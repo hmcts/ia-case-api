@@ -1,0 +1,11 @@
+server:
+  port: ${PORT:8090}
+
+management:
+  endpoints:
+    web:
+      base-path: /
+
+spring:
+  application:
+    name: Immigration & Asylum case API

@@ -1,0 +1,235 @@
+plugins {
+    id 'application'
+    id 'checkstyle'
+    id 'jacoco'
+    id 'pmd'
+    id 'com.github.ben-manes.versions' version '0.20.0'
+    id "info.solidsoft.pitest" version '1.3.0'
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.owasp.dependencycheck' version '3.2.1'
+    id 'org.sonarqube' version '2.6.2'
+    id 'org.springframework.boot' version '2.0.4.RELEASE'
+}
+
+apply plugin: 'java'
+
+def versions = [
+    gradlePitest    : '1.3.0',
+    pitest          : '1.3.2',
+    reformLogging   : '3.0.1',
+    sonarPitest     : '0.5',
+    springBoot      : '2.0.4.RELEASE',
+    springHystrix   : '2.0.0.RELEASE',
+    springfoxSwagger: '2.9.2'
+]
+
+mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
+def jarName = 'ia-case-api.jar'
+
+group = 'uk.gov.hmcts.reform'
+version = '0.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava {
+    options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
+}
+
+compileTestJava {
+    options.compilerArgs << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
+}
+
+sourceSets {
+
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integrationTest/java')
+        }
+        resources.srcDir file('src/integrationTest/resources')
+    }
+
+    functionalTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/functionalTest/java')
+        }
+        resources.srcDir file('src/functionalTest/resources')
+    }
+
+    smokeTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/smokeTest/java')
+        }
+        resources.srcDir file('src/smokeTest/resources')
+    }
+}
+
+checkstyle {
+    maxWarnings = 0
+    toolVersion = '8.10.1'
+    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+    configDir = new File(rootDir, 'config/checkstyle')
+}
+
+pmd {
+    toolVersion = "5.8.1"
+    ignoreFailures = true
+    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    ruleSetFiles = files("config/pmd/ruleset.xml")
+}
+
+task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+}
+
+task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
+    testClassesDirs = sourceSets.smokeTest.output.classesDirs
+    classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+jacoco {
+    toolVersion = "0.8.1"
+}
+
+jacocoTestReport {
+    executionData(test, integration)
+    reports {
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
+pitest {
+    targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
+    excludedClasses = [
+        'uk.gov.hmcts.reform.iacaseapi.config.*',
+        'uk.gov.hmcts.reform.iacaseapi.Application'
+    ]
+    threads = 10
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+    mutationThreshold = 50
+}
+
+project.tasks['pitest'].group = "Verification"
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "IA :: Immigration & Asylum case api"
+        property "sonar.projectKey", "IACASEAPI"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/integration.exec"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+    }
+}
+
+project.tasks['sonarqube'].dependsOn test, integration
+project.tasks['sonarqube'].group = "Verification"
+
+repositories {
+
+    maven {
+        url "https://dl.bintray.com/hmcts/hmcts-maven"
+    }
+
+    jcenter()
+}
+
+dependencies {
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
+
+    compile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.0'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformLogging
+
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+
+    testCompile group: 'org.pitest', name: 'pitest', version: '1.3.2'
+    testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+    testCompile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
+
+    integrationTestCompile sourceSets.main.runtimeClasspath
+    integrationTestCompile sourceSets.test.runtimeClasspath
+
+    functionalTestCompile sourceSets.main.runtimeClasspath
+    functionalTestCompile sourceSets.test.runtimeClasspath
+
+    smokeTestCompile sourceSets.main.runtimeClasspath
+    smokeTestCompile sourceSets.test.runtimeClasspath
+}
+
+// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+dependencyCheck {
+    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+    // range of 0-10 fails the build, anything greater and it doesn't fail the build
+    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
+    suppressionFile = 'config/owasp/suppressions.xml'
+}
+
+dependencyManagement {
+    dependencies {
+        // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
+        dependencySet(group: 'com.google.guava', version: '20.0') {
+            entry 'guava'
+        }
+    }
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+// during check task:
+// first run checkstyle,
+// then unit tests,
+// then integration tests,
+// then dependencyCheckAnalyze
+// for faster feedback of code issues
+check.dependsOn dependencyCheckAnalyze
+dependencyCheckAnalyze.dependsOn integration
+integration.dependsOn test
+
+bootJar {
+    archiveName = jarName
+    manifest {
+        attributes('Implementation-Version': project.version.toString())
+    }
+}
+
+// this is required to force Java running on the Azure Windows Server OS into using
+// UTF-8 as the default character set instead of windows-1252 which causes issues.
+// this setting only applies when running via gradle bootRun -- see web.config for the
+// java flag that configures the deployed appllications
+applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]

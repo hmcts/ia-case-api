@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+  <suppress>
+    <notes><![CDATA[
+   file name: groovy-xml-2.4.15.jar
+   ]]></notes>
+    <gav regex="true">^org\.codehaus\.groovy:groovy-xml:.*$</gav>
+    <cpe>cpe:/a:apache:groovy</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: groovy-json-2.4.15.jar
+   ]]></notes>
+    <gav regex="true">^org\.codehaus\.groovy:groovy-json:.*$</gav>
+    <cpe>cpe:/a:apache:groovy</cpe>
+  </suppress>
+</suppressions>
