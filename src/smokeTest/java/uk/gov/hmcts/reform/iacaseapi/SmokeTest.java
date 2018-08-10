@@ -30,6 +30,6 @@ public class SmokeTest {
             .and()
             .extract().body().asString();
 
-        assertThat(response).isEqualTo("Welcome to Immigration & Asylum case API");
+        assertThat(response).contains("Welcome to Immigration & Asylum case API");
     }
 }
