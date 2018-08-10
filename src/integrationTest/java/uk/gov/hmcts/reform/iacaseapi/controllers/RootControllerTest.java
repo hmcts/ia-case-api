@@ -29,6 +29,6 @@ public class RootControllerTest {
                 .andReturn();
 
         assertThat(response.getResponse().getContentAsString())
-            .isEqualTo("Welcome to Immigration & Asylum case API");
+            .contains("Welcome to Immigration & Asylum case API");
     }
 }
