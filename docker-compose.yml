@@ -11,9 +11,10 @@ services:
     image: hmcts/ia-case-api
     container_name: ia-case-api
     environment:
+      - JAVA_OPTS
       # these environment variables are used by java-logging library
-      - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
+      - ROOT_APPENDER
       - ROOT_LOGGING_LEVEL
       - REFORM_SERVICE_TYPE
       - REFORM_SERVICE_NAME
@@ -24,4 +25,4 @@ services:
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
-      - $SERVER_PORT:$SERVER_PORT
+      - ${SERVER_PORT:-8090}:${SERVER_PORT:-8090}

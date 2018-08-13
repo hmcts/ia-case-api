@@ -11,6 +11,6 @@ def product = "ia"
 def component = "case-api"
 
 withPipeline(type, product, component) {
+    enableDockerBuild()
     enableSlackNotifications('#ia-tech')
 }
-
