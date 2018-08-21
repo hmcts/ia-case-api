@@ -1,0 +1,11 @@
+{
+  "users": {
+    "jamie.burns@hmcts.net": {
+      "workBasket": {
+        "defaultJurisdiction": "SSCS",
+        "defaultCaseType": "Benefit",
+        "defaultState": "appealCreated"
+      }
+    }
+  }
+}

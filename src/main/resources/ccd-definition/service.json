@@ -1,0 +1,621 @@
+{
+  "callbacks": {
+    "ccd-printable-documents": {
+      "URL": "http://ccd-data-store-api-aat.service.core-compute-aat.internal/callback/jurisdictions/SSCS/case-types/Benefit/documents",
+      "retries": "5,10,15"
+    },
+    "sscs-tya-notif": {
+      "URL": "http://sscs-tya-notif-aat.service.core-compute-aat.internal/send",
+      "retries": "5,5"
+    }
+  },
+  "jurisdictions": {
+    "SSCS": {
+      "name": "Tribunals",
+      "description": "Social Security and Child Support",
+      "caseTypes": {
+        "Benefit": {
+          "name": "Benefit Case",
+          "onPrint": {
+            "$ref": "#/callbacks/ccd-printable-documents"
+          },
+          "classification": "PUBLIC",
+          "roles": {
+            "caseworker-sscs": "CRUD",
+            "caseworker-sscs-anonymouscitizen": "CRUD",
+            "caseworker-sscs-systemupdate": "CRUD",
+            "caseworker-sscs-callagent": "CRU"
+          },
+          "states": {
+            "appealCreated": {
+              "name": "Appeal Created",
+              "description": "Case created on CCD",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "testCreate": {
+              "name": "Test Create Case",
+              "description": "Create a test / dummy case",
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            }
+          },
+          "caseFields": {
+            "caseReference": {
+              "label": "SC Case Number",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "caseCreated": {
+              "label": "Case Created Date",
+              "type": "Date",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "region": {
+              "label": "Regional Centre",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "appeal": {
+              "label": "Appeal",
+              "type": {
+                "$ref": "#/complexTypes/appeal"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "subscriptions": {
+              "label": "Subscribers",
+              "type": {
+                "$ref": "#/complexTypes/subscriptions"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-anonymouscitizen": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "events": {
+              "label": "Case Progression",
+              "type": {
+                "$ref": "#/complexTypes/events"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "hearings": {
+              "label": "Hearings",
+              "type": {
+                "$ref": "#/complexTypes/hearings"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "evidence": {
+              "label": "Evidence",
+              "type": {
+                "$ref": "#/complexTypes/evidence"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "dwpTimeExtension": {
+              "label": "DWP Time Extension",
+              "type": {
+                "$ref": "#/complexTypes/dwpTimeExtensions"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "generatedNino": {
+              "label": "Appellant NINO",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "generatedSurname": {
+              "label": "Appellant Surname",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "generatedEmail": {
+              "label": "Appellant Email Address",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "generatedMobile": {
+              "label": "Appellant Mobile Number",
+              "type": "Text",
+              "roles": {
+                "caseworker-sscs": "CRUD",
+                "caseworker-sscs-systemupdate": "CRUD",
+                "caseworker-sscs-callagent": "CRU"
+              }
+            },
+            "generatedDOB": {
+              "label": "Appellant Date of Birth",
+              "type": "Date",
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "regionalProcessingCenter": {
+              "label": "Regional Processing Center",
+              "type": {
+                "$ref": "#/complexTypes/regionalProcessingCenter"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "sscsDocument": {
+              "label": "Case Documents",
+              "type": {
+                "$ref": "#/complexTypes/sscsDocuments"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "panel": {
+              "label": "Panel",
+              "type": {
+                "$ref": "#/complexTypes/panel"
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "evidencePresent": {
+              "label": "Evidence Present",
+              "type": "YesOrNo",
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            }
+          },
+          "caseEvents": {
+            "appealCreated": {
+              "name": "Appeal created",
+              "description": "Appeal created in CCD",
+              "pages": {
+                "2": {
+                  "label": "Case Details",
+                  "fields": {
+                    "caseReference": {},
+                    "caseCreated": {},
+                    "region": {},
+                    "appeal": {},
+                    "regionalProcessingCenter": {},
+                    "panel": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "caseUpdated": {
+              "name": "Update to case data",
+              "description": "Automatic update of data from GAPS 2 - no notification",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "appealLapsed": {
+              "name": "Appeal lapsed",
+              "description": "Notification about appeal lapsed sent",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "appealReceived": {
+              "name": "Appeal received",
+              "description": "Notification that an appeal has been received",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "appealWithdrawn": {
+              "name": "Appeal withdrawn",
+              "description": "Notification that an appeal has been withdrawn",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "evidenceReceived": {
+              "name": "Evidence received",
+              "description": "Notification that evidence has been received",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "evidenceReminder": {
+              "name": "Evidence reminder",
+              "description": "2 days after submission",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "hearingAdjourned": {
+              "name": "Hearing adjourned",
+              "description": "Notification that the hearing has been adjourned",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "hearingBooked": {
+              "name": "Hearing booked",
+              "description": "Notification about a hearing being booked",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "hearingReminder": {
+              "name": "Hearing reminder",
+              "description": "1 day out and 1 week out",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "hearingPostponed": {
+              "name": "Hearing postponed",
+              "description": "Notification that a hearing has been postponed",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "responseReceived": {
+              "name": "Response received",
+              "description": "Notification that DWP have responded to the appeal",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "subscriptionUpdated": {
+              "name": "Updated subscription",
+              "description": "Update Subscription",
+              "pages": {
+                "1": {
+                  "label": "Subscriptions",
+                  "fields": {
+                    "subscriptions": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "eventsUpdates": {
+              "name": "Update events",
+              "description": "Update Events Data for Notifications",
+              "pages": {
+                "1": {
+                  "label": "Events",
+                  "fields": {
+                    "events": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "appealDormant": {
+              "name": "Appeal dormant",
+              "description": "Dormant appeal - no notification",
+              "roles": {
+                "caseworker-sscs": "CR",
+                "caseworker-sscs-systemupdate": "CRUD"
+              },
+              "onSubmitted": {
+                "$ref": "#/callbacks/sscs-tya-notif"
+              }
+            },
+            "addSCnumber": {
+              "name": "Add / update SC number",
+              "description": "Add a SC number to the case",
+              "pages": {
+                "2": {
+                  "label": "SC Code",
+                  "fields": {
+                    "caseReference": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "uploadDocument": {
+              "name": "Upload document",
+              "description": "Upload document",
+              "pages": {
+                "1": {
+                  "label": "Upload documents",
+                  "fields": {
+                    "sscsDocument": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            },
+            "hearingHoldingReminder": {
+              "name": "Hearing Holding Reminder",
+              "description": "Holding email when hearing not booked",
+              "roles": {
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "secondHearingHoldingReminder": {
+              "name": "2nd Hearing Holding Reminder",
+              "description": "Second holding email when hearing not booked",
+              "roles": {
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "thirdHearingHoldingReminder": {
+              "name": "3rd Hearing Holding Reminder",
+              "description": "Third holding email when hearing not booked",
+              "roles": {
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "finalHearingHoldingReminder": {
+              "name": "Final Hearing Holding Reminder",
+              "description": "Final holding email when hearing not booked",
+              "roles": {
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "dwpResponseLateReminder": {
+              "name": "DWP Response Late Reminder",
+              "description": "Holding email when DWP has not responded in time",
+              "roles": {
+                "caseworker-sscs-systemupdate": "CRUD"
+              }
+            },
+            "panelUpdate": {
+              "name": "Create/update Panel",
+              "description": "Add Judge, Medical member and Disability qualified member",
+              "pages": {
+                "1": {
+                  "label": "Panel",
+                  "fields": {
+                    "panel": {}
+                  }
+                }
+              },
+              "roles": {
+                "caseworker-sscs": "CRUD"
+              }
+            }
+          },
+          "workBasket": {
+            "inputFields": {
+              "region": {},
+              "caseReference": {},
+              "caseCreated": {}
+            },
+            "resultFields": {
+              "caseReference": {},
+              "caseCreated": {},
+              "region": {},
+              "evidencePresent": {}
+            }
+          },
+          "search": {
+            "inputFields": {
+              "caseReference": {},
+              "generatedNino": {},
+              "generatedSurname": {},
+              "generatedEmail": {},
+              "generatedMobile": {},
+              "generatedDOB": {},
+              "region": {},
+              "evidencePresent": {}
+            },
+            "resultFields": {
+              "generatedSurname": {},
+              "generatedDOB": {},
+              "caseReference": {},
+              "evidencePresent": {}
+            }
+          },
+          "tabs": {
+            "subscriptions": {
+              "label": "Subscriptions",
+              "fields": {
+                "subscriptions": {}
+              }
+            },
+            "events": {
+              "label": "Case Progression",
+              "fields": {
+                "events": {}
+              }
+            },
+            "caseInfo": {
+              "label": "Case Info",
+              "fields": {
+                "caseReference": {},
+                "caseCreated": {},
+                "region": {}
+              }
+            },
+            "appealInfo": {
+              "label": "Appeal Details",
+              "fields": {
+                "appeal": {}
+              }
+            },
+            "evidence": {
+              "label": "GAPS 2 Evidence",
+              "fields": {
+                "evidence": {}
+              }
+            },
+            "regionalProcessingCenter": {
+              "label": "RegionalProcessingCenter",
+              "fields": {
+                "regionalProcessingCenter": {}
+              }
+            },
+            "appealDocuments": {
+              "label": "Documents",
+              "fields": {
+                "sscsDocument": {}
+              }
+            },
+            "panel": {
+              "label": "Panel",
+              "fields": {
+                "panel": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "complexTypes": {
+    "appeal": {
+      "fields": {
+        "mrnDetails": {
+          "label": "MRN Details",
+          "type": {
+            "$ref": "#/complexTypes/mrnDetails"
+          }
+        },
+        "appellant": {
+          "label": "Appellant Details",
+          "type": {
+            "$ref": "#/complexTypes/appellant"
+          }
+        },
+        "benefitType": {
+          "label": "Benefit Type",
+          "type": {
+            "$ref": "#/complexTypes/benefit"
+          }
+        },
+        "hearingType": {
+          "label": "Hearing Type",
+          "type": {
+            "$ref": "#/fixedLists/hearingType"
+          }
+        },
+        "hearingOptions": {
+          "label": "Hearing Options",
+          "type": {
+            "$ref": "#/complexTypes/hearingOptions"
+          }
+        },
+        "appealReasons": {
+          "label": "Appeal Reasons",
+          "type": {
+            "$ref": "#/complexTypes/appealReasons"
+          }
+        },
+        "supporter": {
+          "label": "Supporter Details",
+          "type": {
+            "$ref": "#/complexTypes/supporter"
+          }
+        },
+        "rep": {
+          "label": "Representative Details",
+          "type": {
+            "$ref": "#/complexTypes/representative"
+          }
+        },
+        "signer": {
+          "label": "Signer",
+          "type": "Text"
+        }
+      }
+    }
+  }
+}
