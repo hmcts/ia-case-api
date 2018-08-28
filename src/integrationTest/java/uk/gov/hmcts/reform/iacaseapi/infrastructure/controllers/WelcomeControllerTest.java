@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.controllers;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
-public class RootControllerTest {
+public class WelcomeControllerTest {
 
     @Autowired
     private transient MockMvc mockMvc;

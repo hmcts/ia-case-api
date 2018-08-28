@@ -116,7 +116,7 @@ jacocoTestReport {
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
-        'uk.gov.hmcts.reform.iacaseapi.config.*',
+        'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
         'uk.gov.hmcts.reform.iacaseapi.Application'
     ]
     threads = 10
@@ -157,6 +157,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
+    compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.2.RELEASE'
 
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.0'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger

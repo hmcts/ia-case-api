@@ -10,3 +10,5 @@ management:
 spring:
   application:
     name: Immigration & Asylum case API
+
+homeOffice.asylumData.endpoint: https://boiling-island-41586.herokuapp.com/home-office/decision

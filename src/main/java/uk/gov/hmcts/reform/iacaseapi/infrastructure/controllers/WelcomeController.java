@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.controllers;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Default endpoints per application.
  */
 @RestController
-public class RootController {
+public class WelcomeController {
 
     /**
      * Root GET endpoint.
