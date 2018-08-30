@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.apache.commons.lang.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.CcdEventHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.datasource.HomeOfficeAsylumDataFetcher;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeAsylumData;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Name;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 
 @Component
-public class HomeOfficeAsylumDataAugmentor implements CcdEventHandler<AsylumCase> {
+public class HomeOfficeAsylumDataAugmentor implements CcdEventPreSubmitHandler<AsylumCase> {
 
     private static final org.slf4j.Logger LOG = getLogger(HomeOfficeAsylumDataAugmentor.class);
 
@@ -35,7 +35,7 @@ public class HomeOfficeAsylumDataAugmentor implements CcdEventHandler<AsylumCase
                && ccdEvent.getEventId() == EventId.START_DRAFT_APPEAL;
     }
 
-    public CcdEventResponse<AsylumCase> handle(
+    public CcdEventPreSubmitResponse<AsylumCase> handle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
@@ -48,8 +48,8 @@ public class HomeOfficeAsylumDataAugmentor implements CcdEventHandler<AsylumCase
                 .getCaseDetails()
                 .getCaseData();
 
-        CcdEventResponse<AsylumCase> ccdEventResponse =
-            new CcdEventResponse<>(asylumCase);
+        CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
+            new CcdEventPreSubmitResponse<>(asylumCase);
 
         final String homeOfficeReferenceNumber = asylumCase.getHomeOfficeReferenceNumber();
 
@@ -63,7 +63,7 @@ public class HomeOfficeAsylumDataAugmentor implements CcdEventHandler<AsylumCase
 
             if (asylumCase.getHomeOfficeDecisionDate() == null
                 || !asylumCase.getHomeOfficeDecisionDate().equals(homeOfficeAsylumData.get().getDate())) {
-                ccdEventResponse
+                preSubmitResponse
                     .getErrors()
                     .add("Home Office decision date does not match the letter sent");
             }
@@ -71,12 +71,12 @@ public class HomeOfficeAsylumDataAugmentor implements CcdEventHandler<AsylumCase
         } else {
 
             LOG.info("Home Office decision *not* found for reference number: {}", homeOfficeReferenceNumber);
-            ccdEventResponse
+            preSubmitResponse
                 .getErrors()
                 .add("Home Office reference number '" + homeOfficeReferenceNumber + "' is not recognised");
         }
 
-        return ccdEventResponse;
+        return preSubmitResponse;
     }
 
     private void augmentCaseWithHomeOfficeData(

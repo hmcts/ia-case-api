@@ -11,4 +11,5 @@ spring:
   application:
     name: Immigration & Asylum case API
 
+limits.allowedTimeFromDecisionInMonths: 1
 homeOffice.asylumData.endpoint: https://boiling-island-41586.herokuapp.com/home-office/decision

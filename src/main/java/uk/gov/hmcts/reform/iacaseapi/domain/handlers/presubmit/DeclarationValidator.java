@@ -1,15 +1,15 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.CcdEventHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 
 @Component
-public class DeclarationValidator implements CcdEventHandler<AsylumCase> {
+public class DeclarationValidator implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
@@ -19,7 +19,7 @@ public class DeclarationValidator implements CcdEventHandler<AsylumCase> {
                && ccdEvent.getEventId() == EventId.SUBMIT_APPEAL;
     }
 
-    public CcdEventResponse<AsylumCase> handle(
+    public CcdEventPreSubmitResponse<AsylumCase> handle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
@@ -32,16 +32,16 @@ public class DeclarationValidator implements CcdEventHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        CcdEventResponse<AsylumCase> ccdEventResponse =
-            new CcdEventResponse<>(asylumCase);
+        CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
+            new CcdEventPreSubmitResponse<>(asylumCase);
 
         if (!asylumCase.getLegalRepDeclaration().orElse("").equals("Yes")) {
 
-            ccdEventResponse
+            preSubmitResponse
                 .getErrors()
                 .add("You cannot submit an appeal without a positive declaration");
         }
 
-        return ccdEventResponse;
+        return preSubmitResponse;
     }
 }

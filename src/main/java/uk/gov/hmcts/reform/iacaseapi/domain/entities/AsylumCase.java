@@ -39,11 +39,12 @@ public class AsylumCase implements CaseData {
     //private Optional<Document> evidenceDocument = Optional.empty();
     private Optional<String> evidenceLabel = Optional.empty();
 
-    private Optional<String> newMatters = Optional.empty();
-    //private Optional<Document> newMattersDocument = Optional.empty();
+    private Optional<List<String>> newMatters = Optional.empty();
+    private Optional<String> newMattersOther = Optional.empty();
+    //private Optional<Document> newMattersOtherDocument = Optional.empty();
 
-    private Optional<String> personalVulnerabilities = Optional.empty();
-    private Optional<List<String>> personalVulnerabilitiesApplicable = Optional.empty();
+    private Optional<String> personalVulnerabilitiesApply = Optional.empty();
+    private Optional<List<String>> personalVulnerabilities = Optional.empty();
     private Optional<String> personalVulnerabilitiesOther = Optional.empty();
 
     private Optional<String> otherAppeals = Optional.empty();
@@ -74,9 +75,10 @@ public class AsylumCase implements CaseData {
         String humanRightsConventionExplanation,
         String evidenceToUpload,
         String evidenceLabel,
-        String newMatters,
-        String personalVulnerabilities,
-        List<String> personalVulnerabilitiesApplicable,
+        List<String> newMatters,
+        String newMattersOther,
+        String personalVulnerabilitiesApply,
+        List<String> personalVulnerabilities,
         String personalVulnerabilitiesOther,
         String otherAppeals,
         List<MultiSelectValue> otherAppealNumbers,
@@ -101,8 +103,9 @@ public class AsylumCase implements CaseData {
         this.evidenceToUpload = Optional.ofNullable(evidenceToUpload);
         this.evidenceLabel = Optional.ofNullable(evidenceLabel);
         this.newMatters = Optional.ofNullable(newMatters);
+        this.newMattersOther = Optional.ofNullable(newMattersOther);
+        this.personalVulnerabilitiesApply = Optional.ofNullable(personalVulnerabilitiesApply);
         this.personalVulnerabilities = Optional.ofNullable(personalVulnerabilities);
-        this.personalVulnerabilitiesApplicable = Optional.ofNullable(personalVulnerabilitiesApplicable);
         this.personalVulnerabilitiesOther = Optional.ofNullable(personalVulnerabilitiesOther);
         this.otherAppeals = Optional.ofNullable(otherAppeals);
         this.otherAppealNumbers = Optional.ofNullable(otherAppealNumbers);
@@ -178,16 +181,20 @@ public class AsylumCase implements CaseData {
         return evidenceLabel;
     }
 
-    public Optional<String> getNewMatters() {
+    public Optional<List<String>> getNewMatters() {
         return newMatters;
     }
 
-    public Optional<String> getPersonalVulnerabilities() {
-        return personalVulnerabilities;
+    public Optional<String> getNewMattersOther() {
+        return newMattersOther;
     }
 
-    public Optional<List<String>> getPersonalVulnerabilitiesApplicable() {
-        return personalVulnerabilitiesApplicable;
+    public Optional<String> getPersonalVulnerabilitiesApply() {
+        return personalVulnerabilitiesApply;
+    }
+
+    public Optional<List<String>> getPersonalVulnerabilities() {
+        return personalVulnerabilities;
     }
 
     public Optional<String> getPersonalVulnerabilitiesOther() {
@@ -270,16 +277,20 @@ public class AsylumCase implements CaseData {
         this.evidenceLabel = Optional.ofNullable(evidenceLabel);
     }
 
-    public void setNewMatters(String newMatters) {
+    public void setNewMatters(List<String> newMatters) {
         this.newMatters = Optional.ofNullable(newMatters);
     }
 
-    public void setPersonalVulnerabilities(String personalVulnerabilities) {
-        this.personalVulnerabilities = Optional.ofNullable(personalVulnerabilities);
+    public void setNewMattersOther(String newMattersOther) {
+        this.newMattersOther = Optional.ofNullable(newMattersOther);
     }
 
-    public void setPersonalVulnerabilitiesApplicable(List<String> personalVulnerabilitiesApplicable) {
-        this.personalVulnerabilitiesApplicable = Optional.ofNullable(personalVulnerabilitiesApplicable);
+    public void setPersonalVulnerabilitiesApply(String personalVulnerabilitiesApply) {
+        this.personalVulnerabilitiesApply = Optional.ofNullable(personalVulnerabilitiesApply);
+    }
+
+    public void setPersonalVulnerabilities(List<String> personalVulnerabilities) {
+        this.personalVulnerabilities = Optional.ofNullable(personalVulnerabilities);
     }
 
     public void setPersonalVulnerabilitiesOther(String personalVulnerabilitiesOther) {

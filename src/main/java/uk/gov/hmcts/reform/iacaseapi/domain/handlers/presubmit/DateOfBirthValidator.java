@@ -1,31 +1,29 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.CcdEventHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 
 @Component
-public class OutOfTimeAugmentor implements CcdEventHandler<AsylumCase> {
+public class DateOfBirthValidator implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && (ccdEvent.getEventId() == EventId.START_DRAFT_APPEAL
-                   || ccdEvent.getEventId() == EventId.COMPLETE_DRAFT_APPEAL
+               && (ccdEvent.getEventId() == EventId.COMPLETE_DRAFT_APPEAL
                    || ccdEvent.getEventId() == EventId.UPDATE_DRAFT_APPEAL);
     }
 
-    public CcdEventResponse<AsylumCase> handle(
+    public CcdEventPreSubmitResponse<AsylumCase> handle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
@@ -38,25 +36,25 @@ public class OutOfTimeAugmentor implements CcdEventHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        CcdEventResponse<AsylumCase> ccdEventResponse =
-            new CcdEventResponse<>(asylumCase);
+        CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
+            new CcdEventPreSubmitResponse<>(asylumCase);
 
-        if (Strings.isNotBlank(asylumCase.getHomeOfficeDecisionDate())) {
+        if (asylumCase.getAppellantDob().isPresent()) {
 
-            LocalDate decisionDate =
+            LocalDate appellantDob =
                 LocalDate.parse(
-                    asylumCase.getHomeOfficeDecisionDate(),
+                    asylumCase.getAppellantDob().get(),
                     DateTimeFormatter.ISO_LOCAL_DATE
                 );
 
-            int periodInMonths = Period.between(decisionDate, LocalDate.now()).getMonths();
-            if (periodInMonths >= 1) {
-                asylumCase.setApplicationOutOfTime("Yes");
-            } else {
-                asylumCase.setApplicationOutOfTime("No");
+            int age = Period.between(appellantDob, LocalDate.now()).getYears();
+            if (age < 18) {
+                preSubmitResponse
+                    .getErrors()
+                    .add("Appellant is too young to use this service");
             }
         }
 
-        return ccdEventResponse;
+        return preSubmitResponse;
     }
 }
