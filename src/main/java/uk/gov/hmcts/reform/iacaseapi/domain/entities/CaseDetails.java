@@ -10,10 +10,6 @@ public class CaseDetails {
     private Optional<String> appellantDob = Optional.empty();
     private Optional<String> legalRepName = Optional.empty();
 
-    private CaseDetails() {
-        // noop -- for deserializer
-    }
-
     public Optional<String> getCaseStartDate() {
         return caseStartDate;
     }
