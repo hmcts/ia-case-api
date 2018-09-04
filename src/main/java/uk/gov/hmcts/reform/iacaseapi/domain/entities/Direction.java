@@ -7,10 +7,7 @@ public class Direction {
     private Optional<String> direction = Optional.empty();
     private Optional<String> description = Optional.empty();
     private Optional<String> parties = Optional.empty();
-
-    private Direction() {
-        // noop -- for deserializer
-    }
+    private Optional<String> dueDate = Optional.empty();
 
     public Optional<String> getDirection() {
         return direction;
@@ -24,6 +21,10 @@ public class Direction {
         return parties;
     }
 
+    public Optional<String> getDueDate() {
+        return dueDate;
+    }
+
     public void setDirection(String direction) {
         this.direction = Optional.ofNullable(direction);
     }
@@ -34,5 +35,9 @@ public class Direction {
 
     public void setParties(String parties) {
         this.parties = Optional.ofNullable(parties);
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = Optional.ofNullable(dueDate);
     }
 }

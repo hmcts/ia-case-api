@@ -2,19 +2,36 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionReview;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DeadlineDirectionExtractor;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FirstSubmittedTimeExtensionExtractor;
 
 @Component
 public class TimeExtensionReviewUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     private static final org.slf4j.Logger LOG = getLogger(TimeExtensionReviewUpdater.class);
+
+    private final DeadlineDirectionExtractor deadlineDirectionExtractor;
+    private final FirstSubmittedTimeExtensionExtractor firstSubmittedTimeExtensionExtractor;
+
+    public TimeExtensionReviewUpdater(
+        @Autowired DeadlineDirectionExtractor deadlineDirectionExtractor,
+        @Autowired FirstSubmittedTimeExtensionExtractor firstSubmittedTimeExtensionExtractor
+    ) {
+        this.deadlineDirectionExtractor = deadlineDirectionExtractor;
+        this.firstSubmittedTimeExtensionExtractor = firstSubmittedTimeExtensionExtractor;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -52,30 +69,38 @@ public class TimeExtensionReviewUpdater implements CcdEventPreSubmitHandler<Asyl
         //       using the most recent extension, which may not work if a new request
         //       arrives whilst reviewing)
 
-        List<TimeExtension> timeExtensions =
-            asylumCase
-                .getTimeExtensions()
-                .orElseThrow(() -> new IllegalStateException("timeExtensions not present"))
-                .getTimeExtensions()
-                .orElseThrow(() -> new IllegalStateException("timeExtensions value not present"))
-                .stream()
-                .map(IdValue::getValue)
-                .filter(timeExtension -> timeExtension.getStatus().orElse("").equals("submitted"))
-                .collect(Collectors.toList());
-
-        TimeExtension timeExtensionToUpdate = timeExtensions.get(0);
+        TimeExtension firstSubmittedTimeExtension =
+            firstSubmittedTimeExtensionExtractor
+                .extract(asylumCase)
+                .orElseThrow(() -> new IllegalStateException("submitted timeExtension not present"));
 
         if (timeExtensionReview.getComment().isPresent()) {
-            timeExtensionToUpdate.setComment(timeExtensionReview.getComment().get());
+            firstSubmittedTimeExtension.setComment(timeExtensionReview.getComment().get());
         }
 
         if (timeExtensionReview
             .getGrantOrDeny()
             .orElse("")
             .equals("grant")) {
-            timeExtensionToUpdate.setStatus("granted");
+
+            Optional<Direction> deadlineDirection =
+                deadlineDirectionExtractor
+                    .extract(asylumCase);
+
+            if (deadlineDirection.isPresent()) {
+
+                deadlineDirection
+                    .get()
+                    .setDueDate(
+                        timeExtensionReview
+                            .getDueDate()
+                            .orElseThrow(() -> new IllegalStateException("dueDate not present"))
+                    );
+            }
+
+            firstSubmittedTimeExtension.setStatus("granted");
         } else {
-            timeExtensionToUpdate.setStatus("denied");
+            firstSubmittedTimeExtension.setStatus("denied");
         }
 
         return preSubmitResponse;

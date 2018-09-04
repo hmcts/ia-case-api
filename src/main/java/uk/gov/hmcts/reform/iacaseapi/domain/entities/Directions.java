@@ -2,20 +2,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.IdValue;
 
 public class Directions {
 
-    private Optional<List<Direction>> directions = Optional.empty();
+    private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
-    private Directions() {
-        // noop -- for deserializer
-    }
-
-    public Optional<List<Direction>> getDirections() {
+    public Optional<List<IdValue<Direction>>> getDirections() {
         return directions;
     }
 
-    public void setDirections(List<Direction> directions) {
+    public void setDirections(List<IdValue<Direction>> directions) {
         this.directions = Optional.ofNullable(directions);
     }
 }

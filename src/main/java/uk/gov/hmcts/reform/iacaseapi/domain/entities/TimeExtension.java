@@ -11,10 +11,6 @@ public class TimeExtension {
     private Optional<String> status = Optional.empty();
     private Optional<String> comment = Optional.empty();
 
-    public TimeExtension() {
-        // noop
-    }
-
     public Optional<String> getDateRequested() {
         return dateRequested;
     }

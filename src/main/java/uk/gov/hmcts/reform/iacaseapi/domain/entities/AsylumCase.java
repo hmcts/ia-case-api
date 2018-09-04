@@ -65,6 +65,12 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepReference = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer serve direction model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Direction> direction = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // legal rep request time extension model ...
     // -----------------------------------------------------------------------------
 
@@ -295,6 +301,22 @@ public class AsylumCase implements CaseData {
 
     public void setLegalRepReference(String legalRepReference) {
         this.legalRepReference = Optional.ofNullable(legalRepReference);
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer serve direction model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Direction> getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = Optional.ofNullable(direction);
+    }
+
+    public void clearDirection() {
+        this.direction = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

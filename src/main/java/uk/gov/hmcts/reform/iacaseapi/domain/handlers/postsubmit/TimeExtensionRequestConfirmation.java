@@ -27,11 +27,6 @@ public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandl
             throw new IllegalStateException("Cannot handle ccd event");
         }
 
-        AsylumCase asylumCase =
-            ccdEvent
-                .getCaseDetails()
-                .getCaseData();
-
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 

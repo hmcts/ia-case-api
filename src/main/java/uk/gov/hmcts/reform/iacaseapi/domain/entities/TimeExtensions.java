@@ -8,10 +8,6 @@ public class TimeExtensions {
 
     private Optional<List<IdValue<TimeExtension>>> timeExtensions = Optional.empty();
 
-    public TimeExtensions() {
-        // noop
-    }
-
     public Optional<List<IdValue<TimeExtension>>> getTimeExtensions() {
         return timeExtensions;
     }
