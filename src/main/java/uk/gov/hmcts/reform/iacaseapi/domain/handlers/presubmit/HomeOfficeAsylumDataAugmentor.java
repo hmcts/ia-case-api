@@ -98,7 +98,7 @@ public class HomeOfficeAsylumDataAugmentor implements CcdEventPreSubmitHandler<A
         if (homeOfficeAsylumData.getNationality().isPresent()) {
             asylumCase.setAppellantNationalities(
                 Collections.singletonList(
-                    new MultiSelectValue(
+                    new IdValue<>(
                         homeOfficeAsylumData.getNationality().get(),
                         homeOfficeAsylumData.getNationality().get()
                     )

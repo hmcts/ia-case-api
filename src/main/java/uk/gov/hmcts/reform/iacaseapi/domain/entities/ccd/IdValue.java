@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-public class MultiSelectValue {
+public class IdValue<T> {
 
     private String id = "";
-    private String value = "";
+    private T value = null;
 
-    private MultiSelectValue() {
+    private IdValue() {
         // noop -- for deserializer
     }
 
-    public MultiSelectValue(String id, String value) {
+    public IdValue(String id, T value) {
         this.id = id;
         this.value = value;
     }
@@ -18,7 +18,11 @@ public class MultiSelectValue {
         return id;
     }
 
-    public String getValue() {
+    public T getValue() {
+        if (value == null) {
+            throw new IllegalStateException("Value cannot be null");
+        }
+
         return value;
     }
 }

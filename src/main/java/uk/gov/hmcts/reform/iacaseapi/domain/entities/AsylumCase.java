@@ -4,9 +4,20 @@ import java.util.List;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AddressUK;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.MultiSelectValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.IdValue;
 
 public class AsylumCase implements CaseData {
+
+    //
+    // @todo explore:
+    //       appeal form and other models should be separate types
+    //       upon submission of the associated event, the correct type can be selected to
+    //       deserialize into.
+    //
+
+    // -----------------------------------------------------------------------------
+    // legal rep draft appeal form model ...
+    // -----------------------------------------------------------------------------
 
     private String homeOfficeReferenceNumber = "";
     private String homeOfficeDecisionDate = "";
@@ -17,7 +28,7 @@ public class AsylumCase implements CaseData {
 
     private Optional<Name> appellantName = Optional.empty();
     private Optional<String> appellantDob = Optional.empty();
-    private Optional<List<MultiSelectValue>> appellantNationalities = Optional.empty();
+    private Optional<List<IdValue<String>>> appellantNationalities = Optional.empty();
     private Optional<String> appellantNationalityContested = Optional.empty();
 
     private Optional<AddressUK> appellantAddress = Optional.empty();
@@ -48,70 +59,43 @@ public class AsylumCase implements CaseData {
     private Optional<String> personalVulnerabilitiesOther = Optional.empty();
 
     private Optional<String> otherAppeals = Optional.empty();
-    private Optional<List<MultiSelectValue>> otherAppealNumbers = Optional.empty();
+    private Optional<List<IdValue<String>>> otherAppealNumbers = Optional.empty();
 
     private Optional<String> legalRepDeclaration = Optional.empty();
     private Optional<String> legalRepReference = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // legal rep request time extension model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<TimeExtensionRequest> timeExtensionRequest = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer review time extension model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<TimeExtension> timeExtensionUnderReview = Optional.empty();
+    private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case details (tabs) display model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<CaseDetails> caseDetails = Optional.empty();
+    private Optional<CaseSummary> caseSummary = Optional.empty();
+    private Optional<CaseFile> caseFile = Optional.empty();
+    private Optional<Directions> directions = Optional.empty();
+    private Optional<TimeExtensions> timeExtensions = Optional.empty();
+
+    // -----------------------------------------------------------------------------
 
     private AsylumCase() {
         // noop -- for deserializer
     }
 
-    public AsylumCase(
-        String homeOfficeReferenceNumber,
-        String homeOfficeDecisionDate,
-        String applicationOutOfTime,
-        String applicationOutOfTimeExplanation,
-        Name appellantName,
-        String appellantDob,
-        List<MultiSelectValue> appellantNationalities,
-        String appellantNationalityContested,
-        AddressUK appellantAddress,
-        String appellantHasNoFixedAbode,
-        String appealReason,
-        List<String> appealGrounds,
-        String refugeeConventionExplanation,
-        String humanitarianProtectionExplanation,
-        String humanRightsConventionExplanation,
-        String evidenceToUpload,
-        String evidenceLabel,
-        List<String> newMatters,
-        String newMattersOther,
-        String personalVulnerabilitiesApply,
-        List<String> personalVulnerabilities,
-        String personalVulnerabilitiesOther,
-        String otherAppeals,
-        List<MultiSelectValue> otherAppealNumbers,
-        String legalRepDeclaration,
-        String legalRepReference
-    ) {
-        this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
-        this.homeOfficeDecisionDate = homeOfficeDecisionDate;
-        this.applicationOutOfTime = Optional.ofNullable(applicationOutOfTime);
-        this.applicationOutOfTimeExplanation = Optional.ofNullable(applicationOutOfTimeExplanation);
-        this.appellantName = Optional.ofNullable(appellantName);
-        this.appellantDob = Optional.ofNullable(appellantDob);
-        this.appellantNationalities = Optional.ofNullable(appellantNationalities);
-        this.appellantNationalityContested = Optional.ofNullable(appellantNationalityContested);
-        this.appellantAddress = Optional.ofNullable(appellantAddress);
-        this.appellantHasNoFixedAbode = Optional.ofNullable(appellantHasNoFixedAbode);
-        this.appealReason = Optional.ofNullable(appealReason);
-        this.appealGrounds = Optional.ofNullable(appealGrounds);
-        this.refugeeConventionExplanation = Optional.ofNullable(refugeeConventionExplanation);
-        this.humanitarianProtectionExplanation = Optional.ofNullable(humanitarianProtectionExplanation);
-        this.humanRightsConventionExplanation = Optional.ofNullable(humanRightsConventionExplanation);
-        this.evidenceToUpload = Optional.ofNullable(evidenceToUpload);
-        this.evidenceLabel = Optional.ofNullable(evidenceLabel);
-        this.newMatters = Optional.ofNullable(newMatters);
-        this.newMattersOther = Optional.ofNullable(newMattersOther);
-        this.personalVulnerabilitiesApply = Optional.ofNullable(personalVulnerabilitiesApply);
-        this.personalVulnerabilities = Optional.ofNullable(personalVulnerabilities);
-        this.personalVulnerabilitiesOther = Optional.ofNullable(personalVulnerabilitiesOther);
-        this.otherAppeals = Optional.ofNullable(otherAppeals);
-        this.otherAppealNumbers = Optional.ofNullable(otherAppealNumbers);
-        this.legalRepDeclaration = Optional.ofNullable(legalRepDeclaration);
-        this.legalRepReference = Optional.ofNullable(legalRepReference);
-    }
+    // -----------------------------------------------------------------------------
+    // legal rep draft appeal model ...
+    // -----------------------------------------------------------------------------
 
     public String getHomeOfficeReferenceNumber() {
         return homeOfficeReferenceNumber;
@@ -137,7 +121,7 @@ public class AsylumCase implements CaseData {
         return appellantDob;
     }
 
-    public Optional<List<MultiSelectValue>> getAppellantNationalities() {
+    public Optional<List<IdValue<String>>> getAppellantNationalities() {
         return appellantNationalities;
     }
 
@@ -205,7 +189,7 @@ public class AsylumCase implements CaseData {
         return otherAppeals;
     }
 
-    public Optional<List<MultiSelectValue>> getOtherAppealNumbers() {
+    public Optional<List<IdValue<String>>> getOtherAppealNumbers() {
         return otherAppealNumbers;
     }
 
@@ -233,7 +217,7 @@ public class AsylumCase implements CaseData {
         this.appellantDob = Optional.ofNullable(appellantDob);
     }
 
-    public void setAppellantNationalities(List<MultiSelectValue> appellantNationalities) {
+    public void setAppellantNationalities(List<IdValue<String>> appellantNationalities) {
         this.appellantNationalities = Optional.ofNullable(appellantNationalities);
     }
 
@@ -301,7 +285,7 @@ public class AsylumCase implements CaseData {
         this.otherAppeals = Optional.ofNullable(otherAppeals);
     }
 
-    public void setOtherAppealNumbers(List<MultiSelectValue> otherAppealNumbers) {
+    public void setOtherAppealNumbers(List<IdValue<String>> otherAppealNumbers) {
         this.otherAppealNumbers = Optional.ofNullable(otherAppealNumbers);
     }
 
@@ -311,5 +295,93 @@ public class AsylumCase implements CaseData {
 
     public void setLegalRepReference(String legalRepReference) {
         this.legalRepReference = Optional.ofNullable(legalRepReference);
+    }
+
+    // -----------------------------------------------------------------------------
+    // legal rep request time extension model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<TimeExtensionRequest> getTimeExtensionRequest() {
+        return timeExtensionRequest;
+    }
+
+    public void setTimeExtensionRequest(TimeExtensionRequest timeExtensionRequest) {
+        this.timeExtensionRequest = Optional.ofNullable(timeExtensionRequest);
+    }
+
+    public void clearTimeExtensionRequest() {
+        this.timeExtensionRequest = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer review time extension model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<TimeExtension> getTimeExtensionUnderReview() {
+        return timeExtensionUnderReview;
+    }
+
+    public Optional<TimeExtensionReview> getTimeExtensionReview() {
+        return timeExtensionReview;
+    }
+
+    public void setTimeExtensionUnderReview(TimeExtension timeExtensionUnderReview) {
+        this.timeExtensionUnderReview = Optional.ofNullable(timeExtensionUnderReview);
+    }
+
+    public void setTimeExtensionReview(TimeExtensionReview timeExtensionReview) {
+        this.timeExtensionReview = Optional.ofNullable(timeExtensionReview);
+    }
+
+    public void clearTimeExtensionUnderReview() {
+        this.timeExtensionUnderReview = Optional.empty();
+    }
+
+    public void clearTimeExtensionReview() {
+        this.timeExtensionReview = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case details (tabs) display model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<CaseDetails> getCaseDetails() {
+        return caseDetails;
+    }
+
+    public Optional<CaseSummary> getCaseSummary() {
+        return caseSummary;
+    }
+
+    public Optional<CaseFile> getCaseFile() {
+        return caseFile;
+    }
+
+    public Optional<Directions> getDirections() {
+        return directions;
+    }
+
+    public Optional<TimeExtensions> getTimeExtensions() {
+        return timeExtensions;
+    }
+
+    public void setCaseDetails(CaseDetails caseDetails) {
+        this.caseDetails = Optional.ofNullable(caseDetails);
+    }
+
+    public void setCaseSummary(CaseSummary caseSummary) {
+        this.caseSummary = Optional.ofNullable(caseSummary);
+    }
+
+    public void setCaseFile(CaseFile caseFile) {
+        this.caseFile = Optional.ofNullable(caseFile);
+    }
+
+    public void setDirections(Directions directions) {
+        this.directions = Optional.ofNullable(directions);
+    }
+
+    public void setTimeExtensions(TimeExtensions timeExtensions) {
+        this.timeExtensions = Optional.ofNullable(timeExtensions);
     }
 }
