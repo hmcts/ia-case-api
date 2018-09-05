@@ -17,7 +17,7 @@ public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<Asy
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.REQUEST_TIME_EXTENSION;
+               && ccdEvent.getEventId() == EventId.SERVE_DIRECTION;
     }
 
     public CcdEventPostSubmitResponse handle(
