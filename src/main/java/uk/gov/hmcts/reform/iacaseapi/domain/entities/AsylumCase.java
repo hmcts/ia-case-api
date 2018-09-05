@@ -65,6 +65,13 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepReference = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer update summary model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<GroundsForAppeal> groundsForAppeal = Optional.empty();
+    private Optional<Issues> issues = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case officer serve direction model ...
     // -----------------------------------------------------------------------------
 
@@ -301,6 +308,34 @@ public class AsylumCase implements CaseData {
 
     public void setLegalRepReference(String legalRepReference) {
         this.legalRepReference = Optional.ofNullable(legalRepReference);
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer update summary model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<GroundsForAppeal> getGroundsForAppeal() {
+        return groundsForAppeal;
+    }
+
+    public void setGroundsForAppeal(GroundsForAppeal groundsForAppeal) {
+        this.groundsForAppeal = Optional.ofNullable(groundsForAppeal);
+    }
+
+    public void clearGroundsForAppeal() {
+        this.groundsForAppeal = Optional.empty();
+    }
+
+    public Optional<Issues> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(Issues issues) {
+        this.issues = Optional.ofNullable(issues);
+    }
+
+    public void clearIssues() {
+        this.issues = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

@@ -41,7 +41,7 @@ public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<Asy
                 .getDirection()
                 .orElseThrow(() -> new IllegalStateException("direction not present"));
 
-        String serveDeadlineUrl =
+        String serveDirectionUrl =
             "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/serveDirection";
 
         if (directionToServe
@@ -54,7 +54,7 @@ public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<Asy
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
                 + "Now that you have served the deadline direction you can go on to "
-                + "[" + serveDeadlineUrl + "](" + serveDeadlineUrl + " \"serve another direction\") "
+                + "[serve another direction](" + serveDirectionUrl + ") "
                 + "or click below."
             );
 
@@ -64,7 +64,7 @@ public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<Asy
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
                 + "Now that you have served a direction you can go on to "
-                + "[" + serveDeadlineUrl + "](" + serveDeadlineUrl + " \"serve another direction\") "
+                + "[serve another direction](" + serveDirectionUrl + ") "
                 + "or click below."
             );
         }
