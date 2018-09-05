@@ -8,7 +8,8 @@ public enum EventId {
     SUBMIT_APPEAL("submitAppeal"),
     SERVE_DIRECTION("serveDirection"),
     REQUEST_TIME_EXTENSION("requestTimeExtension"),
-    REVIEW_TIME_EXTENSION("reviewTimeExtension");
+    REVIEW_TIME_EXTENSION("reviewTimeExtension"),
+    MARK_READY_FOR_HOME_OFFICE("markReadyForHomeOffice");
 
     private final String id;
 
