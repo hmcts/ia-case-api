@@ -17,7 +17,7 @@ data "azurerm_key_vault_secret" "ia_case_api_url" {
 }
 
 locals {
-  ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  ase_name            = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
   previewVaultName    = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName           = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -33,6 +33,8 @@ module "ia-case-api" {
   subscription        = "${var.subscription}"
   capacity            = "${var.capacity}"
   common_tags         = "${var.common_tags}"
+  asp_rg              = "${var.product}-${var.component}-${var.env}"
+  asp_name            = "${var.product}-${var.component}-${var.env}"
 
   app_settings = {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
