@@ -11,7 +11,9 @@ public enum EventId {
     REQUEST_TIME_EXTENSION("requestTimeExtension"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     ADD_WRITTEN_LEGAL_ARGUMENT("addWrittenLegalArgument"),
-    ADD_CORRESPONDENCE("addCorrespondence");
+    ADD_CORRESPONDENCE("addCorrespondence"),
+    ADD_HOME_OFFICE_RESPONSE("addHomeOfficeResponse"),
+    ADD_HEARING_SUMMARY("addHearingSummary");
 
     private final String id;
 

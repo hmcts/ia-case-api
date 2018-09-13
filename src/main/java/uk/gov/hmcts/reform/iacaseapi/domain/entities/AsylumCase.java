@@ -105,6 +105,18 @@ public class AsylumCase implements CaseData {
     private Optional<Correspondence> correspondence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer add home office response model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<HomeOfficeResponse> homeOfficeResponse = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer add hearing summary model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<HearingSummary> hearingSummary = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
@@ -483,6 +495,38 @@ public class AsylumCase implements CaseData {
 
     public void clearWrittenLegalArgument() {
         this.writtenLegalArgument = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer add home office response model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<HomeOfficeResponse> getHomeOfficeResponse() {
+        return homeOfficeResponse;
+    }
+
+    public void setHomeOfficeResponse(HomeOfficeResponse homeOfficeResponse) {
+        this.homeOfficeResponse = Optional.ofNullable(homeOfficeResponse);
+    }
+
+    public void clearHomeOfficeResponse() {
+        this.homeOfficeResponse = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer add hearing summary model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<HearingSummary> getHearingSummary() {
+        return hearingSummary;
+    }
+
+    public void setHearingSummary(HearingSummary hearingSummary) {
+        this.hearingSummary = Optional.ofNullable(hearingSummary);
+    }
+
+    public void clearHearingSummary() {
+        this.hearingSummary = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------
