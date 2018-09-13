@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,18 +33,9 @@ public class DummyIdamController {
     @GetMapping(value = "/login")
     public String login(
         @RequestParam("redirect_uri") String redirectUri
-    ) {
-        return ""
-               + "<html>"
-               + "<body>"
-               + "<hr/>"
-               + "<form method=post><input name=code type=hidden value=legal><p><button>Legal Representative</button></p></form>"
-               + "<form method=post><input name=code type=hidden value=officer><p><button>Case Officer</button></p></form>"
-               + "<hr/>"
-               + "<form method=post><input name=code type=hidden value=super><p><button>Assume Both Roles</button></p></form>"
-               + "<hr/>"
-               + "</body>"
-               + "</html>";
+    ) throws IOException {
+        URL url = Resources.getResource("html/login.html");
+        return Resources.toString(url, Charsets.UTF_8);
     }
 
     @PostMapping(value = "/login")
