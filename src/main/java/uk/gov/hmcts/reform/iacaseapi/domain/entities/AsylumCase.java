@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AddressUK;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.IdValue;
 
 public class AsylumCase implements CaseData {
@@ -24,9 +25,10 @@ public class AsylumCase implements CaseData {
 
     private Optional<String> applicationOutOfTime = Optional.empty();
     private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
-    //private Optional<Document> applicationOutOfTimeExplanationDocument = Optional.empty();
+    private Optional<Document> applicationOutOfTimeExplanationDocument = Optional.empty();
 
     private Optional<Name> appellantName = Optional.empty();
+    private Optional<String> appellantNameForDisplay = Optional.empty();
     private Optional<String> appellantDob = Optional.empty();
     private Optional<List<IdValue<String>>> appellantNationalities = Optional.empty();
     private Optional<String> appellantNationalityContested = Optional.empty();
@@ -38,21 +40,21 @@ public class AsylumCase implements CaseData {
     private Optional<List<String>> appealGrounds = Optional.empty();
 
     private Optional<String> refugeeConventionExplanation = Optional.empty();
-    //private Optional<Document> refugeeConventionExplanationDocument = Optional.empty();
+    private Optional<Document> refugeeConventionExplanationDocument = Optional.empty();
 
     private Optional<String> humanitarianProtectionExplanation = Optional.empty();
-    //private Optional<Document> humanitarianProtectionExplanationDocument = Optional.empty();
+    private Optional<Document> humanitarianProtectionExplanationDocument = Optional.empty();
 
     private Optional<String> humanRightsConventionExplanation = Optional.empty();
-    //private Optional<Document> humanRightsConventionExplanationDocument = Optional.empty();
+    private Optional<Document> humanRightsConventionExplanationDocument = Optional.empty();
 
     private Optional<String> evidenceToUpload = Optional.empty();
-    //private Optional<Document> evidenceDocument = Optional.empty();
+    private Optional<Document> evidenceDocument = Optional.empty();
     private Optional<String> evidenceLabel = Optional.empty();
 
     private Optional<List<String>> newMatters = Optional.empty();
     private Optional<String> newMattersOther = Optional.empty();
-    //private Optional<Document> newMattersOtherDocument = Optional.empty();
+    private Optional<Document> newMattersOtherDocument = Optional.empty();
 
     private Optional<String> personalVulnerabilitiesApply = Optional.empty();
     private Optional<List<String>> personalVulnerabilities = Optional.empty();
@@ -78,27 +80,13 @@ public class AsylumCase implements CaseData {
     private Optional<Direction> direction = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // legal rep request time extension model ...
-    // -----------------------------------------------------------------------------
-
-    private Optional<TimeExtensionRequest> timeExtensionRequest = Optional.empty();
-
-    // -----------------------------------------------------------------------------
-    // case officer review time extension model ...
-    // -----------------------------------------------------------------------------
-
-    private Optional<TimeExtension> timeExtensionUnderReview = Optional.empty();
-    private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
-
-    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
     private Optional<CaseDetails> caseDetails = Optional.empty();
-    private Optional<CaseSummary> caseSummary = Optional.empty();
-    private Optional<CaseFile> caseFile = Optional.empty();
+    private Optional<CaseArgument> caseArgument = Optional.empty();
+    private Optional<Documents> documents = Optional.empty();
     private Optional<Directions> directions = Optional.empty();
-    private Optional<TimeExtensions> timeExtensions = Optional.empty();
 
     // -----------------------------------------------------------------------------
 
@@ -126,8 +114,16 @@ public class AsylumCase implements CaseData {
         return applicationOutOfTimeExplanation;
     }
 
+    public Optional<Document> getApplicationOutOfTimeExplanationDocument() {
+        return applicationOutOfTimeExplanationDocument;
+    }
+
     public Optional<Name> getAppellantName() {
         return appellantName;
+    }
+
+    public Optional<String> getAppellantNameForDisplay() {
+        return appellantNameForDisplay;
     }
 
     public Optional<String> getAppellantDob() {
@@ -162,16 +158,32 @@ public class AsylumCase implements CaseData {
         return refugeeConventionExplanation;
     }
 
+    public Optional<Document> getRefugeeConventionExplanationDocument() {
+        return refugeeConventionExplanationDocument;
+    }
+
     public Optional<String> getHumanitarianProtectionExplanation() {
         return humanitarianProtectionExplanation;
+    }
+
+    public Optional<Document> getHumanitarianProtectionExplanationDocument() {
+        return humanitarianProtectionExplanationDocument;
     }
 
     public Optional<String> getHumanRightsConventionExplanation() {
         return humanRightsConventionExplanation;
     }
 
+    public Optional<Document> getHumanRightsConventionExplanationDocument() {
+        return humanRightsConventionExplanationDocument;
+    }
+
     public Optional<String> getEvidenceToUpload() {
         return evidenceToUpload;
+    }
+
+    public Optional<Document> getEvidenceDocument() {
+        return evidenceDocument;
     }
 
     public Optional<String> getEvidenceLabel() {
@@ -184,6 +196,10 @@ public class AsylumCase implements CaseData {
 
     public Optional<String> getNewMattersOther() {
         return newMattersOther;
+    }
+
+    public Optional<Document> getNewMattersOtherDocument() {
+        return newMattersOtherDocument;
     }
 
     public Optional<String> getPersonalVulnerabilitiesApply() {
@@ -222,8 +238,16 @@ public class AsylumCase implements CaseData {
         this.applicationOutOfTimeExplanation = Optional.ofNullable(applicationOutOfTimeExplanation);
     }
 
+    public void setApplicationOutOfTimeExplanationDocument(Document applicationOutOfTimeExplanationDocument) {
+        this.applicationOutOfTimeExplanationDocument = Optional.ofNullable(applicationOutOfTimeExplanationDocument);
+    }
+
     public void setAppellantName(Name appellantName) {
         this.appellantName = Optional.ofNullable(appellantName);
+    }
+
+    public void setAppellantNameForDisplay(String appellantNameForDisplay) {
+        this.appellantNameForDisplay = Optional.ofNullable(appellantNameForDisplay);
     }
 
     public void setAppellantDob(String appellantDob) {
@@ -258,16 +282,32 @@ public class AsylumCase implements CaseData {
         this.refugeeConventionExplanation = Optional.ofNullable(refugeeConventionExplanation);
     }
 
+    public void setRefugeeConventionExplanationDocument(Document refugeeConventionExplanationDocument) {
+        this.refugeeConventionExplanationDocument = Optional.ofNullable(refugeeConventionExplanationDocument);
+    }
+
     public void setHumanitarianProtectionExplanation(String humanitarianProtectionExplanation) {
         this.humanitarianProtectionExplanation = Optional.ofNullable(humanitarianProtectionExplanation);
+    }
+
+    public void setHumanitarianProtectionExplanationDocument(Document humanitarianProtectionExplanationDocument) {
+        this.humanitarianProtectionExplanationDocument = Optional.ofNullable(humanitarianProtectionExplanationDocument);
     }
 
     public void setHumanRightsConventionExplanation(String humanRightsConventionExplanation) {
         this.humanRightsConventionExplanation = Optional.ofNullable(humanRightsConventionExplanation);
     }
 
+    public void setHumanRightsConventionExplanationDocument(Document humanRightsConventionExplanationDocument) {
+        this.humanRightsConventionExplanationDocument = Optional.ofNullable(humanRightsConventionExplanationDocument);
+    }
+
     public void setEvidenceToUpload(String evidenceToUpload) {
         this.evidenceToUpload = Optional.ofNullable(evidenceToUpload);
+    }
+
+    public void setEvidenceDocument(Document evidenceDocument) {
+        this.evidenceDocument = Optional.ofNullable(evidenceDocument);
     }
 
     public void setEvidenceLabel(String evidenceLabel) {
@@ -280,6 +320,10 @@ public class AsylumCase implements CaseData {
 
     public void setNewMattersOther(String newMattersOther) {
         this.newMattersOther = Optional.ofNullable(newMattersOther);
+    }
+
+    public void setNewMattersOtherDocument(Document newMattersOtherDocument) {
+        this.newMattersOtherDocument = Optional.ofNullable(newMattersOtherDocument);
     }
 
     public void setPersonalVulnerabilitiesApply(String personalVulnerabilitiesApply) {
@@ -355,50 +399,6 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // legal rep request time extension model ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<TimeExtensionRequest> getTimeExtensionRequest() {
-        return timeExtensionRequest;
-    }
-
-    public void setTimeExtensionRequest(TimeExtensionRequest timeExtensionRequest) {
-        this.timeExtensionRequest = Optional.ofNullable(timeExtensionRequest);
-    }
-
-    public void clearTimeExtensionRequest() {
-        this.timeExtensionRequest = Optional.empty();
-    }
-
-    // -----------------------------------------------------------------------------
-    // case officer review time extension model ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<TimeExtension> getTimeExtensionUnderReview() {
-        return timeExtensionUnderReview;
-    }
-
-    public Optional<TimeExtensionReview> getTimeExtensionReview() {
-        return timeExtensionReview;
-    }
-
-    public void setTimeExtensionUnderReview(TimeExtension timeExtensionUnderReview) {
-        this.timeExtensionUnderReview = Optional.ofNullable(timeExtensionUnderReview);
-    }
-
-    public void setTimeExtensionReview(TimeExtensionReview timeExtensionReview) {
-        this.timeExtensionReview = Optional.ofNullable(timeExtensionReview);
-    }
-
-    public void clearTimeExtensionUnderReview() {
-        this.timeExtensionUnderReview = Optional.empty();
-    }
-
-    public void clearTimeExtensionReview() {
-        this.timeExtensionReview = Optional.empty();
-    }
-
-    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
@@ -406,39 +406,31 @@ public class AsylumCase implements CaseData {
         return caseDetails;
     }
 
-    public Optional<CaseSummary> getCaseSummary() {
-        return caseSummary;
+    public Optional<CaseArgument> getCaseArgument() {
+        return caseArgument;
     }
 
-    public Optional<CaseFile> getCaseFile() {
-        return caseFile;
+    public Optional<Documents> getDocuments() {
+        return documents;
     }
 
     public Optional<Directions> getDirections() {
         return directions;
     }
 
-    public Optional<TimeExtensions> getTimeExtensions() {
-        return timeExtensions;
-    }
-
     public void setCaseDetails(CaseDetails caseDetails) {
         this.caseDetails = Optional.ofNullable(caseDetails);
     }
 
-    public void setCaseSummary(CaseSummary caseSummary) {
-        this.caseSummary = Optional.ofNullable(caseSummary);
+    public void setCaseArgument(CaseArgument caseArgument) {
+        this.caseArgument = Optional.ofNullable(caseArgument);
     }
 
-    public void setCaseFile(CaseFile caseFile) {
-        this.caseFile = Optional.ofNullable(caseFile);
+    public void setDocuments(Documents documents) {
+        this.documents = Optional.ofNullable(documents);
     }
 
     public void setDirections(Directions directions) {
         this.directions = Optional.ofNullable(directions);
-    }
-
-    public void setTimeExtensions(TimeExtensions timeExtensions) {
-        this.timeExtensions = Optional.ofNullable(timeExtensions);
     }
 }

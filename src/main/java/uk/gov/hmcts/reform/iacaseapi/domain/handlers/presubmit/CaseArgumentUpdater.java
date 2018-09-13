@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class CaseSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class CaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
@@ -94,18 +94,18 @@ public class CaseSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase> 
             );
         }
 
-        CaseSummary caseSummary = new CaseSummary();
+        CaseArgument caseArgument = new CaseArgument();
 
         GroundsForAppeal groundsForAppeal =
-            caseSummary
+            caseArgument
                 .getGroundsForAppeal()
                 .orElse(new GroundsForAppeal());
 
         groundsForAppeal.setGroundsForAppeal(allGroundsForAppeal);
 
-        caseSummary.setGroundsForAppeal(groundsForAppeal);
+        caseArgument.setGroundsForAppeal(groundsForAppeal);
 
-        asylumCase.setCaseSummary(caseSummary);
+        asylumCase.setCaseArgument(caseArgument);
 
         return preSubmitResponse;
     }

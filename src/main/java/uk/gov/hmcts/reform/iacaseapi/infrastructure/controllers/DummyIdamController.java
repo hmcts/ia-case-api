@@ -118,7 +118,7 @@ public class DummyIdamController {
                 3,
                 "Case",
                 "Officer",
-                "ia-legal-rep@example.com",
+                "ia-case-officer@example.com",
                 "caseworker",
                 "caseworker-sscs",
                 "caseworker-sscs-callagent"

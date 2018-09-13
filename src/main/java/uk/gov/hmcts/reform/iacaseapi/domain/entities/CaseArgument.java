@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.Optional;
 
-public class CaseSummary {
+public class CaseArgument {
 
     private Optional<GroundsForAppeal> groundsForAppeal = Optional.empty();
     private Optional<Issues> issues = Optional.empty();

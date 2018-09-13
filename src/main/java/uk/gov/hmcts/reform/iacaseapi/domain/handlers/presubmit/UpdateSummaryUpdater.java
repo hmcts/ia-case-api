@@ -46,7 +46,7 @@ public class UpdateSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase
                 .orElseThrow(() -> new IllegalStateException("issues not present"));
 
         asylumCase
-            .getCaseSummary()
+            .getCaseArgument()
             .orElseThrow(() -> new IllegalStateException("caseSummary not present"))
             .setIssues(issues);
 

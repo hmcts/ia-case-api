@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-public class CaseFile {
+public class Documents {
 
-    private CaseFile() {
+    private Documents() {
         // noop -- for deserializer
     }
 }

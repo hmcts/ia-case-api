@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Name;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -29,7 +28,9 @@ public class CaseDetailsUpdater implements CcdEventPreSubmitHandler<AsylumCase> 
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.SUBMIT_APPEAL;
+               && (ccdEvent.getEventId() == EventId.COMPLETE_DRAFT_APPEAL
+                   || ccdEvent.getEventId() == EventId.UPDATE_DRAFT_APPEAL
+                   || ccdEvent.getEventId() == EventId.SUBMIT_APPEAL);
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -48,33 +49,32 @@ public class CaseDetailsUpdater implements CcdEventPreSubmitHandler<AsylumCase> 
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        Name appellantName =
+        String appellantNameForDisplay =
             asylumCase
-                .getAppellantName()
-                .orElseThrow(() -> new IllegalStateException("appelantName is not present"));
+                .getAppellantNameForDisplay()
+                .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
 
         String appellantDob =
             asylumCase
                 .getAppellantDob()
-                .orElseThrow(() -> new IllegalStateException("appelantDob is not present"));
+                .orElseThrow(() -> new IllegalStateException("appellantDob is not present"));
 
         String appellantNationality =
             appellantNationalitiesAsStringExtractor
                 .extract(asylumCase)
-                .orElseThrow(() -> new IllegalStateException("appelantNationality is not present"));
+                .orElseThrow(() -> new IllegalStateException("appellantNationality is not present"));
 
         CaseDetails caseDetails = new CaseDetails();
 
-        caseDetails.setCaseStartDate(LocalDate.now().toString());
-        caseDetails.setAppellantName(
-            (appellantName.getFirstName().orElse("")
-             + " "
-             + appellantName.getLastName().orElse("")).trim()
-        );
+        if (ccdEvent.getEventId() == EventId.SUBMIT_APPEAL) {
+            caseDetails.setCaseStartDate(LocalDate.now().toString());
+        }
 
+        caseDetails.setAppellantName(appellantNameForDisplay);
         caseDetails.setAppellantNationality(appellantNationality);
         caseDetails.setAppellantDob(appellantDob);
         caseDetails.setLegalRepName("Legal Rep");
+        caseDetails.setLegalRepContactDetails("ia-legal-rep@example.com");
 
         asylumCase.setCaseDetails(caseDetails);
 

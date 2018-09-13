@@ -4,7 +4,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseSummary;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseArgument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -43,28 +43,28 @@ public class UpdateSummaryPreparer implements CcdEventPreSubmitHandler<AsylumCas
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        CaseSummary caseSummary =
+        CaseArgument caseArgument =
             asylumCase
-                .getCaseSummary()
-                .orElseThrow(() -> new IllegalStateException("caseSummary not present"));
+                .getCaseArgument()
+                .orElseThrow(() -> new IllegalStateException("caseArgument not present"));
 
-        if (caseSummary
+        if (caseArgument
             .getGroundsForAppeal()
             .isPresent()) {
 
             asylumCase.setGroundsForAppeal(
-                caseSummary
+                caseArgument
                     .getGroundsForAppeal()
                     .get()
             );
         }
 
-        if (caseSummary
+        if (caseArgument
             .getIssues()
             .isPresent()) {
 
             asylumCase.setIssues(
-                caseSummary
+                caseArgument
                     .getIssues()
                     .get()
             );
