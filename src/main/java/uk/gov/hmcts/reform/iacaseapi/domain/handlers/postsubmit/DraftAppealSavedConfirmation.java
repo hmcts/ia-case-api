@@ -57,11 +57,20 @@ public class DraftAppealSavedConfirmation implements CcdEventPostSubmitHandler<A
         Optional<LocalDate> appealDeadline =
             appealDeadlineCalculator.calculate(asylumCase);
 
+        String submitMessage;
+
+        if (asylumCase.getApplicationOutOfTime().orElse("").equalsIgnoreCase("Yes")) {
+
+            submitMessage = "You are out of time and need to [submit your appeal](" + submitAppealUrl + ") now.";
+        } else {
+            submitMessage = "If you are ready, you can [submit your appeal](" + submitAppealUrl + ") now.";
+        }
+
         postSubmitResponse.setConfirmationHeader("# Draft appeal saved");
         postSubmitResponse.setConfirmationBody(
               "Submitting your appeal\n"
             + "----------------------\n"
-            + "You have until **" + appealDeadline.get().toString() + "** to [submit your appeal](" + submitAppealUrl + ").\n"
+            + submitMessage + "\n"
             + "\n"
             + "Editing your appeal\n"
             + "-------------------\n"
