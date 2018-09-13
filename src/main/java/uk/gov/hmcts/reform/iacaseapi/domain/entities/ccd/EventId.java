@@ -9,7 +9,9 @@ public enum EventId {
     UPDATE_SUMMARY("updateSummary"),
     SEND_DIRECTION("sendDirection"),
     REQUEST_TIME_EXTENSION("requestTimeExtension"),
-    REVIEW_TIME_EXTENSION("reviewTimeExtension");
+    REVIEW_TIME_EXTENSION("reviewTimeExtension"),
+    ADD_WRITTEN_LEGAL_ARGUMENT("addWrittenLegalArgument"),
+    ADD_CORRESPONDENCE("addCorrespondence");
 
     private final String id;
 

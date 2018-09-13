@@ -4,6 +4,7 @@ import java.util.Optional;
 
 public class SentDirection extends Direction {
 
+    private Optional<String> revisedDueDate = Optional.empty();
     private Optional<String> status = Optional.empty();
 
     private SentDirection() {
@@ -21,8 +22,16 @@ public class SentDirection extends Direction {
         this.status = Optional.of(status);
     }
 
+    public Optional<String> getRevisedDueDate() {
+        return revisedDueDate;
+    }
+
     public Optional<String> getStatus() {
         return status;
+    }
+
+    public void setRevisedDueDate(String revisedDueDate) {
+        this.revisedDueDate = Optional.ofNullable(revisedDueDate);
     }
 
     public void setStatus(String status) {

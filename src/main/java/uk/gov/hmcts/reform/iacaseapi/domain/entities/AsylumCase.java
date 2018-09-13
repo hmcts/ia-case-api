@@ -93,6 +93,18 @@ public class AsylumCase implements CaseData {
     private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // legal rep add written legal argument model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<WrittenLegalArgument> writtenLegalArgument = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer add correspondence model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Correspondence> correspondence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
@@ -100,12 +112,8 @@ public class AsylumCase implements CaseData {
     private Optional<CaseArgument> caseArgument = Optional.empty();
     private Optional<Documents> documents = Optional.empty();
     private Optional<SentDirections> sentDirections = Optional.empty();
-
-    // -----------------------------------------------------------------------------
-    // internal state model ...
-    // -----------------------------------------------------------------------------
-
     private Optional<TimeExtensions> timeExtensions = Optional.empty();
+    private Optional<Correspondences> correspondences = Optional.empty();
 
     // -----------------------------------------------------------------------------
 
@@ -462,6 +470,38 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // legal rep add written legal argument model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<WrittenLegalArgument> getWrittenLegalArgument() {
+        return writtenLegalArgument;
+    }
+
+    public void setWrittenLegalArgument(WrittenLegalArgument writtenLegalArgument) {
+        this.writtenLegalArgument = Optional.ofNullable(writtenLegalArgument);
+    }
+
+    public void clearWrittenLegalArgument() {
+        this.writtenLegalArgument = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer add correspondence model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Correspondence> getCorrespondence() {
+        return correspondence;
+    }
+
+    public void setCorrespondence(Correspondence correspondence) {
+        this.correspondence = Optional.ofNullable(correspondence);
+    }
+
+    public void clearCorrespondence() {
+        this.correspondence = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
@@ -481,6 +521,14 @@ public class AsylumCase implements CaseData {
         return sentDirections;
     }
 
+    public Optional<TimeExtensions> getTimeExtensions() {
+        return timeExtensions;
+    }
+
+    public Optional<Correspondences> getCorrespondences() {
+        return correspondences;
+    }
+
     public void setCaseDetails(CaseDetails caseDetails) {
         this.caseDetails = Optional.ofNullable(caseDetails);
     }
@@ -497,15 +545,11 @@ public class AsylumCase implements CaseData {
         this.sentDirections = Optional.ofNullable(sentDirections);
     }
 
-    // -----------------------------------------------------------------------------
-    // internal state model ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<TimeExtensions> getTimeExtensions() {
-        return timeExtensions;
-    }
-
     public void setTimeExtensions(TimeExtensions timeExtensions) {
         this.timeExtensions = Optional.ofNullable(timeExtensions);
+    }
+
+    public void setCorrespondences(Correspondences correspondences) {
+        this.correspondences = Optional.ofNullable(correspondences);
     }
 }

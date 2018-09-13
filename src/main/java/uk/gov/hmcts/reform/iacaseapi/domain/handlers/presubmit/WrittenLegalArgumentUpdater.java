@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Issues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.WrittenLegalArgument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -12,16 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class UpdateSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
-
-    private static final org.slf4j.Logger LOG = getLogger(SendDirectionUpdater.class);
+public class WrittenLegalArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.UPDATE_SUMMARY;
+               && ccdEvent.getEventId() == EventId.ADD_WRITTEN_LEGAL_ARGUMENT;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -40,15 +36,15 @@ public class UpdateSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        Issues issues =
+        WrittenLegalArgument writtenLegalArgument =
             asylumCase
-                .getIssues()
-                .orElseThrow(() -> new IllegalStateException("issues not present"));
+                .getWrittenLegalArgument()
+                .orElseThrow(() -> new IllegalStateException("writtenLegalArgument not present"));
 
         asylumCase
             .getCaseArgument()
-            .orElseThrow(() -> new IllegalStateException("caseSummary not present"))
-            .setIssues(issues);
+            .orElseThrow(() -> new IllegalStateException("caseArgument not present"))
+            .setWrittenLegalArgument(writtenLegalArgument);
 
         return preSubmitResponse;
     }
