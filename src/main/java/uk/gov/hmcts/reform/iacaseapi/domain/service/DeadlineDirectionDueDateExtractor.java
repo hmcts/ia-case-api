@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirection;
 
 @Service
 public class DeadlineDirectionDueDateExtractor {
@@ -20,7 +20,7 @@ public class DeadlineDirectionDueDateExtractor {
     public Optional<String> extract(
         AsylumCase asylumCase
     ) {
-        Optional<Direction> deadlineDirection =
+        Optional<SentDirection> deadlineDirection =
             deadlineDirectionExtractor
                 .extract(asylumCase);
 

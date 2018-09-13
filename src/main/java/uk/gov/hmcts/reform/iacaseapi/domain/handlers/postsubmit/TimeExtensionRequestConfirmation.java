@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class MarkReadyForHomeOfficeConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.MARK_READY_FOR_HOME_OFFICE;
+               && ccdEvent.getEventId() == EventId.REQUEST_TIME_EXTENSION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,11 +30,10 @@ public class MarkReadyForHomeOfficeConfirmation implements CcdEventPostSubmitHan
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have created & sent the Home Office review");
+        postSubmitResponse.setConfirmationHeader("# Your time extension request has been submitted");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The review bundle has been sent to the Home Office. They now have 3 days to review the bundle, "
-            + "add any further evidence if appropriate and make a decision on proceeding to a hearing or not."
+            + "A Case Officer will review your request and decide whether to grant or deny a time extension."
         );
 
         return postSubmitResponse;

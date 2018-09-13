@@ -8,6 +8,7 @@ public class CaseDetails {
     private Optional<String> appellantName = Optional.empty();
     private Optional<String> appellantNationality = Optional.empty();
     private Optional<String> appellantDob = Optional.empty();
+    private Optional<String> typeOfAppeal = Optional.empty();
     private Optional<String> legalRepName = Optional.empty();
     private Optional<String> legalRepContactDetails = Optional.empty();
 
@@ -25,6 +26,10 @@ public class CaseDetails {
 
     public Optional<String> getAppellantDob() {
         return appellantDob;
+    }
+
+    public Optional<String> getTypeOfAppeal() {
+        return typeOfAppeal;
     }
 
     public Optional<String> getLegalRepName() {
@@ -49,6 +54,10 @@ public class CaseDetails {
 
     public void setAppellantDob(String appellantDob) {
         this.appellantDob = Optional.ofNullable(appellantDob);
+    }
+
+    public void setTypeOfAppeal(String typeOfAppeal) {
+        this.typeOfAppeal = Optional.ofNullable(typeOfAppeal);
     }
 
     public void setLegalRepName(String legalRepName) {

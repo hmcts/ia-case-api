@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
@@ -11,16 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class ServeDirectionPreparer implements CcdEventPreSubmitHandler<AsylumCase> {
-
-    private static final org.slf4j.Logger LOG = getLogger(ServeDirectionPreparer.class);
+public class SendDirectionPreparer implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_START
-               && ccdEvent.getEventId() == EventId.SERVE_DIRECTION;
+               && ccdEvent.getEventId() == EventId.SEND_DIRECTION;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

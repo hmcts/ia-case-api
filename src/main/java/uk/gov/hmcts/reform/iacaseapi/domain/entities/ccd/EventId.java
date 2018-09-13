@@ -7,8 +7,9 @@ public enum EventId {
     UPDATE_DRAFT_APPEAL("updateDraftAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     UPDATE_SUMMARY("updateSummary"),
-    SERVE_DIRECTION("serveDirection"),
-    MARK_READY_FOR_HOME_OFFICE("markReadyForHomeOffice");
+    SEND_DIRECTION("sendDirection"),
+    REQUEST_TIME_EXTENSION("requestTimeExtension"),
+    REVIEW_TIME_EXTENSION("reviewTimeExtension");
 
     private final String id;
 

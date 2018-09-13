@@ -73,6 +73,7 @@ public class CaseDetailsUpdater implements CcdEventPreSubmitHandler<AsylumCase> 
         caseDetails.setAppellantName(appellantNameForDisplay);
         caseDetails.setAppellantNationality(appellantNationality);
         caseDetails.setAppellantDob(appellantDob);
+        caseDetails.setTypeOfAppeal("Asylum");
         caseDetails.setLegalRepName("Legal Rep");
         caseDetails.setLegalRepContactDetails("ia-legal-rep@example.com");
 

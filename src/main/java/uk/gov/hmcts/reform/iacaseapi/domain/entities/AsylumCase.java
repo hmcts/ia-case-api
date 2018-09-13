@@ -74,10 +74,23 @@ public class AsylumCase implements CaseData {
     private Optional<Issues> issues = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // case officer serve direction model ...
+    // case officer send direction model ...
     // -----------------------------------------------------------------------------
 
     private Optional<Direction> direction = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // legal rep request time extension model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<TimeExtensionRequest> timeExtensionRequest = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer review time extension model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<TimeExtension> timeExtensionUnderReview = Optional.empty();
+    private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
@@ -86,7 +99,13 @@ public class AsylumCase implements CaseData {
     private Optional<CaseDetails> caseDetails = Optional.empty();
     private Optional<CaseArgument> caseArgument = Optional.empty();
     private Optional<Documents> documents = Optional.empty();
-    private Optional<Directions> directions = Optional.empty();
+    private Optional<SentDirections> sentDirections = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // internal state model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<TimeExtensions> timeExtensions = Optional.empty();
 
     // -----------------------------------------------------------------------------
 
@@ -383,7 +402,7 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer serve direction model ...
+    // case officer send direction model ...
     // -----------------------------------------------------------------------------
 
     public Optional<Direction> getDirection() {
@@ -396,6 +415,50 @@ public class AsylumCase implements CaseData {
 
     public void clearDirection() {
         this.direction = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // legal rep request time extension model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<TimeExtensionRequest> getTimeExtensionRequest() {
+        return timeExtensionRequest;
+    }
+
+    public void setTimeExtensionRequest(TimeExtensionRequest timeExtensionRequest) {
+        this.timeExtensionRequest = Optional.ofNullable(timeExtensionRequest);
+    }
+
+    public void clearTimeExtensionRequest() {
+        this.timeExtensionRequest = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer review time extension model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<TimeExtension> getTimeExtensionUnderReview() {
+        return timeExtensionUnderReview;
+    }
+
+    public Optional<TimeExtensionReview> getTimeExtensionReview() {
+        return timeExtensionReview;
+    }
+
+    public void setTimeExtensionUnderReview(TimeExtension timeExtensionUnderReview) {
+        this.timeExtensionUnderReview = Optional.ofNullable(timeExtensionUnderReview);
+    }
+
+    public void setTimeExtensionReview(TimeExtensionReview timeExtensionReview) {
+        this.timeExtensionReview = Optional.ofNullable(timeExtensionReview);
+    }
+
+    public void clearTimeExtensionUnderReview() {
+        this.timeExtensionUnderReview = Optional.empty();
+    }
+
+    public void clearTimeExtensionReview() {
+        this.timeExtensionReview = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------
@@ -414,8 +477,8 @@ public class AsylumCase implements CaseData {
         return documents;
     }
 
-    public Optional<Directions> getDirections() {
-        return directions;
+    public Optional<SentDirections> getSentDirections() {
+        return sentDirections;
     }
 
     public void setCaseDetails(CaseDetails caseDetails) {
@@ -430,7 +493,19 @@ public class AsylumCase implements CaseData {
         this.documents = Optional.ofNullable(documents);
     }
 
-    public void setDirections(Directions directions) {
-        this.directions = Optional.ofNullable(directions);
+    public void setSentDirections(SentDirections sentDirections) {
+        this.sentDirections = Optional.ofNullable(sentDirections);
+    }
+
+    // -----------------------------------------------------------------------------
+    // internal state model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<TimeExtensions> getTimeExtensions() {
+        return timeExtensions;
+    }
+
+    public void setTimeExtensions(TimeExtensions timeExtensions) {
+        this.timeExtensions = Optional.ofNullable(timeExtensions);
     }
 }

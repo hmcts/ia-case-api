@@ -3,29 +3,29 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirection;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.IdValue;
 
 @Service
 public class DeadlineDirectionExtractor {
 
-    public Optional<Direction> extract(
+    public Optional<SentDirection> extract(
         AsylumCase asylumCase
     ) {
         if (asylumCase
-            .getDirections()
+            .getSentDirections()
             .isPresent()) {
 
             if (asylumCase
-                .getDirections()
+                .getSentDirections()
                 .get()
-                .getDirections()
+                .getSentDirections()
                 .isPresent()) {
 
                 return asylumCase
-                    .getDirections()
+                    .getSentDirections()
                     .get()
-                    .getDirections()
+                    .getSentDirections()
                     .get()
                     .stream()
                     .map(IdValue::getValue)

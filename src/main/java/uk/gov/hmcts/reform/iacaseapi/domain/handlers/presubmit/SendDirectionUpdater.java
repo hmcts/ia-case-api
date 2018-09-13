@@ -1,28 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Directions;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirection;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirections;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class ServeDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
-
-    private static final org.slf4j.Logger LOG = getLogger(ServeDirectionUpdater.class);
+public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.SERVE_DIRECTION;
+               && ccdEvent.getEventId() == EventId.SEND_DIRECTION;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -41,34 +38,37 @@ public class ServeDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        Direction directionToServe =
+        Direction directionToSend =
             asylumCase
                 .getDirection()
                 .orElseThrow(() -> new IllegalStateException("direction not present"));
 
-        List<IdValue<Direction>> allDirections = new ArrayList<>();
+        List<IdValue<SentDirection>> allSentDirections = new ArrayList<>();
 
-        Directions directions =
+        SentDirections sentDirections =
             asylumCase
-                .getDirections()
-                .orElse(new Directions());
+                .getSentDirections()
+                .orElse(new SentDirections());
 
-        if (directions.getDirections().isPresent()) {
-            allDirections.addAll(
-                directions.getDirections().get()
+        if (sentDirections.getSentDirections().isPresent()) {
+            allSentDirections.addAll(
+                sentDirections.getSentDirections().get()
             );
         }
 
-        allDirections.add(
+        allSentDirections.add(
             new IdValue<>(
                 String.valueOf(Instant.now().toEpochMilli()),
-                directionToServe
+                new SentDirection(
+                    directionToSend,
+                    "Outstanding"
+                )
             )
         );
 
-        directions.setDirections(allDirections);
+        sentDirections.setSentDirections(allSentDirections);
 
-        asylumCase.setDirections(directions);
+        asylumCase.setSentDirections(sentDirections);
 
         return preSubmitResponse;
     }

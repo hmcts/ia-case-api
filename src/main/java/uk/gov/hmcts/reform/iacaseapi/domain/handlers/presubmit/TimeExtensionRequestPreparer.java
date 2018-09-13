@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Issues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -12,16 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class UpdateSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
-
-    private static final org.slf4j.Logger LOG = getLogger(SendDirectionUpdater.class);
+public class TimeExtensionRequestPreparer implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
-        return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.UPDATE_SUMMARY;
+        return stage == Stage.ABOUT_TO_START
+               && ccdEvent.getEventId() == EventId.REQUEST_TIME_EXTENSION;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -37,18 +32,10 @@ public class UpdateSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.clearTimeExtensionRequest();
+
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
-
-        Issues issues =
-            asylumCase
-                .getIssues()
-                .orElseThrow(() -> new IllegalStateException("issues not present"));
-
-        asylumCase
-            .getCaseArgument()
-            .orElseThrow(() -> new IllegalStateException("caseSummary not present"))
-            .setIssues(issues);
 
         return preSubmitResponse;
     }

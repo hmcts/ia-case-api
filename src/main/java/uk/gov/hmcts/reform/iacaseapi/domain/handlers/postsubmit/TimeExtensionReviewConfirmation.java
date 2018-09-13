@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionReview;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPostSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class TimeExtensionReviewConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.SERVE_DIRECTION;
+               && ccdEvent.getEventId() == EventId.REVIEW_TIME_EXTENSION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -36,37 +36,30 @@ public class ServeDirectionConfirmation implements CcdEventPostSubmitHandler<Asy
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        Direction directionToServe =
+        TimeExtensionReview timeExtensionReview =
             asylumCase
-                .getDirection()
-                .orElseThrow(() -> new IllegalStateException("direction not present"));
+                .getTimeExtensionReview()
+                .orElseThrow(() -> new IllegalStateException("timeExtensionReview not present"));
 
-        String serveDirectionUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/serveDirection";
-
-        if (directionToServe
-            .getDirection()
+        if (timeExtensionReview
+            .getGrantOrDeny()
             .orElse("")
-            .toLowerCase()
-            .contains("deadline")) {
+            .equals("grant")) {
 
-            postSubmitResponse.setConfirmationHeader("# You have served a deadline direction");
+            postSubmitResponse.setConfirmationHeader("# You have granted a time extension");
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
-                + "Now that you have served the deadline direction you can go on to "
-                + "[serve another direction](" + serveDirectionUrl + ") "
-                + "or click below."
+                + "Your decision has been sent to the legal rep who requested the time extension. "
+                + "You should now update any direction due dates to reflect the extension."
             );
 
         } else {
-
-            postSubmitResponse.setConfirmationHeader("# You have served a direction");
+            postSubmitResponse.setConfirmationHeader("# You have denied a time extension");
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
-                + "Now that you have served a direction you can go on to "
-                + "[serve another direction](" + serveDirectionUrl + ") "
-                + "or click below."
+                + "Your decision has been sent to the legal rep who requested the time extension."
             );
+
         }
 
         return postSubmitResponse;

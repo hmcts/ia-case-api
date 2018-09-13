@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class UpdateSummaryConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class SendDirectionConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.UPDATE_SUMMARY;
+               && ccdEvent.getEventId() == EventId.SEND_DIRECTION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,17 +30,11 @@ public class UpdateSummaryConfirmation implements CcdEventPostSubmitHandler<Asyl
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        String sendDirectionUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/sendDirection";
-
-        postSubmitResponse.setConfirmationHeader("# You have updated the summary");
+        postSubmitResponse.setConfirmationHeader("# You have sent a direction");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "Now that you have updated the "
-            + "case summary "
-            + "you can go on to "
-            + "[submit the deadline direction](" + sendDirectionUrl + ") "
-            + "or click below."
+            + "Wait for the appellant to complete the direction. "
+            + "If they request a time extension, you will be notified by email."
         );
 
         return postSubmitResponse;
