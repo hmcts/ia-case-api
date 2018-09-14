@@ -67,7 +67,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepReference = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // legal rep upload document model ...
+    // legal rep edit grounds of appeal model ...
     // -----------------------------------------------------------------------------
 
     private Optional<DocumentWithType> document = Optional.empty();

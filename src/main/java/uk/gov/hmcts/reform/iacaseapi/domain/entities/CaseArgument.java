@@ -4,13 +4,13 @@ import java.util.Optional;
 
 public class CaseArgument {
 
-    private Optional<GroundsForAppeal> groundsForAppeal = Optional.empty();
+    private Optional<GroundsOfAppeal> groundsOfAppeal = Optional.empty();
     private Optional<WrittenLegalArgument> writtenLegalArgument = Optional.empty();
     private Optional<HomeOfficeResponse> homeOfficeResponse = Optional.empty();
     private Optional<HearingSummary> hearingSummary = Optional.empty();
 
-    public Optional<GroundsForAppeal> getGroundsForAppeal() {
-        return groundsForAppeal;
+    public Optional<GroundsOfAppeal> getGroundsOfAppeal() {
+        return groundsOfAppeal;
     }
 
     public Optional<WrittenLegalArgument> getWrittenLegalArgument() {
@@ -25,8 +25,8 @@ public class CaseArgument {
         return hearingSummary;
     }
 
-    public void setGroundsForAppeal(GroundsForAppeal groundsForAppeal) {
-        this.groundsForAppeal = Optional.ofNullable(groundsForAppeal);
+    public void setGroundsOfAppeal(GroundsOfAppeal groundsOfAppeal) {
+        this.groundsOfAppeal = Optional.ofNullable(groundsOfAppeal);
     }
 
     public void setWrittenLegalArgument(WrittenLegalArgument writtenLegalArgument) {

@@ -3,19 +3,23 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseArgument;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.GroundOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.GroundsOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class CaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class GroundsOfAppealUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.SUBMIT_APPEAL;
+               && (ccdEvent.getEventId() == EventId.SUBMIT_APPEAL
+                   || ccdEvent.getEventId() == EventId.EDIT_GROUNDS_OF_APPEAL);
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -39,21 +43,21 @@ public class CaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase>
                 .getAppealGrounds()
                 .orElseThrow(() -> new IllegalStateException("appealGrounds is not present"));
 
-        List<IdValue<GroundForAppeal>> allGroundsForAppeal = new ArrayList<>();
+        List<IdValue<GroundOfAppeal>> allGroundsOfAppeal = new ArrayList<>();
 
         for (int i = 0; i < appealGrounds.size(); i++) {
 
             String appealGround = appealGrounds.get(i);
 
-            GroundForAppeal groundForAppeal = new GroundForAppeal();
+            GroundOfAppeal groundOfAppeal = new GroundOfAppeal();
 
             if (appealGround.equals("refugeeConvention")) {
 
-                groundForAppeal.setGround(
+                groundOfAppeal.setGround(
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "under the Refugee Convention"
                 );
-                groundForAppeal.setExplanation(
+                groundOfAppeal.setExplanation(
                     asylumCase
                         .getRefugeeConventionExplanation()
                         .orElse(null)
@@ -62,11 +66,11 @@ public class CaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase>
 
             if (appealGround.equals("humanitarianProtection")) {
 
-                groundForAppeal.setGround(
+                groundOfAppeal.setGround(
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "in relation to persons eligible for a grant of Humanitarian Protection"
                 );
-                groundForAppeal.setExplanation(
+                groundOfAppeal.setExplanation(
                     asylumCase
                         .getHumanitarianProtectionExplanation()
                         .orElse(null)
@@ -75,35 +79,35 @@ public class CaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase>
 
             if (appealGround.equals("humanRightsConvention")) {
 
-                groundForAppeal.setGround(
+                groundOfAppeal.setGround(
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "under the Refugee Convention"
                 );
-                groundForAppeal.setExplanation(
+                groundOfAppeal.setExplanation(
                     asylumCase
                         .getHumanRightsConventionExplanation()
                         .orElse(null)
                 );
             }
 
-            allGroundsForAppeal.add(
+            allGroundsOfAppeal.add(
                 new IdValue<>(
                     String.valueOf(i + 1),
-                    groundForAppeal
+                    groundOfAppeal
                 )
             );
         }
 
         CaseArgument caseArgument = new CaseArgument();
 
-        GroundsForAppeal groundsForAppeal =
+        GroundsOfAppeal groundsOfAppeal =
             caseArgument
-                .getGroundsForAppeal()
-                .orElse(new GroundsForAppeal());
+                .getGroundsOfAppeal()
+                .orElse(new GroundsOfAppeal());
 
-        groundsForAppeal.setGroundsForAppeal(allGroundsForAppeal);
+        groundsOfAppeal.setGroundsOfAppeal(allGroundsOfAppeal);
 
-        caseArgument.setGroundsForAppeal(groundsForAppeal);
+        caseArgument.setGroundsOfAppeal(groundsOfAppeal);
 
         asylumCase.setCaseArgument(caseArgument);
 
