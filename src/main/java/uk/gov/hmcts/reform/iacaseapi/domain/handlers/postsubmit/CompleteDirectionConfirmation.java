@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class CompleteDirectionConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.REQUEST_TIME_EXTENSION;
+               && ccdEvent.getEventId() == EventId.COMPLETE_DIRECTION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,10 +30,11 @@ public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandl
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have requested a time extension");
+        postSubmitResponse.setConfirmationHeader("# You have marked the direction complete");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The case officer will consider your request and respond with an email telling you if your request has been denied or granted."
+            + "The case officer will now review the case. "
+            + "The case officer will tell you if you need to do anything else."
         );
 
         return postSubmitResponse;

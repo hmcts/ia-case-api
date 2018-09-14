@@ -67,6 +67,14 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepReference = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // legal rep build case argument model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> writtenLegalArgumentDocument = Optional.empty();
+    private Optional<String> writtenLegalArgumentDescription = Optional.empty();
+    private Optional<Documents> writtenLegalArgumentEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // legal rep edit grounds of appeal model ...
     // -----------------------------------------------------------------------------
 
@@ -90,12 +98,6 @@ public class AsylumCase implements CaseData {
 
     private Optional<TimeExtension> timeExtensionUnderReview = Optional.empty();
     private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
-
-    // -----------------------------------------------------------------------------
-    // legal rep add written legal argument model ...
-    // -----------------------------------------------------------------------------
-
-    private Optional<WrittenLegalArgument> writtenLegalArgument = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer add correspondence model ...
@@ -393,6 +395,34 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // legal rep build case argument model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getWrittenLegalArgumentDocument() {
+        return writtenLegalArgumentDocument;
+    }
+
+    public Optional<String> getWrittenLegalArgumentDescription() {
+        return writtenLegalArgumentDescription;
+    }
+
+    public Optional<Documents> getWrittenLegalArgumentEvidence() {
+        return writtenLegalArgumentEvidence;
+    }
+
+    public void setWrittenLegalArgumentDocument(Document writtenLegalArgumentDocument) {
+        this.writtenLegalArgumentDocument = Optional.ofNullable(writtenLegalArgumentDocument);
+    }
+
+    public void setWrittenLegalArgumentDescription(String writtenLegalArgumentDescription) {
+        this.writtenLegalArgumentDescription = Optional.ofNullable(writtenLegalArgumentDescription);
+    }
+
+    public void setWrittenLegalArgumentEvidence(Documents writtenLegalArgumentEvidence) {
+        this.writtenLegalArgumentEvidence = Optional.ofNullable(writtenLegalArgumentEvidence);
+    }
+
+    // -----------------------------------------------------------------------------
     // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
@@ -466,22 +496,6 @@ public class AsylumCase implements CaseData {
 
     public void clearTimeExtensionReview() {
         this.timeExtensionReview = Optional.empty();
-    }
-
-    // -----------------------------------------------------------------------------
-    // legal rep add written legal argument model ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<WrittenLegalArgument> getWrittenLegalArgument() {
-        return writtenLegalArgument;
-    }
-
-    public void setWrittenLegalArgument(WrittenLegalArgument writtenLegalArgument) {
-        this.writtenLegalArgument = Optional.ofNullable(writtenLegalArgument);
-    }
-
-    public void clearWrittenLegalArgument() {
-        this.writtenLegalArgument = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

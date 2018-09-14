@@ -7,6 +7,7 @@ public class DocumentWithType {
 
     private Optional<Document> document = Optional.empty();
     private Optional<String> type = Optional.empty();
+    private Optional<String> dateUploaded = Optional.empty();
 
     public Optional<Document> getDocument() {
         return document;
@@ -16,11 +17,19 @@ public class DocumentWithType {
         return type;
     }
 
+    public Optional<String> getDateUploaded() {
+        return dateUploaded;
+    }
+
     public void setDocument(Document document) {
         this.document = Optional.ofNullable(document);
     }
 
     public void setType(String type) {
         this.type = Optional.ofNullable(type);
+    }
+
+    public void setDateUploaded(String dateUploaded) {
+        this.dateUploaded = Optional.ofNullable(dateUploaded);
     }
 }

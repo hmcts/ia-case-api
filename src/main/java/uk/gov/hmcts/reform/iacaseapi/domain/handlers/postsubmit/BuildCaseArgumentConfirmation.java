@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class BuildCaseArgumentConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.REQUEST_TIME_EXTENSION;
+               && ccdEvent.getEventId() == EventId.BUILD_CASE_ARGUMENT;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,10 +30,15 @@ public class TimeExtensionRequestConfirmation implements CcdEventPostSubmitHandl
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have requested a time extension");
+        String completeDirectionUrl =
+            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/completeDirection";
+
+        postSubmitResponse.setConfirmationHeader("# Your update is saved");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The case officer will consider your request and respond with an email telling you if your request has been denied or granted."
+            + "If you've finished building your case, [mark this direction as complete](" + completeDirectionUrl + "). "
+            + "The case officer will then review the case before sending it off to the Home Office. "
+            + "You can continue to add more evidence after the direction is complete."
         );
 
         return postSubmitResponse;

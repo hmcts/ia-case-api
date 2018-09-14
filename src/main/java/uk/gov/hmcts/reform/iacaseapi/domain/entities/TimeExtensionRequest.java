@@ -5,12 +5,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
 
 public class TimeExtensionRequest {
 
+    private Optional<String> direction = Optional.empty();
     private Optional<String> timeRequested = Optional.empty();
     private Optional<String> reason = Optional.empty();
     private Optional<Document> supportingEvidence = Optional.empty();
 
     private TimeExtensionRequest() {
         // noop -- for deserializer
+    }
+
+    public Optional<String> getDirection() {
+        return direction;
     }
 
     public Optional<String> getTimeRequested() {
@@ -23,6 +28,10 @@ public class TimeExtensionRequest {
 
     public Optional<Document> getSupportingEvidence() {
         return supportingEvidence;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = Optional.ofNullable(direction);
     }
 
     public void setTimeRequested(String timeRequested) {
