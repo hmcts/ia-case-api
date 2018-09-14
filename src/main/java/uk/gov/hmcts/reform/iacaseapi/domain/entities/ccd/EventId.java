@@ -6,7 +6,7 @@ public enum EventId {
     COMPLETE_DRAFT_APPEAL("completeDraftAppeal"),
     UPDATE_DRAFT_APPEAL("updateDraftAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
-    UPDATE_SUMMARY("updateSummary"),
+    UPLOAD_DOCUMENT("uploadDocument"),
     SEND_DIRECTION("sendDirection"),
     REQUEST_TIME_EXTENSION("requestTimeExtension"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),

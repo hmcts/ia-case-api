@@ -67,11 +67,10 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepReference = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // case officer update summary model ...
+    // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
-    private Optional<GroundsForAppeal> groundsForAppeal = Optional.empty();
-    private Optional<Issues> issues = Optional.empty();
+    private Optional<DocumentWithType> document = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer send direction model ...
@@ -394,31 +393,19 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer update summary model ...
+    // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
-    public Optional<GroundsForAppeal> getGroundsForAppeal() {
-        return groundsForAppeal;
+    public Optional<DocumentWithType> getDocument() {
+        return document;
     }
 
-    public void setGroundsForAppeal(GroundsForAppeal groundsForAppeal) {
-        this.groundsForAppeal = Optional.ofNullable(groundsForAppeal);
+    public void setDocument(DocumentWithType document) {
+        this.document = Optional.ofNullable(document);
     }
 
-    public void clearGroundsForAppeal() {
-        this.groundsForAppeal = Optional.empty();
-    }
-
-    public Optional<Issues> getIssues() {
-        return issues;
-    }
-
-    public void setIssues(Issues issues) {
-        this.issues = Optional.ofNullable(issues);
-    }
-
-    public void clearIssues() {
-        this.issues = Optional.empty();
+    public void clearDocument() {
+        this.document = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------
