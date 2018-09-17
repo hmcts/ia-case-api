@@ -165,6 +165,8 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformLogging
 
+    compile 'com.auth0:java-jwt:3.4.0'
+
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 

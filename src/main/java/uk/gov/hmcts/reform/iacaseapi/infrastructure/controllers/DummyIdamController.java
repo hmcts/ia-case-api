@@ -1,19 +1,43 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DummyIdamController {
+
+    private static final org.slf4j.Logger LOG = getLogger(DummyIdamController.class);
+
+    private final ObjectMapper mapper;
+
+    public DummyIdamController(
+        @Autowired ObjectMapper mapper
+    ) {
+        this.mapper = mapper;
+    }
 
     @RequestMapping(
         method = {
@@ -57,23 +81,60 @@ public class DummyIdamController {
     ) {
         String accessToken = "";
 
-        if ("legal".equals(code)) {
-            accessToken = getLegalAccessToken();
+        if ("import".equals(code)) {
+            accessToken = createAccessToken(
+                1,
+                "Import",
+                "Script",
+                "ccd-import"
+            );
         }
 
-        if ("officer".equals(code)) {
-            accessToken = getOfficerAccessToken();
+        if ("legal".equals(code)) {
+            accessToken = createAccessToken(
+                2,
+                "Legal",
+                "Rep",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen"
+            );
+        }
+
+        if ("case".equals(code)) {
+            accessToken = createAccessToken(
+                3,
+                "Case",
+                "Officer",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-callagent"
+            );
         }
 
         if ("super".equals(code)) {
-            accessToken = getSuperAccessToken();
+            accessToken = createAccessToken(
+                4,
+                "Super",
+                "user",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen",
+                "caseworker-sscs-callagent",
+                "caseworker-sscs-judge",
+                "caseworker-sscs-systemupdate"
+            );
+        }
+
+        if (accessToken.isEmpty()) {
+            throw new RuntimeException("User code not recognised");
         }
 
         return
             "{"
-            + "\"expires_in\":   31536000," // 1 year
+            + "\"access_token\": \"" + accessToken + "\","
             + "\"token_type\":   \"Bearer\","
-            + "\"access_token\": \"" + accessToken + "\""
+            + "\"expires_in\":   " + Instant.now().plus(1, DAYS).getEpochSecond()
             + "}";
     }
 
@@ -84,9 +145,11 @@ public class DummyIdamController {
     public String details(
         @RequestHeader String authorization
     ) {
+        Map<String, String> token = decodeAccessToken(authorization);
+
         // Import Script
-        if (authorization.contains("MgXM7p7FjKoibcciPdq788wQ2jyq9gd7Ix6QiwoHcuY")) {
-            String details = createUserResponse(
+        if (token.getOrDefault("forename", "").equals("Import")) {
+            String details = createUserDetails(
                 1,
                 "Import",
                 "Script",
@@ -98,9 +161,9 @@ public class DummyIdamController {
         }
 
         // Legal Rep
-        if (authorization.contains("kf991vGFbU")) {
+        if (token.getOrDefault("forename", "").equals("Legal")) {
 
-            return createUserResponse(
+            return createUserDetails(
                 2,
                 "Legal",
                 "Rep",
@@ -112,9 +175,9 @@ public class DummyIdamController {
         }
 
         // Case Officer
-        if (authorization.contains("Hj7wJj5ypENb1QBIeAyA9LW_hySJ6prU_jVvE")) {
+        if (token.getOrDefault("forename", "").equals("Case")) {
 
-            return createUserResponse(
+            return createUserDetails(
                 3,
                 "Case",
                 "Officer",
@@ -126,9 +189,9 @@ public class DummyIdamController {
         }
 
         // Super User
-        if (authorization.contains("ZP4BoV8HxOxpguemeCRyxzKnf2lfDdmoY")) {
+        if (token.getOrDefault("forename", "").equals("Super")) {
 
-            return createUserResponse(
+            return createUserDetails(
                 4,
                 "Super",
                 "user",
@@ -142,10 +205,33 @@ public class DummyIdamController {
             );
         }
 
-        return "{}";
+        throw new RuntimeException("Authorization Token user not recognised");
     }
 
-    private String createUserResponse(
+    private String createAccessToken(
+        int id,
+        String forename,
+        String surname,
+        String... roles
+    ) {
+        return JWT.create()
+            .withSubject(String.valueOf(id))
+            .withExpiresAt(Date.from(Instant.now()))
+            .withIssuedAt(Date.from(Instant.now().plus(1, DAYS)))
+            .withClaim("jti", (int) Math.ceil(Math.random() * 999999))
+            .withClaim("id", String.valueOf(id))
+            .withClaim("type", "ACCESS")
+            .withClaim("forename", forename)
+            .withClaim("surname", surname)
+            .withClaim("loa", 1)
+            .withClaim("data", StringUtils.join(roles, "\",\""))
+            .withClaim("group", "caseworker")
+            .withClaim("default-service", "CCD")
+            .withClaim("default-url", "https://localhost")
+            .sign(Algorithm.HMAC256("foobar"));
+    }
+
+    private String createUserDetails(
         int id,
         String forename,
         String surname,
@@ -163,48 +249,34 @@ public class DummyIdamController {
             + "}";
     }
 
-    private String getLegalAccessToken() {
-        return "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMTExMTExMTExMTExMTExMTEx"
-               + "MTExMTExMSIsInN1YiI6IjExIiwiaWF0IjoxNTM2Nzg2ODU4LCJleHA"
-               + "iOjI1MzY4MTU2NTgsImRhdGEiOiJjYXNld29ya2VyLXNzY3MsY2FzZX"
-               + "dvcmtlci1zc2NzLWFub255bW91c2NpdGl6ZW4sY2FzZXdvcmtlcixjY"
-               + "XNld29ya2VyLXNzY3MtbG9hMSxjYXNld29ya2VyLXNzY3MtYW5vbnlt"
-               + "b3VzY2l0aXplbi1sb2ExLGNhc2V3b3JrZXItbG9hMSIsInR5cGUiOiJ"
-               + "BQ0NFU1MiLCJpZCI6IjUwIiwiZm9yZW5hbWUiOiJMZWdhbCIsInN1cm"
-               + "5hbWUiOiJSZXAiLCJkZWZhdWx0LXNlcnZpY2UiOiJDQ0QiLCJsb2EiO"
-               + "jEsImRlZmF1bHQtdXJsIjoiaHR0cHM6Ly9sb2NhbGhvc3QiLCJncm91"
-               + "cCI6ImNhc2V3b3JrZXIifQ.5_58k_xeCX4aRtgPK2ksjQrI5fcDKdJV"
-               + "-kf991vGFbU";
-    }
+    private Map<String, String> decodeAccessToken(
+        String accessToken
+    ) {
+        try {
 
-    private String getOfficerAccessToken() {
-        return "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMTExMTExMTExMTExMTExMTEx"
-               + "MTExMTExMSIsInN1YiI6IjExIiwiaWF0IjoxNTM2Nzg2ODU4LCJleHA"
-               + "iOjI1MzY4MTU2NTgsImRhdGEiOiJjYXNld29ya2VyLXNzY3MsY2FzZX"
-               + "dvcmtlci1zc2NzLWNhbGxhZ2VudCxjYXNld29ya2VyLGNhc2V3b3JrZ"
-               + "XItc3Njcy1sb2ExLGNhc2V3b3JrZXItc3Njcy1jYWxsYWdlbnQtbG9h"
-               + "MSxjYXNld29ya2VyLWxvYTEiLCJ0eXBlIjoiQUNDRVNTIiwiaWQiOiI"
-               + "3NSIsImZvcmVuYW1lIjoiQ2FzZSIsInN1cm5hbWUiOiJPZmZpY2VyIi"
-               + "wiZGVmYXVsdC1zZXJ2aWNlIjoiQ0NEIiwibG9hIjoxLCJkZWZhdWx0L"
-               + "XVybCI6Imh0dHBzOi8vbG9jYWxob3N0IiwiZ3JvdXAiOiJjYXNld29y"
-               + "a2VyIn0.RWSn_-Hj7wJj5ypENb1QBIeAyA9LW_hySJ6prU_jVvE";
-    }
+            DecodedJWT jwt = JWT.decode(
+                accessToken.replaceFirst("^Bearer\\s+", "")
+            );
 
-    private String getSuperAccessToken() {
-        return "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMTExMTExMTE"
-               + "xMTExMTExMTExMTExMTExMSIsInN1YiI6IjExIiwiaWF0IjoxNTM2N"
-               + "zg2ODU4LCJleHAiOjI1MzY4MTU2NTgsImRhdGEiOiJjYXNld29ya2V"
-               + "yLXNzY3MsY2FzZXdvcmtlci1zc2NzLWFub255bW91c2NpdGl6ZW4sY"
-               + "2FzZXdvcmtlci1zc2NzLWNhbGxhZ2VudCxjYXNld29ya2VyLXNzY3M"
-               + "tanVkZ2UsY2FzZXdvcmtlci1zc2NzLXN5c3RlbXVwZGF0ZSxjYXNld"
-               + "29ya2VyLGNhc2V3b3JrZXItc3Njcy1sb2ExLGNhc2V3b3JrZXItc3N"
-               + "jcy1hbm9ueW1vdXNjaXRpemVuLWxvYTEsY2FzZXdvcmtlci1zc2NzL"
-               + "WNhbGxhZ2VudC1sb2ExLGNhc2V3b3JrZXItc3Njcy1qdWRnZS1sb2E"
-               + "xLGNhc2V3b3JrZXItc3Njcy1zeXN0ZW11cGRhdGUtbG9hMSxjYXNld"
-               + "29ya2VyLWxvYTEiLCJ0eXBlIjoiQUNDRVNTIiwiaWQiOiIyNSIsImZ"
-               + "vcmVuYW1lIjoiTGVnYWwiLCJzdXJuYW1lIjoiUmVwIiwiZGVmYXVsd"
-               + "C1zZXJ2aWNlIjoiQ0NEIiwibG9hIjoxLCJkZWZhdWx0LXVybCI6Imh"
-               + "0dHBzOi8vbG9jYWxob3N0IiwiZ3JvdXAiOiJjYXNld29ya2VyIn0.L"
-               + "SM0fdBKH-ZP4BoV8HxOxpguemeCRyxzKnf2lfDdmoY";
+            String accessTokenClaims = new String(
+                Base64Utils
+                    .decodeFromString(jwt.getPayload())
+            );
+
+            try {
+
+                return mapper.readValue(
+                    accessTokenClaims,
+                    new TypeReference<Map<String, String>>() {
+                    }
+                );
+
+            } catch (IOException e) {
+                throw new RuntimeException("Authorization Token claims cannot be deserialized", e);
+            }
+
+        } catch (JWTDecodeException e) {
+            throw new JWTDecodeException("Authorization Token cannot be decoded using JWT format", e);
+        }
     }
 }
