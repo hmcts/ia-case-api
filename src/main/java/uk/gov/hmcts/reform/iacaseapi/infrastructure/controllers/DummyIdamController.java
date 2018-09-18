@@ -81,6 +81,7 @@ public class DummyIdamController {
     ) {
         String accessToken = "";
 
+        // Import Script
         if ("import".equals(code)) {
             accessToken = createAccessToken(
                 1,
@@ -90,6 +91,7 @@ public class DummyIdamController {
             );
         }
 
+        // Legal Rep
         if ("legal".equals(code)) {
             accessToken = createAccessToken(
                 2,
@@ -101,9 +103,36 @@ public class DummyIdamController {
             );
         }
 
-        if ("case".equals(code)) {
+        // Law Firm A
+        if ("law-firm-a".equals(code)) {
             accessToken = createAccessToken(
                 3,
+                "Law Firm",
+                "A",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen",
+                "caseworker-sscs-law-firm-a-solicitor"
+            );
+        }
+
+        // Law Firm B
+        if ("law-firm-b".equals(code)) {
+            accessToken = createAccessToken(
+                4,
+                "Law Firm",
+                "B",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen",
+                "caseworker-sscs-law-firm-b-solicitor"
+            );
+        }
+
+        // Case Officer
+        if ("case".equals(code)) {
+            accessToken = createAccessToken(
+                5,
                 "Case",
                 "Officer",
                 "caseworker",
@@ -112,9 +141,10 @@ public class DummyIdamController {
             );
         }
 
+        // Super User
         if ("super".equals(code)) {
             accessToken = createAccessToken(
-                4,
+                6,
                 "Super",
                 "user",
                 "caseworker",
@@ -142,28 +172,29 @@ public class DummyIdamController {
         value = "/details",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String details(
+    public ResponseEntity<String> details(
         @RequestHeader String authorization
     ) {
         Map<String, String> token = decodeAccessToken(authorization);
 
+        String details = "";
+
         // Import Script
         if (token.getOrDefault("forename", "").equals("Import")) {
-            String details = createUserDetails(
+
+            details = createUserDetails(
                 1,
                 "Import",
                 "Script",
                 "import-script@example.com",
                 "ccd-import"
             );
-
-            return details;
         }
 
         // Legal Rep
-        if (token.getOrDefault("forename", "").equals("Legal")) {
+        if (token.getOrDefault("surname", "").equals("Rep")) {
 
-            return createUserDetails(
+            details = createUserDetails(
                 2,
                 "Legal",
                 "Rep",
@@ -174,11 +205,43 @@ public class DummyIdamController {
             );
         }
 
+        // Law Firm A
+        if (token.getOrDefault("forename", "").equals("Law Firm")
+            && token.getOrDefault("surname", "").equals("A")) {
+
+            details = createUserDetails(
+                2,
+                "Law Firm",
+                "A",
+                "ia-law-firm-a@example.com",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen",
+                "caseworker-sscs-law-firm-a-solicitor"
+            );
+        }
+
+        // Law Firm B
+        if (token.getOrDefault("forename", "").equals("Law Firm")
+            && token.getOrDefault("surname", "").equals("B")) {
+
+            details = createUserDetails(
+                3,
+                "Law Firm",
+                "B",
+                "ia-law-firm-b@example.com",
+                "caseworker",
+                "caseworker-sscs",
+                "caseworker-sscs-anonymouscitizen",
+                "caseworker-sscs-law-firm-b-solicitor"
+            );
+        }
+
         // Case Officer
         if (token.getOrDefault("forename", "").equals("Case")) {
 
-            return createUserDetails(
-                3,
+            details = createUserDetails(
+                4,
                 "Case",
                 "Officer",
                 "ia-case-officer@example.com",
@@ -191,8 +254,8 @@ public class DummyIdamController {
         // Super User
         if (token.getOrDefault("forename", "").equals("Super")) {
 
-            return createUserDetails(
-                4,
+            details = createUserDetails(
+                5,
                 "Super",
                 "user",
                 "ia-super-user@example.com",
@@ -205,7 +268,14 @@ public class DummyIdamController {
             );
         }
 
-        throw new RuntimeException("Authorization Token user not recognised");
+        if (details.isEmpty()) {
+            LOG.warn("Authorization Token Issue: user not recognised");
+            HttpHeaders headers = new HttpHeaders();
+            headers.clear();
+            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(details, HttpStatus.OK);
+        }
     }
 
     private String createAccessToken(
