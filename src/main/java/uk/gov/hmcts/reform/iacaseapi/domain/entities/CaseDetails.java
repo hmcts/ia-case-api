@@ -10,7 +10,6 @@ public class CaseDetails {
     private Optional<String> appellantDob = Optional.empty();
     private Optional<String> typeOfAppeal = Optional.empty();
     private Optional<String> legalRepName = Optional.empty();
-    private Optional<String> legalRepContactDetails = Optional.empty();
 
     public Optional<String> getCaseStartDate() {
         return caseStartDate;
@@ -36,10 +35,6 @@ public class CaseDetails {
         return legalRepName;
     }
 
-    public Optional<String> getLegalRepContactDetails() {
-        return legalRepContactDetails;
-    }
-
     public void setCaseStartDate(String caseStartDate) {
         this.caseStartDate = Optional.ofNullable(caseStartDate);
     }
@@ -62,9 +57,5 @@ public class CaseDetails {
 
     public void setLegalRepName(String legalRepName) {
         this.legalRepName = Optional.ofNullable(legalRepName);
-    }
-
-    public void setLegalRepContactDetails(String legalRepContactDetails) {
-        this.legalRepContactDetails = Optional.ofNullable(legalRepContactDetails);
     }
 }

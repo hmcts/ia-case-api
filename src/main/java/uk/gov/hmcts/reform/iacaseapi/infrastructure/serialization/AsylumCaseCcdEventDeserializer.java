@@ -34,7 +34,7 @@ public class AsylumCaseCcdEventDeserializer implements Deserializer<CcdEvent<Asy
             );
 
         } catch (IOException e) {
-            LOG.warn("Could not deserialize Asylum Case Ccd Event:\n{}", source);
+            LOG.warn("Could not deserialize Asylum Case Ccd Event:\n{}\n{}", e.getMessage(), source);
             throw new IllegalArgumentException("Could not deserialize Asylum Case Ccd Event", e);
         }
     }

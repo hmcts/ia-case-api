@@ -28,9 +28,9 @@ public class OutOfTimeAugmentor implements CcdEventPreSubmitHandler<AsylumCase> 
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && (ccdEvent.getEventId() == EventId.START_DRAFT_APPEAL
-                   || ccdEvent.getEventId() == EventId.COMPLETE_DRAFT_APPEAL
-                   || ccdEvent.getEventId() == EventId.UPDATE_DRAFT_APPEAL);
+               && (ccdEvent.getEventId() == EventId.START_APPEAL
+                   || ccdEvent.getEventId() == EventId.CHANGE_APPEAL
+                   || ccdEvent.getEventId() == EventId.SUBMIT_APPEAL);
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

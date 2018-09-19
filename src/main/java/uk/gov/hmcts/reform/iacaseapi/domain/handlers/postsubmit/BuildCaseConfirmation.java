@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class BuildCaseArgumentConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class BuildCaseConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.BUILD_CASE_ARGUMENT;
+               && ccdEvent.getEventId() == EventId.BUILD_CASE;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -37,8 +37,7 @@ public class BuildCaseArgumentConfirmation implements CcdEventPostSubmitHandler<
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
             + "If you've finished building your case, [mark this direction as complete](" + completeDirectionUrl + "). "
-            + "The case officer will then review the case before sending it off to the Home Office. "
-            + "You can continue to add more evidence after the direction is complete."
+            + "The case officer will then review the case before sending it off to the Home Office."
         );
 
         return postSubmitResponse;

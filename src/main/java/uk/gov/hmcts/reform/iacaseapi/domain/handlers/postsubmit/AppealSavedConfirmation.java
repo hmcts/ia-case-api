@@ -9,14 +9,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class DraftAppealStartedConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class AppealSavedConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.START_DRAFT_APPEAL;
+               && (ccdEvent.getEventId() == EventId.START_APPEAL
+                   || ccdEvent.getEventId() == EventId.CHANGE_APPEAL);
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,15 +31,17 @@ public class DraftAppealStartedConfirmation implements CcdEventPostSubmitHandler
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        String completeAppealUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/completeDraftAppeal";
+        String changeAppealUrl =
+            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/changeAppeal";
 
-        postSubmitResponse.setConfirmationHeader("# Draft appeal started");
+        String submitAppealUrl =
+            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitAppeal";
+
+        postSubmitResponse.setConfirmationHeader("# Now submit your appeal");
         postSubmitResponse.setConfirmationBody(
-            "#### Completing the appeal now\n\n"
-            + "Your appeal is now started and you can [complete the draft appeal](" + completeAppealUrl + ") now or later.\n\n"
-            + "#### Completing the appeal later\n\n"
-            + "To complete the appeal later, select *'Complete draft appeal'* from the top right menu labelled *'Next step'*, on the case details page."
+            "Now [submit your appeal](" + submitAppealUrl + ").\n\n"
+            + "#### Not ready to submit yet?\n\n"
+            + "You can return to the case details to [make changes](" + changeAppealUrl + ")"
         );
 
         return postSubmitResponse;

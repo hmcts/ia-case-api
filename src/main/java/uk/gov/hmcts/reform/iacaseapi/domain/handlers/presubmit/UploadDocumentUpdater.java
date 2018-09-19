@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithType;
@@ -55,6 +56,7 @@ public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCas
             );
         }
 
+        document.setStored(Optional.of("Yes"));
         document.setDateUploaded(LocalDate.now().toString());
 
         allDocuments.add(

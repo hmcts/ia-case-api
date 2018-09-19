@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 @Service
 public class AppealDeadlineCalculator {
 
-    private final int allowedTimeFromDecisionInMonths;
+    private final int allowedTimeFromDecisionInWeeks;
 
     public AppealDeadlineCalculator(
-        @Value("${limits.allowedTimeFromDecisionInMonths}") int allowedTimeFromDecisionInMonths
+        @Value("${limits.allowedTimeFromDecisionInWeeks}") int allowedTimeFromDecisionInWeeks
     ) {
-        this.allowedTimeFromDecisionInMonths = allowedTimeFromDecisionInMonths;
+        this.allowedTimeFromDecisionInWeeks = allowedTimeFromDecisionInWeeks;
     }
 
     public Optional<LocalDate> calculate(
@@ -32,6 +32,6 @@ public class AppealDeadlineCalculator {
                 DateTimeFormatter.ISO_LOCAL_DATE
             );
 
-        return Optional.of(decisionDate.plusMonths(1));
+        return Optional.of(decisionDate.plusWeeks(allowedTimeFromDecisionInWeeks));
     }
 }

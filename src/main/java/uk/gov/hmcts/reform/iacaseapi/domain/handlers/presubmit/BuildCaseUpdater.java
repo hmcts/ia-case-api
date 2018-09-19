@@ -8,19 +8,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WrittenLegalArgument;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegalArgument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class BuildCaseArgumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.BUILD_CASE_ARGUMENT;
+               && ccdEvent.getEventId() == EventId.BUILD_CASE;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -39,29 +39,29 @@ public class BuildCaseArgumentUpdater implements CcdEventPreSubmitHandler<Asylum
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        Document writtenLegalArgumentDocument =
+        Document legalArgumentDocument =
             asylumCase
-                .getWrittenLegalArgumentDocument()
-                .orElseThrow(() -> new IllegalStateException("writtenLegalArgumentDocument not present"));
+                .getLegalArgumentDocument()
+                .orElseThrow(() -> new IllegalStateException("legalArgumentDocument not present"));
 
-        String writtenLegalArgumentDescription =
+        String legalArgumentDescription =
             asylumCase
-                .getWrittenLegalArgumentDescription()
-                .orElseThrow(() -> new IllegalStateException("writtenLegalArgumentDescription not present"));
+                .getLegalArgumentDescription()
+                .orElseThrow(() -> new IllegalStateException("legalArgumentDescription not present"));
 
-        Documents writtenLegalArgumentEvidence =
+        Documents legalArgumentEvidence =
             asylumCase
-                .getWrittenLegalArgumentEvidence()
-                .orElseThrow(() -> new IllegalStateException("writtenLegalArgumentEvidence not present"));
+                .getLegalArgumentEvidence()
+                .orElseThrow(() -> new IllegalStateException("legalArgumentEvidence not present"));
 
         asylumCase
             .getCaseArgument()
             .orElseThrow(() -> new IllegalStateException("caseArgument not present"))
-            .setWrittenLegalArgument(
-                new WrittenLegalArgument(
-                    writtenLegalArgumentDocument,
-                    writtenLegalArgumentDescription,
-                    writtenLegalArgumentEvidence
+            .setLegalArgument(
+                new LegalArgument(
+                    legalArgumentDocument,
+                    legalArgumentDescription,
+                    legalArgumentEvidence
                 )
             );
 
@@ -81,7 +81,7 @@ public class BuildCaseArgumentUpdater implements CcdEventPreSubmitHandler<Asylum
         }
 
         asylumCase
-            .getWrittenLegalArgumentEvidence()
+            .getLegalArgumentEvidence()
             .get()
             .getDocuments()
             .orElse(Collections.emptyList())

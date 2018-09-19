@@ -17,8 +17,8 @@ public class AppellantNameFormatter implements CcdEventPreSubmitHandler<AsylumCa
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && (ccdEvent.getEventId() == EventId.COMPLETE_DRAFT_APPEAL
-                   || ccdEvent.getEventId() == EventId.UPDATE_DRAFT_APPEAL);
+               && (ccdEvent.getEventId() == EventId.START_APPEAL
+                   || ccdEvent.getEventId() == EventId.CHANGE_APPEAL);
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

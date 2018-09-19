@@ -2,12 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 public enum EventId {
 
-    START_DRAFT_APPEAL("startDraftAppeal"),
-    COMPLETE_DRAFT_APPEAL("completeDraftAppeal"),
-    UPDATE_DRAFT_APPEAL("updateDraftAppeal"),
+    START_APPEAL("startAppeal"),
+    CHANGE_APPEAL("changeAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     EDIT_GROUNDS_OF_APPEAL("editGroundsOfAppeal"),
-    BUILD_CASE_ARGUMENT("buildCaseArgument"),
+    BUILD_CASE("buildCase"),
     UPLOAD_DOCUMENT("uploadDocument"),
     SEND_DIRECTION("sendDirection"),
     COMPLETE_DIRECTION("completeDirection"),

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
@@ -10,6 +11,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
 public class AppealSubmittedConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+
+    private final String bookmarkBaseUrl;
+
+    public AppealSubmittedConfirmation(
+        @Value("${bookmarkBaseUrl}") String bookmarkBaseUrl
+    ) {
+        this.bookmarkBaseUrl = bookmarkBaseUrl;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -31,7 +40,7 @@ public class AppealSubmittedConfirmation implements CcdEventPostSubmitHandler<As
             new CcdEventPostSubmitResponse();
 
         String trackAppealUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId();
+            bookmarkBaseUrl + "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId();
 
         postSubmitResponse.setConfirmationHeader("# Your appeal application has been submitted");
         postSubmitResponse.setConfirmationBody(
@@ -39,7 +48,7 @@ public class AppealSubmittedConfirmation implements CcdEventPostSubmitHandler<As
             + "You will receive an email confirming that this appeal has been submitted successfully.\n"
             + "You can return at any time to add more evidence to this appeal.\n\n"
             + "You will receive email updates as your case progresses. "
-            + "Remember that you can track the progress of your appeal online on this link "
+            + "Remember that you can track the progress of your appeal online on this link:\n"
             + "[" + trackAppealUrl + "](" + trackAppealUrl + " \"Track your appeal\")"
         );
 

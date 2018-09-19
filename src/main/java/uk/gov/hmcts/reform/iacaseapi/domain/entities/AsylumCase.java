@@ -23,56 +23,40 @@ public class AsylumCase implements CaseData {
     private String homeOfficeReferenceNumber = "";
     private String homeOfficeDecisionDate = "";
 
-    private Optional<String> applicationOutOfTime = Optional.empty();
-    private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
-    private Optional<Document> applicationOutOfTimeExplanationDocument = Optional.empty();
-
     private Optional<Name> appellantName = Optional.empty();
     private Optional<String> appellantNameForDisplay = Optional.empty();
     private Optional<String> appellantDob = Optional.empty();
     private Optional<List<IdValue<String>>> appellantNationalities = Optional.empty();
     private Optional<String> appellantNationalityContested = Optional.empty();
 
+    private Optional<String> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUK> appellantAddress = Optional.empty();
-    private Optional<String> appellantHasNoFixedAbode = Optional.empty();
 
     private Optional<String> appealReason = Optional.empty();
     private Optional<List<String>> appealGrounds = Optional.empty();
-
-    private Optional<String> refugeeConventionExplanation = Optional.empty();
-    private Optional<Document> refugeeConventionExplanationDocument = Optional.empty();
-
-    private Optional<String> humanitarianProtectionExplanation = Optional.empty();
-    private Optional<Document> humanitarianProtectionExplanationDocument = Optional.empty();
-
-    private Optional<String> humanRightsConventionExplanation = Optional.empty();
-    private Optional<Document> humanRightsConventionExplanationDocument = Optional.empty();
-
-    private Optional<String> evidenceToUpload = Optional.empty();
-    private Optional<Document> evidenceDocument = Optional.empty();
-    private Optional<String> evidenceLabel = Optional.empty();
 
     private Optional<List<String>> newMatters = Optional.empty();
     private Optional<String> newMattersOther = Optional.empty();
     private Optional<Document> newMattersOtherDocument = Optional.empty();
 
-    private Optional<String> personalVulnerabilitiesApply = Optional.empty();
-    private Optional<List<String>> personalVulnerabilities = Optional.empty();
-    private Optional<String> personalVulnerabilitiesOther = Optional.empty();
-
     private Optional<String> otherAppeals = Optional.empty();
     private Optional<List<IdValue<String>>> otherAppealNumbers = Optional.empty();
 
-    private Optional<String> legalRepDeclaration = Optional.empty();
     private Optional<String> legalRepReference = Optional.empty();
 
+    private Optional<String> applicationOutOfTime = Optional.empty();
+    private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
+    private Optional<Document> applicationOutOfTimeExplanationDocument = Optional.empty();
+
+    private Optional<String> legalRepDeclaration = Optional.empty();
+
     // -----------------------------------------------------------------------------
-    // legal rep build case argument model ...
+    // legal rep build case model ...
     // -----------------------------------------------------------------------------
 
-    private Optional<Document> writtenLegalArgumentDocument = Optional.empty();
-    private Optional<String> writtenLegalArgumentDescription = Optional.empty();
-    private Optional<Documents> writtenLegalArgumentEvidence = Optional.empty();
+    private Optional<Document> legalArgumentDocument = Optional.empty();
+    private Optional<String> legalArgumentDescription = Optional.empty();
+    private Optional<Documents> legalArgumentEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // legal rep edit grounds of appeal model ...
@@ -146,18 +130,6 @@ public class AsylumCase implements CaseData {
         return homeOfficeDecisionDate;
     }
 
-    public Optional<String> getApplicationOutOfTime() {
-        return applicationOutOfTime;
-    }
-
-    public Optional<String> getApplicationOutOfTimeExplanation() {
-        return applicationOutOfTimeExplanation;
-    }
-
-    public Optional<Document> getApplicationOutOfTimeExplanationDocument() {
-        return applicationOutOfTimeExplanationDocument;
-    }
-
     public Optional<Name> getAppellantName() {
         return appellantName;
     }
@@ -178,12 +150,12 @@ public class AsylumCase implements CaseData {
         return appellantNationalityContested;
     }
 
-    public Optional<AddressUK> getAppellantAddress() {
-        return appellantAddress;
+    public Optional<String> getAppellantHasFixedAddress() {
+        return appellantHasFixedAddress;
     }
 
-    public Optional<String> getAppellantHasNoFixedAbode() {
-        return appellantHasNoFixedAbode;
+    public Optional<AddressUK> getAppellantAddress() {
+        return appellantAddress;
     }
 
     public Optional<String> getAppealReason() {
@@ -192,42 +164,6 @@ public class AsylumCase implements CaseData {
 
     public Optional<List<String>> getAppealGrounds() {
         return appealGrounds;
-    }
-
-    public Optional<String> getRefugeeConventionExplanation() {
-        return refugeeConventionExplanation;
-    }
-
-    public Optional<Document> getRefugeeConventionExplanationDocument() {
-        return refugeeConventionExplanationDocument;
-    }
-
-    public Optional<String> getHumanitarianProtectionExplanation() {
-        return humanitarianProtectionExplanation;
-    }
-
-    public Optional<Document> getHumanitarianProtectionExplanationDocument() {
-        return humanitarianProtectionExplanationDocument;
-    }
-
-    public Optional<String> getHumanRightsConventionExplanation() {
-        return humanRightsConventionExplanation;
-    }
-
-    public Optional<Document> getHumanRightsConventionExplanationDocument() {
-        return humanRightsConventionExplanationDocument;
-    }
-
-    public Optional<String> getEvidenceToUpload() {
-        return evidenceToUpload;
-    }
-
-    public Optional<Document> getEvidenceDocument() {
-        return evidenceDocument;
-    }
-
-    public Optional<String> getEvidenceLabel() {
-        return evidenceLabel;
     }
 
     public Optional<List<String>> getNewMatters() {
@@ -242,18 +178,6 @@ public class AsylumCase implements CaseData {
         return newMattersOtherDocument;
     }
 
-    public Optional<String> getPersonalVulnerabilitiesApply() {
-        return personalVulnerabilitiesApply;
-    }
-
-    public Optional<List<String>> getPersonalVulnerabilities() {
-        return personalVulnerabilities;
-    }
-
-    public Optional<String> getPersonalVulnerabilitiesOther() {
-        return personalVulnerabilitiesOther;
-    }
-
     public Optional<String> getOtherAppeals() {
         return otherAppeals;
     }
@@ -262,24 +186,24 @@ public class AsylumCase implements CaseData {
         return otherAppealNumbers;
     }
 
-    public Optional<String> getLegalRepDeclaration() {
-        return legalRepDeclaration;
-    }
-
     public Optional<String> getLegalRepReference() {
         return legalRepReference;
     }
 
-    public void setApplicationOutOfTime(String applicationOutOfTime) {
-        this.applicationOutOfTime = Optional.ofNullable(applicationOutOfTime);
+    public Optional<String> getApplicationOutOfTime() {
+        return applicationOutOfTime;
     }
 
-    public void setApplicationOutOfTimeExplanation(String applicationOutOfTimeExplanation) {
-        this.applicationOutOfTimeExplanation = Optional.ofNullable(applicationOutOfTimeExplanation);
+    public Optional<String> getApplicationOutOfTimeExplanation() {
+        return applicationOutOfTimeExplanation;
     }
 
-    public void setApplicationOutOfTimeExplanationDocument(Document applicationOutOfTimeExplanationDocument) {
-        this.applicationOutOfTimeExplanationDocument = Optional.ofNullable(applicationOutOfTimeExplanationDocument);
+    public Optional<Document> getApplicationOutOfTimeExplanationDocument() {
+        return applicationOutOfTimeExplanationDocument;
+    }
+
+    public Optional<String> getLegalRepDeclaration() {
+        return legalRepDeclaration;
     }
 
     public void setAppellantName(Name appellantName) {
@@ -302,12 +226,12 @@ public class AsylumCase implements CaseData {
         this.appellantNationalityContested = Optional.ofNullable(appellantNationalityContested);
     }
 
-    public void setAppellantAddress(AddressUK appellantAddress) {
-        this.appellantAddress = Optional.ofNullable(appellantAddress);
+    public void setAppellantHasFixedAddress(String appellantHasFixedAddress) {
+        this.appellantHasFixedAddress = Optional.ofNullable(appellantHasFixedAddress);
     }
 
-    public void setAppellantHasNoFixedAbode(String appellantHasNoFixedAbode) {
-        this.appellantHasNoFixedAbode = Optional.ofNullable(appellantHasNoFixedAbode);
+    public void setAppellantAddress(AddressUK appellantAddress) {
+        this.appellantAddress = Optional.ofNullable(appellantAddress);
     }
 
     public void setAppealReason(String appealReason) {
@@ -316,42 +240,6 @@ public class AsylumCase implements CaseData {
 
     public void setAppealGrounds(List<String> appealGrounds) {
         this.appealGrounds = Optional.ofNullable(appealGrounds);
-    }
-
-    public void setRefugeeConventionExplanation(String refugeeConventionExplanation) {
-        this.refugeeConventionExplanation = Optional.ofNullable(refugeeConventionExplanation);
-    }
-
-    public void setRefugeeConventionExplanationDocument(Document refugeeConventionExplanationDocument) {
-        this.refugeeConventionExplanationDocument = Optional.ofNullable(refugeeConventionExplanationDocument);
-    }
-
-    public void setHumanitarianProtectionExplanation(String humanitarianProtectionExplanation) {
-        this.humanitarianProtectionExplanation = Optional.ofNullable(humanitarianProtectionExplanation);
-    }
-
-    public void setHumanitarianProtectionExplanationDocument(Document humanitarianProtectionExplanationDocument) {
-        this.humanitarianProtectionExplanationDocument = Optional.ofNullable(humanitarianProtectionExplanationDocument);
-    }
-
-    public void setHumanRightsConventionExplanation(String humanRightsConventionExplanation) {
-        this.humanRightsConventionExplanation = Optional.ofNullable(humanRightsConventionExplanation);
-    }
-
-    public void setHumanRightsConventionExplanationDocument(Document humanRightsConventionExplanationDocument) {
-        this.humanRightsConventionExplanationDocument = Optional.ofNullable(humanRightsConventionExplanationDocument);
-    }
-
-    public void setEvidenceToUpload(String evidenceToUpload) {
-        this.evidenceToUpload = Optional.ofNullable(evidenceToUpload);
-    }
-
-    public void setEvidenceDocument(Document evidenceDocument) {
-        this.evidenceDocument = Optional.ofNullable(evidenceDocument);
-    }
-
-    public void setEvidenceLabel(String evidenceLabel) {
-        this.evidenceLabel = Optional.ofNullable(evidenceLabel);
     }
 
     public void setNewMatters(List<String> newMatters) {
@@ -366,18 +254,6 @@ public class AsylumCase implements CaseData {
         this.newMattersOtherDocument = Optional.ofNullable(newMattersOtherDocument);
     }
 
-    public void setPersonalVulnerabilitiesApply(String personalVulnerabilitiesApply) {
-        this.personalVulnerabilitiesApply = Optional.ofNullable(personalVulnerabilitiesApply);
-    }
-
-    public void setPersonalVulnerabilities(List<String> personalVulnerabilities) {
-        this.personalVulnerabilities = Optional.ofNullable(personalVulnerabilities);
-    }
-
-    public void setPersonalVulnerabilitiesOther(String personalVulnerabilitiesOther) {
-        this.personalVulnerabilitiesOther = Optional.ofNullable(personalVulnerabilitiesOther);
-    }
-
     public void setOtherAppeals(String otherAppeals) {
         this.otherAppeals = Optional.ofNullable(otherAppeals);
     }
@@ -386,40 +262,52 @@ public class AsylumCase implements CaseData {
         this.otherAppealNumbers = Optional.ofNullable(otherAppealNumbers);
     }
 
-    public void setLegalRepDeclaration(String legalRepDeclaration) {
-        this.legalRepDeclaration = Optional.ofNullable(legalRepDeclaration);
-    }
-
     public void setLegalRepReference(String legalRepReference) {
         this.legalRepReference = Optional.ofNullable(legalRepReference);
     }
 
+    public void setApplicationOutOfTime(String applicationOutOfTime) {
+        this.applicationOutOfTime = Optional.ofNullable(applicationOutOfTime);
+    }
+
+    public void setApplicationOutOfTimeExplanation(String applicationOutOfTimeExplanation) {
+        this.applicationOutOfTimeExplanation = Optional.ofNullable(applicationOutOfTimeExplanation);
+    }
+
+    public void setApplicationOutOfTimeExplanationDocument(Document applicationOutOfTimeExplanationDocument) {
+        this.applicationOutOfTimeExplanationDocument = Optional.ofNullable(applicationOutOfTimeExplanationDocument);
+    }
+
+    public void setLegalRepDeclaration(String legalRepDeclaration) {
+        this.legalRepDeclaration = Optional.ofNullable(legalRepDeclaration);
+    }
+
     // -----------------------------------------------------------------------------
-    // legal rep build case argument model ...
+    // legal rep build case model ...
     // -----------------------------------------------------------------------------
 
-    public Optional<Document> getWrittenLegalArgumentDocument() {
-        return writtenLegalArgumentDocument;
+    public Optional<Document> getLegalArgumentDocument() {
+        return legalArgumentDocument;
     }
 
-    public Optional<String> getWrittenLegalArgumentDescription() {
-        return writtenLegalArgumentDescription;
+    public Optional<String> getLegalArgumentDescription() {
+        return legalArgumentDescription;
     }
 
-    public Optional<Documents> getWrittenLegalArgumentEvidence() {
-        return writtenLegalArgumentEvidence;
+    public Optional<Documents> getLegalArgumentEvidence() {
+        return legalArgumentEvidence;
     }
 
-    public void setWrittenLegalArgumentDocument(Document writtenLegalArgumentDocument) {
-        this.writtenLegalArgumentDocument = Optional.ofNullable(writtenLegalArgumentDocument);
+    public void setLegalArgumentDocument(Document legalArgumentDocument) {
+        this.legalArgumentDocument = Optional.ofNullable(legalArgumentDocument);
     }
 
-    public void setWrittenLegalArgumentDescription(String writtenLegalArgumentDescription) {
-        this.writtenLegalArgumentDescription = Optional.ofNullable(writtenLegalArgumentDescription);
+    public void setLegalArgumentDescription(String legalArgumentDescription) {
+        this.legalArgumentDescription = Optional.ofNullable(legalArgumentDescription);
     }
 
-    public void setWrittenLegalArgumentEvidence(Documents writtenLegalArgumentEvidence) {
-        this.writtenLegalArgumentEvidence = Optional.ofNullable(writtenLegalArgumentEvidence);
+    public void setLegalArgumentEvidence(Documents legalArgumentEvidence) {
+        this.legalArgumentEvidence = Optional.ofNullable(legalArgumentEvidence);
     }
 
     // -----------------------------------------------------------------------------

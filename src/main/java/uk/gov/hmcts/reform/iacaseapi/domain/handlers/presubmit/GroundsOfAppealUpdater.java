@@ -57,11 +57,6 @@ public class GroundsOfAppealUpdater implements CcdEventPreSubmitHandler<AsylumCa
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "under the Refugee Convention"
                 );
-                groundOfAppeal.setExplanation(
-                    asylumCase
-                        .getRefugeeConventionExplanation()
-                        .orElse(null)
-                );
             }
 
             if (appealGround.equals("humanitarianProtection")) {
@@ -70,11 +65,6 @@ public class GroundsOfAppealUpdater implements CcdEventPreSubmitHandler<AsylumCa
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "in relation to persons eligible for a grant of Humanitarian Protection"
                 );
-                groundOfAppeal.setExplanation(
-                    asylumCase
-                        .getHumanitarianProtectionExplanation()
-                        .orElse(null)
-                );
             }
 
             if (appealGround.equals("humanRightsConvention")) {
@@ -82,11 +72,6 @@ public class GroundsOfAppealUpdater implements CcdEventPreSubmitHandler<AsylumCa
                 groundOfAppeal.setGround(
                     "Removing the appellant from the UK would breach the UK's obligations "
                     + "under the Refugee Convention"
-                );
-                groundOfAppeal.setExplanation(
-                    asylumCase
-                        .getHumanRightsConventionExplanation()
-                        .orElse(null)
                 );
             }
 

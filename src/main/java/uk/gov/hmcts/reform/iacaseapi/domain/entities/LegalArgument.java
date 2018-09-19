@@ -3,17 +3,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
 
-public class WrittenLegalArgument {
+public class LegalArgument {
 
     private Optional<Document> document = Optional.empty();
     private Optional<String> description = Optional.empty();
     private Optional<Documents> evidence = Optional.empty();
 
-    private WrittenLegalArgument() {
+    private LegalArgument() {
         // noop -- for deserializer
     }
 
-    public WrittenLegalArgument(
+    public LegalArgument(
         Document document,
         String description,
         Documents evidence
