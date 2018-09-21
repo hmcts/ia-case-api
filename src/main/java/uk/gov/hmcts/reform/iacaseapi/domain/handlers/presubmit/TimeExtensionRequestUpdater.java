@@ -92,6 +92,8 @@ public class TimeExtensionRequestUpdater implements CcdEventPreSubmitHandler<Asy
 
         asylumCase.setTimeExtensions(timeExtensions);
 
+        asylumCase.clearTimeExtensionRequest();
+
         return preSubmitResponse;
     }
 }

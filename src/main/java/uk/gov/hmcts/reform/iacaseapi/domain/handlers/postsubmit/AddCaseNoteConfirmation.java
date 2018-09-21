@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class AddCorrespondenceConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class AddCaseNoteConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.ADD_CORRESPONDENCE;
+               && ccdEvent.getEventId() == EventId.ADD_CASE_NOTE;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,13 +30,13 @@ public class AddCorrespondenceConfirmation implements CcdEventPostSubmitHandler<
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        String reviewCorrespondenceUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#correspondenceTab";
+        String reviewCaseNoteUrl =
+            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#caseNotesTab";
 
-        postSubmitResponse.setConfirmationHeader("# You have saved this correspondence");
+        postSubmitResponse.setConfirmationHeader("# You have saved this note");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You can [review this correspondence](" + reviewCorrespondenceUrl + ")."
+            + "You can [review this note](" + reviewCaseNoteUrl + ")."
         );
 
         return postSubmitResponse;

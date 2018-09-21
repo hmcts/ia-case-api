@@ -70,6 +70,8 @@ public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase
 
         asylumCase.setSentDirections(sentDirections);
 
+        asylumCase.clearDirection();
+
         return preSubmitResponse;
     }
 }

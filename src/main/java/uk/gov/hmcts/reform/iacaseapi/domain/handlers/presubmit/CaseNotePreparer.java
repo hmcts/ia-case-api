@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class CorrespondencePreparer implements CcdEventPreSubmitHandler<AsylumCase> {
+public class CaseNotePreparer implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_START
-               && ccdEvent.getEventId() == EventId.ADD_CORRESPONDENCE;
+               && ccdEvent.getEventId() == EventId.ADD_CASE_NOTE;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -32,7 +32,7 @@ public class CorrespondencePreparer implements CcdEventPreSubmitHandler<AsylumCa
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.clearCorrespondence();
+        asylumCase.clearCaseNote();
 
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);

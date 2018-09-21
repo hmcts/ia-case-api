@@ -12,7 +12,7 @@ public enum EventId {
     COMPLETE_DIRECTION("completeDirection"),
     REQUEST_TIME_EXTENSION("requestTimeExtension"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
-    ADD_CORRESPONDENCE("addCorrespondence"),
+    ADD_CASE_NOTE("addCaseNote"),
     ADD_HOME_OFFICE_RESPONSE("addHomeOfficeResponse"),
     ADD_HEARING_SUMMARY("addHearingSummary");
 

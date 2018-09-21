@@ -73,6 +73,8 @@ public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCas
 
         asylumCase.setDocuments(documents);
 
+        asylumCase.clearDocument();
+
         return preSubmitResponse;
     }
 }

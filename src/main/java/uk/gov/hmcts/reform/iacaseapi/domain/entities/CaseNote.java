@@ -3,16 +3,33 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
 
-public class Correspondence {
+public class CaseNote {
 
     private Optional<String> type = Optional.empty();
     private Optional<String> note = Optional.empty();
     private Optional<Document> document = Optional.empty();
     private Optional<String> correspondent = Optional.empty();
-    private Optional<String> receivedDate = Optional.empty();
+    private Optional<String> correspondenceDate = Optional.empty();
+    private Optional<String> addedDate = Optional.empty();
 
-    private Correspondence() {
+    private CaseNote() {
         // noop -- for deserializer
+    }
+
+    public CaseNote(
+        String type,
+        String note,
+        Document document,
+        String correspondent,
+        String correspondenceDate,
+        String addedDate
+    ) {
+        this.type = Optional.ofNullable(type);
+        this.note = Optional.ofNullable(note);
+        this.document = Optional.ofNullable(document);
+        this.correspondent = Optional.ofNullable(correspondent);
+        this.correspondenceDate = Optional.ofNullable(correspondenceDate);
+        this.addedDate = Optional.ofNullable(addedDate);
     }
 
     public Optional<String> getType() {
@@ -31,8 +48,12 @@ public class Correspondence {
         return correspondent;
     }
 
-    public Optional<String> getReceivedDate() {
-        return receivedDate;
+    public Optional<String> getCorrespondenceDate() {
+        return correspondenceDate;
+    }
+
+    public Optional<String> getAddedDate() {
+        return addedDate;
     }
 
     public void setType(String type) {
@@ -51,7 +72,11 @@ public class Correspondence {
         this.correspondent = Optional.ofNullable(correspondent);
     }
 
-    public void setReceivedDate(String receivedDate) {
-        this.receivedDate = Optional.ofNullable(receivedDate);
+    public void setCorrespondenceDate(String correspondenceDate) {
+        this.correspondenceDate = Optional.ofNullable(correspondenceDate);
+    }
+
+    public void setAddedDate(String addedDate) {
+        this.addedDate = Optional.ofNullable(addedDate);
     }
 }

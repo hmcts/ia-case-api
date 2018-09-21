@@ -84,10 +84,14 @@ public class AsylumCase implements CaseData {
     private Optional<TimeExtensionReview> timeExtensionReview = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // case officer add correspondence model ...
+    // case officer add case note model ...
     // -----------------------------------------------------------------------------
 
-    private Optional<Correspondence> correspondence = Optional.empty();
+    private Optional<String> caseNoteType = Optional.empty();
+    private Optional<String> caseNoteNote = Optional.empty();
+    private Optional<Document> caseNoteDocument = Optional.empty();
+    private Optional<String> caseNoteCorrespondent = Optional.empty();
+    private Optional<String> caseNoteCorrespondenceDate = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer add home office response model ...
@@ -110,7 +114,7 @@ public class AsylumCase implements CaseData {
     private Optional<Documents> documents = Optional.empty();
     private Optional<SentDirections> sentDirections = Optional.empty();
     private Optional<TimeExtensions> timeExtensions = Optional.empty();
-    private Optional<Correspondences> correspondences = Optional.empty();
+    private Optional<CaseNotes> caseNotes = Optional.empty();
 
     // -----------------------------------------------------------------------------
 
@@ -419,19 +423,56 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer add correspondence model ...
+    // case officer add case note model ...
     // -----------------------------------------------------------------------------
 
-    public Optional<Correspondence> getCorrespondence() {
-        return correspondence;
+
+    public Optional<String> getCaseNoteType() {
+        return caseNoteType;
     }
 
-    public void setCorrespondence(Correspondence correspondence) {
-        this.correspondence = Optional.ofNullable(correspondence);
+    public Optional<String> getCaseNoteNote() {
+        return caseNoteNote;
     }
 
-    public void clearCorrespondence() {
-        this.correspondence = Optional.empty();
+    public Optional<Document> getCaseNoteDocument() {
+        return caseNoteDocument;
+    }
+
+    public Optional<String> getCaseNoteCorrespondent() {
+        return caseNoteCorrespondent;
+    }
+
+    public Optional<String> getCaseNoteCorrespondenceDate() {
+        return caseNoteCorrespondenceDate;
+    }
+
+    public void setCaseNoteType(String caseNoteType) {
+        this.caseNoteType = Optional.ofNullable(caseNoteType);
+    }
+
+    public void setCaseNoteNote(String caseNoteNote) {
+        this.caseNoteNote = Optional.ofNullable(caseNoteNote);
+    }
+
+    public void setCaseNoteDocument(Document caseNoteDocument) {
+        this.caseNoteDocument = Optional.ofNullable(caseNoteDocument);
+    }
+
+    public void setCaseNoteCorrespondent(String caseNoteCorrespondent) {
+        this.caseNoteCorrespondent = Optional.ofNullable(caseNoteCorrespondent);
+    }
+
+    public void setCaseNoteCorrespondenceDate(String caseNoteCorrespondenceDate) {
+        this.caseNoteCorrespondenceDate = Optional.ofNullable(caseNoteCorrespondenceDate);
+    }
+
+    public void clearCaseNote() {
+        this.caseNoteType = Optional.empty();
+        this.caseNoteNote = Optional.empty();
+        this.caseNoteDocument = Optional.empty();
+        this.caseNoteCorrespondent = Optional.empty();
+        this.caseNoteCorrespondenceDate = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------
@@ -458,8 +499,8 @@ public class AsylumCase implements CaseData {
         return timeExtensions;
     }
 
-    public Optional<Correspondences> getCorrespondences() {
-        return correspondences;
+    public Optional<CaseNotes> getCaseNotes() {
+        return caseNotes;
     }
 
     public void setCaseDetails(CaseDetails caseDetails) {
@@ -482,7 +523,7 @@ public class AsylumCase implements CaseData {
         this.timeExtensions = Optional.ofNullable(timeExtensions);
     }
 
-    public void setCorrespondences(Correspondences correspondences) {
-        this.correspondences = Optional.ofNullable(correspondences);
+    public void setCaseNotes(CaseNotes caseNotes) {
+        this.caseNotes = Optional.ofNullable(caseNotes);
     }
 }
