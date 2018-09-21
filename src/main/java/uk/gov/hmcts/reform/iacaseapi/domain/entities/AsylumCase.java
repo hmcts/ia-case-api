@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import java.util.List;
 import java.util.Optional;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AddressUK;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 
 public class AsylumCase implements CaseData {
 
@@ -13,8 +10,16 @@ public class AsylumCase implements CaseData {
     // @todo explore:
     //       appeal form and other models should be separate types
     //       upon submission of the associated event, the correct type can be selected to
-    //       deserialize into.
+    //       deserialize into. when sending back to CCD, a mapper would need to map back
+    //       into this full CCD model. this can then be moved into infrastructure to keep
+    //       the domain focussed.
     //
+
+    // -----------------------------------------------------------------------------
+    // internal model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<State> currentCaseState = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // legal rep draft appeal form model ...
@@ -120,6 +125,18 @@ public class AsylumCase implements CaseData {
 
     private AsylumCase() {
         // noop -- for deserializer
+    }
+
+    // -----------------------------------------------------------------------------
+    // internal model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<State> getCurrentCaseState() {
+        return currentCaseState;
+    }
+
+    public void setCurrentCaseState(State currentCaseState) {
+        this.currentCaseState = Optional.ofNullable(currentCaseState);
     }
 
     // -----------------------------------------------------------------------------
