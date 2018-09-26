@@ -5,11 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppellantNationalitiesAsStringExtractor;
 
 @Component
@@ -31,6 +29,10 @@ public class CaseDetailsUpdater implements CcdEventPreSubmitHandler<AsylumCase> 
                && (ccdEvent.getEventId() == EventId.START_APPEAL
                    || ccdEvent.getEventId() == EventId.CHANGE_APPEAL
                    || ccdEvent.getEventId() == EventId.SUBMIT_APPEAL);
+    }
+
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATE;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

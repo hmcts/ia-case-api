@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Name;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.DispatchPriority;
 
 @Component
 public class AppellantNameFormatter implements CcdEventPreSubmitHandler<AsylumCase> {
@@ -19,6 +17,10 @@ public class AppellantNameFormatter implements CcdEventPreSubmitHandler<AsylumCa
         return stage == Stage.ABOUT_TO_SUBMIT
                && (ccdEvent.getEventId() == EventId.START_APPEAL
                    || ccdEvent.getEventId() == EventId.CHANGE_APPEAL);
+    }
+
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLY;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

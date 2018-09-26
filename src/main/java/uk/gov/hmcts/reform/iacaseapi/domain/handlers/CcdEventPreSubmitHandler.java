@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 
 public interface CcdEventPreSubmitHandler<T extends CaseData> {
 
@@ -11,6 +8,10 @@ public interface CcdEventPreSubmitHandler<T extends CaseData> {
         Stage stage,
         CcdEvent<T> ccdEvent
     );
+
+    default DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATE;
+    }
 
     CcdEventPreSubmitResponse<T> handle(
         Stage stage,
