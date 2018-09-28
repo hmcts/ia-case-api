@@ -9,6 +9,22 @@ public class Direction {
     private Optional<String> parties = Optional.empty();
     private Optional<String> dueDate = Optional.empty();
 
+    protected Direction() {
+        // noop -- for deserializer
+    }
+
+    public Direction(
+        String direction,
+        String description,
+        String parties,
+        String dueDate
+    ) {
+        this.direction = Optional.ofNullable(direction);
+        this.description = Optional.ofNullable(description);
+        this.parties = Optional.ofNullable(parties);
+        this.dueDate = Optional.ofNullable(dueDate);
+    }
+
     public Optional<String> getDirection() {
         return direction;
     }

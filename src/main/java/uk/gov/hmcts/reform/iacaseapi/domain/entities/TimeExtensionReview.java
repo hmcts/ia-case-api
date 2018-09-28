@@ -7,7 +7,7 @@ public class TimeExtensionReview {
     private Optional<String> grantOrDeny = Optional.empty();
     private Optional<String> comment = Optional.empty();
 
-    public TimeExtensionReview() {
+    private TimeExtensionReview() {
         // noop
     }
 

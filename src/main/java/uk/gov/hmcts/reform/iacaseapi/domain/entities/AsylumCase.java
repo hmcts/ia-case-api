@@ -70,6 +70,12 @@ public class AsylumCase implements CaseData {
     private Optional<DocumentWithType> document = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer send home office evidence direction model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Direction> homeOfficeEvidenceDirection = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case officer send direction model ...
     // -----------------------------------------------------------------------------
 
@@ -345,6 +351,22 @@ public class AsylumCase implements CaseData {
 
     public void clearDocument() {
         this.document = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer send home office evidence direction model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Direction> getHomeOfficeEvidenceDirection() {
+        return homeOfficeEvidenceDirection;
+    }
+
+    public void setHomeOfficeEvidenceDirection(Direction homeOfficeEvidenceDirection) {
+        this.homeOfficeEvidenceDirection = Optional.ofNullable(homeOfficeEvidenceDirection);
+    }
+
+    public void clearHomeOfficeEvidenceDirection() {
+        this.homeOfficeEvidenceDirection = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------
