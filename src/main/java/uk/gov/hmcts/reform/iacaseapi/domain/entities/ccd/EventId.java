@@ -18,6 +18,7 @@ public enum EventId {
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     ADD_CASE_NOTE("addCaseNote"),
     ADD_HOME_OFFICE_RESPONSE("addHomeOfficeResponse"),
+    PROCEED_TO_HEARING("proceedToHearing"),
     ADD_HEARING_SUMMARY("addHearingSummary");
 
     private final String id;
