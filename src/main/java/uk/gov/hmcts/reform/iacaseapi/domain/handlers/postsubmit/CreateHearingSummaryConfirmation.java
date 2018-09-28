@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class AddHearingSummaryConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class CreateHearingSummaryConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.ADD_HEARING_SUMMARY;
+               && ccdEvent.getEventId() == EventId.CREATE_HEARING_SUMMARY;
     }
 
     public CcdEventPostSubmitResponse handle(

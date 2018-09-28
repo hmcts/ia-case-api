@@ -20,7 +20,7 @@ public enum EventId {
     ADD_HOME_OFFICE_RESPONSE("addHomeOfficeResponse"),
     PROCEED_TO_HEARING("proceedToHearing"),
     RECORD_LISTING("recordListing"),
-    ADD_HEARING_SUMMARY("addHearingSummary");
+    CREATE_HEARING_SUMMARY("createHearingSummary");
 
     private final String id;
 

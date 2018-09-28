@@ -140,10 +140,10 @@ public class AsylumCase implements CaseData {
     private Optional<String> listingHearingDate = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // case officer add hearing summary model ...
+    // case officer create hearing summary model ...
     // -----------------------------------------------------------------------------
 
-    private Optional<HearingSummary> hearingSummary = Optional.empty();
+    private Optional<DocumentWithMetadata> hearingSummary = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
@@ -590,14 +590,14 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer add hearing summary model ...
+    // case officer create hearing summary model ...
     // -----------------------------------------------------------------------------
 
-    public Optional<HearingSummary> getHearingSummary() {
+    public Optional<DocumentWithMetadata> getHearingSummary() {
         return hearingSummary;
     }
 
-    public void setHearingSummary(HearingSummary hearingSummary) {
+    public void setHearingSummary(DocumentWithMetadata hearingSummary) {
         this.hearingSummary = Optional.ofNullable(hearingSummary);
     }
 

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingSummary;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
@@ -17,7 +17,7 @@ public class HearingSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.ADD_HEARING_SUMMARY;
+               && ccdEvent.getEventId() == EventId.CREATE_HEARING_SUMMARY;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -36,7 +36,7 @@ public class HearingSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        HearingSummary hearingSummary =
+        DocumentWithMetadata hearingSummary =
             asylumCase
                 .getHearingSummary()
                 .orElseThrow(() -> new IllegalStateException("hearingSummary not present"));

@@ -16,7 +16,7 @@ public class HearingSummaryPreparer implements CcdEventPreSubmitHandler<AsylumCa
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_START
-               && ccdEvent.getEventId() == EventId.ADD_HEARING_SUMMARY;
+               && ccdEvent.getEventId() == EventId.CREATE_HEARING_SUMMARY;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

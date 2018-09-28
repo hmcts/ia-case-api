@@ -7,7 +7,7 @@ public class CaseArgument {
     private Optional<GroundsOfAppeal> groundsOfAppeal = Optional.empty();
     private Optional<LegalArgument> legalArgument = Optional.empty();
     private Optional<HomeOfficeResponse> homeOfficeResponse = Optional.empty();
-    private Optional<HearingSummary> hearingSummary = Optional.empty();
+    private Optional<DocumentWithMetadata> hearingSummary = Optional.empty();
 
     public Optional<GroundsOfAppeal> getGroundsOfAppeal() {
         return groundsOfAppeal;
@@ -21,7 +21,7 @@ public class CaseArgument {
         return homeOfficeResponse;
     }
 
-    public Optional<HearingSummary> getHearingSummary() {
+    public Optional<DocumentWithMetadata> getHearingSummary() {
         return hearingSummary;
     }
 
@@ -37,7 +37,7 @@ public class CaseArgument {
         this.homeOfficeResponse = Optional.ofNullable(homeOfficeResponse);
     }
 
-    public void setHearingSummary(HearingSummary hearingSummary) {
+    public void setHearingSummary(DocumentWithMetadata hearingSummary) {
         this.hearingSummary = Optional.ofNullable(hearingSummary);
     }
 }
