@@ -8,7 +8,7 @@ public class Listing {
     private Optional<String> hearingLength = Optional.empty();
     private Optional<String> hearingDate = Optional.empty();
 
-    protected Listing() {
+    private Listing() {
         // noop -- for deserializer
     }
 

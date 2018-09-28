@@ -146,6 +146,12 @@ public class AsylumCase implements CaseData {
     private Optional<DocumentWithMetadata> hearingSummary = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // judge upload determination model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<DocumentWithMetadata> determination = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case details (tabs) display model ...
     // -----------------------------------------------------------------------------
 
@@ -603,6 +609,22 @@ public class AsylumCase implements CaseData {
 
     public void clearHearingSummary() {
         this.hearingSummary = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // judge upload determination model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<DocumentWithMetadata> getDetermination() {
+        return determination;
+    }
+
+    public void setDetermination(DocumentWithMetadata determination) {
+        this.determination = Optional.ofNullable(determination);
+    }
+
+    public void clearDetermination() {
+        this.determination = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

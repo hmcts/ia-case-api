@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
 
 @Component
-public class HearingSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class UploadDeterminationUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     private final DocumentAppender documentAppender;
 
-    public HearingSummaryUpdater(
+    public UploadDeterminationUpdater(
         @Autowired DocumentAppender documentAppender
     ) {
         this.documentAppender = documentAppender;
@@ -27,7 +27,7 @@ public class HearingSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.CREATE_HEARING_SUMMARY;
+               && ccdEvent.getEventId() == EventId.UPLOAD_DETERMINATION;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -46,19 +46,14 @@ public class HearingSummaryUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        DocumentWithMetadata hearingSummary =
+        DocumentWithMetadata determination =
             asylumCase
-                .getHearingSummary()
-                .orElseThrow(() -> new IllegalStateException("hearingSummary not present"));
+                .getDetermination()
+                .orElseThrow(() -> new IllegalStateException("determination not present"));
 
-        asylumCase
-            .getCaseArgument()
-            .orElseThrow(() -> new IllegalStateException("caseArgument not present"))
-            .setHearingSummary(hearingSummary);
+        documentAppender.append(asylumCase, determination);
 
-        documentAppender.append(asylumCase, hearingSummary);
-
-        asylumCase.clearHearingSummary();
+        asylumCase.clearDetermination();
 
         return preSubmitResponse;
     }

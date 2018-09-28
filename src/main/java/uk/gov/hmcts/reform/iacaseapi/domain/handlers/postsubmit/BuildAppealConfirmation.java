@@ -30,14 +30,14 @@ public class BuildAppealConfirmation implements CcdEventPostSubmitHandler<Asylum
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        String completeDirectionUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/completeDirection";
+        String submitForReviewUrl =
+            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitForReview";
 
         postSubmitResponse.setConfirmationHeader("# Your update is saved");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "If you've finished building your appeal, [mark this direction as complete](" + completeDirectionUrl + "). "
-            + "The case officer will then review the case before sending it off to the Home Office."
+            + "If you've uploaded your legal argument and all available evidence at this stage, "
+            + "you can [submit your appeal](" + submitForReviewUrl + ")."
         );
 
         return postSubmitResponse;

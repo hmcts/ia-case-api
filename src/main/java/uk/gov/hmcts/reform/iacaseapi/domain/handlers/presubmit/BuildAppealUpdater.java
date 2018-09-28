@@ -1,19 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegalArgument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
 
 @Component
-public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class BuildAppealUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+
+    private final DocumentAppender documentAppender;
+
+    public BuildAppealUpdater(
+        @Autowired DocumentAppender documentAppender
+    ) {
+        this.documentAppender = documentAppender;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -65,20 +71,7 @@ public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
                 )
             );
 
-        // add any new documents to the documents tab ...
-
-        List<IdValue<DocumentWithMetadata>> allDocuments = new ArrayList<>();
-
-        Documents documents =
-            asylumCase
-                .getDocuments()
-                .orElse(new Documents());
-
-        if (documents.getDocuments().isPresent()) {
-            allDocuments.addAll(
-                documents.getDocuments().get()
-            );
-        }
+        documentAppender.append(asylumCase, legalArgumentDocument);
 
         asylumCase
             .getLegalArgumentEvidence()
@@ -87,41 +80,7 @@ public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
             .orElse(Collections.emptyList())
             .stream()
             .map(IdValue::getValue)
-            .filter(document ->
-                allDocuments
-                    .stream()
-                    .map(IdValue::getValue)
-                    .noneMatch(existingDocument ->
-                        existingDocument
-                            .getDocument()
-                            .get()
-                            .getDocumentUrl()
-                            .equals(
-                                document
-                                    .getDocument()
-                                    .get()
-                                    .getDocumentUrl()
-                            )
-                    )
-            )
-            .forEachOrdered(document -> {
-
-                document.setDateUploaded(LocalDate.now().toString());
-
-                allDocuments.add(
-                    new IdValue<>(
-                        document
-                            .getDocument()
-                            .get()
-                            .getDocumentUrl(),
-                        document
-                    )
-                );
-            });
-
-        documents.setDocuments(allDocuments);
-
-        asylumCase.setDocuments(documents);
+            .forEach(document -> documentAppender.append(asylumCase, document));
 
         return preSubmitResponse;
     }

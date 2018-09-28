@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class EditGroundsOfAppealConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class UploadDeterminationConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.EDIT_GROUNDS_OF_APPEAL;
+               && ccdEvent.getEventId() == EventId.UPLOAD_DETERMINATION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,14 +30,10 @@ public class EditGroundsOfAppealConfirmation implements CcdEventPostSubmitHandle
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        String buildAppealTabUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#buildAppealTab";
-
-        postSubmitResponse.setConfirmationHeader("# You have edited the grounds of appeal");
+        postSubmitResponse.setConfirmationHeader("# You have just uploaded your decision");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You have edited the grounds of appeal for your case. This will be shown in your case argument. "
-            + "You can continue to [build your appeal](" + buildAppealTabUrl + ") or return to case details."
+            + "A notice will be sent out to all parties of this decision."
         );
 
         return postSubmitResponse;

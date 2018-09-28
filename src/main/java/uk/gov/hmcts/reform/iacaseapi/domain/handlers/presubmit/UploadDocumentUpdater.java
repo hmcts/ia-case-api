@@ -1,18 +1,26 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
 
 @Component
 public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+
+    private final DocumentAppender documentAppender;
+
+    public UploadDocumentUpdater(
+        @Autowired DocumentAppender documentAppender
+    ) {
+        this.documentAppender = documentAppender;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -43,35 +51,7 @@ public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCas
                 .getDocument()
                 .orElseThrow(() -> new IllegalStateException("document not present"));
 
-        List<IdValue<DocumentWithMetadata>> allDocuments = new ArrayList<>();
-
-        Documents documents =
-            asylumCase
-                .getDocuments()
-                .orElse(new Documents());
-
-        if (documents.getDocuments().isPresent()) {
-            allDocuments.addAll(
-                documents.getDocuments().get()
-            );
-        }
-
-        document.setStored(Optional.of("Yes"));
-        document.setDateUploaded(LocalDate.now().toString());
-
-        allDocuments.add(
-            new IdValue<>(
-                document
-                    .getDocument()
-                    .get()
-                    .getDocumentUrl(),
-                document
-            )
-        );
-
-        documents.setDocuments(allDocuments);
-
-        asylumCase.setDocuments(documents);
+        documentAppender.append(asylumCase, document);
 
         asylumCase.clearDocument();
 

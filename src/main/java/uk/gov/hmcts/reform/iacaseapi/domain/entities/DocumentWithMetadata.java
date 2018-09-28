@@ -10,6 +10,36 @@ public class DocumentWithMetadata {
     private Optional<String> stored = Optional.empty();
     private Optional<String> dateUploaded = Optional.empty();
 
+    private DocumentWithMetadata() {
+        // noop -- for deserializer
+    }
+
+    public DocumentWithMetadata(
+        Document document
+    ) {
+        this.document = Optional.ofNullable(document);
+    }
+
+    public DocumentWithMetadata(
+        Document document,
+        String description
+    ) {
+        this.document = Optional.ofNullable(document);
+        this.description = Optional.ofNullable(description);
+    }
+
+    public DocumentWithMetadata(
+        Document document,
+        String description,
+        String stored,
+        String dateUploaded
+    ) {
+        this.document = Optional.ofNullable(document);
+        this.description = Optional.ofNullable(description);
+        this.stored = Optional.ofNullable(stored);
+        this.dateUploaded = Optional.ofNullable(dateUploaded);
+    }
+
     public Optional<Document> getDocument() {
         return document;
     }

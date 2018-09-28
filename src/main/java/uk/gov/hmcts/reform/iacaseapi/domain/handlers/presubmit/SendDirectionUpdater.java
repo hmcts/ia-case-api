@@ -1,19 +1,26 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirection;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SentDirections;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
 public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+
+    private final DirectionAppender directionAppender;
+
+    public SendDirectionUpdater(
+        @Autowired DirectionAppender directionAppender
+    ) {
+        this.directionAppender = directionAppender;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -44,33 +51,7 @@ public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase
                 .getDirection()
                 .orElseThrow(() -> new IllegalStateException("direction not present"));
 
-        List<IdValue<SentDirection>> allSentDirections = new ArrayList<>();
-
-        allSentDirections.add(
-            new IdValue<>(
-                String.valueOf(Instant.now().toEpochMilli()),
-                new SentDirection(
-                    directionToSend,
-                    LocalDate.now().toString(),
-                    "Outstanding"
-                )
-            )
-        );
-
-        SentDirections sentDirections =
-            asylumCase
-                .getSentDirections()
-                .orElse(new SentDirections());
-
-        if (sentDirections.getSentDirections().isPresent()) {
-            allSentDirections.addAll(
-                sentDirections.getSentDirections().get()
-            );
-        }
-
-        sentDirections.setSentDirections(allSentDirections);
-
-        asylumCase.setSentDirections(sentDirections);
+        directionAppender.append(asylumCase, directionToSend);
 
         asylumCase.clearDirection();
 

@@ -1,14 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
 
 @Component
 public class HomeOfficeResponseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+
+    private final DocumentAppender documentAppender;
+
+    public HomeOfficeResponseUpdater(
+        @Autowired DocumentAppender documentAppender
+    ) {
+        this.documentAppender = documentAppender;
+    }
 
     public boolean canHandle(
         Stage stage,
@@ -65,6 +75,10 @@ public class HomeOfficeResponseUpdater implements CcdEventPreSubmitHandler<Asylu
                     homeOfficeResponseDate
                 )
             );
+
+        documentAppender.append(asylumCase, homeOfficeResponseDocument, homeOfficeResponseDescription);
+
+        asylumCase.clearHomeOfficeResponse();
 
         return preSubmitResponse;
     }

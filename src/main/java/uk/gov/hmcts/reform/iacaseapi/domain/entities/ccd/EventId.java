@@ -7,6 +7,7 @@ public enum EventId {
     SUBMIT_APPEAL("submitAppeal"),
     EDIT_GROUNDS_OF_APPEAL("editGroundsOfAppeal"),
     BUILD_APPEAL("buildAppeal"),
+    SUBMIT_FOR_REVIEW("SubmitForReview"),
     UPLOAD_HOME_OFFICE_EVIDENCE("uploadHomeOfficeEvidence"),
     UPLOAD_DOCUMENT("uploadDocument"),
     SEND_HOME_OFFICE_EVIDENCE_DIRECTION("sendHomeOfficeEvidenceDirection"),
@@ -21,7 +22,8 @@ public enum EventId {
     PROCEED_TO_HEARING("proceedToHearing"),
     RECORD_LISTING("recordListing"),
     CREATE_HEARING_SUMMARY("createHearingSummary"),
-    CREATE_HEARING_READY_BUNDLE("createHearingReadyBundle");
+    CREATE_HEARING_READY_BUNDLE("createHearingReadyBundle"),
+    UPLOAD_DETERMINATION("uploadDetermination");
 
     private final String id;
 
