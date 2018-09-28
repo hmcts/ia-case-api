@@ -68,6 +68,12 @@ public class AsylumCase implements CaseData {
     private Optional<DocumentWithMetadata> homeOfficeEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer send build appeal direction model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Direction> buildAppealDirection = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // legal rep build case model ...
     // -----------------------------------------------------------------------------
 
@@ -345,6 +351,22 @@ public class AsylumCase implements CaseData {
 
     public void clearHomeOfficeEvidenceDirection() {
         this.homeOfficeEvidenceDirection = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer send build appeal direction model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Direction> getBuildAppealDirection() {
+        return buildAppealDirection;
+    }
+
+    public void setBuildAppealDirection(Direction buildAppealDirection) {
+        this.buildAppealDirection = Optional.ofNullable(buildAppealDirection);
+    }
+
+    public void clearBuildAppealDirection() {
+        this.buildAppealDirection = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

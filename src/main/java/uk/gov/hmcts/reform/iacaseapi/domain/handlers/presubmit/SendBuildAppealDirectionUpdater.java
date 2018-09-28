@@ -13,14 +13,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class SendHomeOfficeEvidenceDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class SendBuildAppealDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.SEND_HOME_OFFICE_EVIDENCE_DIRECTION;
+               && ccdEvent.getEventId() == EventId.SEND_BUILD_APPEAL_DIRECTION;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -39,19 +39,19 @@ public class SendHomeOfficeEvidenceDirectionUpdater implements CcdEventPreSubmit
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        Direction homeOfficeEvidenceDirection =
+        Direction buildAppealDirection =
             asylumCase
-                .getHomeOfficeEvidenceDirection()
-                .orElseThrow(() -> new IllegalStateException("homeOfficeEvidenceDirection not present"));
+                .getBuildAppealDirection()
+                .orElseThrow(() -> new IllegalStateException("buildAppealDirection not present"));
 
         Direction directionToSend =
             new Direction(
-                "homeOfficeEvidence",
-                homeOfficeEvidenceDirection
+                "buildAppeal",
+                buildAppealDirection
                     .getDescription()
                     .orElseThrow(() -> new IllegalStateException("homeOfficeEvidenceDirection description not present")),
-                "respondent",
-                homeOfficeEvidenceDirection
+                "legalRepresentative",
+                buildAppealDirection
                     .getDueDate()
                     .orElseThrow(() -> new IllegalStateException("homeOfficeEvidenceDirection dueDate not present"))
             );

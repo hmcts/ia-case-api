@@ -20,7 +20,7 @@ public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.BUILD_CASE;
+               && ccdEvent.getEventId() == EventId.BUILD_APPEAL;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(

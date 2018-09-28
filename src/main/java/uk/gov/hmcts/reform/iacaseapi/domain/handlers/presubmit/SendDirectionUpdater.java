@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,17 @@ public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase
 
         List<IdValue<SentDirection>> allSentDirections = new ArrayList<>();
 
+        allSentDirections.add(
+            new IdValue<>(
+                String.valueOf(Instant.now().toEpochMilli()),
+                new SentDirection(
+                    directionToSend,
+                    LocalDate.now().toString(),
+                    "Outstanding"
+                )
+            )
+        );
+
         SentDirections sentDirections =
             asylumCase
                 .getSentDirections()
@@ -55,16 +67,6 @@ public class SendDirectionUpdater implements CcdEventPreSubmitHandler<AsylumCase
                 sentDirections.getSentDirections().get()
             );
         }
-
-        allSentDirections.add(
-            new IdValue<>(
-                String.valueOf(Instant.now().toEpochMilli()),
-                new SentDirection(
-                    directionToSend,
-                    "Outstanding"
-                )
-            )
-        );
 
         sentDirections.setSentDirections(allSentDirections);
 
