@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
@@ -33,9 +34,12 @@ public class CaseStateUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        asylumCase.setCurrentCaseState(
-            ccdEvent.getCaseDetails().getState()
-        );
+        if (ccdEvent.getCaseDetails().getState().equals(State.APPEAL_SUBMITTED)) {
+
+            asylumCase.setCurrentCaseState(
+                State.APPEAL_SUBMITTED
+            );
+        }
 
         return preSubmitResponse;
     }

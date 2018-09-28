@@ -146,6 +146,20 @@ public class AsylumCase implements CaseData {
     private Optional<DocumentWithMetadata> hearingSummary = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // legal rep submit hearing requirements model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> hearingRequirementsAppellantAttending = Optional.empty();
+    private Optional<String> hearingRequirementsAppellantGivingOralEvidence = Optional.empty();
+    private Optional<String> hearingRequirementsAnyWitnesses = Optional.empty();
+    private Optional<List<IdValue<String>>> hearingRequirementsWitnesses = Optional.empty();
+    private Optional<String> hearingRequirementsInterpreterRequired = Optional.empty();
+    private Optional<List<IdValue<InterpreterRequirement>>> hearingRequirementsInterpreters = Optional.empty();
+    private Optional<String> hearingRequirementsAdjustmentsApply = Optional.empty();
+    private Optional<List<String>> hearingRequirementsAdjustments = Optional.empty();
+    private Optional<String> hearingRequirementsAdjustmentsOther = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // judge upload determination model ...
     // -----------------------------------------------------------------------------
 
@@ -157,6 +171,7 @@ public class AsylumCase implements CaseData {
 
     private Optional<CaseDetails> caseDetails = Optional.empty();
     private Optional<Listing> listing = Optional.empty();
+    private Optional<HearingRequirements> hearingRequirements = Optional.empty();
 
     private Optional<CaseArgument> caseArgument = Optional.empty();
 
@@ -612,6 +627,82 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // legal rep submit hearing requirements model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getHearingRequirementsAppellantAttending() {
+        return hearingRequirementsAppellantAttending;
+    }
+
+    public Optional<String> getHearingRequirementsAppellantGivingOralEvidence() {
+        return hearingRequirementsAppellantGivingOralEvidence;
+    }
+
+    public Optional<String> getHearingRequirementsAnyWitnesses() {
+        return hearingRequirementsAnyWitnesses;
+    }
+
+    public Optional<List<IdValue<String>>> getHearingRequirementsWitnesses() {
+        return hearingRequirementsWitnesses;
+    }
+
+    public Optional<String> getHearingRequirementsInterpreterRequired() {
+        return hearingRequirementsInterpreterRequired;
+    }
+
+    public Optional<List<IdValue<InterpreterRequirement>>> getHearingRequirementsInterpreters() {
+        return hearingRequirementsInterpreters;
+    }
+
+    public Optional<String> getHearingRequirementsAdjustmentsApply() {
+        return hearingRequirementsAdjustmentsApply;
+    }
+
+    public Optional<List<String>> getHearingRequirementsAdjustments() {
+        return hearingRequirementsAdjustments;
+    }
+
+    public Optional<String> getHearingRequirementsAdjustmentsOther() {
+        return hearingRequirementsAdjustmentsOther;
+    }
+
+    public void setHearingRequirementsAppellantAttending(String hearingRequirementsAppellantAttending) {
+        this.hearingRequirementsAppellantAttending = Optional.ofNullable(hearingRequirementsAppellantAttending);
+    }
+
+    public void setHearingRequirementsAppellantGivingOralEvidence(String hearingRequirementsAppellantGivingOralEvidence) {
+        this.hearingRequirementsAppellantGivingOralEvidence = Optional.ofNullable(hearingRequirementsAppellantGivingOralEvidence);
+    }
+
+    public void setHearingRequirementsAnyWitnesses(String hearingRequirementsAnyWitnesses) {
+        this.hearingRequirementsAnyWitnesses = Optional.ofNullable(hearingRequirementsAnyWitnesses);
+    }
+
+    public void setHearingRequirementsWitnesses(List<IdValue<String>> hearingRequirementsWitnesses) {
+        this.hearingRequirementsWitnesses = Optional.ofNullable(hearingRequirementsWitnesses);
+    }
+
+    public void setHearingRequirementsInterpreterRequired(String hearingRequirementsInterpreterRequired) {
+        this.hearingRequirementsInterpreterRequired = Optional.ofNullable(hearingRequirementsInterpreterRequired);
+    }
+
+    public void setHearingRequirementsInterpreters(List<IdValue<InterpreterRequirement>> hearingRequirementsInterpreters) {
+        this.hearingRequirementsInterpreters = Optional.ofNullable(hearingRequirementsInterpreters);
+    }
+
+    public void setHearingRequirementsAdjustmentsApply(String hearingRequirementsAdjustmentsApply) {
+        this.hearingRequirementsAdjustmentsApply = Optional.ofNullable(hearingRequirementsAdjustmentsApply);
+    }
+
+    public void setHearingRequirementsAdjustments(List<String> hearingRequirementsAdjustments) {
+        this.hearingRequirementsAdjustments = Optional.ofNullable(hearingRequirementsAdjustments);
+    }
+
+    public void setHearingRequirementsAdjustmentsOther(String hearingRequirementsAdjustmentsOther) {
+        this.hearingRequirementsAdjustmentsOther = Optional.ofNullable(hearingRequirementsAdjustmentsOther);
+    }
+
+    // -----------------------------------------------------------------------------
     // judge upload determination model ...
     // -----------------------------------------------------------------------------
 
@@ -691,6 +782,10 @@ public class AsylumCase implements CaseData {
         return listing;
     }
 
+    public Optional<HearingRequirements> getHearingRequirements() {
+        return hearingRequirements;
+    }
+
     public Optional<CaseArgument> getCaseArgument() {
         return caseArgument;
     }
@@ -717,6 +812,10 @@ public class AsylumCase implements CaseData {
 
     public void setListing(Listing listing) {
         this.listing = Optional.ofNullable(listing);
+    }
+
+    public void setHearingRequirements(HearingRequirements hearingRequirements) {
+        this.hearingRequirements = Optional.ofNullable(hearingRequirements);
     }
 
     public void setCaseArgument(CaseArgument caseArgument) {
