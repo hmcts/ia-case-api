@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPostSubmitHandler;
 
 @Component
-public class AddHomeOfficeResponseConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
+public class SendHomeOfficeReviewDirectionConfirmation implements CcdEventPostSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.SUBMITTED
-               && ccdEvent.getEventId() == EventId.ADD_HOME_OFFICE_RESPONSE;
+               && ccdEvent.getEventId() == EventId.SEND_HOME_OFFICE_REVIEW_DIRECTION;
     }
 
     public CcdEventPostSubmitResponse handle(
@@ -30,10 +30,11 @@ public class AddHomeOfficeResponseConfirmation implements CcdEventPostSubmitHand
         CcdEventPostSubmitResponse postSubmitResponse =
             new CcdEventPostSubmitResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have saved the Home Office response");
+        postSubmitResponse.setConfirmationHeader("# You have sent a direction");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The apellant will be notified of the update to the case argument. You will be notified if they repsond."
+            + "Wait for the Home Office to complete the direction. "
+            + "An email will be sent to the Home Office with this direction."
         );
 
         return postSubmitResponse;

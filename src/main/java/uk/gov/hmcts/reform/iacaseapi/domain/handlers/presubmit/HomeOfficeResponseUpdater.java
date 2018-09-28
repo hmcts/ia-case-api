@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
@@ -36,15 +34,37 @@ public class HomeOfficeResponseUpdater implements CcdEventPreSubmitHandler<Asylu
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        HomeOfficeResponse homeOfficeResponse =
+        Document homeOfficeResponseDocument =
             asylumCase
-                .getHomeOfficeResponse()
-                .orElseThrow(() -> new IllegalStateException("homeOfficeResponse not present"));
+                .getHomeOfficeResponseDocument()
+                .orElseThrow(() -> new IllegalStateException("homeOfficeResponseDocument not present"));
+
+        String homeOfficeResponseDescription =
+            asylumCase
+                .getHomeOfficeResponseDescription()
+                .orElseThrow(() -> new IllegalStateException("homeOfficeResponseDescription not present"));
+
+        Documents homeOfficeResponseEvidence =
+            asylumCase
+                .getHomeOfficeResponseEvidence()
+                .orElseThrow(() -> new IllegalStateException("homeOfficeResponseEvidence not present"));
+
+        String homeOfficeResponseDate =
+            asylumCase
+                .getHomeOfficeResponseDate()
+                .orElseThrow(() -> new IllegalStateException("homeOfficeResponseDate not present"));
 
         asylumCase
             .getCaseArgument()
             .orElseThrow(() -> new IllegalStateException("caseArgument not present"))
-            .setHomeOfficeResponse(homeOfficeResponse);
+            .setHomeOfficeResponse(
+                new HomeOfficeResponse(
+                    homeOfficeResponseDocument,
+                    homeOfficeResponseDescription,
+                    homeOfficeResponseEvidence,
+                    homeOfficeResponseDate
+                )
+            );
 
         return preSubmitResponse;
     }

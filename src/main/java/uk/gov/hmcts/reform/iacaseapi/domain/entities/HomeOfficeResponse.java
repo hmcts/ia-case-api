@@ -7,9 +7,24 @@ public class HomeOfficeResponse {
 
     private Optional<Document> document = Optional.empty();
     private Optional<String> description = Optional.empty();
-    private Optional<Document> evidence = Optional.empty();
-    private Optional<String> respondentName = Optional.empty();
+    private Optional<Documents> evidence = Optional.empty();
     private Optional<String> responseDate = Optional.empty();
+
+    private HomeOfficeResponse() {
+        // noop -- for deserializer
+    }
+
+    public HomeOfficeResponse(
+        Document document,
+        String description,
+        Documents evidence,
+        String responseDate
+    ) {
+        this.document = Optional.ofNullable(document);
+        this.description = Optional.ofNullable(description);
+        this.evidence = Optional.ofNullable(evidence);
+        this.responseDate = Optional.ofNullable(responseDate);
+    }
 
     public Optional<Document> getDocument() {
         return document;
@@ -19,12 +34,8 @@ public class HomeOfficeResponse {
         return description;
     }
 
-    public Optional<Document> getEvidence() {
+    public Optional<Documents> getEvidence() {
         return evidence;
-    }
-
-    public Optional<String> getRespondentName() {
-        return respondentName;
     }
 
     public Optional<String> getResponseDate() {
@@ -39,12 +50,8 @@ public class HomeOfficeResponse {
         this.description = Optional.ofNullable(description);
     }
 
-    public void setEvidence(Document evidence) {
+    public void setEvidence(Documents evidence) {
         this.evidence = Optional.ofNullable(evidence);
-    }
-
-    public void setRespondentName(String respondentName) {
-        this.respondentName = Optional.ofNullable(respondentName);
     }
 
     public void setResponseDate(String responseDate) {
