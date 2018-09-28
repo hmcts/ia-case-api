@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Documents;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegalArgument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
@@ -67,7 +67,7 @@ public class BuildCaseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
         // add any new documents to the documents tab ...
 
-        List<IdValue<DocumentWithType>> allDocuments = new ArrayList<>();
+        List<IdValue<DocumentWithMetadata>> allDocuments = new ArrayList<>();
 
         Documents documents =
             asylumCase

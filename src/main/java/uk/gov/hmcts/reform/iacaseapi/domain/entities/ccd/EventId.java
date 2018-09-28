@@ -7,6 +7,7 @@ public enum EventId {
     SUBMIT_APPEAL("submitAppeal"),
     EDIT_GROUNDS_OF_APPEAL("editGroundsOfAppeal"),
     BUILD_CASE("buildCase"),
+    UPLOAD_HOME_OFFICE_EVIDENCE("uploadHomeOfficeEvidence"),
     UPLOAD_DOCUMENT("uploadDocument"),
     SEND_HOME_OFFICE_EVIDENCE_DIRECTION("sendHomeOfficeEvidenceDirection"),
     SEND_DIRECTION("sendDirection"),

@@ -56,6 +56,18 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepDeclaration = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer send home office evidence direction model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Direction> homeOfficeEvidenceDirection = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer upload home office evidence model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<DocumentWithMetadata> homeOfficeEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // legal rep build case model ...
     // -----------------------------------------------------------------------------
 
@@ -64,16 +76,10 @@ public class AsylumCase implements CaseData {
     private Optional<Documents> legalArgumentEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
-    // legal rep edit grounds of appeal model ...
+    // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
-    private Optional<DocumentWithType> document = Optional.empty();
-
-    // -----------------------------------------------------------------------------
-    // case officer send home office evidence direction model ...
-    // -----------------------------------------------------------------------------
-
-    private Optional<Direction> homeOfficeEvidenceDirection = Optional.empty();
+    private Optional<DocumentWithMetadata> document = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer send direction model ...
@@ -310,6 +316,38 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // case officer upload home office evidence model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<DocumentWithMetadata> getHomeOfficeEvidence() {
+        return homeOfficeEvidence;
+    }
+
+    public void setHomeOfficeEvidence(DocumentWithMetadata homeOfficeEvidence) {
+        this.homeOfficeEvidence = Optional.ofNullable(homeOfficeEvidence);
+    }
+
+    public void clearHomeOfficeEvidence() {
+        this.homeOfficeEvidence = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer send home office evidence direction model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Direction> getHomeOfficeEvidenceDirection() {
+        return homeOfficeEvidenceDirection;
+    }
+
+    public void setHomeOfficeEvidenceDirection(Direction homeOfficeEvidenceDirection) {
+        this.homeOfficeEvidenceDirection = Optional.ofNullable(homeOfficeEvidenceDirection);
+    }
+
+    public void clearHomeOfficeEvidenceDirection() {
+        this.homeOfficeEvidenceDirection = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
     // legal rep build case model ...
     // -----------------------------------------------------------------------------
 
@@ -341,32 +379,16 @@ public class AsylumCase implements CaseData {
     // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
-    public Optional<DocumentWithType> getDocument() {
+    public Optional<DocumentWithMetadata> getDocument() {
         return document;
     }
 
-    public void setDocument(DocumentWithType document) {
+    public void setDocument(DocumentWithMetadata document) {
         this.document = Optional.ofNullable(document);
     }
 
     public void clearDocument() {
         this.document = Optional.empty();
-    }
-
-    // -----------------------------------------------------------------------------
-    // case officer send home office evidence direction model ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<Direction> getHomeOfficeEvidenceDirection() {
-        return homeOfficeEvidenceDirection;
-    }
-
-    public void setHomeOfficeEvidenceDirection(Direction homeOfficeEvidenceDirection) {
-        this.homeOfficeEvidenceDirection = Optional.ofNullable(homeOfficeEvidenceDirection);
-    }
-
-    public void clearHomeOfficeEvidenceDirection() {
-        this.homeOfficeEvidenceDirection = Optional.empty();
     }
 
     // -----------------------------------------------------------------------------

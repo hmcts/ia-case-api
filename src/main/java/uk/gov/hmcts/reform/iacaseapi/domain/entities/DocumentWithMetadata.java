@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Document;
 
-public class DocumentWithType {
+public class DocumentWithMetadata {
 
     private Optional<Document> document = Optional.empty();
-    private Optional<String> type = Optional.empty();
+    private Optional<String> description = Optional.empty();
     private Optional<String> stored = Optional.empty();
     private Optional<String> dateUploaded = Optional.empty();
 
@@ -14,8 +14,8 @@ public class DocumentWithType {
         return document;
     }
 
-    public Optional<String> getType() {
-        return type;
+    public Optional<String> getDescription() {
+        return description;
     }
 
     public Optional<String> getStored() {
@@ -30,8 +30,8 @@ public class DocumentWithType {
         this.document = Optional.ofNullable(document);
     }
 
-    public void setType(String type) {
-        this.type = Optional.ofNullable(type);
+    public void setDescription(String description) {
+        this.description = Optional.ofNullable(description);
     }
 
     public void setStored(Optional<String> stored) {

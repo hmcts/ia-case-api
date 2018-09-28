@@ -12,14 +12,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 
 @Component
-public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class UploadHomeOfficeEvidenceUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     public boolean canHandle(
         Stage stage,
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.UPLOAD_DOCUMENT;
+               && ccdEvent.getEventId() == EventId.UPLOAD_HOME_OFFICE_EVIDENCE;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -38,10 +38,10 @@ public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCas
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        DocumentWithMetadata document =
+        DocumentWithMetadata homeOfficeEvidence =
             asylumCase
-                .getDocument()
-                .orElseThrow(() -> new IllegalStateException("document not present"));
+                .getHomeOfficeEvidence()
+                .orElseThrow(() -> new IllegalStateException("homeOfficeEvidence not present"));
 
         List<IdValue<DocumentWithMetadata>> allDocuments = new ArrayList<>();
 
@@ -56,16 +56,16 @@ public class UploadDocumentUpdater implements CcdEventPreSubmitHandler<AsylumCas
             );
         }
 
-        document.setStored(Optional.of("Yes"));
-        document.setDateUploaded(LocalDate.now().toString());
+        homeOfficeEvidence.setStored(Optional.of("Yes"));
+        homeOfficeEvidence.setDateUploaded(LocalDate.now().toString());
 
         allDocuments.add(
             new IdValue<>(
-                document
+                homeOfficeEvidence
                     .getDocument()
                     .get()
                     .getDocumentUrl(),
-                document
+                homeOfficeEvidence
             )
         );
 
