@@ -132,6 +132,14 @@ public class AsylumCase implements CaseData {
     private Optional<String> homeOfficeResponseDate = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // case officer record listing model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> listingHearingCentre = Optional.empty();
+    private Optional<String> listingHearingLength = Optional.empty();
+    private Optional<String> listingHearingDate = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case officer add hearing summary model ...
     // -----------------------------------------------------------------------------
 
@@ -142,11 +150,17 @@ public class AsylumCase implements CaseData {
     // -----------------------------------------------------------------------------
 
     private Optional<CaseDetails> caseDetails = Optional.empty();
+    private Optional<Listing> listing = Optional.empty();
+
     private Optional<CaseArgument> caseArgument = Optional.empty();
+
     private Optional<Documents> documents = Optional.empty();
+
     private Optional<SentDirections> sentDirections = Optional.empty();
-    private Optional<TimeExtensions> timeExtensions = Optional.empty();
+
     private Optional<CaseNotes> caseNotes = Optional.empty();
+
+    private Optional<TimeExtensions> timeExtensions = Optional.empty();
 
     // -----------------------------------------------------------------------------
 
@@ -502,7 +516,6 @@ public class AsylumCase implements CaseData {
     // case officer add home office response model ...
     // -----------------------------------------------------------------------------
 
-
     public Optional<Document> getHomeOfficeResponseDocument() {
         return homeOfficeResponseDocument;
     }
@@ -543,6 +556,40 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // case officer record listing model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getListingHearingCentre() {
+        return listingHearingCentre;
+    }
+
+    public Optional<String> getListingHearingLength() {
+        return listingHearingLength;
+    }
+
+    public Optional<String> getListingHearingDate() {
+        return listingHearingDate;
+    }
+
+    public void setListingHearingCentre(String listingHearingCentre) {
+        this.listingHearingCentre = Optional.ofNullable(listingHearingCentre);
+    }
+
+    public void setListingHearingLength(String listingHearingLength) {
+        this.listingHearingLength = Optional.ofNullable(listingHearingLength);
+    }
+
+    public void setListingHearingDate(String listingHearingDate) {
+        this.listingHearingDate = Optional.ofNullable(listingHearingDate);
+    }
+
+    public void clearListing() {
+        this.listingHearingCentre = Optional.empty();
+        this.listingHearingLength = Optional.empty();
+        this.listingHearingDate = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
     // case officer add hearing summary model ...
     // -----------------------------------------------------------------------------
 
@@ -561,7 +608,6 @@ public class AsylumCase implements CaseData {
     // -----------------------------------------------------------------------------
     // case officer add case note model ...
     // -----------------------------------------------------------------------------
-
 
     public Optional<String> getCaseNoteType() {
         return caseNoteType;
@@ -619,6 +665,10 @@ public class AsylumCase implements CaseData {
         return caseDetails;
     }
 
+    public Optional<Listing> getListing() {
+        return listing;
+    }
+
     public Optional<CaseArgument> getCaseArgument() {
         return caseArgument;
     }
@@ -631,16 +681,20 @@ public class AsylumCase implements CaseData {
         return sentDirections;
     }
 
-    public Optional<TimeExtensions> getTimeExtensions() {
-        return timeExtensions;
-    }
-
     public Optional<CaseNotes> getCaseNotes() {
         return caseNotes;
     }
 
+    public Optional<TimeExtensions> getTimeExtensions() {
+        return timeExtensions;
+    }
+
     public void setCaseDetails(CaseDetails caseDetails) {
         this.caseDetails = Optional.ofNullable(caseDetails);
+    }
+
+    public void setListing(Listing listing) {
+        this.listing = Optional.ofNullable(listing);
     }
 
     public void setCaseArgument(CaseArgument caseArgument) {
@@ -655,11 +709,11 @@ public class AsylumCase implements CaseData {
         this.sentDirections = Optional.ofNullable(sentDirections);
     }
 
-    public void setTimeExtensions(TimeExtensions timeExtensions) {
-        this.timeExtensions = Optional.ofNullable(timeExtensions);
-    }
-
     public void setCaseNotes(CaseNotes caseNotes) {
         this.caseNotes = Optional.ofNullable(caseNotes);
+    }
+
+    public void setTimeExtensions(TimeExtensions timeExtensions) {
+        this.timeExtensions = Optional.ofNullable(timeExtensions);
     }
 }

@@ -19,6 +19,7 @@ public enum EventId {
     ADD_CASE_NOTE("addCaseNote"),
     ADD_HOME_OFFICE_RESPONSE("addHomeOfficeResponse"),
     PROCEED_TO_HEARING("proceedToHearing"),
+    RECORD_LISTING("recordListing"),
     ADD_HEARING_SUMMARY("addHearingSummary");
 
     private final String id;
