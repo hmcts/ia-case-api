@@ -37,6 +37,10 @@ public class SentDirection extends Direction {
         return status;
     }
 
+    public void markAsComplete() {
+        setStatus("Complete");
+    }
+
     public void setRevisedDueDate(String revisedDueDate) {
         this.revisedDueDate = Optional.ofNullable(revisedDueDate);
     }

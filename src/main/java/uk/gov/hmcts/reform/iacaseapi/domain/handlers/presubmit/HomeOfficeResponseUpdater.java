@@ -8,16 +8,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HomeOfficeResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.SentDirectionCompleter;
 
 @Component
 public class HomeOfficeResponseUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
     private final DocumentAppender documentAppender;
+    private final SentDirectionCompleter sentDirectionCompleter;
 
     public HomeOfficeResponseUpdater(
-        @Autowired DocumentAppender documentAppender
+        @Autowired DocumentAppender documentAppender,
+        @Autowired SentDirectionCompleter sentDirectionCompleter
     ) {
         this.documentAppender = documentAppender;
+        this.sentDirectionCompleter = sentDirectionCompleter;
     }
 
     public boolean canHandle(
@@ -77,6 +81,8 @@ public class HomeOfficeResponseUpdater implements CcdEventPreSubmitHandler<Asylu
             );
 
         documentAppender.append(asylumCase, homeOfficeResponseDocument, homeOfficeResponseDescription);
+
+        sentDirectionCompleter.tryMarkAsComplete(asylumCase, "homeOfficeReview");
 
         asylumCase.clearHomeOfficeResponse();
 

@@ -3,26 +3,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEvent;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CcdEventPreSubmitResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.EventId;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Stage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.CcdEventPreSubmitHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.SentDirectionCompleter;
 
 @Component
-public class UploadHomeOfficeEvidenceUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
+public class SubmitForReviewUpdater implements CcdEventPreSubmitHandler<AsylumCase> {
 
-    private final DocumentAppender documentAppender;
     private final SentDirectionCompleter sentDirectionCompleter;
 
-    public UploadHomeOfficeEvidenceUpdater(
-        @Autowired DocumentAppender documentAppender,
+    public SubmitForReviewUpdater(
         @Autowired SentDirectionCompleter sentDirectionCompleter
     ) {
-        this.documentAppender = documentAppender;
         this.sentDirectionCompleter = sentDirectionCompleter;
     }
 
@@ -31,7 +26,7 @@ public class UploadHomeOfficeEvidenceUpdater implements CcdEventPreSubmitHandler
         CcdEvent<AsylumCase> ccdEvent
     ) {
         return stage == Stage.ABOUT_TO_SUBMIT
-               && ccdEvent.getEventId() == EventId.UPLOAD_HOME_OFFICE_EVIDENCE;
+               && ccdEvent.getEventId() == EventId.SUBMIT_FOR_REVIEW;
     }
 
     public CcdEventPreSubmitResponse<AsylumCase> handle(
@@ -50,16 +45,7 @@ public class UploadHomeOfficeEvidenceUpdater implements CcdEventPreSubmitHandler
         CcdEventPreSubmitResponse<AsylumCase> preSubmitResponse =
             new CcdEventPreSubmitResponse<>(asylumCase);
 
-        DocumentWithMetadata homeOfficeEvidence =
-            asylumCase
-                .getHomeOfficeEvidence()
-                .orElseThrow(() -> new IllegalStateException("homeOfficeEvidence not present"));
-
-        documentAppender.append(asylumCase, homeOfficeEvidence);
-
-        sentDirectionCompleter.tryMarkAsComplete(asylumCase, "homeOfficeEvidence");
-
-        asylumCase.clearHomeOfficeEvidence();
+        sentDirectionCompleter.tryMarkAsComplete(asylumCase, "buildAppeal");
 
         return preSubmitResponse;
     }
