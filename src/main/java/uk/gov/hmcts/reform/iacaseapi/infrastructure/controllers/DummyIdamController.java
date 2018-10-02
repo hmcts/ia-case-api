@@ -152,7 +152,8 @@ public class DummyIdamController {
                 "caseworker-sscs-anonymouscitizen",
                 "caseworker-sscs-callagent",
                 "caseworker-sscs-judge",
-                "caseworker-sscs-systemupdate"
+                "caseworker-sscs-systemupdate",
+                "judge-sscs"
             );
         }
 
@@ -210,7 +211,7 @@ public class DummyIdamController {
             && token.getOrDefault("surname", "").equals("A")) {
 
             details = createUserDetails(
-                2,
+                3,
                 "Law Firm",
                 "A",
                 "ia-law-firm-a@example.com",
@@ -226,7 +227,7 @@ public class DummyIdamController {
             && token.getOrDefault("surname", "").equals("B")) {
 
             details = createUserDetails(
-                3,
+                4,
                 "Law Firm",
                 "B",
                 "ia-law-firm-b@example.com",
@@ -241,7 +242,7 @@ public class DummyIdamController {
         if (token.getOrDefault("forename", "").equals("Case")) {
 
             details = createUserDetails(
-                4,
+                5,
                 "Case",
                 "Officer",
                 "ia-case-officer@example.com",
@@ -255,7 +256,7 @@ public class DummyIdamController {
         if (token.getOrDefault("forename", "").equals("Super")) {
 
             details = createUserDetails(
-                5,
+                6,
                 "Super",
                 "user",
                 "ia-super-user@example.com",
@@ -264,7 +265,8 @@ public class DummyIdamController {
                 "caseworker-sscs-anonymouscitizen",
                 "caseworker-sscs-callagent",
                 "caseworker-sscs-judge",
-                "caseworker-sscs-systemupdate"
+                "caseworker-sscs-systemupdate",
+                "judge-sscs"
             );
         }
 
@@ -286,15 +288,15 @@ public class DummyIdamController {
     ) {
         return JWT.create()
             .withSubject(String.valueOf(id))
-            .withExpiresAt(Date.from(Instant.now()))
-            .withIssuedAt(Date.from(Instant.now().plus(1, DAYS)))
+            .withIssuedAt(Date.from(Instant.now()))
+            .withExpiresAt(Date.from(Instant.now().plus(1, DAYS)))
             .withClaim("jti", (int) Math.ceil(Math.random() * 999999))
             .withClaim("id", String.valueOf(id))
             .withClaim("type", "ACCESS")
             .withClaim("forename", forename)
             .withClaim("surname", surname)
             .withClaim("loa", 1)
-            .withClaim("data", StringUtils.join(roles, "\",\""))
+            .withClaim("data", "\"" + StringUtils.join(roles, "\",\"") + "\"")
             .withClaim("group", "caseworker")
             .withClaim("default-service", "CCD")
             .withClaim("default-url", "https://localhost")
