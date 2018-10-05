@@ -5,10 +5,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.IOException;
@@ -23,20 +19,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenDecoder;
 
 @RestController
 public class DummyIdamController {
 
     private static final org.slf4j.Logger LOG = getLogger(DummyIdamController.class);
 
-    private final ObjectMapper mapper;
+    private final AccessTokenDecoder accessTokenDecoder;
 
     public DummyIdamController(
-        @Autowired ObjectMapper mapper
+        @Autowired AccessTokenDecoder accessTokenDecoder
     ) {
-        this.mapper = mapper;
+        this.accessTokenDecoder = accessTokenDecoder;
     }
 
     @RequestMapping(
@@ -176,7 +172,7 @@ public class DummyIdamController {
     public ResponseEntity<String> details(
         @RequestHeader String authorization
     ) {
-        Map<String, String> token = decodeAccessToken(authorization);
+        Map<String, String> token = accessTokenDecoder.decode(authorization);
 
         String details = "";
 
@@ -319,36 +315,5 @@ public class DummyIdamController {
             + "\"accountStatus\": \"active\","
             + "\"roles\":         [\"" + StringUtils.join(roles, "\",\"") + "\"]"
             + "}";
-    }
-
-    private Map<String, String> decodeAccessToken(
-        String accessToken
-    ) {
-        try {
-
-            DecodedJWT jwt = JWT.decode(
-                accessToken.replaceFirst("^Bearer\\s+", "")
-            );
-
-            String accessTokenClaims = new String(
-                Base64Utils
-                    .decodeFromString(jwt.getPayload())
-            );
-
-            try {
-
-                return mapper.readValue(
-                    accessTokenClaims,
-                    new TypeReference<Map<String, String>>() {
-                    }
-                );
-
-            } catch (IOException e) {
-                throw new RuntimeException("Authorization Token claims cannot be deserialized", e);
-            }
-
-        } catch (JWTDecodeException e) {
-            throw new JWTDecodeException("Authorization Token cannot be decoded using JWT format", e);
-        }
     }
 }

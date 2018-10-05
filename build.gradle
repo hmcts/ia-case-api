@@ -147,7 +147,16 @@ repositories {
         url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
 
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+
     jcenter()
+    mavenCentral()
+}
+
+ext {
+    springCloudVersion = 'Finchley.M9'
 }
 
 dependencies {
@@ -159,13 +168,20 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.2.RELEASE'
 
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.4.0'
+    compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.4.0'
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.0'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.11'
 
+    compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.0'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.0'
 
     compile 'com.auth0:java-jwt:3.4.0'
+    compileOnly 'org.projectlombok:lombok:1.18.2'
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
@@ -193,6 +209,9 @@ dependencyCheck {
 }
 
 dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
     dependencies {
         // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
         dependencySet(group: 'com.google.guava', version: '20.0') {

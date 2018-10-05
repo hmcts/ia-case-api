@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FirstUnapprovedTimeExtension
 @Component
 public class TimeExtensionReviewPreparer implements CcdEventPreSubmitHandler<AsylumCase> {
 
-    private static final org.slf4j.Logger LOG = getLogger(TimeExtensionReviewPreparer.class);
-
     private final FirstUnapprovedTimeExtensionExtractor firstUnapprovedTimeExtensionExtractor;
 
     public TimeExtensionReviewPreparer(

@@ -11,6 +11,21 @@ spring:
   application:
     name: Immigration & Asylum case API
 
+logging:
+  level:
+    project:
+      user:
+        UserClient: debug
+
 bookmarkBaseUrl: https://ia-prototype.cloudfabric.co.uk:3451
+docmosis.accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
+docmosis.convert.endpoint: ${DOCMOSIS_ENDPOINT:https://dws2.docmosis.com/services/rs/convert}
+documentManagementApi.baseUrl: ${DOCUMENT_MANAGEMENT_URL:http://127.0.0.1:4506}
 limits.allowedTimeFromDecisionInWeeks: 2
 homeOffice.asylumData.endpoint: https://boiling-island-41586.herokuapp.com/home-office/decision
+
+### dependency configuration
+document_management.url: ${DOCUMENT_MANAGEMENT_URL:http://127.0.0.1:4506}
+idam.s2s-auth.totp_secret: ${IDAM.S2S-AUTH.TOTP_SECRET:AAAAAAAAAAAAAAAC}
+idam.s2s-auth.microservice: ${IDAM.S2S-AUTH.MICROSERVICE:ccd_gw}
+idam.s2s-auth.url: ${IDAM.S2S-AUTH:http://127.0.0.1:4502}
