@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 public class CaseDetails<T extends CaseData> {
 
     private long id;
+    private String jurisdiction;
     private State state;
     private T caseData;
 
@@ -16,6 +17,7 @@ public class CaseDetails<T extends CaseData> {
 
     public CaseDetails(
         long id,
+        String jurisdiction,
         State state,
         T caseData
     ) {
@@ -26,6 +28,10 @@ public class CaseDetails<T extends CaseData> {
 
     public long getId() {
         return id;
+    }
+
+    public String getJurisdiction() {
+        return jurisdiction;
     }
 
     public State getState() {

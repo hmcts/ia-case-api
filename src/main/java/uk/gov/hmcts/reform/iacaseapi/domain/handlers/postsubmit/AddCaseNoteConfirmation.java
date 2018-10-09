@@ -31,7 +31,7 @@ public class AddCaseNoteConfirmation implements CcdEventPostSubmitHandler<Asylum
             new CcdEventPostSubmitResponse();
 
         String reviewCaseNoteUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#caseNotesTab";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "#caseNotesTab";
 
         postSubmitResponse.setConfirmationHeader("# You have saved this note");
         postSubmitResponse.setConfirmationBody(

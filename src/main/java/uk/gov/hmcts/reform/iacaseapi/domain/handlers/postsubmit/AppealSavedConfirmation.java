@@ -32,10 +32,10 @@ public class AppealSavedConfirmation implements CcdEventPostSubmitHandler<Asylum
             new CcdEventPostSubmitResponse();
 
         String changeAppealUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/changeAppeal";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/changeAppeal";
 
         String submitAppealUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitAppeal";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitAppeal";
 
         postSubmitResponse.setConfirmationHeader("# Now submit your appeal");
         postSubmitResponse.setConfirmationBody(

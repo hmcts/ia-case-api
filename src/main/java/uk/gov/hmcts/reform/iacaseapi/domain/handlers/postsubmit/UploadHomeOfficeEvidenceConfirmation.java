@@ -31,7 +31,7 @@ public class UploadHomeOfficeEvidenceConfirmation implements CcdEventPostSubmitH
             new CcdEventPostSubmitResponse();
 
         String buildAppealDirectionUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/sendBuildAppealDirection";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/sendBuildAppealDirection";
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded a document to the case");
         postSubmitResponse.setConfirmationBody(

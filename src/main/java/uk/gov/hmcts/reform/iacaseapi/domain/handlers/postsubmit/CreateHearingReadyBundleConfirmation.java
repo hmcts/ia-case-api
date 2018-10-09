@@ -31,7 +31,7 @@ public class CreateHearingReadyBundleConfirmation implements CcdEventPostSubmitH
             new CcdEventPostSubmitResponse();
 
         String documentsTabUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#documentsTab";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "#documentsTab";
 
         postSubmitResponse.setConfirmationHeader("# You have created the hearing bundle");
         postSubmitResponse.setConfirmationBody(

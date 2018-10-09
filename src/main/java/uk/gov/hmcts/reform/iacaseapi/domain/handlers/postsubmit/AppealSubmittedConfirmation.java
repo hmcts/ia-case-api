@@ -40,7 +40,7 @@ public class AppealSubmittedConfirmation implements CcdEventPostSubmitHandler<As
             new CcdEventPostSubmitResponse();
 
         String trackAppealUrl =
-            bookmarkBaseUrl + "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId();
+            bookmarkBaseUrl + "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId();
 
         postSubmitResponse.setConfirmationHeader("# Your appeal application has been submitted");
         postSubmitResponse.setConfirmationBody(

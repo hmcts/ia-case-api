@@ -24,6 +24,7 @@ public enum EventId {
     RECORD_LISTING("recordListing"),
     CREATE_HEARING_SUMMARY("createHearingSummary"),
     CREATE_HEARING_READY_BUNDLE("createHearingReadyBundle"),
+    SIMULATE_HEARING("simulateHearing"),
     UPLOAD_DETERMINATION("uploadDetermination");
 
     private final String id;

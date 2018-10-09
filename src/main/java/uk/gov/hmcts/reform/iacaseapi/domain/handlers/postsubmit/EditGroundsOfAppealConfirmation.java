@@ -31,7 +31,7 @@ public class EditGroundsOfAppealConfirmation implements CcdEventPostSubmitHandle
             new CcdEventPostSubmitResponse();
 
         String buildAppealTabUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "#buildAppealTab";
+            "/case/IA/Asylum/" + ccdEvent.getCaseDetails().getId() + "#buildAppealTab";
 
         postSubmitResponse.setConfirmationHeader("# You have edited the grounds of appeal");
         postSubmitResponse.setConfirmationBody(

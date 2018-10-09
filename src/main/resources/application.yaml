@@ -11,12 +11,6 @@ spring:
   application:
     name: Immigration & Asylum case API
 
-logging:
-  level:
-    project:
-      user:
-        UserClient: debug
-
 bookmarkBaseUrl: https://ia-prototype.cloudfabric.co.uk:3451
 docmosis.accessKey: ${DOCMOSIS_ACCESS_KEY:SOMETHING}
 docmosis.convert.endpoint: ${DOCMOSIS_ENDPOINT:https://dws2.docmosis.com/services/rs/convert}

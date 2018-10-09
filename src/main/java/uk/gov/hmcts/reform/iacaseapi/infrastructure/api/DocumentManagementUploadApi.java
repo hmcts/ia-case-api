@@ -55,11 +55,6 @@ public class DocumentManagementUploadApi {
         this.objectMapper = objectMapper;
     }
 
-    // @todo clearly this is not the way to get the response body, but without a working alternative,
-    //       this provides a temporary approach using the RequestResponseLoggingInterceptor
-
-    private String responseBody = null;
-
     public synchronized UploadResponse uploadFiles(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
@@ -143,6 +138,11 @@ public class DocumentManagementUploadApi {
             throw new IllegalStateException(ioException);
         }
     }
+
+    // @todo clearly this is not the way to get the response body, but without a working alternative,
+    //       this provides a temporary approach using the RequestResponseLoggingInterceptor
+
+    private String responseBody = null;
 
     private class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
 

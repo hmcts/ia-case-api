@@ -31,10 +31,10 @@ public class UploadDocumentConfirmation implements CcdEventPostSubmitHandler<Asy
             new CcdEventPostSubmitResponse();
 
         String completeDirectionUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/completeDirection";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/completeDirection";
 
         String uploadDocumentUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/uploadDocument";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/uploadDocument";
 
         postSubmitResponse.setConfirmationHeader("# You have uploaded a document to the case");
         postSubmitResponse.setConfirmationBody(

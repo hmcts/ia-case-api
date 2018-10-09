@@ -31,7 +31,7 @@ public class BuildAppealConfirmation implements CcdEventPostSubmitHandler<Asylum
             new CcdEventPostSubmitResponse();
 
         String submitForReviewUrl =
-            "/case/SSCS/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitForReview";
+            "/case/" + ccdEvent.getCaseDetails().getJurisdiction() + "/Asylum/" + ccdEvent.getCaseDetails().getId() + "/trigger/submitForReview";
 
         postSubmitResponse.setConfirmationHeader("# Your update is saved");
         postSubmitResponse.setConfirmationBody(

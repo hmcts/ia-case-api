@@ -94,8 +94,8 @@ public class DummyIdamController {
                 "Legal",
                 "Rep",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen"
             );
         }
 
@@ -106,9 +106,9 @@ public class DummyIdamController {
                 "Law Firm",
                 "A",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-law-firm-a-solicitor"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-law-firm-a-solicitor"
             );
         }
 
@@ -119,9 +119,9 @@ public class DummyIdamController {
                 "Law Firm",
                 "B",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-law-firm-b-solicitor"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-law-firm-b-solicitor"
             );
         }
 
@@ -132,8 +132,8 @@ public class DummyIdamController {
                 "Case",
                 "Officer",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-callagent"
+                "caseworker-ia",
+                "caseworker-ia-callagent"
             );
         }
 
@@ -144,12 +144,12 @@ public class DummyIdamController {
                 "Super",
                 "user",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-callagent",
-                "caseworker-sscs-judge",
-                "caseworker-sscs-systemupdate",
-                "judge-sscs"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-callagent",
+                "caseworker-ia-judge",
+                "caseworker-ia-systemupdate",
+                "judge-ia"
             );
         }
 
@@ -197,8 +197,8 @@ public class DummyIdamController {
                 "Rep",
                 "ia-legal-rep@example.com",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen"
             );
         }
 
@@ -212,9 +212,9 @@ public class DummyIdamController {
                 "A",
                 "ia-law-firm-a@example.com",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-law-firm-a-solicitor"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-law-firm-a-solicitor"
             );
         }
 
@@ -228,9 +228,9 @@ public class DummyIdamController {
                 "B",
                 "ia-law-firm-b@example.com",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-law-firm-b-solicitor"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-law-firm-b-solicitor"
             );
         }
 
@@ -243,8 +243,8 @@ public class DummyIdamController {
                 "Officer",
                 "ia-case-officer@example.com",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-callagent"
+                "caseworker-ia",
+                "caseworker-ia-callagent"
             );
         }
 
@@ -257,12 +257,12 @@ public class DummyIdamController {
                 "user",
                 "ia-super-user@example.com",
                 "caseworker",
-                "caseworker-sscs",
-                "caseworker-sscs-anonymouscitizen",
-                "caseworker-sscs-callagent",
-                "caseworker-sscs-judge",
-                "caseworker-sscs-systemupdate",
-                "judge-sscs"
+                "caseworker-ia",
+                "caseworker-ia-anonymouscitizen",
+                "caseworker-ia-callagent",
+                "caseworker-ia-judge",
+                "caseworker-ia-systemupdate",
+                "judge-ia"
             );
         }
 
