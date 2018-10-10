@@ -11,6 +11,7 @@ import org.springframework.retry.annotation.EnableRetry;
 @EnableFeignClients(basePackages =
     {
         "uk.gov.hmcts.reform.authorisation",
+        "uk.gov.hmcts.reform.ccd.client",
         "uk.gov.hmcts.reform.iacaseapi",
     })
 @EnableRetry
