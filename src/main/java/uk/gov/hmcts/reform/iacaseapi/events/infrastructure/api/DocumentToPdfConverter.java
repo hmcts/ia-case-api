@@ -52,47 +52,50 @@ public class DocumentToPdfConverter {
         final String convertedFileName =
             originalFilename.substring(0, originalFilename.lastIndexOf('.')) + ".pdf";
 
-        List<ClientHttpRequestInterceptor> originalInterceptors = restTemplate.getInterceptors();
+        synchronized (restTemplate) {
 
-        try {
+            List<ClientHttpRequestInterceptor> originalInterceptors = restTemplate.getInterceptors();
 
-            restTemplate.setInterceptors(Collections.singletonList(new ResponseCaptureInterceptor()));
+            try {
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            headers.setAccept(Arrays.asList(
-                MediaType.APPLICATION_PDF,
-                MediaType.APPLICATION_OCTET_STREAM,
-                MediaType.ALL
-            ));
+                restTemplate.setInterceptors(Collections.singletonList(new ResponseCaptureInterceptor()));
 
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("accessKey", docmosisAccessKey);
-            body.add("outputName", convertedFileName);
-            body.add("file", originalResource);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+                headers.setAccept(Arrays.asList(
+                    MediaType.APPLICATION_PDF,
+                    MediaType.APPLICATION_OCTET_STREAM,
+                    MediaType.ALL
+                ));
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("accessKey", docmosisAccessKey);
+                body.add("outputName", convertedFileName);
+                body.add("file", originalResource);
 
-            restTemplate
-                .postForObject(
-                    docmosisConvertEndpoint,
-                    requestEntity,
-                    byte[].class
-                );
+                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            if (convertedData == null) {
-                throw new IllegalStateException("No data returned from document converter");
-            }
+                restTemplate
+                    .postForObject(
+                        docmosisConvertEndpoint,
+                        requestEntity,
+                        byte[].class
+                    );
 
-            return new ByteArrayResource(convertedData) {
-                public String getFilename() {
-                    return convertedFileName;
+                if (convertedData == null) {
+                    throw new IllegalStateException("No data returned from document converter");
                 }
-            };
 
-        } finally {
-            convertedData = null;
-            restTemplate.setInterceptors(originalInterceptors);
+                return new ByteArrayResource(convertedData) {
+                    public String getFilename() {
+                        return convertedFileName;
+                    }
+                };
+
+            } finally {
+                convertedData = null;
+                restTemplate.setInterceptors(originalInterceptors);
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -42,6 +43,7 @@ public class CcdAsylumCaseFetcher {
         this.userProvider = userProvider;
     }
 
+    @Retryable
     public CaseDetails<AsylumCase> fetch(
         String caseId
     ) {
@@ -54,20 +56,27 @@ public class CcdAsylumCaseFetcher {
         HttpEntity<?> request =
             new HttpEntity<>(headers);
 
-        return restTemplate
-            .exchange(
-                ccdBaseUrl + PATH_TEMPLATE,
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<CaseDetails<AsylumCase>>() {
-                },
-                ImmutableMap.of(
-                    "uid", userProvider.getUserId(),
-                    "jid", "IA",
-                    "ctid", "Asylum",
-                    "cid", caseId
+        CaseDetails<AsylumCase> asylumCaseDetails =
+            restTemplate
+                .exchange(
+                    ccdBaseUrl + PATH_TEMPLATE,
+                    HttpMethod.GET,
+                    request,
+                    new ParameterizedTypeReference<CaseDetails<AsylumCase>>() {},
+                    ImmutableMap.of(
+                        "uid", userProvider.getUserId(),
+                        "jid", "IA",
+                        "ctid", "Asylum",
+                        "cid", caseId
+                    )
                 )
-            )
-            .getBody();
+                .getBody();
+
+        if (asylumCaseDetails == null
+            || asylumCaseDetails.getCaseData() == null) {
+            throw new IllegalStateException("Case data not found");
+        }
+
+        return asylumCaseDetails;
     }
 }

@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.events.domain.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.events.infrastructure.api.DocumentDataFetcher;
+import uk.gov.hmcts.reform.iacaseapi.events.infrastructure.api.DocumentToPdfConverter;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.Documents;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.Document;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.events.infrastructure.api.DocumentDataFetcher;
-import uk.gov.hmcts.reform.iacaseapi.events.infrastructure.api.DocumentToPdfConverter;
 
 @Service
 public class DocumentBundler {
@@ -97,29 +95,11 @@ public class DocumentBundler {
             }
         };
 
-        String sampleDocumentUrl =
-            allDocuments
-                .stream()
-                .findFirst()
-                .get()
-                .getDocumentUrl();
+        Document bundleDocument = documentUploader.upload(
+            bundleDocumentData,
+            "application/pdf"
+        );
 
-        try {
-
-            URI sampleDocumentUrlParts = new URI(sampleDocumentUrl);
-            String documentPath = sampleDocumentUrlParts.getPath();
-            String documentManagmentWebBaseUrl = sampleDocumentUrl.replaceFirst(documentPath, "");
-
-            Document bundleDocument = documentUploader.upload(
-                bundleDocumentData,
-                "application/pdf",
-                documentManagmentWebBaseUrl
-            );
-
-            documentAppender.append(asylumCase, bundleDocument);
-
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        documentAppender.append(asylumCase, bundleDocument);
     }
 }

@@ -3,13 +3,16 @@ package uk.gov.hmcts.reform.iacaseapi.events.domain.handlers.presubmit;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.events.domain.entities.*;
-import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.*;
+import uk.gov.hmcts.reform.iacaseapi.events.domain.entities.Callback;
+import uk.gov.hmcts.reform.iacaseapi.events.domain.entities.CallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.events.domain.entities.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.events.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.CaseArgument;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundsOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.EventId;
+import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.IdValue;
 
 @Component
 public class GroundsOfAppealUpdater implements PreSubmitCallbackHandler<AsylumCase> {
@@ -80,14 +83,17 @@ public class GroundsOfAppealUpdater implements PreSubmitCallbackHandler<AsylumCa
 
                 allGroundsOfAppeal.add(
                     new IdValue<>(
-                        String.valueOf(i + 1),
+                        appealGround,
                         groundOfAppeal
                     )
                 );
             }
         }
 
-        CaseArgument caseArgument = new CaseArgument();
+        CaseArgument caseArgument =
+            asylumCase
+                .getCaseArgument()
+                .orElse(new CaseArgument());
 
         GroundsOfAppeal groundsOfAppeal =
             caseArgument

@@ -5,26 +5,18 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.client.RestTemplate;
@@ -55,43 +47,35 @@ public class DocumentManagementUploadApi {
         this.objectMapper = objectMapper;
     }
 
-    public synchronized UploadResponse uploadFiles(
+    public UploadResponse uploadFiles(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
         @RequestHeader(USER_ID) String userId,
         @RequestPart List<MultipartFile> files
     ) {
-        List<ClientHttpRequestInterceptor> originalInterceptors = restTemplate.getInterceptors();
-
         try {
 
-            restTemplate.setInterceptors(Collections.singletonList(new RequestResponseLoggingInterceptor()));
+            MultiValueMap<String, Object> parameters = prepareRequest(files);
 
-            try {
+            HttpHeaders httpHeaders = setHttpHeaders(authorisation, serviceAuth, userId);
 
-                MultiValueMap<String, Object> parameters = prepareRequest(files);
+            HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(
+                parameters, httpHeaders
+            );
 
-                HttpHeaders httpHeaders = setHttpHeaders(authorisation, serviceAuth, userId);
+            // get as map, then serialize, because restTemplate doesn't know how to accept the
+            // data as either String or UploadResponse directly
+            Map bodyAsMap = restTemplate.postForObject(dmUri + DOCUMENTS_PATH, httpEntity, Map.class);
+            String responseBody = objectMapper.writeValueAsString(bodyAsMap);
 
-                HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(
-                    parameters, httpHeaders
-                );
-
-                restTemplate.postForObject(dmUri + DOCUMENTS_PATH, httpEntity, String.class);
-
-                if (responseBody == null) {
-                    throw new IllegalArgumentException("No data returned from document management");
-                }
-
-                return objectMapper.readValue(responseBody, UploadResponse.class);
-
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
+            if (responseBody == null) {
+                throw new IllegalArgumentException("No data returned from document management");
             }
 
-        } finally {
-            responseBody = null;
-            restTemplate.setInterceptors(originalInterceptors);
+            return objectMapper.readValue(responseBody, UploadResponse.class);
+
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -136,44 +120,6 @@ public class DocumentManagementUploadApi {
             };
         } catch (IOException ioException) {
             throw new IllegalStateException(ioException);
-        }
-    }
-
-    // @todo clearly this is not the way to get the response body, but without a working alternative,
-    //       this provides a temporary approach using the RequestResponseLoggingInterceptor
-
-    private String responseBody = null;
-
-    private class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
-
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-        @Override
-        public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-            logRequest(request, body);
-            ClientHttpResponse response = execution.execute(request, body);
-            logResponse(response);
-            return response;
-        }
-
-        private void logRequest(HttpRequest request, byte[] body) throws IOException {
-            //log.info("===========================request begin================================================");
-            //log.info("URI         : {}", request.getURI());
-            //log.info("Method      : {}", request.getMethod());
-            //log.info("Headers     : {}", request.getHeaders());
-            //log.info("Request body: {}", new String(body, "UTF-8"));
-            //log.info("==========================request end================================================");
-        }
-
-        private void logResponse(ClientHttpResponse response) throws IOException {
-            //log.info("============================response begin==========================================");
-            //log.info("Status code  : {}", response.getStatusCode());
-            //log.info("Status text  : {}", response.getStatusText());
-            //log.info("Headers      : {}", response.getHeaders());
-            //log.info("Response body: {}", StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8")));
-            //log.info("=======================response end=================================================");
-
-            responseBody = StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
         }
     }
 }

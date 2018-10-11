@@ -1,50 +1,51 @@
-package uk.gov.hmcts.reform.iacaseapi.forms.domain.datasource;
+package uk.gov.hmcts.reform.iacaseapi.forms.domain.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.forms.domain.api.CcdAsylumCaseEventProcessor;
 import uk.gov.hmcts.reform.iacaseapi.forms.domain.entities.Event;
 import uk.gov.hmcts.reform.iacaseapi.forms.domain.entities.EventWithCaseData;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.LegalArgument;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.EventId;
 
 @Service
-public class GroundsOfAppealSubmitter {
+public class LegalArgumentSubmitter {
 
     private final CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor;
 
-    public GroundsOfAppealSubmitter(
+    public LegalArgumentSubmitter(
         @Autowired CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor
     ) {
         this.ccdAsylumCaseEventProcessor = ccdAsylumCaseEventProcessor;
     }
 
-    public void subhmit(
+    public void submit(
         final String caseId,
-        List<GroundOfAppeal> groundsOfAppeal
+        LegalArgument legalArgument
     ) {
         EventWithCaseData<AsylumCase> eventWithCaseData =
             ccdAsylumCaseEventProcessor.startEvent(
                 caseId,
-                new Event(
-                    EventId.EDIT_GROUNDS_OF_APPEAL,
-                    "Edit grounds of appeal",
-                    "Edit grounds of appeal"
-                )
+                new Event(EventId.BUILD_APPEAL)
             );
 
-        List<String> appealGrounds =
-            groundsOfAppeal
-                .stream()
-                .map(GroundOfAppeal::getGround)
-                .collect(Collectors.toList());
+        AsylumCase asylumCase = eventWithCaseData.getCaseData();
 
-        eventWithCaseData
-            .getCaseData()
-            .setAppealGrounds(appealGrounds);
+        asylumCase
+            .setLegalArgumentDocument(
+                legalArgument.getDocument().orElse(null)
+            );
+
+        asylumCase
+            .setLegalArgumentDescription(
+                legalArgument.getDescription().orElse(null)
+            );
+
+        asylumCase
+            .setLegalArgumentEvidence(
+                legalArgument.getEvidence().orElse(null)
+            );
 
         ccdAsylumCaseEventProcessor.completeEvent(
             caseId,

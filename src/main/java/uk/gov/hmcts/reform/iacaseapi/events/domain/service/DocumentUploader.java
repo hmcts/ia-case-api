@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.events.infrastructure.api.DocumentManagemen
 public class DocumentUploader {
 
     private final String documentManagementApiBaseUrl;
+    private final String documentManagementWebBaseUrl;
     private final DocumentManagementUploadApi documentManagementUploadApi;
     private final AuthTokenGenerator serviceAuthorizationTokenGenerator;
     private final AccessTokenProvider accessTokenProvider;
@@ -29,12 +30,14 @@ public class DocumentUploader {
 
     public DocumentUploader(
         @Value("${documentManagementApi.baseUrl}") String documentManagementApiBaseUrl,
+        @Value("${documentManagementWeb.baseUrl}") String documentManagementWebBaseUrl,
         @Autowired DocumentManagementUploadApi documentManagementUploadApi,
         @Autowired AuthTokenGenerator serviceAuthorizationTokenGenerator,
         @Autowired AccessTokenProvider accessTokenProvider,
         @Autowired UserAndRolesProvider userAndRolesProvider
     ) {
         this.documentManagementApiBaseUrl = documentManagementApiBaseUrl;
+        this.documentManagementWebBaseUrl = documentManagementWebBaseUrl;
         this.documentManagementUploadApi = documentManagementUploadApi;
         this.serviceAuthorizationTokenGenerator = serviceAuthorizationTokenGenerator;
         this.accessTokenProvider = accessTokenProvider;
@@ -43,8 +46,7 @@ public class DocumentUploader {
 
     public Document upload(
         Resource documentData,
-        String documentContentType,
-        String documentManagmentWebBaseUrl
+        String documentContentType
     ) {
         final String accessToken = accessTokenProvider.getAccessToken();
         final String serviceAuthorizationToken = serviceAuthorizationTokenGenerator.generate();
@@ -76,7 +78,7 @@ public class DocumentUploader {
                     .links
                     .self
                     .href
-                    .replaceFirst(documentManagementApiBaseUrl, documentManagmentWebBaseUrl),
+                    .replaceFirst(documentManagementApiBaseUrl, documentManagementWebBaseUrl),
                 uploadResponse
                     .getEmbedded()
                     .getDocuments()
@@ -84,7 +86,7 @@ public class DocumentUploader {
                     .links
                     .binary
                     .href
-                    .replaceFirst(documentManagementApiBaseUrl, documentManagmentWebBaseUrl),
+                    .replaceFirst(documentManagementApiBaseUrl, documentManagementWebBaseUrl),
                 uploadResponse
                     .getEmbedded()
                     .getDocuments()

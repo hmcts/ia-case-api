@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.forms.domain.datasource;
+package uk.gov.hmcts.reform.iacaseapi.forms.domain.service;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.forms.domain.api.CcdAsylumCaseFetcher;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundsOfAppeal;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.IdValue;
@@ -24,7 +23,7 @@ public class GroundsOfAppealFetcher {
         this.asylumCaseFetcher = asylumCaseFetcher;
     }
 
-    public List<GroundOfAppeal> fetch(
+    public List<String> fetch(
         String caseId
     ) {
         CaseDetails<AsylumCase> asylumCaseDetails = asylumCaseFetcher.fetch(caseId);
@@ -46,7 +45,24 @@ public class GroundsOfAppealFetcher {
             .getGroundsOfAppeal()
             .get()
             .stream()
-            .map(IdValue::getValue)
+            .map(IdValue::getId)
+            //.map(ground -> {
+            //
+            //    if (ground.getGround().contains("Refugee Convention")) {
+            //        return "refugeeConvention";
+            //    }
+            //
+            //    if (ground.getGround().contains("humanitarian protection")) {
+            //        return "humanitarianProtection";
+            //    }
+            //
+            //    if (ground.getGround().contains("Human Rights Convention")) {
+            //        return "humanRightsConvention";
+            //    }
+            //
+            //    throw new IllegalStateException("Ground not recognised");
+            //
+            //})
             .collect(Collectors.toList());
     }
 }

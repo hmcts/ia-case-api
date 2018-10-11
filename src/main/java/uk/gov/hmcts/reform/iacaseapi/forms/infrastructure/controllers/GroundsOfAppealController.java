@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.iacaseapi.forms.domain.datasource.GroundsOfAppealFetcher;
-import uk.gov.hmcts.reform.iacaseapi.forms.domain.datasource.GroundsOfAppealSubmitter;
-import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.GroundOfAppeal;
+import uk.gov.hmcts.reform.iacaseapi.forms.domain.service.GroundsOfAppealFetcher;
+import uk.gov.hmcts.reform.iacaseapi.forms.domain.service.GroundsOfAppealSubmitter;
 
 @RestController
 @RequestMapping(
@@ -28,21 +27,21 @@ public class GroundsOfAppealController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GroundOfAppeal>> get(
+    public ResponseEntity<List<String>> get(
         @PathVariable("caseId") final String caseId
     ) {
-        List<GroundOfAppeal> groundsOfAppeal = groundsOfAppealFetcher.fetch(caseId);
+        List<String> groundsOfAppeal = groundsOfAppealFetcher.fetch(caseId);
         return ResponseEntity.ok(groundsOfAppeal);
     }
 
     @PostMapping(
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public ResponseEntity<Void> put(
+    public ResponseEntity<Void> post(
         @PathVariable("caseId") final String caseId,
-        @RequestBody List<GroundOfAppeal> groundsOfAppeal
+        @RequestBody List<String> groundsOfAppeal
     ) {
-        groundsOfAppealSubmitter.subhmit(caseId, groundsOfAppeal);
+        groundsOfAppealSubmitter.submit(caseId, groundsOfAppeal);
         return ResponseEntity.noContent().build();
     }
 }
