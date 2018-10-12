@@ -54,7 +54,7 @@ public class BuildAppealUpdater implements PreSubmitCallbackHandler<AsylumCase> 
         String legalArgumentDescription =
             asylumCase
                 .getLegalArgumentDescription()
-                .orElseThrow(() -> new IllegalStateException("legalArgumentDescription not present"));
+                .orElse(null);
 
         Documents legalArgumentEvidence =
             asylumCase
