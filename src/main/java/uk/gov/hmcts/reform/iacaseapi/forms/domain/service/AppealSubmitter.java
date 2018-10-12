@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.EventId;
 
 @Service
-public class CaseSubmitter {
+public class AppealSubmitter {
 
     private final CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor;
 
-    public CaseSubmitter(
+    public AppealSubmitter(
         @Autowired CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor
     ) {
         this.ccdAsylumCaseEventProcessor = ccdAsylumCaseEventProcessor;
