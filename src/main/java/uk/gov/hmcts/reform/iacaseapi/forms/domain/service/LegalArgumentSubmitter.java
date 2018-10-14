@@ -30,7 +30,10 @@ public class LegalArgumentSubmitter {
                 new Event(EventId.BUILD_APPEAL)
             );
 
-        AsylumCase asylumCase = eventWithCaseData.getCaseData();
+        AsylumCase asylumCase =
+            eventWithCaseData
+                .getCaseData()
+                .orElseThrow(() -> new IllegalStateException("caseData not present"));
 
         asylumCase
             .setLegalArgumentDocument(

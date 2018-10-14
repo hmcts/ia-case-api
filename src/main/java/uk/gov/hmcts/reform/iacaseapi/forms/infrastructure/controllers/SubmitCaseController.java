@@ -7,28 +7,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.iacaseapi.forms.domain.service.AppealSubmitter;
+import uk.gov.hmcts.reform.iacaseapi.forms.domain.service.CaseSubmitter;
 
 @RestController
 @RequestMapping(
-    path = "/IA/Asylum/{caseId}/submit-appeal",
+    path = "/IA/Asylum/{caseId}/submit-case",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
-public class SubmitAppealController {
+public class SubmitCaseController {
 
-    private final AppealSubmitter appealSubmitter;
+    private final CaseSubmitter caseSubmitter;
 
-    public SubmitAppealController(
-        @Autowired AppealSubmitter appealSubmitter
+    public SubmitCaseController(
+        @Autowired CaseSubmitter caseSubmitter
     ) {
-        this.appealSubmitter = appealSubmitter;
+        this.caseSubmitter = caseSubmitter;
     }
 
     @PostMapping
     public ResponseEntity<Void> submit(
         @PathVariable("caseId") final String caseId
     ) {
-        appealSubmitter.submit(caseId);
+        caseSubmitter.submit(caseId);
         return ResponseEntity.noContent().build();
     }
 }

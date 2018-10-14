@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.shared.domain.entities.ccd.EventId;
 
 @Service
-public class AppealSubmitter {
+public class CaseSubmitter {
 
     private final CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor;
 
-    public AppealSubmitter(
+    public CaseSubmitter(
         @Autowired CcdAsylumCaseEventProcessor ccdAsylumCaseEventProcessor
     ) {
         this.ccdAsylumCaseEventProcessor = ccdAsylumCaseEventProcessor;
@@ -25,8 +25,13 @@ public class AppealSubmitter {
         EventWithCaseData<AsylumCase> eventWithCaseData =
             ccdAsylumCaseEventProcessor.startEvent(
                 caseId,
-                new Event(EventId.SUBMIT_APPEAL)
+                new Event(EventId.SUBMIT_FOR_REVIEW)
             );
+
+        eventWithCaseData
+            .getCaseData()
+            .orElseThrow(() -> new IllegalStateException("caseData not present"))
+            .setSubmitForReview("Yes");
 
         ccdAsylumCaseEventProcessor.completeEvent(
             caseId,

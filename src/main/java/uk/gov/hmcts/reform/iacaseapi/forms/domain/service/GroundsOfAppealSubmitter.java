@@ -32,6 +32,7 @@ public class GroundsOfAppealSubmitter {
 
         eventWithCaseData
             .getCaseData()
+            .orElseThrow(() -> new IllegalStateException("caseData not present"))
             .setAppealGrounds(groundsOfAppeal);
 
         ccdAsylumCaseEventProcessor.completeEvent(

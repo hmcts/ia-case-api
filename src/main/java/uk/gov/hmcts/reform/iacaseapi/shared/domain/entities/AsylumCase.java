@@ -82,6 +82,12 @@ public class AsylumCase implements CaseData {
     private Optional<Documents> legalArgumentEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // legal rep submit appeal model ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> submitForReview = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // legal rep upload document model ...
     // -----------------------------------------------------------------------------
 
@@ -188,6 +194,48 @@ public class AsylumCase implements CaseData {
     private AsylumCase() {
         // noop -- for deserializer
     }
+
+    //public AsylumCase(
+    //    String homeOfficeReferenceNumber,
+    //    String homeOfficeDecisionDate,
+    //    Name appellantName,
+    //    String appellantNameForDisplay,
+    //    String appellantDob,
+    //    List<IdValue<String>> appellantNationalities,
+    //    String appellantNationalityContested,
+    //    String appellantHasFixedAddress,
+    //    AddressUK appellantAddress,
+    //    String appealReason,
+    //    List<String> appealGrounds,
+    //    List<String> newMatters,
+    //    String newMattersOther,
+    //    Document newMattersOtherDocument,
+    //    String otherAppeals,
+    //    List<IdValue<String>> otherAppealNumbers,
+    //    String legalRepReference,
+    //    String applicationOutOfTimeExplanation,
+    //    Document applicationOutOfTimeExplanationDocument
+    //) {
+    //    this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
+    //    this.homeOfficeDecisionDate = homeOfficeDecisionDate;
+    //    this.appellantName = Optional.ofNullable(appellantName);
+    //    this.appellantNameForDisplay = Optional.ofNullable(appellantNameForDisplay);
+    //    this.appellantDob = Optional.ofNullable(appellantDob);
+    //    this.appellantNationalities = Optional.ofNullable(appellantNationalities);
+    //    this.appellantNationalityContested = Optional.ofNullable(appellantNationalityContested);
+    //    this.appellantHasFixedAddress = Optional.ofNullable(appellantHasFixedAddress);
+    //    this.appellantAddress = Optional.ofNullable(appellantAddress);
+    //    this.appealReason = Optional.ofNullable(appealReason);
+    //    this.appealGrounds = Optional.ofNullable(appealGrounds);
+    //    this.newMatters = Optional.ofNullable(newMatters);
+    //    this.newMattersOther = Optional.ofNullable(newMattersOther);
+    //    this.newMattersOtherDocument = Optional.ofNullable(newMattersOtherDocument);
+    //    this.otherAppeals = Optional.ofNullable(otherAppeals);
+    //    this.otherAppealNumbers = Optional.ofNullable(otherAppealNumbers);
+    //    this.legalRepReference = Optional.ofNullable(legalRepReference);
+    //    this.applicationOutOfTimeExplanation = Optional.ofNullable(applicationOutOfTimeExplanation);
+    //    this.applicationOutOfTimeExplanationDocument = Optional.ofNullable(applicationOutOfTimeExplanationDocument);
+    //}
 
     // -----------------------------------------------------------------------------
     // internal model ...
@@ -439,6 +487,18 @@ public class AsylumCase implements CaseData {
 
     public void setLegalArgumentEvidence(Documents legalArgumentEvidence) {
         this.legalArgumentEvidence = Optional.ofNullable(legalArgumentEvidence);
+    }
+
+    // -----------------------------------------------------------------------------
+    // legal rep submit appeal model ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getSubmitForReview() {
+        return submitForReview;
+    }
+
+    public void setSubmitForReview(String submitForReview) {
+        this.submitForReview = Optional.ofNullable(submitForReview);
     }
 
     // -----------------------------------------------------------------------------
