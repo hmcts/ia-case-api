@@ -12,5 +12,7 @@ def product = "ia"
 def component = "case-api"
 
 withNightlyPipeline(type, product, component) {
+
+  enableMutationTest()
   enableSlackNotifications('#ia-tech')
 }
