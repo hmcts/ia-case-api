@@ -12,6 +12,15 @@ def component = "case-api"
 
 withPipeline(type, product, component) {
     enableDockerBuild()
-    mutationTest()
+
+    after('test') {
+        try {
+            sh './gradlew pitest'
+        }
+        finally {
+            steps.archiveArtifacts 'build/reports/pitest/**/*.*'
+        }
+    }
+
     enableSlackNotifications('#ia-tech')
 }
