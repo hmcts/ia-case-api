@@ -12,6 +12,6 @@ def component = "case-api"
 
 withPipeline(type, product, component) {
     enableDockerBuild()
-    enableMutationTest()
+    mutationTest()
     enableSlackNotifications('#ia-tech')
 }
