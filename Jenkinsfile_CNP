@@ -22,5 +22,14 @@ withPipeline(type, product, component) {
         }
     }
 
+    after('functionalTest') {
+        publishHTML target: [
+                reportDir            : "target/site/serenity/",
+                reportFiles          : "index.html",
+                reportName           : "Functional Test Results",
+                alwaysLinkToLastBuild: true
+        ]
+    }
+
     enableSlackNotifications('#ia-tech')
 }
