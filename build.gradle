@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
+    }
+}
+
 plugins {
     id 'application'
     id 'checkstyle'
@@ -12,11 +21,13 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'net.serenity-bdd.aggregator'
 
 def versions = [
     gradlePitest    : '1.3.0',
     pitest          : '1.4.2',
     reformLogging   : '3.0.1',
+    serenity        : '2.0.11',
     sonarPitest     : '0.5',
     springBoot      : '2.0.4.RELEASE',
     springHystrix   : '2.0.0.RELEASE',
@@ -93,6 +104,7 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
+    finalizedBy aggregate
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
@@ -158,7 +170,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
 
-    compile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.0'
+    compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
@@ -167,7 +179,7 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
-    testCompile group: 'org.pitest', name: 'pitest', version: '1.3.2'
+    testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
     testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
     testCompile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
 
@@ -176,6 +188,11 @@ dependencies {
 
     functionalTestCompile sourceSets.main.runtimeClasspath
     functionalTestCompile sourceSets.test.runtimeClasspath
+
+    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
 
     smokeTestCompile sourceSets.main.runtimeClasspath
     smokeTestCompile sourceSets.test.runtimeClasspath
@@ -210,6 +227,8 @@ dependencyUpdates.resolutionStrategy = {
         }
     }
 }
+
+gradle.startParameter.continueOnFailure = true
 
 // during check task:
 // first run checkstyle,
