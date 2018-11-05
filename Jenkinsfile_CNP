@@ -22,13 +22,12 @@ withPipeline(type, product, component) {
         }
     }
 
-    after('functionalTest') {
-        publishHTML target: [
-                reportDir            : "target/site/serenity/",
-                reportFiles          : "index.html",
-                reportName           : "Functional Test Results",
-                alwaysLinkToLastBuild: true
-        ]
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
     enableSlackNotifications('#ia-tech')
