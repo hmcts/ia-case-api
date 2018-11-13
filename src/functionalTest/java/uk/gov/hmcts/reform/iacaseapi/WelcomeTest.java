@@ -3,14 +3,18 @@ package uk.gov.hmcts.reform.iacaseapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
 
-@RunWith(SerenityRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class WelcomeTest {
 
     private final String targetInstance =
@@ -19,14 +23,18 @@ public class WelcomeTest {
             "http://localhost:8090"
         );
 
+    @Autowired
+    private AuthorizationHeadersProvider authorizationHeadersProvider;
+
     @Test
-    public void should_welcome_upon_root_request_with_200_response_code() {
+    public void should_welcome_with_200_response_code() {
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
 
         String response = SerenityRest
             .given()
+            .headers(authorizationHeadersProvider.getCaseOfficerAuthorization())
             .when()
             .get("/")
             .then()

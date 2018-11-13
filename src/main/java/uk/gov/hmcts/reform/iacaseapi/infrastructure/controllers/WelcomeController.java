@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.controllers;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -6,11 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Default endpoints per application.
- */
 @RestController
-public class RootController {
+public class WelcomeController {
 
     /**
      * Root GET endpoint.
@@ -21,7 +18,7 @@ public class RootController {
      *
      * @return Welcome message from the service.
      */
-    @GetMapping(value = "/")
+    @GetMapping(path = "/")
     public ResponseEntity<String> welcome() {
         return ok("Welcome to Immigration & Asylum case API");
     }
