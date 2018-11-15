@@ -103,7 +103,6 @@ public class IdamAuthorizor {
                     new ParameterizedTypeReference<Map<String, String>>() {
                     }
                 ).getBody();
-        ;
 
         return response.getOrDefault("access_token", "");
     }

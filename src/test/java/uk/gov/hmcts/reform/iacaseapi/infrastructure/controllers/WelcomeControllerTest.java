@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.springframework.http.HttpStatus;

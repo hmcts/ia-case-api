@@ -12,15 +12,16 @@ spring:
 
 security:
   anonymousPaths:
-    - "/health"
-    - "/loggers/**"
-    - "/swagger-ui.html"
-    - "/swagger-resources/**"
-    - "/webjars/springfox-swagger-ui/**"
+  - "/health"
+  - "/loggers/**"
+  - "/swagger-ui.html"
+  - "/swagger-resources/**"
+  - "/webjars/springfox-swagger-ui/**"
   authorisedServices:
-    - "ccd"
-    - "ccd_gw"
-    - "ccd_ps"
+  - "ccd"
+  - "ccd_data"
+  - "ccd_gw"
+  - "ccd_ps"
   authorisedRoles:
 
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}

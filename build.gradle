@@ -188,6 +188,7 @@ dependencies {
     compile 'org.projectlombok:lombok:1.18.2'
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
     testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
@@ -245,10 +246,14 @@ gradle.startParameter.continueOnFailure = true
 // first run checkstyle,
 // then unit tests,
 // then integration tests,
+// then functional tests,
+// then smoke tests,
 // then dependencyCheckAnalyze
 // for faster feedback of code issues
 check.dependsOn dependencyCheckAnalyze
-dependencyCheckAnalyze.dependsOn integration
+dependencyCheckAnalyze.dependsOn smoke
+smoke.dependsOn functional
+functional.dependsOn integration
 integration.dependsOn test
 
 bootJar {

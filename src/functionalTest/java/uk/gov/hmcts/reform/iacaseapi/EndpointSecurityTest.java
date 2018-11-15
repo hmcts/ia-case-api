@@ -27,7 +27,7 @@ public class EndpointSecurityTest {
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
     @Test
-    public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() throws Exception {
+    public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
@@ -45,7 +45,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_unauthenticated_requests_and_return_403_response_code() throws Exception {
+    public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
 
         SerenityRest
             .given()
@@ -56,7 +56,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() throws Exception {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
 
         String invalidServiceToken = "invalid";
 
@@ -78,7 +78,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() throws Exception {
+    public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() {
 
         String serviceToken = authorizationHeadersProvider
             .getCaseOfficerAuthorization()

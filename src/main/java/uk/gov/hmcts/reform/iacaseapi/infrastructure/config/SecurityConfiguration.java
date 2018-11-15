@@ -64,6 +64,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests().anyRequest().authenticated()
-            ;
+        ;
     }
 }

@@ -1,0 +1,20 @@
+{
+  "homeOfficeReferenceNumber": "A123456",
+  "homeOfficeDecisionDate": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantLastName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "Iceland": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "appealType": "protection",
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No"
+}
