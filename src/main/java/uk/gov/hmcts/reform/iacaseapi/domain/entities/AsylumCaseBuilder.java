@@ -25,7 +25,7 @@ public class AsylumCaseBuilder {
     private Optional<AddressUk> appellantAddress = Optional.empty();
     private Optional<String> appealType = Optional.empty();
     private Optional<String> hasNewMatters = Optional.empty();
-    private Optional<List<String>> newMatters = Optional.empty();
+    private Optional<String> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
@@ -78,7 +78,7 @@ public class AsylumCaseBuilder {
         return hasNewMatters;
     }
 
-    public Optional<List<String>> getNewMatters() {
+    public Optional<String> getNewMatters() {
         return newMatters;
     }
 
@@ -138,7 +138,7 @@ public class AsylumCaseBuilder {
         this.hasNewMatters = hasNewMatters;
     }
 
-    public void setNewMatters(Optional<List<String>> newMatters) {
+    public void setNewMatters(Optional<String> newMatters) {
         this.newMatters = newMatters;
     }
 

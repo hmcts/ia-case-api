@@ -22,7 +22,7 @@ public class AsylumCaseBuilderTest {
     private final Optional<AddressUk> appellantAddress = Optional.of(mock(AddressUk.class));
     private final Optional<String> appealType = Optional.of("I");
     private final Optional<String> hasNewMatters = Optional.of("J");
-    private final Optional<List<String>> newMatters = Optional.of(Arrays.asList("K"));
+    private final Optional<String> newMatters = Optional.of("K");
     private final Optional<String> hasOtherAppeals = Optional.of("L");
     private final Optional<List<IdValue<Map<String, String>>>> otherAppeals =
         Optional.of(Arrays.asList(new IdValue<>("1", Collections.emptyMap())));
