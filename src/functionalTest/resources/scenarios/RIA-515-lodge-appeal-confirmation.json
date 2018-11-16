@@ -1,0 +1,19 @@
+{
+  "description": "RIA-515 Lodge appeal confirmation",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdSubmitted",
+  "input": {
+    "eventId": "submitAppeal",
+    "state": "appealSubmitted",
+    "caseData": {
+      "template": "minimal-lodgeable-appeal.json"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Your appeal has been submitted",
+      "body": "#### What happens next\n\nYou will receive an email confirming that this appeal has been submitted successfully."
+    }
+  }
+}

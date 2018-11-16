@@ -104,7 +104,10 @@ public class CcdScenarioRunnerTest {
         Map<String, Object> caseData = MapSerializer.deserialize(templatesByFilename.get(templateFilename));
         Map<String, Object> caseDataReplacements = MapValueExtractor.extract(scenario, "input.caseData.replacements");
 
-        MapMerger.merge(caseData, caseDataReplacements);
+        if (caseDataReplacements != null) {
+            MapMerger.merge(caseData, caseDataReplacements);
+        }
+
         MapValueExpander.expandValues(caseData);
 
         Map<String, Object> caseDetails = new HashMap<>();
@@ -125,17 +128,30 @@ public class CcdScenarioRunnerTest {
         Map<String, String> templatesByFilename
     ) throws IOException {
 
-        String templateFilename = MapValueExtractor.extract(scenario, "expectation.caseData.template");
+        final String callback = MapValueExtractor.extract(scenario, "callback");
+        final Map<String, Object> callbackResponse = new HashMap<>();
 
-        Map<String, Object> caseData = MapSerializer.deserialize(templatesByFilename.get(templateFilename));
-        Map<String, Object> caseDataReplacements = MapValueExtractor.extract(scenario, "expectation.caseData.replacements");
+        if (callback.endsWith("ccdSubmitted")) {
 
-        MapMerger.merge(caseData, caseDataReplacements);
-        MapValueExpander.expandValues(caseData);
+            callbackResponse.put("confirmation_header", MapValueExtractor.extract(scenario, "expectation.confirmation.header"));
+            callbackResponse.put("confirmation_body", MapValueExtractor.extract(scenario, "expectation.confirmation.body"));
 
-        Map<String, Object> callbackResponse = new HashMap<>();
-        callbackResponse.put("data", caseData);
-        callbackResponse.put("errors", MapValueExtractor.extract(scenario, "expectation.errors"));
+        } else {
+
+            String templateFilename = MapValueExtractor.extract(scenario, "expectation.caseData.template");
+
+            Map<String, Object> caseData = MapSerializer.deserialize(templatesByFilename.get(templateFilename));
+            Map<String, Object> caseDataReplacements = MapValueExtractor.extract(scenario, "expectation.caseData.replacements");
+
+            if (caseDataReplacements != null) {
+                MapMerger.merge(caseData, caseDataReplacements);
+            }
+
+            MapValueExpander.expandValues(caseData);
+
+            callbackResponse.put("data", caseData);
+            callbackResponse.put("errors", MapValueExtractor.extract(scenario, "expectation.errors"));
+        }
 
         return MapSerializer.serialize(callbackResponse);
     }
