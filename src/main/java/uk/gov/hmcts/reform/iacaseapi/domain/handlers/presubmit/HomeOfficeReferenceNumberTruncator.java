@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -15,6 +17,9 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.START_APPEAL;
     }
@@ -32,9 +37,6 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            new PreSubmitCallbackResponse<>(asylumCase);
-
         String homeOfficeReferenceNumber =
             asylumCase
                 .getHomeOfficeReferenceNumber()
@@ -45,6 +47,9 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 homeOfficeReferenceNumber.substring(0, 7)
             );
         }
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            new PreSubmitCallbackResponse<>(asylumCase);
 
         return callbackResponse;
     }

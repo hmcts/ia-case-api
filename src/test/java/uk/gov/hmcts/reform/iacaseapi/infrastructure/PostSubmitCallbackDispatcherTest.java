@@ -100,7 +100,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_parameters() {
+    public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> postSubmitCallbackDispatcher.handle(null))
             .hasMessage("callback must not be null")

@@ -6,12 +6,13 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Component
 public class AsylumCaseBuilder {
 
     // -----------------------------------------------------------------------------
-    // legal rep appeal form model ...
+    // legal rep appeal ...
     // -----------------------------------------------------------------------------
 
     private Optional<String> homeOfficeReferenceNumber = Optional.empty();
@@ -21,14 +22,24 @@ public class AsylumCaseBuilder {
     private Optional<String> appellantLastName = Optional.empty();
     private Optional<String> appellantDateOfBirth = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> appellantNationalities = Optional.empty();
-    private Optional<String> appellantHasFixedAddress = Optional.empty();
+    private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUk> appellantAddress = Optional.empty();
     private Optional<String> appealType = Optional.empty();
-    private Optional<String> hasNewMatters = Optional.empty();
+    private Optional<YesOrNo> hasNewMatters = Optional.empty();
     private Optional<String> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer directions ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<String> sendDirectionExplanation = Optional.empty();
+    private Optional<Parties> sendDirectionParties = Optional.empty();
+    private Optional<String> sendDirectionDateDue = Optional.empty();
+    private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -62,7 +73,7 @@ public class AsylumCaseBuilder {
         return appellantNationalities;
     }
 
-    public Optional<String> getAppellantHasFixedAddress() {
+    public Optional<YesOrNo> getAppellantHasFixedAddress() {
         return appellantHasFixedAddress;
     }
 
@@ -74,7 +85,7 @@ public class AsylumCaseBuilder {
         return appealType;
     }
 
-    public Optional<String> getHasNewMatters() {
+    public Optional<YesOrNo> getHasNewMatters() {
         return hasNewMatters;
     }
 
@@ -92,6 +103,26 @@ public class AsylumCaseBuilder {
 
     public Optional<String> getLegalRepReferenceNumber() {
         return legalRepReferenceNumber;
+    }
+
+    public Optional<YesOrNo> getSendDirectionActionAvailable() {
+        return sendDirectionActionAvailable;
+    }
+
+    public Optional<String> getSendDirectionExplanation() {
+        return sendDirectionExplanation;
+    }
+
+    public Optional<Parties> getSendDirectionParties() {
+        return sendDirectionParties;
+    }
+
+    public Optional<String> getSendDirectionDateDue() {
+        return sendDirectionDateDue;
+    }
+
+    public Optional<List<IdValue<Direction>>> getDirections() {
+        return directions;
     }
 
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
@@ -122,7 +153,7 @@ public class AsylumCaseBuilder {
         this.appellantNationalities = appellantNationalities;
     }
 
-    public void setAppellantHasFixedAddress(Optional<String> appellantHasFixedAddress) {
+    public void setAppellantHasFixedAddress(Optional<YesOrNo> appellantHasFixedAddress) {
         this.appellantHasFixedAddress = appellantHasFixedAddress;
     }
 
@@ -134,7 +165,7 @@ public class AsylumCaseBuilder {
         this.appealType = appealType;
     }
 
-    public void setHasNewMatters(Optional<String> hasNewMatters) {
+    public void setHasNewMatters(Optional<YesOrNo> hasNewMatters) {
         this.hasNewMatters = hasNewMatters;
     }
 
@@ -152,5 +183,25 @@ public class AsylumCaseBuilder {
 
     public void setLegalRepReferenceNumber(Optional<String> legalRepReferenceNumber) {
         this.legalRepReferenceNumber = legalRepReferenceNumber;
+    }
+
+    public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {
+        this.sendDirectionActionAvailable = sendDirectionActionAvailable;
+    }
+
+    public void setSendDirectionExplanation(Optional<String> sendDirectionExplanation) {
+        this.sendDirectionExplanation = sendDirectionExplanation;
+    }
+
+    public void setSendDirectionParties(Optional<Parties> sendDirectionParties) {
+        this.sendDirectionParties = sendDirectionParties;
+    }
+
+    public void setSendDirectionDateDue(Optional<String> sendDirectionDateDue) {
+        this.sendDirectionDateDue = sendDirectionDateDue;
+    }
+
+    public void setDirections(Optional<List<IdValue<Direction>>> directions) {
+        this.directions = directions;
     }
 }

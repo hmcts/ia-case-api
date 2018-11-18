@@ -6,7 +6,7 @@
     "eventId": "submitAppeal",
     "state": "appealSubmitted",
     "caseData": {
-      "template": "minimal-lodgeable-appeal.json"
+      "template": "empty-case.json"
     }
   },
   "expectation": {

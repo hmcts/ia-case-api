@@ -175,7 +175,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_parameters() {
+    public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(null, callback))
             .hasMessage("callbackStage must not be null")
