@@ -245,6 +245,7 @@ gradle.startParameter.continueOnFailure = true
 // for faster feedback of code issues
 check.dependsOn dependencyCheckAnalyze
 dependencyCheckAnalyze.dependsOn integration
+integration.dependsOn test
 
 bootJar {
     archiveName = jarName
