@@ -188,6 +188,7 @@ dependencies {
         exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
     }
 
+    compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     compile 'org.projectlombok:lombok:1.18.2'
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
@@ -219,15 +220,6 @@ dependencyCheck {
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
     failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
     suppressionFile = 'config/owasp/suppressions.xml'
-}
-
-dependencyManagement {
-    dependencies {
-        // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
-        dependencySet(group: 'com.google.guava', version: '20.0') {
-            entry 'guava'
-        }
-    }
 }
 
 dependencyUpdates.resolutionStrategy = {
