@@ -24,22 +24,23 @@ public final class StringResourceLoader {
         return
             Stream
                 .of(resources)
-                .collect(
-                    Collectors.toMap(
-                        Resource::getFilename,
-                        r -> {
+                .collect(Collectors.toMap(
+                    Resource::getFilename,
+                    StringResourceLoader::loadResourceToString
+                ));
+    }
 
-                            try {
+    private static String loadResourceToString(Resource r) {
 
-                                return StreamUtils.copyToString(
-                                    r.getInputStream(),
-                                    Charset.defaultCharset()
-                                );
+        try {
 
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                );
+            return StreamUtils.copyToString(
+                r.getInputStream(),
+                Charset.defaultCharset()
+            );
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
