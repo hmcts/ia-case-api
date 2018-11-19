@@ -2,18 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AsylumCaseTest {
+public class AsylumCaseBuilderTest {
 
     private final Optional<String> homeOfficeReferenceNumber = Optional.of("A");
     private final Optional<String> homeOfficeDecisionDate = Optional.of("B");
@@ -32,28 +27,28 @@ public class AsylumCaseTest {
     private final Optional<List<IdValue<String>>> otherAppeals = Optional.of(Arrays.asList(new IdValue<>("1", "M")));
     private final Optional<String> legalRepReferenceNumber = Optional.of("N");
 
-    @Mock AsylumCaseBuilder asylumCaseBuilder;
+    private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
     @Test
-    public void should_hold_onto_values() {
+    public void should_build_asylum_case() {
 
-        when(asylumCaseBuilder.getHomeOfficeReferenceNumber()).thenReturn(this.homeOfficeReferenceNumber);
-        when(asylumCaseBuilder.getHomeOfficeDecisionDate()).thenReturn(this.homeOfficeDecisionDate);
-        when(asylumCaseBuilder.getAppellantTitle()).thenReturn(this.appellantTitle);
-        when(asylumCaseBuilder.getAppellantGivenNames()).thenReturn(this.appellantGivenNames);
-        when(asylumCaseBuilder.getAppellantLastName()).thenReturn(this.appellantLastName);
-        when(asylumCaseBuilder.getAppellantDateOfBirth()).thenReturn(this.appellantDateOfBirth);
-        when(asylumCaseBuilder.getAppellantNationalities()).thenReturn(this.appellantNationalities);
-        when(asylumCaseBuilder.getAppellantHasFixedAddress()).thenReturn(this.appellantHasFixedAddress);
-        when(asylumCaseBuilder.getAppellantAddress()).thenReturn(this.appellantAddress);
-        when(asylumCaseBuilder.getAppealType()).thenReturn(this.appealType);
-        when(asylumCaseBuilder.getHasNewMatters()).thenReturn(this.hasNewMatters);
-        when(asylumCaseBuilder.getNewMatters()).thenReturn(this.newMatters);
-        when(asylumCaseBuilder.getHasOtherAppeals()).thenReturn(this.hasOtherAppeals);
-        when(asylumCaseBuilder.getOtherAppeals()).thenReturn(this.otherAppeals);
-        when(asylumCaseBuilder.getLegalRepReferenceNumber()).thenReturn(this.legalRepReferenceNumber);
+        asylumCaseBuilder.setHomeOfficeReferenceNumber(homeOfficeReferenceNumber);
+        asylumCaseBuilder.setHomeOfficeDecisionDate(homeOfficeDecisionDate);
+        asylumCaseBuilder.setAppellantTitle(appellantTitle);
+        asylumCaseBuilder.setAppellantGivenNames(appellantGivenNames);
+        asylumCaseBuilder.setAppellantLastName(appellantLastName);
+        asylumCaseBuilder.setAppellantDateOfBirth(appellantDateOfBirth);
+        asylumCaseBuilder.setAppellantNationalities(appellantNationalities);
+        asylumCaseBuilder.setAppellantHasFixedAddress(appellantHasFixedAddress);
+        asylumCaseBuilder.setAppellantAddress(appellantAddress);
+        asylumCaseBuilder.setAppealType(appealType);
+        asylumCaseBuilder.setHasNewMatters(hasNewMatters);
+        asylumCaseBuilder.setNewMatters(newMatters);
+        asylumCaseBuilder.setHasOtherAppeals(hasOtherAppeals);
+        asylumCaseBuilder.setOtherAppeals(otherAppeals);
+        asylumCaseBuilder.setLegalRepReferenceNumber(legalRepReferenceNumber);
 
-        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+        AsylumCase asylumCase = asylumCaseBuilder.build();
 
         assertEquals(homeOfficeReferenceNumber, asylumCase.getHomeOfficeReferenceNumber());
         assertEquals(homeOfficeDecisionDate, asylumCase.getHomeOfficeDecisionDate());
@@ -70,17 +65,5 @@ public class AsylumCaseTest {
         assertEquals(hasOtherAppeals, asylumCase.getHasOtherAppeals());
         assertEquals(otherAppeals, asylumCase.getOtherAppeals());
         assertEquals(legalRepReferenceNumber, asylumCase.getLegalRepReferenceNumber());
-    }
-
-    @Test
-    public void home_office_reference_number_is_mutable() {
-
-        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
-
-        asylumCase.setHomeOfficeReferenceNumber("HO123");
-        assertEquals(Optional.of("HO123"), asylumCase.getHomeOfficeReferenceNumber());
-
-        asylumCase.setHomeOfficeReferenceNumber(Optional.of("HO123"));
-        assertEquals(Optional.of("HO123"), asylumCase.getHomeOfficeReferenceNumber());
     }
 }

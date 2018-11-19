@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class AsylumCase implements CaseData {
+@Component
+public class AsylumCaseBuilder {
 
     // -----------------------------------------------------------------------------
     // legal rep appeal form model ...
@@ -31,111 +30,127 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<String>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
 
-    private AsylumCase() {
-        // noop -- for deserializers
-    }
-
-    public AsylumCase(
-        AsylumCaseBuilder asylumCaseBuilder
-    ) {
-        this.homeOfficeReferenceNumber = asylumCaseBuilder.getHomeOfficeReferenceNumber();
-        this.homeOfficeDecisionDate = asylumCaseBuilder.getHomeOfficeDecisionDate();
-        this.appellantTitle = asylumCaseBuilder.getAppellantTitle();
-        this.appellantGivenNames = asylumCaseBuilder.getAppellantGivenNames();
-        this.appellantLastName = asylumCaseBuilder.getAppellantLastName();
-        this.appellantDateOfBirth = asylumCaseBuilder.getAppellantDateOfBirth();
-        this.appellantNationalities = asylumCaseBuilder.getAppellantNationalities();
-        this.appellantHasFixedAddress = asylumCaseBuilder.getAppellantHasFixedAddress();
-        this.appellantAddress = asylumCaseBuilder.getAppellantAddress();
-        this.appealType = asylumCaseBuilder.getAppealType();
-        this.hasNewMatters = asylumCaseBuilder.getHasNewMatters();
-        this.newMatters = asylumCaseBuilder.getNewMatters();
-        this.hasOtherAppeals = asylumCaseBuilder.getHasOtherAppeals();
-        this.otherAppeals = asylumCaseBuilder.getOtherAppeals();
-        this.legalRepReferenceNumber = asylumCaseBuilder.getLegalRepReferenceNumber();
+    public AsylumCase build() {
+        return new AsylumCase(this);
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
-        requireNonNull(homeOfficeReferenceNumber);
         return homeOfficeReferenceNumber;
     }
 
     public Optional<String> getHomeOfficeDecisionDate() {
-        requireNonNull(homeOfficeDecisionDate);
         return homeOfficeDecisionDate;
     }
 
     public Optional<String> getAppellantTitle() {
-        requireNonNull(appellantTitle);
         return appellantTitle;
     }
 
     public Optional<String> getAppellantGivenNames() {
-        requireNonNull(appellantGivenNames);
         return appellantGivenNames;
     }
 
     public Optional<String> getAppellantLastName() {
-        requireNonNull(appellantLastName);
         return appellantLastName;
     }
 
     public Optional<String> getAppellantDateOfBirth() {
-        requireNonNull(appellantDateOfBirth);
         return appellantDateOfBirth;
     }
 
     public Optional<List<IdValue<Map<String, String>>>> getAppellantNationalities() {
-        requireNonNull(appellantNationalities);
         return appellantNationalities;
     }
 
     public Optional<String> getAppellantHasFixedAddress() {
-        requireNonNull(appellantHasFixedAddress);
         return appellantHasFixedAddress;
     }
 
     public Optional<AddressUk> getAppellantAddress() {
-        requireNonNull(appellantAddress);
         return appellantAddress;
     }
 
     public Optional<String> getAppealType() {
-        requireNonNull(appealType);
         return appealType;
     }
 
     public Optional<String> getHasNewMatters() {
-        requireNonNull(hasNewMatters);
         return hasNewMatters;
     }
 
     public Optional<List<String>> getNewMatters() {
-        requireNonNull(newMatters);
         return newMatters;
     }
 
     public Optional<String> getHasOtherAppeals() {
-        requireNonNull(hasOtherAppeals);
         return hasOtherAppeals;
     }
 
     public Optional<List<IdValue<String>>> getOtherAppeals() {
-        requireNonNull(otherAppeals);
         return otherAppeals;
     }
 
     public Optional<String> getLegalRepReferenceNumber() {
-        requireNonNull(legalRepReferenceNumber);
         return legalRepReferenceNumber;
     }
 
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
-        requireNonNull(homeOfficeReferenceNumber);
         this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
     }
 
-    public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
-        this.homeOfficeReferenceNumber = Optional.ofNullable(homeOfficeReferenceNumber);
+    public void setHomeOfficeDecisionDate(Optional<String> homeOfficeDecisionDate) {
+        this.homeOfficeDecisionDate = homeOfficeDecisionDate;
+    }
+
+    public void setAppellantTitle(Optional<String> appellantTitle) {
+        this.appellantTitle = appellantTitle;
+    }
+
+    public void setAppellantGivenNames(Optional<String> appellantGivenNames) {
+        this.appellantGivenNames = appellantGivenNames;
+    }
+
+    public void setAppellantLastName(Optional<String> appellantLastName) {
+        this.appellantLastName = appellantLastName;
+    }
+
+    public void setAppellantDateOfBirth(Optional<String> appellantDateOfBirth) {
+        this.appellantDateOfBirth = appellantDateOfBirth;
+    }
+
+    public void setAppellantNationalities(Optional<List<IdValue<Map<String, String>>>> appellantNationalities) {
+        this.appellantNationalities = appellantNationalities;
+    }
+
+    public void setAppellantHasFixedAddress(Optional<String> appellantHasFixedAddress) {
+        this.appellantHasFixedAddress = appellantHasFixedAddress;
+    }
+
+    public void setAppellantAddress(Optional<AddressUk> appellantAddress) {
+        this.appellantAddress = appellantAddress;
+    }
+
+    public void setAppealType(Optional<String> appealType) {
+        this.appealType = appealType;
+    }
+
+    public void setHasNewMatters(Optional<String> hasNewMatters) {
+        this.hasNewMatters = hasNewMatters;
+    }
+
+    public void setNewMatters(Optional<List<String>> newMatters) {
+        this.newMatters = newMatters;
+    }
+
+    public void setHasOtherAppeals(Optional<String> hasOtherAppeals) {
+        this.hasOtherAppeals = hasOtherAppeals;
+    }
+
+    public void setOtherAppeals(Optional<List<IdValue<String>>> otherAppeals) {
+        this.otherAppeals = otherAppeals;
+    }
+
+    public void setLegalRepReferenceNumber(Optional<String> legalRepReferenceNumber) {
+        this.legalRepReferenceNumber = legalRepReferenceNumber;
     }
 }

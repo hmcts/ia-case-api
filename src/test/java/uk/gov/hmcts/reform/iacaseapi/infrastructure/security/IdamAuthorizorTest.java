@@ -59,7 +59,7 @@ public class IdamAuthorizorTest {
 
         String actualAccessToken = idamAuthorizor.exchangeForAccessToken(username, password);
 
-        assertEquals(actualAccessToken, "Bearer XYZ");
+        assertEquals("Bearer XYZ", actualAccessToken);
 
         ArgumentCaptor<HttpEntity> authorizeHttpEntityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
 
