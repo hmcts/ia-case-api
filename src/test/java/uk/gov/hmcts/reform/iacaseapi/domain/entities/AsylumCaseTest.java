@@ -29,7 +29,8 @@ public class AsylumCaseTest {
     private final Optional<String> hasNewMatters = Optional.of("J");
     private final Optional<List<String>> newMatters = Optional.of(Arrays.asList("K"));
     private final Optional<String> hasOtherAppeals = Optional.of("L");
-    private final Optional<List<IdValue<String>>> otherAppeals = Optional.of(Arrays.asList(new IdValue<>("1", "M")));
+    private final Optional<List<IdValue<Map<String, String>>>> otherAppeals =
+        Optional.of(Arrays.asList(new IdValue<>("1", Collections.emptyMap())));
     private final Optional<String> legalRepReferenceNumber = Optional.of("N");
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;

@@ -28,7 +28,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> hasNewMatters = Optional.empty();
     private Optional<List<String>> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
-    private Optional<List<IdValue<String>>> otherAppeals = Optional.empty();
+    private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
 
     private AsylumCase() {
@@ -120,7 +120,7 @@ public class AsylumCase implements CaseData {
         return hasOtherAppeals;
     }
 
-    public Optional<List<IdValue<String>>> getOtherAppeals() {
+    public Optional<List<IdValue<Map<String, String>>>> getOtherAppeals() {
         requireNonNull(otherAppeals);
         return otherAppeals;
     }
