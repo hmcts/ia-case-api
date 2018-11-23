@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.RequiredFieldMissingException;
 
 public class CaseDetailsTest {
 
@@ -27,4 +29,27 @@ public class CaseDetailsTest {
         assertEquals(state, caseDetails.getState());
         assertEquals(caseData, caseDetails.getCaseData());
     }
+
+    @Test
+    public void should_throw_required_field_missing_exception() {
+
+        CaseDetails<CaseData> caseDetails = new CaseDetails<>(
+            id,
+            null,
+            null,
+            null
+        );
+
+        assertThatThrownBy(caseDetails::getJurisdiction)
+            .isExactlyInstanceOf(RequiredFieldMissingException.class)
+            .hasMessageContaining("jurisdiction");
+        assertThatThrownBy(caseDetails::getState)
+            .isExactlyInstanceOf(RequiredFieldMissingException.class)
+            .hasMessageContaining("state");
+        assertThatThrownBy(caseDetails::getCaseData)
+            .isExactlyInstanceOf(RequiredFieldMissingException.class)
+            .hasMessageContaining("caseData");
+
+    }
+
 }

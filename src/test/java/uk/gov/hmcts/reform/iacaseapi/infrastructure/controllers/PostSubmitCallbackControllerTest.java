@@ -15,12 +15,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Deserializer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostSubmitCallbackControllerTest {
 
-    @Mock private Deserializer<Callback<AsylumCase>> callbackDeserializer;
     @Mock private PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
     @Mock private PostSubmitCallbackResponse callbackResponse;
     @Mock private Callback<AsylumCase> callback;
@@ -32,19 +30,12 @@ public class PostSubmitCallbackControllerTest {
     public void setUp() {
         postSubmitCallbackController =
             new PostSubmitCallbackController(
-                callbackDeserializer,
                 callbackDispatcher
             );
     }
 
     @Test
-    public void should_deserialize_submitted_callback_then_dispatch_then_return_response() {
-
-        String asylumCaseCallbackSource = "{\"case\":\"data\"}";
-
-        doReturn(callback)
-            .when(callbackDeserializer)
-            .deserialize(asylumCaseCallbackSource);
+    public void should_dispatch_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -53,7 +44,7 @@ public class PostSubmitCallbackControllerTest {
             .handle(callback);
 
         ResponseEntity<PostSubmitCallbackResponse> actualResponse =
-            postSubmitCallbackController.ccdSubmitted(asylumCaseCallbackSource);
+            postSubmitCallbackController.ccdSubmitted(callback);
 
         assertNotNull(actualResponse);
 
@@ -63,11 +54,7 @@ public class PostSubmitCallbackControllerTest {
     @Test
     public void should_not_allow_null_constructor_arguments() {
 
-        assertThatThrownBy(() -> new PostSubmitCallbackController(null, callbackDispatcher))
-            .hasMessage("callbackDeserializer must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PostSubmitCallbackController(callbackDeserializer, null))
+        assertThatThrownBy(() -> new PostSubmitCallbackController(null))
             .hasMessage("callbackDispatcher must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

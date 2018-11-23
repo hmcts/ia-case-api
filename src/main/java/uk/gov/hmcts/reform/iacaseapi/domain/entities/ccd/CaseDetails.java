@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static java.util.Objects.requireNonNull;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.RequiredFieldMissingException;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CaseDetails<T extends CaseData> {
@@ -34,17 +33,29 @@ public class CaseDetails<T extends CaseData> {
     }
 
     public String getJurisdiction() {
-        requireNonNull(jurisdiction);
+
+        if (jurisdiction == null) {
+            throw new RequiredFieldMissingException("jurisdiction field is required");
+        }
+
         return jurisdiction;
     }
 
     public State getState() {
-        requireNonNull(state);
+
+        if (state == null) {
+            throw new RequiredFieldMissingException("state field is required");
+        }
+
         return state;
     }
 
     public T getCaseData() {
-        requireNonNull(caseData);
+
+        if (caseData == null) {
+            throw new RequiredFieldMissingException("caseData field is required");
+        }
+
         return caseData;
     }
 }
