@@ -1,15 +1,14 @@
 {
-  "description": "RIA-694 Send direction",
+  "description": "RIA-892 Request respondent evidence - create direction",
   "credentials": "CaseOfficer",
   "callback": "/asylum/ccdAboutToSubmit",
   "input": {
-    "eventId": "sendDirection",
+    "eventId": "requestRespondentEvidence",
     "state": "appealSubmitted",
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "sendDirectionExplanation": "Do the second thing",
-        "sendDirectionParties": "legalRepresentative",
+        "sendDirectionExplanation": "Send your evidence",
         "sendDirectionDateDue": "2022-01-01",
         "directions": [
           {
@@ -35,8 +34,8 @@
           {
             "id": "2",
             "value": {
-              "explanation": "Do the second thing",
-              "parties": "legalRepresentative",
+              "explanation": "Send your evidence",
+              "parties": "respondent",
               "dateDue": "2022-01-01",
               "dateSent": "{$TODAY}"
             }
