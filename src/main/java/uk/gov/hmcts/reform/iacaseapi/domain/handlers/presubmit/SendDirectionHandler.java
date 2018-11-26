@@ -80,9 +80,6 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase
         asylumCase.clearSendDirectionParties();
         asylumCase.clearSendDirectionDateDue();
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            new PreSubmitCallbackResponse<>(asylumCase);
-
-        return callbackResponse;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

@@ -58,9 +58,6 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             asylumCase.setSendDirectionActionAvailable(YesOrNo.NO);
         }
 
-        PreSubmitCallbackResponse<AsylumCase> preSubmitResponse =
-            new PreSubmitCallbackResponse<>(asylumCase);
-
-        return preSubmitResponse;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

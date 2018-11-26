@@ -12,6 +12,7 @@ public enum Parties {
         this.id = id;
     }
 
+    @Override
     public String toString() {
         return id;
     }

@@ -48,9 +48,6 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
             );
         }
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            new PreSubmitCallbackResponse<>(asylumCase);
-
-        return callbackResponse;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
