@@ -6,25 +6,25 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final DirectionAppender directionAppender;
+    private final DocumentsAppender documentsAppender;
 
-    public RequestRespondentEvidenceHandler(
-        DirectionAppender directionAppender
+    public UploadRespondentEvidenceHandler(
+        DocumentsAppender documentsAppender
     ) {
-        this.directionAppender = directionAppender;
+        this.documentsAppender = documentsAppender;
     }
 
     public boolean canHandle(
@@ -35,7 +35,7 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
+               && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,34 +51,22 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
                 .getCaseDetails()
                 .getCaseData();
 
-        String sendDirectionExplanation =
+        final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
             asylumCase
-                .getSendDirectionExplanation()
-                .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
-
-        String sendDirectionDateDue =
-            asylumCase
-                .getSendDirectionDateDue()
-                .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
-
-        final List<IdValue<Direction>> existingDirections =
-            asylumCase
-                .getDirections()
+                .getRespondentDocuments()
                 .orElse(Collections.emptyList());
 
-        List<IdValue<Direction>> allDirections =
-            directionAppender.append(
-                existingDirections,
-                sendDirectionExplanation,
-                Parties.RESPONDENT,
-                sendDirectionDateDue
-            );
+        final List<IdValue<DocumentWithDescription>> respondentEvidence =
+            asylumCase
+                .getUploadRespondentEvidence()
+                .orElseThrow(() -> new IllegalStateException("uploadRespondentEvidence is not present"));
 
-        asylumCase.setDirections(allDirections);
+        List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
+            documentsAppender.append(existingRespondentDocuments, respondentEvidence);
 
-        asylumCase.clearSendDirectionExplanation();
-        asylumCase.clearSendDirectionParties();
-        asylumCase.clearSendDirectionDateDue();
+        asylumCase.setRespondentDocuments(allRespondentDocuments);
+
+        asylumCase.clearUploadRespondentEvidence();
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

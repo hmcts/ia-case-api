@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,10 +39,13 @@ public class AsylumCaseTest {
     private final String sendDirectionDateDue = "2022-01-01";
     private final List<IdValue<Direction>> directions = Arrays.asList(new IdValue<>("1", mock(Direction.class)));
 
+    private final List<IdValue<DocumentWithDescription>> uploadRespondentEvidence = Arrays.asList(new IdValue<>("1", mock(DocumentWithDescription.class)));
+    private final List<IdValue<DocumentWithMetadata>> respondentDocuments = Arrays.asList(new IdValue<>("1", mock(DocumentWithMetadata.class)));
+
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
-    @Test
-    public void should_hold_onto_values() {
+    @Before
+    public void setUp() {
 
         when(asylumCaseBuilder.getHomeOfficeReferenceNumber()).thenReturn(Optional.of(homeOfficeReferenceNumber));
         when(asylumCaseBuilder.getHomeOfficeDecisionDate()).thenReturn(Optional.of(homeOfficeDecisionDate));
@@ -63,6 +67,12 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
         when(asylumCaseBuilder.getDirections()).thenReturn(Optional.of(directions));
+        when(asylumCaseBuilder.getUploadRespondentEvidence()).thenReturn(Optional.of(uploadRespondentEvidence));
+        when(asylumCaseBuilder.getRespondentDocuments()).thenReturn(Optional.of(respondentDocuments));
+    }
+
+    @Test
+    public void should_hold_onto_values() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
@@ -86,6 +96,8 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
+        assertEquals(Optional.of(uploadRespondentEvidence), asylumCase.getUploadRespondentEvidence());
+        assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
     }
 
     @Test
@@ -180,7 +192,8 @@ public class AsylumCaseTest {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
-        List<IdValue<Direction>> newDirections = Arrays.asList(new IdValue<>("ABC", mock(Direction.class)));
+        List<IdValue<Direction>> newDirections =
+            Arrays.asList(new IdValue<>("ABC", mock(Direction.class)));
 
         asylumCase.setDirections(newDirections);
         assertEquals(Optional.of(newDirections), asylumCase.getDirections());
@@ -190,5 +203,32 @@ public class AsylumCaseTest {
 
         asylumCase.setDirections(null);
         assertEquals(Optional.empty(), asylumCase.getDirections());
+    }
+
+    @Test
+    public void upload_respondent_evidence_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearUploadRespondentEvidence();
+        assertEquals(Optional.empty(), asylumCase.getUploadRespondentEvidence());
+    }
+
+    @Test
+    public void respondent_documents_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        List<IdValue<DocumentWithMetadata>> newRespondentDocuments =
+            Arrays.asList(new IdValue<>("ABC", mock(DocumentWithMetadata.class)));
+
+        asylumCase.setRespondentDocuments(newRespondentDocuments);
+        assertEquals(Optional.of(newRespondentDocuments), asylumCase.getRespondentDocuments());
+
+        asylumCase.setRespondentDocuments(Collections.emptyList());
+        assertEquals(Optional.of(Collections.emptyList()), asylumCase.getRespondentDocuments());
+
+        asylumCase.setRespondentDocuments(null);
+        assertEquals(Optional.empty(), asylumCase.getRespondentDocuments());
     }
 }
