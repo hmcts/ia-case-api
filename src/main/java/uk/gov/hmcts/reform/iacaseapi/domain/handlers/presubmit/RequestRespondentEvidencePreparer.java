@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -68,12 +67,12 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         asylumCase.setSendDirectionParties(Parties.RESPONDENT);
 
-        LocalDate dateDue =
+        asylumCase.setSendDirectionDateDue(
             dateProvider
                 .now()
-                .plusDays(requestRespondentEvidenceDueInDays);
-
-        asylumCase.setSendDirectionDateDue(dateDue.toString());
+                .plusDays(requestRespondentEvidenceDueInDays)
+                .toString()
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
