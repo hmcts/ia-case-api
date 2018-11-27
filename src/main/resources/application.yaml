@@ -10,6 +10,7 @@ spring:
   application:
     name: Immigration & Asylum case API
 
+buildCase.dueInDays: 28
 requestRespondentEvidence.dueInDays: 14
 
 security:

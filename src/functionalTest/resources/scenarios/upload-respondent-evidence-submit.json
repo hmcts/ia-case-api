@@ -1,5 +1,5 @@
 {
-  "description": "RIA-700 Upload respondent evidence - upload case documents",
+  "description": "RIA-700 & RIA-592 Upload respondent evidence - upload case documents",
   "credentials": "CaseOfficer",
   "callback": "/asylum/ccdAboutToSubmit",
   "input": {
@@ -55,6 +55,17 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You must now build your case by uploading your appeal argument and evidence.\n\nAdvice on writing an appeal argument\nYou must write a full argument that references:\n- all the evidence you have or plan to rely on, including any witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the Home Office to conduct a thorough review of their decision at this stage.\n\nNext steps\nOnce you have uploaded your appeal argument and all evidence, submit your case. The case officer will then review everything you've added. If your case looks ready, the case officer will send it to the respondent for their review. The respondent then has 14 days to respond.",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}"
+            }
+          }
+        ],
         "respondentDocuments": [
           {
             "id": "3",
