@@ -33,21 +33,21 @@ public class AddressUk {
     }
 
     public AddressUk(
-        Optional<String> addressLine1,
-        Optional<String> addressLine2,
-        Optional<String> addressLine3,
-        Optional<String> postTown,
-        Optional<String> county,
-        Optional<String> postCode,
-        Optional<String> country
+        String addressLine1,
+        String addressLine2,
+        String addressLine3,
+        String postTown,
+        String county,
+        String postCode,
+        String country
     ) {
-        this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
-        this.addressLine3 = addressLine3;
-        this.postTown = postTown;
-        this.county = county;
-        this.postCode = postCode;
-        this.country = country;
+        this.addressLine1 = Optional.ofNullable(addressLine1);
+        this.addressLine2 = Optional.ofNullable(addressLine2);
+        this.addressLine3 = Optional.ofNullable(addressLine3);
+        this.postTown = Optional.ofNullable(postTown);
+        this.county = Optional.ofNullable(county);
+        this.postCode = Optional.ofNullable(postCode);
+        this.country = Optional.ofNullable(country);
     }
 
     public Optional<String> getAddressLine1() {

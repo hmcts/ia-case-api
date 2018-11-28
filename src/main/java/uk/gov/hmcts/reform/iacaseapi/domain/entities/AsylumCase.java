@@ -8,11 +8,12 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class AsylumCase implements CaseData {
 
     // -----------------------------------------------------------------------------
-    // legal rep appeal form model ...
+    // legal rep appeal ...
     // -----------------------------------------------------------------------------
 
     private Optional<String> homeOfficeReferenceNumber = Optional.empty();
@@ -22,14 +23,24 @@ public class AsylumCase implements CaseData {
     private Optional<String> appellantLastName = Optional.empty();
     private Optional<String> appellantDateOfBirth = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> appellantNationalities = Optional.empty();
-    private Optional<String> appellantHasFixedAddress = Optional.empty();
+    private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUk> appellantAddress = Optional.empty();
     private Optional<String> appealType = Optional.empty();
-    private Optional<String> hasNewMatters = Optional.empty();
+    private Optional<YesOrNo> hasNewMatters = Optional.empty();
     private Optional<String> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case officer directions ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<String> sendDirectionExplanation = Optional.empty();
+    private Optional<Parties> sendDirectionParties = Optional.empty();
+    private Optional<String> sendDirectionDateDue = Optional.empty();
+    private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -53,6 +64,11 @@ public class AsylumCase implements CaseData {
         this.hasOtherAppeals = asylumCaseBuilder.getHasOtherAppeals();
         this.otherAppeals = asylumCaseBuilder.getOtherAppeals();
         this.legalRepReferenceNumber = asylumCaseBuilder.getLegalRepReferenceNumber();
+        this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
+        this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
+        this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
+        this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
+        this.directions = asylumCaseBuilder.getDirections();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -90,7 +106,7 @@ public class AsylumCase implements CaseData {
         return appellantNationalities;
     }
 
-    public Optional<String> getAppellantHasFixedAddress() {
+    public Optional<YesOrNo> getAppellantHasFixedAddress() {
         requireNonNull(appellantHasFixedAddress);
         return appellantHasFixedAddress;
     }
@@ -105,7 +121,7 @@ public class AsylumCase implements CaseData {
         return appealType;
     }
 
-    public Optional<String> getHasNewMatters() {
+    public Optional<YesOrNo> getHasNewMatters() {
         requireNonNull(hasNewMatters);
         return hasNewMatters;
     }
@@ -130,12 +146,55 @@ public class AsylumCase implements CaseData {
         return legalRepReferenceNumber;
     }
 
-    public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
-        requireNonNull(homeOfficeReferenceNumber);
-        this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
-    }
-
     public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = Optional.ofNullable(homeOfficeReferenceNumber);
+    }
+
+    // -----------------------------------------------------------------------------
+    // case officer directions ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<YesOrNo> getSendDirectionActionAvailable() {
+        requireNonNull(sendDirectionActionAvailable);
+        return sendDirectionActionAvailable;
+    }
+
+    public Optional<String> getSendDirectionExplanation() {
+        requireNonNull(sendDirectionExplanation);
+        return sendDirectionExplanation;
+    }
+
+    public Optional<Parties> getSendDirectionParties() {
+        requireNonNull(sendDirectionParties);
+        return sendDirectionParties;
+    }
+
+    public Optional<String> getSendDirectionDateDue() {
+        requireNonNull(sendDirectionDateDue);
+        return sendDirectionDateDue;
+    }
+
+    public Optional<List<IdValue<Direction>>> getDirections() {
+        return directions;
+    }
+
+    public void clearSendDirectionExplanation() {
+        this.sendDirectionExplanation = Optional.empty();
+    }
+
+    public void clearSendDirectionParties() {
+        this.sendDirectionParties = Optional.empty();
+    }
+
+    public void clearSendDirectionDateDue() {
+        this.sendDirectionDateDue = Optional.empty();
+    }
+
+    public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
+        this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
+    }
+
+    public void setDirections(List<IdValue<Direction>> directions) {
+        this.directions = Optional.ofNullable(directions);
     }
 }

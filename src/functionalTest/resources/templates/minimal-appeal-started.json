@@ -16,5 +16,6 @@
   "appellantHasFixedAddress": "No",
   "appealType": "protection",
   "hasNewMatters": "No",
-  "hasOtherAppeals": "No"
+  "hasOtherAppeals": "No",
+  "sendDirectionActionAvailable": "No"
 }

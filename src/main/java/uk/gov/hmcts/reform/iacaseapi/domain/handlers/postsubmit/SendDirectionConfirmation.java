@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class SendDirectionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.SUBMIT_APPEAL;
+        return callback.getEvent() == Event.SEND_DIRECTION;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -30,10 +30,16 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
+        String directionsTabUrl =
+            "/case/IA/Asylum/"
+            + callback.getCaseDetails().getId()
+            + "#directions";
+
+        postSubmitResponse.setConfirmationHeader("# You have sent a direction");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You will receive an email confirming that this appeal has been submitted successfully."
+            + "You can see the status of the direction in the "
+            + "[directions tab](" + directionsTabUrl + ")"
         );
 
         return postSubmitResponse;

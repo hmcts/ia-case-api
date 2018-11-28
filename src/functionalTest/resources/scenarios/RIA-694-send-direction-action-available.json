@@ -1,14 +1,14 @@
 {
-  "description": "RIA-730 Home Office reference number more than 7 characters is truncated",
+  "description": "RIA-694 Send direction action becomes available in appropriate state",
   "credentials": "CaseOfficer",
   "callback": "/asylum/ccdAboutToSubmit",
   "input": {
-    "eventId": "startAppeal",
-    "state": "appealStarted",
+    "eventId": "submitAppeal",
+    "state": "appealSubmitted",
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "Z123456/001"
+        "sendDirectionActionAvailable": "No"
       }
     }
   },
@@ -18,7 +18,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "Z123456"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }

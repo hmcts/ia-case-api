@@ -1,9 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum Event {
 
     START_APPEAL("startAppeal"),
-    SUBMIT_APPEAL("submitAppeal");
+    SUBMIT_APPEAL("submitAppeal"),
+    SEND_DIRECTION("sendDirection"),
+
+    @JsonEnumDefaultValue
+    UNKNOWN("unknown");
 
     private final String id;
 

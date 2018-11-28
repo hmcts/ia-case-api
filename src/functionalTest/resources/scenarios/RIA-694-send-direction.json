@@ -1,0 +1,57 @@
+{
+  "description": "RIA-694 Send direction",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "sendDirection",
+    "state": "appealSubmitted",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionExplanation": "Do the second thing",
+        "sendDirectionParties": "legalRepresentative",
+        "sendDirectionDateDue": "2022-01-01T00:00:00.000",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Do the first thing",
+              "parties": "legalRepresentative",
+              "dateDue": "2018-12-31T00:00:00.000",
+              "dateSent": "2018-12-25"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "2",
+            "value": {
+              "explanation": "Do the second thing",
+              "parties": "legalRepresentative",
+              "dateDue": "2022-01-01T00:00:00.000",
+              "dateSent": "{$TODAY}"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Do the first thing",
+              "parties": "legalRepresentative",
+              "dateDue": "2018-12-31T00:00:00.000",
+              "dateSent": "2018-12-25"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

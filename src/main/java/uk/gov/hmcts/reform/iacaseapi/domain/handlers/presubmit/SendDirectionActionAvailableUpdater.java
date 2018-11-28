@@ -2,16 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHandler<AsylumCase> {
+public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -20,8 +23,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPEAL;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -32,20 +34,28 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDetails<AsylumCase> caseDetails =
             callback
-                .getCaseDetails()
-                .getCaseData();
+                .getCaseDetails();
 
-        String homeOfficeReferenceNumber =
-            asylumCase
-                .getHomeOfficeReferenceNumber()
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is not present"));
+        AsylumCase asylumCase = caseDetails.getCaseData();
 
-        if (homeOfficeReferenceNumber.length() > 7) {
-            asylumCase.setHomeOfficeReferenceNumber(
-                homeOfficeReferenceNumber.substring(0, 7)
-            );
+        if (Arrays.asList(
+            State.APPEAL_SUBMITTED,
+            State.APPEAL_SUBMITTED_OUT_OF_TIME,
+            State.AWAITING_RESPONDENT_EVIDENCE,
+            State.CASE_BUILDING,
+            State.CASE_UNDER_REVIEW,
+            State.RESPONDENT_REVIEW,
+            State.SUBMIT_HEARING_REQUIREMENTS,
+            State.LISTING,
+            State.PREPARE_FOR_HEARING,
+            State.FINAL_BUNDLING,
+            State.PRE_HEARING
+        ).contains(caseDetails.getState())) {
+            asylumCase.setSendDirectionActionAvailable(YesOrNo.YES);
+        } else {
+            asylumCase.setSendDirectionActionAvailable(YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
