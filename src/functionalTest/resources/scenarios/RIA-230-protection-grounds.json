@@ -1,0 +1,45 @@
+{
+  "description": "RIA-230 Grounds of appeal for protection type appeals",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "startAppeal",
+    "state": "appealStarted",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealGroundsProtection": {
+          "values": [
+            "refugeeConvention",
+            "humanitarianProtection"
+          ]
+        },
+        "appealGroundsHumanRights": {
+          "values": [
+            "humanRights"
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealGroundsProtection": {
+          "values": [
+            "refugeeConvention",
+            "humanitarianProtection"
+          ]
+        },
+        "appealGroundsHumanRights": {
+          "values": [
+            "humanRights"
+          ]
+        }
+      }
+    }
+  }
+}

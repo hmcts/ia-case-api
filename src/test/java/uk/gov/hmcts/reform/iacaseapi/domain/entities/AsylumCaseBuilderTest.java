@@ -5,10 +5,12 @@ import static org.mockito.Mockito.mock;
 
 import java.util.*;
 import org.junit.Test;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+@SuppressWarnings("unchecked")
 public class AsylumCaseBuilderTest {
 
     private final String homeOfficeReferenceNumber = "A";
@@ -21,6 +23,9 @@ public class AsylumCaseBuilderTest {
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
     private final AddressUk appellantAddress = mock(AddressUk.class);
     private final String appealType = "I";
+    private final CheckValues<String> appealGroundsProtection = mock(CheckValues.class);
+    private final CheckValues<String> appealGroundsHumanRights = mock(CheckValues.class);
+    private final CheckValues<String> appealGroundsRevocation = mock(CheckValues.class);
     private final YesOrNo hasNewMatters = YesOrNo.YES;
     private final String newMatters = "K";
     private final String hasOtherAppeals = "NotSure";
@@ -51,6 +56,9 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setAppellantHasFixedAddress(Optional.of(appellantHasFixedAddress));
         asylumCaseBuilder.setAppellantAddress(Optional.of(appellantAddress));
         asylumCaseBuilder.setAppealType(Optional.of(appealType));
+        asylumCaseBuilder.setAppealGroundsProtection(Optional.of(appealGroundsProtection));
+        asylumCaseBuilder.setAppealGroundsHumanRights(Optional.of(appealGroundsHumanRights));
+        asylumCaseBuilder.setAppealGroundsRevocation(Optional.of(appealGroundsRevocation));
         asylumCaseBuilder.setHasNewMatters(Optional.of(hasNewMatters));
         asylumCaseBuilder.setNewMatters(Optional.of(newMatters));
         asylumCaseBuilder.setHasOtherAppeals(Optional.of(hasOtherAppeals));
@@ -76,6 +84,9 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(appellantHasFixedAddress), asylumCase.getAppellantHasFixedAddress());
         assertEquals(Optional.of(appellantAddress), asylumCase.getAppellantAddress());
         assertEquals(Optional.of(appealType), asylumCase.getAppealType());
+        assertEquals(Optional.of(appealGroundsProtection), asylumCase.getAppealGroundsProtection());
+        assertEquals(Optional.of(appealGroundsHumanRights), asylumCase.getAppealGroundsHumanRights());
+        assertEquals(Optional.of(appealGroundsRevocation), asylumCase.getAppealGroundsRevocation());
         assertEquals(Optional.of(hasNewMatters), asylumCase.getHasNewMatters());
         assertEquals(Optional.of(newMatters), asylumCase.getNewMatters());
         assertEquals(Optional.of(hasOtherAppeals), asylumCase.getHasOtherAppeals());
