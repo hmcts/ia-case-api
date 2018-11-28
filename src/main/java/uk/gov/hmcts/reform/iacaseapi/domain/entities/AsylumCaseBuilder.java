@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -25,6 +26,9 @@ public class AsylumCaseBuilder {
     private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUk> appellantAddress = Optional.empty();
     private Optional<String> appealType = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsProtection = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsHumanRights = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsRevocation = Optional.empty();
     private Optional<YesOrNo> hasNewMatters = Optional.empty();
     private Optional<String> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
@@ -90,6 +94,18 @@ public class AsylumCaseBuilder {
 
     public Optional<String> getAppealType() {
         return appealType;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsProtection() {
+        return appealGroundsProtection;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsHumanRights() {
+        return appealGroundsHumanRights;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsRevocation() {
+        return appealGroundsRevocation;
     }
 
     public Optional<YesOrNo> getHasNewMatters() {
@@ -178,6 +194,18 @@ public class AsylumCaseBuilder {
 
     public void setAppealType(Optional<String> appealType) {
         this.appealType = appealType;
+    }
+
+    public void setAppealGroundsProtection(Optional<CheckValues<String>> appealGroundsProtection) {
+        this.appealGroundsProtection = appealGroundsProtection;
+    }
+
+    public void setAppealGroundsHumanRights(Optional<CheckValues<String>> appealGroundsHumanRights) {
+        this.appealGroundsHumanRights = appealGroundsHumanRights;
+    }
+
+    public void setAppealGroundsRevocation(Optional<CheckValues<String>> appealGroundsRevocation) {
+        this.appealGroundsRevocation = appealGroundsRevocation;
     }
 
     public void setHasNewMatters(Optional<YesOrNo> hasNewMatters) {

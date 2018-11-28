@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -26,6 +27,9 @@ public class AsylumCase implements CaseData {
     private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUk> appellantAddress = Optional.empty();
     private Optional<String> appealType = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsProtection = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsHumanRights = Optional.empty();
+    private Optional<CheckValues<String>> appealGroundsRevocation = Optional.empty();
     private Optional<YesOrNo> hasNewMatters = Optional.empty();
     private Optional<String> newMatters = Optional.empty();
     private Optional<String> hasOtherAppeals = Optional.empty();
@@ -66,6 +70,9 @@ public class AsylumCase implements CaseData {
         this.appellantHasFixedAddress = asylumCaseBuilder.getAppellantHasFixedAddress();
         this.appellantAddress = asylumCaseBuilder.getAppellantAddress();
         this.appealType = asylumCaseBuilder.getAppealType();
+        this.appealGroundsProtection = asylumCaseBuilder.getAppealGroundsProtection();
+        this.appealGroundsHumanRights = asylumCaseBuilder.getAppealGroundsHumanRights();
+        this.appealGroundsRevocation = asylumCaseBuilder.getAppealGroundsRevocation();
         this.hasNewMatters = asylumCaseBuilder.getHasNewMatters();
         this.newMatters = asylumCaseBuilder.getNewMatters();
         this.hasOtherAppeals = asylumCaseBuilder.getHasOtherAppeals();
@@ -128,6 +135,21 @@ public class AsylumCase implements CaseData {
     public Optional<String> getAppealType() {
         requireNonNull(appealType);
         return appealType;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsProtection() {
+        requireNonNull(appealGroundsProtection);
+        return appealGroundsProtection;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsHumanRights() {
+        requireNonNull(appealGroundsHumanRights);
+        return appealGroundsHumanRights;
+    }
+
+    public Optional<CheckValues<String>> getAppealGroundsRevocation() {
+        requireNonNull(appealGroundsRevocation);
+        return appealGroundsRevocation;
     }
 
     public Optional<YesOrNo> getHasNewMatters() {
