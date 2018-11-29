@@ -8,6 +8,7 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -50,8 +51,22 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // upload respondent evidence ...
+    // -----------------------------------------------------------------------------
+
     private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case argument ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> caseArgumentDocument = Optional.empty();
+    private Optional<String> caseArgumentDescription = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -83,8 +98,12 @@ public class AsylumCase implements CaseData {
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
+        this.legalRepresentativeDocuments = asylumCaseBuilder.getLegalRepresentativeDocuments();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
         this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
+        this.caseArgumentDocument = asylumCaseBuilder.getCaseArgumentDocument();
+        this.caseArgumentDescription = asylumCaseBuilder.getCaseArgumentDescription();
+        this.caseArgumentEvidence = asylumCaseBuilder.getCaseArgumentEvidence();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -245,10 +264,27 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
+        requireNonNull(legalRepresentativeDocuments);
+        return legalRepresentativeDocuments;
+    }
+
     public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
         requireNonNull(respondentDocuments);
         return respondentDocuments;
     }
+
+    public void setLegalRepresentativeDocuments(List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments) {
+        this.legalRepresentativeDocuments = Optional.ofNullable(legalRepresentativeDocuments);
+    }
+
+    public void setRespondentDocuments(List<IdValue<DocumentWithMetadata>> respondentDocuments) {
+        this.respondentDocuments = Optional.ofNullable(respondentDocuments);
+    }
+
+    // -----------------------------------------------------------------------------
+    // upload respondent evidence ...
+    // -----------------------------------------------------------------------------
 
     public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
         requireNonNull(respondentEvidence);
@@ -259,7 +295,19 @@ public class AsylumCase implements CaseData {
         this.respondentEvidence = Optional.empty();
     }
 
-    public void setRespondentDocuments(List<IdValue<DocumentWithMetadata>> respondentDocuments) {
-        this.respondentDocuments = Optional.ofNullable(respondentDocuments);
+    // -----------------------------------------------------------------------------
+    // case argument ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getCaseArgumentDocument() {
+        return caseArgumentDocument;
+    }
+
+    public Optional<String> getCaseArgumentDescription() {
+        return caseArgumentDescription;
+    }
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getCaseArgumentEvidence() {
+        return caseArgumentEvidence;
     }
 }

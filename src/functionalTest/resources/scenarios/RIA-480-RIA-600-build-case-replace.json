@@ -1,0 +1,152 @@
+{
+  "description": "RIA-480 & RIA-600 Build case -- case argument replace previous",
+  "credentials": "LegalRepresentative",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "buildCase",
+    "state": "caseBuilding",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseArgumentDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-argument.pdf"
+        },
+        "caseArgumentDescription": "Case argument",
+        "caseArgumentEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-case-argument-evidence.pdf"
+              },
+              "description": "Some case argument evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-case-argument-evidence.pdf"
+              },
+              "description": "Some more case argument evidence"
+            }
+          }
+        ],
+        "legalRepresentativeDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/XXX",
+                "document_binary_url": "http://document-store/XXX/binary",
+                "document_filename": "previous-case-argument.pdf"
+              },
+              "description": "Previous case argument",
+              "dateUploaded": "2018-12-01",
+              "tag": "caseArgument"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/YYY",
+                "document_binary_url": "http://document-store/YYY/binary",
+                "document_filename": "previous-case-argument-evidence.pdf"
+              },
+              "description": "Previous case argument evidence",
+              "dateUploaded": "2018-12-01",
+              "tag": "caseArgument"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseArgumentDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-argument.pdf"
+        },
+        "caseArgumentDescription": "Case argument",
+        "caseArgumentEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-case-argument-evidence.pdf"
+              },
+              "description": "Some case argument evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-case-argument-evidence.pdf"
+              },
+              "description": "Some more case argument evidence"
+            }
+          }
+        ],
+        "legalRepresentativeDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "case-argument.pdf"
+              },
+              "description": "Case argument",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseArgument"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-case-argument-evidence.pdf"
+              },
+              "description": "Some case argument evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseArgument"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-case-argument-evidence.pdf"
+              },
+              "description": "Some more case argument evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseArgument"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

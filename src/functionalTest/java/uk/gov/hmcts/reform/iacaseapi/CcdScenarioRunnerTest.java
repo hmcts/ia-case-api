@@ -90,6 +90,12 @@ public class CcdScenarioRunnerTest {
 
         String credentials = MapValueExtractor.extract(scenario, "credentials");
 
+        if ("LegalRepresentative".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getLegalRepresentativeAuthorization();
+        }
+
         if ("CaseOfficer".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider

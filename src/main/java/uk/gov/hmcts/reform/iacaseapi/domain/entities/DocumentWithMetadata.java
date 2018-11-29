@@ -9,6 +9,7 @@ public class DocumentWithMetadata {
     private Document document;
     private String description;
     private String dateUploaded;
+    private DocumentTag tag;
 
     private DocumentWithMetadata() {
         // noop -- for deserializer
@@ -17,11 +18,13 @@ public class DocumentWithMetadata {
     public DocumentWithMetadata(
         Document document,
         String description,
-        String dateUploaded
+        String dateUploaded,
+        DocumentTag tag
     ) {
         this.document = document;
         this.description = description;
         this.dateUploaded = dateUploaded;
+        this.tag = tag;
     }
 
     public Document getDocument() {
@@ -37,5 +40,10 @@ public class DocumentWithMetadata {
     public String getDateUploaded() {
         requireNonNull(dateUploaded);
         return dateUploaded;
+    }
+
+    public DocumentTag getTag() {
+        requireNonNull(tag);
+        return tag;
     }
 }
