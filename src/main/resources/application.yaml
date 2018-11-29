@@ -9,23 +9,24 @@ management:
 spring:
   application:
     name: Immigration & Asylum case API
+  jackson.date-format: yyyy-MM-dd
 
 buildCase.dueInDays: 28
 requestRespondentEvidence.dueInDays: 14
 
 security:
   anonymousPaths:
-  - "/health"
-  - "/loggers/**"
-  - "/swagger-ui.html"
-  - "/swagger-resources/**"
-  - "/v2/api-docs"
-  - "/webjars/springfox-swagger-ui/**"
+    - "/health"
+    - "/loggers/**"
+    - "/swagger-ui.html"
+    - "/swagger-resources/**"
+    - "/v2/api-docs"
+    - "/webjars/springfox-swagger-ui/**"
   authorisedServices:
-  - "ccd"
-  - "ccd_data"
-  - "ccd_gw"
-  - "ccd_ps"
+    - "ccd"
+    - "ccd_data"
+    - "ccd_gw"
+    - "ccd_ps"
   authorisedRoles:
 
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
