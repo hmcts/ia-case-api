@@ -57,7 +57,7 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
-        when(asylumCase.getUploadRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
         when(documentsAppender.append(
             existingRespondentDocuments,
             respondentEvidence
@@ -69,7 +69,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getUploadRespondentEvidence();
+        verify(asylumCase, times(1)).getRespondentEvidence();
 
         verify(documentsAppender, times(1)).append(
             existingRespondentDocuments,
@@ -78,7 +78,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
 
-        verify(asylumCase, times(1)).clearUploadRespondentEvidence();
+        verify(asylumCase, times(1)).clearRespondentEvidence();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getUploadRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
         when(documentsAppender.append(
             any(List.class),
             eq(respondentEvidence)
@@ -103,7 +103,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getUploadRespondentEvidence();
+        verify(asylumCase, times(1)).getRespondentEvidence();
 
         verify(documentsAppender, times(1)).append(
             existingRespondentDocumentsCaptor.capture(),
@@ -119,7 +119,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
 
-        verify(asylumCase, times(1)).clearUploadRespondentEvidence();
+        verify(asylumCase, times(1)).clearRespondentEvidence();
     }
 
     @Test
@@ -129,10 +129,10 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getUploadRespondentEvidence()).thenReturn(Optional.empty());
+        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("uploadRespondentEvidence is not present")
+            .hasMessage("respondentEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 

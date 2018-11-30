@@ -45,7 +45,7 @@ public class AsylumCaseBuilder {
     // case documents ...
     // -----------------------------------------------------------------------------
 
-    private Optional<List<IdValue<DocumentWithDescription>>> uploadRespondentEvidence = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
 
     public AsylumCase build() {
@@ -132,8 +132,8 @@ public class AsylumCaseBuilder {
         return directions;
     }
 
-    public Optional<List<IdValue<DocumentWithDescription>>> getUploadRespondentEvidence() {
-        return uploadRespondentEvidence;
+    public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
+        return respondentEvidence;
     }
 
     public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
@@ -220,11 +220,11 @@ public class AsylumCaseBuilder {
         this.directions = directions;
     }
 
-    public void setUploadRespondentEvidence(Optional<List<IdValue<DocumentWithDescription>>> uploadRespondentEvidence) {
-        this.uploadRespondentEvidence = uploadRespondentEvidence;
-    }
-
     public void setRespondentDocuments(Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments) {
         this.respondentDocuments = respondentDocuments;
+    }
+
+    public void setRespondentEvidence(Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence) {
+        this.respondentEvidence = respondentEvidence;
     }
 }

@@ -46,8 +46,8 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
-    private Optional<List<IdValue<DocumentWithDescription>>> uploadRespondentEvidence = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -76,8 +76,8 @@ public class AsylumCase implements CaseData {
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
-        this.uploadRespondentEvidence = asylumCaseBuilder.getUploadRespondentEvidence();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
+        this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -223,18 +223,18 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
-    public Optional<List<IdValue<DocumentWithDescription>>> getUploadRespondentEvidence() {
-        requireNonNull(uploadRespondentEvidence);
-        return uploadRespondentEvidence;
-    }
-
     public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
         requireNonNull(respondentDocuments);
         return respondentDocuments;
     }
 
-    public void clearUploadRespondentEvidence() {
-        this.uploadRespondentEvidence = Optional.empty();
+    public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
+        requireNonNull(respondentEvidence);
+        return respondentEvidence;
+    }
+
+    public void clearRespondentEvidence() {
+        this.respondentEvidence = Optional.empty();
     }
 
     public void setRespondentDocuments(List<IdValue<DocumentWithMetadata>> respondentDocuments) {

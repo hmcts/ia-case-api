@@ -51,22 +51,22 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
-        final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
+        final List<IdValue<DocumentWithMetadata>> respondentDocuments =
             asylumCase
                 .getRespondentDocuments()
                 .orElse(Collections.emptyList());
 
         final List<IdValue<DocumentWithDescription>> respondentEvidence =
             asylumCase
-                .getUploadRespondentEvidence()
-                .orElseThrow(() -> new IllegalStateException("uploadRespondentEvidence is not present"));
+                .getRespondentEvidence()
+                .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"));
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
-            documentsAppender.append(existingRespondentDocuments, respondentEvidence);
+            documentsAppender.append(respondentDocuments, respondentEvidence);
 
         asylumCase.setRespondentDocuments(allRespondentDocuments);
 
-        asylumCase.clearUploadRespondentEvidence();
+        asylumCase.clearRespondentEvidence();
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

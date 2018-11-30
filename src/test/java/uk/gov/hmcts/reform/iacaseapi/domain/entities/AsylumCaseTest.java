@@ -39,8 +39,8 @@ public class AsylumCaseTest {
     private final String sendDirectionDateDue = "2022-01-01";
     private final List<IdValue<Direction>> directions = Arrays.asList(new IdValue<>("1", mock(Direction.class)));
 
-    private final List<IdValue<DocumentWithDescription>> uploadRespondentEvidence = Arrays.asList(new IdValue<>("1", mock(DocumentWithDescription.class)));
     private final List<IdValue<DocumentWithMetadata>> respondentDocuments = Arrays.asList(new IdValue<>("1", mock(DocumentWithMetadata.class)));
+    private final List<IdValue<DocumentWithDescription>> respondentEvidence = Arrays.asList(new IdValue<>("1", mock(DocumentWithDescription.class)));
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -67,8 +67,8 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
         when(asylumCaseBuilder.getDirections()).thenReturn(Optional.of(directions));
-        when(asylumCaseBuilder.getUploadRespondentEvidence()).thenReturn(Optional.of(uploadRespondentEvidence));
         when(asylumCaseBuilder.getRespondentDocuments()).thenReturn(Optional.of(respondentDocuments));
+        when(asylumCaseBuilder.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
-        assertEquals(Optional.of(uploadRespondentEvidence), asylumCase.getUploadRespondentEvidence());
         assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
+        assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
     }
 
     @Test
@@ -206,15 +206,6 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void upload_respondent_evidence_is_clearable() {
-
-        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
-
-        asylumCase.clearUploadRespondentEvidence();
-        assertEquals(Optional.empty(), asylumCase.getUploadRespondentEvidence());
-    }
-
-    @Test
     public void respondent_documents_is_mutable() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
@@ -230,5 +221,14 @@ public class AsylumCaseTest {
 
         asylumCase.setRespondentDocuments(null);
         assertEquals(Optional.empty(), asylumCase.getRespondentDocuments());
+    }
+
+    @Test
+    public void respondent_evidence_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearRespondentEvidence();
+        assertEquals(Optional.empty(), asylumCase.getRespondentEvidence());
     }
 }
