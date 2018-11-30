@@ -10,6 +10,7 @@ public enum Event {
     REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
     UPLOAD_RESPONDENT_EVIDENCE("uploadRespondentEvidence"),
     BUILD_CASE("buildCase"),
+    SUBMIT_CASE("submitCase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
