@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentEvidenceHandlerTest {
+public class SendDirectionToRespondentHandlerTest {
 
     @Mock private DirectionAppender directionAppender;
     @Mock private Callback<AsylumCase> callback;
@@ -36,18 +36,18 @@ public class RequestRespondentEvidenceHandlerTest {
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
-    private RequestRespondentEvidenceHandler requestRespondentEvidenceHandler;
+    private SendDirectionToRespondentHandler sendDirectionToRespondentHandler;
 
     @Before
     public void setUp() {
-        requestRespondentEvidenceHandler =
-            new RequestRespondentEvidenceHandler(
+        sendDirectionToRespondentHandler =
+            new SendDirectionToRespondentHandler(
                 directionAppender
             );
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    public void should_append_new_respondent_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -70,7 +70,7 @@ public class RequestRespondentEvidenceHandlerTest {
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -94,7 +94,7 @@ public class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    public void should_add_new_respondent_direction_to_the_case_when_no_directions_exist() {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class RequestRespondentEvidenceHandlerTest {
         final String expectedDateDue = "2018-12-25";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getDirections()).thenReturn(Optional.empty());
         when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.of(expectedExplanation));
@@ -116,7 +116,7 @@ public class RequestRespondentEvidenceHandlerTest {
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -155,7 +155,7 @@ public class RequestRespondentEvidenceHandlerTest {
 
         when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionExplanation is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -164,13 +164,13 @@ public class RequestRespondentEvidenceHandlerTest {
     public void should_throw_when_send_direction_date_due_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.of("Do the thing"));
         when(asylumCase.getSendDirectionDateDue()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionDateDue is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -178,12 +178,12 @@ public class RequestRespondentEvidenceHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -197,9 +197,10 @@ public class RequestRespondentEvidenceHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = requestRespondentEvidenceHandler.canHandle(callbackStage, callback);
+                boolean canHandle = sendDirectionToRespondentHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
+                if ((event == Event.REQUEST_RESPONDENT_EVIDENCE
+                     || event == Event.REQUEST_RESPONDENT_REVIEW)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -215,19 +216,19 @@ public class RequestRespondentEvidenceHandlerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(null, callback))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> sendDirectionToRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
