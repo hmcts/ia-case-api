@@ -11,7 +11,8 @@ spring:
     name: Immigration & Asylum case API
   jackson.date-format: yyyy-MM-dd
 
-buildCase.dueInDays: 28
+legalRepresentativeBuildCase.dueInDays: 28
+legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
 

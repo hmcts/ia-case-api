@@ -19,18 +19,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
-public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final int buildCaseDueInDays;
+    private final int reviewDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
-    public AutoBuildCaseDirectionHandler(
-        @Value("${legalRepresentativeBuildCase.dueInDays}") int buildCaseDueInDays,
+    public AutoLegalRepresentativeReviewDirectionHandler(
+        @Value("${legalRepresentativeReview.dueInDays}") int reviewDueInDays,
         DateProvider dateProvider,
         DirectionAppender directionAppender
     ) {
-        this.buildCaseDueInDays = buildCaseDueInDays;
+        this.reviewDueInDays = reviewDueInDays;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -43,7 +43,7 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
+               && callback.getEvent() == Event.ADD_APPEAL_RESPONSE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -67,23 +67,16 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
                 existingDirections,
-                "You must now build your case by uploading your appeal argument and evidence.\n\n"
-                + "Advice on writing an appeal argument\n"
-                + "You must write a full argument that references:\n"
-                + "- all the evidence you have or plan to rely on, including any witness statements\n"
-                + "- the grounds and issues of the case\n"
-                + "- any new matters\n"
-                + "- any legal authorities you plan to rely on and why they are applicable to your case\n\n"
-                + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all "
-                + "the information for the Home Office to conduct a thorough review of their decision at this stage.\n\n"
+                "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\n"
                 + "Next steps\n"
-                + "Once you have uploaded your appeal argument and all evidence, submit your case. The case officer will "
-                + "then review everything you've added. If your case looks ready, the case officer will send it to the "
-                + "respondent for their review. The respondent then has 14 days to respond.",
+                + "You have " + reviewDueInDays + " days to review the response. "
+                + "If you want to respond to what the Home Office has said, you should email the case officer.\n\n"
+                + "If you do not respond within " + reviewDueInDays + " days, "
+                + "the case will automatically go to hearing.",
                 Parties.LEGAL_REPRESENTATIVE,
                 dateProvider
                     .now()
-                    .plusDays(buildCaseDueInDays)
+                    .plusDays(reviewDueInDays)
                     .toString()
             );
 
