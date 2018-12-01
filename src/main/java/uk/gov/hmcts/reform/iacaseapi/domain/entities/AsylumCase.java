@@ -68,6 +68,14 @@ public class AsylumCase implements CaseData {
     private Optional<String> caseArgumentDescription = Optional.empty();
     private Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence = Optional.empty();
 
+    // -----------------------------------------------------------------------------
+    // appeal response ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> appealResponseDocument = Optional.empty();
+    private Optional<String> appealResponseDescription = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
+
     private AsylumCase() {
         // noop -- for deserializers
     }
@@ -104,6 +112,9 @@ public class AsylumCase implements CaseData {
         this.caseArgumentDocument = asylumCaseBuilder.getCaseArgumentDocument();
         this.caseArgumentDescription = asylumCaseBuilder.getCaseArgumentDescription();
         this.caseArgumentEvidence = asylumCaseBuilder.getCaseArgumentEvidence();
+        this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
+        this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
+        this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -300,14 +311,36 @@ public class AsylumCase implements CaseData {
     // -----------------------------------------------------------------------------
 
     public Optional<Document> getCaseArgumentDocument() {
+        requireNonNull(caseArgumentDocument);
         return caseArgumentDocument;
     }
 
     public Optional<String> getCaseArgumentDescription() {
+        requireNonNull(caseArgumentDescription);
         return caseArgumentDescription;
     }
 
     public Optional<List<IdValue<DocumentWithDescription>>> getCaseArgumentEvidence() {
+        requireNonNull(caseArgumentEvidence);
         return caseArgumentEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // appeal response ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getAppealResponseDocument() {
+        requireNonNull(appealResponseDocument);
+        return appealResponseDocument;
+    }
+
+    public Optional<String> getAppealResponseDescription() {
+        requireNonNull(appealResponseDescription);
+        return appealResponseDescription;
+    }
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getAppealResponseEvidence() {
+        requireNonNull(appealResponseEvidence);
+        return appealResponseEvidence;
     }
 }

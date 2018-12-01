@@ -1,0 +1,20 @@
+{
+  "description": "RIA-480 & RIA-600 Build case confirmation",
+  "credentials": "LegalRepresentative",
+  "callback": "/asylum/ccdSubmitted",
+  "input": {
+    "eventId": "buildCase",
+    "state": "caseBuilding",
+    "id": 1234,
+    "caseData": {
+      "template": "empty-case.json"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Upload saved\nYou still need to submit your case",
+      "body": "#### What happens next?\n\nIf you're ready for your case to be reviewed, [submit your case](/case/IA/Asylum/1234/trigger/submitCase).\n\nIf you're not yet ready for your case to be reviewed, continue to [build your case](/case/IA/Asylum/1234/trigger/buildCase)."
+    }
+  }
+}

@@ -4,12 +4,34 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class DocumentsAppender {
+
+    public List<IdValue<DocumentWithMetadata>> append(
+        List<IdValue<DocumentWithMetadata>> existingDocuments,
+        List<DocumentWithMetadata> newDocuments,
+        DocumentTag replaceExistingDocuments
+    ) {
+        requireNonNull(existingDocuments, "existingDocuments must not be null");
+        requireNonNull(newDocuments, "newDocuments must not be null");
+
+        final List<IdValue<DocumentWithMetadata>> filteredDocuments =
+            existingDocuments
+                .stream()
+                .filter(idValue -> idValue.getValue().getTag() != replaceExistingDocuments)
+                .collect(Collectors.toList());
+
+        return append(
+            filteredDocuments,
+            newDocuments
+        );
+    }
 
     public List<IdValue<DocumentWithMetadata>> append(
         List<IdValue<DocumentWithMetadata>> existingDocuments,

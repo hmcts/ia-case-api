@@ -67,6 +67,14 @@ public class AsylumCaseBuilder {
     private Optional<String> caseArgumentDescription = Optional.empty();
     private Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence = Optional.empty();
 
+    // -----------------------------------------------------------------------------
+    // appeal response ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> appealResponseDocument = Optional.empty();
+    private Optional<String> appealResponseDescription = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
+
     public AsylumCase build() {
         return new AsylumCase(this);
     }
@@ -322,5 +330,33 @@ public class AsylumCaseBuilder {
 
     public void setCaseArgumentEvidence(Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence) {
         this.caseArgumentEvidence = caseArgumentEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // appeal response ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getAppealResponseDocument() {
+        return appealResponseDocument;
+    }
+
+    public Optional<String> getAppealResponseDescription() {
+        return appealResponseDescription;
+    }
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getAppealResponseEvidence() {
+        return appealResponseEvidence;
+    }
+
+    public void setAppealResponseDocument(Optional<Document> appealResponseDocument) {
+        this.appealResponseDocument = appealResponseDocument;
+    }
+
+    public void setAppealResponseDescription(Optional<String> appealResponseDescription) {
+        this.appealResponseDescription = appealResponseDescription;
+    }
+
+    public void setAppealResponseEvidence(Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence) {
+        this.appealResponseEvidence = appealResponseEvidence;
     }
 }
