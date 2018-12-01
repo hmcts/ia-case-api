@@ -1,5 +1,5 @@
 {
-  "description": "RIA-697 Add appeal response -- replace previous",
+  "description": "RIA-697 & RIA-237 Add appeal response -- initial upload",
   "credentials": "CaseOfficer",
   "callback": "/asylum/ccdAboutToSubmit",
   "input": {
@@ -37,34 +37,6 @@
               "description": "Some more appeal response evidence"
             }
           }
-        ],
-        "respondentDocuments": [
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/XXX",
-                "document_binary_url": "http://document-store/XXX/binary",
-                "document_filename": "previous-appeal-response.pdf"
-              },
-              "description": "Previous appeal response",
-              "dateUploaded": "2018-12-01",
-              "tag": "appealResponse"
-            }
-          },
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/YYY",
-                "document_binary_url": "http://document-store/YYY/binary",
-                "document_filename": "previous-appeal-response-evidence.pdf"
-              },
-              "description": "Previous appeal response evidence",
-              "dateUploaded": "2018-12-01",
-              "tag": "appealResponse"
-            }
-          }
         ]
       }
     }
@@ -75,6 +47,17 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\nNext steps\nYou have 5 days to review the response. If you want to respond to what the Home Office has said, you should email the case officer.\n\nIf you do not respond within 5 days, the case will automatically go to hearing.",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+5}",
+              "dateSent": "{$TODAY}"
+            }
+          }
+        ],
         "appealResponseDocument": {
           "document_url": "http://document-store/AAA",
           "document_binary_url": "http://document-store/AAA/binary",
