@@ -16,11 +16,12 @@ public class EventTest {
         assertEquals("buildCase", Event.BUILD_CASE.toString());
         assertEquals("submitCase", Event.SUBMIT_CASE.toString());
         assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
+        assertEquals("addAppealResponse", Event.ADD_APPEAL_RESPONSE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(9, Event.values().length);
+        assertEquals(10, Event.values().length);
     }
 }

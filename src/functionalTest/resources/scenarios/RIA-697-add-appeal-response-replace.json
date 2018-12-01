@@ -1,0 +1,152 @@
+{
+  "description": "RIA-697 Add appeal response -- replace previous",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "addAppealResponse",
+    "state": "respondentReview",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealResponseDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "appeal-response.pdf"
+        },
+        "appealResponseDescription": "Appeal response",
+        "appealResponseEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-appeal-response-evidence.pdf"
+              },
+              "description": "Some more appeal response evidence"
+            }
+          }
+        ],
+        "respondentDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/XXX",
+                "document_binary_url": "http://document-store/XXX/binary",
+                "document_filename": "previous-appeal-response.pdf"
+              },
+              "description": "Previous appeal response",
+              "dateUploaded": "2018-12-01",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/YYY",
+                "document_binary_url": "http://document-store/YYY/binary",
+                "document_filename": "previous-appeal-response-evidence.pdf"
+              },
+              "description": "Previous appeal response evidence",
+              "dateUploaded": "2018-12-01",
+              "tag": "appealResponse"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealResponseDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "appeal-response.pdf"
+        },
+        "appealResponseDescription": "Appeal response",
+        "appealResponseEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-appeal-response-evidence.pdf"
+              },
+              "description": "Some more appeal response evidence"
+            }
+          }
+        ],
+        "respondentDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "appeal-response.pdf"
+              },
+              "description": "Appeal response",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-appeal-response-evidence.pdf"
+              },
+              "description": "Some more appeal response evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

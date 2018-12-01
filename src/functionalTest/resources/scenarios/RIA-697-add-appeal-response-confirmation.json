@@ -1,0 +1,20 @@
+{
+  "description": "RIA-697 Add appeal response confirmation",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdSubmitted",
+  "input": {
+    "eventId": "addAppealResponse",
+    "state": "respondentReview",
+    "id": 1234,
+    "caseData": {
+      "template": "empty-case.json"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have uploaded the appeal response",
+      "body": "#### What happens next?\n\nThe legal representative will now get an email directing them to review the response.\n\nThis is an automated email sent from the system - you don't need to do anything."
+    }
+  }
+}

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -21,15 +22,17 @@ public class DocumentsAppenderTest {
 
     @Mock private IdValue<DocumentWithMetadata> existingDocumentById1;
     @Mock private IdValue<DocumentWithMetadata> existingDocumentById2;
+    @Mock private IdValue<DocumentWithMetadata> existingDocumentById3;
     @Mock private DocumentWithMetadata existingDocument1 = mock(DocumentWithMetadata.class);
     @Mock private DocumentWithMetadata existingDocument2 = mock(DocumentWithMetadata.class);
+    @Mock private DocumentWithMetadata existingDocument3 = mock(DocumentWithMetadata.class);
     @Mock private DocumentWithMetadata newDocument1 = mock(DocumentWithMetadata.class);
     @Mock private DocumentWithMetadata newDocument2 = mock(DocumentWithMetadata.class);
 
     private DocumentsAppender documentsAppender = new DocumentsAppender();
 
     @Test
-    public void should_append_new_direction_in_first_position() {
+    public void should_append_new_document_in_first_position() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =
             Arrays.asList(
@@ -46,7 +49,7 @@ public class DocumentsAppenderTest {
         when(existingDocumentById1.getValue()).thenReturn(existingDocument1);
         when(existingDocumentById2.getValue()).thenReturn(existingDocument2);
 
-        List<IdValue<DocumentWithMetadata>> allDocuments =
+        final List<IdValue<DocumentWithMetadata>> allDocuments =
             documentsAppender.append(existingDocuments, newDocuments);
 
         verify(existingDocumentById1, never()).getId();
@@ -69,6 +72,50 @@ public class DocumentsAppenderTest {
     }
 
     @Test
+    public void should_append_new_document_in_first_position_replacing_any_existing_with_tag() {
+
+        List<IdValue<DocumentWithMetadata>> existingDocuments =
+            Arrays.asList(
+                existingDocumentById1,
+                existingDocumentById2,
+                existingDocumentById3
+            );
+
+        List<DocumentWithMetadata> newDocuments =
+            Arrays.asList(
+                newDocument1,
+                newDocument2
+            );
+
+        when(existingDocumentById1.getValue()).thenReturn(existingDocument1);
+        when(existingDocumentById2.getValue()).thenReturn(existingDocument2);
+        when(existingDocumentById3.getValue()).thenReturn(existingDocument3);
+
+        when(existingDocument1.getTag()).thenReturn(DocumentTag.APPEAL_RESPONSE);
+        when(existingDocument2.getTag()).thenReturn(DocumentTag.CASE_ARGUMENT);
+        when(existingDocument3.getTag()).thenReturn(DocumentTag.APPEAL_RESPONSE);
+
+        final List<IdValue<DocumentWithMetadata>> allDocuments =
+            documentsAppender.append(existingDocuments, newDocuments, DocumentTag.APPEAL_RESPONSE);
+
+        verify(existingDocumentById1, never()).getId();
+        verify(existingDocumentById2, never()).getId();
+        verify(existingDocumentById3, never()).getId();
+
+        assertNotNull(allDocuments);
+        assertEquals(3, allDocuments.size());
+
+        assertEquals("3", allDocuments.get(0).getId());
+        assertEquals(newDocument1, allDocuments.get(0).getValue());
+
+        assertEquals("2", allDocuments.get(1).getId());
+        assertEquals(newDocument2, allDocuments.get(1).getValue());
+
+        assertEquals("1", allDocuments.get(2).getId());
+        assertEquals(existingDocument2, allDocuments.get(2).getValue());
+    }
+
+    @Test
     public void should_return_existing_documents_if_no_new_documents_present() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =
@@ -82,7 +129,7 @@ public class DocumentsAppenderTest {
         when(existingDocumentById1.getValue()).thenReturn(existingDocument1);
         when(existingDocumentById2.getValue()).thenReturn(existingDocument2);
 
-        List<IdValue<DocumentWithMetadata>> allDocuments =
+        final List<IdValue<DocumentWithMetadata>> allDocuments =
             documentsAppender.append(existingDocuments, newDocuments);
 
         assertNotNull(allDocuments);
@@ -106,7 +153,7 @@ public class DocumentsAppenderTest {
                 newDocument2
             );
 
-        List<IdValue<DocumentWithMetadata>> allDocuments =
+        final List<IdValue<DocumentWithMetadata>> allDocuments =
             documentsAppender.append(existingDocuments, newDocuments);
 
         assertNotNull(allDocuments);
