@@ -12,6 +12,7 @@ spring:
   jackson.date-format: yyyy-MM-dd
 
 legalRepresentativeBuildCase.dueInDays: 28
+legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
