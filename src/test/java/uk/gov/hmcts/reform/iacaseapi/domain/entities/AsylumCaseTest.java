@@ -35,7 +35,7 @@ public class AsylumCaseTest {
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final String sendDirectionExplanation = "Do the thing";
     private final Parties sendDirectionParties = Parties.LEGAL_REPRESENTATIVE;
-    private final String sendDirectionDateDue = "2022-01-01 00:00:00";
+    private final String sendDirectionDateDue = "2022-01-01";
     private final List<IdValue<Direction>> directions = Arrays.asList(new IdValue<>("1", mock(Direction.class)));
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
@@ -136,6 +136,42 @@ public class AsylumCaseTest {
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
         asylumCase.clearSendDirectionDateDue();
+        assertEquals(Optional.empty(), asylumCase.getSendDirectionDateDue());
+    }
+
+    @Test
+    public void send_direction_explanation_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setSendDirectionExplanation("explanation");
+        assertEquals(Optional.of("explanation"), asylumCase.getSendDirectionExplanation());
+
+        asylumCase.setSendDirectionExplanation(null);
+        assertEquals(Optional.empty(), asylumCase.getSendDirectionExplanation());
+    }
+
+    @Test
+    public void send_direction_parties_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setSendDirectionParties(Parties.LEGAL_REPRESENTATIVE);
+        assertEquals(Optional.of(Parties.LEGAL_REPRESENTATIVE), asylumCase.getSendDirectionParties());
+
+        asylumCase.setSendDirectionParties(null);
+        assertEquals(Optional.empty(), asylumCase.getSendDirectionParties());
+    }
+
+    @Test
+    public void send_direction_date_due_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setSendDirectionDateDue("2018-12-25");
+        assertEquals(Optional.of("2018-12-25"), asylumCase.getSendDirectionDateDue());
+
+        asylumCase.setSendDirectionDateDue(null);
         assertEquals(Optional.empty(), asylumCase.getSendDirectionDateDue());
     }
 

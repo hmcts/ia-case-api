@@ -1,0 +1,20 @@
+{
+  "description": "RIA-892 Request respondent evidence confirmation",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdSubmitted",
+  "input": {
+    "eventId": "requestRespondentEvidence",
+    "state": "appealSubmitted",
+    "id": 1234,
+    "caseData": {
+      "template": "empty-case.json"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have sent a direction",
+      "body": "#### What happens next\n\nWait for the respondent to complete the direction.\nYou must upload the respondent evidence as soon as you receive it."
+    }
+  }
+}

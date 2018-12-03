@@ -7,6 +7,7 @@ public enum Event {
     START_APPEAL("startAppeal"),
     SUBMIT_APPEAL("submitAppeal"),
     SEND_DIRECTION("sendDirection"),
+    REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

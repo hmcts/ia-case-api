@@ -194,6 +194,18 @@ public class AsylumCase implements CaseData {
         this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
     }
 
+    public void setSendDirectionExplanation(String sendDirectionExplanation) {
+        this.sendDirectionExplanation = Optional.ofNullable(sendDirectionExplanation);
+    }
+
+    public void setSendDirectionParties(Parties sendDirectionParties) {
+        this.sendDirectionParties = Optional.ofNullable(sendDirectionParties);
+    }
+
+    public void setSendDirectionDateDue(String sendDirectionDateDue) {
+        this.sendDirectionDateDue = Optional.ofNullable(sendDirectionDateDue);
+    }
+
     public void setDirections(List<IdValue<Direction>> directions) {
         this.directions = Optional.ofNullable(directions);
     }

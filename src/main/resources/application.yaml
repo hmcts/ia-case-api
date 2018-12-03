@@ -10,6 +10,8 @@ spring:
   application:
     name: Immigration & Asylum case API
 
+requestRespondentEvidence.dueInDays: 14
+
 security:
   anonymousPaths:
   - "/health"
