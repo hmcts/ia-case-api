@@ -1,0 +1,99 @@
+{
+  "description": "RIA-700 Upload respondent evidence - upload case documents",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "uploadRespondentEvidence",
+    "state": "awaitingRespondentEvidence",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "respondentDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "existing-evidence.pdf"
+              },
+              "description": "Existing evidence",
+              "dateUploaded": "2018-12-25"
+            }
+          }
+        ],
+        "respondentEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-new-evidence.pdf"
+              },
+              "description": "Some new evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-new-evidence.pdf"
+              },
+              "description": "Some more new evidence"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "respondentDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-new-evidence.pdf"
+              },
+              "description": "Some new evidence",
+              "dateUploaded": "{$TODAY}"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-new-evidence.pdf"
+              },
+              "description": "Some more new evidence",
+              "dateUploaded": "{$TODAY}"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "existing-evidence.pdf"
+              },
+              "description": "Existing evidence",
+              "dateUploaded": "2018-12-25"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

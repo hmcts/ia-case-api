@@ -5,97 +5,150 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class DirectionAppenderTest {
 
-    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
     @Mock private IdValue<Direction> existingDirectionById1;
     @Mock private IdValue<Direction> existingDirectionById2;
-    @Mock private Direction newDirection;
+    private String newDirectionExplanation = "New direction";
+    private Parties newDirectionParties = Parties.BOTH;
+    private String newDirectionDateDue = "2018-12-25";
+    private String expectedDateSent = LocalDate.MAX.toString();
 
-    @Captor private ArgumentCaptor<List<IdValue<Direction>>> newDirectionsCaptor;
+    private DirectionAppender directionAppender;
 
-    private DirectionAppender directionAppender =
-        new DirectionAppender();
+    @Before
+    public void setUp() {
+        directionAppender = new DirectionAppender(dateProvider);
+    }
 
     @Test
     public void should_append_new_direction_in_first_position() {
 
-        Direction existingDirection1 = mock(Direction.class);
-        Direction existingDirection2 = mock(Direction.class);
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
+        Direction existingDirection1 = mock(Direction.class);
         when(existingDirectionById1.getValue()).thenReturn(existingDirection1);
+
+        Direction existingDirection2 = mock(Direction.class);
         when(existingDirectionById2.getValue()).thenReturn(existingDirection2);
 
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(existingDirectionById1, existingDirectionById2);
 
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
-
-        directionAppender.append(asylumCase, newDirection);
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                newDirectionParties,
+                newDirectionDateDue
+            );
 
         verify(existingDirectionById1, never()).getId();
         verify(existingDirectionById2, never()).getId();
 
-        verify(asylumCase, times(1)).getDirections();
-        verify(asylumCase, times(1)).setDirections(newDirectionsCaptor.capture());
+        assertNotNull(allDirections);
+        assertEquals(3, allDirections.size());
 
-        List<IdValue<Direction>> actualNewDirections = newDirectionsCaptor.getAllValues().get(0);
+        assertEquals("3", allDirections.get(0).getId());
+        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
 
-        assertNotNull(actualNewDirections);
-        assertEquals(3, actualNewDirections.size());
+        assertEquals("2", allDirections.get(1).getId());
+        assertEquals(existingDirection1, allDirections.get(1).getValue());
 
-        assertEquals("3", actualNewDirections.get(0).getId());
-        assertEquals(newDirection, actualNewDirections.get(0).getValue());
-
-        assertEquals("2", actualNewDirections.get(1).getId());
-        assertEquals(existingDirection1, actualNewDirections.get(1).getValue());
-
-        assertEquals("1", actualNewDirections.get(2).getId());
-        assertEquals(existingDirection2, actualNewDirections.get(2).getValue());
+        assertEquals("1", allDirections.get(2).getId());
+        assertEquals(existingDirection2, allDirections.get(2).getValue());
     }
 
     @Test
-    public void should_return_new_direction_if_no_existing_directions_present() {
+    public void should_return_new_documents_if_no_existing_documents_present() {
 
-        when(asylumCase.getDirections()).thenReturn(Optional.empty());
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
-        directionAppender.append(asylumCase, newDirection);
+        List<IdValue<Direction>> existingDirections =
+            Collections.emptyList();
 
-        verify(asylumCase, times(1)).getDirections();
-        verify(asylumCase, times(1)).setDirections(newDirectionsCaptor.capture());
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                newDirectionParties,
+                newDirectionDateDue
+            );
 
-        List<IdValue<Direction>> actualNewDirections = newDirectionsCaptor.getAllValues().get(0);
+        assertNotNull(allDirections);
+        assertEquals(1, allDirections.size());
 
-        assertNotNull(actualNewDirections);
-        assertEquals(1, actualNewDirections.size());
-
-        assertEquals("1", actualNewDirections.get(0).getId());
-        assertEquals(newDirection, actualNewDirections.get(0).getValue());
+        assertEquals("1", allDirections.get(0).getId());
+        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
     }
 
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> directionAppender.append(null, newDirection))
-            .hasMessage("asylumCase must not be null")
+        List<IdValue<Direction>> existingDirections =
+            Arrays.asList(existingDirectionById1);
+
+        assertThatThrownBy(() ->
+            directionAppender.append(
+                null,
+                newDirectionExplanation,
+                newDirectionParties,
+                newDirectionDateDue
+            ))
+            .hasMessage("existingDirections must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> directionAppender.append(asylumCase, null))
-            .hasMessage("newDirection must not be null")
+        assertThatThrownBy(() ->
+            directionAppender.append(
+                existingDirections,
+                null,
+                newDirectionParties,
+                newDirectionDateDue
+            ))
+            .hasMessage("newDirectionExplanation must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() ->
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                null,
+                newDirectionDateDue
+            ))
+            .hasMessage("newDirectionParties must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() ->
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                newDirectionParties,
+                null
+            ))
+            .hasMessage("newDirectionDateDue must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 }

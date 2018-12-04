@@ -18,25 +18,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionConfirmationTest {
+public class AppealSavedConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
 
-    private SendDirectionConfirmation sendDirectionConfirmation =
-        new SendDirectionConfirmation();
+    private AppealSavedConfirmation appealSavedConfirmation =
+        new AppealSavedConfirmation();
 
     @Test
     public void should_return_confirmation() {
 
         long caseId = 1234;
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
 
         PostSubmitCallbackResponse callbackResponse =
-            sendDirectionConfirmation.handle(callback);
+            appealSavedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -44,19 +44,24 @@ public class SendDirectionConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("sent a direction")
+            containsString("Appeal saved")
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
+            containsString("Ready to submit?")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("Not ready to submit yet?")
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString(
-                "[directions tab]"
-                + "(/case/IA/Asylum/" + caseId + "#directions)"
+                "[Submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             )
         );
     }
@@ -64,7 +69,7 @@ public class SendDirectionConfirmationTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.handle(callback))
+        assertThatThrownBy(() -> appealSavedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -76,9 +81,9 @@ public class SendDirectionConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = sendDirectionConfirmation.canHandle(callback);
+            boolean canHandle = appealSavedConfirmation.canHandle(callback);
 
-            if (event == Event.SEND_DIRECTION) {
+            if (event == Event.START_APPEAL) {
 
                 assertTrue(canHandle);
             } else {
@@ -92,11 +97,11 @@ public class SendDirectionConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.canHandle(null))
+        assertThatThrownBy(() -> appealSavedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.handle(null))
+        assertThatThrownBy(() -> appealSavedConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

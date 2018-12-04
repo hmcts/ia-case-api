@@ -1,0 +1,20 @@
+{
+  "description": "RIA-700 Upload respondent evidence confirmation",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdSubmitted",
+  "input": {
+    "eventId": "uploadRespondentEvidence",
+    "state": "awaitingRespondentEvidence",
+    "id": 1234,
+    "caseData": {
+      "template": "empty-case.json"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have uploaded the respondent evidence",
+      "body": "#### What happens next\n\nThe legal representative will now get an email directing them to build their case.\n\nThis is an automated email sent from the system - you don't need to do anything."
+    }
+  }
+}

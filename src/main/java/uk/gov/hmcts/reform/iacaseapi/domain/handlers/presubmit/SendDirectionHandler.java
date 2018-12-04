@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
+import java.util.List;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -11,20 +12,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
 public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
     public SendDirectionHandler(
-        DateProvider dateProvider,
         DirectionAppender directionAppender
     ) {
-        this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
 
@@ -67,14 +66,20 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase
                 .getSendDirectionDateDue()
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 
-        Direction direction = new Direction(
-            sendDirectionExplanation,
-            sendDirectionParties,
-            sendDirectionDateDue,
-            dateProvider.now().toString()
-        );
+        final List<IdValue<Direction>> existingDirections =
+            asylumCase
+                .getDirections()
+                .orElse(Collections.emptyList());
 
-        directionAppender.append(asylumCase, direction);
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                existingDirections,
+                sendDirectionExplanation,
+                sendDirectionParties,
+                sendDirectionDateDue
+            );
+
+        asylumCase.setDirections(allDirections);
 
         asylumCase.clearSendDirectionExplanation();
         asylumCase.clearSendDirectionParties();

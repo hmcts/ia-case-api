@@ -41,6 +41,13 @@ public class AsylumCaseBuilder {
     private Optional<String> sendDirectionDateDue = Optional.empty();
     private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
+    // -----------------------------------------------------------------------------
+    // case documents ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
+    private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
+
     public AsylumCase build() {
         return new AsylumCase(this);
     }
@@ -125,6 +132,14 @@ public class AsylumCaseBuilder {
         return directions;
     }
 
+    public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
+        return respondentEvidence;
+    }
+
+    public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
+        return respondentDocuments;
+    }
+
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
     }
@@ -203,5 +218,13 @@ public class AsylumCaseBuilder {
 
     public void setDirections(Optional<List<IdValue<Direction>>> directions) {
         this.directions = directions;
+    }
+
+    public void setRespondentDocuments(Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments) {
+        this.respondentDocuments = respondentDocuments;
+    }
+
+    public void setRespondentEvidence(Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence) {
+        this.respondentEvidence = respondentEvidence;
     }
 }

@@ -33,6 +33,9 @@ public class AsylumCaseBuilderTest {
     private final String sendDirectionDateDue = "2022-01-01 00:00:00";
     private final List<IdValue<Direction>> directions = Arrays.asList(new IdValue<>("1", mock(Direction.class)));
 
+    private final List<IdValue<DocumentWithMetadata>> respondentDocuments = Arrays.asList(new IdValue<>("1", mock(DocumentWithMetadata.class)));
+    private final List<IdValue<DocumentWithDescription>> respondentEvidence = Arrays.asList(new IdValue<>("1", mock(DocumentWithDescription.class)));
+
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
     @Test
@@ -58,6 +61,8 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
         asylumCaseBuilder.setDirections(Optional.of(directions));
+        asylumCaseBuilder.setRespondentDocuments(Optional.of(respondentDocuments));
+        asylumCaseBuilder.setRespondentEvidence(Optional.of(respondentEvidence));
 
         AsylumCase asylumCase = asylumCaseBuilder.build();
 
@@ -81,5 +86,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
+        assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
+        assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
     }
 }

@@ -11,32 +11,26 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionConfirmationTest {
+public class UploadRespondentEvidenceConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
 
-    private SendDirectionConfirmation sendDirectionConfirmation =
-        new SendDirectionConfirmation();
+    private UploadRespondentEvidenceConfirmation uploadRespondentEvidenceConfirmation =
+        new UploadRespondentEvidenceConfirmation();
 
     @Test
     public void should_return_confirmation() {
 
-        long caseId = 1234;
-
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
 
         PostSubmitCallbackResponse callbackResponse =
-            sendDirectionConfirmation.handle(callback);
+            uploadRespondentEvidenceConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -44,27 +38,19 @@ public class SendDirectionConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("sent a direction")
+            containsString("You have uploaded the respondent evidence")
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString("What happens next")
         );
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
-                "[directions tab]"
-                + "(/case/IA/Asylum/" + caseId + "#directions)"
-            )
-        );
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.handle(callback))
+        assertThatThrownBy(() -> uploadRespondentEvidenceConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -76,9 +62,9 @@ public class SendDirectionConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = sendDirectionConfirmation.canHandle(callback);
+            boolean canHandle = uploadRespondentEvidenceConfirmation.canHandle(callback);
 
-            if (event == Event.SEND_DIRECTION) {
+            if (event == Event.UPLOAD_RESPONDENT_EVIDENCE) {
 
                 assertTrue(canHandle);
             } else {
@@ -92,11 +78,11 @@ public class SendDirectionConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.canHandle(null))
+        assertThatThrownBy(() -> uploadRespondentEvidenceConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> sendDirectionConfirmation.handle(null))
+        assertThatThrownBy(() -> uploadRespondentEvidenceConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
