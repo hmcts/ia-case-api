@@ -24,9 +24,9 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
     private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
 
     public AppealReferenceNumberInitializerFromCcd(
-            CoreCaseDataRetriever coreCaseDataRetriever,
-            SystemDateProvider systemDateProvider,
-            @Value("${appealReferenceSequenceSeed}") String appealReferenceSequenceSeed
+        CoreCaseDataRetriever coreCaseDataRetriever,
+        SystemDateProvider systemDateProvider,
+        @Value("${appealReferenceSequenceSeed}") String appealReferenceSequenceSeed
     ) {
         this.coreCaseDataRetriever = coreCaseDataRetriever;
         this.systemDateProvider = systemDateProvider;
@@ -53,33 +53,33 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
 
     private void initializeFromExistingAsylumCases(List<Map> asylumCases) {
         asylumCases.stream()
-                .map(this::extractReferenceNumber)
-                .collect(groupingBy(AppealReferenceNumber::getType))
-                .forEach((key, appealReferenceNumbers) -> {
-                    appealReferenceNumbers.sort(new AppealReferenceNumberComparator());
-                    lastAppealReferenceNumbers.put(key, appealReferenceNumbers.get(0));
-                });
+            .map(this::extractReferenceNumber)
+            .collect(groupingBy(AppealReferenceNumber::getType))
+            .forEach((key, appealReferenceNumbers) -> {
+                appealReferenceNumbers.sort(new AppealReferenceNumberComparator());
+                lastAppealReferenceNumbers.put(key, appealReferenceNumbers.get(0));
+            });
     }
 
     private void initializeFromSeed() {
         stream(AsylumAppealType.values())
-                .forEach(asylumAppealType -> lastAppealReferenceNumbers.put(
-                        asylumAppealType, new AppealReferenceNumber(
-                                asylumAppealType,
-                                appealReferenceSequenceSeed,
-                                String.valueOf(systemDateProvider.now().getYear()))));
+            .forEach(asylumAppealType -> lastAppealReferenceNumbers.put(
+                asylumAppealType, new AppealReferenceNumber(
+                    asylumAppealType,
+                    appealReferenceSequenceSeed,
+                    String.valueOf(systemDateProvider.now().getYear()))));
     }
 
     private List<Map> removeCasesWithoutAnAppealReferenceNumber(List<Map> asylumCases) {
         return asylumCases.stream()
-                .filter(map -> map.get(CASE_DATA_MAP_KEY) instanceof Map)
-                .filter(map -> ((Map) map.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber") != null)
-                .collect(toList());
+            .filter(map -> map.get(CASE_DATA_MAP_KEY) instanceof Map)
+            .filter(map -> ((Map) map.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber") != null)
+            .collect(toList());
     }
 
     private AppealReferenceNumber extractReferenceNumber(Map appealMap) {
         String appealReferenceNumber =
-                (String) ((Map)appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
+            (String) ((Map) appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
 
         return new AppealReferenceNumber(appealReferenceNumber);
     }

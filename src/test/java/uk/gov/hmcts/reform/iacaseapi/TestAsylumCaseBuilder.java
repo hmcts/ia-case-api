@@ -29,10 +29,10 @@ public class TestAsylumCaseBuilder {
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
         CaseDetails<AsylumCase> asylumCaseDetails = new CaseDetails<>(
-                1,
-                "some-jurisdiction",
-                State.APPEAL_SUBMITTED,
-                asylumCase);
+            1,
+            "some-jurisdiction",
+            State.APPEAL_SUBMITTED,
+            asylumCase);
 
         return asylumCaseDetails;
     }

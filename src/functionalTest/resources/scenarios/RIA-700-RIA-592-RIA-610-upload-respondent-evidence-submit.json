@@ -1,52 +1,55 @@
 {
-  "description": "RIA-700 & RIA-592 Upload respondent evidence - upload case documents",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "uploadRespondentEvidence",
-    "state": "awaitingRespondentEvidence",
-    "caseData": {
-      "template": "minimal-appeal-submitted.json",
-      "replacements": {
-        "respondentDocuments": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/AAA",
-                "document_binary_url": "http://document-store/AAA/binary",
-                "document_filename": "existing-evidence.pdf"
-              },
-              "description": "Existing evidence",
-              "dateUploaded": "2018-12-25",
-              "tag": "respondentEvidence"
+  "description": "RIA-700 & RIA-592 & RIA-610 Upload respondent evidence - upload case documents",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "uploadRespondentEvidence",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "notificationsSent": [],
+          "respondentDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "existing-evidence.pdf"
+                },
+                "description": "Existing evidence",
+                "dateUploaded": "2018-12-25",
+                "tag": "respondentEvidence"
+              }
             }
-          }
-        ],
-        "respondentEvidence": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-new-evidence.pdf"
-              },
-              "description": "Some new evidence"
+          ],
+          "respondentEvidence": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-new-evidence.pdf"
+                },
+                "description": "Some new evidence"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-more-new-evidence.pdf"
+                },
+                "description": "Some more new evidence"
+              }
             }
-          },
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-more-new-evidence.pdf"
-              },
-              "description": "Some more new evidence"
-            }
-          }
-        ]
+          ]
+        }
       }
     }
   },
@@ -63,9 +66,13 @@
               "explanation": "You must now build your case by uploading your appeal argument and evidence.\n\nAdvice on writing an appeal argument\nYou must write a full argument that references:\n- all the evidence you have or plan to rely on, including any witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the Home Office to conduct a thorough review of their decision at this stage.\n\nNext steps\nOnce you have uploaded your appeal argument and all evidence, submit your case. The case officer will then review everything you've added. If your case looks ready, the case officer will send it to the respondent for their review. The respondent then has 14 days to respond.",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+28}",
-              "dateSent": "{$TODAY}"
+              "dateSent": "{$TODAY}",
+              "directionTag": "buildCase"
             }
           }
+        ],
+        "notificationsSent": [
+          "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
         ],
         "respondentDocuments": [
           {

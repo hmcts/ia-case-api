@@ -26,13 +26,13 @@ public class AppealReferenceNumberGeneratorTest {
     private final DateProvider dateProvider = mock(DateProvider.class);
 
     private final AppealReferenceNumberInitializerFromCcd appealReferenceNumberInitializer =
-            mock(AppealReferenceNumberInitializerFromCcd.class);
+        mock(AppealReferenceNumberInitializerFromCcd.class);
 
     private final AppealReferenceNumberGenerator underTest =
-            new AppealReferenceNumberGenerator(
-                    "50000",
-                    appealReferenceNumberInitializer,
-                    dateProvider);
+        new AppealReferenceNumberGenerator(
+            "50000",
+            appealReferenceNumberInitializer,
+            dateProvider);
 
     @Before
     public void setUp() {
@@ -45,7 +45,7 @@ public class AppealReferenceNumberGeneratorTest {
         when(appealReferenceNumberInitializer.initialize()).thenReturn(initialReferenceNumbers());
 
         Optional<String> maybeAppealReferenceNumber =
-                underTest.getNextAppealReferenceNumberFor(PA.getValue());
+            underTest.getNextAppealReferenceNumberFor(PA.getValue());
 
         assertThat(maybeAppealReferenceNumber.get(), is("PA/50001/2018"));
     }
@@ -56,7 +56,7 @@ public class AppealReferenceNumberGeneratorTest {
         when(appealReferenceNumberInitializer.initialize()).thenReturn(initialReferenceNumbers());
 
         Optional<String> maybeAppealReferenceNumber =
-                underTest.getNextAppealReferenceNumberFor(RP.getValue());
+            underTest.getNextAppealReferenceNumberFor(RP.getValue());
 
         assertThat(maybeAppealReferenceNumber.get(), is("RP/50001/2018"));
     }
@@ -97,7 +97,8 @@ public class AppealReferenceNumberGeneratorTest {
     @Test
     public void handles_unknown_appeal_type() {
 
-        when(appealReferenceNumberInitializer.initialize()).thenReturn(initialReferenceNumbers());; // ref numbers in 2018
+        when(appealReferenceNumberInitializer.initialize()).thenReturn(initialReferenceNumbers());
+        ; // ref numbers in 2018
 
         Optional<String> maybeAppealReferenceNumber = underTest.getNextAppealReferenceNumberFor("some_unknown_appeal_type");
 

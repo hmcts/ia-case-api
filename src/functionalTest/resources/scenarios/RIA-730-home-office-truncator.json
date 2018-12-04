@@ -1,14 +1,16 @@
 {
   "description": "RIA-730 Home Office reference number more than 7 characters is truncated",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "startAppeal",
-    "state": "appealStarted",
-    "caseData": {
-      "template": "minimal-appeal-started.json",
-      "replacements": {
-        "homeOfficeReferenceNumber": "Z123456/001"
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "Z123456/001"
+        }
       }
     }
   },

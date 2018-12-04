@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -55,6 +56,7 @@ public class SendDirectionHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
@@ -67,7 +69,8 @@ public class SendDirectionHandlerTest {
             existingDirections,
             expectedExplanation,
             expectedParties,
-            expectedDateDue
+            expectedDateDue,
+            expectedDirectionTag
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -84,7 +87,8 @@ public class SendDirectionHandlerTest {
             existingDirections,
             expectedExplanation,
             expectedParties,
-            expectedDateDue
+            expectedDateDue,
+            expectedDirectionTag
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -102,6 +106,7 @@ public class SendDirectionHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
@@ -114,7 +119,8 @@ public class SendDirectionHandlerTest {
             any(List.class),
             eq(expectedExplanation),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedDirectionTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -131,7 +137,8 @@ public class SendDirectionHandlerTest {
             existingDirectionsCaptor.capture(),
             eq(expectedExplanation),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedDirectionTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

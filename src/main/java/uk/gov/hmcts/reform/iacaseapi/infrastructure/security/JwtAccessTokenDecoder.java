@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
@@ -17,33 +16,38 @@ public class JwtAccessTokenDecoder implements AccessTokenDecoder {
     private final ObjectMapper mapper;
 
     public JwtAccessTokenDecoder(
-            @Autowired ObjectMapper mapper
+        ObjectMapper mapper
     ) {
         this.mapper = mapper;
     }
 
     public Map<String, String> decode(
-            String accessToken
+        String accessToken
     ) {
         try {
 
             DecodedJWT jwt = JWT.decode(
-                    accessToken.replaceFirst("^Bearer\\s+", "")
+                accessToken.replaceFirst("^Bearer\\s+", "")
             );
 
             String accessTokenClaims = new String(
-                    Base64Utils.decodeFromString(jwt.getPayload())
+                Base64Utils.decodeFromString(jwt.getPayload())
             );
 
-            return mapper.readValue(
+            try {
+
+                return mapper.readValue(
                     accessTokenClaims,
                     new TypeReference<Map<String, String>>() {
                     }
-            );
+                );
 
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Access Token claims cannot be deserialized", e);
+            }
 
-        } catch (JWTDecodeException | IOException e) {
-            throw new JWTDecodeException("Access Token is not in JWT format", e);
+        } catch (JWTDecodeException e) {
+            throw new IllegalArgumentException("Access Token cannot be decoded", e);
         }
     }
 }

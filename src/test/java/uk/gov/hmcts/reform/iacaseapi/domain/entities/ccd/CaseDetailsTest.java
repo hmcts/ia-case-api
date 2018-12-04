@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 public class CaseDetailsTest {
 

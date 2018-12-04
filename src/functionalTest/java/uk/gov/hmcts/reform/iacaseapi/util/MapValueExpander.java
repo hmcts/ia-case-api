@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public final class MapValueExpander {
 
     private static final Pattern TODAY_PATTERN = Pattern.compile("\\{\\$TODAY([+-]?\\d*?)}");
+    private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\{\\$([A-Z0-9_]+?)}");
 
     private MapValueExpander() {
         // noop
@@ -52,6 +53,10 @@ public final class MapValueExpander {
                 value = expandToday(value);
             }
 
+            if (ENV_VARIABLE_PATTERN.matcher(value).matches()) {
+                value = expandEnvironmentVariable(value);
+            }
+
             return value;
         }
 
@@ -87,6 +92,27 @@ public final class MapValueExpander {
             String token = matcher.group(0);
 
             expandedValue = expandedValue.replace(token, now.toString());
+        }
+
+        return expandedValue;
+    }
+
+    private static String expandEnvironmentVariable(String value) {
+
+        Matcher matcher = ENV_VARIABLE_PATTERN.matcher(value);
+
+        String expandedValue = value;
+
+        while (matcher.find()) {
+
+            if (matcher.groupCount() == 1
+                && !matcher.group(1).isEmpty()) {
+
+                String variableName = matcher.group(1);
+                String token = matcher.group(0);
+
+                expandedValue = expandedValue.replace(token, System.getenv(variableName));
+            }
         }
 
         return expandedValue;

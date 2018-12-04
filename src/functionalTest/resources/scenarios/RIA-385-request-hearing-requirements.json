@@ -1,24 +1,27 @@
 {
   "description": "RIA-385 Request hearing requirements",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "requestHearingRequirements",
-    "state": "respondentReview",
-    "caseData": {
-      "template": "minimal-appeal-submitted.json",
-      "replacements": {
-        "directions": [
-          {
-            "id": "1",
-            "value": {
-              "explanation": "Do the first thing",
-              "parties": "legalRepresentative",
-              "dateDue": "2018-12-31",
-              "dateSent": "2018-12-25"
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHearingRequirements",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Do the first thing",
+                "parties": "legalRepresentative",
+                "dateDue": "2018-12-31",
+                "dateSent": "2018-12-25",
+                "directionTag": ""
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     }
   },
@@ -35,7 +38,8 @@
               "explanation": "Your appeal is going to a hearing. Login to submit your hearing requirements on the overview tab.\n\nNext steps\nThe case officer will review your hearing requirements and try to accommodate them. You will then be sent a hearing date.\nIf you do not supply your hearing requirements within 5 days, we may not be able to accommodate your needs for the hearing.\n",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
-              "dateSent": "{$TODAY}"
+              "dateSent": "{$TODAY}",
+              "directionTag": "legalRepresentativeHearingRequirements"
             }
           },
           {
@@ -44,7 +48,8 @@
               "explanation": "Do the first thing",
               "parties": "legalRepresentative",
               "dateDue": "2018-12-31",
-              "dateSent": "2018-12-25"
+              "dateSent": "2018-12-25",
+              "directionTag": ""
             }
           }
         ]
