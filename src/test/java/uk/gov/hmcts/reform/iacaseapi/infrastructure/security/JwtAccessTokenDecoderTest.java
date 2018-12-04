@@ -1,65 +1,119 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.Map;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class JwtAccessTokenDecoderTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final JwtAccessTokenDecoder underTest = new JwtAccessTokenDecoder(objectMapper);
+    @Mock private ObjectMapper objectMapper;
 
-    /* Pre encoded JWT
-     {
-     "alg": "HS256",
-     "typ": "JWT"
-     }
-     {
-     "sub": "1234567890",
-     "name": "John Doe",
-     "iat": 1516239022
-     }
-     */
-    private static String wellFormedJwtToken() {
-        return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-    }
+    private JwtAccessTokenDecoder jwtAccessTokenDecoder;
 
-    /* Pre encoded JWT
-     {
-        unreadable header
-     }
-     {
-     "sub": "1234567890",
-     "name": "John Doe",
-     "iat": 1516239022
-     }
-     */
-    private static String badlyFormedJwtToke() {
-        return "Bearer eyJhbGciOiJIUzI1.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    private final String testToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1"
+                                     + "NiJ9.eyJzdWIiOiIxNiIsIm5hbWUiOiJ"
+                                     + "UZXN0IiwianRpIjoiMTIzNCIsImlhdCI"
+                                     + "6MTUyNjkyOTk1MiwiZXhwIjoxNTI2OTM"
+                                     + "zNTg5fQ.lZwrWNjG-y1Olo1qWocKIuq3"
+                                     + "_fdffVF8BTcR5l87FTg";
+
+    @Before
+    public void setUp() {
+        jwtAccessTokenDecoder = new JwtAccessTokenDecoder(objectMapper);
     }
 
     @Test
-    public void decodes_jwt_access_token() {
+    public void can_decode_token_and_return_claims() throws IOException {
 
-        assertThatThrownBy(() -> underTest.decode(badlyFormedJwtToke()))
-                .isExactlyInstanceOf(JWTDecodeException.class)
-                .hasMessage("Access Token is not in JWT format");
+        String serializedClaimsInToken =
+            "{\"sub\":\"16\",\"name\":\"Test\",\"jti\":\"1234\",\"iat\":1526929952,\"exp\":1526933589}";
+
+        Map<String, String> deserializedClaims = mock(Map.class);
+
+        doReturn(deserializedClaims)
+            .when(objectMapper)
+            .readValue(
+                eq(serializedClaimsInToken),
+                isA(TypeReference.class)
+            );
+
+        Map<String, String> actualClaims = jwtAccessTokenDecoder.decode(testToken);
+
+        verify(objectMapper, times(1)).readValue(
+            eq(serializedClaimsInToken),
+            isA(TypeReference.class)
+        );
+
+        assertSame(actualClaims, deserializedClaims);
     }
 
     @Test
-    public void handles_badly_formed_jwt_access_token() {
+    public void can_decode_token_with_bearer_marker_and_return_claims() throws IOException {
 
-        Map<String, String> claims = underTest.decode(wellFormedJwtToken());
+        String serializedClaimsInToken =
+            "{\"sub\":\"16\",\"name\":\"Test\",\"jti\":\"1234\",\"iat\":1526929952,\"exp\":1526933589}";
 
-        assertThat(claims.get("sub")).isEqualTo("1234567890");
-        assertThat(claims.get("name")).isEqualTo("John Doe");
-        assertThat(claims.get("iat")).isEqualTo("1516239022");
+        Map<String, String> deserializedClaims = mock(Map.class);
+
+        doReturn(deserializedClaims)
+            .when(objectMapper)
+            .readValue(
+                eq(serializedClaimsInToken),
+                isA(TypeReference.class)
+            );
+
+        Map<String, String> actualClaims = jwtAccessTokenDecoder.decode("Bearer " + testToken);
+
+        verify(objectMapper, times(1)).readValue(
+            eq(serializedClaimsInToken),
+            isA(TypeReference.class)
+        );
+
+        assertSame(actualClaims, deserializedClaims);
     }
 
+    @Test
+    public void wraps_decode_exceptions() throws IOException {
 
+        doThrow(JWTDecodeException.class)
+            .when(objectMapper)
+            .readValue(
+                isA(String.class),
+                isA(TypeReference.class)
+            );
 
+        assertThatThrownBy(() -> jwtAccessTokenDecoder.decode(testToken))
+            .hasMessage("Access Token cannot be decoded")
+            .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void wraps_deserialization_exceptions() throws IOException {
+
+        doThrow(IOException.class)
+            .when(objectMapper)
+            .readValue(
+                isA(String.class),
+                isA(TypeReference.class)
+            );
+
+        assertThatThrownBy(() -> jwtAccessTokenDecoder.decode(testToken))
+            .hasMessage("Access Token cannot be decoded")
+            .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
 }

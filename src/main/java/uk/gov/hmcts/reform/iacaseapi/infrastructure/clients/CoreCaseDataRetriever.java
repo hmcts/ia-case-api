@@ -6,7 +6,7 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 
 @Service
 public class CoreCaseDataRetriever {
@@ -23,13 +23,13 @@ public class CoreCaseDataRetriever {
 
         try {
             asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
-                    .parallel()
-                    .mapToObj(String::valueOf)
-                    .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
-                    .collect(toList());
+                .parallel()
+                .mapToObj(String::valueOf)
+                .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
+                .collect(toList());
 
-        } catch (AsylumCaseRetrievalException exp) {
-            throw new AsylumCaseRetrievalException("Couldn't retrieve appeal cases from Ccd", exp);
+        } catch (AppealReferenceNumberInitializerException exp) {
+            throw new AppealReferenceNumberInitializerException("Couldn't retrieve appeal cases from Ccd", exp);
         }
 
         return asylumCaseDetails;

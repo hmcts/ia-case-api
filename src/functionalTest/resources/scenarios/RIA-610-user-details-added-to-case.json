@@ -1,0 +1,25 @@
+{
+  "description": "RIA-610 User details are added to case upon appeal submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "legalRepresentativeName": "LawFirm A",
+        "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}"
+      }
+    }
+  }
+}

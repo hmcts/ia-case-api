@@ -1,13 +1,15 @@
 {
   "description": "RIA-815 Appeal saved confirmation",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdSubmitted",
-  "input": {
-    "eventId": "startAppeal",
-    "state": "appealStarted",
-    "id": 1234,
-    "caseData": {
-      "template": "minimal-appeal-started.json"
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
     }
   },
   "expectation": {

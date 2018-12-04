@@ -128,7 +128,6 @@ public class PreSubmitCallbackController {
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-
         LOG.info(
             "Asylum Case CCD `{}` event received for Case ID `{}`",
             callbackStage,

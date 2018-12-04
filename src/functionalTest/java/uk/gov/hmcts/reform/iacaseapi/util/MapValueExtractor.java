@@ -43,4 +43,15 @@ public final class MapValueExtractor {
 
         return value;
     }
+
+    public static <T> T extractOrThrow(Map<String, Object> map, String path) {
+
+        T value = extract(map, path);
+
+        if (value == null) {
+            throw new RuntimeException("Missing value for path: " + path);
+        }
+
+        return value;
+    }
 }

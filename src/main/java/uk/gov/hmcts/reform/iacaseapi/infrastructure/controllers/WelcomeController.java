@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Api(
-        value = "/",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    value = "/",
+    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 
 @RestController
@@ -31,11 +31,11 @@ public class WelcomeController {
      */
     @ApiOperation("Welcome page for the Immigration & Asylum case API")
     @ApiResponses({
-            @ApiResponse(
-                    code = 200,
-                    message = "Welcome Page",
-                    response = String.class
-            )
+        @ApiResponse(
+            code = 200,
+            message = "Welcome Page",
+            response = String.class
+        )
     })
     @GetMapping(path = "/")
     public ResponseEntity<String> welcome() {

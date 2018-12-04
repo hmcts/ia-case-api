@@ -1,13 +1,15 @@
 {
   "description": "RIA-697 Add appeal response confirmation",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdSubmitted",
-  "input": {
-    "eventId": "addAppealResponse",
-    "state": "respondentReview",
-    "id": 1234,
-    "caseData": {
-      "template": "empty-case.json"
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "addAppealResponse",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "empty-case.json"
+      }
     }
   },
   "expectation": {

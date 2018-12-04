@@ -11,14 +11,14 @@ public class DocumentWithMetadataTest {
     private final Document document = mock(Document.class);
     private final String description = "Some evidence";
     private final String dateUploaded = "2018-12-25";
-    private final DocumentTag documentTag = DocumentTag.CASE_ARGUMENT;
+    private final DocumentTag tag = DocumentTag.CASE_ARGUMENT;
 
     private DocumentWithMetadata documentWithMetadata =
         new DocumentWithMetadata(
             document,
             description,
             dateUploaded,
-            documentTag
+            tag
         );
 
     @Test
@@ -27,6 +27,6 @@ public class DocumentWithMetadataTest {
         assertEquals(document, documentWithMetadata.getDocument());
         assertEquals(description, documentWithMetadata.getDescription());
         assertEquals(dateUploaded, documentWithMetadata.getDateUploaded());
-        assertEquals(documentTag, documentWithMetadata.getTag());
+        assertEquals(tag, documentWithMetadata.getTag());
     }
 }

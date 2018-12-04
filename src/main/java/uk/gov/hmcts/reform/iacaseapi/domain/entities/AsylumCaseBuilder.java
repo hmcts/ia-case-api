@@ -41,7 +41,6 @@ public class AsylumCaseBuilder {
     // case officer directions ...
     // -----------------------------------------------------------------------------
 
-    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<String> sendDirectionExplanation = Optional.empty();
     private Optional<Parties> sendDirectionParties = Optional.empty();
     private Optional<String> sendDirectionDateDue = Optional.empty();
@@ -75,6 +74,15 @@ public class AsylumCaseBuilder {
     private Optional<Document> appealResponseDocument = Optional.empty();
     private Optional<String> appealResponseDescription = Optional.empty();
     private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // internal API managed fields ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> legalRepresentativeName = Optional.empty();
+    private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
+    private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
+    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -241,10 +249,6 @@ public class AsylumCaseBuilder {
     // case officer directions ...
     // -----------------------------------------------------------------------------
 
-    public Optional<YesOrNo> getSendDirectionActionAvailable() {
-        return sendDirectionActionAvailable;
-    }
-
     public Optional<String> getSendDirectionExplanation() {
         return sendDirectionExplanation;
     }
@@ -259,10 +263,6 @@ public class AsylumCaseBuilder {
 
     public Optional<List<IdValue<Direction>>> getDirections() {
         return directions;
-    }
-
-    public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {
-        this.sendDirectionActionAvailable = sendDirectionActionAvailable;
     }
 
     public void setSendDirectionExplanation(Optional<String> sendDirectionExplanation) {
@@ -368,5 +368,41 @@ public class AsylumCaseBuilder {
 
     public void setAppealResponseEvidence(Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence) {
         this.appealResponseEvidence = appealResponseEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // internal API managed fields ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getLegalRepresentativeName() {
+        return legalRepresentativeName;
+    }
+
+    public Optional<String> getLegalRepresentativeEmailAddress() {
+        return legalRepresentativeEmailAddress;
+    }
+
+    public Optional<List<IdValue<String>>> getNotificationsSent() {
+        return notificationsSent;
+    }
+
+    public Optional<YesOrNo> getSendDirectionActionAvailable() {
+        return sendDirectionActionAvailable;
+    }
+
+    public void setLegalRepresentativeName(Optional<String> legalRepresentativeName) {
+        this.legalRepresentativeName = legalRepresentativeName;
+    }
+
+    public void setLegalRepresentativeEmailAddress(Optional<String> legalRepresentativeEmailAddress) {
+        this.legalRepresentativeEmailAddress = legalRepresentativeEmailAddress;
+    }
+
+    public void setNotificationsSent(Optional<List<IdValue<String>>> notificationsSent) {
+        this.notificationsSent = notificationsSent;
+    }
+
+    public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {
+        this.sendDirectionActionAvailable = sendDirectionActionAvailable;
     }
 }
