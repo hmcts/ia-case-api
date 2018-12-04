@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
 public enum DispatchPriority {
 
+    EARLIEST("earliest"),
     EARLY("early"),
-    LATE("late");
+    LATE("late"),
+    LATEST("latest");
 
     private final String id;
 

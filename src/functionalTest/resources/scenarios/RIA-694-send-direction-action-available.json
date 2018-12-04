@@ -1,14 +1,16 @@
 {
   "description": "RIA-694 Send direction action becomes available in appropriate state",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "submitAppeal",
-    "state": "appealSubmitted",
-    "caseData": {
-      "template": "minimal-appeal-started.json",
-      "replacements": {
-        "sendDirectionActionAvailable": "No"
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "sendDirectionActionAvailable": "No"
+        }
       }
     }
   },
@@ -16,7 +18,7 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-started.json",
+      "template": "minimal-appeal-submitted.json",
       "replacements": {
         "sendDirectionActionAvailable": "Yes"
       }

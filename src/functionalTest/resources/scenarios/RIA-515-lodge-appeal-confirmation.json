@@ -1,12 +1,14 @@
 {
   "description": "RIA-515 Lodge appeal confirmation",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdSubmitted",
-  "input": {
-    "eventId": "submitAppeal",
-    "state": "appealSubmitted",
-    "caseData": {
-      "template": "empty-case.json"
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "empty-case.json"
+      }
     }
   },
   "expectation": {

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CaseDetails<T extends CaseData> {

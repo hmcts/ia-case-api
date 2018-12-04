@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -62,6 +63,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         final String expectedExplanationPart = "The respondent has replied to your appeal argument";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -72,7 +74,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(existingDirections),
             contains(expectedExplanationPart),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -85,7 +88,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(existingDirections),
             contains(expectedExplanationPart),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedTag)
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -99,6 +103,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         final String expectedExplanationPart = "The respondent has replied to your appeal argument";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -109,7 +114,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             any(List.class),
             contains(expectedExplanationPart),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -122,7 +128,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             existingDirectionsCaptor.capture(),
             contains(expectedExplanationPart),
             eq(expectedParties),
-            eq(expectedDateDue)
+            eq(expectedDateDue),
+            eq(expectedTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

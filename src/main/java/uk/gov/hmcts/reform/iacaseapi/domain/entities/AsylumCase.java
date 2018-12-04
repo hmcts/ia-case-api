@@ -42,7 +42,6 @@ public class AsylumCase implements CaseData {
     // case officer directions ...
     // -----------------------------------------------------------------------------
 
-    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<String> sendDirectionExplanation = Optional.empty();
     private Optional<Parties> sendDirectionParties = Optional.empty();
     private Optional<String> sendDirectionDateDue = Optional.empty();
@@ -76,6 +75,15 @@ public class AsylumCase implements CaseData {
     private Optional<Document> appealResponseDocument = Optional.empty();
     private Optional<String> appealResponseDescription = Optional.empty();
     private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // internal API managed fields ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> legalRepresentativeName = Optional.empty();
+    private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
+    private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
+    private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -117,7 +125,10 @@ public class AsylumCase implements CaseData {
         this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
         this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
-
+        this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
+        this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
+        this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
+        this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -226,11 +237,6 @@ public class AsylumCase implements CaseData {
     // case officer directions ...
     // -----------------------------------------------------------------------------
 
-    public Optional<YesOrNo> getSendDirectionActionAvailable() {
-        requireNonNull(sendDirectionActionAvailable);
-        return sendDirectionActionAvailable;
-    }
-
     public Optional<String> getSendDirectionExplanation() {
         requireNonNull(sendDirectionExplanation);
         return sendDirectionExplanation;
@@ -260,10 +266,6 @@ public class AsylumCase implements CaseData {
 
     public void clearSendDirectionDateDue() {
         this.sendDirectionDateDue = Optional.empty();
-    }
-
-    public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
-        this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
     }
 
     public void setSendDirectionExplanation(String sendDirectionExplanation) {
@@ -353,5 +355,45 @@ public class AsylumCase implements CaseData {
     public Optional<List<IdValue<DocumentWithDescription>>> getAppealResponseEvidence() {
         requireNonNull(appealResponseEvidence);
         return appealResponseEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // internal API managed fields ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getLegalRepresentativeName() {
+        requireNonNull(legalRepresentativeName);
+        return legalRepresentativeName;
+    }
+
+    public Optional<String> getLegalRepresentativeEmailAddress() {
+        requireNonNull(legalRepresentativeEmailAddress);
+        return legalRepresentativeEmailAddress;
+    }
+
+    public Optional<List<IdValue<String>>> getNotificationsSent() {
+        requireNonNull(notificationsSent);
+        return notificationsSent;
+    }
+
+    public Optional<YesOrNo> getSendDirectionActionAvailable() {
+        requireNonNull(sendDirectionActionAvailable);
+        return sendDirectionActionAvailable;
+    }
+
+    public void setLegalRepresentativeName(String legalRepresentativeName) {
+        this.legalRepresentativeName = Optional.ofNullable(legalRepresentativeName);
+    }
+
+    public void setLegalRepresentativeEmailAddress(String legalRepresentativeEmailAddress) {
+        this.legalRepresentativeEmailAddress = Optional.ofNullable(legalRepresentativeEmailAddress);
+    }
+
+    public void setNotificationsSent(List<IdValue<String>> notificationsSent) {
+        this.notificationsSent = Optional.ofNullable(notificationsSent);
+    }
+
+    public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
+        this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
     }
 }

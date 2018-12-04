@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -84,7 +85,8 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                 dateProvider
                     .now()
                     .plusDays(buildCaseDueInDays)
-                    .toString()
+                    .toString(),
+                DirectionTag.BUILD_CASE
             );
 
         asylumCase.setDirections(allDirections);

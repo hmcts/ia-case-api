@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.exceptions;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 public class AsylumCaseRetrievalException extends RuntimeException {
 
@@ -6,7 +6,7 @@ public class AsylumCaseRetrievalException extends RuntimeException {
         super(reason);
     }
 
-    public AsylumCaseRetrievalException(String reason, Throwable exp) {
-        super(reason, exp);
+    public AsylumCaseRetrievalException(String reason, Throwable cause) {
+        super(reason, cause);
     }
 }

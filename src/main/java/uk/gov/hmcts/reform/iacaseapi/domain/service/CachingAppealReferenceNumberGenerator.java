@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 public class CachingAppealReferenceNumberGenerator {
 
     private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
-    private final Cache<Long, String>  appealReferenceNumberCache;
+    private final Cache<Long, String> appealReferenceNumberCache;
 
     public CachingAppealReferenceNumberGenerator(
-            @Value("${cache.appealReferenceNumbers.expirationTimeInSeconds}") int expirationTimeInSeconds,
-            AppealReferenceNumberGenerator appealReferenceNumberGenerator) {
+        @Value("${cache.appealReferenceNumbers.expirationTimeInSeconds}") int expirationTimeInSeconds,
+        AppealReferenceNumberGenerator appealReferenceNumberGenerator) {
 
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
 
@@ -29,14 +29,14 @@ public class CachingAppealReferenceNumberGenerator {
     public synchronized Optional<String> getNextAppealReferenceNumberFor(long caseId, String appealType) {
 
         String maybeCachedAppealReferenceNumber =
-                appealReferenceNumberCache.getIfPresent(caseId);
+            appealReferenceNumberCache.getIfPresent(caseId);
 
         if (maybeCachedAppealReferenceNumber != null) {
             return Optional.of(maybeCachedAppealReferenceNumber);
         }
 
         Optional<String> maybeAppealReferenceNumber =
-                appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(appealType);
+            appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(appealType);
 
         maybeAppealReferenceNumber.ifPresent(putInCacheFor(caseId));
 
@@ -46,7 +46,7 @@ public class CachingAppealReferenceNumberGenerator {
     private Consumer<String> putInCacheFor(long caseId) {
 
         return newAppealReferenceNumber -> appealReferenceNumberCache.put(
-                caseId,
-                newAppealReferenceNumber);
+            caseId,
+            newAppealReferenceNumber);
     }
 }

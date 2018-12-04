@@ -1,14 +1,16 @@
 {
   "description": "RIA-581 Generates a valid appeal reference number",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "submitAppeal",
-    "state": "appealStarted",
-    "caseData": {
-      "template": "minimal-appeal-started.json",
-      "replacements": {
-        "appealReferenceNumber": null
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealReferenceNumber": null
+        }
       }
     }
   },

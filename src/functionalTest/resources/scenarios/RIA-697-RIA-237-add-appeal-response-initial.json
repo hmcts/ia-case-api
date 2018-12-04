@@ -1,43 +1,45 @@
 {
   "description": "RIA-697 & RIA-237 Add appeal response -- initial upload",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdAboutToSubmit",
-  "input": {
-    "eventId": "addAppealResponse",
-    "state": "respondentReview",
-    "caseData": {
-      "template": "minimal-appeal-submitted.json",
-      "replacements": {
-        "appealResponseDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "appeal-response.pdf"
-        },
-        "appealResponseDescription": "Appeal response",
-        "appealResponseEvidence": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-appeal-response-evidence.pdf"
-              },
-              "description": "Some appeal response evidence"
-            }
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "addAppealResponse",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealResponseDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "appeal-response.pdf"
           },
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-more-appeal-response-evidence.pdf"
-              },
-              "description": "Some more appeal response evidence"
+          "appealResponseDescription": "Appeal response",
+          "appealResponseEvidence": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-appeal-response-evidence.pdf"
+                },
+                "description": "Some appeal response evidence"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-more-appeal-response-evidence.pdf"
+                },
+                "description": "Some more appeal response evidence"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
     }
   },
@@ -54,7 +56,8 @@
               "explanation": "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\nNext steps\nYou have 5 days to review the response. If you want to respond to what the Home Office has said, you should email the case officer.\n\nIf you do not respond within 5 days, the case will automatically go to hearing.",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
-              "dateSent": "{$TODAY}"
+              "dateSent": "{$TODAY}",
+              "tag": "legalRepresentativeReview"
             }
           }
         ],

@@ -28,15 +28,15 @@ public class TestFixtures {
     public static List<CaseDetails<AsylumCase>> someListOfCasesIncludingButPriorTo(TestAsylumCaseBuilder latestAsylumCaseBuilder) {
 
         int seed = getSequenceNumber(
-                latestAsylumCaseBuilder.build()
-                        .getCaseData()
-                        .getAppealReferenceNumber()
-                        .get()
+            latestAsylumCaseBuilder.build()
+                .getCaseData()
+                .getAppealReferenceNumber()
+                .get()
         );
 
         List<CaseDetails<AsylumCase>> caseDetails = rangeClosed((seed - 20), (seed))
-                .mapToObj(i -> buildCase(i, (i % 2 == 0 ? RP : PA)))
-                .collect(toList());
+            .mapToObj(i -> buildCase(i, (i % 2 == 0 ? RP : PA)))
+            .collect(toList());
 
         caseDetails.forEach(cd -> System.out.println(cd.getCaseData().getAppealReferenceNumber()));
 
@@ -51,7 +51,7 @@ public class TestFixtures {
         caseBuilder.setAppealType(Optional.of(caseType.getValue()));
         caseBuilder.setAppealReferenceNumber(Optional.of(caseType.name() + "/" + sequence + "/2018"));
         CaseDetails<AsylumCase> caseDetails =
-                new CaseDetails<>(nextLong(), "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
+            new CaseDetails<>(nextLong(), "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
 
         return caseDetails;
     }

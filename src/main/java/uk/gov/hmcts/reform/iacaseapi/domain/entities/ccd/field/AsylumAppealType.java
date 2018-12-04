@@ -19,8 +19,8 @@ public enum AsylumAppealType {
 
     public static Optional<AsylumAppealType> from(String value) {
         return stream(values())
-                .filter(v -> v.getValue().equals(value))
-                .findFirst();
+            .filter(v -> v.getValue().equals(value))
+            .findFirst();
     }
 
     @Override
