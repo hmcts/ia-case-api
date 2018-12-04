@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -7,13 +7,18 @@ import static org.mockito.Mockito.*;
 import com.google.common.collect.ImmutableMap;
 import java.util.Base64;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class IdamAuthorizorTest {
 
@@ -22,16 +27,22 @@ public class IdamAuthorizorTest {
     private static final String CLIENT_SECRET = "badgers";
     private static final String CLIENT_REDIRECT_URI = "http://redirect.url";
 
-    private final RestTemplate restTemplate = mock(RestTemplate.class);
+    @Mock private RestTemplate restTemplate;
 
-    private final IdamAuthorizor idamAuthorizor =
-        new IdamAuthorizor(
-            restTemplate,
-            BASE_URL,
-            CLIENT_ID,
-            CLIENT_SECRET,
-            CLIENT_REDIRECT_URI
-        );
+    private IdamAuthorizor idamAuthorizor;
+
+    @Before
+    public void setUp() {
+
+        idamAuthorizor =
+            new IdamAuthorizor(
+                restTemplate,
+                BASE_URL,
+                CLIENT_ID,
+                CLIENT_SECRET,
+                CLIENT_REDIRECT_URI
+            );
+    }
 
     @Test
     public void should_call_idam_api_to_authorize() {

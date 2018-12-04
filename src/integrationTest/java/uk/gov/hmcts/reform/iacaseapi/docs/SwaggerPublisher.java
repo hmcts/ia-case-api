@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,11 @@ public class SwaggerPublisher {
     public void shouldGenerateDocs() throws Exception {
 
         LOG.info("Generating Swagger Docs");
+
+        File linuxTmpDir = new File("/tmp");
+        if (!linuxTmpDir.exists()) {
+            return;
+        }
 
         byte[] specs = mockMvc.perform(get("/v2/api-docs"))
             .andExpect(status().isOk())

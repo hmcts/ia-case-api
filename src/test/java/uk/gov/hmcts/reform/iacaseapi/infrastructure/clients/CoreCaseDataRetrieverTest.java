@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 
 public class CoreCaseDataRetrieverTest {
 
@@ -41,11 +40,11 @@ public class CoreCaseDataRetrieverTest {
     public void maps_new_exception_message_when_get_number_of_pages_throws() {
 
         when(asylumCasesRetriever.getNumberOfPages())
-                .thenThrow(mock(AsylumCaseRetrievalException.class));
+            .thenThrow(mock(AsylumCaseRetrievalException.class));
 
         assertThatThrownBy(underTest::retrieveAllAppealCases)
-                .hasMessage("Couldn't retrieve appeal cases from Ccd")
-                .isExactlyInstanceOf(AsylumCaseRetrievalException.class);
+            .hasMessage("Couldn't retrieve appeal cases from Ccd")
+            .isExactlyInstanceOf(AsylumCaseRetrievalException.class);
     }
 
     @Test

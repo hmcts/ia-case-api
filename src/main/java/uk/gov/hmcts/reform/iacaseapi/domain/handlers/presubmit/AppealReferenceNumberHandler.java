@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CachingAppealReferenceNumberGenerator;
 
@@ -20,8 +19,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
     private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     public AppealReferenceNumberHandler(
-            CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator) {
-
+        CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator
+    ) {
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
     }
 
@@ -32,34 +31,35 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase = callback
-                .getCaseDetails()
-                .getCaseData();
+            .getCaseDetails()
+            .getCaseData();
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                new PreSubmitCallbackResponse<>(asylumCase);
+            new PreSubmitCallbackResponse<>(asylumCase);
 
         if (!asylumCase.getAppealReferenceNumber().isPresent()) {
 
             String appealType = asylumCase.getAppealType()
-                    .orElseThrow(() -> new AsylumCaseRetrievalException("Unrecognised asylum case type"));
+                .orElseThrow(() -> new IllegalStateException("Unrecognised asylum case type"));
 
             Optional<String> appealReferenceNumber =
                 appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(
-                        callback.getCaseDetails().getId(),
-                        appealType);
+                    callback.getCaseDetails().getId(),
+                    appealType
+                );
 
             if (!appealReferenceNumber.isPresent()) {
                 callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));

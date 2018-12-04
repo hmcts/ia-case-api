@@ -1,13 +1,15 @@
 {
   "description": "RIA-435 Request respondent review confirmation",
-  "credentials": "CaseOfficer",
-  "callback": "/asylum/ccdSubmitted",
-  "input": {
-    "eventId": "requestRespondentReview",
-    "state": "caseUnderReview",
-    "id": 1234,
-    "caseData": {
-      "template": "empty-case.json"
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestRespondentReview",
+      "state": "caseUnderReview",
+      "id": 1234,
+      "caseData": {
+        "template": "empty-case.json"
+      }
     }
   },
   "expectation": {

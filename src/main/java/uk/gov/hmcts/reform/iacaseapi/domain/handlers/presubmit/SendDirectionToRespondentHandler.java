@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -71,12 +72,15 @@ public class SendDirectionToRespondentHandler implements PreSubmitCallbackHandle
                 .getDirections()
                 .orElse(Collections.emptyList());
 
+        DirectionTag directionTag = mapEventToDirectionTag(callback);
+
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
                 existingDirections,
                 sendDirectionExplanation,
                 Parties.RESPONDENT,
-                sendDirectionDateDue
+                sendDirectionDateDue,
+                directionTag
             );
 
         asylumCase.setDirections(allDirections);
@@ -86,5 +90,15 @@ public class SendDirectionToRespondentHandler implements PreSubmitCallbackHandle
         asylumCase.clearSendDirectionDateDue();
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private DirectionTag mapEventToDirectionTag(
+        Callback<AsylumCase> callback
+    ) {
+        if (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE) {
+            return DirectionTag.RESPONDENT_EVIDENCE;
+        }
+
+        return DirectionTag.RESPONDENT_REVIEW;
     }
 }

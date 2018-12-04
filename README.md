@@ -57,6 +57,12 @@ If the API is running (either inside a Docker container or via `gradle bootRun`)
 ./gradlew functional
 ```
 
+If you want to run a specific scenario use this command:
+
+```
+./gradlew functional --tests CcdScenarioRunnerTest --info -Dscenario=RIA-697
+```
+
 If the API is running (either inside a Docker container or via `gradle bootRun`) you can run the *smoke tests* as follows:
 
 ```

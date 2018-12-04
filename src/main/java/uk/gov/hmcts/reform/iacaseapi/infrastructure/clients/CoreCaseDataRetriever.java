@@ -6,7 +6,6 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 
 @Service
 public class CoreCaseDataRetriever {
@@ -23,9 +22,9 @@ public class CoreCaseDataRetriever {
 
         try {
             asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
-                    .mapToObj(String::valueOf)
-                    .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
-                    .collect(toList());
+                .mapToObj(String::valueOf)
+                .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
+                .collect(toList());
 
         } catch (AsylumCaseRetrievalException exp) {
             throw new AsylumCaseRetrievalException("Couldn't retrieve appeal cases from Ccd", exp);

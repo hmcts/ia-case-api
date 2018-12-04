@@ -3,24 +3,29 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @Component
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
+    private final CcdEventAuthorizor ccdEventAuthorizor;
     private final List<PreSubmitCallbackHandler<T>> callbackHandlers;
 
     public PreSubmitCallbackDispatcher(
+        CcdEventAuthorizor ccdEventAuthorizor,
         List<PreSubmitCallbackHandler<T>> callbackHandlers
     ) {
+        requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizor must not be null");
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
+        this.ccdEventAuthorizor = ccdEventAuthorizor;
         this.callbackHandlers = callbackHandlers;
     }
 
@@ -31,6 +36,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        ccdEventAuthorizor.throwIfNotAuthorized(callback.getEvent());
+
         T caseData =
             callback
                 .getCaseDetails()
@@ -39,25 +46,10 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse =
             new PreSubmitCallbackResponse<>(caseData);
 
-        dispatchToHandlers(
-            callbackStage,
-            callback,
-            callbackHandlers
-                .stream()
-                .filter(callbackHandler -> callbackHandler.getDispatchPriority() == DispatchPriority.EARLY)
-                .collect(Collectors.toList()),
-            callbackResponse
-        );
-
-        dispatchToHandlers(
-            callbackStage,
-            callback,
-            callbackHandlers
-                .stream()
-                .filter(callbackHandler -> callbackHandler.getDispatchPriority() == DispatchPriority.LATE)
-                .collect(Collectors.toList()),
-            callbackResponse
-        );
+        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
+        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.EARLY);
+        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.LATE);
+        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.LATEST);
 
         return callbackResponse;
     }
@@ -66,17 +58,34 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackStage callbackStage,
         Callback<T> callback,
         List<PreSubmitCallbackHandler<T>> callbackHandlers,
-        PreSubmitCallbackResponse<T> callbackResponse
+        PreSubmitCallbackResponse<T> callbackResponse,
+        DispatchPriority dispatchPriority
     ) {
         for (PreSubmitCallbackHandler<T> callbackHandler : callbackHandlers) {
 
-            if (callbackHandler.canHandle(callbackStage, callback)) {
+            if (callbackHandler.getDispatchPriority() == dispatchPriority) {
 
-                PreSubmitCallbackResponse<T> callbackResponseFromHandler =
-                    callbackHandler.handle(callbackStage, callback);
+                Callback<T> callbackForHandler = new Callback<>(
+                    new CaseDetails<>(
+                        callback.getCaseDetails().getId(),
+                        callback.getCaseDetails().getJurisdiction(),
+                        callback.getCaseDetails().getState(),
+                        callbackResponse.getData()
+                    ),
+                    callback.getCaseDetailsBefore(),
+                    callback.getEvent()
+                );
 
-                if (!callbackResponseFromHandler.getErrors().isEmpty()) {
-                    callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
+                if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
+
+                    PreSubmitCallbackResponse<T> callbackResponseFromHandler =
+                        callbackHandler.handle(callbackStage, callbackForHandler);
+
+                    callbackResponse.setData(callbackResponseFromHandler.getData());
+
+                    if (!callbackResponseFromHandler.getErrors().isEmpty()) {
+                        callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
+                    }
                 }
             }
         }

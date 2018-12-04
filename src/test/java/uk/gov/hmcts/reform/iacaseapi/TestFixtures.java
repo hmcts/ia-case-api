@@ -22,7 +22,7 @@ public class TestFixtures {
 
         CaseDetails caseDetails = buildCase(nextInt(), PA);
         Callback<AsylumCase> asylumCaseCallback =
-                new Callback<>(caseDetails, Optional.empty(), SUBMIT_APPEAL);
+            new Callback<>(caseDetails, Optional.empty(), SUBMIT_APPEAL);
 
         asylumCaseCallback
             .getCaseDetails()
@@ -38,10 +38,10 @@ public class TestFixtures {
         caseBuilder.setAppealType(Optional.of(caseType.getValue()));
 
         caseBuilder.setAppealReferenceNumber(
-                Optional.of(caseType.name() + "/" + sequence + "/2018"));
+            Optional.of(caseType.name() + "/" + sequence + "/2018"));
 
         CaseDetails<AsylumCase> caseDetails =
-                new CaseDetails<>(1, "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
+            new CaseDetails<>(1, "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
 
         return caseDetails;
     }
