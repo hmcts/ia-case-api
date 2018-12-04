@@ -2,10 +2,13 @@
 
 properties([
   // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
-  pipelineTriggers([cron('H 22 * * *')])
+  pipelineTriggers([cron('H 22 * * *')]),
+  parameters([
+          string(name: 'URL_TO_TEST', defaultValue: 'https://ia-case-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
+  ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@securityscan")
 
 def type = "java"
 def product = "ia"
@@ -39,10 +42,12 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withNightlyPipeline(type, product, component) {
+  env.TEST_URL = params.URL_TO_TEST
 
   setVaultName('ia')
   loadVaultSecrets(secrets)
 
-  enableMutationTest()
-  enableSlackNotifications('#ia-tech')
+  //  enableMutationTest()
+  enableSecurityScan()
+//  enableSlackNotifications('#ia-tech')
 }
