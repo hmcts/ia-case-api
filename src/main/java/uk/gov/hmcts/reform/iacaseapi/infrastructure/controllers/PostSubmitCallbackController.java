@@ -4,10 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.ok;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +15,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Deserializer;
+
 
 @Api(
-    value = "Handles callbacks from CCD that occur *before* changes are persisted.",
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
+    value = "/asylum",
+    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 @RequestMapping(
     path = "/asylum",
@@ -35,34 +32,56 @@ public class PostSubmitCallbackController {
 
     private static final org.slf4j.Logger LOG = getLogger(PostSubmitCallbackController.class);
 
-    private final Deserializer<Callback<AsylumCase>> callbackDeserializer;
     private final PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
     public PostSubmitCallbackController(
-        Deserializer<Callback<AsylumCase>> callbackDeserializer,
         PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
     ) {
-        requireNonNull(callbackDeserializer, "callbackDeserializer must not be null");
         requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
-        this.callbackDeserializer = callbackDeserializer;
         this.callbackDispatcher = callbackDispatcher;
     }
 
-    @ApiOperation("Handles 'SubmittedEvent' callbacks from CCD")
+    @ApiOperation(
+        value = "Handles 'SubmittedEvent' callbacks from CCD",
+        response = PostSubmitCallbackResponse.class,
+        authorizations =
+            {
+                @Authorization(value = "Authorization"),
+                @Authorization(value = "ServiceAuthorization")
+            }
+    )
     @ApiResponses({
         @ApiResponse(
             code = 200,
             message = "Optional confirmation text for CCD UI",
             response = PostSubmitCallbackResponse.class
+        ),
+        @ApiResponse(
+            code = 400,
+            message = "Bad Request",
+            response = PostSubmitCallbackResponse.class
+        ),
+        @ApiResponse(
+            code = 403,
+            message = "Forbidden",
+            response = PostSubmitCallbackResponse.class
+        ),
+        @ApiResponse(
+            code = 415,
+            message = "Unsupported Media Type",
+            response = PostSubmitCallbackResponse.class
+        ),
+        @ApiResponse(
+            code = 500,
+            message = "Internal Server Error",
+            response = PostSubmitCallbackResponse.class
         )
     })
     @PostMapping(path = "/ccdSubmitted")
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
-        @RequestBody String source
+        @ApiParam(value = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
-        Callback<AsylumCase> callback =
-            callbackDeserializer.deserialize(source);
 
         LOG.info(
             "Asylum Case CCD `submitted` event received for Case ID `{}`",

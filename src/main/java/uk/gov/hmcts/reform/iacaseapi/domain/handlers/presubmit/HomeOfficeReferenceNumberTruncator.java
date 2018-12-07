@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -40,7 +41,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
         String homeOfficeReferenceNumber =
             asylumCase
                 .getHomeOfficeReferenceNumber()
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is not present"));
+                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
 
         if (homeOfficeReferenceNumber.length() > 7) {
             asylumCase.setHomeOfficeReferenceNumber(

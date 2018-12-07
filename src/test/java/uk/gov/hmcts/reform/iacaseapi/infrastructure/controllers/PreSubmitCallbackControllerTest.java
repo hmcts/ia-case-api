@@ -16,12 +16,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Deserializer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PreSubmitCallbackControllerTest {
 
-    @Mock private Deserializer<Callback<AsylumCase>> callbackDeserializer;
     @Mock private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock private Callback<AsylumCase> callback;
@@ -33,19 +31,12 @@ public class PreSubmitCallbackControllerTest {
     public void setUp() {
         preSubmitCallbackController =
             new PreSubmitCallbackController(
-                callbackDeserializer,
                 callbackDispatcher
             );
     }
 
     @Test
-    public void should_deserialize_about_to_start_callback_then_dispatch_then_return_response() {
-
-        String asylumCaseCallbackSource = "{\"case\":\"data\"}";
-
-        doReturn(callback)
-            .when(callbackDeserializer)
-            .deserialize(asylumCaseCallbackSource);
+    public void should_dispatch_about_to_start_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -54,7 +45,7 @@ public class PreSubmitCallbackControllerTest {
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
-            preSubmitCallbackController.ccdAboutToStart(asylumCaseCallbackSource);
+            preSubmitCallbackController.ccdAboutToStart(callback);
 
         assertNotNull(actualResponse);
 
@@ -65,13 +56,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_deserialize_about_to_submit_callback_then_dispatch_then_return_response() {
-
-        String asylumCaseCallbackSource = "{\"case\":\"data\"}";
-
-        doReturn(callback)
-            .when(callbackDeserializer)
-            .deserialize(asylumCaseCallbackSource);
+    public void should_dispatch_about_to_submit_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -80,7 +65,7 @@ public class PreSubmitCallbackControllerTest {
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
-            preSubmitCallbackController.ccdAboutToSubmit(asylumCaseCallbackSource);
+            preSubmitCallbackController.ccdAboutToSubmit(callback);
 
         assertNotNull(actualResponse);
 
@@ -93,11 +78,7 @@ public class PreSubmitCallbackControllerTest {
     @Test
     public void should_not_allow_null_constructor_arguments() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackController(null, callbackDispatcher))
-            .hasMessage("callbackDeserializer must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreSubmitCallbackController(callbackDeserializer, null))
+        assertThatThrownBy(() -> new PreSubmitCallbackController(null))
             .hasMessage("callbackDispatcher must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
