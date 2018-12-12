@@ -14,7 +14,7 @@ public class PreSubmitCallbackResponse<T extends CaseData> {
     private final Set<String> errors = new LinkedHashSet<>();
 
     public PreSubmitCallbackResponse(
-        T data
+            T data
     ) {
         requireNonNull(data);
         this.data = data;

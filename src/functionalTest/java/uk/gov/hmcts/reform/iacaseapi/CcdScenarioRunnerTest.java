@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.describedAs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -58,7 +56,7 @@ public class CcdScenarioRunnerTest {
             String description = MapValueExtractor.extract(scenario, "description");
             int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 
-            String response =
+            String actualResponseBody =
                 SerenityRest
                     .given()
                     .headers(authorizationHeaders)
@@ -74,15 +72,14 @@ public class CcdScenarioRunnerTest {
                         )
                     )
                     .and()
-                    .extract().body().asString();
+                        .extract().body().asString();
 
             String expectedResponseBody = buildExpectedResponseBody(scenario, templatesByFilename);
 
-            assertThat(
-                "Response is correct (" + description + ")",
-                response,
-                equalTo(expectedResponseBody)
-            );
+            Map<String, Object> actualResponse = MapSerializer.deserialize(actualResponseBody);
+            Map<String, Object> expectedResponse = MapSerializer.deserialize(expectedResponseBody);
+
+            MapFieldAssertor.assertFields(expectedResponse, actualResponse, (description + ": "));
         }
     }
 

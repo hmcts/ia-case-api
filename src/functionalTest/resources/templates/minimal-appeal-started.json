@@ -22,5 +22,6 @@
   },
   "hasNewMatters": "No",
   "hasOtherAppeals": "No",
-  "sendDirectionActionAvailable": "No"
+  "sendDirectionActionAvailable": "No",
+  "appealReferenceNumber": "PA/12345/2018"
 }
