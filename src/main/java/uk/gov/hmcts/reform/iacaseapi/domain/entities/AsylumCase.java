@@ -36,6 +36,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> hasOtherAppeals = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
+    private Optional<String> appealReferenceNumber = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -101,6 +102,7 @@ public class AsylumCase implements CaseData {
         this.hasOtherAppeals = asylumCaseBuilder.getHasOtherAppeals();
         this.otherAppeals = asylumCaseBuilder.getOtherAppeals();
         this.legalRepReferenceNumber = asylumCaseBuilder.getLegalRepReferenceNumber();
+        this.appealReferenceNumber = asylumCaseBuilder.getAppealReferenceNumber();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
@@ -115,6 +117,7 @@ public class AsylumCase implements CaseData {
         this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
         this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
+
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -207,8 +210,16 @@ public class AsylumCase implements CaseData {
         return legalRepReferenceNumber;
     }
 
+    public Optional<String> getAppealReferenceNumber() {
+        return appealReferenceNumber;
+    }
+
     public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = Optional.ofNullable(homeOfficeReferenceNumber);
+    }
+
+    public void setAppealReferenceNumber(String appealReferenceNumber) {
+        this.appealReferenceNumber = Optional.ofNullable(appealReferenceNumber);
     }
 
     // -----------------------------------------------------------------------------
