@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.integration.util;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.IntStream.range;
+import static java.util.stream.IntStream.rangeClosed;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
@@ -34,9 +34,11 @@ public class TestFixtures {
                         .get()
         );
 
-        List<CaseDetails<AsylumCase>> caseDetails = range((seed - 20), (seed))
-                .mapToObj(i -> buildCase(seed, (i % 2 == 0 ? RP : PA)))
+        List<CaseDetails<AsylumCase>> caseDetails = rangeClosed((seed - 20), (seed))
+                .mapToObj(i -> buildCase(i, (i % 2 == 0 ? RP : PA)))
                 .collect(toList());
+
+        caseDetails.forEach(cd -> System.out.println(cd.getCaseData().getAppealReferenceNumber()));
 
         caseDetails.add(latestAsylumCaseBuilder.build());
 

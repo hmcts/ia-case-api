@@ -4,7 +4,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetrieve
 @Service
 public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceNumberInitializer {
 
+    private static final String CASE_DATA_MAP_KEY = "case_data";
     private final CoreCaseDataRetriever coreCaseDataRetriever;
     private final SystemDateProvider systemDateProvider;
     private final String appealReferenceSequenceSeed;
-    private final Map<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new HashMap<>();
+    private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
 
     public AppealReferenceNumberInitializerFromCcd(
             CoreCaseDataRetriever coreCaseDataRetriever,
@@ -71,14 +72,14 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
 
     private List<Map> removeCasesWithoutAnAppealReferenceNumber(List<Map> asylumCases) {
         return asylumCases.stream()
-                .filter(map -> map.get("case_data") instanceof Map)
-                .filter(map -> ((Map) map.get("case_data")).get("appealReferenceNumber") != null)
+                .filter(map -> map.get(CASE_DATA_MAP_KEY) instanceof Map)
+                .filter(map -> ((Map) map.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber") != null)
                 .collect(toList());
     }
 
     private AppealReferenceNumber extractReferenceNumber(Map appealMap) {
         String appealReferenceNumber =
-                (String) ((Map)appealMap.get("case_data")).get("appealReferenceNumber");
+                (String) ((Map)appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
 
         return new AppealReferenceNumber(appealReferenceNumber);
     }

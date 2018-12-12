@@ -12,11 +12,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Serializer;
 import uk.gov.hmcts.reform.iacaseapi.integration.stubs.CcdMock;
 import uk.gov.hmcts.reform.iacaseapi.integration.util.IdamStubbedSpringBootIntegrationTest;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ConcurrentAppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSpringBootIntegrationTest {
 
     @Autowired

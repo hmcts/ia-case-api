@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.from;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ public class AppealReferenceNumberGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppealReferenceNumberGenerator.class);
 
-    private final Map<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new HashMap<>();
+    private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
     private final AppealReferenceNumberInitializer appealReferenceNumberInitalizer;
     private final String appealReferenceSequenceSeed;
     private final DateProvider dateProvider;

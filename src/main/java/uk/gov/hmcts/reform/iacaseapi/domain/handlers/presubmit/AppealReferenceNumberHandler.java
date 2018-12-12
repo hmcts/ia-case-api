@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
@@ -53,7 +54,9 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         if (!asylumCase.getAppealReferenceNumber().isPresent()) {
 
             Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(asylumCase.getAppealType().get());
+                appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(
+                        asylumCase.getAppealType()
+                            .orElseThrow(() -> new AsylumCaseRetrievalException("Unrecognised asylum case type")));
 
             if (!appealReferenceNumber.isPresent()) {
                 callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));
