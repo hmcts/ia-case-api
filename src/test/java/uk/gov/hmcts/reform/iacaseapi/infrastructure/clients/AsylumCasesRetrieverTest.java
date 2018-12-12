@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.UNKNOWN;
 
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenDecoder;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.IdamAuthorizor;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.IdamUserConnectionConfig;
 
 @SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
@@ -42,10 +44,10 @@ public class AsylumCasesRetrieverTest {
     private final RestTemplate restTemplate = mock(RestTemplate.class);
     private final String someServiceAuthorizationToken = "some-service-authorization";
     private final String someIdamAccessToken = "some-access-token";
-    private final String testSystemPassword = "some-test-user-password";
-    private final String testSystemUser = "some-test-user";
     private final String ccdBaseUrl = "some-url";
     private final String userId = "10";
+    private final String searchPathUrlTemplate = "someSearchPathTemplate";
+    private final String searchPathMetadataUrlTemplate = "someSearchPathMetadataTemplate";
 
     @Captor ArgumentCaptor<ParameterizedTypeReference> parameterizedTypeReference;
     @Captor ArgumentCaptor<Map<String, String>> urlVariables;
@@ -53,24 +55,28 @@ public class AsylumCasesRetrieverTest {
     @Captor ArgumentCaptor<HttpEntity> httpEntity;
     @Captor ArgumentCaptor<String> urlCaptor;
 
+    private final IdamUserConnectionConfig idamUserConnectionConfig = mock(IdamUserConnectionConfig.class);
     private final AsylumCasesRetriever underTest = new AsylumCasesRetriever(
+            searchPathUrlTemplate,
+            searchPathMetadataUrlTemplate,
             ccdBaseUrl,
-            testSystemUser,
-            testSystemPassword,
             restTemplate,
-            idamAuthorizor,
             serviceAuthorizationTokenGenerator,
-            accessTokenDecoder);
+            idamUserConnectionConfig
+    );
 
     @Before
     public void setUp() {
 
-        when(idamAuthorizor.exchangeForAccessToken(testSystemUser, testSystemPassword))
-                .thenReturn(someIdamAccessToken);
+        Mockito.reset(idamAuthorizor, restTemplate, serviceAuthorizationTokenGenerator, responseEntity, accessTokenDecoder);
+
         when(serviceAuthorizationTokenGenerator.generate())
                 .thenReturn(someServiceAuthorizationToken);
-        when(accessTokenDecoder.decode(someIdamAccessToken))
-                .thenReturn(singletonMap("id", userId));
+        when(idamUserConnectionConfig.getAccessToken())
+                .thenReturn(someIdamAccessToken);
+        when(idamUserConnectionConfig.getId())
+                .thenReturn(userId);
+
     }
 
     @Test
@@ -85,26 +91,30 @@ public class AsylumCasesRetrieverTest {
 
         underTest.getAsylumCasesPage("1");
 
-        verify(idamAuthorizor).exchangeForAccessToken(testSystemUser, testSystemPassword);
         verify(serviceAuthorizationTokenGenerator).generate();
-        verify(accessTokenDecoder).decode(someIdamAccessToken);
+        verify(idamUserConnectionConfig).getAccessToken();
+        verify(idamUserConnectionConfig).getId();
 
         assertTrue(urlCaptor.getValue()
                 .startsWith(ccdBaseUrl));
+
         assertThat(urlCaptor.getValue()
-                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED) + "&page=1"));
-        assertTrue(httpMethod.getValue()
-                .equals(GET));
+                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED) + "&page=1")).isEqualTo(true);
+
+        assertThat(httpMethod.getValue().equals(GET)).isEqualTo(true);
 
         assertThat(httpEntity.getValue().getHeaders().get(AUTHORIZATION))
                 .containsExactly(someIdamAccessToken);
-        assertThat(httpEntity.getValue().getHeaders().get("ServiceAuthorization")
-                .equals(someServiceAuthorizationToken));
+
+        assertThat(httpEntity.getValue().getHeaders().get("ServiceAuthorization"))
+                .contains(someServiceAuthorizationToken);
 
         assertThat(urlVariables.getValue().get("uid"))
                 .isEqualToIgnoringCase(userId);
+
         assertThat(urlVariables.getValue().get("jid"))
                 .isEqualToIgnoringCase("IA");
+
         assertThat(urlVariables.getValue().get("ctid"))
                 .isEqualToIgnoringCase("Asylum");
     }
@@ -123,30 +133,36 @@ public class AsylumCasesRetrieverTest {
 
         int numberOfPages = underTest.getNumberOfPages();
 
-        verify(idamAuthorizor).exchangeForAccessToken(testSystemUser, testSystemPassword);
         verify(serviceAuthorizationTokenGenerator).generate();
-        verify(accessTokenDecoder).decode(someIdamAccessToken);
+        verify(idamUserConnectionConfig).getAccessToken();
+        verify(idamUserConnectionConfig).getId();
 
         Assertions.assertThat(numberOfPages).isEqualTo(1);
 
         assertTrue(urlCaptor.getValue()
                 .startsWith(ccdBaseUrl));
-        assertThat(urlCaptor.getValue()
-                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED)));
-        assertThat(urlCaptor.getValue()
-                .contains("pagination_metadata"));
-        assertTrue(httpMethod.getValue()
-                .equals(GET));
+
+        assertThat(urlCaptor.getValue())
+                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED));
+
+        assertThat(urlCaptor.getValue())
+                .contains(searchPathMetadataUrlTemplate);
+
+        assertThat(httpMethod.getValue())
+                .isEqualTo(GET);
 
         assertThat(httpEntity.getValue().getHeaders().get(AUTHORIZATION))
                 .containsExactly(someIdamAccessToken);
-        assertThat(httpEntity.getValue().getHeaders().get("ServiceAuthorization")
-                .equals(someServiceAuthorizationToken));
+
+        assertThat(httpEntity.getValue().getHeaders().get("ServiceAuthorization"))
+                .containsExactly(someServiceAuthorizationToken);
 
         assertThat(urlVariables.getValue().get("uid"))
                 .isEqualToIgnoringCase(userId);
+
         assertThat(urlVariables.getValue().get("jid"))
                 .isEqualToIgnoringCase("IA");
+
         assertThat(urlVariables.getValue().get("ctid"))
                 .isEqualToIgnoringCase("Asylum");
     }
@@ -162,7 +178,7 @@ public class AsylumCasesRetrieverTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class),
                 Mockito.any(Map.class)))
-                    .thenThrow(underlyingException);
+                .thenThrow(underlyingException);
 
         try {
 
@@ -200,6 +216,7 @@ public class AsylumCasesRetrieverTest {
     private String queryStringForAllAppealStatesExcept(State state) {
         return "?" + stream(State.values())
                 .filter(s -> !s.equals(state))
+                .filter(s -> !s.equals(UNKNOWN))
                 .map(s -> "state=" + s)
                 .collect(joining("&"));
     }
