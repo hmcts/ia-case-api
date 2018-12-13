@@ -31,7 +31,7 @@ public class DirectionAppenderTest {
     private Parties newDirectionParties = Parties.BOTH;
     private String newDirectionDateDue = "2018-12-25";
     private String expectedDateSent = LocalDate.MAX.toString();
-    private DirectionTag expectedDirectionTag = DirectionTag.RESPONDENT_REVIEW;
+    private DirectionTag expectedTag = DirectionTag.RESPONDENT_REVIEW;
 
     private DirectionAppender directionAppender;
 
@@ -60,7 +60,7 @@ public class DirectionAppenderTest {
                 newDirectionExplanation,
                 newDirectionParties,
                 newDirectionDateDue,
-                expectedDirectionTag
+                expectedTag
             );
 
         verify(existingDirectionById1, never()).getId();
@@ -75,7 +75,7 @@ public class DirectionAppenderTest {
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedDirectionTag, allDirections.get(0).getValue().getDirectionTag());
+        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());
@@ -98,7 +98,7 @@ public class DirectionAppenderTest {
                 newDirectionExplanation,
                 newDirectionParties,
                 newDirectionDateDue,
-                expectedDirectionTag
+                expectedTag
             );
 
         assertNotNull(allDirections);
@@ -109,7 +109,7 @@ public class DirectionAppenderTest {
         assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
-        assertEquals(expectedDirectionTag, allDirections.get(0).getValue().getDirectionTag());
+        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class DirectionAppenderTest {
                 newDirectionExplanation,
                 newDirectionParties,
                 newDirectionDateDue,
-                expectedDirectionTag
+                expectedTag
             ))
             .hasMessage("existingDirections must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -135,7 +135,7 @@ public class DirectionAppenderTest {
                 null,
                 newDirectionParties,
                 newDirectionDateDue,
-                expectedDirectionTag
+                expectedTag
             ))
             .hasMessage("explanation must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -146,7 +146,7 @@ public class DirectionAppenderTest {
                 newDirectionExplanation,
                 null,
                 newDirectionDateDue,
-                expectedDirectionTag
+                expectedTag
             ))
             .hasMessage("parties must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -157,7 +157,7 @@ public class DirectionAppenderTest {
                 newDirectionExplanation,
                 newDirectionParties,
                 null,
-                expectedDirectionTag
+                expectedTag
             ))
             .hasMessage("dateDue must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -170,7 +170,7 @@ public class DirectionAppenderTest {
                 newDirectionDateDue,
                 null
             ))
-            .hasMessage("directionTag must not be null")
+            .hasMessage("tag must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 }

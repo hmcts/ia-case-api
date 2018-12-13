@@ -85,7 +85,7 @@
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",
-              "directionTag": "legalRepresentativeReview"
+              "tag": "legalRepresentativeReview"
             }
           }
         ],

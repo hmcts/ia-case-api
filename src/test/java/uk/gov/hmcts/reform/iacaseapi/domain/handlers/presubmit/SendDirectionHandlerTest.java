@@ -56,7 +56,7 @@ public class SendDirectionHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
+        final DirectionTag expectedTag = DirectionTag.NONE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
@@ -70,7 +70,7 @@ public class SendDirectionHandlerTest {
             expectedExplanation,
             expectedParties,
             expectedDateDue,
-            expectedDirectionTag
+            expectedTag
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -88,7 +88,7 @@ public class SendDirectionHandlerTest {
             expectedExplanation,
             expectedParties,
             expectedDateDue,
-            expectedDirectionTag
+            expectedTag
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -106,7 +106,7 @@ public class SendDirectionHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
+        final DirectionTag expectedTag = DirectionTag.NONE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
@@ -120,7 +120,7 @@ public class SendDirectionHandlerTest {
             eq(expectedExplanation),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -138,7 +138,7 @@ public class SendDirectionHandlerTest {
             eq(expectedExplanation),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

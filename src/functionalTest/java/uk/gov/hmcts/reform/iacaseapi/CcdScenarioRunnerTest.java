@@ -107,6 +107,8 @@ public class CcdScenarioRunnerTest {
 
             MapFieldAssertor.assertFields(expectedResponse, actualResponse, (description + ": "));
         }
+
+        System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
     }
 
     private Map<String, Object> deserializeWithExpandedValues(

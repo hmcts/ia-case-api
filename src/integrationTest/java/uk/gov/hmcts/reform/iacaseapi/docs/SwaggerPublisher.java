@@ -47,8 +47,7 @@ public class SwaggerPublisher {
         LOG.info("Generating Swagger Docs");
 
         File linuxTmpDir = new File("/tmp");
-        boolean linuxTmpDirExists = linuxTmpDir.exists();
-        if (!linuxTmpDirExists) {
+        if (!linuxTmpDir.exists()) {
             return;
         }
 

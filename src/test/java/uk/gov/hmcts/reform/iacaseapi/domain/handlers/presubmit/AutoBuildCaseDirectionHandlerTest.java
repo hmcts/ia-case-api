@@ -63,7 +63,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         final String expectedExplanationPart = "build your case";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.BUILD_CASE;
+        final DirectionTag expectedTag = DirectionTag.BUILD_CASE;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -75,7 +75,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -89,7 +89,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -103,7 +103,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         final String expectedExplanationPart = "build your case";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.BUILD_CASE;
+        final DirectionTag expectedTag = DirectionTag.BUILD_CASE;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -115,7 +115,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -129,7 +129,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

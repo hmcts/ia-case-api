@@ -20,7 +20,7 @@
                 "parties": "legalRepresentative",
                 "dateDue": "2018-12-31",
                 "dateSent": "2018-12-25",
-                "directionTag": ""
+                "tag": ""
               }
             }
           ]
@@ -42,7 +42,7 @@
               "parties": "legalRepresentative",
               "dateDue": "2022-01-01",
               "dateSent": "{$TODAY}",
-              "directionTag": ""
+              "tag": ""
             }
           },
           {
@@ -52,7 +52,7 @@
               "parties": "legalRepresentative",
               "dateDue": "2018-12-31",
               "dateSent": "2018-12-25",
-              "directionTag": ""
+              "tag": ""
             }
           }
         ]

@@ -63,7 +63,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         final String expectedExplanationPart = "Your appeal is going to a hearing.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -75,7 +75,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -89,7 +89,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -103,7 +103,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         final String expectedExplanationPart = "Your appeal is going to a hearing.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -115,7 +115,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -129,7 +129,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

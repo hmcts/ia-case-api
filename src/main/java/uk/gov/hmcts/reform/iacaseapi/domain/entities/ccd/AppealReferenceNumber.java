@@ -38,4 +38,3 @@ public class AppealReferenceNumber {
         return asylumAppealType.name() + "/" + sequence + "/" + year;
     }
 }
-

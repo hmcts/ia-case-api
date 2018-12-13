@@ -113,7 +113,7 @@ public class JwtAccessTokenDecoderTest {
             );
 
         assertThatThrownBy(() -> jwtAccessTokenDecoder.decode(testToken))
-            .hasMessage("Access Token claims cannot be deserialized")
+            .hasMessage("Access Token cannot be decoded")
             .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

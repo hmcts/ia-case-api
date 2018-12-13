@@ -8,7 +8,7 @@ public class Direction {
     private Parties parties;
     private String dateDue;
     private String dateSent;
-    private DirectionTag directionTag;
+    private DirectionTag tag;
 
     private Direction() {
         // noop -- for deserializer
@@ -19,19 +19,19 @@ public class Direction {
         Parties parties,
         String dateDue,
         String dateSent,
-        DirectionTag directionTag
+        DirectionTag tag
     ) {
         requireNonNull(explanation);
         requireNonNull(parties);
         requireNonNull(dateDue);
         requireNonNull(dateSent);
-        requireNonNull(directionTag);
+        requireNonNull(tag);
 
         this.explanation = explanation;
         this.parties = parties;
         this.dateDue = dateDue;
         this.dateSent = dateSent;
-        this.directionTag = directionTag;
+        this.tag = tag;
     }
 
     public String getExplanation() {
@@ -54,8 +54,8 @@ public class Direction {
         return dateSent;
     }
 
-    public DirectionTag getDirectionTag() {
-        requireNonNull(directionTag);
-        return directionTag;
+    public DirectionTag getTag() {
+        requireNonNull(tag);
+        return tag;
     }
 }

@@ -17,7 +17,7 @@
                 "parties": "legalRepresentative",
                 "dateDue": "2018-12-31",
                 "dateSent": "2018-12-25",
-                "directionTag": ""
+                "tag": ""
               }
             }
           ]
@@ -39,7 +39,7 @@
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",
-              "directionTag": "legalRepresentativeHearingRequirements"
+              "tag": "legalRepresentativeHearingRequirements"
             }
           },
           {
@@ -49,7 +49,7 @@
               "parties": "legalRepresentative",
               "dateDue": "2018-12-31",
               "dateSent": "2018-12-25",
-              "directionTag": ""
+              "tag": ""
             }
           }
         ]

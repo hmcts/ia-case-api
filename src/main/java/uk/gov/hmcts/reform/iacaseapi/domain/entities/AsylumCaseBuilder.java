@@ -81,7 +81,7 @@ public class AsylumCaseBuilder {
 
     private Optional<String> legalRepresentativeName = Optional.empty();
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
-    private Optional<List<String>> notificationsSent = Optional.empty();
+    private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
 
     public AsylumCase build() {
@@ -382,7 +382,7 @@ public class AsylumCaseBuilder {
         return legalRepresentativeEmailAddress;
     }
 
-    public Optional<List<String>> getNotificationsSent() {
+    public Optional<List<IdValue<String>>> getNotificationsSent() {
         return notificationsSent;
     }
 
@@ -398,7 +398,7 @@ public class AsylumCaseBuilder {
         this.legalRepresentativeEmailAddress = legalRepresentativeEmailAddress;
     }
 
-    public void setNotificationsSent(Optional<List<String>> notificationsSent) {
+    public void setNotificationsSent(Optional<List<IdValue<String>>> notificationsSent) {
         this.notificationsSent = notificationsSent;
     }
 

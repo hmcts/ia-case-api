@@ -34,19 +34,13 @@ public class JwtAccessTokenDecoder implements AccessTokenDecoder {
                 Base64Utils.decodeFromString(jwt.getPayload())
             );
 
-            try {
+            return mapper.readValue(
+                accessTokenClaims,
+                new TypeReference<Map<String, String>>() {
+                }
+            );
 
-                return mapper.readValue(
-                    accessTokenClaims,
-                    new TypeReference<Map<String, String>>() {
-                    }
-                );
-
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Access Token claims cannot be deserialized", e);
-            }
-
-        } catch (JWTDecodeException e) {
+        } catch (IOException | JWTDecodeException e) {
             throw new IllegalArgumentException("Access Token cannot be decoded", e);
         }
     }

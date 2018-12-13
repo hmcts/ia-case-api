@@ -11,14 +11,14 @@ public class DirectionTest {
     private final Parties parties = Parties.RESPONDENT;
     private final String dateDue = "2018-12-31T12:34:56";
     private final String dateSent = "2018-12-25";
-    private DirectionTag directionTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
+    private DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
 
     private Direction direction = new Direction(
         explanation,
         parties,
         dateDue,
         dateSent,
-        directionTag
+        tag
     );
 
     @Test
@@ -33,16 +33,16 @@ public class DirectionTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> new Direction(null, parties, dateDue, dateSent, directionTag))
+        assertThatThrownBy(() -> new Direction(null, parties, dateDue, dateSent, tag))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction(explanation, null, dateDue, dateSent, directionTag))
+        assertThatThrownBy(() -> new Direction(explanation, null, dateDue, dateSent, tag))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction(explanation, parties, null, dateSent, directionTag))
+        assertThatThrownBy(() -> new Direction(explanation, parties, null, dateSent, tag))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction(explanation, parties, dateDue, null, directionTag))
+        assertThatThrownBy(() -> new Direction(explanation, parties, dateDue, null, tag))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new Direction(explanation, parties, dateDue, dateSent, null))

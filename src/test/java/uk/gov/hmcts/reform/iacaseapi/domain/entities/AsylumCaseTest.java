@@ -87,7 +87,7 @@ public class AsylumCaseTest {
 
     private final String legalRepresentativeName = "Q";
     private final String legalRepresentativeEmailAddress = "R";
-    private final List<String> notificationsSent = mock(List.class);
+    private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
@@ -341,7 +341,7 @@ public class AsylumCaseTest {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
-        List<String> notificationsSent = Arrays.asList("ABC");
+        List<IdValue<String>> notificationsSent = Arrays.asList(new IdValue<>("1", "ABC"));
 
         asylumCase.setNotificationsSent(notificationsSent);
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());

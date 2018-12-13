@@ -56,7 +56,7 @@ public class SendDirectionToRespondentHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.RESPONDENT_EVIDENCE;
+        final DirectionTag expectedTag = DirectionTag.RESPONDENT_EVIDENCE;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -69,7 +69,7 @@ public class SendDirectionToRespondentHandlerTest {
             expectedExplanation,
             expectedParties,
             expectedDateDue,
-            expectedDirectionTag
+            expectedTag
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -87,7 +87,7 @@ public class SendDirectionToRespondentHandlerTest {
             expectedExplanation,
             expectedParties,
             expectedDateDue,
-            expectedDirectionTag
+            expectedTag
         );
 
         verify(asylumCase, times(1)).setDirections(allDirections);
@@ -105,7 +105,7 @@ public class SendDirectionToRespondentHandlerTest {
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.RESPONDENT_REVIEW;
+        final DirectionTag expectedTag = DirectionTag.RESPONDENT_REVIEW;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
@@ -118,7 +118,7 @@ public class SendDirectionToRespondentHandlerTest {
             eq(expectedExplanation),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -136,7 +136,7 @@ public class SendDirectionToRespondentHandlerTest {
             eq(expectedExplanation),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedTag)
         );
 
         List<IdValue<Direction>> actualExistingDirections =

@@ -83,7 +83,7 @@ public class AsylumCaseBuilderTest {
 
     private final String legalRepresentativeName = "Q";
     private final String legalRepresentativeEmailAddress = "R";
-    private final List<String> notificationsSent = mock(List.class);
+    private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
 
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();

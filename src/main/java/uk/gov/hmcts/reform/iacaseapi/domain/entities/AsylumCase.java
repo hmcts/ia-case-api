@@ -82,7 +82,7 @@ public class AsylumCase implements CaseData {
 
     private Optional<String> legalRepresentativeName = Optional.empty();
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
-    private Optional<List<String>> notificationsSent = Optional.empty();
+    private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
 
     private AsylumCase() {
@@ -371,7 +371,7 @@ public class AsylumCase implements CaseData {
         return legalRepresentativeEmailAddress;
     }
 
-    public Optional<List<String>> getNotificationsSent() {
+    public Optional<List<IdValue<String>>> getNotificationsSent() {
         requireNonNull(notificationsSent);
         return notificationsSent;
     }
@@ -389,7 +389,7 @@ public class AsylumCase implements CaseData {
         this.legalRepresentativeEmailAddress = Optional.ofNullable(legalRepresentativeEmailAddress);
     }
 
-    public void setNotificationsSent(List<String> notificationsSent) {
+    public void setNotificationsSent(List<IdValue<String>> notificationsSent) {
         this.notificationsSent = Optional.ofNullable(notificationsSent);
     }
 

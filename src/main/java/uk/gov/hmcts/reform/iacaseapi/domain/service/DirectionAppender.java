@@ -27,20 +27,20 @@ public class DirectionAppender {
         String explanation,
         Parties parties,
         String dateDue,
-        DirectionTag directionTag
+        DirectionTag tag
     ) {
         requireNonNull(existingDirections, "existingDirections must not be null");
         requireNonNull(explanation, "explanation must not be null");
         requireNonNull(parties, "parties must not be null");
         requireNonNull(dateDue, "dateDue must not be null");
-        requireNonNull(directionTag, "directionTag must not be null");
+        requireNonNull(tag, "tag must not be null");
 
         final Direction newDirection = new Direction(
             explanation,
             parties,
             dateDue,
             dateProvider.now().toString(),
-            directionTag
+            tag
         );
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();

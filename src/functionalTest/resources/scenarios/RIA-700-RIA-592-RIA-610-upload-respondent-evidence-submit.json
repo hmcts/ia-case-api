@@ -4,6 +4,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
+      "id": 1234,
       "eventId": "uploadRespondentEvidence",
       "state": "awaitingRespondentEvidence",
       "caseData": {
@@ -67,12 +68,15 @@
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+28}",
               "dateSent": "{$TODAY}",
-              "directionTag": "buildCase"
+              "tag": "buildCase"
             }
           }
         ],
         "notificationsSent": [
-          "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          {
+            "id": "1234_BUILD_CASE_DIRECTION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
         ],
         "respondentDocuments": [
           {
