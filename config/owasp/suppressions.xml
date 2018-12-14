@@ -14,4 +14,12 @@
     <gav regex="true">^org\.codehaus\.groovy:groovy-json:.*$</gav>
     <cpe>cpe:/a:apache:groovy</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+	The offending library and class and not used in our code
+	https://tools.hmcts.net/jira/browse/RIA-951
+	]]></notes>
+    <gav regex="true">.*</gav>
+    <cve>CVE-2018-8088</cve>
+  </suppress>
 </suppressions>
