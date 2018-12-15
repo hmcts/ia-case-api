@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -38,6 +39,7 @@ public class AsylumCaseBuilderTest {
     private final String hasOtherAppeals = "NotSure";
     private final List<IdValue<Map<String, String>>> otherAppeals = mock(List.class);
     private final String legalRepReferenceNumber = "N";
+    private final String appealReferenceNumber = "PA/00001/2018";
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -86,6 +88,8 @@ public class AsylumCaseBuilderTest {
     private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
+    private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
+    private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
 
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
@@ -110,6 +114,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setHasOtherAppeals(Optional.of(hasOtherAppeals));
         asylumCaseBuilder.setOtherAppeals(Optional.of(otherAppeals));
         asylumCaseBuilder.setLegalRepReferenceNumber(Optional.of(legalRepReferenceNumber));
+        asylumCaseBuilder.setAppealReferenceNumber(Optional.of(appealReferenceNumber));
         asylumCaseBuilder.setSendDirectionExplanation(Optional.of(sendDirectionExplanation));
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
@@ -128,6 +133,8 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setNotificationsSent(Optional.of(notificationsSent));
         asylumCaseBuilder.setSendDirectionActionAvailable(Optional.of(sendDirectionActionAvailable));
         asylumCaseBuilder.setCaseBuildingReadyForSubmission(Optional.of(caseBuildingReadyForSubmission));
+        asylumCaseBuilder.setCurrentCaseStateVisibleToCaseOfficer(Optional.of(currentCaseStateVisibleToCaseOfficer));
+        asylumCaseBuilder.setCurrentCaseStateVisibleToLegalRepresentative(Optional.of(currentCaseStateVisibleToLegalRepresentative));
 
         AsylumCase asylumCase = asylumCaseBuilder.build();
 
@@ -149,6 +156,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(hasOtherAppeals), asylumCase.getHasOtherAppeals());
         assertEquals(Optional.of(otherAppeals), asylumCase.getOtherAppeals());
         assertEquals(Optional.of(legalRepReferenceNumber), asylumCase.getLegalRepReferenceNumber());
+        assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
@@ -167,5 +175,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
+        assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
+        assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
     }
 }

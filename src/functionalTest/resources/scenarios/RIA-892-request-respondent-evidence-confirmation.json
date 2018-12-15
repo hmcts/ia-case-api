@@ -5,7 +5,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "requestRespondentEvidence",
-      "state": "appealSubmitted",
+      "state": "awaitingRespondentEvidence",
       "id": 1234,
       "caseData": {
         "template": "empty-case.json"

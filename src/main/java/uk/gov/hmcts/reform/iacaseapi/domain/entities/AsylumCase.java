@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -85,6 +86,8 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -131,6 +134,8 @@ public class AsylumCase implements CaseData {
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
+        this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
+        this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -387,6 +392,14 @@ public class AsylumCase implements CaseData {
         return caseBuildingReadyForSubmission;
     }
 
+    public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
+        return currentCaseStateVisibleToCaseOfficer;
+    }
+
+    public Optional<State> getCurrentCaseStateVisibleToLegalRepresentative() {
+        return currentCaseStateVisibleToLegalRepresentative;
+    }
+
     public void clearCaseBuildingReadyForSubmission() {
         this.caseBuildingReadyForSubmission = Optional.empty();
     }
@@ -409,5 +422,13 @@ public class AsylumCase implements CaseData {
 
     public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
         this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
+    }
+
+    public void setCurrentCaseStateVisibleToCaseOfficer(State currentCaseStateVisibleToCaseOfficer) {
+        this.currentCaseStateVisibleToCaseOfficer = Optional.ofNullable(currentCaseStateVisibleToCaseOfficer);
+    }
+
+    public void setCurrentCaseStateVisibleToLegalRepresentative(State currentCaseStateVisibleToLegalRepresentative) {
+        this.currentCaseStateVisibleToLegalRepresentative = Optional.ofNullable(currentCaseStateVisibleToLegalRepresentative);
     }
 }
