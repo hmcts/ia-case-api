@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -84,6 +85,8 @@ public class AsylumCaseBuilder {
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -395,6 +398,14 @@ public class AsylumCaseBuilder {
         return caseBuildingReadyForSubmission;
     }
 
+    public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
+        return currentCaseStateVisibleToCaseOfficer;
+    }
+
+    public Optional<State> getCurrentCaseStateVisibleToLegalRepresentative() {
+        return currentCaseStateVisibleToLegalRepresentative;
+    }
+
     public void setLegalRepresentativeName(Optional<String> legalRepresentativeName) {
         this.legalRepresentativeName = legalRepresentativeName;
     }
@@ -413,5 +424,13 @@ public class AsylumCaseBuilder {
 
     public void setCaseBuildingReadyForSubmission(Optional<YesOrNo> caseBuildingReadyForSubmission) {
         this.caseBuildingReadyForSubmission = caseBuildingReadyForSubmission;
+    }
+
+    public void setCurrentCaseStateVisibleToCaseOfficer(Optional<State> currentCaseStateVisibleToCaseOfficer) {
+        this.currentCaseStateVisibleToCaseOfficer = currentCaseStateVisibleToCaseOfficer;
+    }
+
+    public void setCurrentCaseStateVisibleToLegalRepresentative(Optional<State> currentCaseStateVisibleToLegalRepresentative) {
+        this.currentCaseStateVisibleToLegalRepresentative = currentCaseStateVisibleToLegalRepresentative;
     }
 }
