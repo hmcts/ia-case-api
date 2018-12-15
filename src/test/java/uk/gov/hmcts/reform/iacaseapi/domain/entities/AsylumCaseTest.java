@@ -89,6 +89,7 @@ public class AsylumCaseTest {
     private final String legalRepresentativeEmailAddress = "R";
     private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
+    private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -130,6 +131,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of(legalRepresentativeEmailAddress));
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
         when(asylumCaseBuilder.getSendDirectionActionAvailable()).thenReturn(Optional.of(sendDirectionActionAvailable));
+        when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
     }
 
     @Test
@@ -172,6 +174,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
+        assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
     }
 
     @Test
@@ -358,10 +361,31 @@ public class AsylumCaseTest {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
-        asylumCase.setSendDirectionActionAvailable(YesOrNo.YES);
-        assertEquals(Optional.of(YesOrNo.YES), asylumCase.getSendDirectionActionAvailable());
+        asylumCase.setSendDirectionActionAvailable(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getSendDirectionActionAvailable());
 
         asylumCase.setSendDirectionActionAvailable(null);
         assertEquals(Optional.empty(), asylumCase.getSendDirectionActionAvailable());
+    }
+
+    @Test
+    public void case_building_ready_for_submission_flag_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearCaseBuildingReadyForSubmission();
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
+    }
+
+    @Test
+    public void case_building_ready_for_submission_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getCaseBuildingReadyForSubmission());
+
+        asylumCase.setCaseBuildingReadyForSubmission(null);
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
     }
 }

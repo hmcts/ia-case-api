@@ -83,6 +83,7 @@ public class AsylumCaseBuilder {
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -390,6 +391,10 @@ public class AsylumCaseBuilder {
         return sendDirectionActionAvailable;
     }
 
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        return caseBuildingReadyForSubmission;
+    }
+
     public void setLegalRepresentativeName(Optional<String> legalRepresentativeName) {
         this.legalRepresentativeName = legalRepresentativeName;
     }
@@ -404,5 +409,9 @@ public class AsylumCaseBuilder {
 
     public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {
         this.sendDirectionActionAvailable = sendDirectionActionAvailable;
+    }
+
+    public void setCaseBuildingReadyForSubmission(Optional<YesOrNo> caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = caseBuildingReadyForSubmission;
     }
 }
