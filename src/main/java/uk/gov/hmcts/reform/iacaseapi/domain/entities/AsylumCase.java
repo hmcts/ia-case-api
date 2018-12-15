@@ -84,6 +84,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -129,6 +130,7 @@ public class AsylumCase implements CaseData {
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
+        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -381,6 +383,14 @@ public class AsylumCase implements CaseData {
         return sendDirectionActionAvailable;
     }
 
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        return caseBuildingReadyForSubmission;
+    }
+
+    public void clearCaseBuildingReadyForSubmission() {
+        this.caseBuildingReadyForSubmission = Optional.empty();
+    }
+
     public void setLegalRepresentativeName(String legalRepresentativeName) {
         this.legalRepresentativeName = Optional.ofNullable(legalRepresentativeName);
     }
@@ -395,5 +405,9 @@ public class AsylumCase implements CaseData {
 
     public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
         this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
+    }
+
+    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
     }
 }

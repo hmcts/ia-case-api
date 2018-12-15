@@ -85,6 +85,7 @@ public class AsylumCaseBuilderTest {
     private final String legalRepresentativeEmailAddress = "R";
     private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
+    private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
 
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
@@ -126,6 +127,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setLegalRepresentativeEmailAddress(Optional.of(legalRepresentativeEmailAddress));
         asylumCaseBuilder.setNotificationsSent(Optional.of(notificationsSent));
         asylumCaseBuilder.setSendDirectionActionAvailable(Optional.of(sendDirectionActionAvailable));
+        asylumCaseBuilder.setCaseBuildingReadyForSubmission(Optional.of(caseBuildingReadyForSubmission));
 
         AsylumCase asylumCase = asylumCaseBuilder.build();
 
@@ -164,5 +166,6 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
+        assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
     }
 }
