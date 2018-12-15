@@ -5,7 +5,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "requestHearingRequirements",
-      "state": "respondentReview",
+      "state": "submitHearingRequirements",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {

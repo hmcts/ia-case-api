@@ -1,0 +1,29 @@
+{
+  "description": "RIA-910 & RIA-911 & RIA-912 Current case state is maintained in fields for Case Officer and Legal Representative #1",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "currentCaseStateVisibleToCaseOfficer": "appealStarted",
+          "currentCaseStateVisibleToLegalRepresentative": "appealStarted"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "currentCaseStateVisibleToCaseOfficer": "appealSubmitted",
+        "currentCaseStateVisibleToLegalRepresentative": "appealSubmitted"
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "requestRespondentEvidence",
-      "state": "appealSubmitted",
+      "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {

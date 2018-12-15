@@ -109,6 +109,7 @@ public class CcdScenarioRunnerTest {
         }
 
         System.out.println((char) 27 + "[36m" + "-------------------------------------------------------------------");
+        System.out.println((char) 27 + "[0m");
     }
 
     private Map<String, Object> deserializeWithExpandedValues(
