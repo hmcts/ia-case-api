@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.CachingAppealReferenceNumber
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String DRAFT = "DRAFT";
     private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     public AppealReferenceNumberHandler(
@@ -33,7 +34,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && (callback.getEvent() == Event.START_APPEAL
+                   || callback.getEvent() == Event.SUBMIT_APPEAL);
     }
 
     @Override
@@ -45,14 +47,23 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback
-            .getCaseDetails()
-            .getCaseData();
+        AsylumCase asylumCase =
+            callback
+                .getCaseDetails()
+                .getCaseData();
+
+        if (callback.getEvent() == Event.START_APPEAL) {
+            asylumCase.setAppealReferenceNumber(DRAFT);
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (!asylumCase.getAppealReferenceNumber().isPresent()) {
+        Optional<String> existingAppealReferenceNumber = asylumCase.getAppealReferenceNumber();
+
+        if (!existingAppealReferenceNumber.isPresent()
+            || existingAppealReferenceNumber.get().equals(DRAFT)) {
 
             String appealType = asylumCase.getAppealType()
                 .orElseThrow(() -> new IllegalStateException("Unrecognised asylum case type"));
