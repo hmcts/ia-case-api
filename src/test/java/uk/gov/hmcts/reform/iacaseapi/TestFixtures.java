@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
 
@@ -10,6 +9,7 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseBuilder;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
 
@@ -19,11 +19,12 @@ public class TestFixtures {
     private TestFixtures() {
     }
 
-    public static Callback<AsylumCase> submitAppealCallbackForProtectionAsylumCase() {
-
+    public static Callback<AsylumCase> submitAppealCallbackForProtectionAsylumCase(
+        Event event
+    ) {
         CaseDetails caseDetails = buildCase(nextInt(), PA);
         Callback<AsylumCase> asylumCaseCallback =
-            new Callback<>(caseDetails, Optional.empty(), SUBMIT_APPEAL);
+            new Callback<>(caseDetails, Optional.empty(), event);
 
         asylumCaseCallback
             .getCaseDetails()

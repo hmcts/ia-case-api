@@ -4,12 +4,13 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.TestFixtures.submitAppealCallbackForProtectionAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -35,8 +36,103 @@ public class AppealReferenceNumberHandlerTest {
     private final AppealReferenceNumberHandler underTest =
         new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
 
-    private final AsylumCase caseData = mock(AsylumCase.class);
+    private final AsylumCase asylumCase = mock(AsylumCase.class);
     private final CaseDetails caseDetails = mock(CaseDetails.class);
+
+    @Test
+    public void should_get_draft_appeal_reference_when_case_started() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            underTest.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).setAppealReferenceNumber("DRAFT");
+
+        verifyZeroInteractions(appealReferenceNumberGenerator);
+    }
+
+    @Test
+    public void should_get_next_appeal_reference_number_to_replace_draft() {
+
+        String protectionAppealType = PA.getValue();
+
+        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(protectionAppealType))
+            .thenReturn(of("the-next-appeal-reference-number"));
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.getAppealType()).thenReturn(Optional.of(protectionAppealType));
+        when(asylumCase.getAppealReferenceNumber()).thenReturn(Optional.of("DRAFT"));
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            underTest.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).setAppealReferenceNumber("the-next-appeal-reference-number");
+    }
+
+    @Test
+    public void should_get_next_appeal_reference_number() {
+
+        String protectionAppealType = "protection";
+
+        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(protectionAppealType))
+            .thenReturn(of("the-next-appeal-reference-number"));
+
+        PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
+            underTest.handle(ABOUT_TO_SUBMIT, submitAppealCallbackForProtectionAsylumCase(Event.SUBMIT_APPEAL));
+
+        assertThat(submitCallbackResponse.getData().getAppealReferenceNumber().get())
+            .isEqualTo("the-next-appeal-reference-number");
+    }
+
+    @Test
+    public void doesnt_get_next_appeal_reference_number_if_non_draft_number_already_present() {
+
+        Optional<String> appealReference = of("some-unexpected-reference-number");
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.getAppealReferenceNumber()).thenReturn(appealReference);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PreSubmitCallbackResponse preSubmitCallbackResponse = underTest.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyZeroInteractions(appealReferenceNumberGenerator);
+
+        assertThat(asylumCase.getAppealReferenceNumber()).isSameAs(appealReference);
+
+        assertThat(preSubmitCallbackResponse.getErrors())
+            .containsExactly("Sorry, there was a problem submitting your appeal case");
+    }
+
+    @Test
+    public void should_add_error_to_callback_response_if_unable_to_generate_appeal_reference() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.getAppealType()).thenReturn(Optional.of("protection"));
+        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(anyString())).thenReturn(empty());
+
+        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor("protection"))
+            .thenReturn(empty());
+
+        PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
+            underTest.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(submitCallbackResponse.getErrors())
+            .containsExactly("Sorry, there was a problem submitting your appeal case");
+    }
 
     @Test
     public void it_can_handle_callback() {
@@ -49,7 +145,8 @@ public class AppealReferenceNumberHandlerTest {
 
                 boolean canHandle = underTest.canHandle(callbackStage, callback);
 
-                if (event == Event.SUBMIT_APPEAL
+                if ((event == Event.START_APPEAL
+                     || event == Event.SUBMIT_APPEAL)
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -67,41 +164,6 @@ public class AppealReferenceNumberHandlerTest {
         assertThatThrownBy(() -> underTest.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    public void should_get_next_appeal_reference_number() {
-
-        String protectionAppealType = "protection";
-
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(protectionAppealType))
-            .thenReturn(of("the-next-appeal-reference-number"));
-
-        PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
-            underTest.handle(ABOUT_TO_SUBMIT, submitAppealCallbackForProtectionAsylumCase());
-
-        assertThat(submitCallbackResponse.getData().getAppealReferenceNumber().get())
-            .isEqualTo("the-next-appeal-reference-number");
-    }
-
-    @Test
-    public void doesnt_get_next_appeal_reference_number_if_already_present() {
-
-        Optional<String> appealReference = of("some-unexpected-reference-number");
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(caseData);
-        when(caseData.getAppealReferenceNumber()).thenReturn(appealReference);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        PreSubmitCallbackResponse preSubmitCallbackResponse = underTest.handle(ABOUT_TO_SUBMIT, callback);
-
-        verifyZeroInteractions(appealReferenceNumberGenerator);
-
-        assertThat(caseData.getAppealReferenceNumber()).isSameAs(appealReference);
-
-        assertThat(preSubmitCallbackResponse.getErrors())
-            .containsExactly("Sorry, there was a problem submitting your appeal case");
     }
 
     @Test
@@ -123,24 +185,4 @@ public class AppealReferenceNumberHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
-    @Test
-    public void should_add_error_to_callback_response_if_unable_to_generate_appeal_reference() {
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(caseData);
-        when(caseData.getAppealType()).thenReturn(Optional.of("protection"));
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(anyString())).thenReturn(empty());
-
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor("protection"))
-            .thenReturn(empty());
-
-        PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
-            underTest.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(submitCallbackResponse.getErrors())
-            .containsExactly("Sorry, there was a problem submitting your appeal case");
-    }
-
 }
