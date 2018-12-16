@@ -4,29 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @Component
-public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
-
-    private final NotificationSender<AsylumCase> notificationSender;
-
-    public SendNotificationHandler(
-        NotificationSender<AsylumCase> notificationSender
-    ) {
-        this.notificationSender = notificationSender;
-    }
-
-    @Override
-    public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LATEST;
-    }
+public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -35,8 +19,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -47,8 +30,27 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
+        final AsylumCase asylumCase =
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
-        return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
+        final String appellantGivenNames =
+            asylumCase
+                .getAppellantGivenNames()
+                .orElseThrow(() -> new IllegalStateException("appellantGivenNames is not present"));
+
+        final String appellantLastName =
+            asylumCase
+                .getAppellantLastName()
+                .orElseThrow(() -> new IllegalStateException("appellantLastName is not present"));
+
+        String appellantNameForDisplay = appellantGivenNames + " " + appellantLastName;
+
+        asylumCase.setAppellantNameForDisplay(
+            appellantNameForDisplay.replaceAll("\\s+", " ").trim()
+        );
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

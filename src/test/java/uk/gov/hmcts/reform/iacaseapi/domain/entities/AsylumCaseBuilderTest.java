@@ -24,8 +24,8 @@ public class AsylumCaseBuilderTest {
     private final String homeOfficeReferenceNumber = "A";
     private final String homeOfficeDecisionDate = "B";
     private final String appellantTitle = "C";
-    private final String appellantGivenNames = "D";
-    private final String appellantLastName = "E";
+    private final String appellantGivenNames = "Jane Mary";
+    private final String appellantLastName = "Smith";
     private final String appellantDateOfBirth = "F";
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
@@ -40,6 +40,7 @@ public class AsylumCaseBuilderTest {
     private final List<IdValue<Map<String, String>>> otherAppeals = mock(List.class);
     private final String legalRepReferenceNumber = "N";
     private final String appealReferenceNumber = "PA/00001/2018";
+    private final String appellantNameForDisplay = "Jane Mary Smith";
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -115,6 +116,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setOtherAppeals(Optional.of(otherAppeals));
         asylumCaseBuilder.setLegalRepReferenceNumber(Optional.of(legalRepReferenceNumber));
         asylumCaseBuilder.setAppealReferenceNumber(Optional.of(appealReferenceNumber));
+        asylumCaseBuilder.setAppellantNameForDisplay(Optional.of(appellantNameForDisplay));
         asylumCaseBuilder.setSendDirectionExplanation(Optional.of(sendDirectionExplanation));
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
@@ -157,6 +159,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(otherAppeals), asylumCase.getOtherAppeals());
         assertEquals(Optional.of(legalRepReferenceNumber), asylumCase.getLegalRepReferenceNumber());
         assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
+        assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());

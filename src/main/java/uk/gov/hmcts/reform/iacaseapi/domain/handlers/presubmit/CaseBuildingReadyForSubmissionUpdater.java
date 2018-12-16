@@ -32,12 +32,12 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        State caseState =
+        final State caseState =
             callback
                 .getCaseDetails()
                 .getState();
 
-        AsylumCase asylumCase =
+        final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();

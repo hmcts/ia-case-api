@@ -28,8 +28,8 @@ public class AsylumCaseTest {
     private final String homeOfficeReferenceNumber = "A";
     private final String homeOfficeDecisionDate = "B";
     private final String appellantTitle = "C";
-    private final String appellantGivenNames = "D";
-    private final String appellantLastName = "E";
+    private final String appellantGivenNames = "Jane Mary";
+    private final String appellantLastName = "Smith";
     private final String appellantDateOfBirth = "F";
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
@@ -44,6 +44,7 @@ public class AsylumCaseTest {
     private final List<IdValue<Map<String, String>>> otherAppeals = mock(List.class);
     private final String legalRepReferenceNumber = "N";
     private final String appealReferenceNumber = "PA/00001/2018";
+    private final String appellantNameForDisplay = "Jane Mary Smith";
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -119,6 +120,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getOtherAppeals()).thenReturn(Optional.of(otherAppeals));
         when(asylumCaseBuilder.getLegalRepReferenceNumber()).thenReturn(Optional.of(legalRepReferenceNumber));
         when(asylumCaseBuilder.getAppealReferenceNumber()).thenReturn(Optional.of(appealReferenceNumber));
+        when(asylumCaseBuilder.getAppellantNameForDisplay()).thenReturn(Optional.of(appellantNameForDisplay));
         when(asylumCaseBuilder.getSendDirectionExplanation()).thenReturn(Optional.of(sendDirectionExplanation));
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
@@ -165,6 +167,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(otherAppeals), asylumCase.getOtherAppeals());
         assertEquals(Optional.of(legalRepReferenceNumber), asylumCase.getLegalRepReferenceNumber());
         assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
+        assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
@@ -197,6 +200,18 @@ public class AsylumCaseTest {
 
         asylumCase.setAppealReferenceNumber(null);
         assertEquals(Optional.empty(), asylumCase.getAppealReferenceNumber());
+    }
+
+    @Test
+    public void appellant_name_for_display_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setAppellantNameForDisplay("John Doe");
+        assertEquals(Optional.of("John Doe"), asylumCase.getAppellantNameForDisplay());
+
+        asylumCase.setAppellantNameForDisplay(null);
+        assertEquals(Optional.empty(), asylumCase.getAppellantNameForDisplay());
     }
 
     @Test
