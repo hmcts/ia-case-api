@@ -25,8 +25,10 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
     }
 
     @Override
-    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
-
+    public boolean canHandle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 

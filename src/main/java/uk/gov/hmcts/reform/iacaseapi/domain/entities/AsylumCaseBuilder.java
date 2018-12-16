@@ -37,6 +37,7 @@ public class AsylumCaseBuilder {
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
     private Optional<String> appealReferenceNumber = Optional.empty();
+    private Optional<String> appellantNameForDisplay = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -172,6 +173,10 @@ public class AsylumCaseBuilder {
         return appealReferenceNumber;
     }
 
+    public Optional<String> getAppellantNameForDisplay() {
+        return appellantNameForDisplay;
+    }
+
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
     }
@@ -247,6 +252,10 @@ public class AsylumCaseBuilder {
 
     public void setAppealReferenceNumber(Optional<String> appealReferenceNumber) {
         this.appealReferenceNumber = appealReferenceNumber;
+    }
+
+    public void setAppellantNameForDisplay(Optional<String> appellantNameForDisplay) {
+        this.appellantNameForDisplay = appellantNameForDisplay;
     }
 
     // -----------------------------------------------------------------------------

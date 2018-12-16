@@ -38,6 +38,7 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
     private Optional<String> appealReferenceNumber = Optional.empty();
+    private Optional<String> appellantNameForDisplay = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -115,6 +116,7 @@ public class AsylumCase implements CaseData {
         this.otherAppeals = asylumCaseBuilder.getOtherAppeals();
         this.legalRepReferenceNumber = asylumCaseBuilder.getLegalRepReferenceNumber();
         this.appealReferenceNumber = asylumCaseBuilder.getAppealReferenceNumber();
+        this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
@@ -229,7 +231,13 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<String> getAppealReferenceNumber() {
+        requireNonNull(appealReferenceNumber);
         return appealReferenceNumber;
+    }
+
+    public Optional<String> getAppellantNameForDisplay() {
+        requireNonNull(appellantNameForDisplay);
+        return appellantNameForDisplay;
     }
 
     public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
@@ -238,6 +246,10 @@ public class AsylumCase implements CaseData {
 
     public void setAppealReferenceNumber(String appealReferenceNumber) {
         this.appealReferenceNumber = Optional.ofNullable(appealReferenceNumber);
+    }
+
+    public void setAppellantNameForDisplay(String appellantNameForDisplay) {
+        this.appellantNameForDisplay = Optional.ofNullable(appellantNameForDisplay);
     }
 
     // -----------------------------------------------------------------------------
@@ -260,6 +272,7 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<List<IdValue<Direction>>> getDirections() {
+        requireNonNull(directions);
         return directions;
     }
 
@@ -389,14 +402,17 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        requireNonNull(caseBuildingReadyForSubmission);
         return caseBuildingReadyForSubmission;
     }
 
     public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
+        requireNonNull(currentCaseStateVisibleToCaseOfficer);
         return currentCaseStateVisibleToCaseOfficer;
     }
 
     public Optional<State> getCurrentCaseStateVisibleToLegalRepresentative() {
+        requireNonNull(currentCaseStateVisibleToLegalRepresentative);
         return currentCaseStateVisibleToLegalRepresentative;
     }
 
