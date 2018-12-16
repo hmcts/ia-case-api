@@ -1,0 +1,31 @@
+{
+  "description": "RIA-910 & RIA-911 & RIA-912 Appellant name formatted for display",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantGivenNames": "Bob",
+          "appellantLastName": "Jones",
+          "appellantNameForDisplay": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantGivenNames": "Bob",
+        "appellantLastName": "Jones",
+        "appellantNameForDisplay": "Bob Jones"
+      }
+    }
+  }
+}
