@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.describedAs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.util.*;
 
 @RunWith(SpringRunner.class)
@@ -32,6 +36,7 @@ public class CcdScenarioRunnerTest {
         );
 
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
+    @Autowired private ObjectMapper objectMapper;
 
     @Before
     public void setUp() {
@@ -136,6 +141,8 @@ public class CcdScenarioRunnerTest {
             callbackResponse.put("confirmation_header", MapValueExtractor.extract(scenario, "expectation.confirmation.header"));
             callbackResponse.put("confirmation_body", MapValueExtractor.extract(scenario, "expectation.confirmation.body"));
 
+            return MapSerializer.serialize(callbackResponse);
+
         } else {
 
             String templateFilename = MapValueExtractor.extract(scenario, "expectation.caseData.template");
@@ -149,10 +156,18 @@ public class CcdScenarioRunnerTest {
 
             MapValueExpander.expandValues(caseData);
 
-            callbackResponse.put("data", caseData);
-            callbackResponse.put("errors", MapValueExtractor.extract(scenario, "expectation.errors"));
-        }
+            PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse =
+                new PreSubmitCallbackResponse<>(
+                    objectMapper.readValue(
+                        MapSerializer.serialize(caseData),
+                        new TypeReference<AsylumCase>() {
+                        }
+                    )
+                );
 
-        return MapSerializer.serialize(callbackResponse);
+            preSubmitCallbackResponse.addErrors(MapValueExtractor.extract(scenario, "expectation.errors"));
+
+            return objectMapper.writeValueAsString(preSubmitCallbackResponse);
+        }
     }
 }

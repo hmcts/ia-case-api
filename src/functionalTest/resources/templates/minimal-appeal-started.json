@@ -15,6 +15,11 @@
   ],
   "appellantHasFixedAddress": "No",
   "appealType": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
   "hasNewMatters": "No",
   "hasOtherAppeals": "No",
   "sendDirectionActionAvailable": "No"

@@ -1,0 +1,35 @@
+{
+  "description": "RIA-236 Grounds of appeal for revocation type appeals",
+  "credentials": "CaseOfficer",
+  "callback": "/asylum/ccdAboutToSubmit",
+  "input": {
+    "eventId": "startAppeal",
+    "state": "appealStarted",
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealGroundsRevocation": {
+          "values": [
+            "refugeeConvention",
+            "humanitarianProtection"
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealGroundsRevocation": {
+          "values": [
+            "refugeeConvention",
+            "humanitarianProtection"
+          ]
+        }
+      }
+    }
+  }
+}
