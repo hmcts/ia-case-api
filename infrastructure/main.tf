@@ -21,33 +21,33 @@ data "azurerm_key_vault" "ia_key_vault" {
   resource_group_name = "${local.key_vault_name}"
 }
 
-data "azurerm_key_vault_secret" "ia_case_notifications_api_url" {
-  name      = "ia-case-notifications-api-url"
+data "azurerm_key_vault_secret" "case_notifications_api_url" {
+  name      = "case-notifications-api-url"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "ia_idam_client_id" {
-  name      = "ia-idam-client-id"
+data "azurerm_key_vault_secret" "idam_client_id" {
+  name      = "idam-client-id"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "ia_idam_secret" {
-  name      = "ia-idam-secret"
+data "azurerm_key_vault_secret" "idam_secret" {
+  name      = "idam-secret"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "ia_idam_redirect_uri" {
-  name      = "ia-idam-redirect-uri"
+data "azurerm_key_vault_secret" "idam_redirect_uri" {
+  name      = "idam-redirect-uri"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "ia_s2s_secret" {
-  name      = "ia-s2s-secret"
+data "azurerm_key_vault_secret" "s2s_secret" {
+  name      = "s2s-secret"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "ia_s2s_microservice" {
-  name      = "ia-s2s-microservice"
+data "azurerm_key_vault_secret" "s2s_microservice" {
+  name      = "s2s-microservice"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
@@ -89,12 +89,12 @@ module "ia_case_api" {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
 
-    IA_CASE_NOTIFICATIONS_API_URL = "${data.azurerm_key_vault_secret.ia_case_notifications_api_url.value}"
-    IA_IDAM_CLIENT_ID             = "${data.azurerm_key_vault_secret.ia_idam_client_id.value}"
-    IA_IDAM_SECRET                = "${data.azurerm_key_vault_secret.ia_idam_secret.value}"
-    IA_IDAM_REDIRECT_URI          = "${data.azurerm_key_vault_secret.ia_idam_redirect_uri.value}"
-    IA_S2S_SECRET                 = "${data.azurerm_key_vault_secret.ia_s2s_secret.value}"
-    IA_S2S_MICROSERVICE           = "${data.azurerm_key_vault_secret.ia_s2s_microservice.value}"
+    IA_CASE_NOTIFICATIONS_API_URL = "${data.azurerm_key_vault_secret.case_notifications_api_url.value}"
+    IA_IDAM_CLIENT_ID             = "${data.azurerm_key_vault_secret.idam_client_id.value}"
+    IA_IDAM_SECRET                = "${data.azurerm_key_vault_secret.idam_secret.value}"
+    IA_IDAM_REDIRECT_URI          = "${data.azurerm_key_vault_secret.idam_redirect_uri.value}"
+    IA_S2S_SECRET                 = "${data.azurerm_key_vault_secret.s2s_secret.value}"
+    IA_S2S_MICROSERVICE           = "${data.azurerm_key_vault_secret.s2s_microservice.value}"
 
     CCD_URL  = "${data.azurerm_key_vault_secret.ccd_url.value}"
     DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"
