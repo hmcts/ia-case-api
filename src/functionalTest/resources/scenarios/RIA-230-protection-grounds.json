@@ -40,7 +40,12 @@
           "values": [
             "humanRights"
           ]
-        }
+        },
+        "appealGroundsForDisplay": [
+          "refugeeConvention",
+          "humanitarianProtection",
+          "humanRights"
+        ]
       }
     }
   }

@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "appealResponseAvailable": "Yes",
           "appealResponseDocument": {
             "document_url": "http://document-store/AAA",
             "document_binary_url": "http://document-store/AAA/binary",
@@ -89,6 +90,7 @@
             }
           }
         ],
+        "appealResponseAvailable": "Yes",
         "appealResponseDocument": {
           "document_url": "http://document-store/AAA",
           "document_binary_url": "http://document-store/AAA/binary",

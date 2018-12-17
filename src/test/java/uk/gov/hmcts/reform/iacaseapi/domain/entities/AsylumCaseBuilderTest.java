@@ -41,6 +41,7 @@ public class AsylumCaseBuilderTest {
     private final String legalRepReferenceNumber = "N";
     private final String appealReferenceNumber = "PA/00001/2018";
     private final String appellantNameForDisplay = "Jane Mary Smith";
+    private final List<String> appealGroundsForDisplay = mock(List.class);
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -91,6 +92,8 @@ public class AsylumCaseBuilderTest {
     private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
     private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
     private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
+    private final YesOrNo caseArgumentAvailable = YesOrNo.YES;
+    private final YesOrNo appealResponseAvailable = YesOrNo.NO;
 
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
@@ -117,6 +120,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setLegalRepReferenceNumber(Optional.of(legalRepReferenceNumber));
         asylumCaseBuilder.setAppealReferenceNumber(Optional.of(appealReferenceNumber));
         asylumCaseBuilder.setAppellantNameForDisplay(Optional.of(appellantNameForDisplay));
+        asylumCaseBuilder.setAppealGroundsForDisplay(Optional.of(appealGroundsForDisplay));
         asylumCaseBuilder.setSendDirectionExplanation(Optional.of(sendDirectionExplanation));
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
@@ -137,6 +141,8 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setCaseBuildingReadyForSubmission(Optional.of(caseBuildingReadyForSubmission));
         asylumCaseBuilder.setCurrentCaseStateVisibleToCaseOfficer(Optional.of(currentCaseStateVisibleToCaseOfficer));
         asylumCaseBuilder.setCurrentCaseStateVisibleToLegalRepresentative(Optional.of(currentCaseStateVisibleToLegalRepresentative));
+        asylumCaseBuilder.setCaseArgumentAvailable(Optional.of(caseArgumentAvailable));
+        asylumCaseBuilder.setAppealResponseAvailable(Optional.of(appealResponseAvailable));
 
         AsylumCase asylumCase = asylumCaseBuilder.build();
 
@@ -160,6 +166,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(legalRepReferenceNumber), asylumCase.getLegalRepReferenceNumber());
         assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
         assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
+        assertEquals(Optional.of(appealGroundsForDisplay), asylumCase.getAppealGroundsForDisplay());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
@@ -180,5 +187,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
         assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
+        assertEquals(Optional.of(caseArgumentAvailable), asylumCase.getCaseArgumentAvailable());
+        assertEquals(Optional.of(appealResponseAvailable), asylumCase.getAppealResponseAvailable());
     }
 }
