@@ -30,17 +30,33 @@ security:
     - "ccd_data"
     - "ccd_gw"
     - "ccd_ps"
+    - "sscs" # TEMP for AAT until S2S configured for IA
   authorisedRoles:
+    - "caseworker-ia"
+  roleEventAccess:
+    caseworker-ia-legalrep-solicitor:
+      - "startAppeal"
+      - "submitAppeal"
+      - "buildCase"
+      - "submitCase"
+    caseworker-ia-caseofficer:
+      - "sendDirection"
+      - "requestHearingRequirements"
+      - "requestRespondentEvidence"
+      - "uploadRespondentEvidence"
+      - "requestRespondentReview"
+      - "addAppealResponse"
 
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
-auth.idam.client.id: ${IA_IDAM_ID:ia}
+auth.idam.client.detailsUri: "/details"
+auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}
 auth.idam.client.secret: ${IA_IDAM_SECRET:something}
 auth.idam.client.redirectUri: ${IA_IDAM_REDIRECT_URI:http://localhost}
 
 ### dependency configuration
 auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:4502}
-core_case_data.api.url: ${CCD_URL:http://127.0.0.1:4452}
-document_management.url: ${DOCUMENT_MANAGEMENT_URL:http://127.0.0.1:4506}
-idam.s2s-auth.totp_secret: ${S2S_TOTP_SECRET:AAAAAAAAAAAAAAAC}
-idam.s2s-auth.microservice: ${S2S_MICROSERVICE:ia}
+core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
+idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
+idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
