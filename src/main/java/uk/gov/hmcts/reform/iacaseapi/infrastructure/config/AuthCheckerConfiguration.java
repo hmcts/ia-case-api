@@ -28,16 +28,16 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedServicesExtractor() {
-        return (any) -> ImmutableSet.copyOf(authorisedServices);
+        return any -> ImmutableSet.copyOf(authorisedServices);
     }
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor() {
-        return (any) -> ImmutableSet.copyOf(authorisedRoles);
+        return any -> ImmutableSet.copyOf(authorisedRoles);
     }
 
     @Bean
     public Function<HttpServletRequest, Optional<String>> userIdExtractor() {
-        return (any) -> Optional.empty();
+        return any -> Optional.empty();
     }
 }

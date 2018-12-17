@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
@@ -15,6 +15,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -23,16 +24,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class UploadRespondentEvidenceHandlerTest {
 
+    @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private DocumentWithDescription respondentEvidence1;
+    @Mock private DocumentWithDescription respondentEvidence2;
+    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
     @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
 
@@ -42,6 +51,7 @@ public class UploadRespondentEvidenceHandlerTest {
     public void setUp() {
         uploadRespondentEvidenceHandler =
             new UploadRespondentEvidenceHandler(
+                documentReceiver,
                 documentsAppender
             );
     }
@@ -49,19 +59,32 @@ public class UploadRespondentEvidenceHandlerTest {
     @Test
     public void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
 
-        final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments = new ArrayList<>();
-        final List<IdValue<DocumentWithDescription>> respondentEvidence = new ArrayList<>();
-        final List<IdValue<DocumentWithMetadata>> allRespondentDocuments = new ArrayList<>();
+        List<IdValue<DocumentWithDescription>> respondentEvidence =
+            Arrays.asList(
+                new IdValue<>("1", respondentEvidence1),
+                new IdValue<>("2", respondentEvidence2)
+            );
+
+        List<DocumentWithMetadata> respondentEvidenceWithMetadata =
+            Arrays.asList(
+                respondentEvidence1WithMetadata,
+                respondentEvidence2WithMetadata
+            );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
         when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
-        when(documentsAppender.append(
-            existingRespondentDocuments,
-            respondentEvidence
-        )).thenReturn(allRespondentDocuments);
+
+        when(documentReceiver.receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
+            .thenReturn(Optional.of(respondentEvidence1WithMetadata));
+
+        when(documentReceiver.receive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE))
+            .thenReturn(Optional.of(respondentEvidence2WithMetadata));
+
+        when(documentsAppender.append(existingRespondentDocuments, respondentEvidenceWithMetadata))
+            .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -71,31 +94,32 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).getRespondentEvidence();
 
-        verify(documentsAppender, times(1)).append(
-            existingRespondentDocuments,
-            respondentEvidence
-        );
+        verify(documentReceiver, times(1)).receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
+        verify(documentReceiver, times(1)).receive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
+
+        verify(documentsAppender, times(1)).append(existingRespondentDocuments, respondentEvidenceWithMetadata);
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-
         verify(asylumCase, times(1)).clearRespondentEvidence();
     }
 
     @Test
     public void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
 
-        final List<IdValue<DocumentWithDescription>> respondentEvidence = new ArrayList<>();
-        final List<IdValue<DocumentWithMetadata>> allRespondentDocuments = new ArrayList<>();
+        List<IdValue<DocumentWithDescription>> respondentEvidence = Arrays.asList(new IdValue<>("1", respondentEvidence1));
+        List<DocumentWithMetadata> respondentEvidenceWithMetadata = Arrays.asList(respondentEvidence1WithMetadata);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
         when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
-        when(documentsAppender.append(
-            any(List.class),
-            eq(respondentEvidence)
-        )).thenReturn(allRespondentDocuments);
+
+        when(documentReceiver.receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
+            .thenReturn(Optional.of(respondentEvidence1WithMetadata));
+
+        when(documentsAppender.append(any(List.class), eq(respondentEvidenceWithMetadata)))
+            .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -105,10 +129,9 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).getRespondentEvidence();
 
-        verify(documentsAppender, times(1)).append(
-            existingRespondentDocumentsCaptor.capture(),
-            eq(respondentEvidence)
-        );
+        verify(documentReceiver, times(1)).receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
+
+        verify(documentsAppender, times(1)).append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
 
         List<IdValue<DocumentWithMetadata>> actualExistingRespondentDocuments =
             existingRespondentDocumentsCaptor
@@ -118,7 +141,6 @@ public class UploadRespondentEvidenceHandlerTest {
         assertEquals(0, actualExistingRespondentDocuments.size());
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-
         verify(asylumCase, times(1)).clearRespondentEvidence();
     }
 

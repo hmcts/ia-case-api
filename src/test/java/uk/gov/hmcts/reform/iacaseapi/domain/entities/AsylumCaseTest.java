@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -25,7 +26,7 @@ public class AsylumCaseTest {
     private final String appellantGivenNames = "D";
     private final String appellantLastName = "E";
     private final String appellantDateOfBirth = "F";
-    private final List<IdValue<Map<String, String>>> appellantNationalities = Arrays.asList(new IdValue<>("1", Collections.emptyMap()));
+    private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
     private final AddressUk appellantAddress = mock(AddressUk.class);
     private final String appealType = "I";
@@ -35,17 +36,23 @@ public class AsylumCaseTest {
     private final YesOrNo hasNewMatters = YesOrNo.YES;
     private final String newMatters = "K";
     private final String hasOtherAppeals = "NotSure";
-    private final List<IdValue<Map<String, String>>> otherAppeals = Arrays.asList(new IdValue<>("1", Collections.emptyMap()));
+    private final List<IdValue<Map<String, String>>> otherAppeals = mock(List.class);
     private final String legalRepReferenceNumber = "N";
 
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final String sendDirectionExplanation = "Do the thing";
     private final Parties sendDirectionParties = Parties.LEGAL_REPRESENTATIVE;
     private final String sendDirectionDateDue = "2022-01-01";
-    private final List<IdValue<Direction>> directions = Arrays.asList(new IdValue<>("1", mock(Direction.class)));
+    private final List<IdValue<Direction>> directions = mock(List.class);
 
-    private final List<IdValue<DocumentWithMetadata>> respondentDocuments = Arrays.asList(new IdValue<>("1", mock(DocumentWithMetadata.class)));
-    private final List<IdValue<DocumentWithDescription>> respondentEvidence = Arrays.asList(new IdValue<>("1", mock(DocumentWithDescription.class)));
+    private final List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = mock(List.class);
+    private final List<IdValue<DocumentWithMetadata>> respondentDocuments = mock(List.class);
+
+    private final List<IdValue<DocumentWithDescription>> respondentEvidence = mock(List.class);
+
+    private final Document caseArgumentDocument = mock(Document.class);
+    private final String caseArgumentDescription = "O";
+    private final List<IdValue<DocumentWithDescription>> caseArgumentEvidence = mock(List.class);
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -75,8 +82,12 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
         when(asylumCaseBuilder.getDirections()).thenReturn(Optional.of(directions));
+        when(asylumCaseBuilder.getLegalRepresentativeDocuments()).thenReturn(Optional.of(legalRepresentativeDocuments));
         when(asylumCaseBuilder.getRespondentDocuments()).thenReturn(Optional.of(respondentDocuments));
         when(asylumCaseBuilder.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(asylumCaseBuilder.getCaseArgumentDocument()).thenReturn(Optional.of(caseArgumentDocument));
+        when(asylumCaseBuilder.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
+        when(asylumCaseBuilder.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
     }
 
     @Test
@@ -107,8 +118,12 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
+        assertEquals(Optional.of(legalRepresentativeDocuments), asylumCase.getLegalRepresentativeDocuments());
         assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
         assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
+        assertEquals(Optional.of(caseArgumentDocument), asylumCase.getCaseArgumentDocument());
+        assertEquals(Optional.of(caseArgumentDescription), asylumCase.getCaseArgumentDescription());
+        assertEquals(Optional.of(caseArgumentEvidence), asylumCase.getCaseArgumentEvidence());
     }
 
     @Test

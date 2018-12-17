@@ -16,6 +16,20 @@ public class AuthorizationHeadersProvider {
     @Autowired
     private IdamAuthorizor idamAuthorizor;
 
+    public Headers getLegalRepresentativeAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            System.getenv("TEST_LAW_FIRM_A_USERNAME"),
+            System.getenv("TEST_LAW_FIRM_A_PASSWORD")
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
+
     public Headers getCaseOfficerAuthorization() {
 
         String serviceToken = serviceAuthTokenGenerator.generate();

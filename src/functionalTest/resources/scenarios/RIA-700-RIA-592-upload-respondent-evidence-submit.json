@@ -18,7 +18,8 @@
                 "document_filename": "existing-evidence.pdf"
               },
               "description": "Existing evidence",
-              "dateUploaded": "2018-12-25"
+              "dateUploaded": "2018-12-25",
+              "tag": "respondentEvidence"
             }
           }
         ],
@@ -76,7 +77,8 @@
                 "document_filename": "some-new-evidence.pdf"
               },
               "description": "Some new evidence",
-              "dateUploaded": "{$TODAY}"
+              "dateUploaded": "{$TODAY}",
+              "tag": "respondentEvidence"
             }
           },
           {
@@ -88,7 +90,8 @@
                 "document_filename": "some-more-new-evidence.pdf"
               },
               "description": "Some more new evidence",
-              "dateUploaded": "{$TODAY}"
+              "dateUploaded": "{$TODAY}",
+              "tag": "respondentEvidence"
             }
           },
           {
@@ -100,7 +103,8 @@
                 "document_filename": "existing-evidence.pdf"
               },
               "description": "Existing evidence",
-              "dateUploaded": "2018-12-25"
+              "dateUploaded": "2018-12-25",
+              "tag": "respondentEvidence"
             }
           }
         ]

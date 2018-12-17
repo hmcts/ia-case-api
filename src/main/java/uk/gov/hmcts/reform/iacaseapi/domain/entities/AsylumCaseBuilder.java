@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -49,12 +50,30 @@ public class AsylumCaseBuilder {
     // case documents ...
     // -----------------------------------------------------------------------------
 
-    private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
+    private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // upload respondent evidence ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // case argument ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> caseArgumentDocument = Optional.empty();
+    private Optional<String> caseArgumentDescription = Optional.empty();
+    private Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
     }
+
+    // -----------------------------------------------------------------------------
+    // legal rep appeal ...
+    // -----------------------------------------------------------------------------
 
     public Optional<String> getHomeOfficeReferenceNumber() {
         return homeOfficeReferenceNumber;
@@ -126,34 +145,6 @@ public class AsylumCaseBuilder {
 
     public Optional<String> getLegalRepReferenceNumber() {
         return legalRepReferenceNumber;
-    }
-
-    public Optional<YesOrNo> getSendDirectionActionAvailable() {
-        return sendDirectionActionAvailable;
-    }
-
-    public Optional<String> getSendDirectionExplanation() {
-        return sendDirectionExplanation;
-    }
-
-    public Optional<Parties> getSendDirectionParties() {
-        return sendDirectionParties;
-    }
-
-    public Optional<String> getSendDirectionDateDue() {
-        return sendDirectionDateDue;
-    }
-
-    public Optional<List<IdValue<Direction>>> getDirections() {
-        return directions;
-    }
-
-    public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
-        return respondentEvidence;
-    }
-
-    public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
-        return respondentDocuments;
     }
 
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
@@ -228,6 +219,30 @@ public class AsylumCaseBuilder {
         this.legalRepReferenceNumber = legalRepReferenceNumber;
     }
 
+    // -----------------------------------------------------------------------------
+    // case officer directions ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<YesOrNo> getSendDirectionActionAvailable() {
+        return sendDirectionActionAvailable;
+    }
+
+    public Optional<String> getSendDirectionExplanation() {
+        return sendDirectionExplanation;
+    }
+
+    public Optional<Parties> getSendDirectionParties() {
+        return sendDirectionParties;
+    }
+
+    public Optional<String> getSendDirectionDateDue() {
+        return sendDirectionDateDue;
+    }
+
+    public Optional<List<IdValue<Direction>>> getDirections() {
+        return directions;
+    }
+
     public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {
         this.sendDirectionActionAvailable = sendDirectionActionAvailable;
     }
@@ -248,11 +263,64 @@ public class AsylumCaseBuilder {
         this.directions = directions;
     }
 
+    // -----------------------------------------------------------------------------
+    // case documents ...
+    // -----------------------------------------------------------------------------
+
+
+    public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
+        return legalRepresentativeDocuments;
+    }
+
+    public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
+        return respondentDocuments;
+    }
+
+    public void setLegalRepresentativeDocuments(Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments) {
+        this.legalRepresentativeDocuments = legalRepresentativeDocuments;
+    }
+
     public void setRespondentDocuments(Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments) {
         this.respondentDocuments = respondentDocuments;
     }
 
+    // -----------------------------------------------------------------------------
+    // upload respondent evidence ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getRespondentEvidence() {
+        return respondentEvidence;
+    }
+
     public void setRespondentEvidence(Optional<List<IdValue<DocumentWithDescription>>> respondentEvidence) {
         this.respondentEvidence = respondentEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // case argument ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getCaseArgumentDocument() {
+        return caseArgumentDocument;
+    }
+
+    public Optional<String> getCaseArgumentDescription() {
+        return caseArgumentDescription;
+    }
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getCaseArgumentEvidence() {
+        return caseArgumentEvidence;
+    }
+
+    public void setCaseArgumentDocument(Optional<Document> caseArgumentDocument) {
+        this.caseArgumentDocument = caseArgumentDocument;
+    }
+
+    public void setCaseArgumentDescription(Optional<String> caseArgumentDescription) {
+        this.caseArgumentDescription = caseArgumentDescription;
+    }
+
+    public void setCaseArgumentEvidence(Optional<List<IdValue<DocumentWithDescription>>> caseArgumentEvidence) {
+        this.caseArgumentEvidence = caseArgumentEvidence;
     }
 }

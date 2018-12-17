@@ -2,12 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 public class DocumentWithDescription {
 
-    private Document document;
-    private String description;
+    private Optional<Document> document = Optional.empty();
+    private Optional<String> description = Optional.empty();
 
     private DocumentWithDescription() {
         // noop -- for deserializer
@@ -17,16 +18,16 @@ public class DocumentWithDescription {
         Document document,
         String description
     ) {
-        this.document = document;
-        this.description = description;
+        this.document = Optional.ofNullable(document);
+        this.description = Optional.ofNullable(description);
     }
 
-    public Document getDocument() {
+    public Optional<Document> getDocument() {
         requireNonNull(document);
         return document;
     }
 
-    public String getDescription() {
+    public Optional<String> getDescription() {
         requireNonNull(description);
         return description;
     }
