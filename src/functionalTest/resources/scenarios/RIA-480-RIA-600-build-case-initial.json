@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "caseArgumentAvailable": null,
           "caseArgumentDocument": {
             "document_url": "http://document-store/AAA",
             "document_binary_url": "http://document-store/AAA/binary",
@@ -49,6 +50,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "caseArgumentAvailable": "Yes",
         "caseArgumentDocument": {
           "document_url": "http://document-store/AAA",
           "document_binary_url": "http://document-store/AAA/binary",
