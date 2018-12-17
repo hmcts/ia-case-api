@@ -81,6 +81,13 @@ sourceSets {
     }
 }
 
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+    functionalTestCompile.extendsFrom testCompile
+    functionalTestRuntime.extendsFrom testRuntime
+}
+
 checkstyle {
     maxWarnings = 0
     toolVersion = '8.10.1'
@@ -236,16 +243,6 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 gradle.startParameter.continueOnFailure = true
-
-// during check task:
-// first run checkstyle,
-// then unit tests,
-// then integration tests,
-// then dependencyCheckAnalyze
-// for faster feedback of code issues
-check.dependsOn dependencyCheckAnalyze
-dependencyCheckAnalyze.dependsOn integration
-integration.dependsOn test
 
 bootJar {
     archiveName = jarName
