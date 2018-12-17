@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -120,6 +121,7 @@ public class BuildCaseHandlerTest {
             );
 
         verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
     }
 
     @Test
@@ -189,6 +191,7 @@ public class BuildCaseHandlerTest {
         assertEquals(0, legalRepresentativeDocuments.size());
 
         verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
     }
 
     @Test

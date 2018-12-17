@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -121,6 +122,7 @@ public class AddAppealResponseHandlerTest {
             );
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
+        verify(asylumCase, times(1)).setAppealResponseAvailable(YesOrNo.YES);
     }
 
     @Test
@@ -190,6 +192,7 @@ public class AddAppealResponseHandlerTest {
         assertEquals(0, respondentDocuments.size());
 
         verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
+        verify(asylumCase, times(1)).setAppealResponseAvailable(YesOrNo.YES);
     }
 
     @Test
