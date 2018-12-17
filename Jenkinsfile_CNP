@@ -1,7 +1,7 @@
 #!groovy
 properties([
-        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
-        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+    [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-api.git'],
+    pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
 @Library("Infrastructure")
@@ -10,8 +10,38 @@ def type = "java"
 def product = "ia"
 def component = "case-api"
 
+List<LinkedHashMap<String, Object>> secrets = [
+
+    secret('test-caseofficer-username', 'TEST_CASEOFFICER_USERNAME'),
+    secret('test-caseofficer-password', 'TEST_CASEOFFICER_PASSWORD'),
+    secret('test-law-firm-a-username', 'TEST_LAW_FIRM_A_USERNAME'),
+    secret('test-law-firm-a-password', 'TEST_LAW_FIRM_A_PASSWORD'),
+
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+    secret('idam-redirect-uri', 'IA_IDAM_REDIRECT_URI'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('ccd-url', 'CCD_URL'),
+    secret('dm-url', 'DM_URL'),
+    secret('idam-url', 'IDAM_URL'),
+    secret('s2s-url', 'S2S_URL'),
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
+    ]
+}
+
 withPipeline(type, product, component) {
     enableDockerBuild()
+
+    setVaultName('ia')
+    loadVaultSecrets(secrets)
 
     after('test') {
         try {
