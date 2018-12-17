@@ -43,7 +43,7 @@ security:
 
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
-auth.idam.client.id: ${IA_IDAM_ID:ia}
+auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}
 auth.idam.client.secret: ${IA_IDAM_SECRET:something}
 auth.idam.client.redirectUri: ${IA_IDAM_REDIRECT_URI:http://localhost}
 
