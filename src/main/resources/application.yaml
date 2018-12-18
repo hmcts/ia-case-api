@@ -13,6 +13,7 @@ spring:
 
 buildCase.dueInDays: 28
 requestRespondentEvidence.dueInDays: 14
+requestRespondentReview.dueInDays: 14
 
 security:
   anonymousPaths:

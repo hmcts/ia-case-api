@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentEvidencePreparerTest {
+public class RequestRespondentReviewPreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
 
@@ -35,28 +35,28 @@ public class RequestRespondentEvidencePreparerTest {
 
     @Captor private ArgumentCaptor<String> sendDirectionExplanationCaptor;
 
-    private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
+    private RequestRespondentReviewPreparer requestRespondentReviewPreparer;
 
     @Before
     public void setUp() {
-        requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, dateProvider);
+        requestRespondentReviewPreparer =
+            new RequestRespondentReviewPreparer(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "A notice of appeal has been lodged against this asylum decision.";
+        final String expectedExplanationContains = "You must now review this case.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -82,12 +82,12 @@ public class RequestRespondentEvidencePreparerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -101,9 +101,9 @@ public class RequestRespondentEvidencePreparerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = requestRespondentEvidencePreparer.canHandle(callbackStage, callback);
+                boolean canHandle = requestRespondentReviewPreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_RESPONDENT_EVIDENCE
+                if (event == Event.REQUEST_RESPONDENT_REVIEW
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -119,19 +119,19 @@ public class RequestRespondentEvidencePreparerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(null, callback))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

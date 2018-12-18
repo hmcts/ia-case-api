@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
-public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class SendDirectionToRespondentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DirectionAppender directionAppender;
 
-    public RequestRespondentEvidenceHandler(
+    public SendDirectionToRespondentHandler(
         DirectionAppender directionAppender
     ) {
         this.directionAppender = directionAppender;
@@ -34,8 +35,12 @@ public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandle
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
+        return
+            callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && Arrays.asList(
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW
+            ).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
