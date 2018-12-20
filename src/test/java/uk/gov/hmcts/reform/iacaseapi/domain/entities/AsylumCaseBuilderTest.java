@@ -25,7 +25,7 @@ public class AsylumCaseBuilderTest {
     private final String homeOfficeDecisionDate = "B";
     private final String appellantTitle = "C";
     private final String appellantGivenNames = "Jane Mary";
-    private final String appellantLastName = "Smith";
+    private final String appellantFamilyName = "Smith";
     private final String appellantDateOfBirth = "F";
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
@@ -104,7 +104,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setHomeOfficeDecisionDate(Optional.of(homeOfficeDecisionDate));
         asylumCaseBuilder.setAppellantTitle(Optional.of(appellantTitle));
         asylumCaseBuilder.setAppellantGivenNames(Optional.of(appellantGivenNames));
-        asylumCaseBuilder.setAppellantLastName(Optional.of(appellantLastName));
+        asylumCaseBuilder.setAppellantFamilyName(Optional.of(appellantFamilyName));
         asylumCaseBuilder.setAppellantDateOfBirth(Optional.of(appellantDateOfBirth));
         asylumCaseBuilder.setAppellantNationalities(Optional.of(appellantNationalities));
         asylumCaseBuilder.setAppellantHasFixedAddress(Optional.of(appellantHasFixedAddress));
@@ -150,7 +150,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(homeOfficeDecisionDate), asylumCase.getHomeOfficeDecisionDate());
         assertEquals(Optional.of(appellantTitle), asylumCase.getAppellantTitle());
         assertEquals(Optional.of(appellantGivenNames), asylumCase.getAppellantGivenNames());
-        assertEquals(Optional.of(appellantLastName), asylumCase.getAppellantLastName());
+        assertEquals(Optional.of(appellantFamilyName), asylumCase.getAppellantFamilyName());
         assertEquals(Optional.of(appellantDateOfBirth), asylumCase.getAppellantDateOfBirth());
         assertEquals(Optional.of(appellantNationalities), asylumCase.getAppellantNationalities());
         assertEquals(Optional.of(appellantHasFixedAddress), asylumCase.getAppellantHasFixedAddress());

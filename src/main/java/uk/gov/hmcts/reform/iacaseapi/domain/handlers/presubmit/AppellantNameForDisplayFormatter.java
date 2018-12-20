@@ -40,12 +40,12 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
                 .getAppellantGivenNames()
                 .orElseThrow(() -> new IllegalStateException("appellantGivenNames is not present"));
 
-        final String appellantLastName =
+        final String appellantFamilyName =
             asylumCase
-                .getAppellantLastName()
-                .orElseThrow(() -> new IllegalStateException("appellantLastName is not present"));
+                .getAppellantFamilyName()
+                .orElseThrow(() -> new IllegalStateException("appellantFamilyName is not present"));
 
-        String appellantNameForDisplay = appellantGivenNames + " " + appellantLastName;
+        String appellantNameForDisplay = appellantGivenNames + " " + appellantFamilyName;
 
         asylumCase.setAppellantNameForDisplay(
             appellantNameForDisplay.replaceAll("\\s+", " ").trim()

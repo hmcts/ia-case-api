@@ -50,7 +50,7 @@ public class AppellantNameForDisplayFormatterTest {
                 final String output = inputOutput.getValue();
 
                 when(asylumCase.getAppellantGivenNames()).thenReturn(Optional.of(input.getKey()));
-                when(asylumCase.getAppellantLastName()).thenReturn(Optional.of(input.getValue()));
+                when(asylumCase.getAppellantFamilyName()).thenReturn(Optional.of(input.getValue()));
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -76,15 +76,15 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void should_throw_when_appellant_last_name_is_not_present() {
+    public void should_throw_when_appellant_family_name_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.getAppellantGivenNames()).thenReturn(Optional.of("John"));
-        when(asylumCase.getAppellantLastName()).thenReturn(Optional.empty());
+        when(asylumCase.getAppellantFamilyName()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("appellantLastName is not present")
+            .hasMessage("appellantFamilyName is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
