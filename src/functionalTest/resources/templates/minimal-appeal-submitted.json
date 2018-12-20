@@ -3,7 +3,7 @@
   "homeOfficeDecisionDate": "{$TODAY}",
   "appellantTitle": "Mr",
   "appellantGivenNames": "Talha",
-  "appellantLastName": "Awan",
+  "appellantFamilyName": "Awan",
   "appellantDateOfBirth": "{$TODAY-7300}",
   "appellantNationalities": [
     {

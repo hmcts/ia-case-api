@@ -10,7 +10,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "appellantGivenNames": "Bob",
-          "appellantLastName": "Jones",
+          "appellantFamilyName": "Jones",
           "appellantNameForDisplay": null
         }
       }
@@ -23,7 +23,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantGivenNames": "Bob",
-        "appellantLastName": "Jones",
+        "appellantFamilyName": "Jones",
         "appellantNameForDisplay": "Bob Jones"
       }
     }

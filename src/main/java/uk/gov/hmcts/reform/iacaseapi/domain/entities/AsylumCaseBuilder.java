@@ -22,7 +22,7 @@ public class AsylumCaseBuilder {
     private Optional<String> homeOfficeDecisionDate = Optional.empty();
     private Optional<String> appellantTitle = Optional.empty();
     private Optional<String> appellantGivenNames = Optional.empty();
-    private Optional<String> appellantLastName = Optional.empty();
+    private Optional<String> appellantFamilyName = Optional.empty();
     private Optional<String> appellantDateOfBirth = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> appellantNationalities = Optional.empty();
     private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
@@ -116,8 +116,8 @@ public class AsylumCaseBuilder {
         return appellantGivenNames;
     }
 
-    public Optional<String> getAppellantLastName() {
-        return appellantLastName;
+    public Optional<String> getAppellantFamilyName() {
+        return appellantFamilyName;
     }
 
     public Optional<String> getAppellantDateOfBirth() {
@@ -200,8 +200,8 @@ public class AsylumCaseBuilder {
         this.appellantGivenNames = appellantGivenNames;
     }
 
-    public void setAppellantLastName(Optional<String> appellantLastName) {
-        this.appellantLastName = appellantLastName;
+    public void setAppellantFamilyName(Optional<String> appellantFamilyName) {
+        this.appellantFamilyName = appellantFamilyName;
     }
 
     public void setAppellantDateOfBirth(Optional<String> appellantDateOfBirth) {
