@@ -23,7 +23,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> homeOfficeDecisionDate = Optional.empty();
     private Optional<String> appellantTitle = Optional.empty();
     private Optional<String> appellantGivenNames = Optional.empty();
-    private Optional<String> appellantLastName = Optional.empty();
+    private Optional<String> appellantFamilyName = Optional.empty();
     private Optional<String> appellantDateOfBirth = Optional.empty();
     private Optional<List<IdValue<Map<String, String>>>> appellantNationalities = Optional.empty();
     private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
@@ -104,7 +104,7 @@ public class AsylumCase implements CaseData {
         this.homeOfficeDecisionDate = asylumCaseBuilder.getHomeOfficeDecisionDate();
         this.appellantTitle = asylumCaseBuilder.getAppellantTitle();
         this.appellantGivenNames = asylumCaseBuilder.getAppellantGivenNames();
-        this.appellantLastName = asylumCaseBuilder.getAppellantLastName();
+        this.appellantFamilyName = asylumCaseBuilder.getAppellantFamilyName();
         this.appellantDateOfBirth = asylumCaseBuilder.getAppellantDateOfBirth();
         this.appellantNationalities = asylumCaseBuilder.getAppellantNationalities();
         this.appellantHasFixedAddress = asylumCaseBuilder.getAppellantHasFixedAddress();
@@ -166,9 +166,9 @@ public class AsylumCase implements CaseData {
         return appellantGivenNames;
     }
 
-    public Optional<String> getAppellantLastName() {
-        requireNonNull(appellantLastName);
-        return appellantLastName;
+    public Optional<String> getAppellantFamilyName() {
+        requireNonNull(appellantFamilyName);
+        return appellantFamilyName;
     }
 
     public Optional<String> getAppellantDateOfBirth() {
