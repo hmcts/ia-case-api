@@ -13,6 +13,7 @@ public enum Event {
     SUBMIT_CASE("submitCase"),
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     ADD_APPEAL_RESPONSE("addAppealResponse"),
+    REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
