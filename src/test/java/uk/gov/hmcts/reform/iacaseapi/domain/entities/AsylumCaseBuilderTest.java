@@ -50,6 +50,10 @@ public class AsylumCaseBuilderTest {
     private final String caseArgumentDescription = "O";
     private final List<IdValue<DocumentWithDescription>> caseArgumentEvidence = mock(List.class);
 
+    private final Document appealResponseDocument = mock(Document.class);
+    private final String appealResponseDescription = "P";
+    private final List<IdValue<DocumentWithDescription>> appealResponseEvidence = mock(List.class);
+
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
     @Test

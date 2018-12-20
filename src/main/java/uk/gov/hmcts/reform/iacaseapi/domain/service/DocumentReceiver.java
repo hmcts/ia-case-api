@@ -2,13 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class DocumentReceiver {
@@ -28,7 +31,6 @@ public class DocumentReceiver {
     ) {
         requireNonNull(document, "document must not be null");
         requireNonNull(description, "description must not be null");
-        requireNonNull(tag, "tag must not be null");
 
         return receive(
             new DocumentWithDescription(
@@ -64,5 +66,20 @@ public class DocumentReceiver {
         }
 
         return Optional.empty();
+    }
+
+    public List<DocumentWithMetadata> receiveAll(
+        List<IdValue<DocumentWithDescription>> documentsWithDescription,
+        DocumentTag tag
+    ) {
+        requireNonNull(documentsWithDescription, "documentWithDescription must not be null");
+
+        return documentsWithDescription
+            .stream()
+            .map(IdValue::getValue)
+            .map(document -> receive(document, tag))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
     }
 }

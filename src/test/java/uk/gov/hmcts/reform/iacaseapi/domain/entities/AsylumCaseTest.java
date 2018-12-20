@@ -54,6 +54,10 @@ public class AsylumCaseTest {
     private final String caseArgumentDescription = "O";
     private final List<IdValue<DocumentWithDescription>> caseArgumentEvidence = mock(List.class);
 
+    private final Document appealResponseDocument = mock(Document.class);
+    private final String appealResponseDescription = "P";
+    private final List<IdValue<DocumentWithDescription>> appealResponseEvidence = mock(List.class);
+
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
     @Before
@@ -88,6 +92,9 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getCaseArgumentDocument()).thenReturn(Optional.of(caseArgumentDocument));
         when(asylumCaseBuilder.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
         when(asylumCaseBuilder.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
+        when(asylumCaseBuilder.getAppealResponseDocument()).thenReturn(Optional.of(appealResponseDocument));
+        when(asylumCaseBuilder.getAppealResponseDescription()).thenReturn(Optional.of(appealResponseDescription));
+        when(asylumCaseBuilder.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
     }
 
     @Test
@@ -124,6 +131,9 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(caseArgumentDocument), asylumCase.getCaseArgumentDocument());
         assertEquals(Optional.of(caseArgumentDescription), asylumCase.getCaseArgumentDescription());
         assertEquals(Optional.of(caseArgumentEvidence), asylumCase.getCaseArgumentEvidence());
+        assertEquals(Optional.of(appealResponseDocument), asylumCase.getAppealResponseDocument());
+        assertEquals(Optional.of(appealResponseDescription), asylumCase.getAppealResponseDescription());
+        assertEquals(Optional.of(appealResponseEvidence), asylumCase.getAppealResponseEvidence());
     }
 
     @Test
@@ -229,6 +239,24 @@ public class AsylumCaseTest {
 
         asylumCase.setDirections(null);
         assertEquals(Optional.empty(), asylumCase.getDirections());
+    }
+
+    @Test
+    public void legal_representative_documents_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        List<IdValue<DocumentWithMetadata>> newLegalRepresentativeDocuments =
+            Arrays.asList(new IdValue<>("ABC", mock(DocumentWithMetadata.class)));
+
+        asylumCase.setLegalRepresentativeDocuments(newLegalRepresentativeDocuments);
+        assertEquals(Optional.of(newLegalRepresentativeDocuments), asylumCase.getLegalRepresentativeDocuments());
+
+        asylumCase.setLegalRepresentativeDocuments(Collections.emptyList());
+        assertEquals(Optional.of(Collections.emptyList()), asylumCase.getLegalRepresentativeDocuments());
+
+        asylumCase.setLegalRepresentativeDocuments(null);
+        assertEquals(Optional.empty(), asylumCase.getLegalRepresentativeDocuments());
     }
 
     @Test

@@ -21,12 +21,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AddAppealResponseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public BuildCaseHandler(
+    public AddAppealResponseHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -42,7 +42,7 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.BUILD_CASE;
+               && callback.getEvent() == Event.ADD_APPEAL_RESPONSE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -58,51 +58,51 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        final Document caseArgumentDocument =
+        final Document appealResponseDocument =
             asylumCase
-                .getCaseArgumentDocument()
-                .orElseThrow(() -> new IllegalStateException("caseArgumentDocument is not present"));
+                .getAppealResponseDocument()
+                .orElseThrow(() -> new IllegalStateException("appealResponseDocument is not present"));
 
-        final String caseArgumentDescription =
+        final String appealResponseDescription =
             asylumCase
-                .getCaseArgumentDescription()
+                .getAppealResponseDescription()
                 .orElse("");
 
-        final List<IdValue<DocumentWithDescription>> caseArgumentEvidence =
+        final List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             asylumCase
-                .getCaseArgumentEvidence()
+                .getAppealResponseEvidence()
                 .orElse(Collections.emptyList());
 
-        final List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
+        final List<IdValue<DocumentWithMetadata>> respondentDocuments =
             asylumCase
-                .getLegalRepresentativeDocuments()
+                .getRespondentDocuments()
                 .orElse(Collections.emptyList());
 
-        List<DocumentWithMetadata> caseArgumentDocuments = new ArrayList<>();
+        List<DocumentWithMetadata> appealResponseDocuments = new ArrayList<>();
 
         documentReceiver
             .receive(
-                caseArgumentDocument,
-                caseArgumentDescription,
-                DocumentTag.CASE_ARGUMENT
+                appealResponseDocument,
+                appealResponseDescription,
+                DocumentTag.APPEAL_RESPONSE
             )
-            .ifPresent(caseArgumentDocuments::add);
+            .ifPresent(appealResponseDocuments::add);
 
         documentReceiver
             .receiveAll(
-                caseArgumentEvidence,
-                DocumentTag.CASE_ARGUMENT
+                appealResponseEvidence,
+                DocumentTag.APPEAL_RESPONSE
             )
-            .forEach(caseArgumentDocuments::add);
+            .forEach(appealResponseDocuments::add);
 
-        List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments =
+        List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(
-                legalRepresentativeDocuments,
-                caseArgumentDocuments,
-                DocumentTag.CASE_ARGUMENT
+                respondentDocuments,
+                appealResponseDocuments,
+                DocumentTag.APPEAL_RESPONSE
             );
 
-        asylumCase.setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
+        asylumCase.setRespondentDocuments(allRespondentDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

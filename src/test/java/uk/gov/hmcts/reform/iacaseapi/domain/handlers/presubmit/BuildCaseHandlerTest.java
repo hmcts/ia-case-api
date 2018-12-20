@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
@@ -48,7 +47,7 @@ public class BuildCaseHandlerTest {
     @Mock private List<IdValue<DocumentWithMetadata>> existingLegalRepresentativeDocuments;
     @Mock private List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> filteredLegalRepresentativeDocumentsCaptor;
+    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocumentsCaptor;
 
     private BuildCaseHandler buildCaseHandler;
 
@@ -76,79 +75,9 @@ public class BuildCaseHandlerTest {
                 caseArgumentEvidence2WithMetadata
             );
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getLegalRepresentativeDocuments()).thenReturn(Optional.of(existingLegalRepresentativeDocuments));
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.of(caseArgumentDocument));
-        when(asylumCase.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
-        when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
-
-        when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentWithMetadata));
-
-        when(documentReceiver.receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence1WithMetadata));
-
-        when(documentReceiver.receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence2WithMetadata));
-
-        when(documentsAppender.append(any(List.class), eq(caseArgumentEvidenceWithMetadata)))
-            .thenReturn(allLegalRepresentativeDocuments);
-
-        when(documentsAppender.append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata)))
-            .thenReturn(allLegalRepresentativeDocuments);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).getCaseArgumentDocument();
-        verify(asylumCase, times(1)).getCaseArgumentDescription();
-        verify(asylumCase, times(1)).getCaseArgumentEvidence();
-
-        verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT);
-
-        verify(documentsAppender, times(1)).append(filteredLegalRepresentativeDocumentsCaptor.capture(), eq(caseArgumentEvidenceWithMetadata));
-
-        List<IdValue<DocumentWithMetadata>> filteredLegalRepresentativeDocuments =
-            filteredLegalRepresentativeDocumentsCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(0, filteredLegalRepresentativeDocuments.size());
-
-        verify(documentsAppender, times(1)).append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata));
-
-        verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
-    }
-
-    @Test
-    public void should_replace_any_existing_case_argument_documents_for_the_case() {
-
-        DocumentWithMetadata existingCaseArgumentDocument1 = mock(DocumentWithMetadata.class);
-        DocumentWithMetadata existingCaseArgumentDocument2 = mock(DocumentWithMetadata.class);
-        DocumentWithMetadata existingCaseArgumentDocument3 = mock(DocumentWithMetadata.class);
-
-        List<IdValue<DocumentWithMetadata>> existingLegalRepresentativeDocuments =
+        List<DocumentWithMetadata> caseArgumentDocumentsWithMetadata =
             Arrays.asList(
-                new IdValue<>("1", existingCaseArgumentDocument1),
-                new IdValue<>("2", existingCaseArgumentDocument2),
-                new IdValue<>("3", existingCaseArgumentDocument3)
-            );
-
-        List<IdValue<DocumentWithDescription>> caseArgumentEvidence =
-            Arrays.asList(
-                new IdValue<>("1", caseArgumentEvidence1),
-                new IdValue<>("2", caseArgumentEvidence2)
-            );
-
-        List<DocumentWithMetadata> caseArgumentEvidenceWithMetadata =
-            Arrays.asList(
+                caseArgumentWithMetadata,
                 caseArgumentEvidence1WithMetadata,
                 caseArgumentEvidence2WithMetadata
             );
@@ -161,23 +90,13 @@ public class BuildCaseHandlerTest {
         when(asylumCase.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
         when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
 
-        when(existingCaseArgumentDocument1.getTag()).thenReturn(DocumentTag.CASE_ARGUMENT);
-        when(existingCaseArgumentDocument2.getTag()).thenReturn(DocumentTag.RESPONDENT_EVIDENCE);
-        when(existingCaseArgumentDocument3.getTag()).thenReturn(DocumentTag.CASE_ARGUMENT);
-
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(Optional.of(caseArgumentWithMetadata));
 
-        when(documentReceiver.receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence1WithMetadata));
+        when(documentReceiver.receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
+            .thenReturn(caseArgumentEvidenceWithMetadata);
 
-        when(documentReceiver.receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence2WithMetadata));
-
-        when(documentsAppender.append(any(List.class), eq(caseArgumentEvidenceWithMetadata)))
-            .thenReturn(allLegalRepresentativeDocuments);
-
-        when(documentsAppender.append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata)))
+        when(documentsAppender.append(existingLegalRepresentativeDocuments, caseArgumentDocumentsWithMetadata, DocumentTag.CASE_ARGUMENT))
             .thenReturn(allLegalRepresentativeDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -191,19 +110,14 @@ public class BuildCaseHandlerTest {
         verify(asylumCase, times(1)).getCaseArgumentEvidence();
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT);
+        verify(documentReceiver, times(1)).receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
 
-        verify(documentsAppender, times(1)).append(filteredLegalRepresentativeDocumentsCaptor.capture(), eq(caseArgumentEvidenceWithMetadata));
-
-        List<IdValue<DocumentWithMetadata>> filteredLegalRepresentativeDocuments =
-            filteredLegalRepresentativeDocumentsCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals("Existing case argument is filtered out to be replaced", 1, filteredLegalRepresentativeDocuments.size());
-
-        verify(documentsAppender, times(1)).append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(
+                existingLegalRepresentativeDocuments,
+                caseArgumentDocumentsWithMetadata,
+                DocumentTag.CASE_ARGUMENT
+            );
 
         verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
     }
@@ -223,6 +137,13 @@ public class BuildCaseHandlerTest {
                 caseArgumentEvidence2WithMetadata
             );
 
+        List<DocumentWithMetadata> caseArgumentDocumentsWithMetadata =
+            Arrays.asList(
+                caseArgumentWithMetadata,
+                caseArgumentEvidence1WithMetadata,
+                caseArgumentEvidence2WithMetadata
+            );
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -234,16 +155,10 @@ public class BuildCaseHandlerTest {
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(Optional.of(caseArgumentWithMetadata));
 
-        when(documentReceiver.receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence1WithMetadata));
+        when(documentReceiver.receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
+            .thenReturn(caseArgumentEvidenceWithMetadata);
 
-        when(documentReceiver.receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentEvidence2WithMetadata));
-
-        when(documentsAppender.append(any(List.class), eq(caseArgumentEvidenceWithMetadata)))
-            .thenReturn(allLegalRepresentativeDocuments);
-
-        when(documentsAppender.append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata)))
+        when(documentsAppender.append(any(List.class), eq(caseArgumentDocumentsWithMetadata), eq(DocumentTag.CASE_ARGUMENT)))
             .thenReturn(allLegalRepresentativeDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -257,19 +172,21 @@ public class BuildCaseHandlerTest {
         verify(asylumCase, times(1)).getCaseArgumentEvidence();
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence1, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receive(caseArgumentEvidence2, DocumentTag.CASE_ARGUMENT);
+        verify(documentReceiver, times(1)).receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
 
-        verify(documentsAppender, times(1)).append(filteredLegalRepresentativeDocumentsCaptor.capture(), eq(caseArgumentEvidenceWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(
+                legalRepresentativeDocumentsCaptor.capture(),
+                eq(caseArgumentDocumentsWithMetadata),
+                eq(DocumentTag.CASE_ARGUMENT)
+            );
 
-        List<IdValue<DocumentWithMetadata>> filteredLegalRepresentativeDocuments =
-            filteredLegalRepresentativeDocumentsCaptor
+        List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
+            legalRepresentativeDocumentsCaptor
                 .getAllValues()
                 .get(0);
 
-        assertEquals(0, filteredLegalRepresentativeDocuments.size());
-
-        verify(documentsAppender, times(1)).append(allLegalRepresentativeDocuments, Collections.singletonList(caseArgumentWithMetadata));
+        assertEquals(0, legalRepresentativeDocuments.size());
 
         verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
     }

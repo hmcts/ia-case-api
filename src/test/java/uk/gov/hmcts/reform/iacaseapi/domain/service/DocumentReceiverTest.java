@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -82,6 +85,36 @@ public class DocumentReceiverTest {
     }
 
     @Test
+    public void should_receive_all_documents_by_adding_metadata() {
+
+        Document document = mock(Document.class);
+        String description = "Description";
+        String dateUploaded = "2018-12-25";
+
+        DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);
+        DocumentTag tag = DocumentTag.RESPONDENT_EVIDENCE;
+
+        List<IdValue<DocumentWithDescription>> documentsWithDescription =
+            Collections.singletonList(new IdValue<>("1", documentWithDescription));
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(dateUploaded));
+        when(documentWithDescription.getDocument()).thenReturn(Optional.of(document));
+        when(documentWithDescription.getDescription()).thenReturn(Optional.of(description));
+
+        List<DocumentWithMetadata> actualReceivedDocuments =
+            documentReceiver.receiveAll(documentsWithDescription, tag);
+
+        verify(dateProvider, times(1)).now();
+
+        assertNotNull(actualReceivedDocuments);
+        assertEquals(1, actualReceivedDocuments.size());
+        assertEquals(document, actualReceivedDocuments.get(0).getDocument());
+        assertEquals(description, actualReceivedDocuments.get(0).getDescription());
+        assertEquals(dateUploaded, actualReceivedDocuments.get(0).getDateUploaded());
+        assertEquals(tag, actualReceivedDocuments.get(0).getTag());
+    }
+
+    @Test
     public void should_not_receive_document_if_file_is_not_uploaded() {
 
         DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);
@@ -119,6 +152,10 @@ public class DocumentReceiverTest {
 
         assertThatThrownBy(() -> documentReceiver.receive(mock(DocumentWithDescription.class), null))
             .hasMessage("tag must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> documentReceiver.receiveAll(null, DocumentTag.CASE_ARGUMENT))
+            .hasMessage("documentWithDescription must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 }
