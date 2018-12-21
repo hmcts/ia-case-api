@@ -17,7 +17,6 @@ public class CoreCaseDataRetriever {
         this.asylumCasesRetriever = asylumCasesRetriever;
     }
 
-
     public List<Map> retrieveAppealCasesInAllStatesExceptAppealStarted() {
 
         List<Map> asylumCaseDetails;

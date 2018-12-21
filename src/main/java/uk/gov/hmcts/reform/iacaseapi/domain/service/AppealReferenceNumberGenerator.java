@@ -25,7 +25,7 @@ public class AppealReferenceNumberGenerator {
     private final DateProvider dateProvider;
 
     public AppealReferenceNumberGenerator(
-            @Value("appealReferenceSequenceSeed") String appealReferenceSequenceSeed,
+            @Value("${appealReferenceSequenceSeed}") String appealReferenceSequenceSeed,
             AppealReferenceNumberInitializer appealReferenceNumberInitalizer,
             DateProvider dateProvider) {
 
