@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetrieve
 
 public class AppealReferenceSequenceInitializerFromCcdTest {
 
-    private final String appealReferenceSequenceSeed = "50000";
+    private final int appealReferenceSequenceSeed = 50000;
     private final CoreCaseDataRetriever coreCaseDataRetriever = mock(CoreCaseDataRetriever.class);
     private final SystemDateProvider systemDateProvider = mock(SystemDateProvider.class);
     private AppealReferenceNumberInitializerFromCcd underTest;

@@ -20,13 +20,13 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
     private static final String CASE_DATA_MAP_KEY = "case_data";
     private final CoreCaseDataRetriever coreCaseDataRetriever;
     private final SystemDateProvider systemDateProvider;
-    private final String appealReferenceSequenceSeed;
+    private final int appealReferenceSequenceSeed;
     private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
 
     public AppealReferenceNumberInitializerFromCcd(
             CoreCaseDataRetriever coreCaseDataRetriever,
             SystemDateProvider systemDateProvider,
-            @Value("${appealReferenceSequenceSeed}") String appealReferenceSequenceSeed
+            @Value("${appealReferenceSequenceSeed}") int appealReferenceSequenceSeed
     ) {
         this.coreCaseDataRetriever = coreCaseDataRetriever;
         this.systemDateProvider = systemDateProvider;

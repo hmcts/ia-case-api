@@ -21,11 +21,11 @@ public class AppealReferenceNumberGenerator {
 
     private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
     private final AppealReferenceNumberInitializer appealReferenceNumberInitalizer;
-    private final String appealReferenceSequenceSeed;
+    private final int appealReferenceSequenceSeed;
     private final DateProvider dateProvider;
 
     public AppealReferenceNumberGenerator(
-            @Value("${appealReferenceSequenceSeed}") String appealReferenceSequenceSeed,
+            @Value("${appealReferenceSequenceSeed}") int appealReferenceSequenceSeed,
             AppealReferenceNumberInitializer appealReferenceNumberInitalizer,
             DateProvider dateProvider
     ) {
@@ -86,8 +86,8 @@ public class AppealReferenceNumberGenerator {
                 lastAppealReferenceNumbers.get(asylumAppealType).toString());
     }
 
-    private String increment(String intString) {
-        return String.valueOf(Integer.valueOf(intString) + 1);
+    private int increment(int number) {
+        return number + 1;
     }
 
     private String yearOfLastReference(AsylumAppealType asylumAppealType) {

@@ -5,17 +5,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
 public class AppealReferenceNumber {
 
     final AsylumAppealType asylumAppealType;
-    final String sequence;
+    final int sequence;
     final String year;
 
     public AppealReferenceNumber(String appealReferenceNumber) {
         String[] bits = appealReferenceNumber.split("/");
         asylumAppealType = AsylumAppealType.valueOf(bits[0]);
-        sequence = bits[1];
+        sequence = Integer.valueOf(bits[1]);
         year = bits[2];
     }
 
-    public AppealReferenceNumber(AsylumAppealType type, String sequence, String year) {
+    public AppealReferenceNumber(AsylumAppealType type, int sequence, String year) {
         asylumAppealType = type;
         this.sequence = sequence;
         this.year = year;
@@ -25,7 +25,7 @@ public class AppealReferenceNumber {
         return asylumAppealType;
     }
 
-    public String getSequence() {
+    public int getSequence() {
         return sequence;
     }
 

@@ -30,7 +30,7 @@ public class AppealReferenceNumberGeneratorTest {
 
     private final AppealReferenceNumberGenerator underTest =
             new AppealReferenceNumberGenerator(
-                    "50000",
+                    50000,
                     appealReferenceNumberInitializer,
                     dateProvider);
 
@@ -106,15 +106,15 @@ public class AppealReferenceNumberGeneratorTest {
 
     private Map<AsylumAppealType, AppealReferenceNumber> initialReferenceNumbers() {
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumbers = new HashMap<>();
-        referenceNumbers.put(PA, new AppealReferenceNumber(PA, "50000", "2018"));
-        referenceNumbers.put(RP, new AppealReferenceNumber(RP, "50000", "2018"));
+        referenceNumbers.put(PA, new AppealReferenceNumber(PA, 50000, "2018"));
+        referenceNumbers.put(RP, new AppealReferenceNumber(RP, 50000, "2018"));
         return referenceNumbers;
     }
 
     private Map<AsylumAppealType, AppealReferenceNumber> someAppealReferenceNumbersTowardsTHeEndOf2018() {
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumbers = new HashMap<>();
-        referenceNumbers.put(PA, new AppealReferenceNumber(PA, "50201", "2018"));
-        referenceNumbers.put(RP, new AppealReferenceNumber(RP, "50201", "2018"));
+        referenceNumbers.put(PA, new AppealReferenceNumber(PA, 50201, "2018"));
+        referenceNumbers.put(RP, new AppealReferenceNumber(RP, 50201, "2018"));
         return referenceNumbers;
     }
 }

@@ -46,7 +46,9 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
 
     @Before
     public void setUpDate() {
-        when(dateProvider.now()).thenReturn(LocalDate.now());
+        when(dateProvider.now()).thenReturn(
+                LocalDate.now()
+                    .withYear(2018));
     }
 
     @Test
