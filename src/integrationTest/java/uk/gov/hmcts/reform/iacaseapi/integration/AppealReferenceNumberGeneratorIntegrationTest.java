@@ -86,7 +86,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
 
         Optional<String> appealReferenceNumber =
                 appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
+                        .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(appealReferenceNumber.get(), is("PA/50001/2019"));
     }
