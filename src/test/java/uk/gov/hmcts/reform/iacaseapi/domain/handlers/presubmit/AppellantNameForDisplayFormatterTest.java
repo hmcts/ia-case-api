@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Optional;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,9 +35,9 @@ public class AppellantNameForDisplayFormatterTest {
 
         Map<Pair<String, String>, String> exampleInputOutputs =
             ImmutableMap
-                .of(new Pair<>("Jane Mary", "Smith"), "Jane Mary Smith",
-                    new Pair<>("John", "Doe"), "John Doe",
-                    new Pair<>(" Matt ", " Jones "), "Matt Jones");
+                .of(Pair.of("Jane Mary", "Smith"), "Jane Mary Smith",
+                    Pair.of("John", "Doe"), "John Doe",
+                    Pair.of(" Matt ", " Jones "), "Matt Jones");
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
