@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.integration;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.RP;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.*;
 import org.assertj.core.api.Assertions;
@@ -13,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Serializer;
 import uk.gov.hmcts.reform.iacaseapi.integration.stubs.CcdMock;
@@ -27,11 +30,21 @@ public class ConcurrentAppealReferenceNumberGeneratorIntegrationTest extends Ida
     @Autowired
     private Serializer<List> ccdCaseListSerializer;
 
+    @Autowired
+    private DateProvider dateProvider;
+
     private CcdMock givenCcd;
 
     @Before
     public void createCcdMock() {
         givenCcd = new CcdMock(ccdCaseListSerializer);
+    }
+
+    @Before
+    public void setUpDate() {
+        when(dateProvider.now()).thenReturn(
+            LocalDate.now()
+                .withYear(2018));
     }
 
     @Test
