@@ -8,7 +8,7 @@ properties([
   ])
 ])
 
-@Library("Infrastructure@securityscan")
+@Library("Infrastructure@nightly-security-test")
 
 def type = "java"
 def product = "ia"
