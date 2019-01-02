@@ -77,10 +77,10 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
 
-        assertThat(referenceNumberMap.get(RP).getSequence(), is("50020"));
+        assertThat(referenceNumberMap.get(RP).getSequence(), is(50020));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
 
-        assertThat(referenceNumberMap.get(PA).getSequence(), is("50401"));
+        assertThat(referenceNumberMap.get(PA).getSequence(), is(50401));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
     }
 
@@ -104,10 +104,10 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
 
-        assertThat(referenceNumberMap.get(RP).getSequence(), is("50020"));
+        assertThat(referenceNumberMap.get(RP).getSequence(), is(50020));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
 
-        assertThat(referenceNumberMap.get(PA).getSequence(), is("50401"));
+        assertThat(referenceNumberMap.get(PA).getSequence(), is(50401));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
     }
 
@@ -131,10 +131,10 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
 
-        assertThat(referenceNumberMap.get(RP).getSequence(), is("50020"));
+        assertThat(referenceNumberMap.get(RP).getSequence(), is(50020));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
 
-        assertThat(referenceNumberMap.get(PA).getSequence(), is("50401"));
+        assertThat(referenceNumberMap.get(PA).getSequence(), is(50401));
         assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
     }
 
@@ -155,5 +155,4 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
                 .map(ref -> singletonMap("case_data", singletonMap("appealReferenceNumber", ref)))
                 .collect(toList());
     }
-
 }

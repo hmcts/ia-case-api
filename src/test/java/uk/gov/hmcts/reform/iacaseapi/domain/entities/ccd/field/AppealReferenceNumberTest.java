@@ -13,7 +13,7 @@ public class AppealReferenceNumberTest {
         AppealReferenceNumber appealReferenceNumber = new AppealReferenceNumber("RP/50000/2019");
 
         assertThat(appealReferenceNumber.getType(), is(AsylumAppealType.RP));
-        assertThat(appealReferenceNumber.getSequence(), is("50000"));
+        assertThat(appealReferenceNumber.getSequence(), is(50000));
         assertThat(appealReferenceNumber.getYear(), is("2019"));
     }
 }

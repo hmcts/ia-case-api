@@ -36,7 +36,7 @@ public class AppealReferenceNumberGeneratorTest {
 
     @Before
     public void setUp() {
-        when(dateProvider.now()).thenReturn(LocalDate.now());
+        when(dateProvider.now()).thenReturn(LocalDate.now().withYear(2018));
     }
 
     @Test
