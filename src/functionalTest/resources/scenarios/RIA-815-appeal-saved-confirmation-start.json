@@ -1,5 +1,5 @@
 {
-  "description": "RIA-815 Appeal saved confirmation",
+  "description": "RIA-815 Appeal saved confirmation after start",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",

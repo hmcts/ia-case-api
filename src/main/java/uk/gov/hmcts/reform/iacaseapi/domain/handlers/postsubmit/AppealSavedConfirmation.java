@@ -17,7 +17,7 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.START_APPEAL;
+        return callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(

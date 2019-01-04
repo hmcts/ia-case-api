@@ -79,7 +79,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
                 final String output = inputOutput.getValue();
 
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+                when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.getHomeOfficeReferenceNumber()).thenReturn(Optional.of(input));
 
@@ -131,7 +131,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
                 boolean canHandle = homeOfficeReferenceNumberTruncator.canHandle(callbackStage, callback);
 
-                if (event == Event.START_APPEAL
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
