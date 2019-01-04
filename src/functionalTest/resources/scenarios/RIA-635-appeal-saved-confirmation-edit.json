@@ -1,0 +1,22 @@
+{
+  "description": "RIA-815 Appeal saved confirmation after edit",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Appeal saved\nYou still need to submit it",
+      "body": "#### Ready to submit?\n\n[Submit your appeal](/case/IA/Asylum/1234/trigger/submitAppeal) when you are ready.\n\n#### Not ready to submit yet?\nYou can return to the case to make changes."
+    }
+  }
+}

@@ -45,6 +45,7 @@ security:
   roleEventAccess:
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
+      - "editAppeal"
       - "submitAppeal"
       - "buildCase"
       - "submitCase"

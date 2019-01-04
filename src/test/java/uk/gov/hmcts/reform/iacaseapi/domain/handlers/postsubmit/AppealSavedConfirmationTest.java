@@ -83,7 +83,7 @@ public class AppealSavedConfirmationTest {
 
             boolean canHandle = appealSavedConfirmation.canHandle(callback);
 
-            if (event == Event.START_APPEAL) {
+            if (event == Event.START_APPEAL || event == Event.EDIT_APPEAL) {
 
                 assertTrue(canHandle);
             } else {
