@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
-import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
@@ -42,7 +41,7 @@ public class TestFixtures {
                 Optional.of(caseType.name() + "/" + sequence + "/2018"));
 
         CaseDetails<AsylumCase> caseDetails =
-                new CaseDetails<>(nextLong(), "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
+                new CaseDetails<>(1, "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
 
         return caseDetails;
     }

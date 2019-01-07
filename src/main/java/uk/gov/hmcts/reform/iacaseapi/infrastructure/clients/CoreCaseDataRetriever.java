@@ -23,7 +23,6 @@ public class CoreCaseDataRetriever {
 
         try {
             asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
-                    .parallel()
                     .mapToObj(String::valueOf)
                     .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
                     .collect(toList());

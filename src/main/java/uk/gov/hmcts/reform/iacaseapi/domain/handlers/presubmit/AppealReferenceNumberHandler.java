@@ -12,15 +12,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CachingAppealReferenceNumberGenerator;
 
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     public AppealReferenceNumberHandler(
-            AppealReferenceNumberGenerator appealReferenceNumberGenerator) {
+            CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator) {
 
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
     }
@@ -53,10 +53,13 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
         if (!asylumCase.getAppealReferenceNumber().isPresent()) {
 
+            String appealType = asylumCase.getAppealType()
+                    .orElseThrow(() -> new AsylumCaseRetrievalException("Unrecognised asylum case type"));
+
             Optional<String> appealReferenceNumber =
                 appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(
-                        asylumCase.getAppealType()
-                            .orElseThrow(() -> new AsylumCaseRetrievalException("Unrecognised asylum case type")));
+                        callback.getCaseDetails().getId(),
+                        appealType);
 
             if (!appealReferenceNumber.isPresent()) {
                 callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));

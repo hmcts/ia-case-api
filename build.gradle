@@ -183,7 +183,9 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
+    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
     compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.4.0'
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.4.0'

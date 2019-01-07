@@ -79,8 +79,8 @@ public class ConcurrentAppealReferenceNumberGeneratorIntegrationTest extends Ida
 
     private Callable<Optional<String>> alternatingAsylumTypeAppealReferenceNumberRequest(int i) {
         return i % 2 == 0
-                ? callableRevocationOfProtectionAppealReferenceNumberRequest() :
-                callableProtectionAppealReferenceNumberRequest();
+                ? callableRevocationOfProtectionAppealReferenceNumberRequest(i) :
+                callableProtectionAppealReferenceNumberRequest(i);
     }
 
     private <T> Set<T> removeDuplicates(Collection<T> generatedAppealReferenceNumbers) {
@@ -96,11 +96,11 @@ public class ConcurrentAppealReferenceNumberGeneratorIntegrationTest extends Ida
         return Optional.empty();
     }
 
-    private Callable<Optional<String>> callableRevocationOfProtectionAppealReferenceNumberRequest() {
+    private Callable<Optional<String>> callableRevocationOfProtectionAppealReferenceNumberRequest(int i) {
         return () -> appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(RP.toString());
     }
 
-    private Callable<Optional<String>> callableProtectionAppealReferenceNumberRequest() {
+    private Callable<Optional<String>> callableProtectionAppealReferenceNumberRequest(int i) {
         return () -> appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(PA.toString());
     }
 }

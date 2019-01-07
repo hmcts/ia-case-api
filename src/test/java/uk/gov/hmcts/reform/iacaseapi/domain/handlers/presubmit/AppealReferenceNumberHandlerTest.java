@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CachingAppealReferenceNumberGenerator;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -29,8 +28,8 @@ public class AppealReferenceNumberHandlerTest {
 
     private final Callback callback = mock(Callback.class);
 
-    private final AppealReferenceNumberGenerator appealReferenceNumberGenerator =
-            mock(AppealReferenceNumberGenerator.class);
+    private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator =
+            mock(CachingAppealReferenceNumberGenerator.class);
 
     private final AppealReferenceNumberHandler underTest =
             new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
@@ -74,7 +73,7 @@ public class AppealReferenceNumberHandlerTest {
 
         String protectionAppealType = "protection";
 
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(protectionAppealType))
+        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(1, protectionAppealType))
                 .thenReturn(of("the-next-appeal-reference-number"));
 
         PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
@@ -131,10 +130,6 @@ public class AppealReferenceNumberHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(caseData);
         when(caseData.getAppealType()).thenReturn(Optional.of("protection"));
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(anyString())).thenReturn(empty());
-
-        when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor("protection"))
-                .thenReturn(empty());
 
         PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
                 underTest.handle(ABOUT_TO_SUBMIT, callback);

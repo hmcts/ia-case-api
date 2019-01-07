@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
-import static java.util.Arrays.stream;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.joining;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.UNKNOWN;
 
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -27,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenDecoder;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.IdamAuthorizor;
@@ -56,6 +51,7 @@ public class AsylumCasesRetrieverTest {
     @Captor ArgumentCaptor<String> urlCaptor;
 
     private final IdamUserConnectionConfig idamUserConnectionConfig = mock(IdamUserConnectionConfig.class);
+
     private final AsylumCasesRetriever underTest = new AsylumCasesRetriever(
             searchPathUrlTemplate,
             searchPathMetadataUrlTemplate,
@@ -99,7 +95,7 @@ public class AsylumCasesRetrieverTest {
                 .startsWith(ccdBaseUrl));
 
         assertThat(urlCaptor.getValue()
-                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED) + "&page=1")).isEqualTo(true);
+                .endsWith("?page=1")).isEqualTo(true);
 
         assertThat(httpMethod.getValue().equals(GET)).isEqualTo(true);
 
@@ -141,9 +137,6 @@ public class AsylumCasesRetrieverTest {
 
         assertTrue(urlCaptor.getValue()
                 .startsWith(ccdBaseUrl));
-
-        assertThat(urlCaptor.getValue())
-                .endsWith(queryStringForAllAppealStatesExcept(APPEAL_STARTED));
 
         assertThat(urlCaptor.getValue())
                 .contains(searchPathMetadataUrlTemplate);
@@ -211,13 +204,5 @@ public class AsylumCasesRetrieverTest {
             assertThat(e).hasCause(underlyingException);
             assertThat(e).hasMessage("Couldn't retrieve asylum cases from CCD");
         }
-    }
-
-    private String queryStringForAllAppealStatesExcept(State state) {
-        return "?" + stream(State.values())
-                .filter(s -> !s.equals(state))
-                .filter(s -> !s.equals(UNKNOWN))
-                .map(s -> "state=" + s)
-                .collect(joining("&"));
     }
 }

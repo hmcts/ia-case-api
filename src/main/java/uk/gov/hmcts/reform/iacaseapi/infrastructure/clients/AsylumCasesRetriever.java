@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 import static org.springframework.http.HttpHeaders.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.UNKNOWN;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
@@ -21,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.exceptions.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.IdamUserConnectionConfig;
 
@@ -67,7 +62,7 @@ class AsylumCasesRetriever {
 
             asylumCaseDetails = restTemplate
                     .exchange(
-                            ccdBaseUrl + caseworkerAsylumCaseSearchUrlTemplate + getQueryStringForStates() + "&page=" + pageNumber,
+                            ccdBaseUrl + caseworkerAsylumCaseSearchUrlTemplate  + "?page=" + pageNumber,
                             HttpMethod.GET,
                             new HttpEntity<>(getHttpHeaders(accessToken, serviceAuthorizationTokenGenerator.generate())),
                             new ParameterizedTypeReference<List<Map>>() {
@@ -98,7 +93,7 @@ class AsylumCasesRetriever {
         try {
             Map<String, String> paginationMetadata = restTemplate
                     .exchange(
-                            ccdBaseUrl + caseworkerAsylumCaseSearchMetadataUrlTemplate + getQueryStringForStates(),
+                            ccdBaseUrl + caseworkerAsylumCaseSearchMetadataUrlTemplate,
                             HttpMethod.GET,
                             new HttpEntity<>(getHttpHeaders(accessToken, serviceAuthorizationTokenGenerator.generate())),
                             new ParameterizedTypeReference<Map<String, String>>() {
@@ -120,19 +115,13 @@ class AsylumCasesRetriever {
     }
 
     private HttpHeaders getHttpHeaders(String accessToken, String serviceAuthorization) {
+
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorization);
         headers.set(ACCEPT, MediaType.APPLICATION_JSON_UTF8_VALUE);
         headers.set(CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
-        return headers;
-    }
 
-    private String getQueryStringForStates() {
-        return "?" + stream(State.values())
-                .filter(state -> !state.equals(APPEAL_STARTED))
-                .filter(state -> !state.equals(UNKNOWN))
-                .map(state -> "state=" + state)
-                .collect(joining("&"));
+        return headers;
     }
 }
