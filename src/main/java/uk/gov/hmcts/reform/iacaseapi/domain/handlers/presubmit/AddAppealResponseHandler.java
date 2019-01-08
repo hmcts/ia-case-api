@@ -81,20 +81,22 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
 
         List<DocumentWithMetadata> appealResponseDocuments = new ArrayList<>();
 
-        documentReceiver
-            .receive(
-                appealResponseDocument,
-                appealResponseDescription,
-                DocumentTag.APPEAL_RESPONSE
-            )
-            .ifPresent(appealResponseDocuments::add);
+        appealResponseDocuments.add(
+            documentReceiver
+                .receive(
+                    appealResponseDocument,
+                    appealResponseDescription,
+                    DocumentTag.APPEAL_RESPONSE
+                )
+        );
 
-        documentReceiver
-            .receiveAll(
-                appealResponseEvidence,
-                DocumentTag.APPEAL_RESPONSE
-            )
-            .forEach(appealResponseDocuments::add);
+        appealResponseDocuments.addAll(
+            documentReceiver
+                .tryReceiveAll(
+                    appealResponseEvidence,
+                    DocumentTag.APPEAL_RESPONSE
+                )
+        );
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(

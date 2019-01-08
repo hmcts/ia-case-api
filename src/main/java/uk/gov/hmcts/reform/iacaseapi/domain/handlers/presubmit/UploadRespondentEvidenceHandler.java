@@ -63,7 +63,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
-                .map(document -> documentReceiver.receive(document, DocumentTag.RESPONDENT_EVIDENCE))
+                .map(document -> documentReceiver.tryReceive(document, DocumentTag.RESPONDENT_EVIDENCE))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

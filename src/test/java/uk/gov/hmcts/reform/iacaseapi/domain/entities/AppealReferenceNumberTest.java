@@ -1,10 +1,9 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
 
 public class AppealReferenceNumberTest {
 

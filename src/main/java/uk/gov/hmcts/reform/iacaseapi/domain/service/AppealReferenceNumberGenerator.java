@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.from;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.from;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 
 @Service
 public class AppealReferenceNumberGenerator {

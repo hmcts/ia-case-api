@@ -3,17 +3,18 @@ package uk.gov.hmcts.reform.iacaseapi.integration.util;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.rangeClosed;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.RP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.RP;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseBuilder;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
 
 @SuppressWarnings("unchecked")
 public class TestFixtures {
@@ -51,7 +52,7 @@ public class TestFixtures {
         caseBuilder.setAppealType(Optional.of(caseType.getValue()));
         caseBuilder.setAppealReferenceNumber(Optional.of(caseType.name() + "/" + sequence + "/2018"));
         CaseDetails<AsylumCase> caseDetails =
-            new CaseDetails<>(nextLong(), "IA", APPEAL_STARTED, new AsylumCase(caseBuilder));
+            new CaseDetails<>(nextLong(), "IA", APPEAL_STARTED, new AsylumCase(caseBuilder), LocalDateTime.now());
 
         return caseDetails;
     }
