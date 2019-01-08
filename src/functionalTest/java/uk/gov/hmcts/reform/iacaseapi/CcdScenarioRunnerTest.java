@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class CcdScenarioRunnerTest {
 
     @Before
     public void setUp() {
+        MapSerializer.setObjectMapper(objectMapper);
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
     }
@@ -146,10 +148,16 @@ public class CcdScenarioRunnerTest {
             templatesByFilename
         );
 
+        LocalDateTime createdDate =
+            LocalDateTime.parse(
+                MapValueExtractor.extractOrDefault(data, "input.createdDate", LocalDateTime.now().toString())
+            );
+
         Map<String, Object> caseDetails = new HashMap<>();
         caseDetails.put("id", MapValueExtractor.extractOrDefault(data, "input.id", 1));
         caseDetails.put("jurisdiction", MapValueExtractor.extractOrDefault(data, "input.jurisdiction", "IA"));
         caseDetails.put("state", MapValueExtractor.extractOrThrow(data, "input.state"));
+        caseDetails.put("created_date", createdDate);
         caseDetails.put("case_data", caseData);
 
         Map<String, Object> callback = new HashMap<>();

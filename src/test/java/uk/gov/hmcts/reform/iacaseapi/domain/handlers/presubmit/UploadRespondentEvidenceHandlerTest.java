@@ -77,10 +77,10 @@ public class UploadRespondentEvidenceHandlerTest {
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
         when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
 
-        when(documentReceiver.receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
+        when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
 
-        when(documentReceiver.receive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE))
+        when(documentReceiver.tryReceive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence2WithMetadata));
 
         when(documentsAppender.append(existingRespondentDocuments, respondentEvidenceWithMetadata))
@@ -94,8 +94,8 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).getRespondentEvidence();
 
-        verify(documentReceiver, times(1)).receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
-        verify(documentReceiver, times(1)).receive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
+        verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
+        verify(documentReceiver, times(1)).tryReceive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingRespondentDocuments, respondentEvidenceWithMetadata);
 
@@ -115,7 +115,7 @@ public class UploadRespondentEvidenceHandlerTest {
         when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
         when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
 
-        when(documentReceiver.receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
+        when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
 
         when(documentsAppender.append(any(List.class), eq(respondentEvidenceWithMetadata)))
@@ -129,7 +129,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).getRespondentEvidence();
 
-        verify(documentReceiver, times(1)).receive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
+        verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
 

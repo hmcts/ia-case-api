@@ -22,6 +22,10 @@ appealReferenceSequenceSeed: 50000
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
+documentsApi:
+  endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"

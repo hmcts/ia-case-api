@@ -93,9 +93,9 @@ public class AddAppealResponseHandlerTest {
         when(asylumCase.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
-            .thenReturn(Optional.of(appealResponseWithMetadata));
+            .thenReturn(appealResponseWithMetadata);
 
-        when(documentReceiver.receiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
+        when(documentReceiver.tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseEvidenceWithMetadata);
 
         when(documentsAppender.append(existingRespondentDocuments, appealResponseDocumentsWithMetadata, DocumentTag.APPEAL_RESPONSE))
@@ -112,7 +112,7 @@ public class AddAppealResponseHandlerTest {
         verify(asylumCase, times(1)).getAppealResponseEvidence();
 
         verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
-        verify(documentReceiver, times(1)).receiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
+        verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
 
         verify(documentsAppender, times(1))
             .append(
@@ -156,9 +156,9 @@ public class AddAppealResponseHandlerTest {
         when(asylumCase.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
-            .thenReturn(Optional.of(appealResponseWithMetadata));
+            .thenReturn(appealResponseWithMetadata);
 
-        when(documentReceiver.receiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
+        when(documentReceiver.tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseEvidenceWithMetadata);
 
         when(documentsAppender.append(any(List.class), eq(appealResponseDocumentsWithMetadata), eq(DocumentTag.APPEAL_RESPONSE)))
@@ -175,7 +175,7 @@ public class AddAppealResponseHandlerTest {
         verify(asylumCase, times(1)).getAppealResponseEvidence();
 
         verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
-        verify(documentReceiver, times(1)).receiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
+        verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
 
         verify(documentsAppender, times(1))
             .append(

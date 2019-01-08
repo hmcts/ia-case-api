@@ -5,12 +5,11 @@ import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.TestFixtures.submitAppealCallbackForProtectionAsylumCase;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
 
 import java.util.Optional;
 import org.junit.Test;

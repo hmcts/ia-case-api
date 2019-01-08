@@ -1,6 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
-
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 public class AppealReferenceNumber {
 

@@ -187,7 +187,8 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.8'
     compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.4.0'
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.4.0'
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.integration;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.RP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.RP;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;

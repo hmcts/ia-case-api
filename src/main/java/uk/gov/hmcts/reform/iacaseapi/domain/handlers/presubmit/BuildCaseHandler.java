@@ -81,20 +81,22 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         List<DocumentWithMetadata> caseArgumentDocuments = new ArrayList<>();
 
-        documentReceiver
-            .receive(
-                caseArgumentDocument,
-                caseArgumentDescription,
-                DocumentTag.CASE_ARGUMENT
-            )
-            .ifPresent(caseArgumentDocuments::add);
+        caseArgumentDocuments.add(
+            documentReceiver
+                .receive(
+                    caseArgumentDocument,
+                    caseArgumentDescription,
+                    DocumentTag.CASE_ARGUMENT
+                )
+        );
 
-        documentReceiver
-            .receiveAll(
-                caseArgumentEvidence,
-                DocumentTag.CASE_ARGUMENT
-            )
-            .forEach(caseArgumentDocuments::add);
+        caseArgumentDocuments.addAll(
+            documentReceiver
+                .tryReceiveAll(
+                    caseArgumentEvidence,
+                    DocumentTag.CASE_ARGUMENT
+                )
+        );
 
         List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments =
             documentsAppender.append(

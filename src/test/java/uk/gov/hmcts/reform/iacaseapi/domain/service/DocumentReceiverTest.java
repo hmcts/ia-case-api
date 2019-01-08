@@ -44,21 +44,20 @@ public class DocumentReceiverTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse(dateUploaded));
 
-        Optional<DocumentWithMetadata> actualReceivedDocument =
+        DocumentWithMetadata actualReceivedDocument =
             documentReceiver.receive(document, description, tag);
 
         verify(dateProvider, times(1)).now();
 
         assertNotNull(actualReceivedDocument);
-        assertTrue(actualReceivedDocument.isPresent());
-        assertEquals(document, actualReceivedDocument.get().getDocument());
-        assertEquals(description, actualReceivedDocument.get().getDescription());
-        assertEquals(dateUploaded, actualReceivedDocument.get().getDateUploaded());
-        assertEquals(tag, actualReceivedDocument.get().getTag());
+        assertEquals(document, actualReceivedDocument.getDocument());
+        assertEquals(description, actualReceivedDocument.getDescription());
+        assertEquals(dateUploaded, actualReceivedDocument.getDateUploaded());
+        assertEquals(tag, actualReceivedDocument.getTag());
     }
 
     @Test
-    public void should_receive_document_by_adding_metadata() {
+    public void should_try_to_receive_document_by_adding_metadata() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -72,7 +71,7 @@ public class DocumentReceiverTest {
         when(documentWithDescription.getDescription()).thenReturn(Optional.of(description));
 
         Optional<DocumentWithMetadata> actualReceivedDocument =
-            documentReceiver.receive(documentWithDescription, tag);
+            documentReceiver.tryReceive(documentWithDescription, tag);
 
         verify(dateProvider, times(1)).now();
 
@@ -85,7 +84,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_receive_all_documents_by_adding_metadata() {
+    public void should_try_to_receive_all_documents_by_adding_metadata() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -102,7 +101,7 @@ public class DocumentReceiverTest {
         when(documentWithDescription.getDescription()).thenReturn(Optional.of(description));
 
         List<DocumentWithMetadata> actualReceivedDocuments =
-            documentReceiver.receiveAll(documentsWithDescription, tag);
+            documentReceiver.tryReceiveAll(documentsWithDescription, tag);
 
         verify(dateProvider, times(1)).now();
 
@@ -115,7 +114,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_not_receive_document_if_file_is_not_uploaded() {
+    public void should_not_receive_document_if_file_is_not_actually_uploaded() {
 
         DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);
         DocumentTag tag = DocumentTag.RESPONDENT_EVIDENCE;
@@ -123,7 +122,7 @@ public class DocumentReceiverTest {
         when(documentWithDescription.getDocument()).thenReturn(Optional.empty());
 
         Optional<DocumentWithMetadata> actualReceivedDocument =
-            documentReceiver.receive(documentWithDescription, tag);
+            documentReceiver.tryReceive(documentWithDescription, tag);
 
         verify(dateProvider, never()).now();
 
@@ -146,15 +145,15 @@ public class DocumentReceiverTest {
             .hasMessage("tag must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> documentReceiver.receive(null, DocumentTag.CASE_ARGUMENT))
+        assertThatThrownBy(() -> documentReceiver.tryReceive(null, DocumentTag.CASE_ARGUMENT))
             .hasMessage("documentWithDescription must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> documentReceiver.receive(mock(DocumentWithDescription.class), null))
+        assertThatThrownBy(() -> documentReceiver.tryReceive(mock(DocumentWithDescription.class), null))
             .hasMessage("tag must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> documentReceiver.receiveAll(null, DocumentTag.CASE_ARGUMENT))
+        assertThatThrownBy(() -> documentReceiver.tryReceiveAll(null, DocumentTag.CASE_ARGUMENT))
             .hasMessage("documentWithDescription must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

@@ -10,8 +10,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializer;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetriever;
 

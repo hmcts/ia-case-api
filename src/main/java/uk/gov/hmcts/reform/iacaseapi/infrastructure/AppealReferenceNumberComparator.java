@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import java.util.Comparator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
 
 class AppealReferenceNumberComparator implements Comparator<AppealReferenceNumber> {
 
