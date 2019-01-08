@@ -1,11 +1,13 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
+package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
 import java.util.Optional;
 
 public enum AsylumAppealType {
-    RP("revocationOfProtection"), PA("protection");
+
+    RP("revocationOfProtection"),
+    PA("protection");
 
     private String value;
 
@@ -13,14 +15,14 @@ public enum AsylumAppealType {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static Optional<AsylumAppealType> from(String value) {
         return stream(values())
             .filter(v -> v.getValue().equals(value))
             .findFirst();
+    }
+
+    public String getValue() {
+        return value;
     }
 
     @Override

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
 
 public class AppealReferenceNumberComparatorTest {
 
