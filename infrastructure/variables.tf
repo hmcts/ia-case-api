@@ -36,3 +36,7 @@ variable "capacity" {
 variable "instance_size" {
   default = "I1"
 }
+
+variable "appinsights_instrumentation_key" {
+  default = ""
+}
