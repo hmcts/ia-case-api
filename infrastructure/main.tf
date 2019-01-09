@@ -24,6 +24,16 @@ data "azurerm_key_vault" "ia_key_vault" {
   resource_group_name = "${local.key_vault_name}"
 }
 
+data "azurerm_key_vault_secret" "case_documents_api_url" {
+  name      = "case-documents-api-url"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "case_notifications_api_url" {
+  name      = "case-notifications-api-url"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "test_caseofficer_username" {
   name      = "test-caseofficer-username"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
@@ -41,11 +51,6 @@ data "azurerm_key_vault_secret" "test_law_firm_a_username" {
 
 data "azurerm_key_vault_secret" "test_law_firm_a_password" {
   name      = "test-law-firm-a-password"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "case_notifications_api_url" {
-  name      = "case-notifications-api-url"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
@@ -105,24 +110,27 @@ data "azurerm_key_vault_secret" "s2s_url" {
 }
 
 module "ia_case_api" {
-  source              = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product             = "${var.product}-${var.component}"
-  location            = "${var.location}"
-  env                 = "${var.env}"
-  ilbIp               = "${var.ilbIp}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
-  subscription        = "${var.subscription}"
-  capacity            = "${var.capacity}"
-  instance_size       = "${var.instance_size}"
-  common_tags         = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
-  asp_name            = "${local.app_service_plan}"
-  asp_rg              = "${local.app_service_plan}"
+  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
+  product                         = "${var.product}-${var.component}"
+  location                        = "${var.location}"
+  env                             = "${var.env}"
+  ilbIp                           = "${var.ilbIp}"
+  resource_group_name             = "${azurerm_resource_group.rg.name}"
+  subscription                    = "${var.subscription}"
+  capacity                        = "${var.capacity}"
+  instance_size                   = "${var.instance_size}"
+  common_tags                     = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  asp_name                        = "${local.app_service_plan}"
+  asp_rg                          = "${local.app_service_plan}"
 
   app_settings = {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
 
+    IA_CASE_DOCUMENTS_API_URL     = "${data.azurerm_key_vault_secret.case_documents_api_url.value}"
     IA_CASE_NOTIFICATIONS_API_URL = "${data.azurerm_key_vault_secret.case_notifications_api_url.value}"
+
     IA_SYSTEM_USERNAME            = "${data.azurerm_key_vault_secret.system_username.value}"
     IA_SYSTEM_PASSWORD            = "${data.azurerm_key_vault_secret.system_password.value}"
     IA_IDAM_CLIENT_ID             = "${data.azurerm_key_vault_secret.idam_client_id.value}"

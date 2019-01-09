@@ -1,2 +1,2 @@
-capacity = "2"
+capacity = "1"
 instance_size="I2"
