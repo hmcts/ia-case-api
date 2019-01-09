@@ -43,10 +43,14 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 .getHomeOfficeReferenceNumber()
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
 
-        if (homeOfficeReferenceNumber.length() > 7) {
-            asylumCase.setHomeOfficeReferenceNumber(
-                homeOfficeReferenceNumber.substring(0, 7)
-            );
+        if (homeOfficeReferenceNumber.contains("/") || homeOfficeReferenceNumber.length() > 8) {
+            String truncatedReferenceNumber = homeOfficeReferenceNumber.split("/")[0];
+
+            if (truncatedReferenceNumber.length() > 8) {
+                truncatedReferenceNumber = truncatedReferenceNumber.substring(0, 8);
+            }
+
+            asylumCase.setHomeOfficeReferenceNumber(truncatedReferenceNumber);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
