@@ -1,5 +1,5 @@
 {
-  "description": "RIA-730 Home Office reference number more than 7 characters is truncated",
+  "description": "RIA-730-RIA-971 Home Office reference number is truncated when it has slashes and is over 8 characters ",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "Z123456/001"
+          "homeOfficeReferenceNumber": "Z12345678/001"
         }
       }
     }
@@ -20,7 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "Z123456"
+        "homeOfficeReferenceNumber": "Z1234567"
       }
     }
   }
