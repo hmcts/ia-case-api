@@ -17,8 +17,8 @@ public class CachingAppealReferenceNumberGenerator {
 
     public CachingAppealReferenceNumberGenerator(
             @Value("${cache.appealReferenceNumbers.expirationTimeInSeconds}") int expirationTimeInSeconds,
-            AppealReferenceNumberGenerator appealReferenceNumberGenerator)
-    {
+            AppealReferenceNumberGenerator appealReferenceNumberGenerator) {
+
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
 
         appealReferenceNumberCache = Caffeine.newBuilder()
@@ -26,12 +26,12 @@ public class CachingAppealReferenceNumberGenerator {
             .build();
     }
 
-    public synchronized Optional<String> getNextAppealReferenceNumberFor(long caseId, String appealType)
-    {
+    public synchronized Optional<String> getNextAppealReferenceNumberFor(long caseId, String appealType) {
+
         String maybeCachedAppealReferenceNumber =
                 appealReferenceNumberCache.getIfPresent(caseId);
 
-        if ( maybeCachedAppealReferenceNumber != null ) {
+        if (maybeCachedAppealReferenceNumber != null) {
             return Optional.of(maybeCachedAppealReferenceNumber);
         }
 
@@ -43,8 +43,8 @@ public class CachingAppealReferenceNumberGenerator {
         return maybeAppealReferenceNumber;
     }
 
-    private Consumer<String> putInCacheFor(long caseId)
-    {
+    private Consumer<String> putInCacheFor(long caseId) {
+
         return newAppealReferenceNumber -> appealReferenceNumberCache.put(
                 caseId,
                 newAppealReferenceNumber);

@@ -42,7 +42,7 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
     @Test
     public void throws_when_client_fails() {
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted())
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
                 .thenThrow(AsylumCaseRetrievalException.class);
 
         assertThatThrownBy(() -> underTest.initialize())
@@ -53,7 +53,7 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
     @Test
     public void uses_sequence_seed_when_ccd_returns_zero_cases() {
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted()).thenReturn(emptyList());
+        when(coreCaseDataRetriever.retrieveAllAppealCases()).thenReturn(emptyList());
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
 
@@ -64,7 +64,7 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
     @Test
     public void initializes_reference_numbers_based_on_case_list_from_Ccd() {
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted()).thenReturn(someListOf(
+        when(coreCaseDataRetriever.retrieveAllAppealCases()).thenReturn(someListOf(
                 "RP/50001/2018",
                 "RP/50020/2018", // Latest RP reference
                 "PA/50401/2018", // Latest PA reference
@@ -99,7 +99,7 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
 
         cases.add(emptyMap());
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted())
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
                 .thenReturn(cases);
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
@@ -126,7 +126,7 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
 
         cases.add(singletonMap("case_data", emptyMap()));
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted())
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
                 .thenReturn(cases);
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
@@ -141,13 +141,57 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
     @Test
     public void uses_seed_when_list_of_cases_that_have_no_reference_numbers() {
 
-        when(coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted())
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
                 .thenReturn(singletonList(singletonMap("case_data", emptyMap())));
 
         Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
 
         assertThat(referenceNumberMap.get(RP).getSequence(), is(appealReferenceSequenceSeed));
         assertThat(referenceNumberMap.get(PA).getSequence(), is(appealReferenceSequenceSeed));
+    }
+
+    @Test
+    public void handle_case_where_ccd_has_RP_cases_but_not_PA_cases() {
+
+        List<Map> onlyRpAppealCases = someListOf(
+                "RP/50001/2018",
+                "RP/50020/2018", // Latest RP reference
+                "RP/53001/2017");
+
+        onlyRpAppealCases.add(singletonMap("case_data", emptyMap()));
+
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
+                .thenReturn(onlyRpAppealCases);
+
+        Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
+
+        assertThat(referenceNumberMap.get(RP).getSequence(), is(50020));
+        assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
+
+        assertThat(referenceNumberMap.get(PA).getSequence(), is(appealReferenceSequenceSeed));
+        assertThat(referenceNumberMap.get(PA).getYear(), is("2018"));
+    }
+
+    @Test
+    public void handle_case_where_ccd_has_PA_cases_but_not_RP_cases() {
+
+        List<Map> onlyRpAppealCases = someListOf(
+                "PA/50001/2018",
+                "PA/50020/2018", // Latest RP reference
+                "PA/53001/2017");
+
+        onlyRpAppealCases.add(singletonMap("case_data", emptyMap()));
+
+        when(coreCaseDataRetriever.retrieveAllAppealCases())
+                .thenReturn(onlyRpAppealCases);
+
+        Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap = underTest.initialize();
+
+        assertThat(referenceNumberMap.get(PA).getSequence(), is(50020));
+        assertThat(referenceNumberMap.get(PA).getYear(), is("2018"));
+
+        assertThat(referenceNumberMap.get(RP).getSequence(), is(appealReferenceSequenceSeed));
+        assertThat(referenceNumberMap.get(RP).getYear(), is("2018"));
     }
 
     private List<Map> someListOf(String... referenceNumbers) {

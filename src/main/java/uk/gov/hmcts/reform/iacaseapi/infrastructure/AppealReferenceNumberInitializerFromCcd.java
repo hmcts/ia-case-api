@@ -21,7 +21,8 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
     private final CoreCaseDataRetriever coreCaseDataRetriever;
     private final SystemDateProvider systemDateProvider;
     private final int appealReferenceSequenceSeed;
-    private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
+    private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers =
+            new EnumMap<>(AsylumAppealType.class);
 
     public AppealReferenceNumberInitializerFromCcd(
             CoreCaseDataRetriever coreCaseDataRetriever,
@@ -37,21 +38,20 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
 
         if (lastAppealReferenceNumbers.isEmpty()) {
 
-            List<Map> asylumCases = coreCaseDataRetriever.retrieveAppealCasesInAllStatesExceptAppealStarted();
+            List<Map> asylumCases = coreCaseDataRetriever.retrieveAllAppealCases();
 
             List<Map> filteredAsylumCases = removeCasesWithoutAnAppealReferenceNumber(asylumCases);
 
-            if (filteredAsylumCases.isEmpty()) {
-                initializeFromSeed();
-            } else {
-                initializeFromExistingAsylumCases(filteredAsylumCases);
-            }
+            initializeFromSeed();
+
+            initializeFromExistingAsylumCases(filteredAsylumCases);
         }
 
         return lastAppealReferenceNumbers;
     }
 
     private void initializeFromExistingAsylumCases(List<Map> asylumCases) {
+
         asylumCases.stream()
                 .map(this::extractReferenceNumber)
                 .collect(groupingBy(AppealReferenceNumber::getType))
@@ -79,7 +79,7 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
 
     private AppealReferenceNumber extractReferenceNumber(Map appealMap) {
         String appealReferenceNumber =
-                (String) ((Map)appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
+                (String) ((Map) appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
 
         return new AppealReferenceNumber(appealReferenceNumber);
     }

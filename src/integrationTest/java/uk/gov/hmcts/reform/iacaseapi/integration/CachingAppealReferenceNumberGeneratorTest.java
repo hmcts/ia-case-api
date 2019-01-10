@@ -58,7 +58,7 @@ public class CachingAppealReferenceNumberGeneratorTest extends IdamStubbedSpring
                         1,
                         RP.toString()).get();
 
-        assertThat(maybeSecondAppealReferenceNumber  )
+        assertThat(maybeSecondAppealReferenceNumber)
                 .isEqualTo(maybeFirstAppealReferenceNumber);
     }
 

@@ -40,6 +40,7 @@ public class CachingAppealReferenceNumberGeneratorTest {
 
     @Test
     public void delegates_on_cache_miss() {
+
         CachingAppealReferenceNumberGenerator underTest =
                 new CachingAppealReferenceNumberGenerator(
                         60,

@@ -19,7 +19,7 @@ public class CoreCaseDataRetrieverTest {
 
         when(asylumCasesRetriever.getNumberOfPages()).thenReturn(10);
 
-        underTest.retrieveAppealCasesInAllStatesExceptAppealStarted();
+        underTest.retrieveAllAppealCases();
 
         verify(asylumCasesRetriever, times(1)).getNumberOfPages();
 
@@ -43,7 +43,7 @@ public class CoreCaseDataRetrieverTest {
         when(asylumCasesRetriever.getNumberOfPages())
                 .thenThrow(mock(AsylumCaseRetrievalException.class));
 
-        assertThatThrownBy(underTest::retrieveAppealCasesInAllStatesExceptAppealStarted)
+        assertThatThrownBy(underTest::retrieveAllAppealCases)
                 .hasMessage("Couldn't retrieve appeal cases from Ccd")
                 .isExactlyInstanceOf(AsylumCaseRetrievalException.class);
     }
@@ -53,7 +53,7 @@ public class CoreCaseDataRetrieverTest {
 
         when(asylumCasesRetriever.getNumberOfPages()).thenReturn(0);
 
-        List<Map> cases = underTest.retrieveAppealCasesInAllStatesExceptAppealStarted();
+        List<Map> cases = underTest.retrieveAllAppealCases();
 
         assertThat(cases).isEmpty();
     }
