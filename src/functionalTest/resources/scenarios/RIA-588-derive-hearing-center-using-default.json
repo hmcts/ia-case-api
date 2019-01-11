@@ -1,0 +1,29 @@
+{
+  "description": "RIA-588 Derive default hearing centre where no fixed address",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantHasFixedAddress": "No",
+        "hearingCentre": "taylorHouse"
+      }
+    }
+  }
+}

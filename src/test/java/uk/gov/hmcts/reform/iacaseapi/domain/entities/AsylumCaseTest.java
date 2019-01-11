@@ -46,6 +46,7 @@ public class AsylumCaseTest {
     private final String appealReferenceNumber = "PA/00001/2018";
     private final String appellantNameForDisplay = "Jane Mary Smith";
     private final List<String> appealGroundsForDisplay = mock(List.class);
+    private final HearingCentre hearingCentre = HearingCentre.TAYLOR_HOUSE;
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -125,6 +126,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getAppealReferenceNumber()).thenReturn(Optional.of(appealReferenceNumber));
         when(asylumCaseBuilder.getAppellantNameForDisplay()).thenReturn(Optional.of(appellantNameForDisplay));
         when(asylumCaseBuilder.getAppealGroundsForDisplay()).thenReturn(Optional.of(appealGroundsForDisplay));
+        when(asylumCaseBuilder.getHearingCentre()).thenReturn(Optional.of(hearingCentre));
         when(asylumCaseBuilder.getSendDirectionExplanation()).thenReturn(Optional.of(sendDirectionExplanation));
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
@@ -175,6 +177,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
         assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
         assertEquals(Optional.of(appealGroundsForDisplay), asylumCase.getAppealGroundsForDisplay());
+        assertEquals(Optional.of(hearingCentre), asylumCase.getHearingCentre());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
@@ -221,6 +224,18 @@ public class AsylumCaseTest {
 
         asylumCase.setAppealGroundsForDisplay(null);
         assertEquals(Optional.empty(), asylumCase.getAppealGroundsForDisplay());
+    }
+
+    @Test
+    public void hearing_centre_for_display_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setHearingCentre(HearingCentre.MANCHESTER);
+        assertEquals(Optional.of(HearingCentre.MANCHESTER), asylumCase.getHearingCentre());
+
+        asylumCase.setHearingCentre(null);
+        assertEquals(Optional.empty(), asylumCase.getHearingCentre());
     }
 
     @Test

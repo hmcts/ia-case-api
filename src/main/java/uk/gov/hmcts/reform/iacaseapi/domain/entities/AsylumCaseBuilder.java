@@ -39,6 +39,7 @@ public class AsylumCaseBuilder {
     private Optional<String> appealReferenceNumber = Optional.empty();
     private Optional<String> appellantNameForDisplay = Optional.empty();
     private Optional<List<String>> appealGroundsForDisplay = Optional.empty();
+    private Optional<HearingCentre> hearingCentre = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -184,6 +185,10 @@ public class AsylumCaseBuilder {
         return appealGroundsForDisplay;
     }
 
+    public Optional<HearingCentre> getHearingCentre() {
+        return hearingCentre;
+    }
+
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
     }
@@ -267,6 +272,10 @@ public class AsylumCaseBuilder {
 
     public void setAppealGroundsForDisplay(Optional<List<String>> appealGroundsForDisplay) {
         this.appealGroundsForDisplay = appealGroundsForDisplay;
+    }
+
+    public void setHearingCentre(Optional<HearingCentre> hearingCentre) {
+        this.hearingCentre = hearingCentre;
     }
 
     // -----------------------------------------------------------------------------

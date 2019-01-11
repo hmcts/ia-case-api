@@ -26,6 +26,31 @@ cache:
   appealReferenceNumbers:
     expirationTimeInSeconds: 60
 
+defaultHearingCentre: taylorHouse
+hearingCentreCatchmentAreas:
+    manchester:
+      - "L"
+      - "LA"
+      - "M"
+      - "OL"
+      - "PR"
+      - "SK"
+      - "WA"
+      - "WN"
+    taylorHouse:
+      - "BN"
+      - "CB"
+      - "CM"
+      - "HP"
+      - "IP"
+      - "ME"
+      - "N"
+      - "NR"
+      - "RH"
+      - "SE"
+      - "TN"
+      - "W"
+
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
