@@ -51,6 +51,12 @@ public class AsylumCaseBuilder {
     private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // change direction due date ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<EditableDirection>>> editableDirections = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -86,6 +92,7 @@ public class AsylumCaseBuilder {
     private Optional<String> legalRepresentativeName = Optional.empty();
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
+    private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
@@ -315,6 +322,18 @@ public class AsylumCaseBuilder {
     }
 
     // -----------------------------------------------------------------------------
+    // change direction due date ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<List<IdValue<EditableDirection>>> getEditableDirections() {
+        return editableDirections;
+    }
+
+    public void setEditableDirections(Optional<List<IdValue<EditableDirection>>> editableDirections) {
+        this.editableDirections = editableDirections;
+    }
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -419,6 +438,10 @@ public class AsylumCaseBuilder {
         return notificationsSent;
     }
 
+    public Optional<YesOrNo> getChangeDirectionDueDateActionAvailable() {
+        return changeDirectionDueDateActionAvailable;
+    }
+
     public Optional<YesOrNo> getSendDirectionActionAvailable() {
         return sendDirectionActionAvailable;
     }
@@ -453,6 +476,10 @@ public class AsylumCaseBuilder {
 
     public void setNotificationsSent(Optional<List<IdValue<String>>> notificationsSent) {
         this.notificationsSent = notificationsSent;
+    }
+
+    public void setChangeDirectionDueDateActionAvailable(Optional<YesOrNo> changeDirectionDueDateActionAvailable) {
+        this.changeDirectionDueDateActionAvailable = changeDirectionDueDateActionAvailable;
     }
 
     public void setSendDirectionActionAvailable(Optional<YesOrNo> sendDirectionActionAvailable) {

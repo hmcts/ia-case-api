@@ -52,6 +52,12 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<Direction>>> directions = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // change direction due date ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<EditableDirection>>> editableDirections = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -87,6 +93,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepresentativeName = Optional.empty();
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
+    private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
@@ -123,11 +130,11 @@ public class AsylumCase implements CaseData {
         this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.appealGroundsForDisplay = asylumCaseBuilder.getAppealGroundsForDisplay();
         this.hearingCentre = asylumCaseBuilder.getHearingCentre();
-        this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
+        this.editableDirections = asylumCaseBuilder.getEditableDirections();
         this.legalRepresentativeDocuments = asylumCaseBuilder.getLegalRepresentativeDocuments();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
         this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
@@ -140,6 +147,7 @@ public class AsylumCase implements CaseData {
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
+        this.changeDirectionDueDateActionAvailable = asylumCaseBuilder.getChangeDirectionDueDateActionAvailable();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
         this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
@@ -331,6 +339,23 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // case officer directions ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<List<IdValue<EditableDirection>>> getEditableDirections() {
+        requireNonNull(editableDirections);
+        return editableDirections;
+    }
+
+    public void clearEditableDirections() {
+        this.editableDirections = Optional.empty();
+    }
+
+    public void setEditableDirections(List<IdValue<EditableDirection>> editableDirections) {
+        this.editableDirections = Optional.ofNullable(editableDirections);
+    }
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -422,6 +447,11 @@ public class AsylumCase implements CaseData {
         return notificationsSent;
     }
 
+    public Optional<YesOrNo> getChangeDirectionDueDateActionAvailable() {
+        requireNonNull(changeDirectionDueDateActionAvailable);
+        return changeDirectionDueDateActionAvailable;
+    }
+
     public Optional<YesOrNo> getSendDirectionActionAvailable() {
         requireNonNull(sendDirectionActionAvailable);
         return sendDirectionActionAvailable;
@@ -466,6 +496,10 @@ public class AsylumCase implements CaseData {
 
     public void setNotificationsSent(List<IdValue<String>> notificationsSent) {
         this.notificationsSent = Optional.ofNullable(notificationsSent);
+    }
+
+    public void setChangeDirectionDueDateActionAvailable(YesOrNo changeDirectionDueDateActionAvailable) {
+        this.changeDirectionDueDateActionAvailable = Optional.ofNullable(changeDirectionDueDateActionAvailable);
     }
 
     public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {

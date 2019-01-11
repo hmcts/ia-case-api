@@ -54,6 +54,12 @@ public class AsylumCaseBuilderTest {
     private final List<IdValue<Direction>> directions = mock(List.class);
 
     // -----------------------------------------------------------------------------
+    // change direction due date ...
+    // -----------------------------------------------------------------------------
+
+    private final List<IdValue<EditableDirection>> editableDirections = mock(List.class);
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -89,6 +95,7 @@ public class AsylumCaseBuilderTest {
     private final String legalRepresentativeName = "Q";
     private final String legalRepresentativeEmailAddress = "R";
     private final List<IdValue<String>> notificationsSent = mock(List.class);
+    private final YesOrNo changeDirectionDueDateActionAvailable = YesOrNo.YES;
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
     private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
@@ -127,6 +134,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
         asylumCaseBuilder.setDirections(Optional.of(directions));
+        asylumCaseBuilder.setEditableDirections(Optional.of(editableDirections));
         asylumCaseBuilder.setLegalRepresentativeDocuments(Optional.of(legalRepresentativeDocuments));
         asylumCaseBuilder.setRespondentDocuments(Optional.of(respondentDocuments));
         asylumCaseBuilder.setRespondentEvidence(Optional.of(respondentEvidence));
@@ -139,6 +147,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setLegalRepresentativeName(Optional.of(legalRepresentativeName));
         asylumCaseBuilder.setLegalRepresentativeEmailAddress(Optional.of(legalRepresentativeEmailAddress));
         asylumCaseBuilder.setNotificationsSent(Optional.of(notificationsSent));
+        asylumCaseBuilder.setChangeDirectionDueDateActionAvailable(Optional.of(changeDirectionDueDateActionAvailable));
         asylumCaseBuilder.setSendDirectionActionAvailable(Optional.of(sendDirectionActionAvailable));
         asylumCaseBuilder.setCaseBuildingReadyForSubmission(Optional.of(caseBuildingReadyForSubmission));
         asylumCaseBuilder.setCurrentCaseStateVisibleToCaseOfficer(Optional.of(currentCaseStateVisibleToCaseOfficer));
@@ -174,6 +183,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
+        assertEquals(Optional.of(editableDirections), asylumCase.getEditableDirections());
         assertEquals(Optional.of(legalRepresentativeDocuments), asylumCase.getLegalRepresentativeDocuments());
         assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
         assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
@@ -186,6 +196,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(legalRepresentativeName), asylumCase.getLegalRepresentativeName());
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
+        assertEquals(Optional.of(changeDirectionDueDateActionAvailable), asylumCase.getChangeDirectionDueDateActionAvailable());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
