@@ -42,6 +42,6 @@ public class HearingCentreTest {
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("TN1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("W1 1AA"));
 
-        assertEquals(HearingCentre.MANCHESTER, hearingCentreFinder.find("XX"));
+        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("XX"));
     }
 }
