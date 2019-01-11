@@ -19,6 +19,31 @@ requestRespondentReview.dueInDays: 14
 
 appealReferenceSequenceSeed: 50000
 
+defaultHearingCentre: taylorHouse
+hearingCentreCatchmentAreas:
+    manchester:
+      - "L"
+      - "LA"
+      - "M"
+      - "OL"
+      - "PR"
+      - "SK"
+      - "WA"
+      - "WN"
+    taylorHouse:
+      - "BN"
+      - "CB"
+      - "CM"
+      - "HP"
+      - "IP"
+      - "ME"
+      - "N"
+      - "NR"
+      - "RH"
+      - "SE"
+      - "TN"
+      - "W"
+
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
