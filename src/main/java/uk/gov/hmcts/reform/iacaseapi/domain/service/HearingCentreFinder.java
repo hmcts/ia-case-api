@@ -34,23 +34,21 @@ public class HearingCentreFinder {
     ) {
         Matcher postcodeAreaMatcher = POSTCODE_AREA_PATTERN.matcher(postcode);
 
-        if (postcodeAreaMatcher.find()) {
+        if (postcodeAreaMatcher.find()
+            && postcodeAreaMatcher.groupCount() == 1) {
 
-            if (postcodeAreaMatcher.groupCount() == 1) {
+            String postcodeArea = postcodeAreaMatcher.group(1).toUpperCase();
 
-                String postcodeArea = postcodeAreaMatcher.group(1).toUpperCase();
+            Optional<HearingCentre> hearingCentre =
+                hearingCentreCatchmentAreas
+                    .entrySet()
+                    .stream()
+                    .filter(catchmentArea -> catchmentArea.getValue().contains(postcodeArea))
+                    .map(Map.Entry::getKey)
+                    .findFirst();
 
-                Optional<HearingCentre> hearingCentre =
-                    hearingCentreCatchmentAreas
-                        .entrySet()
-                        .stream()
-                        .filter(catchmentArea -> catchmentArea.getValue().contains(postcodeArea))
-                        .map(Map.Entry::getKey)
-                        .findFirst();
-
-                if (hearingCentre.isPresent()) {
-                    return hearingCentre.get();
-                }
+            if (hearingCentre.isPresent()) {
+                return hearingCentre.get();
             }
         }
 

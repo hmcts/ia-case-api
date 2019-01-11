@@ -87,6 +87,7 @@ security:
       - "submitCase"
     caseworker-ia-caseofficer:
       - "sendDirection"
+      - "changeDirectionDueDate"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "uploadRespondentEvidence"

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 @ConfigurationProperties
 public class HearingCentreFinderConfiguration {
 
-    private Map<HearingCentre, List<String>> hearingCentreCatchmentAreas = new HashMap<>();
+    private Map<HearingCentre, List<String>> hearingCentreCatchmentAreas = new EnumMap<>(HearingCentre.class);
 
     public Map<HearingCentre, List<String>> getHearingCentreCatchmentAreas() {
         return hearingCentreCatchmentAreas;
