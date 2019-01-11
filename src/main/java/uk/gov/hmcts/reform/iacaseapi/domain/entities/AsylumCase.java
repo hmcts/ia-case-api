@@ -40,6 +40,7 @@ public class AsylumCase implements CaseData {
     private Optional<String> appealReferenceNumber = Optional.empty();
     private Optional<String> appellantNameForDisplay = Optional.empty();
     private Optional<List<String>> appealGroundsForDisplay = Optional.empty();
+    private Optional<HearingCentre> hearingCentre = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -121,6 +122,7 @@ public class AsylumCase implements CaseData {
         this.appealReferenceNumber = asylumCaseBuilder.getAppealReferenceNumber();
         this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.appealGroundsForDisplay = asylumCaseBuilder.getAppealGroundsForDisplay();
+        this.hearingCentre = asylumCaseBuilder.getHearingCentre();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
@@ -251,6 +253,11 @@ public class AsylumCase implements CaseData {
         return appealGroundsForDisplay;
     }
 
+    public Optional<HearingCentre> getHearingCentre() {
+        requireNonNull(hearingCentre);
+        return hearingCentre;
+    }
+
     public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = Optional.ofNullable(homeOfficeReferenceNumber);
     }
@@ -265,6 +272,10 @@ public class AsylumCase implements CaseData {
 
     public void setAppealGroundsForDisplay(List<String> appealGroundsForDisplay) {
         this.appealGroundsForDisplay = Optional.ofNullable(appealGroundsForDisplay);
+    }
+
+    public void setHearingCentre(HearingCentre hearingCentre) {
+        this.hearingCentre = Optional.ofNullable(hearingCentre);
     }
 
     // -----------------------------------------------------------------------------
