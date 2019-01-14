@@ -17,7 +17,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "legalRepresentativeName": "LawFirm A",
+        "legalRepresentativeName": "A Legal Rep",
         "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}"
       }
     }
