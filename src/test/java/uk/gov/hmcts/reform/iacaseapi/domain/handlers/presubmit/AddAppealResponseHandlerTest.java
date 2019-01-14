@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +101,7 @@ public class AddAppealResponseHandlerTest {
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            addAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            addAppealResponseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -162,7 +163,7 @@ public class AddAppealResponseHandlerTest {
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            addAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            addAppealResponseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -200,7 +201,7 @@ public class AddAppealResponseHandlerTest {
 
         when(asylumCase.getAppealResponseDocument()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> addAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("appealResponseDocument is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -208,12 +209,12 @@ public class AddAppealResponseHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> addAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> addAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -225,12 +226,12 @@ public class AddAppealResponseHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            for (PreSubmitCallbackStage callbackStage : values()) {
 
                 boolean canHandle = addAppealResponseHandler.canHandle(callbackStage, callback);
 
                 if (event == Event.ADD_APPEAL_RESPONSE
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                    && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {

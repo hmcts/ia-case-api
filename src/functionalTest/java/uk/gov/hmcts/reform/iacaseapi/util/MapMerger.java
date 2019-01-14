@@ -18,13 +18,15 @@ public final class MapMerger {
             String key = difference.getKey();
             Object value = difference.getValue();
 
-            if (!(targetMap.get(key) instanceof Map) || !(value instanceof Map)) {
-                targetMap.put(key, value);
-            } else {
+            if ((targetMap.get(key) instanceof Map) && (value instanceof Map)) {
+
                 merge(
                     (Map<String, Object>) targetMap.get(key),
                     (Map<String, Object>) value
                 );
+
+            } else {
+                targetMap.put(key, value);
             }
         }
     }
