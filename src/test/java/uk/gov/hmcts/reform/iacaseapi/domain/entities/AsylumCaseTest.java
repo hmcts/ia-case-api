@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -27,8 +28,8 @@ public class AsylumCaseTest {
     private final String homeOfficeReferenceNumber = "A";
     private final String homeOfficeDecisionDate = "B";
     private final String appellantTitle = "C";
-    private final String appellantGivenNames = "D";
-    private final String appellantLastName = "E";
+    private final String appellantGivenNames = "Jane Mary";
+    private final String appellantLastName = "Smith";
     private final String appellantDateOfBirth = "F";
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
@@ -42,6 +43,8 @@ public class AsylumCaseTest {
     private final String hasOtherAppeals = "NotSure";
     private final List<IdValue<Map<String, String>>> otherAppeals = mock(List.class);
     private final String legalRepReferenceNumber = "N";
+    private final String appealReferenceNumber = "PA/00001/2018";
+    private final String appellantNameForDisplay = "Jane Mary Smith";
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -89,6 +92,9 @@ public class AsylumCaseTest {
     private final String legalRepresentativeEmailAddress = "R";
     private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
+    private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
+    private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
+    private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -113,6 +119,8 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getHasOtherAppeals()).thenReturn(Optional.of(hasOtherAppeals));
         when(asylumCaseBuilder.getOtherAppeals()).thenReturn(Optional.of(otherAppeals));
         when(asylumCaseBuilder.getLegalRepReferenceNumber()).thenReturn(Optional.of(legalRepReferenceNumber));
+        when(asylumCaseBuilder.getAppealReferenceNumber()).thenReturn(Optional.of(appealReferenceNumber));
+        when(asylumCaseBuilder.getAppellantNameForDisplay()).thenReturn(Optional.of(appellantNameForDisplay));
         when(asylumCaseBuilder.getSendDirectionExplanation()).thenReturn(Optional.of(sendDirectionExplanation));
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
@@ -130,6 +138,9 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of(legalRepresentativeEmailAddress));
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
         when(asylumCaseBuilder.getSendDirectionActionAvailable()).thenReturn(Optional.of(sendDirectionActionAvailable));
+        when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
+        when(asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer()).thenReturn(Optional.of(currentCaseStateVisibleToCaseOfficer));
+        when(asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative()).thenReturn(Optional.of(currentCaseStateVisibleToLegalRepresentative));
     }
 
     @Test
@@ -155,6 +166,8 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(hasOtherAppeals), asylumCase.getHasOtherAppeals());
         assertEquals(Optional.of(otherAppeals), asylumCase.getOtherAppeals());
         assertEquals(Optional.of(legalRepReferenceNumber), asylumCase.getLegalRepReferenceNumber());
+        assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
+        assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
@@ -172,6 +185,33 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
+        assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
+        assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
+        assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
+    }
+
+    @Test
+    public void appeal_reference_number_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setAppealReferenceNumber("PR/12345/2019");
+        assertEquals(Optional.of("PR/12345/2019"), asylumCase.getAppealReferenceNumber());
+
+        asylumCase.setAppealReferenceNumber(null);
+        assertEquals(Optional.empty(), asylumCase.getAppealReferenceNumber());
+    }
+
+    @Test
+    public void appellant_name_for_display_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setAppellantNameForDisplay("John Doe");
+        assertEquals(Optional.of("John Doe"), asylumCase.getAppellantNameForDisplay());
+
+        asylumCase.setAppellantNameForDisplay(null);
+        assertEquals(Optional.empty(), asylumCase.getAppellantNameForDisplay());
     }
 
     @Test
@@ -358,10 +398,55 @@ public class AsylumCaseTest {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
 
-        asylumCase.setSendDirectionActionAvailable(YesOrNo.YES);
-        assertEquals(Optional.of(YesOrNo.YES), asylumCase.getSendDirectionActionAvailable());
+        asylumCase.setSendDirectionActionAvailable(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getSendDirectionActionAvailable());
 
         asylumCase.setSendDirectionActionAvailable(null);
         assertEquals(Optional.empty(), asylumCase.getSendDirectionActionAvailable());
+    }
+
+    @Test
+    public void case_building_ready_for_submission_flag_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearCaseBuildingReadyForSubmission();
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
+    }
+
+    @Test
+    public void case_building_ready_for_submission_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getCaseBuildingReadyForSubmission());
+
+        asylumCase.setCaseBuildingReadyForSubmission(null);
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
+    }
+
+    @Test
+    public void current_case_state_visible_to_case_officer_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setCurrentCaseStateVisibleToCaseOfficer(State.AWAITING_RESPONDENT_EVIDENCE);
+        assertEquals(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
+
+        asylumCase.setCurrentCaseStateVisibleToCaseOfficer(null);
+        assertEquals(Optional.empty(), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
+    }
+
+    @Test
+    public void current_case_state_visible_to_legal_representative_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setCurrentCaseStateVisibleToLegalRepresentative(State.CASE_UNDER_REVIEW);
+        assertEquals(Optional.of(State.CASE_UNDER_REVIEW), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
+
+        asylumCase.setCurrentCaseStateVisibleToLegalRepresentative(null);
+        assertEquals(Optional.empty(), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
     }
 }

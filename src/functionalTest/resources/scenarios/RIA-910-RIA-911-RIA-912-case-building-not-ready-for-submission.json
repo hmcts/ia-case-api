@@ -1,0 +1,40 @@
+{
+  "description": "RIA-910 & RIA-911 & RIA-912 Case building ready for submission *not* flagged when argument is missing",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "uploadRespondentEvidence",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseBuildingReadyForSubmission": "No",
+          "respondentEvidence": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-new-evidence.pdf"
+                },
+                "description": "Some new evidence"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseBuildingReadyForSubmission": "No"
+      }
+    }
+  }
+}

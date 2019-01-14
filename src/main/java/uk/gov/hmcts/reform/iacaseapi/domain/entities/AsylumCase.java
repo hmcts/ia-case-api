@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -37,6 +38,7 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<Map<String, String>>>> otherAppeals = Optional.empty();
     private Optional<String> legalRepReferenceNumber = Optional.empty();
     private Optional<String> appealReferenceNumber = Optional.empty();
+    private Optional<String> appellantNameForDisplay = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -84,6 +86,9 @@ public class AsylumCase implements CaseData {
     private Optional<String> legalRepresentativeEmailAddress = Optional.empty();
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
+    private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -111,6 +116,7 @@ public class AsylumCase implements CaseData {
         this.otherAppeals = asylumCaseBuilder.getOtherAppeals();
         this.legalRepReferenceNumber = asylumCaseBuilder.getLegalRepReferenceNumber();
         this.appealReferenceNumber = asylumCaseBuilder.getAppealReferenceNumber();
+        this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
@@ -129,6 +135,9 @@ public class AsylumCase implements CaseData {
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
+        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
+        this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
+        this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -222,7 +231,13 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<String> getAppealReferenceNumber() {
+        requireNonNull(appealReferenceNumber);
         return appealReferenceNumber;
+    }
+
+    public Optional<String> getAppellantNameForDisplay() {
+        requireNonNull(appellantNameForDisplay);
+        return appellantNameForDisplay;
     }
 
     public void setHomeOfficeReferenceNumber(String homeOfficeReferenceNumber) {
@@ -231,6 +246,10 @@ public class AsylumCase implements CaseData {
 
     public void setAppealReferenceNumber(String appealReferenceNumber) {
         this.appealReferenceNumber = Optional.ofNullable(appealReferenceNumber);
+    }
+
+    public void setAppellantNameForDisplay(String appellantNameForDisplay) {
+        this.appellantNameForDisplay = Optional.ofNullable(appellantNameForDisplay);
     }
 
     // -----------------------------------------------------------------------------
@@ -253,6 +272,7 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<List<IdValue<Direction>>> getDirections() {
+        requireNonNull(directions);
         return directions;
     }
 
@@ -381,6 +401,25 @@ public class AsylumCase implements CaseData {
         return sendDirectionActionAvailable;
     }
 
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        requireNonNull(caseBuildingReadyForSubmission);
+        return caseBuildingReadyForSubmission;
+    }
+
+    public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
+        requireNonNull(currentCaseStateVisibleToCaseOfficer);
+        return currentCaseStateVisibleToCaseOfficer;
+    }
+
+    public Optional<State> getCurrentCaseStateVisibleToLegalRepresentative() {
+        requireNonNull(currentCaseStateVisibleToLegalRepresentative);
+        return currentCaseStateVisibleToLegalRepresentative;
+    }
+
+    public void clearCaseBuildingReadyForSubmission() {
+        this.caseBuildingReadyForSubmission = Optional.empty();
+    }
+
     public void setLegalRepresentativeName(String legalRepresentativeName) {
         this.legalRepresentativeName = Optional.ofNullable(legalRepresentativeName);
     }
@@ -395,5 +434,17 @@ public class AsylumCase implements CaseData {
 
     public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
         this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
+    }
+
+    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
+    }
+
+    public void setCurrentCaseStateVisibleToCaseOfficer(State currentCaseStateVisibleToCaseOfficer) {
+        this.currentCaseStateVisibleToCaseOfficer = Optional.ofNullable(currentCaseStateVisibleToCaseOfficer);
+    }
+
+    public void setCurrentCaseStateVisibleToLegalRepresentative(State currentCaseStateVisibleToLegalRepresentative) {
+        this.currentCaseStateVisibleToLegalRepresentative = Optional.ofNullable(currentCaseStateVisibleToLegalRepresentative);
     }
 }

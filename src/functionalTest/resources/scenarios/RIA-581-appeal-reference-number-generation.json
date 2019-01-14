@@ -5,7 +5,7 @@
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "submitAppeal",
-      "state": "appealStarted",
+      "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {

@@ -1,0 +1,37 @@
+{
+  "description": "RIA-910 & RIA-911 & RIA-912 Case building ready for submission flagged when argument is uploaded",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "buildCase",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseArgumentDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "case-argument.pdf"
+          },
+          "caseBuildingReadyForSubmission": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseArgumentDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-argument.pdf"
+        },
+        "caseBuildingReadyForSubmission": "Yes"
+      }
+    }
+  }
+}
