@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Test;
 
 public class CachingAppealReferenceNumberGeneratorTest {
@@ -65,7 +69,7 @@ public class CachingAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void expired_items_dont_get_hit() throws InterruptedException {
+    public void expired_items_dont_get_hit() {
         CachingAppealReferenceNumberGenerator underTest =
                 new CachingAppealReferenceNumberGenerator(
                         1,
@@ -78,7 +82,11 @@ public class CachingAppealReferenceNumberGeneratorTest {
                 1,
                 "some-type");
 
-        Thread.sleep(2000);
+        try {
+            await().atMost(2, TimeUnit.SECONDS).until(() -> false);
+        } catch (ConditionTimeoutException e) {
+            assertTrue("We expect this to timeout", true);
+        }
 
         Optional<String> maybeAppealReferenceNumber2 = underTest.getNextAppealReferenceNumberFor(
                 1,
