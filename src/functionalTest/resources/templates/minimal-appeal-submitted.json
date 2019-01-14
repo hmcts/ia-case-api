@@ -24,7 +24,7 @@
   "hasOtherAppeals": "No",
   "appellantNameForDisplay": "Talha Awan",
   "appealReferenceNumber": "PA/12345/2018",
-  "legalRepresentativeName": "LawFirm A",
+  "legalRepresentativeName": "A Legal Rep",
   "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
   "sendDirectionActionAvailable": "Yes"
 }
