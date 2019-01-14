@@ -29,7 +29,7 @@ public class AsylumCaseTest {
     private final String homeOfficeDecisionDate = "B";
     private final String appellantTitle = "C";
     private final String appellantGivenNames = "Jane Mary";
-    private final String appellantLastName = "Smith";
+    private final String appellantFamilyName = "Smith";
     private final String appellantDateOfBirth = "F";
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
@@ -108,7 +108,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getHomeOfficeDecisionDate()).thenReturn(Optional.of(homeOfficeDecisionDate));
         when(asylumCaseBuilder.getAppellantTitle()).thenReturn(Optional.of(appellantTitle));
         when(asylumCaseBuilder.getAppellantGivenNames()).thenReturn(Optional.of(appellantGivenNames));
-        when(asylumCaseBuilder.getAppellantLastName()).thenReturn(Optional.of(appellantLastName));
+        when(asylumCaseBuilder.getAppellantFamilyName()).thenReturn(Optional.of(appellantFamilyName));
         when(asylumCaseBuilder.getAppellantDateOfBirth()).thenReturn(Optional.of(appellantDateOfBirth));
         when(asylumCaseBuilder.getAppellantNationalities()).thenReturn(Optional.of(appellantNationalities));
         when(asylumCaseBuilder.getAppellantHasFixedAddress()).thenReturn(Optional.of(appellantHasFixedAddress));
@@ -158,7 +158,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(homeOfficeDecisionDate), asylumCase.getHomeOfficeDecisionDate());
         assertEquals(Optional.of(appellantTitle), asylumCase.getAppellantTitle());
         assertEquals(Optional.of(appellantGivenNames), asylumCase.getAppellantGivenNames());
-        assertEquals(Optional.of(appellantLastName), asylumCase.getAppellantLastName());
+        assertEquals(Optional.of(appellantFamilyName), asylumCase.getAppellantFamilyName());
         assertEquals(Optional.of(appellantDateOfBirth), asylumCase.getAppellantDateOfBirth());
         assertEquals(Optional.of(appellantNationalities), asylumCase.getAppellantNationalities());
         assertEquals(Optional.of(appellantHasFixedAddress), asylumCase.getAppellantHasFixedAddress());
