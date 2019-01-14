@@ -38,6 +38,7 @@ public class AsylumCaseBuilder {
     private Optional<String> legalRepReferenceNumber = Optional.empty();
     private Optional<String> appealReferenceNumber = Optional.empty();
     private Optional<String> appellantNameForDisplay = Optional.empty();
+    private Optional<List<String>> appealGroundsForDisplay = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -88,6 +89,8 @@ public class AsylumCaseBuilder {
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
+    private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
+    private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -177,6 +180,10 @@ public class AsylumCaseBuilder {
         return appellantNameForDisplay;
     }
 
+    public Optional<List<String>> getAppealGroundsForDisplay() {
+        return appealGroundsForDisplay;
+    }
+
     public void setHomeOfficeReferenceNumber(Optional<String> homeOfficeReferenceNumber) {
         this.homeOfficeReferenceNumber = homeOfficeReferenceNumber;
     }
@@ -256,6 +263,10 @@ public class AsylumCaseBuilder {
 
     public void setAppellantNameForDisplay(Optional<String> appellantNameForDisplay) {
         this.appellantNameForDisplay = appellantNameForDisplay;
+    }
+
+    public void setAppealGroundsForDisplay(Optional<List<String>> appealGroundsForDisplay) {
+        this.appealGroundsForDisplay = appealGroundsForDisplay;
     }
 
     // -----------------------------------------------------------------------------
@@ -415,6 +426,14 @@ public class AsylumCaseBuilder {
         return currentCaseStateVisibleToLegalRepresentative;
     }
 
+    public Optional<YesOrNo> getCaseArgumentAvailable() {
+        return caseArgumentAvailable;
+    }
+
+    public Optional<YesOrNo> getAppealResponseAvailable() {
+        return appealResponseAvailable;
+    }
+
     public void setLegalRepresentativeName(Optional<String> legalRepresentativeName) {
         this.legalRepresentativeName = legalRepresentativeName;
     }
@@ -441,5 +460,13 @@ public class AsylumCaseBuilder {
 
     public void setCurrentCaseStateVisibleToLegalRepresentative(Optional<State> currentCaseStateVisibleToLegalRepresentative) {
         this.currentCaseStateVisibleToLegalRepresentative = currentCaseStateVisibleToLegalRepresentative;
+    }
+
+    public void setCaseArgumentAvailable(Optional<YesOrNo> caseArgumentAvailable) {
+        this.caseArgumentAvailable = caseArgumentAvailable;
+    }
+
+    public void setAppealResponseAvailable(Optional<YesOrNo> appealResponseAvailable) {
+        this.appealResponseAvailable = appealResponseAvailable;
     }
 }
