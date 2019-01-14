@@ -1,15 +1,15 @@
 {
-  "description": "RIA-694 Send direction action becomes available in appropriate state",
+  "description": "RIA-583 Draft appeal reference before submission",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "submitAppeal",
-      "state": "appealSubmitted",
+      "eventId": "startAppeal",
+      "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "sendDirectionActionAvailable": "No"
+          "appealReferenceNumber": null
         }
       }
     }
@@ -18,10 +18,9 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-submitted.json",
+      "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealReferenceNumber": "$/(.+)/",
-        "sendDirectionActionAvailable": "Yes"
+        "appealReferenceNumber": "DRAFT"
       }
     }
   }
