@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import java.util.Base64;
 import java.util.Map;

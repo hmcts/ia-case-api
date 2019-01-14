@@ -29,10 +29,10 @@ public class AppealReferenceNumberHandlerTest {
     private final Callback callback = mock(Callback.class);
 
     private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator =
-            mock(CachingAppealReferenceNumberGenerator.class);
+        mock(CachingAppealReferenceNumberGenerator.class);
 
     private final AppealReferenceNumberHandler underTest =
-            new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
+        new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
 
     private final AsylumCase caseData = mock(AsylumCase.class);
     private final CaseDetails caseDetails = mock(CaseDetails.class);
@@ -49,7 +49,7 @@ public class AppealReferenceNumberHandlerTest {
                 boolean canHandle = underTest.canHandle(callbackStage, callback);
 
                 if (event == Event.SUBMIT_APPEAL
-                        && callbackStage == ABOUT_TO_SUBMIT) {
+                    && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {
@@ -64,8 +64,8 @@ public class AppealReferenceNumberHandlerTest {
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> underTest.handle(ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -74,13 +74,13 @@ public class AppealReferenceNumberHandlerTest {
         String protectionAppealType = "protection";
 
         when(appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(1, protectionAppealType))
-                .thenReturn(of("the-next-appeal-reference-number"));
+            .thenReturn(of("the-next-appeal-reference-number"));
 
         PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
-                underTest.handle(ABOUT_TO_SUBMIT, submitAppealCallbackForProtectionAsylumCase());
+            underTest.handle(ABOUT_TO_SUBMIT, submitAppealCallbackForProtectionAsylumCase());
 
         assertThat(submitCallbackResponse.getData().getAppealReferenceNumber().get())
-                .isEqualTo("the-next-appeal-reference-number");
+            .isEqualTo("the-next-appeal-reference-number");
     }
 
     @Test
@@ -100,27 +100,27 @@ public class AppealReferenceNumberHandlerTest {
         assertThat(caseData.getAppealReferenceNumber()).isSameAs(appealReference);
 
         assertThat(preSubmitCallbackResponse.getErrors())
-                .containsExactly("Sorry, there was a problem submitting your appeal case");
+            .containsExactly("Sorry, there was a problem submitting your appeal case");
     }
 
     @Test
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> underTest.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> underTest.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> underTest.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> underTest.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -132,10 +132,9 @@ public class AppealReferenceNumberHandlerTest {
         when(caseData.getAppealType()).thenReturn(Optional.of("protection"));
 
         PreSubmitCallbackResponse<AsylumCase> submitCallbackResponse =
-                underTest.handle(ABOUT_TO_SUBMIT, callback);
+            underTest.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(submitCallbackResponse.getErrors())
-                .containsExactly("Sorry, there was a problem submitting your appeal case");
+            .containsExactly("Sorry, there was a problem submitting your appeal case");
     }
-
 }

@@ -53,12 +53,6 @@ public final class MapFieldAssertor {
                 assertValue(expectedValue, actualValue, pathWithKey);
             }
         }
-
-        assertThat(
-            "Expected fields are same size (" + path + ")",
-            actualMap.size(),
-            equalTo(expectedMap.size())
-        );
     }
 
     private static void assertValue(

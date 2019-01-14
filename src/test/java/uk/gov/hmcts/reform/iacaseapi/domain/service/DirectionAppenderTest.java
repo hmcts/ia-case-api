@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -30,6 +31,7 @@ public class DirectionAppenderTest {
     private Parties newDirectionParties = Parties.BOTH;
     private String newDirectionDateDue = "2018-12-25";
     private String expectedDateSent = LocalDate.MAX.toString();
+    private DirectionTag expectedTag = DirectionTag.RESPONDENT_REVIEW;
 
     private DirectionAppender directionAppender;
 
@@ -57,7 +59,8 @@ public class DirectionAppenderTest {
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
-                newDirectionDateDue
+                newDirectionDateDue,
+                expectedTag
             );
 
         verify(existingDirectionById1, never()).getId();
@@ -71,6 +74,8 @@ public class DirectionAppenderTest {
         assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
+        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());
@@ -92,7 +97,8 @@ public class DirectionAppenderTest {
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
-                newDirectionDateDue
+                newDirectionDateDue,
+                expectedTag
             );
 
         assertNotNull(allDirections);
@@ -103,6 +109,7 @@ public class DirectionAppenderTest {
         assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
     }
 
     @Test
@@ -116,7 +123,8 @@ public class DirectionAppenderTest {
                 null,
                 newDirectionExplanation,
                 newDirectionParties,
-                newDirectionDateDue
+                newDirectionDateDue,
+                expectedTag
             ))
             .hasMessage("existingDirections must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -126,9 +134,10 @@ public class DirectionAppenderTest {
                 existingDirections,
                 null,
                 newDirectionParties,
-                newDirectionDateDue
+                newDirectionDateDue,
+                expectedTag
             ))
-            .hasMessage("newDirectionExplanation must not be null")
+            .hasMessage("explanation must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() ->
@@ -136,9 +145,10 @@ public class DirectionAppenderTest {
                 existingDirections,
                 newDirectionExplanation,
                 null,
-                newDirectionDateDue
+                newDirectionDateDue,
+                expectedTag
             ))
-            .hasMessage("newDirectionParties must not be null")
+            .hasMessage("parties must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() ->
@@ -146,9 +156,21 @@ public class DirectionAppenderTest {
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
+                null,
+                expectedTag
+            ))
+            .hasMessage("dateDue must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() ->
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                newDirectionParties,
+                newDirectionDateDue,
                 null
             ))
-            .hasMessage("newDirectionDateDue must not be null")
+            .hasMessage("tag must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 }

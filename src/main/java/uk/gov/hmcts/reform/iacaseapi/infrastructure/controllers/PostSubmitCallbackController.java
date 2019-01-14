@@ -82,9 +82,9 @@ public class PostSubmitCallbackController {
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
         @ApiParam(value = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
-
         LOG.info(
-            "Asylum Case CCD `submitted` event received for Case ID `{}`",
+            "Asylum Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",
+            callback.getEvent(),
             callback.getCaseDetails().getId()
         );
 
@@ -92,7 +92,8 @@ public class PostSubmitCallbackController {
             callbackDispatcher.handle(callback);
 
         LOG.info(
-            "Asylum Case CCD `submitted` event handled for Case ID `{}`",
+            "Asylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
+            callback.getEvent(),
             callback.getCaseDetails().getId()
         );
 

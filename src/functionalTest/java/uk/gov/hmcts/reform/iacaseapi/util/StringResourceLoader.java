@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.core.io.Resource;
@@ -26,7 +27,11 @@ public final class StringResourceLoader {
                 .of(resources)
                 .collect(Collectors.toMap(
                     Resource::getFilename,
-                    StringResourceLoader::loadResourceToString
+                    StringResourceLoader::loadResourceToString,
+                    (u, v) -> {
+                        throw new IllegalStateException(String.format("Duplicate key %s", u));
+                    },
+                    TreeMap::new
                 ));
     }
 

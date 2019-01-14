@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -23,20 +24,23 @@ public class DirectionAppender {
 
     public List<IdValue<Direction>> append(
         List<IdValue<Direction>> existingDirections,
-        String newDirectionExplanation,
-        Parties newDirectionParties,
-        String newDirectionDateDue
+        String explanation,
+        Parties parties,
+        String dateDue,
+        DirectionTag tag
     ) {
         requireNonNull(existingDirections, "existingDirections must not be null");
-        requireNonNull(newDirectionExplanation, "newDirectionExplanation must not be null");
-        requireNonNull(newDirectionParties, "newDirectionParties must not be null");
-        requireNonNull(newDirectionDateDue, "newDirectionDateDue must not be null");
+        requireNonNull(explanation, "explanation must not be null");
+        requireNonNull(parties, "parties must not be null");
+        requireNonNull(dateDue, "dateDue must not be null");
+        requireNonNull(tag, "tag must not be null");
 
         final Direction newDirection = new Direction(
-            newDirectionExplanation,
-            newDirectionParties,
-            newDirectionDateDue,
-            dateProvider.now().toString()
+            explanation,
+            parties,
+            dateDue,
+            dateProvider.now().toString(),
+            tag
         );
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();

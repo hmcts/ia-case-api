@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,16 @@ public class PreSubmitCallbackResponseTest {
     }
 
     @Test
+    public void data_is_mutable() {
+
+        CaseData newCaseData = mock(CaseData.class);
+
+        preSubmitCallbackResponse.setData(newCaseData);
+
+        assertEquals(newCaseData, preSubmitCallbackResponse.getData());
+    }
+
+    @Test
     public void should_store_distinct_errors() {
 
         List<String> someErrors = Arrays.asList("error3", "error4");
@@ -40,15 +51,17 @@ public class PreSubmitCallbackResponseTest {
 
         preSubmitCallbackResponse.addErrors(someErrors);
         preSubmitCallbackResponse.addErrors(someMoreErrors);
+        preSubmitCallbackResponse.addError("error5");
 
         String[] storedErrors =
             preSubmitCallbackResponse
                 .getErrors()
                 .toArray(new String[0]);
 
-        assertEquals(3, storedErrors.length);
+        assertEquals(4, storedErrors.length);
         assertEquals("error3", storedErrors[0]);
         assertEquals("error4", storedErrors[1]);
         assertEquals("error1", storedErrors[2]);
+        assertEquals("error5", storedErrors[3]);
     }
 }
