@@ -92,9 +92,9 @@ public class BuildCaseHandlerTest {
         when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentWithMetadata));
+            .thenReturn(caseArgumentWithMetadata);
 
-        when(documentReceiver.receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
+        when(documentReceiver.tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentEvidenceWithMetadata);
 
         when(documentsAppender.append(existingLegalRepresentativeDocuments, caseArgumentDocumentsWithMetadata, DocumentTag.CASE_ARGUMENT))
@@ -111,7 +111,7 @@ public class BuildCaseHandlerTest {
         verify(asylumCase, times(1)).getCaseArgumentEvidence();
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
+        verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
 
         verify(documentsAppender, times(1))
             .append(
@@ -155,9 +155,9 @@ public class BuildCaseHandlerTest {
         when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
-            .thenReturn(Optional.of(caseArgumentWithMetadata));
+            .thenReturn(caseArgumentWithMetadata);
 
-        when(documentReceiver.receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
+        when(documentReceiver.tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentEvidenceWithMetadata);
 
         when(documentsAppender.append(any(List.class), eq(caseArgumentDocumentsWithMetadata), eq(DocumentTag.CASE_ARGUMENT)))
@@ -174,7 +174,7 @@ public class BuildCaseHandlerTest {
         verify(asylumCase, times(1)).getCaseArgumentEvidence();
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
-        verify(documentReceiver, times(1)).receiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
+        verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
 
         verify(documentsAppender, times(1))
             .append(

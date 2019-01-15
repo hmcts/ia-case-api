@@ -1,0 +1,41 @@
+{
+  "description": "RIA-769 Create appeal submission PDF",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "legalRepresentativeDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "legalRepresentativeDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-appeal-form.PDF"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealSubmission"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.time.LocalDateTime;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -11,6 +12,7 @@ public class CaseDetails<T extends CaseData> {
     private String jurisdiction;
     private State state;
     private T caseData;
+    private LocalDateTime createdDate;
 
     private CaseDetails() {
         // noop -- for deserializer
@@ -20,12 +22,14 @@ public class CaseDetails<T extends CaseData> {
         long id,
         String jurisdiction,
         State state,
-        T caseData
+        T caseData,
+        LocalDateTime createdDate
     ) {
         this.id = id;
         this.jurisdiction = jurisdiction;
         this.state = state;
         this.caseData = caseData;
+        this.createdDate = createdDate;
     }
 
     public long getId() {
@@ -57,5 +61,14 @@ public class CaseDetails<T extends CaseData> {
         }
 
         return caseData;
+    }
+
+    public LocalDateTime getCreatedDate() {
+
+        if (createdDate == null) {
+            throw new RequiredFieldMissingException("createdDate field is required");
+        }
+
+        return createdDate;
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseBuilder;
@@ -32,7 +33,9 @@ public class TestAsylumCaseBuilder {
             1,
             "some-jurisdiction",
             State.APPEAL_SUBMITTED,
-            asylumCase);
+            asylumCase,
+            LocalDateTime.now()
+        );
 
         return asylumCaseDetails;
     }

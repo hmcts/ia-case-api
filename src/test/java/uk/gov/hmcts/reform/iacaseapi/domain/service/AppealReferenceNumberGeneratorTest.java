@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.PA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType.RP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.RP;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.AppealReferenceNumber;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AsylumAppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.AppealReferenceNumberInitializerFromCcd;
 
 @RunWith(MockitoJUnitRunner.class)

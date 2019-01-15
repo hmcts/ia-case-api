@@ -7,10 +7,16 @@ import java.util.Map;
 
 public final class MapSerializer {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static ObjectMapper MAPPER = new ObjectMapper();
 
     private MapSerializer() {
         // noop
+    }
+
+    public static void setObjectMapper(
+        ObjectMapper objectMapper
+    ) {
+        MAPPER = objectMapper;
     }
 
     public static Map<String, Object> deserialize(String source) throws IOException {

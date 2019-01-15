@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
+import java.time.LocalDateTime;
 import org.junit.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
@@ -13,12 +14,14 @@ public class CaseDetailsTest {
     private final String jurisdiction = "IA";
     private final State state = State.APPEAL_STARTED;
     private final CaseData caseData = mock(CaseData.class);
+    private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
 
     private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
         id,
         jurisdiction,
         state,
-        caseData
+        caseData,
+        createdDate
     );
 
     @Test
@@ -28,6 +31,7 @@ public class CaseDetailsTest {
         assertEquals(jurisdiction, caseDetails.getJurisdiction());
         assertEquals(state, caseDetails.getState());
         assertEquals(caseData, caseDetails.getCaseData());
+        assertEquals(createdDate, caseDetails.getCreatedDate());
     }
 
     @Test
@@ -37,19 +41,24 @@ public class CaseDetailsTest {
             id,
             null,
             null,
+            null,
             null
         );
 
         assertThatThrownBy(caseDetails::getJurisdiction)
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("jurisdiction");
+
         assertThatThrownBy(caseDetails::getState)
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("state");
+
         assertThatThrownBy(caseDetails::getCaseData)
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("caseData");
 
+        assertThatThrownBy(caseDetails::getCreatedDate)
+            .isExactlyInstanceOf(RequiredFieldMissingException.class)
+            .hasMessageContaining("createdDate");
     }
-
 }

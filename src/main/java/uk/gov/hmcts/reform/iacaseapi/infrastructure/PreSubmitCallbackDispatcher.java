@@ -70,7 +70,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                         callback.getCaseDetails().getId(),
                         callback.getCaseDetails().getJurisdiction(),
                         callback.getCaseDetails().getState(),
-                        callbackResponse.getData()
+                        callbackResponse.getData(),
+                        callback.getCaseDetails().getCreatedDate()
                     ),
                     callback.getCaseDetailsBefore(),
                     callback.getEvent()

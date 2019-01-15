@@ -24,24 +24,26 @@ public class DocumentReceiver {
         this.dateProvider = dateProvider;
     }
 
-    public Optional<DocumentWithMetadata> receive(
+    public DocumentWithMetadata receive(
         Document document,
         String description,
         DocumentTag tag
     ) {
         requireNonNull(document, "document must not be null");
         requireNonNull(description, "description must not be null");
+        requireNonNull(tag, "tag must not be null");
 
-        return receive(
-            new DocumentWithDescription(
-                document,
-                description
-            ),
+        final String dateUploaded = dateProvider.now().toString();
+
+        return new DocumentWithMetadata(
+            document,
+            description,
+            dateUploaded,
             tag
         );
     }
 
-    public Optional<DocumentWithMetadata> receive(
+    public Optional<DocumentWithMetadata> tryReceive(
         DocumentWithDescription documentWithDescription,
         DocumentTag tag
     ) {
@@ -68,7 +70,7 @@ public class DocumentReceiver {
         return Optional.empty();
     }
 
-    public List<DocumentWithMetadata> receiveAll(
+    public List<DocumentWithMetadata> tryReceiveAll(
         List<IdValue<DocumentWithDescription>> documentsWithDescription,
         DocumentTag tag
     ) {
@@ -77,7 +79,7 @@ public class DocumentReceiver {
         return documentsWithDescription
             .stream()
             .map(IdValue::getValue)
-            .map(document -> receive(document, tag))
+            .map(document -> tryReceive(document, tag))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
