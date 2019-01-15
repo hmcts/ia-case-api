@@ -42,6 +42,7 @@ public class AsylumCaseBuilderTest {
     private final String appealReferenceNumber = "PA/00001/2018";
     private final String appellantNameForDisplay = "Jane Mary Smith";
     private final List<String> appealGroundsForDisplay = mock(List.class);
+    private final HearingCentre hearingCentre = HearingCentre.TAYLOR_HOUSE;
 
     // -----------------------------------------------------------------------------
     // case officer directions ...
@@ -121,6 +122,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setAppealReferenceNumber(Optional.of(appealReferenceNumber));
         asylumCaseBuilder.setAppellantNameForDisplay(Optional.of(appellantNameForDisplay));
         asylumCaseBuilder.setAppealGroundsForDisplay(Optional.of(appealGroundsForDisplay));
+        asylumCaseBuilder.setHearingCentre(Optional.of(hearingCentre));
         asylumCaseBuilder.setSendDirectionExplanation(Optional.of(sendDirectionExplanation));
         asylumCaseBuilder.setSendDirectionParties(Optional.of(sendDirectionParties));
         asylumCaseBuilder.setSendDirectionDateDue(Optional.of(sendDirectionDateDue));
@@ -167,6 +169,7 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(appealReferenceNumber), asylumCase.getAppealReferenceNumber());
         assertEquals(Optional.of(appellantNameForDisplay), asylumCase.getAppellantNameForDisplay());
         assertEquals(Optional.of(appealGroundsForDisplay), asylumCase.getAppealGroundsForDisplay());
+        assertEquals(Optional.of(hearingCentre), asylumCase.getHearingCentre());
         assertEquals(Optional.of(sendDirectionExplanation), asylumCase.getSendDirectionExplanation());
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());

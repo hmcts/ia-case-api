@@ -1,0 +1,32 @@
+{
+  "description": "RIA-588 Derive hearing centre from postcode",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "PostCode": "M1 2AB"
+          },
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantHasFixedAddress": "Yes",
+        "hearingCentre": "manchester"
+      }
+    }
+  }
+}
