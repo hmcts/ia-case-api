@@ -58,6 +58,12 @@ public class AsylumCaseTest {
     private final List<IdValue<Direction>> directions = mock(List.class);
 
     // -----------------------------------------------------------------------------
+    // change direction due date ...
+    // -----------------------------------------------------------------------------
+
+    private final List<IdValue<EditableDirection>> editableDirections = mock(List.class);
+
+    // -----------------------------------------------------------------------------
     // case documents ...
     // -----------------------------------------------------------------------------
 
@@ -93,6 +99,7 @@ public class AsylumCaseTest {
     private final String legalRepresentativeName = "Q";
     private final String legalRepresentativeEmailAddress = "R";
     private final List<IdValue<String>> notificationsSent = mock(List.class);
+    private final YesOrNo changeDirectionDueDateActionAvailable = YesOrNo.YES;
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
     private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
@@ -131,6 +138,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getSendDirectionParties()).thenReturn(Optional.of(sendDirectionParties));
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
         when(asylumCaseBuilder.getDirections()).thenReturn(Optional.of(directions));
+        when(asylumCaseBuilder.getEditableDirections()).thenReturn(Optional.of(editableDirections));
         when(asylumCaseBuilder.getLegalRepresentativeDocuments()).thenReturn(Optional.of(legalRepresentativeDocuments));
         when(asylumCaseBuilder.getRespondentDocuments()).thenReturn(Optional.of(respondentDocuments));
         when(asylumCaseBuilder.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
@@ -143,6 +151,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getLegalRepresentativeName()).thenReturn(Optional.of(legalRepresentativeName));
         when(asylumCaseBuilder.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of(legalRepresentativeEmailAddress));
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
+        when(asylumCaseBuilder.getChangeDirectionDueDateActionAvailable()).thenReturn(Optional.of(changeDirectionDueDateActionAvailable));
         when(asylumCaseBuilder.getSendDirectionActionAvailable()).thenReturn(Optional.of(sendDirectionActionAvailable));
         when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer()).thenReturn(Optional.of(currentCaseStateVisibleToCaseOfficer));
@@ -182,6 +191,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(sendDirectionParties), asylumCase.getSendDirectionParties());
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
+        assertEquals(Optional.of(editableDirections), asylumCase.getEditableDirections());
         assertEquals(Optional.of(legalRepresentativeDocuments), asylumCase.getLegalRepresentativeDocuments());
         assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
         assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
@@ -194,6 +204,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(legalRepresentativeName), asylumCase.getLegalRepresentativeName());
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
+        assertEquals(Optional.of(changeDirectionDueDateActionAvailable), asylumCase.getChangeDirectionDueDateActionAvailable());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
@@ -344,6 +355,24 @@ public class AsylumCaseTest {
     }
 
     @Test
+    public void editable_directions_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        List<IdValue<EditableDirection>> newEditableDirections =
+            Arrays.asList(new IdValue<>("ABC", mock(EditableDirection.class)));
+
+        asylumCase.setEditableDirections(newEditableDirections);
+        assertEquals(Optional.of(newEditableDirections), asylumCase.getEditableDirections());
+
+        asylumCase.setEditableDirections(Collections.emptyList());
+        assertEquals(Optional.of(Collections.emptyList()), asylumCase.getEditableDirections());
+
+        asylumCase.setEditableDirections(null);
+        assertEquals(Optional.empty(), asylumCase.getEditableDirections());
+    }
+
+    @Test
     public void legal_representative_documents_is_mutable() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
@@ -427,6 +456,18 @@ public class AsylumCaseTest {
 
         asylumCase.setNotificationsSent(null);
         assertEquals(Optional.empty(), asylumCase.getNotificationsSent());
+    }
+
+    @Test
+    public void change_direction_due_date_action_available_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getChangeDirectionDueDateActionAvailable());
+
+        asylumCase.setChangeDirectionDueDateActionAvailable(null);
+        assertEquals(Optional.empty(), asylumCase.getChangeDirectionDueDateActionAvailable());
     }
 
     @Test
