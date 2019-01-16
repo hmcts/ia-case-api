@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -16,7 +17,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -115,4 +119,118 @@ public class IdamAuthorizorTest {
         assertEquals(CLIENT_ID, actualTokenParameters.getFirst("client_id"));
         assertEquals(CLIENT_SECRET, actualTokenParameters.getFirst("client_secret"));
     }
+
+    @Test
+    public void wrap_client_exception_when_calling_oauth_authorize() {
+
+        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
+
+        String username = "username";
+        String password = "password";
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + "/oauth2/authorize"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )
+        ).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get auth code")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+
+    }
+
+    @Test
+    public void wrap_server_exception_when_calling_oauth_authorize() {
+
+        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
+
+        String username = "username";
+        String password = "password";
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + "/oauth2/authorize"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )
+        ).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get auth code")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+
+    }
+
+    @Test
+    public void wrap_client_exception_when_calling_oauth_token() {
+
+        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
+
+        String username = "username";
+        String password = "password";
+
+        doReturn(new ResponseEntity<>(ImmutableMap.of("code", "ABC"), HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(BASE_URL + "/oauth2/authorize"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + "/oauth2/token"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get auth token")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+
+    }
+
+    @Test
+    public void wrap_server_exception_when_calling_oauth_token() {
+
+        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
+
+        String username = "username";
+        String password = "password";
+
+        doReturn(new ResponseEntity<>(ImmutableMap.of("code", "ABC"), HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(BASE_URL + "/oauth2/authorize"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + "/oauth2/token"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get auth token")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+
+    }
+
+
 }

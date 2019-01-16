@@ -50,7 +50,6 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
             .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
     }
 
-
     @Test
     public void uses_sequence_seed_when_ccd_returns_zero_cases() {
 

@@ -4,13 +4,15 @@ import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
 
 @SuppressWarnings("squid:MaximumInheritanceDepth")
-public class AsylumCaseRetrievalException extends UnknownErrorCodeException {
+public class AsylumCaseServiceResponseException extends UnknownErrorCodeException {
 
-    public AsylumCaseRetrievalException(
+    public AsylumCaseServiceResponseException(
         AlertLevel alertLevel,
         String message,
         Throwable cause) {
 
         super(alertLevel, message, cause);
+
     }
+
 }

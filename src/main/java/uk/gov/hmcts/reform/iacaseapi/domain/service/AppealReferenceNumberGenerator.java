@@ -48,7 +48,7 @@ public class AppealReferenceNumberGenerator {
                     incrementAndGetAppealReferenceNumberFor(appealType);
 
             } catch (AppealReferenceNumberInitializerException e) {
-                LOG.error(e.getMessage());
+                LOG.error(e.getMessage(), e);
             }
         } else {
             nextReferenceNumber =

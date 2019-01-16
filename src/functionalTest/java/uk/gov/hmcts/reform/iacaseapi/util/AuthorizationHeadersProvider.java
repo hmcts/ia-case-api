@@ -24,6 +24,8 @@ public class AuthorizationHeadersProvider {
             System.getenv("TEST_LAW_FIRM_A_PASSWORD")
         );
 
+        System.out.println("\n*** ServiceToken*** " +  serviceToken);
+
         return new Headers(
             new Header("ServiceAuthorization", serviceToken),
             new Header("Authorization", accessToken)

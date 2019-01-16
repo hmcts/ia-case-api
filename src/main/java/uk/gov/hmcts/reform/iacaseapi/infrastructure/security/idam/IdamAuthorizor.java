@@ -12,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class IdamAuthorizor {
@@ -66,8 +68,10 @@ public class IdamAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        Map<String, String> response =
-            restTemplate
+        Map<String, String> response;
+
+        try {
+            response = restTemplate
                 .exchange(
                     baseUrl + "/oauth2/authorize",
                     HttpMethod.POST,
@@ -75,6 +79,13 @@ public class IdamAuthorizor {
                     new ParameterizedTypeReference<Map<String, String>>() {
                     }
                 ).getBody();
+
+        } catch (RestClientException ex) {
+            throw new IdentityManagerResponseException(AlertLevel.P2,
+                "Could not get auth code",
+                ex
+            );
+        }
 
         return response.getOrDefault("code", "");
     }
@@ -94,8 +105,9 @@ public class IdamAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        Map<String, String> response =
-            restTemplate
+        Map<String, String> response;
+        try {
+            response = restTemplate
                 .exchange(
                     baseUrl + "/oauth2/token",
                     HttpMethod.POST,
@@ -103,6 +115,12 @@ public class IdamAuthorizor {
                     new ParameterizedTypeReference<Map<String, String>>() {
                     }
                 ).getBody();
+        } catch (RestClientException ex) {
+            throw new IdentityManagerResponseException(AlertLevel.P2,
+                "Could not get auth token",
+                ex
+            );
+        }
 
         return response.getOrDefault("access_token", "");
     }

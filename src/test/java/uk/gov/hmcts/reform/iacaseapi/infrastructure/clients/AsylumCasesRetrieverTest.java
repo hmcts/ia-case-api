@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 import static java.util.Collections.singletonMap;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
@@ -21,7 +22,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
@@ -156,9 +158,9 @@ public class AsylumCasesRetrieverTest {
     }
 
     @Test
-    public void throws_correct_exception_when_failed_to_retrieve_metadata_from_ccd() {
+    public void wraps_http_server_exception_when_failed_to_retrieve_asylum_cases_from_ccd() {
 
-        RestClientException underlyingException = mock(RestClientException.class);
+        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 
         when(restTemplate.exchange(
             Mockito.anyString(),
@@ -168,20 +170,17 @@ public class AsylumCasesRetrieverTest {
             Mockito.any(Map.class)))
             .thenThrow(underlyingException);
 
-        try {
+        assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
+            .isExactlyInstanceOf(AsylumCaseRetrievalException.class)
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
+            .hasCause(underlyingException);
 
-            underTest.getNumberOfPages();
-
-        } catch (AsylumCaseRetrievalException e) {
-            assertThat(e).hasCause(underlyingException);
-            assertThat(e).hasMessage("Couldn't retrieve metadata from CCD");
-        }
     }
 
     @Test
-    public void throws_correct_exception_when_failed_to_retrieve_asylum_cases_from_ccd() {
+    public void wraps_http_client_exception_when_failed_to_retrieve_asylum_cases_from_ccd() {
 
-        RestClientException underlyingException = mock(RestClientException.class);
+        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
 
         when(restTemplate.exchange(
             Mockito.anyString(),
@@ -191,13 +190,11 @@ public class AsylumCasesRetrieverTest {
             Mockito.any(Map.class)))
             .thenThrow(underlyingException);
 
-        try {
+        assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
+            .isExactlyInstanceOf(AsylumCaseRetrievalException.class)
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
+            .hasCause(underlyingException);
 
-            underTest.getAsylumCasesPage("1");
-
-        } catch (AsylumCaseRetrievalException e) {
-            assertThat(e).hasCause(underlyingException);
-            assertThat(e).hasMessage("Couldn't retrieve asylum cases from CCD");
-        }
     }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class AsylumCaseNotificationApiSender implements NotificationSender<AsylumCase> {
@@ -58,8 +60,10 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            restTemplate
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+
+        try {
+            callbackResponse = restTemplate
                 .exchange(
                     endpoint + aboutToSubmitPath,
                     HttpMethod.POST,
@@ -67,6 +71,15 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                     new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
                     }
                 ).getBody();
+
+
+        } catch (RestClientException clientEx) {
+            throw new AsylumCaseServiceResponseException(AlertLevel.P2,
+                "Couldn't send asylum case notification with notifications api",
+                clientEx
+            );
+
+        }
 
         return callbackResponse.getData();
     }
