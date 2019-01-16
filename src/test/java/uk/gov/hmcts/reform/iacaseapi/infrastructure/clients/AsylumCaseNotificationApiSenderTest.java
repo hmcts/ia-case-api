@@ -14,12 +14,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -104,5 +107,58 @@ public class AsylumCaseNotificationApiSenderTest {
         assertThatThrownBy(() -> asylumCaseNotificationApiSender.send(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void wraps_http_server_exception_when_sending_notification() {
+
+        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
+
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(restTemplate
+            .exchange(
+                eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            ))
+            .thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> asylumCaseNotificationApiSender.send(callback))
+            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
+            .hasMessageContaining("Couldn't send asylum case notifications with notifications api")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCause(underlyingException);
+    }
+
+    @Test
+    public void wraps_http_client_exception_when_sending_notification() {
+
+        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
+
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(restTemplate
+            .exchange(
+                eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            ))
+            .thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> asylumCaseNotificationApiSender.send(callback))
+            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
+            .hasMessageContaining("Couldn't send asylum case notifications with notifications api")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCause(underlyingException);
+
     }
 }

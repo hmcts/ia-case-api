@@ -49,7 +49,7 @@ class AsylumCasesRetriever {
     }
 
     @Retryable(
-        value = {AsylumCaseRetrievalException.class},
+        value = {CoreCaseDataAccessException.class},
         backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
@@ -74,15 +74,15 @@ class AsylumCasesRetriever {
                         )
                     ).getBody();
 
-        } catch (RestClientException | NullPointerException exp) {
-            throw new AsylumCaseRetrievalException("Couldn't retrieve asylum cases from CCD", exp);
+        } catch (RestClientException | NullPointerException ex) {
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
         }
 
         return asylumCaseDetails;
     }
 
     @Retryable(
-        value = {AsylumCaseRetrievalException.class},
+        value = {CoreCaseDataAccessException.class},
         backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
@@ -109,8 +109,8 @@ class AsylumCasesRetriever {
 
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
-        } catch (RestClientException | NullPointerException exp) {
-            throw new AsylumCaseRetrievalException("Couldn't retrieve metadata from CCD", exp);
+        } catch (RestClientException | NullPointerException ex) {
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
         }
 
         return numberOfPages;

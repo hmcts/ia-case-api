@@ -14,9 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -173,4 +176,49 @@ public class IdamUserDetailsProviderTest {
             .hasMessage("IDAM user details missing 'email' field")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    public void should_wrap_server_exception_when_calling_idam() {
+
+        HttpServerErrorException restClientException = mock(HttpServerErrorException.class);
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + DETAILS_URI),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )
+        ).thenThrow(restClientException);
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get user details with IDAM")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCause(restClientException);
+
+    }
+
+    @Test
+    public void should_wrap_client_exception_when_calling_idam() {
+
+        HttpClientErrorException restClientException = mock(HttpClientErrorException.class);
+
+        when(restTemplate
+            .exchange(
+                eq(BASE_URL + DETAILS_URI),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )
+        ).thenThrow(restClientException);
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
+            .isExactlyInstanceOf(IdentityManagerResponseException.class)
+            .hasMessage("Could not get user details with IDAM")
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCause(restClientException);
+
+    }
+
 }
