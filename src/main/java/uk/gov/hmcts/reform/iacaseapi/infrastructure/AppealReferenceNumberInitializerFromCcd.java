@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetrieve
 public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceNumberInitializer {
 
     private static final String CASE_DATA_MAP_KEY = "case_data";
+    private static final String APPEAL_REFERENCE_NUMBER_MAP_KEY = "appealReferenceNumber";
+
     private final CoreCaseDataRetriever coreCaseDataRetriever;
     private final DateProvider dateProvider;
     private final int appealReferenceSequenceSeed;
@@ -82,13 +84,14 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
     private List<Map> removeCasesWithoutAnAppealReferenceNumber(List<Map> asylumCases) {
         return asylumCases.stream()
             .filter(map -> map.get(CASE_DATA_MAP_KEY) instanceof Map)
-            .filter(map -> ((Map) map.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber") != null)
+            .filter(map -> ((Map) map.get(CASE_DATA_MAP_KEY)).get(APPEAL_REFERENCE_NUMBER_MAP_KEY) != null)
+            .filter(map -> !((Map) map.get(CASE_DATA_MAP_KEY)).get(APPEAL_REFERENCE_NUMBER_MAP_KEY).equals("DRAFT"))
             .collect(toList());
     }
 
     private AppealReferenceNumber extractReferenceNumber(Map appealMap) {
         String appealReferenceNumber =
-            (String) ((Map) appealMap.get(CASE_DATA_MAP_KEY)).get("appealReferenceNumber");
+            (String) ((Map) appealMap.get(CASE_DATA_MAP_KEY)).get(APPEAL_REFERENCE_NUMBER_MAP_KEY);
 
         return new AppealReferenceNumber(appealReferenceNumber);
     }

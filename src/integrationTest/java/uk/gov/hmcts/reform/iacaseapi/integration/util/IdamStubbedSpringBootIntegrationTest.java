@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.integration.util;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Collections.singletonMap;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.junit.Before;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 @TestPropertySource(properties = {
         "idam.s2s-auth.url=http://127.0.0.1:8990",
@@ -13,6 +17,21 @@ import org.springframework.test.context.TestPropertySource;
 public abstract class IdamStubbedSpringBootIntegrationTest extends SpringBootIntegrationTest {
 
     private ObjectMapper mapper = new ObjectMapper();
+
+    @MockBean
+    private RequestUserAccessTokenProvider requestUserAccessTokenProvider;
+
+    @Before
+    public void stubRequestUserCredentials() {
+
+        when(requestUserAccessTokenProvider.tryGetAccessToken())
+            .thenReturn(Optional.of("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxMjM0Iiwic3ViIjoiMSIsImlhd"
+                                    + "CI6MTU0ODA3NzQwMiwiZXhwIjoxNjQ4MTA2MjAyLCJkYXRhIjoiY2FzZXd"
+                                    + "vcmtlci1pYSxjYXNld29ya2VyLWlhLWxlZ2FscmVwLXNvbGljaXRvciIsI"
+                                    + "nR5cGUiOiJBQ0NFU1MiLCJpZCI6IjEiLCJmb3JlbmFtZSI6IlRlc3QiLCJ"
+                                    + "zdXJuYW1lIjoiVG9rZW4ifQ.SKNPcMM2XWgfApxDeKkUy63Zv-z-aa5Cw1"
+                                    + "wE2LgcZr0"));
+    }
 
     @Before
     public void setupIdamStubs() throws Exception {

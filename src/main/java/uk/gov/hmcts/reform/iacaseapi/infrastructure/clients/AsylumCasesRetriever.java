@@ -30,7 +30,7 @@ class AsylumCasesRetriever {
     private final String ccdBaseUrl;
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthorizationTokenGenerator;
-    private final UserCredentialsProvider systemUserCredentialsProvider;
+    private final UserCredentialsProvider requestUserCredentialsProvider;
 
     public AsylumCasesRetriever(
         @Value("${core_case_data_api_url_template}") String caseworkerAsylumCaseSearchUrlTemplate,
@@ -38,14 +38,14 @@ class AsylumCasesRetriever {
         @Value("${core_case_data_api_url}") String ccdBaseUrl,
         RestTemplate restTemplate,
         AuthTokenGenerator serviceAuthorizationTokenGenerator,
-        @Qualifier("systemUser") UserCredentialsProvider systemUserCredentialsProvider
+        @Qualifier("requestUser") UserCredentialsProvider requestUserCredentialsProvider
     ) {
         this.caseworkerAsylumCaseSearchUrlTemplate = caseworkerAsylumCaseSearchUrlTemplate;
         this.caseworkerAsylumCaseSearchMetadataUrlTemplate = caseworkerAsylumCaseSearchMetadataUrlTemplate;
         this.ccdBaseUrl = ccdBaseUrl;
         this.restTemplate = restTemplate;
         this.serviceAuthorizationTokenGenerator = serviceAuthorizationTokenGenerator;
-        this.systemUserCredentialsProvider = systemUserCredentialsProvider;
+        this.requestUserCredentialsProvider = requestUserCredentialsProvider;
     }
 
     @Retryable(
@@ -53,7 +53,7 @@ class AsylumCasesRetriever {
         backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
-        String accessToken = systemUserCredentialsProvider.getAccessToken();
+        String accessToken = requestUserCredentialsProvider.getAccessToken();
 
         List<Map> asylumCaseDetails;
 
@@ -68,7 +68,7 @@ class AsylumCasesRetriever {
                         new ParameterizedTypeReference<List<Map>>() {
                         },
                         ImmutableMap.of(
-                            "uid", systemUserCredentialsProvider.getId(),
+                            "uid", requestUserCredentialsProvider.getId(),
                             "jid", "IA",
                             "ctid", "Asylum"
                         )
@@ -86,7 +86,7 @@ class AsylumCasesRetriever {
         backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
-        String accessToken = systemUserCredentialsProvider.getAccessToken();
+        String accessToken = requestUserCredentialsProvider.getAccessToken();
 
         int numberOfPages;
 
@@ -101,7 +101,7 @@ class AsylumCasesRetriever {
                         new ParameterizedTypeReference<Map<String, String>>() {
                         },
                         ImmutableMap.of(
-                            "uid", systemUserCredentialsProvider.getId(),
+                            "uid", requestUserCredentialsProvider.getId(),
                             "jid", "IA",
                             "ctid", "Asylum"
                         )
