@@ -75,7 +75,7 @@ security:
     - "ccd_data"
     - "ccd_gw"
     - "ccd_ps"
-    - "sscs" # TEMP for AAT until S2S configured for IA
+    - "iac"
   authorisedRoles:
     - "caseworker-ia"
   roleEventAccess:
