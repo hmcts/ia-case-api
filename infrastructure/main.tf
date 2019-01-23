@@ -143,5 +143,9 @@ module "ia_case_api" {
     DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
+
+    ROOT_LOGGING_LEVEL   = "${var.root_logging_level}"
+    LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
+    LOG_LEVEL_IA         = "${var.log_level_ia}"
   }
 }

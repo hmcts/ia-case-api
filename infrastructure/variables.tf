@@ -40,3 +40,15 @@ variable "instance_size" {
 variable "appinsights_instrumentation_key" {
   default = ""
 }
+
+variable "root_logging_level" {
+  default = "INFO"
+}
+
+variable "log_level_spring_web" {
+  default = "INFO"
+}
+
+variable "log_level_ia" {
+  default = "INFO"
+}
