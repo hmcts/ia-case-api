@@ -5,8 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.fro
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -15,8 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 
 @Service
 public class AppealReferenceNumberGenerator {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AppealReferenceNumberGenerator.class);
 
     private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
     private final AppealReferenceNumberInitializer appealReferenceNumberInitalizer;
@@ -35,21 +31,18 @@ public class AppealReferenceNumberGenerator {
 
     public synchronized Optional<String> getNextAppealReferenceNumberFor(String appealType) {
 
-        Optional<String> nextReferenceNumber = Optional.empty();
+        Optional<String> nextReferenceNumber;
 
         if (lastAppealReferenceNumbers.isEmpty()) {
-            try {
-                Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap =
-                    appealReferenceNumberInitalizer.initialize();
 
-                lastAppealReferenceNumbers.putAll(referenceNumberMap);
+            Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap =
+                appealReferenceNumberInitalizer.initialize();
 
-                nextReferenceNumber =
-                    incrementAndGetAppealReferenceNumberFor(appealType);
+            lastAppealReferenceNumbers.putAll(referenceNumberMap);
 
-            } catch (AppealReferenceNumberInitializerException e) {
-                LOG.error(e.getMessage(), e);
-            }
+            nextReferenceNumber =
+                incrementAndGetAppealReferenceNumberFor(appealType);
+
         } else {
             nextReferenceNumber =
                 incrementAndGetAppealReferenceNumberFor(appealType);
