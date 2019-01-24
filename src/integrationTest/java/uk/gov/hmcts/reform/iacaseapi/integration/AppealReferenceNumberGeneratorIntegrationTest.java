@@ -171,12 +171,10 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
 
         givenCcd.hadAnInternalError();
 
-        //Optional<String> appealReferenceNumber =
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(RP.toString()))
             .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
-            .hasMessage("Couldn't retrieve appeal cases from Ccd");
-
+            .hasMessage("Appeal reference number could not be initialised");
     }
 
     @Test

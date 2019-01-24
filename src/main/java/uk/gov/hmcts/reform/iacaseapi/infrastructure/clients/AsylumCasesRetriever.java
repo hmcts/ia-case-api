@@ -19,7 +19,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 class AsylumCasesRetriever {
@@ -77,7 +76,6 @@ class AsylumCasesRetriever {
 
         } catch (RestClientException | NullPointerException ex) {
             throw new AsylumCaseRetrievalException(
-                AlertLevel.P2,
                 "Couldn't retrieve asylum cases from CCD",
                 ex
             );
@@ -116,7 +114,6 @@ class AsylumCasesRetriever {
 
         } catch (RestClientException | NullPointerException ex) {
             throw new AsylumCaseRetrievalException(
-                AlertLevel.P2,
                 "Couldn't retrieve asylum cases from CCD",
                 ex
             );

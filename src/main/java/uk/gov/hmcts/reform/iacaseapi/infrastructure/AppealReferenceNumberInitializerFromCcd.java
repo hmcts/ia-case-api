@@ -52,7 +52,7 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
                 initializeFromExistingAsylumCases(filteredAsylumCases);
 
             } catch (AsylumCaseRetrievalException e) {
-                throw new AppealReferenceNumberInitializerException(e.getMessage(), e);
+                throw new AppealReferenceNumberInitializerException(e);
             }
         }
 

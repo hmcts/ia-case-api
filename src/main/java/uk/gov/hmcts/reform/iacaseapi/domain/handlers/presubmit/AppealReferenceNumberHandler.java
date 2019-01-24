@@ -79,6 +79,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             } else {
                 asylumCase.setAppealReferenceNumber(appealReferenceNumber.get());
             }
+
         } else {
             callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));
         }

@@ -6,7 +6,6 @@ import static java.util.stream.IntStream.rangeClosed;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class CoreCaseDataRetriever {
@@ -29,7 +28,6 @@ public class CoreCaseDataRetriever {
 
         } catch (AsylumCaseRetrievalException exp) {
             throw new AsylumCaseRetrievalException(
-                AlertLevel.P2,
                 "Couldn't retrieve appeal cases from Ccd",
                 exp
             );
