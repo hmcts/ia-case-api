@@ -71,6 +71,8 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/asylum/ccdAboutToSubmit"
+    - "/test1"
+    - "/test2"
   authorisedServices:
     - "ccd"
     - "ccd_data"
