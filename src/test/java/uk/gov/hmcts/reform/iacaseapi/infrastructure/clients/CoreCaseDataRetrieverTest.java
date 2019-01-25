@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 
 public class CoreCaseDataRetrieverTest {
 
@@ -39,12 +40,15 @@ public class CoreCaseDataRetrieverTest {
     @Test
     public void maps_new_exception_message_when_get_number_of_pages_throws() {
 
+        AppealReferenceNumberInitializerException ex =
+            new AppealReferenceNumberInitializerException("Couldn't retrieve asylum cases from CCD");
+
         when(asylumCasesRetriever.getNumberOfPages())
-            .thenThrow(mock(AsylumCaseRetrievalException.class));
+            .thenThrow(ex);
 
         assertThatThrownBy(underTest::retrieveAllAppealCases)
-            .hasMessage("Couldn't retrieve appeal cases from Ccd")
-            .isExactlyInstanceOf(AsylumCaseRetrievalException.class);
+            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
+            .hasMessage(ex.getMessage());
     }
 
     @Test

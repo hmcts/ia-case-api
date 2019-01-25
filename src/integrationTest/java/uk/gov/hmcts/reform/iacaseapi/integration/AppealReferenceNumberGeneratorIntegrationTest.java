@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -168,15 +167,13 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     }
 
     @Test
-    @Ignore
     public void returns_error_when_unable_to_initialize_reference_numbers() {
 
         givenCcd.hadAnInternalError();
 
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(RP.toString()))
-            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
-            .hasMessage("Couldn't retrieve appeal cases from Ccd");
+            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
 
     }
 

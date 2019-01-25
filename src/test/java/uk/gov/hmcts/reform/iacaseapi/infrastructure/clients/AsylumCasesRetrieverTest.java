@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
 
 @SuppressWarnings("unchecked")
@@ -171,9 +172,8 @@ public class AsylumCasesRetrieverTest {
             .thenThrow(underlyingException);
 
         assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
-            .isExactlyInstanceOf(AsylumCaseRetrievalException.class)
-            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
-            .hasCause(underlyingException);
+            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD");
 
     }
 
@@ -191,10 +191,8 @@ public class AsylumCasesRetrieverTest {
             .thenThrow(underlyingException);
 
         assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
-            .isExactlyInstanceOf(AsylumCaseRetrievalException.class)
-            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
-            .hasCause(underlyingException);
-
+            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD");
     }
 
 }

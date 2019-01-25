@@ -20,18 +20,10 @@ public class CoreCaseDataRetriever {
 
         List<Map> asylumCaseDetails;
 
-        try {
-            asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
-                .mapToObj(String::valueOf)
-                .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
-                .collect(toList());
-
-        } catch (AsylumCaseRetrievalException exp) {
-            throw new AsylumCaseRetrievalException(
-                "Couldn't retrieve appeal cases from Ccd",
-                exp
-            );
-        }
+        asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
+            .mapToObj(String::valueOf)
+            .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
+            .collect(toList());
 
         return asylumCaseDetails;
     }

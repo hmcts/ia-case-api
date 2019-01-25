@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
 
 @Service
@@ -73,10 +74,7 @@ class AsylumCasesRetriever {
                     ).getBody();
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new AsylumCaseRetrievalException(
-                "Couldn't retrieve asylum cases from CCD",
-                ex
-            );
+            throw new AppealReferenceNumberInitializerException("Couldn't retrieve asylum cases from CCD");
         }
 
         return asylumCaseDetails;
@@ -111,10 +109,7 @@ class AsylumCasesRetriever {
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new AsylumCaseRetrievalException(
-                "Couldn't retrieve asylum cases from CCD",
-                ex
-            );
+            throw new AppealReferenceNumberInitializerException(ex.getMessage());
         }
 
         return numberOfPages;

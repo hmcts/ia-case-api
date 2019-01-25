@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializer;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseRetrievalException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetriever;
 
 @Service
@@ -41,19 +39,14 @@ public class AppealReferenceNumberInitializerFromCcd implements AppealReferenceN
 
         if (lastAppealReferenceNumbers.isEmpty()) {
 
-            try {
+            List<Map> asylumCases = coreCaseDataRetriever.retrieveAllAppealCases();
 
-                List<Map> asylumCases = coreCaseDataRetriever.retrieveAllAppealCases();
+            List<Map> filteredAsylumCases = removeCasesWithoutAnAppealReferenceNumber(asylumCases);
 
-                List<Map> filteredAsylumCases = removeCasesWithoutAnAppealReferenceNumber(asylumCases);
+            initializeFromSeed();
 
-                initializeFromSeed();
+            initializeFromExistingAsylumCases(filteredAsylumCases);
 
-                initializeFromExistingAsylumCases(filteredAsylumCases);
-
-            } catch (AsylumCaseRetrievalException e) {
-                throw new AppealReferenceNumberInitializerException(e.getMessage(), e);
-            }
         }
 
         return lastAppealReferenceNumbers;
