@@ -12,6 +12,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -47,9 +49,9 @@ class AsylumCasesRetriever {
         this.systemUserCredentialsProvider = systemUserCredentialsProvider;
     }
 
-    //@Retryable(
-    //    value = {AsylumCaseRetrievalException.class},
-    //    backoff = @Backoff(delay = 5000))
+    @Retryable(
+        value = {AppealReferenceNumberInitializerException.class},
+        backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
         String accessToken = systemUserCredentialsProvider.getAccessToken();
@@ -80,9 +82,9 @@ class AsylumCasesRetriever {
         return asylumCaseDetails;
     }
 
-    //@Retryable(
-    //    value = {AsylumCaseRetrievalException.class},
-    //    backoff = @Backoff(delay = 5000))
+    @Retryable(
+        value = {AppealReferenceNumberInitializerException.class},
+        backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
         String accessToken = systemUserCredentialsProvider.getAccessToken();
@@ -109,7 +111,7 @@ class AsylumCasesRetriever {
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new AppealReferenceNumberInitializerException(ex.getMessage());
+            throw new AppealReferenceNumberInitializerException("Couldn't retrieve asylum cases from CCD");
         }
 
         return numberOfPages;

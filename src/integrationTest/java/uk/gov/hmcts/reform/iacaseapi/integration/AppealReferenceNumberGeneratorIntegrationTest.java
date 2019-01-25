@@ -186,7 +186,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
             .getNextAppealReferenceNumberFor(PA.toString()))
             .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
 
-        verify(1, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
+        verify(3, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
 
         givenCcd.doesntHaveAnyExistingAppealCases();
 
