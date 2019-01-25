@@ -48,9 +48,9 @@ class AsylumCasesRetriever {
         this.systemUserCredentialsProvider = systemUserCredentialsProvider;
     }
 
-    @Retryable(
-        value = {AsylumCaseRetrievalException.class},
-        backoff = @Backoff(delay = 5000))
+    //@Retryable(
+    //    value = {AsylumCaseRetrievalException.class},
+    //    backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
         String accessToken = systemUserCredentialsProvider.getAccessToken();
@@ -84,9 +84,9 @@ class AsylumCasesRetriever {
         return asylumCaseDetails;
     }
 
-    @Retryable(
-        value = {AsylumCaseRetrievalException.class},
-        backoff = @Backoff(delay = 5000))
+    //@Retryable(
+    //    value = {AsylumCaseRetrievalException.class},
+    //    backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
         String accessToken = systemUserCredentialsProvider.getAccessToken();

@@ -172,7 +172,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     public void returns_error_when_unable_to_initialize_reference_numbers() {
 
         givenCcd.hadAnInternalError();
-        
+
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(RP.toString()))
             .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class)
@@ -189,7 +189,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
             .getNextAppealReferenceNumberFor(PA.toString()))
             .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
 
-        verify(3, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
+        verify(1, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
 
         givenCcd.doesntHaveAnyExistingAppealCases();
 
