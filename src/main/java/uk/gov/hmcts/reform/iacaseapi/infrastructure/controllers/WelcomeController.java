@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseRetrievalException;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Api(
     value = "/",
@@ -46,22 +45,4 @@ public class WelcomeController {
         return ok("Welcome to Immigration & Asylum case API");
     }
 
-    @GetMapping(path = "/test1")
-    public ResponseEntity<String> test1() {
-
-        throw new AppealReferenceNumberInitializerException("AppealReferenceNumberInitializerException",
-            new AsylumCaseRetrievalException(AlertLevel.P2,
-                "This is a test reason",
-                new RestClientException("RestClientException")));
-
-    }
-
-    @GetMapping(path = "/test2")
-    public ResponseEntity<String> test2() {
-
-        throw new AsylumCaseRetrievalException(AlertLevel.P2,
-            "AsylumCaseRetrievalException",
-            new RestClientException("RestClientException"));
-
-    }
 }
