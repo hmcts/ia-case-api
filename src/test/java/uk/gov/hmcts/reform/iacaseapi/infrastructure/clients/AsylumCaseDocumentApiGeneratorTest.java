@@ -132,7 +132,6 @@ public class AsylumCaseDocumentApiGeneratorTest {
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasMessageContaining("Couldn't generate asylum case documents")
             .hasCause(underlyingException);
-
     }
 
     @Test
@@ -158,6 +157,5 @@ public class AsylumCaseDocumentApiGeneratorTest {
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasMessageContaining("Couldn't generate asylum case documents")
             .hasCause(underlyingException);
-
     }
 }

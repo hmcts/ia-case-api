@@ -146,6 +146,6 @@ module "ia_case_api" {
 
     ROOT_LOGGING_LEVEL   = "${var.root_logging_level}"
     LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
-    LOG_LEVEL_IA       = "${var.log_level_ia}"
+    LOG_LEVEL_IA         = "${var.log_level_ia}"
   }
 }

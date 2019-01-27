@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import java.util.Arrays;
+import java.util.List;
 import net.serenitybdd.rest.SerenityRest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +24,48 @@ public class EndpointSecurityTest {
 
     @Value("${targetInstance}") private String targetInstance;
 
+    private final List<String> callbackEndpoints =
+        Arrays.asList(
+            "/asylum/ccdAboutToStart",
+            "/asylum/ccdAboutToSubmit",
+            "/asylum/ccdSubmitted"
+        );
+
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
+
+    @Before
+    public void setUp() {
+        RestAssured.baseURI = targetInstance;
+        RestAssured.useRelaxedHTTPSValidation();
+    }
+
+    @Test
+    public void should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code() {
+
+        String response =
+            SerenityRest
+                .when()
+                .get("/")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().asString();
+
+        assertThat(response)
+            .contains("Welcome");
+    }
 
     @Test
     public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
 
-        RestAssured.baseURI = targetInstance;
-        RestAssured.useRelaxedHTTPSValidation();
-
-        String response = SerenityRest
-            .when()
-            .get("/health")
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().asString();
+        String response =
+            SerenityRest
+                .when()
+                .get("/health")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().asString();
 
         assertThat(response)
             .contains("UP");
@@ -44,12 +74,15 @@ public class EndpointSecurityTest {
     @Test
     public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
 
-        SerenityRest
-            .given()
-            .when()
-            .get("/")
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());
+        callbackEndpoints.forEach(callbackEndpoint ->
+
+            SerenityRest
+                .given()
+                .when()
+                .get("/asylum/ccdAboutToSubmit")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+        );
     }
 
     @Test
@@ -57,42 +90,44 @@ public class EndpointSecurityTest {
 
         String invalidServiceToken = "invalid";
 
-        String accessToken = authorizationHeadersProvider
-            .getCaseOfficerAuthorization()
-            .getValue("Authorization");
+        String accessToken =
+            authorizationHeadersProvider
+                .getCaseOfficerAuthorization()
+                .getValue("Authorization");
 
-        RestAssured.baseURI = targetInstance;
-        RestAssured.useRelaxedHTTPSValidation();
+        callbackEndpoints.forEach(callbackEndpoint ->
 
-        SerenityRest
-            .given()
-            .header("ServiceAuthorization", invalidServiceToken)
-            .header("Authorization", accessToken)
-            .when()
-            .get("/")
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());
+            SerenityRest
+                .given()
+                .header("ServiceAuthorization", invalidServiceToken)
+                .header("Authorization", accessToken)
+                .when()
+                .get("/asylum/ccdAboutToSubmit")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+        );
     }
 
     @Test
     public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() {
 
-        String serviceToken = authorizationHeadersProvider
-            .getCaseOfficerAuthorization()
-            .getValue("ServiceAuthorization");
+        String serviceToken =
+            authorizationHeadersProvider
+                .getCaseOfficerAuthorization()
+                .getValue("ServiceAuthorization");
 
         String invalidAccessToken = "invalid";
 
-        RestAssured.baseURI = targetInstance;
-        RestAssured.useRelaxedHTTPSValidation();
+        callbackEndpoints.forEach(callbackEndpoint ->
 
-        SerenityRest
-            .given()
-            .header("ServiceAuthorization", serviceToken)
-            .header("Authorization", invalidAccessToken)
-            .when()
-            .get("/")
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());
+            SerenityRest
+                .given()
+                .header("ServiceAuthorization", serviceToken)
+                .header("Authorization", invalidAccessToken)
+                .when()
+                .get("/asylum/ccdAboutToSubmit")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+        );
     }
 }
