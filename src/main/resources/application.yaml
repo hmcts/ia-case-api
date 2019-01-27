@@ -66,6 +66,7 @@ ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
 security:
   anonymousPaths:
+    - "/"
     - "/health"
     - "/loggers/**"
     - "/swagger-ui.html"
