@@ -31,24 +31,15 @@ public class AppealReferenceNumberGenerator {
 
     public synchronized Optional<String> getNextAppealReferenceNumberFor(String appealType) {
 
-        Optional<String> nextReferenceNumber;
-
         if (lastAppealReferenceNumbers.isEmpty()) {
 
-            Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap =
+            Map<AsylumAppealType, AppealReferenceNumber> initialReferenceNumbers =
                 appealReferenceNumberInitalizer.initialize();
 
-            lastAppealReferenceNumbers.putAll(referenceNumberMap);
-
-            nextReferenceNumber =
-                incrementAndGetAppealReferenceNumberFor(appealType);
-
-        } else {
-            nextReferenceNumber =
-                incrementAndGetAppealReferenceNumberFor(appealType);
+            lastAppealReferenceNumbers.putAll(initialReferenceNumbers);
         }
 
-        return nextReferenceNumber;
+        return incrementAndGetAppealReferenceNumberFor(appealType);
     }
 
     private Optional<String> incrementAndGetAppealReferenceNumberFor(String asylumAppealTypeString) {
@@ -64,18 +55,22 @@ public class AppealReferenceNumberGenerator {
         String currentYear = String.valueOf(dateProvider.now().getYear());
 
         if (!yearOfLastReference(asylumAppealType).equals(currentYear)) {
+
             lastAppealReferenceNumbers.put(
                 asylumAppealType,
                 new AppealReferenceNumber(
                     asylumAppealType,
                     increment(appealReferenceSequenceSeed),
-                    currentYear));
+                    currentYear)
+            );
+
         } else {
             incrementLastReference(asylumAppealType);
         }
 
         return Optional.of(
-            lastAppealReferenceNumbers.get(asylumAppealType).toString());
+            lastAppealReferenceNumbers.get(asylumAppealType).toString()
+        );
     }
 
     private int increment(int number) {
@@ -87,6 +82,7 @@ public class AppealReferenceNumberGenerator {
     }
 
     private void incrementLastReference(AsylumAppealType asylumAppealType) {
+        
         AppealReferenceNumber lastAppealReferenceNumber =
             lastAppealReferenceNumbers.get(asylumAppealType);
 
@@ -94,7 +90,8 @@ public class AppealReferenceNumberGenerator {
             new AppealReferenceNumber(
                 asylumAppealType,
                 increment(lastAppealReferenceNumber.getSequence()),
-                lastAppealReferenceNumber.getYear());
+                lastAppealReferenceNumber.getYear()
+            );
 
         lastAppealReferenceNumbers.put(asylumAppealType, newAppealReferenceNumber);
     }

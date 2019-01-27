@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class AsylumCaseNotificationApiSender implements NotificationSender<AsylumCase> {
@@ -74,8 +73,8 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
 
 
         } catch (RestClientException clientEx) {
-            throw new AsylumCaseServiceResponseException(AlertLevel.P2,
-                "Couldn't send asylum case notification with notifications api",
+            throw new AsylumCaseServiceResponseException(
+                "Couldn't send asylum case notifications with notifications api",
                 clientEx
             );
 

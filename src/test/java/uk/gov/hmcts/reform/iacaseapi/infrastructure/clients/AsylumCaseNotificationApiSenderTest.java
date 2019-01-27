@@ -130,7 +130,7 @@ public class AsylumCaseNotificationApiSenderTest {
 
         assertThatThrownBy(() -> asylumCaseNotificationApiSender.send(callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
-            .hasMessageContaining("Couldn't send asylum case notification with notifications api")
+            .hasMessageContaining("Couldn't send asylum case notifications with notifications api")
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(underlyingException);
     }
@@ -156,7 +156,7 @@ public class AsylumCaseNotificationApiSenderTest {
 
         assertThatThrownBy(() -> asylumCaseNotificationApiSender.send(callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
-            .hasMessageContaining("Couldn't send asylum case notification with notifications api")
+            .hasMessageContaining("Couldn't send asylum case notifications with notifications api")
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(underlyingException);
 

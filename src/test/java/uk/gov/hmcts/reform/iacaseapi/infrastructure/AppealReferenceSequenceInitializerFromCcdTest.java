@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReferenceNumber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataAccessException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataRetriever;
 
 public class AppealReferenceSequenceInitializerFromCcdTest {
@@ -43,10 +43,10 @@ public class AppealReferenceSequenceInitializerFromCcdTest {
     public void throws_when_client_fails() {
 
         when(coreCaseDataRetriever.retrieveAllAppealCases())
-            .thenThrow(AppealReferenceNumberInitializerException.class);
+            .thenThrow(CoreCaseDataAccessException.class);
 
         assertThatThrownBy(() -> underTest.initialize())
-            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class);
     }
 
     @Test

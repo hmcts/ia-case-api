@@ -18,13 +18,9 @@ public class CoreCaseDataRetriever {
 
     public List<Map> retrieveAllAppealCases() {
 
-        List<Map> asylumCaseDetails;
-
-        asylumCaseDetails = rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
+        return rangeClosed(1, asylumCasesRetriever.getNumberOfPages())
             .mapToObj(String::valueOf)
             .flatMap(pageParam -> asylumCasesRetriever.getAsylumCasesPage(pageParam).stream())
             .collect(toList());
-
-        return asylumCaseDetails;
     }
 }

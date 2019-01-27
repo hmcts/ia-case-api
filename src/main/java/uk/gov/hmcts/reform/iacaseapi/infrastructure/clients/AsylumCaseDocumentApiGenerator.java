@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumCase> {
@@ -73,7 +72,7 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
                 ).getBody();
 
         } catch (RestClientException ex) {
-            throw new AsylumCaseServiceResponseException(AlertLevel.P2,
+            throw new AsylumCaseServiceResponseException(
                 "Couldn't generate asylum case documents with documents api",
                 ex
             );

@@ -19,12 +19,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataAccessException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Serializer;
 import uk.gov.hmcts.reform.iacaseapi.integration.stubs.CcdMock;
 import uk.gov.hmcts.reform.iacaseapi.integration.util.IdamStubbedSpringBootIntegrationTest;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSpringBootIntegrationTest {
@@ -167,14 +169,15 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     }
 
     @Test
-    public void returns_error_when_unable_to_initialize_reference_numbers() {
+    public void returns_error_when_unable_to_initialize_reference_numbers_using_ccd() {
 
         givenCcd.hadAnInternalError();
 
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(RP.toString()))
-            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
-
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCauseInstanceOf(RestClientException.class);
     }
 
     @Test
@@ -184,7 +187,9 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
 
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(PA.toString()))
-            .isExactlyInstanceOf(AppealReferenceNumberInitializerException.class);
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasCauseInstanceOf(RestClientException.class);
 
         verify(3, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
 

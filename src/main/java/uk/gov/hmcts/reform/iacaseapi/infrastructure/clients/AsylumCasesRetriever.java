@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberInitializerException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
 
 @Service
@@ -50,7 +49,7 @@ class AsylumCasesRetriever {
     }
 
     @Retryable(
-        value = {AppealReferenceNumberInitializerException.class},
+        value = {CoreCaseDataAccessException.class},
         backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
@@ -76,14 +75,14 @@ class AsylumCasesRetriever {
                     ).getBody();
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new AppealReferenceNumberInitializerException("Couldn't retrieve asylum cases from CCD");
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
         }
 
         return asylumCaseDetails;
     }
 
     @Retryable(
-        value = {AppealReferenceNumberInitializerException.class},
+        value = {CoreCaseDataAccessException.class},
         backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
@@ -111,7 +110,7 @@ class AsylumCasesRetriever {
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new AppealReferenceNumberInitializerException("Couldn't retrieve asylum cases from CCD");
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
         }
 
         return numberOfPages;
