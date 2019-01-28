@@ -79,7 +79,7 @@ public class EndpointSecurityTest {
             SerenityRest
                 .given()
                 .when()
-                .get("/asylum/ccdAboutToSubmit")
+                .get(callbackEndpoint)
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value())
         );
@@ -102,7 +102,7 @@ public class EndpointSecurityTest {
                 .header("ServiceAuthorization", invalidServiceToken)
                 .header("Authorization", accessToken)
                 .when()
-                .get("/asylum/ccdAboutToSubmit")
+                .get(callbackEndpoint)
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value())
         );
@@ -125,7 +125,7 @@ public class EndpointSecurityTest {
                 .header("ServiceAuthorization", serviceToken)
                 .header("Authorization", invalidAccessToken)
                 .when()
-                .get("/asylum/ccdAboutToSubmit")
+                .get(callbackEndpoint)
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value())
         );
