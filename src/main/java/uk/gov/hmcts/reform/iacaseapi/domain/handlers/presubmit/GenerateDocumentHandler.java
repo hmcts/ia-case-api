@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -15,11 +16,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 @Component
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final boolean isDocmosisEnabled;
     private final DocumentGenerator<AsylumCase> documentGenerator;
 
     public GenerateDocumentHandler(
+        @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
         DocumentGenerator<AsylumCase> documentGenerator
     ) {
+        this.isDocmosisEnabled = isDocmosisEnabled;
         this.documentGenerator = documentGenerator;
     }
 
@@ -36,7 +40,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && callback.getEvent() == Event.SUBMIT_APPEAL
+               && isDocmosisEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
