@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class CoreCaseDataAccessException extends UnknownErrorCodeException {
 
-    public CoreCaseDataAccessException(String reason, Throwable cause) {
-        super(AlertLevel.P2, reason, cause);
+    public CoreCaseDataAccessException(String reason) {
+        super(AlertLevel.P2, reason);
     }
 }

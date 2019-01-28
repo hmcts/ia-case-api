@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataAccessException;
@@ -176,8 +175,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(RP.toString()))
             .isExactlyInstanceOf(CoreCaseDataAccessException.class)
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
-            .hasCauseInstanceOf(RestClientException.class);
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
     }
 
     @Test
@@ -188,8 +186,7 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
         assertThatThrownBy(() -> appealReferenceNumberGenerator
             .getNextAppealReferenceNumberFor(PA.toString()))
             .isExactlyInstanceOf(CoreCaseDataAccessException.class)
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
-            .hasCauseInstanceOf(RestClientException.class);
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
 
         verify(3, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
 

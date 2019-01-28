@@ -163,6 +163,8 @@ public class AsylumCasesRetrieverTest {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 
+        when(underlyingException.getMessage()).thenReturn("Some CCD Error");
+
         when(restTemplate.exchange(
             Mockito.anyString(),
             Mockito.any(HttpMethod.class),
@@ -174,8 +176,7 @@ public class AsylumCasesRetrieverTest {
         assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
             .isExactlyInstanceOf(CoreCaseDataAccessException.class)
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
-            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
-            .hasCause(underlyingException);
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD: Some CCD Error");
     }
 
     @Test
@@ -183,6 +184,8 @@ public class AsylumCasesRetrieverTest {
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
 
+        when(underlyingException.getMessage()).thenReturn("Some CCD Error");
+
         when(restTemplate.exchange(
             Mockito.anyString(),
             Mockito.any(HttpMethod.class),
@@ -194,7 +197,6 @@ public class AsylumCasesRetrieverTest {
         assertThatThrownBy(() -> underTest.getAsylumCasesPage("1"))
             .isExactlyInstanceOf(CoreCaseDataAccessException.class)
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
-            .hasMessageContaining("Couldn't retrieve asylum cases from CCD")
-            .hasCause(underlyingException);
+            .hasMessageContaining("Couldn't retrieve asylum cases from CCD: Some CCD Error");
     }
 }

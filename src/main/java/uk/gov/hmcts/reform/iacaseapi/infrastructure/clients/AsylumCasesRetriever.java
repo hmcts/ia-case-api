@@ -75,7 +75,7 @@ class AsylumCasesRetriever {
                     ).getBody();
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + ex.getMessage());
         }
 
         return asylumCaseDetails;
@@ -110,7 +110,7 @@ class AsylumCasesRetriever {
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
         } catch (RestClientException | NullPointerException ex) {
-            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", ex);
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + ex.getMessage());
         }
 
         return numberOfPages;

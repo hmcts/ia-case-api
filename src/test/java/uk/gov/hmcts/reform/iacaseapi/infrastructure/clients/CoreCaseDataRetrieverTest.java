@@ -39,10 +39,8 @@ public class CoreCaseDataRetrieverTest {
     @Test
     public void maps_new_exception_message_when_get_number_of_pages_throws() {
 
-        RuntimeException cause = new RuntimeException("CCD Exception");
-
         CoreCaseDataAccessException ex =
-            new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD", cause);
+            new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: Some CCD Error");
 
         when(asylumCasesRetriever.getNumberOfPages())
             .thenThrow(ex);
