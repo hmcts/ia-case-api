@@ -30,7 +30,10 @@ public class GenerateDocumentHandlerTest {
     public void setUp() {
 
         generateDocumentHandler =
-            new GenerateDocumentHandler(documentGenerator);
+            new GenerateDocumentHandler(
+                true,
+                documentGenerator
+            );
     }
 
     @Test
@@ -86,6 +89,30 @@ public class GenerateDocumentHandlerTest {
                 } else {
                     assertFalse(canHandle);
                 }
+            }
+
+            reset(callback);
+        }
+    }
+
+    @Test
+    public void it_cannot_handle_callback_if_docmosis_not_enabled() {
+
+        generateDocumentHandler =
+            new GenerateDocumentHandler(
+                false,
+                documentGenerator
+            );
+
+        for (Event event : Event.values()) {
+
+            when(callback.getEvent()).thenReturn(event);
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
+
+                assertFalse(canHandle);
             }
 
             reset(callback);

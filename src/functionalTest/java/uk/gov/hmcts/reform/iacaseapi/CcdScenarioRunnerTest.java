@@ -80,7 +80,24 @@ public class CcdScenarioRunnerTest {
             Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
 
             String description = MapValueExtractor.extract(scenario, "description");
-            if (MapValueExtractor.extractOrDefault(scenario, "disabled", false)) {
+
+            Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled");
+
+            if (scenarioEnabled == null) {
+                scenarioEnabled = true;
+            } else if (scenarioEnabled instanceof String) {
+                scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
+            }
+
+            Object scenarioDisabled = MapValueExtractor.extract(scenario, "disabled");
+
+            if (scenarioDisabled == null) {
+                scenarioDisabled = false;
+            } else if (scenarioDisabled instanceof String) {
+                scenarioDisabled = Boolean.valueOf((String) scenarioDisabled);
+            }
+
+            if (((Boolean) scenarioEnabled) == false || ((Boolean) scenarioDisabled) == true) {
                 System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
                 continue;
             }
