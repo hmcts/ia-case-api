@@ -1,0 +1,28 @@
+{
+  "description": "RIA-995 Does not create appeal submission PDF (Docmosis disabled)",
+  "disabled": "{$featureFlag.docmosisEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "legalRepresentativeDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "legalRepresentativeDocuments": []
+      }
+    }
+  }
+}

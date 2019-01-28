@@ -11,7 +11,7 @@ spring:
     name: Immigration & Asylum case API
   jackson.date-format: yyyy-MM-dd
 
-featureFlag.docmosisEnabled: ${IA_DOCMOSIS_ENABLED:true}
+featureFlag.docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeHearingRequirements.dueInDays: 5

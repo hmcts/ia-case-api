@@ -1,5 +1,6 @@
 {
-  "description": "RIA-769 Create appeal submission PDF",
+  "description": "RIA-769 Create appeal submission PDF (Docmosis enabled)",
+  "enabled": "{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
