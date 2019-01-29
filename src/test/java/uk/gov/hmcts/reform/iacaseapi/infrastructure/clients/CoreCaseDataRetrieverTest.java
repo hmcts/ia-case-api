@@ -39,12 +39,15 @@ public class CoreCaseDataRetrieverTest {
     @Test
     public void maps_new_exception_message_when_get_number_of_pages_throws() {
 
+        CoreCaseDataAccessException ex =
+            new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: Some CCD Error");
+
         when(asylumCasesRetriever.getNumberOfPages())
-            .thenThrow(mock(AsylumCaseRetrievalException.class));
+            .thenThrow(ex);
 
         assertThatThrownBy(underTest::retrieveAllAppealCases)
-            .hasMessage("Couldn't retrieve appeal cases from Ccd")
-            .isExactlyInstanceOf(AsylumCaseRetrievalException.class);
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class)
+            .hasMessage(ex.getMessage());
     }
 
     @Test

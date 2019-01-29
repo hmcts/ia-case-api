@@ -41,4 +41,5 @@ public class WelcomeController {
     public ResponseEntity<String> welcome() {
         return ok("Welcome to Immigration & Asylum case API");
     }
+
 }

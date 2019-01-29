@@ -14,12 +14,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -104,5 +107,57 @@ public class AsylumCaseDocumentApiGeneratorTest {
         assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void wraps_http_server_exception_when_calling_documents_api() {
+
+        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        when(restTemplate
+            .exchange(
+                eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(callback))
+            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasMessageContaining("Couldn't generate asylum case documents")
+            .hasCause(underlyingException);
+
+    }
+
+    @Test
+    public void wraps_http_client_exception_when_calling_documents_api() {
+
+        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
+        when(restTemplate
+            .exchange(
+                eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            )).thenThrow(underlyingException);
+
+        assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(callback))
+            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
+            .hasMessageContaining("Couldn't generate asylum case documents")
+            .hasCause(underlyingException);
+
     }
 }

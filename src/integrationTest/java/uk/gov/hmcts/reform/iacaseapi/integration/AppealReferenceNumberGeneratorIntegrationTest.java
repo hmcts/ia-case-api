@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.RP;
@@ -21,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CoreCaseDataAccessException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization.Serializer;
 import uk.gov.hmcts.reform.iacaseapi.integration.stubs.CcdMock;
 import uk.gov.hmcts.reform.iacaseapi.integration.util.IdamStubbedSpringBootIntegrationTest;
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSpringBootIntegrationTest {
@@ -47,27 +49,27 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     @Before
     public void setUpDate() {
         when(dateProvider.now()).thenReturn(
-                LocalDate.now()
-                    .withYear(2018));
+            LocalDate.now()
+                .withYear(2018));
     }
 
     @Test
     public void generates_revocation_of_protection_appeal_reference_number_correctly_when_year_rolls_over() throws JsonProcessingException {
 
         givenCcd.returns(
-                someListOfCasesIncludingButPriorTo(
-                        anAsylumCase().withAppealReference("RP/50018/2018")));
+            someListOfCasesIncludingButPriorTo(
+                anAsylumCase().withAppealReference("RP/50018/2018")));
 
         appealReferenceNumberGenerator
-                .getNextAppealReferenceNumberFor(RP.toString()); // ensures initialization of a 2018 reference
+            .getNextAppealReferenceNumberFor(RP.toString()); // ensures initialization of a 2018 reference
 
         when(dateProvider.now()).thenReturn(LocalDate.now()
-                .withMonth(1)
-                .withYear(2019));
+            .withMonth(1)
+            .withYear(2019));
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(RP.toString());
 
         assertThat(appealReferenceNumber.get(), is("RP/50001/2019"));
     }
@@ -76,19 +78,19 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     public void generates_protection_appeal_reference_number_correctly_when_year_rolls_over() throws JsonProcessingException {
 
         givenCcd.returns(
-                someListOfCasesIncludingButPriorTo(
-                        anAsylumCase().withAppealReference("PA/50018/2018")));
+            someListOfCasesIncludingButPriorTo(
+                anAsylumCase().withAppealReference("PA/50018/2018")));
 
         appealReferenceNumberGenerator
-                .getNextAppealReferenceNumberFor(PA.toString()); // ensures initialization of a 2018 reference
+            .getNextAppealReferenceNumberFor(PA.toString()); // ensures initialization of a 2018 reference
 
         when(dateProvider.now()).thenReturn(LocalDate.now()
-                .withMonth(1)
-                .withYear(2019));
+            .withMonth(1)
+            .withYear(2019));
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(PA.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(appealReferenceNumber.get(), is("PA/50001/2019"));
     }
@@ -99,8 +101,8 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
         givenCcd.doesntHaveAnyExistingAppealCases();
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(RP.toString());
 
         assertThat(appealReferenceNumber.get(), is("RP/50001/2018"));
     }
@@ -111,8 +113,8 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
         givenCcd.doesntHaveAnyExistingAppealCases();
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(PA.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(appealReferenceNumber.get(), is("PA/50001/2018"));
     }
@@ -121,12 +123,12 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     public void generates_protection_appeal_reference_number_from_ccd_case_list() throws JsonProcessingException {
 
         givenCcd.returns(
-                someListOfCasesIncludingButPriorTo(
-                        anAsylumCase().withAppealReference("PA/50019/2018")));
+            someListOfCasesIncludingButPriorTo(
+                anAsylumCase().withAppealReference("PA/50019/2018")));
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(PA.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(appealReferenceNumber.get(), is("PA/50020/2018"));
     }
@@ -135,12 +137,12 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     public void generates_revocation_of_protection_appeal_reference_number_from_ccd_case_list() throws JsonProcessingException {
 
         givenCcd.returns(
-                someListOfCasesIncludingButPriorTo(
-                        anAsylumCase().withAppealReference("RP/50019/2018")));
+            someListOfCasesIncludingButPriorTo(
+                anAsylumCase().withAppealReference("RP/50019/2018")));
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(RP.toString());
 
         assertThat(appealReferenceNumber.get(), is("RP/50020/2018"));
     }
@@ -149,32 +151,31 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
     public void generates_appeal_reference_numbers_for_each_type_from_ccd_case_list() throws JsonProcessingException {
 
         givenCcd.returns(
-                someListOfCasesIncludingButPriorTo(
-                        anAsylumCase().withAppealReference("RP/50019/2018")));
+            someListOfCasesIncludingButPriorTo(
+                anAsylumCase().withAppealReference("RP/50019/2018")));
 
         Optional<String> protectionAppealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(PA.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(protectionAppealReferenceNumber.get(), is("PA/50020/2018"));
 
         Optional<String> revocationAppealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(RP.toString());
 
         assertThat(revocationAppealReferenceNumber.get(), is("RP/50020/2018"));
     }
 
     @Test
-    public void returns_error_when_unable_to_initialize_reference_numbers() {
+    public void returns_error_when_unable_to_initialize_reference_numbers_using_ccd() {
 
         givenCcd.hadAnInternalError();
 
-        Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(RP.toString());
-
-        assertFalse(appealReferenceNumber.isPresent());
+        assertThatThrownBy(() -> appealReferenceNumberGenerator
+            .getNextAppealReferenceNumberFor(RP.toString()))
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
     }
 
     @Test
@@ -182,16 +183,18 @@ public class AppealReferenceNumberGeneratorIntegrationTest extends IdamStubbedSp
 
         givenCcd.hadAnInternalError();
 
-        appealReferenceNumberGenerator
-                .getNextAppealReferenceNumberFor(PA.toString());
+        assertThatThrownBy(() -> appealReferenceNumberGenerator
+            .getNextAppealReferenceNumberFor(PA.toString()))
+            .isExactlyInstanceOf(CoreCaseDataAccessException.class)
+            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
 
         verify(3, getRequestedFor(urlEqualTo(paginationMetadataUrl)));
 
         givenCcd.doesntHaveAnyExistingAppealCases();
 
         Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator
-                        .getNextAppealReferenceNumberFor(PA.toString());
+            appealReferenceNumberGenerator
+                .getNextAppealReferenceNumberFor(PA.toString());
 
         assertThat(appealReferenceNumber.get(), is("PA/50001/2018"));
     }

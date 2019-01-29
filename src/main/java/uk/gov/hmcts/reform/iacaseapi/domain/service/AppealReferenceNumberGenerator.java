@@ -5,8 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType.fro
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -15,8 +13,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumAppealType;
 
 @Service
 public class AppealReferenceNumberGenerator {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AppealReferenceNumberGenerator.class);
 
     private final EnumMap<AsylumAppealType, AppealReferenceNumber> lastAppealReferenceNumbers = new EnumMap<>(AsylumAppealType.class);
     private final AppealReferenceNumberInitializer appealReferenceNumberInitalizer;
@@ -35,27 +31,15 @@ public class AppealReferenceNumberGenerator {
 
     public synchronized Optional<String> getNextAppealReferenceNumberFor(String appealType) {
 
-        Optional<String> nextReferenceNumber = Optional.empty();
-
         if (lastAppealReferenceNumbers.isEmpty()) {
-            try {
-                Map<AsylumAppealType, AppealReferenceNumber> referenceNumberMap =
-                    appealReferenceNumberInitalizer.initialize();
 
-                lastAppealReferenceNumbers.putAll(referenceNumberMap);
+            Map<AsylumAppealType, AppealReferenceNumber> initialReferenceNumbers =
+                appealReferenceNumberInitalizer.initialize();
 
-                nextReferenceNumber =
-                    incrementAndGetAppealReferenceNumberFor(appealType);
-
-            } catch (AppealReferenceNumberInitializerException e) {
-                LOG.error(e.getMessage());
-            }
-        } else {
-            nextReferenceNumber =
-                incrementAndGetAppealReferenceNumberFor(appealType);
+            lastAppealReferenceNumbers.putAll(initialReferenceNumbers);
         }
 
-        return nextReferenceNumber;
+        return incrementAndGetAppealReferenceNumberFor(appealType);
     }
 
     private Optional<String> incrementAndGetAppealReferenceNumberFor(String asylumAppealTypeString) {
@@ -71,18 +55,22 @@ public class AppealReferenceNumberGenerator {
         String currentYear = String.valueOf(dateProvider.now().getYear());
 
         if (!yearOfLastReference(asylumAppealType).equals(currentYear)) {
+
             lastAppealReferenceNumbers.put(
                 asylumAppealType,
                 new AppealReferenceNumber(
                     asylumAppealType,
                     increment(appealReferenceSequenceSeed),
-                    currentYear));
+                    currentYear)
+            );
+
         } else {
             incrementLastReference(asylumAppealType);
         }
 
         return Optional.of(
-            lastAppealReferenceNumbers.get(asylumAppealType).toString());
+            lastAppealReferenceNumbers.get(asylumAppealType).toString()
+        );
     }
 
     private int increment(int number) {
@@ -94,6 +82,7 @@ public class AppealReferenceNumberGenerator {
     }
 
     private void incrementLastReference(AsylumAppealType asylumAppealType) {
+        
         AppealReferenceNumber lastAppealReferenceNumber =
             lastAppealReferenceNumbers.get(asylumAppealType);
 
@@ -101,7 +90,8 @@ public class AppealReferenceNumberGenerator {
             new AppealReferenceNumber(
                 asylumAppealType,
                 increment(lastAppealReferenceNumber.getSequence()),
-                lastAppealReferenceNumber.getYear());
+                lastAppealReferenceNumber.getYear()
+            );
 
         lastAppealReferenceNumbers.put(asylumAppealType, newAppealReferenceNumber);
     }

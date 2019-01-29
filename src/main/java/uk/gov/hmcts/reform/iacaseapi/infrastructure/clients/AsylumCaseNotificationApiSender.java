@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -58,8 +59,10 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            restTemplate
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+
+        try {
+            callbackResponse = restTemplate
                 .exchange(
                     endpoint + aboutToSubmitPath,
                     HttpMethod.POST,
@@ -67,6 +70,15 @@ public class AsylumCaseNotificationApiSender implements NotificationSender<Asylu
                     new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
                     }
                 ).getBody();
+
+
+        } catch (RestClientException clientEx) {
+            throw new AsylumCaseServiceResponseException(
+                "Couldn't send asylum case notifications with notifications api",
+                clientEx
+            );
+
+        }
 
         return callbackResponse.getData();
     }
