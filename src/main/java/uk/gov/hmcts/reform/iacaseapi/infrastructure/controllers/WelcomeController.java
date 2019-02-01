@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.UUID;
+import org.slf4j.Logger;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WelcomeController {
 
+    private static final Logger LOG = getLogger(WelcomeController.class);
+    private static final String INSTANCE_ID = UUID.randomUUID().toString();
+    private static final String MESSAGE = "Welcome to Immigration & Asylum case API";
+
     /**
      * Root GET endpoint.
      *
@@ -28,7 +36,7 @@ public class WelcomeController {
      *
      * @return Welcome message from the service.
      */
-    @ApiOperation("Welcome message for the Immigration & Asylum case API")
+    @ApiOperation(MESSAGE)
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -42,10 +50,13 @@ public class WelcomeController {
     )
     @ResponseBody
     public ResponseEntity<String> welcome() {
+
+        LOG.info("Welcome message '{}' from running instance: {}", MESSAGE, INSTANCE_ID);
+
         return ResponseEntity
             .ok()
             .cacheControl(CacheControl.noCache())
-            .body("{\"message\": \"Welcome to Immigration & Asylum case API\"}");
+            .body("{\"message\": \"" + MESSAGE + "\"}");
     }
 
 }
