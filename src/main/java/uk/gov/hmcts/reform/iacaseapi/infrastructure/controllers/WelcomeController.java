@@ -36,7 +36,7 @@ public class WelcomeController {
      *
      * @return Welcome message from the service.
      */
-    @ApiOperation(MESSAGE)
+    @ApiOperation("Welcome message for the Immigration & Asylum case API")
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -58,5 +58,4 @@ public class WelcomeController {
             .cacheControl(CacheControl.noCache())
             .body("{\"message\": \"" + MESSAGE + "\"}");
     }
-
 }
