@@ -4,6 +4,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Collections.singletonMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
 import org.junit.Before;
 import org.springframework.test.context.TestPropertySource;
 
@@ -40,6 +42,22 @@ public abstract class IdamStubbedSpringBootIntegrationTest extends SpringBootInt
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(someJwtToken())));
+
+        stubFor(get(urlEqualTo("/details"))
+                .withHeader("Accept", equalTo("application/json, application/json, application/*+json, application/*+json"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(mapper.writeValueAsString(
+                            ImmutableMap
+                                .builder()
+                                .put("id", "1")
+                                .put("roles", Arrays.asList("role-1", "role-2"))
+                                .put("email", "foo@bar.com")
+                                .put("forename", "John")
+                                .put("surname", "Barnes")
+                                .build()
+                        ))));
     }
 
     private String someJwtToken() {

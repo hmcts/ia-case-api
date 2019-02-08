@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
 @Service
 class AsylumCasesRetriever {
@@ -30,7 +31,7 @@ class AsylumCasesRetriever {
     private final String ccdBaseUrl;
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthorizationTokenGenerator;
-    private final UserCredentialsProvider systemUserCredentialsProvider;
+    private final UserDetailsProvider userDetailsProvider;
 
     public AsylumCasesRetriever(
         @Value("${core_case_data_api_url_template}") String caseworkerAsylumCaseSearchUrlTemplate,
@@ -38,14 +39,14 @@ class AsylumCasesRetriever {
         @Value("${core_case_data_api_url}") String ccdBaseUrl,
         RestTemplate restTemplate,
         AuthTokenGenerator serviceAuthorizationTokenGenerator,
-        @Qualifier("systemUser") UserCredentialsProvider systemUserCredentialsProvider
+        @Qualifier("systemUser") UserDetailsProvider userDetailsProvider
     ) {
         this.caseworkerAsylumCaseSearchUrlTemplate = caseworkerAsylumCaseSearchUrlTemplate;
         this.caseworkerAsylumCaseSearchMetadataUrlTemplate = caseworkerAsylumCaseSearchMetadataUrlTemplate;
         this.ccdBaseUrl = ccdBaseUrl;
         this.restTemplate = restTemplate;
         this.serviceAuthorizationTokenGenerator = serviceAuthorizationTokenGenerator;
-        this.systemUserCredentialsProvider = systemUserCredentialsProvider;
+        this.userDetailsProvider = userDetailsProvider;
     }
 
     @Retryable(
@@ -53,7 +54,8 @@ class AsylumCasesRetriever {
         backoff = @Backoff(delay = 5000))
     public List<Map> getAsylumCasesPage(String pageNumber) {
 
-        String accessToken = systemUserCredentialsProvider.getAccessToken();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
 
         List<Map> asylumCaseDetails;
 
@@ -68,14 +70,14 @@ class AsylumCasesRetriever {
                         new ParameterizedTypeReference<List<Map>>() {
                         },
                         ImmutableMap.of(
-                            "uid", systemUserCredentialsProvider.getId(),
+                            "uid", userDetails.getId(),
                             "jid", "IA",
                             "ctid", "Asylum"
                         )
                     ).getBody();
 
-        } catch (RestClientException | NullPointerException ex) {
-            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + ex.getMessage());
+        } catch (RestClientException | NullPointerException e) {
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + e.getMessage());
         }
 
         return asylumCaseDetails;
@@ -86,7 +88,8 @@ class AsylumCasesRetriever {
         backoff = @Backoff(delay = 5000))
     public int getNumberOfPages() {
 
-        String accessToken = systemUserCredentialsProvider.getAccessToken();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
 
         int numberOfPages;
 
@@ -101,7 +104,7 @@ class AsylumCasesRetriever {
                         new ParameterizedTypeReference<Map<String, String>>() {
                         },
                         ImmutableMap.of(
-                            "uid", systemUserCredentialsProvider.getId(),
+                            "uid", userDetails.getId(),
                             "jid", "IA",
                             "ctid", "Asylum"
                         )
@@ -109,8 +112,8 @@ class AsylumCasesRetriever {
 
             numberOfPages = Integer.valueOf(paginationMetadata.get("total_pages_count"));
 
-        } catch (RestClientException | NullPointerException ex) {
-            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + ex.getMessage());
+        } catch (RestClientException | NullPointerException e) {
+            throw new CoreCaseDataAccessException("Couldn't retrieve asylum cases from CCD: " + e.getMessage());
         }
 
         return numberOfPages;

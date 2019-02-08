@@ -48,7 +48,7 @@ public class RequestUserAccessTokenProviderTest {
         when(httpServletRequest.getHeader("Authorization")).thenReturn(null);
 
         assertThatThrownBy(() -> requestUserAccessTokenProvider.getAccessToken())
-            .hasMessage("Access token not present")
+            .hasMessage("Request access token not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 

@@ -4,28 +4,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.AccessDeniedException;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 public class CcdEventAuthorizor {
 
     private final Map<String, List<Event>> roleEventAccess;
-    private final UserCredentialsProvider requestUserCredentialsProvider;
+    private final UserDetailsProvider userDetailsProvider;
 
     public CcdEventAuthorizor(
         Map<String, List<Event>> roleEventAccess,
-        @Qualifier("requestUser") UserCredentialsProvider requestUserCredentialsProvider
+        UserDetailsProvider userDetailsProvider
     ) {
         this.roleEventAccess = roleEventAccess;
-        this.requestUserCredentialsProvider = requestUserCredentialsProvider;
+        this.userDetailsProvider = userDetailsProvider;
     }
 
     public void throwIfNotAuthorized(
         Event event
     ) {
         List<String> requiredRoles = getRequiredRolesForEvent(event);
-        List<String> userRoles = requestUserCredentialsProvider.getRoles();
+        List<String> userRoles =
+            userDetailsProvider
+                .getUserDetails()
+                .getRoles();
 
         if (requiredRoles.isEmpty()
             || userRoles.isEmpty()

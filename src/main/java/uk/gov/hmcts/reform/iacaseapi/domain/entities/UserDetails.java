@@ -1,36 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static java.util.Objects.requireNonNull;
+import java.util.List;
 
-public class UserDetails {
+public interface UserDetails {
 
-    private final String forename;
-    private final String surname;
-    private final String emailAddress;
+    String getAccessToken();
 
-    public UserDetails(
-        String forename,
-        String surname,
-        String emailAddress
-    ) {
-        requireNonNull(forename);
-        requireNonNull(surname);
-        requireNonNull(emailAddress);
+    String getId();
 
-        this.forename = forename;
-        this.surname = surname;
-        this.emailAddress = emailAddress;
-    }
+    List<String> getRoles();
 
-    public String getForename() {
-        return forename;
-    }
+    String getEmailAddress();
 
-    public String getSurname() {
-        return surname;
-    }
+    String getForename();
 
-    public String getEmailAddress() {
-        return emailAddress;
-    }
+    String getSurname();
 }

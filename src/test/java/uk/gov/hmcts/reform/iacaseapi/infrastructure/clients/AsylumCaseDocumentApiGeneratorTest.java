@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,7 +33,7 @@ public class AsylumCaseDocumentApiGeneratorTest {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserCredentialsProvider requestUserCredentialsProvider;
+    @Mock private AccessTokenProvider accessTokenProvider;
     @Mock private RestTemplate restTemplate;
     @Mock private Callback<AsylumCase> callback;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
@@ -46,7 +46,7 @@ public class AsylumCaseDocumentApiGeneratorTest {
         asylumCaseDocumentApiGenerator =
             new AsylumCaseDocumentApiGenerator(
                 serviceAuthTokenGenerator,
-                requestUserCredentialsProvider,
+                accessTokenProvider,
                 restTemplate,
                 ENDPOINT,
                 ABOUT_TO_SUBMIT_PATH
@@ -61,7 +61,7 @@ public class AsylumCaseDocumentApiGeneratorTest {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(callbackResponse.getData()).thenReturn(notifiedAsylumCase);
         doReturn(new ResponseEntity<>(callbackResponse, HttpStatus.OK))
@@ -117,7 +117,7 @@ public class AsylumCaseDocumentApiGeneratorTest {
         final String expectedAccessToken = "HIJKLMN";
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(restTemplate
             .exchange(
@@ -125,7 +125,8 @@ public class AsylumCaseDocumentApiGeneratorTest {
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
-            )).thenThrow(underlyingException);
+            ))
+            .thenThrow(underlyingException);
 
         assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
@@ -143,7 +144,7 @@ public class AsylumCaseDocumentApiGeneratorTest {
         final String expectedAccessToken = "HIJKLMN";
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(restTemplate
             .exchange(
@@ -151,13 +152,13 @@ public class AsylumCaseDocumentApiGeneratorTest {
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
-            )).thenThrow(underlyingException);
+            ))
+            .thenThrow(underlyingException);
 
         assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasMessageContaining("Couldn't generate asylum case documents")
             .hasCause(underlyingException);
-
     }
 }

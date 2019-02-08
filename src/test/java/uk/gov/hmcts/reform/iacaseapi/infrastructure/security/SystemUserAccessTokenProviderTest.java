@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +43,16 @@ public class SystemUserAccessTokenProviderTest {
         String actualAccessToken = systemUserAccessTokenProvider.getAccessToken();
 
         assertEquals(expectedAccessToken, actualAccessToken);
+    }
+
+    @Test
+    public void get_missing_access_token_from_idam_throws_if_not_a_try_attempt() {
+
+        when(idamAuthorizor.exchangeForAccessToken(SYSTEM_USERNAME, SYSTEM_PASSWORD)).thenReturn(null);
+
+        assertThatThrownBy(() -> systemUserAccessTokenProvider.getAccessToken())
+            .hasMessage("System access token not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test

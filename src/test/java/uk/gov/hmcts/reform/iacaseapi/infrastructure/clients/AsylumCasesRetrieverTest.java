@@ -26,7 +26,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @SuppressWarnings("unchecked")
@@ -35,7 +36,7 @@ public class AsylumCasesRetrieverTest {
 
     @Mock private RestTemplate restTemplate;
     @Mock private AuthTokenGenerator serviceAuthorizationTokenGenerator;
-    @Mock private UserCredentialsProvider systemUserCredentialsProvider;
+    @Mock private UserDetailsProvider userDetailsProvider;
 
     private final String someServiceAuthorizationToken = "some-service-authorization";
     private final String someIdamAccessToken = "some-access-token";
@@ -44,6 +45,7 @@ public class AsylumCasesRetrieverTest {
     private final String searchPathUrlTemplate = "someSearchPathTemplate";
     private final String searchPathMetadataUrlTemplate = "someSearchPathMetadataTemplate";
 
+    @Mock private UserDetails userDetails;
     @Mock private ResponseEntity responseEntity;
 
     @Captor ArgumentCaptor<ParameterizedTypeReference> parameterizedTypeReference;
@@ -63,14 +65,15 @@ public class AsylumCasesRetrieverTest {
             ccdBaseUrl,
             restTemplate,
             serviceAuthorizationTokenGenerator,
-            systemUserCredentialsProvider
+            userDetailsProvider
         );
 
-        Mockito.reset(serviceAuthorizationTokenGenerator, systemUserCredentialsProvider);
+        Mockito.reset(serviceAuthorizationTokenGenerator, userDetailsProvider);
 
         when(serviceAuthorizationTokenGenerator.generate()).thenReturn(someServiceAuthorizationToken);
-        when(systemUserCredentialsProvider.getAccessToken()).thenReturn(someIdamAccessToken);
-        when(systemUserCredentialsProvider.getId()).thenReturn(userId);
+        when(userDetails.getAccessToken()).thenReturn(someIdamAccessToken);
+        when(userDetails.getId()).thenReturn(userId);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
     }
 
     @Test
@@ -86,8 +89,7 @@ public class AsylumCasesRetrieverTest {
         underTest.getAsylumCasesPage("1");
 
         verify(serviceAuthorizationTokenGenerator).generate();
-        verify(systemUserCredentialsProvider).getAccessToken();
-        verify(systemUserCredentialsProvider).getId();
+        verify(userDetailsProvider).getUserDetails();
 
         assertTrue(urlCaptor.getValue()
             .startsWith(ccdBaseUrl));
@@ -128,8 +130,7 @@ public class AsylumCasesRetrieverTest {
         int numberOfPages = underTest.getNumberOfPages();
 
         verify(serviceAuthorizationTokenGenerator).generate();
-        verify(systemUserCredentialsProvider).getAccessToken();
-        verify(systemUserCredentialsProvider).getId();
+        verify(userDetailsProvider).getUserDetails();
 
         Assertions.assertThat(numberOfPages).isEqualTo(1);
 

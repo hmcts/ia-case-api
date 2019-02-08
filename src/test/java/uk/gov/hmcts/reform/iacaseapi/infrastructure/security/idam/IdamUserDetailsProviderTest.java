@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,16 +51,20 @@ public class IdamUserDetailsProviderTest {
     public void should_call_idam_api_to_get_user_details() {
 
         String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+        String expectedEmailAddress = "john.doe@example.com";
         String expectedForename = "John";
         String expectedSurname = "Doe";
-        String expectedEmailAddress = "john.doe@example.com";
 
         Map<String, Object> userDetails =
             ImmutableMap
                 .<String, Object>builder()
+                .put("id", expectedId)
+                .put("roles", expectedRoles)
+                .put("email", expectedEmailAddress)
                 .put("forename", expectedForename)
                 .put("surname", expectedSurname)
-                .put("email", expectedEmailAddress)
                 .build();
 
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
@@ -88,9 +94,102 @@ public class IdamUserDetailsProviderTest {
         String actualAuthorizationHeader = authorizeHttpEntity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         assertEquals(expectedAccessToken, actualAuthorizationHeader);
 
+        assertEquals(expectedAccessToken, actualUserDetails.getAccessToken());
+        assertEquals(expectedId, actualUserDetails.getId());
+        assertEquals(expectedRoles, actualUserDetails.getRoles());
+        assertEquals(expectedEmailAddress, actualUserDetails.getEmailAddress());
         assertEquals(expectedForename, actualUserDetails.getForename());
         assertEquals(expectedSurname, actualUserDetails.getSurname());
-        assertEquals(expectedEmailAddress, actualUserDetails.getEmailAddress());
+    }
+
+    @Test
+    public void should_throw_exception_if_idam_id_missing() {
+
+        String accessToken = "ABCDEFG";
+
+        Map<String, Object> userDetails =
+            ImmutableMap
+                .<String, Object>builder()
+                .put("roles", Arrays.asList("role"))
+                .put("email", "john.doe@example.com")
+                .put("forename", "John")
+                .put("surname", "Doe")
+                .build();
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
+
+        doReturn(new ResponseEntity<>(userDetails, HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(BASE_URL + DETAILS_URI),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
+            .hasMessage("IDAM user details missing 'id' field")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void should_throw_exception_if_idam_roles_missing() {
+
+        String accessToken = "ABCDEFG";
+
+        Map<String, Object> userDetails =
+            ImmutableMap
+                .<String, Object>builder()
+                .put("id", "1234")
+                .put("email", "john.doe@example.com")
+                .put("forename", "John")
+                .put("surname", "Doe")
+                .build();
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
+
+        doReturn(new ResponseEntity<>(userDetails, HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(BASE_URL + DETAILS_URI),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
+            .hasMessage("IDAM user details missing 'roles' field")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void should_throw_exception_if_idam_email_missing() {
+
+        String accessToken = "ABCDEFG";
+
+        Map<String, Object> userDetails =
+            ImmutableMap
+                .<String, Object>builder()
+                .put("id", "1234")
+                .put("roles", Arrays.asList("role"))
+                .put("forename", "John")
+                .put("surname", "Doe")
+                .build();
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
+
+        doReturn(new ResponseEntity<>(userDetails, HttpStatus.OK))
+            .when(restTemplate)
+            .exchange(
+                eq(BASE_URL + DETAILS_URI),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
+            .hasMessage("IDAM user details missing 'email' field")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -101,8 +200,10 @@ public class IdamUserDetailsProviderTest {
         Map<String, Object> userDetails =
             ImmutableMap
                 .<String, Object>builder()
-                .put("surname", "Doe")
+                .put("id", "1234")
+                .put("roles", Arrays.asList("role"))
                 .put("email", "john.doe@example.com")
+                .put("surname", "Doe")
                 .build();
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
@@ -129,8 +230,10 @@ public class IdamUserDetailsProviderTest {
         Map<String, Object> userDetails =
             ImmutableMap
                 .<String, Object>builder()
-                .put("forename", "John")
+                .put("id", "1234")
+                .put("roles", Arrays.asList("role"))
                 .put("email", "john.doe@example.com")
+                .put("forename", "John")
                 .build();
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
@@ -146,34 +249,6 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'surname' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    public void should_throw_exception_if_idam_email_missing() {
-
-        String accessToken = "ABCDEFG";
-
-        Map<String, Object> userDetails =
-            ImmutableMap
-                .<String, Object>builder()
-                .put("forename", "John")
-                .put("surname", "Doe")
-                .build();
-
-        when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
-
-        doReturn(new ResponseEntity<>(userDetails, HttpStatus.OK))
-            .when(restTemplate)
-            .exchange(
-                eq(BASE_URL + DETAILS_URI),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
-
-        assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
-            .hasMessage("IDAM user details missing 'email' field")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
@@ -218,7 +293,5 @@ public class IdamUserDetailsProviderTest {
             .hasMessage("Could not get user details with IDAM")
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(restClientException);
-
     }
-
 }

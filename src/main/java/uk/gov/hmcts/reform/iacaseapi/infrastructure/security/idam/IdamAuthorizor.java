@@ -71,19 +71,23 @@ public class IdamAuthorizor {
         Map<String, String> response;
 
         try {
-            response = restTemplate
-                .exchange(
-                    baseUrl + "/oauth2/authorize",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<Map<String, String>>() {
-                    }
-                ).getBody();
 
-        } catch (RestClientException ex) {
-            throw new IdentityManagerResponseException(AlertLevel.P2,
+            response =
+                restTemplate
+                    .exchange(
+                        baseUrl + "/oauth2/authorize",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Map<String, String>>() {
+                        }
+                    ).getBody();
+
+        } catch (RestClientException e) {
+
+            throw new IdentityManagerResponseException(
+                AlertLevel.P2,
                 "Could not get auth code with IDAM",
-                ex
+                e
             );
         }
 
@@ -106,19 +110,25 @@ public class IdamAuthorizor {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
         Map<String, String> response;
+
         try {
-            response = restTemplate
-                .exchange(
-                    baseUrl + "/oauth2/token",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<Map<String, String>>() {
-                    }
-                ).getBody();
-        } catch (RestClientException ex) {
-            throw new IdentityManagerResponseException(AlertLevel.P2,
+
+            response =
+                restTemplate
+                    .exchange(
+                        baseUrl + "/oauth2/token",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Map<String, String>>() {
+                        }
+                    ).getBody();
+
+        } catch (RestClientException e) {
+
+            throw new IdentityManagerResponseException(
+                AlertLevel.P2,
                 "Could not get auth token with IDAM",
-                ex
+                e
             );
         }
 
