@@ -12,6 +12,7 @@ public enum Event {
     UPLOAD_RESPONDENT_EVIDENCE("uploadRespondentEvidence"),
     BUILD_CASE("buildCase"),
     SUBMIT_CASE("submitCase"),
+    REQUEST_CASE_EDIT("requestCaseEdit"),
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     ADD_APPEAL_RESPONSE("addAppealResponse"),
     REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),

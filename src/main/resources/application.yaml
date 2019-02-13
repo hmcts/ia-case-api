@@ -117,6 +117,7 @@ security:
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
+      - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "uploadRespondentEvidence"

@@ -16,6 +16,7 @@ public class EventTest {
         assertEquals("uploadRespondentEvidence", Event.UPLOAD_RESPONDENT_EVIDENCE.toString());
         assertEquals("buildCase", Event.BUILD_CASE.toString());
         assertEquals("submitCase", Event.SUBMIT_CASE.toString());
+        assertEquals("requestCaseEdit", Event.REQUEST_CASE_EDIT.toString());
         assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
         assertEquals("addAppealResponse", Event.ADD_APPEAL_RESPONSE.toString());
         assertEquals("requestHearingRequirements", Event.REQUEST_HEARING_REQUIREMENTS.toString());
@@ -25,6 +26,6 @@ public class EventTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(13, Event.values().length);
+        assertEquals(14, Event.values().length);
     }
 }
