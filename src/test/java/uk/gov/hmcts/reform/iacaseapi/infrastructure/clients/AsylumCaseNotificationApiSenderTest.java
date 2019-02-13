@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,7 +33,7 @@ public class AsylumCaseNotificationApiSenderTest {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserCredentialsProvider requestUserCredentialsProvider;
+    @Mock private AccessTokenProvider accessTokenProvider;
     @Mock private RestTemplate restTemplate;
     @Mock private Callback<AsylumCase> callback;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
@@ -46,7 +46,7 @@ public class AsylumCaseNotificationApiSenderTest {
         asylumCaseNotificationApiSender =
             new AsylumCaseNotificationApiSender(
                 serviceAuthTokenGenerator,
-                requestUserCredentialsProvider,
+                accessTokenProvider,
                 restTemplate,
                 ENDPOINT,
                 ABOUT_TO_SUBMIT_PATH
@@ -61,7 +61,7 @@ public class AsylumCaseNotificationApiSenderTest {
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
         when(callbackResponse.getData()).thenReturn(notifiedAsylumCase);
         doReturn(new ResponseEntity<>(callbackResponse, HttpStatus.OK))
@@ -118,7 +118,8 @@ public class AsylumCaseNotificationApiSenderTest {
         final String expectedAccessToken = "HIJKLMN";
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
         when(restTemplate
             .exchange(
                 eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
@@ -144,7 +145,8 @@ public class AsylumCaseNotificationApiSenderTest {
         final String expectedAccessToken = "HIJKLMN";
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(requestUserCredentialsProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+
         when(restTemplate
             .exchange(
                 eq(ENDPOINT + ABOUT_TO_SUBMIT_PATH),
@@ -159,6 +161,5 @@ public class AsylumCaseNotificationApiSenderTest {
             .hasMessageContaining("Couldn't send asylum case notifications with notifications api")
             .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(underlyingException);
-
     }
 }

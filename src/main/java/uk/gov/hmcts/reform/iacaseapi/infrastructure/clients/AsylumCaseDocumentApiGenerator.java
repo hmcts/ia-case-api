@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -16,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @Service
 public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumCase> {
@@ -24,20 +25,20 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private final AuthTokenGenerator serviceAuthTokenGenerator;
-    private final UserCredentialsProvider requestUserCredentialsProvider;
+    private final AccessTokenProvider accessTokenProvider;
     private final RestTemplate restTemplate;
     private final String endpoint;
     private final String aboutToSubmitPath;
 
     public AsylumCaseDocumentApiGenerator(
         AuthTokenGenerator serviceAuthTokenGenerator,
-        UserCredentialsProvider requestUserCredentialsProvider,
+        @Qualifier("requestUser") AccessTokenProvider accessTokenProvider,
         RestTemplate restTemplate,
         @Value("${documentsApi.endpoint}") String endpoint,
         @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath
     ) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
-        this.requestUserCredentialsProvider = requestUserCredentialsProvider;
+        this.accessTokenProvider = accessTokenProvider;
         this.restTemplate = restTemplate;
         this.endpoint = endpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
@@ -48,35 +49,37 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
-        String userAccessToken = requestUserCredentialsProvider.getAccessToken();
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final String accessToken = accessTokenProvider.getAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8_VALUE);
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
-        headers.set(HttpHeaders.AUTHORIZATION, userAccessToken);
+        headers.set(HttpHeaders.AUTHORIZATION, accessToken);
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
         try {
-            callbackResponse = restTemplate
-                .exchange(
-                    endpoint + aboutToSubmitPath,
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
-                    }
-                ).getBody();
 
-        } catch (RestClientException ex) {
+            callbackResponse =
+                restTemplate
+                    .exchange(
+                        endpoint + aboutToSubmitPath,
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                        }
+                    ).getBody();
+
+        } catch (RestClientException e) {
+
             throw new AsylumCaseServiceResponseException(
                 "Couldn't generate asylum case documents with documents api",
-                ex
+                e
             );
-
         }
 
         return callbackResponse.getData();

@@ -13,12 +13,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.access.AccessDeniedException;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdEventAuthorizorTest {
 
-    @Mock private UserCredentialsProvider requestUserCredentialsProvider;
+    @Mock private UserDetailsProvider userDetailsProvider;
+
+    @Mock private UserDetails userDetails;
 
     private CcdEventAuthorizor ccdEventAuthorizor;
 
@@ -32,20 +36,22 @@ public class CcdEventAuthorizorTest {
                     .put("caseworker-role", Arrays.asList(Event.REQUEST_RESPONDENT_REVIEW, Event.SEND_DIRECTION))
                     .put("legal-role", Arrays.asList(Event.SUBMIT_APPEAL, Event.BUILD_CASE))
                     .build(),
-                requestUserCredentialsProvider
+                userDetailsProvider
             );
+
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
     }
 
     @Test
     public void does_not_throw_access_denied_exception_if_role_is_allowed_access_to_event() {
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Arrays.asList("some-unrelated-role", "legal-role")
         );
 
         ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE);
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
@@ -55,7 +61,7 @@ public class CcdEventAuthorizorTest {
     @Test
     public void throw_access_denied_exception_if_role_not_allowed_access_to_event() {
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
@@ -63,7 +69,7 @@ public class CcdEventAuthorizorTest {
             .hasMessage("Event 'buildCase' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Arrays.asList("some-unrelated-role", "legal-role")
         );
 
@@ -75,7 +81,7 @@ public class CcdEventAuthorizorTest {
     @Test
     public void throw_access_denied_exception_if_event_not_configured() {
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
@@ -87,7 +93,7 @@ public class CcdEventAuthorizorTest {
     @Test
     public void throw_access_denied_exception_if_user_has_no_roles() {
 
-        when(requestUserCredentialsProvider.getRoles()).thenReturn(
+        when(userDetails.getRoles()).thenReturn(
             Collections.emptyList()
         );
 

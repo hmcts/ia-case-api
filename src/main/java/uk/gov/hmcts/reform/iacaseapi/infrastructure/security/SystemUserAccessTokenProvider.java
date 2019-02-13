@@ -26,7 +26,7 @@ public class SystemUserAccessTokenProvider implements AccessTokenProvider {
 
     public String getAccessToken() {
         return tryGetAccessToken()
-            .orElseThrow(() -> new IllegalStateException("Access token not present"));
+            .orElseThrow(() -> new IllegalStateException("System access token not present"));
     }
 
     public Optional<String> tryGetAccessToken() {
