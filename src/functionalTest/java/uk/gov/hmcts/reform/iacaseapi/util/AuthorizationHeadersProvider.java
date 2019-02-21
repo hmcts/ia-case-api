@@ -19,6 +19,10 @@ public class AuthorizationHeadersProvider {
     public Headers getLegalRepresentativeAuthorization() {
 
         String serviceToken = serviceAuthTokenGenerator.generate();
+
+        System.out.println("@@ serviceToken:");
+        System.out.println(serviceToken);
+
         String accessToken = idamAuthorizor.exchangeForAccessToken(
             System.getenv("TEST_LAW_FIRM_A_USERNAME"),
             System.getenv("TEST_LAW_FIRM_A_PASSWORD")

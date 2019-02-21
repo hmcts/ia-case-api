@@ -6,14 +6,19 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCasesRetriever;
 
 @Api(
     value = "/",
@@ -26,6 +31,9 @@ public class WelcomeController {
     private static final Logger LOG = getLogger(WelcomeController.class);
     private static final String INSTANCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGE = "Welcome to Immigration & Asylum case API";
+
+    @Autowired
+    private AsylumCasesRetriever asylumCasesRetriever;
 
     /**
      * Root GET endpoint.
@@ -53,9 +61,17 @@ public class WelcomeController {
 
         LOG.info("Welcome message '{}' from running instance: {}", MESSAGE, INSTANCE_ID);
 
+        int numberOfPages = -1;
+        List<Map> page = Collections.emptyList();
+
+        if (asylumCasesRetriever != null) {
+            numberOfPages = asylumCasesRetriever.getNumberOfPages();
+            page = asylumCasesRetriever.getAsylumCasesPage("1");
+        }
+
         return ResponseEntity
             .ok()
             .cacheControl(CacheControl.noCache())
-            .body("{\"message\": \"" + MESSAGE + "\"}");
+            .body("Welcome to Immigration & Asylum case API\n" + numberOfPages + "\n" + page.toString());
     }
 }

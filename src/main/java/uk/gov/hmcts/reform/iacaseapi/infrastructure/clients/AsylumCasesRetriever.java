@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.UserCredentialsProvider;
 
 @Service
-class AsylumCasesRetriever {
+public class AsylumCasesRetriever {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
