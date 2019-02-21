@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,18 +37,27 @@ public class SendNotificationHandlerTest {
     @Test
     public void should_send_notification_and_update_the_case() {
 
-        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        Arrays.asList(
+            Event.SUBMIT_APPEAL,
+            Event.UPLOAD_RESPONDENT_EVIDENCE
+        ).forEach(event -> {
 
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            when(callback.getEvent()).thenReturn(event);
+            when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
 
-        assertNotNull(callbackResponse);
-        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(notificationSender, times(1)).send(callback);
+            assertNotNull(callbackResponse);
+            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+            verify(notificationSender, times(1)).send(callback);
+
+            reset(callback);
+            reset(notificationSender);
+        });
     }
 
     @Test
@@ -79,8 +89,12 @@ public class SendNotificationHandlerTest {
 
                 boolean canHandle = sendNotificationHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.UPLOAD_RESPONDENT_EVIDENCE
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    &&
+                    Arrays.asList(
+                        Event.SUBMIT_APPEAL,
+                        Event.UPLOAD_RESPONDENT_EVIDENCE
+                    ).contains(event)) {
 
                     assertTrue(canHandle);
                 } else {
