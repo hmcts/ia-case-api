@@ -161,6 +161,8 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/config/**," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/AsylumCaseDocumentApiGenerator.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/clients/AsylumCaseNotificationApiSender.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java"
     }
 }
