@@ -30,4 +30,17 @@
     <gav regex="true">^com\.google\.guava:guava:.*$</gav>
     <cve>CVE-2018-10237</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+         CVE-2018-1115: Vulnerability applies to postgresql before versions 10.4, 9.6.9 is vulnerable. We use Azure 10.5 in Azure which does not have this issue.
+       ]]></notes>
+    <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
+    <cve>CVE-2018-1115</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+         CVE-2016-7048: Vulnerability applies to PostgreSQL before 9.3.15, 9.4.x before 9.4.10, and 9.5.x before 9.5.5 only. We use Azure 10.5 in Azure which does not have this issue.
+        ]]></notes>
+    <cve>CVE-2016-7048</cve>
+  </suppress>
 </suppressions>

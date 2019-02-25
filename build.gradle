@@ -15,9 +15,10 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.20.0'
     id "info.solidsoft.pitest" version '1.3.0'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '3.2.1'
     id 'org.sonarqube' version '2.6.2'
-    id 'org.springframework.boot' version '2.0.4.RELEASE'
+    id 'org.springframework.boot' version '2.0.5.RELEASE'
 }
 
 apply plugin: 'java'
@@ -195,6 +196,7 @@ dependencies {
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
@@ -210,6 +212,8 @@ dependencies {
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformLogging
@@ -229,7 +233,7 @@ dependencies {
         exclude group: "org.hamcrest", module: "hamcrest-library"
     }
 
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot

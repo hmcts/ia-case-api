@@ -28,7 +28,7 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<Map<String, String>>>> appellantNationalities = Optional.empty();
     private Optional<YesOrNo> appellantHasFixedAddress = Optional.empty();
     private Optional<AddressUk> appellantAddress = Optional.empty();
-    private Optional<String> appealType = Optional.empty();
+    private Optional<AppealType> appealType = Optional.empty();
     private Optional<CheckValues<String>> appealGroundsProtection = Optional.empty();
     private Optional<CheckValues<String>> appealGroundsHumanRights = Optional.empty();
     private Optional<CheckValues<String>> appealGroundsRevocation = Optional.empty();
@@ -201,7 +201,7 @@ public class AsylumCase implements CaseData {
         return appellantAddress;
     }
 
-    public Optional<String> getAppealType() {
+    public Optional<AppealType> getAppealType() {
         requireNonNull(appealType);
         return appealType;
     }

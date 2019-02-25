@@ -1,26 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CachingAppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String DRAFT = "DRAFT";
-    private final CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator;
+
+    private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     public AppealReferenceNumberHandler(
-        CachingAppealReferenceNumberGenerator appealReferenceNumberGenerator
+        AppealReferenceNumberGenerator appealReferenceNumberGenerator
     ) {
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
     }
@@ -65,22 +66,18 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
         if (!existingAppealReferenceNumber.isPresent()
             || existingAppealReferenceNumber.get().equals(DRAFT)) {
 
-            String appealType = asylumCase.getAppealType()
-                .orElseThrow(() -> new IllegalStateException("Unrecognised asylum case type"));
+            AppealType appealType =
+                asylumCase
+                    .getAppealType()
+                    .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
-            Optional<String> appealReferenceNumber =
-                appealReferenceNumberGenerator.getNextAppealReferenceNumberFor(
+            String appealReferenceNumber =
+                appealReferenceNumberGenerator.generate(
                     callback.getCaseDetails().getId(),
                     appealType
                 );
 
-            if (!appealReferenceNumber.isPresent()) {
-                callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));
-            } else {
-                asylumCase.setAppealReferenceNumber(appealReferenceNumber.get());
-            }
-        } else {
-            callbackResponse.addErrors(asList("Sorry, there was a problem submitting your appeal case"));
+            asylumCase.setAppealReferenceNumber(appealReferenceNumber);
         }
 
         return callbackResponse;
