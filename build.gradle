@@ -109,11 +109,14 @@ checkstyle {
 }
 
 pmd {
-    toolVersion = "5.8.1"
+    toolVersion = '6.12.0'
     ignoreFailures = true
     sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSetFiles = files("config/pmd/ruleset.xml")
+    ruleSets = [
+        'category/java/errorprone.xml',
+        'category/java/bestpractices.xml'
+    ]
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
