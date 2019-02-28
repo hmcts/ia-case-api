@@ -87,6 +87,13 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
+    private Optional<Document> applicationOutOfTimeDocument = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -100,6 +107,7 @@ public class AsylumCase implements CaseData {
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
     private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
+    private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -144,6 +152,8 @@ public class AsylumCase implements CaseData {
         this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
         this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
+        this.applicationOutOfTimeExplanation = asylumCaseBuilder.getApplicationOutOfTimeExplanation();
+        this.applicationOutOfTimeDocument = asylumCaseBuilder.getApplicationOutOfTimeDocument();
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
@@ -154,6 +164,7 @@ public class AsylumCase implements CaseData {
         this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
         this.caseArgumentAvailable = asylumCaseBuilder.getCaseArgumentAvailable();
         this.appealResponseAvailable = asylumCaseBuilder.getAppealResponseAvailable();
+        this.submissionOutOfTime = asylumCaseBuilder.getSubmissionOutOfTime();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -429,6 +440,20 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getApplicationOutOfTimeExplanation() {
+        requireNonNull(applicationOutOfTimeExplanation);
+        return applicationOutOfTimeExplanation;
+    }
+
+    public Optional<Document> getApplicationOutOfTimeDocument() {
+        requireNonNull(applicationOutOfTimeDocument);
+        return applicationOutOfTimeDocument;
+    }
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -478,8 +503,13 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<YesOrNo> getAppealResponseAvailable() {
-        requireNonNull(caseArgumentAvailable);
+        requireNonNull(appealResponseAvailable);
         return appealResponseAvailable;
+    }
+
+    public Optional<YesOrNo> getSubmissionOutOfTime() {
+        requireNonNull(submissionOutOfTime);
+        return submissionOutOfTime;
     }
 
     public void clearCaseBuildingReadyForSubmission() {
@@ -524,5 +554,9 @@ public class AsylumCase implements CaseData {
 
     public void setAppealResponseAvailable(YesOrNo appealResponseAvailable) {
         this.appealResponseAvailable = Optional.ofNullable(appealResponseAvailable);
+    }
+
+    public void setSubmissionOutOfTime(YesOrNo submissionOutOfTime) {
+        this.submissionOutOfTime = Optional.ofNullable(submissionOutOfTime);
     }
 }

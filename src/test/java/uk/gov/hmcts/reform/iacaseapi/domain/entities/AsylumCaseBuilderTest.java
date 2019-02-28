@@ -89,6 +89,13 @@ public class AsylumCaseBuilderTest {
     private final List<IdValue<DocumentWithDescription>> appealResponseEvidence = mock(List.class);
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    private final String applicationOutOfTimeExplanation = "Delayed in the post";
+    private final Document applicationOutOfTimeDocument = mock(Document.class);
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -102,6 +109,7 @@ public class AsylumCaseBuilderTest {
     private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
     private final YesOrNo caseArgumentAvailable = YesOrNo.YES;
     private final YesOrNo appealResponseAvailable = YesOrNo.NO;
+    private final YesOrNo submissionOutOfTime = YesOrNo.YES;
 
     private AsylumCaseBuilder asylumCaseBuilder = new AsylumCaseBuilder();
 
@@ -144,6 +152,8 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setAppealResponseDocument(Optional.of(appealResponseDocument));
         asylumCaseBuilder.setAppealResponseDescription(Optional.of(appealResponseDescription));
         asylumCaseBuilder.setAppealResponseEvidence(Optional.of(appealResponseEvidence));
+        asylumCaseBuilder.setApplicationOutOfTimeExplanation(Optional.of(applicationOutOfTimeExplanation));
+        asylumCaseBuilder.setApplicationOutOfTimeDocument(Optional.of(applicationOutOfTimeDocument));
         asylumCaseBuilder.setLegalRepresentativeName(Optional.of(legalRepresentativeName));
         asylumCaseBuilder.setLegalRepresentativeEmailAddress(Optional.of(legalRepresentativeEmailAddress));
         asylumCaseBuilder.setNotificationsSent(Optional.of(notificationsSent));
@@ -154,6 +164,7 @@ public class AsylumCaseBuilderTest {
         asylumCaseBuilder.setCurrentCaseStateVisibleToLegalRepresentative(Optional.of(currentCaseStateVisibleToLegalRepresentative));
         asylumCaseBuilder.setCaseArgumentAvailable(Optional.of(caseArgumentAvailable));
         asylumCaseBuilder.setAppealResponseAvailable(Optional.of(appealResponseAvailable));
+        asylumCaseBuilder.setSubmissionOutOfTime(Optional.of(submissionOutOfTime));
 
         AsylumCase asylumCase = asylumCaseBuilder.build();
 
@@ -193,6 +204,8 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(appealResponseDocument), asylumCase.getAppealResponseDocument());
         assertEquals(Optional.of(appealResponseDescription), asylumCase.getAppealResponseDescription());
         assertEquals(Optional.of(appealResponseEvidence), asylumCase.getAppealResponseEvidence());
+        assertEquals(Optional.of(applicationOutOfTimeExplanation), asylumCase.getApplicationOutOfTimeExplanation());
+        assertEquals(Optional.of(applicationOutOfTimeDocument), asylumCase.getApplicationOutOfTimeDocument());
         assertEquals(Optional.of(legalRepresentativeName), asylumCase.getLegalRepresentativeName());
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
@@ -203,5 +216,6 @@ public class AsylumCaseBuilderTest {
         assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
         assertEquals(Optional.of(caseArgumentAvailable), asylumCase.getCaseArgumentAvailable());
         assertEquals(Optional.of(appealResponseAvailable), asylumCase.getAppealResponseAvailable());
+        assertEquals(Optional.of(submissionOutOfTime), asylumCase.getSubmissionOutOfTime());
     }
 }

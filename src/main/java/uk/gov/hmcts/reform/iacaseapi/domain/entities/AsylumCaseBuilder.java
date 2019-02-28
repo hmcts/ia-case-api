@@ -86,6 +86,13 @@ public class AsylumCaseBuilder {
     private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
+    private Optional<Document> applicationOutOfTimeDocument = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -99,6 +106,7 @@ public class AsylumCaseBuilder {
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
     private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
+    private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -422,6 +430,18 @@ public class AsylumCaseBuilder {
     }
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    public void setApplicationOutOfTimeExplanation(Optional<String> applicationOutOfTimeExplanation) {
+        this.applicationOutOfTimeExplanation = applicationOutOfTimeExplanation;
+    }
+
+    public void setApplicationOutOfTimeDocument(Optional<Document> applicationOutOfTimeDocument) {
+        this.applicationOutOfTimeDocument = applicationOutOfTimeDocument;
+    }
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -465,6 +485,18 @@ public class AsylumCaseBuilder {
         return appealResponseAvailable;
     }
 
+    public Optional<YesOrNo> getSubmissionOutOfTime() {
+        return submissionOutOfTime;
+    }
+
+    public Optional<String> getApplicationOutOfTimeExplanation() {
+        return applicationOutOfTimeExplanation;
+    }
+
+    public Optional<Document> getApplicationOutOfTimeDocument() {
+        return applicationOutOfTimeDocument;
+    }
+
     public void setLegalRepresentativeName(Optional<String> legalRepresentativeName) {
         this.legalRepresentativeName = legalRepresentativeName;
     }
@@ -503,5 +535,9 @@ public class AsylumCaseBuilder {
 
     public void setAppealResponseAvailable(Optional<YesOrNo> appealResponseAvailable) {
         this.appealResponseAvailable = appealResponseAvailable;
+    }
+
+    public void setSubmissionOutOfTime(Optional<YesOrNo> submissionOutOfTime) {
+        this.submissionOutOfTime = submissionOutOfTime;
     }
 }

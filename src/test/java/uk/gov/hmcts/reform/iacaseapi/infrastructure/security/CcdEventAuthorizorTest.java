@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
@@ -49,13 +50,15 @@ public class CcdEventAuthorizorTest {
             Arrays.asList("some-unrelated-role", "legal-role")
         );
 
-        ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE);
+        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
+            .doesNotThrowAnyException();
 
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
         );
 
-        ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION);
+        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
+            .doesNotThrowAnyException();
     }
 
     @Test

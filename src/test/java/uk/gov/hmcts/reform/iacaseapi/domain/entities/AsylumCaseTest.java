@@ -93,6 +93,13 @@ public class AsylumCaseTest {
     private final List<IdValue<DocumentWithDescription>> appealResponseEvidence = mock(List.class);
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    private final String applicationOutOfTimeExplanation = "Delayed in the post";
+    private final Document applicationOutOfTimeDocument = mock(Document.class);
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -106,6 +113,7 @@ public class AsylumCaseTest {
     private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
     private final YesOrNo caseArgumentAvailable = YesOrNo.YES;
     private final YesOrNo appealResponseAvailable = YesOrNo.NO;
+    private final YesOrNo submissionOutOfTime = YesOrNo.YES;
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -148,6 +156,8 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getAppealResponseDocument()).thenReturn(Optional.of(appealResponseDocument));
         when(asylumCaseBuilder.getAppealResponseDescription()).thenReturn(Optional.of(appealResponseDescription));
         when(asylumCaseBuilder.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
+        when(asylumCaseBuilder.getApplicationOutOfTimeExplanation()).thenReturn(Optional.of(applicationOutOfTimeExplanation));
+        when(asylumCaseBuilder.getApplicationOutOfTimeDocument()).thenReturn(Optional.of(applicationOutOfTimeDocument));
         when(asylumCaseBuilder.getLegalRepresentativeName()).thenReturn(Optional.of(legalRepresentativeName));
         when(asylumCaseBuilder.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of(legalRepresentativeEmailAddress));
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
@@ -158,6 +168,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative()).thenReturn(Optional.of(currentCaseStateVisibleToLegalRepresentative));
         when(asylumCaseBuilder.getCaseArgumentAvailable()).thenReturn(Optional.of(caseArgumentAvailable));
         when(asylumCaseBuilder.getAppealResponseAvailable()).thenReturn(Optional.of(appealResponseAvailable));
+        when(asylumCaseBuilder.getSubmissionOutOfTime()).thenReturn(Optional.of(submissionOutOfTime));
     }
 
     @Test
@@ -201,6 +212,8 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(appealResponseDocument), asylumCase.getAppealResponseDocument());
         assertEquals(Optional.of(appealResponseDescription), asylumCase.getAppealResponseDescription());
         assertEquals(Optional.of(appealResponseEvidence), asylumCase.getAppealResponseEvidence());
+        assertEquals(Optional.of(applicationOutOfTimeExplanation), asylumCase.getApplicationOutOfTimeExplanation());
+        assertEquals(Optional.of(applicationOutOfTimeDocument), asylumCase.getApplicationOutOfTimeDocument());
         assertEquals(Optional.of(legalRepresentativeName), asylumCase.getLegalRepresentativeName());
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
@@ -211,6 +224,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
         assertEquals(Optional.of(caseArgumentAvailable), asylumCase.getCaseArgumentAvailable());
         assertEquals(Optional.of(appealResponseAvailable), asylumCase.getAppealResponseAvailable());
+        assertEquals(Optional.of(submissionOutOfTime), asylumCase.getSubmissionOutOfTime());
     }
 
     @Test
@@ -549,5 +563,31 @@ public class AsylumCaseTest {
 
         asylumCase.setAppealResponseAvailable(null);
         assertEquals(Optional.empty(), asylumCase.getAppealResponseAvailable());
+    }
+
+    @Test
+    public void editable_directions_are_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        List<IdValue<EditableDirection>> editableDirections = Arrays.asList(new IdValue<>("1", mock(EditableDirection.class)));
+
+        asylumCase.setEditableDirections(editableDirections);
+        assertEquals(Optional.of(editableDirections), asylumCase.getEditableDirections());
+
+        asylumCase.clearEditableDirections();
+        assertEquals(Optional.empty(), asylumCase.getEditableDirections());
+    }
+
+    @Test
+    public void submission_out_of_time_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setSubmissionOutOfTime(YesOrNo.YES);
+        assertEquals(Optional.of(YesOrNo.YES), asylumCase.getSubmissionOutOfTime());
+
+        asylumCase.setSubmissionOutOfTime(null);
+        assertEquals(Optional.empty(), asylumCase.getSubmissionOutOfTime());
     }
 }

@@ -5,12 +5,17 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -20,12 +25,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 public class AppealSubmittedConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation =
         new AppealSubmittedConfirmation();
 
+    @Before
+    public void setUp() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+    }
+
     @Test
-    public void should_return_confirmation() {
+    public void should_return_standard_confirmation_when_not_out_of_time() {
+
+        when(asylumCase.getSubmissionOutOfTime()).thenReturn(Optional.of(NO));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -48,7 +64,34 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
+    public void should_return_out_of_time_confirmation_when_out_of_time() {
+
+        when(asylumCase.getSubmissionOutOfTime()).thenReturn(Optional.of(YES));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+                appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+                callbackResponse.getConfirmationHeader().get(),
+                containsString("")
+        );
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get(),
+                containsString("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n")
+        );
+    }
+
+    @Test
     public void handling_should_throw_if_cannot_actually_handle() {
+
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")

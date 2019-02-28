@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
@@ -30,11 +33,28 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
-        postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "You will receive an email confirming that this appeal has been submitted successfully."
-        );
+
+        YesOrNo submissionOutOfTime =
+                requireNonNull(callback.getCaseDetails().getCaseData().getSubmissionOutOfTime()
+                        .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
+
+        if (submissionOutOfTime.equals(NO)) {
+
+            postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
+            postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                            + "You will receive an email confirming that this appeal has been submitted successfully."
+            );
+
+        } else {
+
+            postSubmitResponse.setConfirmationHeader("");
+            postSubmitResponse.setConfirmationBody(
+                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
+                        + "## What happens Next\n\n"
+                        + "You have submitted this appeal beyond the deadline.  The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead."
+            );
+        }
 
         return postSubmitResponse;
     }

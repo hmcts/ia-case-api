@@ -54,6 +54,8 @@ cache:
   appealReferenceNumbers:
     expirationTimeInSeconds: 60
 
+appealOutOfTimeDays: 14
+
 defaultHearingCentre: taylorHouse
 hearingCentreCatchmentAreas:
     manchester:
