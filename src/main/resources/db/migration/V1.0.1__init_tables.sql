@@ -2,7 +2,7 @@
 CREATE SCHEMA IF NOT EXISTS ia_case_api;
 --
 CREATE TABLE IF NOT EXISTS ia_case_api.appeal_reference_numbers (
-  case_id BIGINT NOT NULL,
+  case_id INT NOT NULL,
   type varchar(30),
   year INT NOT NULL,
   sequence INT,

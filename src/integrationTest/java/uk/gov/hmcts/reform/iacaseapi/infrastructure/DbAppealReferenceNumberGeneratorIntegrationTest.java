@@ -39,15 +39,28 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     @Before
     public void setUp() {
 
-        truncateAppealReferenceNumbersTable();
+        deleteAnyTestAppealReferenceNumbers();
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2018, 12, 31));
     }
 
     @Test
-    public void should_generate_sequential_appeal_reference_number_for_protection_appeal() {
+    public void should_start_from_offset_to_skip_any_live_cases_when_2019() {
 
-        assertAppealReferenceNumbersTableEmpty();
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 12, 31));
+
+        final String firstAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+
+        final String secondAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.RP);
+
+        assertThat(firstAppealReferenceNumber, is("PA/50020/2019"));
+        assertThat(secondAppealReferenceNumber, is("RP/50020/2019"));
+    }
+
+    @Test
+    public void should_generate_sequential_appeal_reference_number_for_protection_appeal() {
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -66,8 +79,6 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     @Test
     public void should_generate_sequential_appeal_reference_number_for_revocation_appeal() {
 
-        assertAppealReferenceNumbersTableEmpty();
-
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
 
@@ -84,8 +95,6 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
 
     @Test
     public void should_use_distinct_number_range_for_each_appeal_type() {
-
-        assertAppealReferenceNumbersTableEmpty();
 
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
@@ -108,8 +117,6 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     @Test
     public void should_always_return_same_appeal_reference_number_for_same_case() {
 
-        assertAppealReferenceNumbersTableEmpty();
-
         final String firstAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
 
@@ -126,8 +133,6 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
 
     @Test
     public void should_reset_number_range_using_seed_for_new_years() {
-
-        assertAppealReferenceNumbersTableEmpty();
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2022, 12, 31));
 
@@ -152,12 +157,10 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     @Test
     public void should_not_create_duplicate_appeal_reference_numbers_when_used_concurrently() throws InterruptedException, ExecutionException {
 
-        assertAppealReferenceNumbersTableEmpty();
-
         Set<String> appealReferenceNumbers =
             (new ForkJoinPool(32))
                 .submit(() ->
-                    LongStream.rangeClosed(1, 10000)
+                    LongStream.rangeClosed(1000000000000001L, 1000000000000000L + 10000L)
                         .parallel()
                         .mapToObj(caseId -> dbAppealReferenceNumberGenerator.generate(caseId, AppealType.PA))
                         .collect(Collectors.toSet())
@@ -173,22 +176,13 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     @Test
     public void should_throw_when_same_case_is_presented_with_different_appeal_type() {
 
-        assertAppealReferenceNumbersTableEmpty();
-
         dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
 
         assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.generate(1, AppealType.RP))
             .isInstanceOf(IllegalStateException.class);
     }
 
-    private void assertAppealReferenceNumbersTableEmpty() {
-        assertThat(
-            jdbcTemplate.queryForObject("SELECT COUNT(*) FROM ia_case_api.appeal_reference_numbers", Integer.class),
-            is(0)
-        );
-    }
-
-    private void truncateAppealReferenceNumbersTable() {
-        jdbcTemplate.execute("TRUNCATE TABLE ia_case_api.appeal_reference_numbers;");
+    private void deleteAnyTestAppealReferenceNumbers() {
+        jdbcTemplate.execute("DELETE FROM ia_case_api.appeal_reference_numbers WHERE case_id NOT IN (-1, -2);");
     }
 }
