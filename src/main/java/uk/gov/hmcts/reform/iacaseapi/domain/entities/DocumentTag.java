@@ -8,6 +8,7 @@ public enum DocumentTag {
     RESPONDENT_EVIDENCE("respondentEvidence"),
     APPEAL_RESPONSE("appealResponse"),
     APPEAL_SUBMISSION("appealSubmission"),
+    ADDITIONAL_EVIDENCE("additionalEvidence"),
 
     @JsonEnumDefaultValue
     NONE("");

@@ -39,7 +39,8 @@
                 "description": "Some more appeal response evidence"
               }
             }
-          ]
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -133,7 +134,8 @@
               "tag": "appealResponse"
             }
           }
-        ]
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

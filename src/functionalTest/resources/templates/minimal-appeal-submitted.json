@@ -28,5 +28,6 @@
   "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
   "sendDirectionActionAvailable": "Yes",
   "hearingCentre": "taylorHouse",
-  "submissionOutOfTime": "No"
+  "submissionOutOfTime": "No",
+  "uploadAdditionalEvidenceActionAvailable": "No"
 }

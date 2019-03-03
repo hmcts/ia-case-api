@@ -22,7 +22,8 @@
                 "tag": ""
               }
             }
-          ]
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -54,7 +55,8 @@
               "tag": ""
             }
           }
-        ]
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

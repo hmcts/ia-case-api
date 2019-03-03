@@ -21,11 +21,12 @@ public class EventTest {
         assertEquals("addAppealResponse", Event.ADD_APPEAL_RESPONSE.toString());
         assertEquals("requestHearingRequirements", Event.REQUEST_HEARING_REQUIREMENTS.toString());
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
+        assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(14, Event.values().length);
+        assertEquals(15, Event.values().length);
     }
 }

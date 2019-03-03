@@ -67,7 +67,8 @@
                 "tag": "appealResponse"
               }
             }
-          ]
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -161,7 +162,8 @@
               "tag": "appealResponse"
             }
           }
-        ]
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

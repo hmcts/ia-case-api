@@ -61,6 +61,7 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    private Optional<List<IdValue<DocumentWithMetadata>>> additionalEvidenceDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
 
@@ -94,6 +95,12 @@ public class AsylumCase implements CaseData {
     private Optional<Document> applicationOutOfTimeDocument = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // upload additional evidence ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<DocumentWithDescription>>> additionalEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -102,6 +109,7 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
+    private Optional<YesOrNo> uploadAdditionalEvidenceActionAvailable = Optional.empty();
     private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
@@ -143,6 +151,7 @@ public class AsylumCase implements CaseData {
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
         this.editableDirections = asylumCaseBuilder.getEditableDirections();
+        this.additionalEvidenceDocuments = asylumCaseBuilder.getAdditionalEvidenceDocuments();
         this.legalRepresentativeDocuments = asylumCaseBuilder.getLegalRepresentativeDocuments();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
         this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
@@ -154,11 +163,13 @@ public class AsylumCase implements CaseData {
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
         this.applicationOutOfTimeExplanation = asylumCaseBuilder.getApplicationOutOfTimeExplanation();
         this.applicationOutOfTimeDocument = asylumCaseBuilder.getApplicationOutOfTimeDocument();
+        this.additionalEvidence = asylumCaseBuilder.getAdditionalEvidence();
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
         this.changeDirectionDueDateActionAvailable = asylumCaseBuilder.getChangeDirectionDueDateActionAvailable();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
+        this.uploadAdditionalEvidenceActionAvailable = asylumCaseBuilder.getUploadAdditionalEvidenceActionAvailable();
         this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
         this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
         this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
@@ -370,6 +381,11 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    public Optional<List<IdValue<DocumentWithMetadata>>> getAdditionalEvidenceDocuments() {
+        requireNonNull(additionalEvidenceDocuments);
+        return additionalEvidenceDocuments;
+    }
+
     public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
         requireNonNull(legalRepresentativeDocuments);
         return legalRepresentativeDocuments;
@@ -378,6 +394,10 @@ public class AsylumCase implements CaseData {
     public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
         requireNonNull(respondentDocuments);
         return respondentDocuments;
+    }
+
+    public void setAdditionalEvidenceDocuments(List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments) {
+        this.additionalEvidenceDocuments = Optional.ofNullable(additionalEvidenceDocuments);
     }
 
     public void setLegalRepresentativeDocuments(List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments) {
@@ -454,6 +474,19 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // upload additional evidence ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getAdditionalEvidence() {
+        requireNonNull(additionalEvidence);
+        return additionalEvidence;
+    }
+
+    public void clearAdditionalEvidence() {
+        this.additionalEvidence = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -480,6 +513,11 @@ public class AsylumCase implements CaseData {
     public Optional<YesOrNo> getSendDirectionActionAvailable() {
         requireNonNull(sendDirectionActionAvailable);
         return sendDirectionActionAvailable;
+    }
+
+    public Optional<YesOrNo> getUploadAdditionalEvidenceActionAvailable() {
+        requireNonNull(uploadAdditionalEvidenceActionAvailable);
+        return uploadAdditionalEvidenceActionAvailable;
     }
 
     public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
@@ -534,6 +572,10 @@ public class AsylumCase implements CaseData {
 
     public void setSendDirectionActionAvailable(YesOrNo sendDirectionActionAvailable) {
         this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
+    }
+
+    public void setUploadAdditionalEvidenceActionAvailable(YesOrNo uploadAdditionalEvidenceActionAvailable) {
+        this.uploadAdditionalEvidenceActionAvailable = Optional.ofNullable(uploadAdditionalEvidenceActionAvailable);
     }
 
     public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {

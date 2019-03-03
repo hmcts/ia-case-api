@@ -116,6 +116,7 @@ security:
       - "submitAppeal"
       - "buildCase"
       - "submitCase"
+      - "uploadAdditionalEvidence"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

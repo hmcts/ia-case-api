@@ -67,6 +67,7 @@ public class AsylumCaseTest {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    private final List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments = mock(List.class);
     private final List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = mock(List.class);
     private final List<IdValue<DocumentWithMetadata>> respondentDocuments = mock(List.class);
 
@@ -108,6 +109,7 @@ public class AsylumCaseTest {
     private final List<IdValue<String>> notificationsSent = mock(List.class);
     private final YesOrNo changeDirectionDueDateActionAvailable = YesOrNo.YES;
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
+    private final YesOrNo uploadAdditionalEvidenceActionAvailable = YesOrNo.YES;
     private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
     private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
     private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
@@ -147,6 +149,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getSendDirectionDateDue()).thenReturn(Optional.of(sendDirectionDateDue));
         when(asylumCaseBuilder.getDirections()).thenReturn(Optional.of(directions));
         when(asylumCaseBuilder.getEditableDirections()).thenReturn(Optional.of(editableDirections));
+        when(asylumCaseBuilder.getAdditionalEvidenceDocuments()).thenReturn(Optional.of(additionalEvidenceDocuments));
         when(asylumCaseBuilder.getLegalRepresentativeDocuments()).thenReturn(Optional.of(legalRepresentativeDocuments));
         when(asylumCaseBuilder.getRespondentDocuments()).thenReturn(Optional.of(respondentDocuments));
         when(asylumCaseBuilder.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
@@ -163,6 +166,7 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
         when(asylumCaseBuilder.getChangeDirectionDueDateActionAvailable()).thenReturn(Optional.of(changeDirectionDueDateActionAvailable));
         when(asylumCaseBuilder.getSendDirectionActionAvailable()).thenReturn(Optional.of(sendDirectionActionAvailable));
+        when(asylumCaseBuilder.getUploadAdditionalEvidenceActionAvailable()).thenReturn(Optional.of(uploadAdditionalEvidenceActionAvailable));
         when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer()).thenReturn(Optional.of(currentCaseStateVisibleToCaseOfficer));
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative()).thenReturn(Optional.of(currentCaseStateVisibleToLegalRepresentative));
@@ -203,6 +207,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(sendDirectionDateDue), asylumCase.getSendDirectionDateDue());
         assertEquals(Optional.of(directions), asylumCase.getDirections());
         assertEquals(Optional.of(editableDirections), asylumCase.getEditableDirections());
+        assertEquals(Optional.of(additionalEvidenceDocuments), asylumCase.getAdditionalEvidenceDocuments());
         assertEquals(Optional.of(legalRepresentativeDocuments), asylumCase.getLegalRepresentativeDocuments());
         assertEquals(Optional.of(respondentDocuments), asylumCase.getRespondentDocuments());
         assertEquals(Optional.of(respondentEvidence), asylumCase.getRespondentEvidence());
@@ -219,6 +224,7 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(notificationsSent), asylumCase.getNotificationsSent());
         assertEquals(Optional.of(changeDirectionDueDateActionAvailable), asylumCase.getChangeDirectionDueDateActionAvailable());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
+        assertEquals(Optional.of(uploadAdditionalEvidenceActionAvailable), asylumCase.getUploadAdditionalEvidenceActionAvailable());
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
         assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
@@ -387,6 +393,24 @@ public class AsylumCaseTest {
     }
 
     @Test
+    public void additional_evidence_documents_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        List<IdValue<DocumentWithMetadata>> newAdditionalEvidenceDocuments =
+            Arrays.asList(new IdValue<>("ABC", mock(DocumentWithMetadata.class)));
+
+        asylumCase.setAdditionalEvidenceDocuments(newAdditionalEvidenceDocuments);
+        assertEquals(Optional.of(newAdditionalEvidenceDocuments), asylumCase.getAdditionalEvidenceDocuments());
+
+        asylumCase.setAdditionalEvidenceDocuments(Collections.emptyList());
+        assertEquals(Optional.of(Collections.emptyList()), asylumCase.getAdditionalEvidenceDocuments());
+
+        asylumCase.setAdditionalEvidenceDocuments(null);
+        assertEquals(Optional.empty(), asylumCase.getAdditionalEvidenceDocuments());
+    }
+
+    @Test
     public void legal_representative_documents_is_mutable() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
@@ -494,6 +518,18 @@ public class AsylumCaseTest {
 
         asylumCase.setSendDirectionActionAvailable(null);
         assertEquals(Optional.empty(), asylumCase.getSendDirectionActionAvailable());
+    }
+
+    @Test
+    public void upload_additional_evidence_action_available_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getUploadAdditionalEvidenceActionAvailable());
+
+        asylumCase.setUploadAdditionalEvidenceActionAvailable(null);
+        assertEquals(Optional.empty(), asylumCase.getUploadAdditionalEvidenceActionAvailable());
     }
 
     @Test
