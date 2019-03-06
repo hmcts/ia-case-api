@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -174,12 +173,33 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     }
 
     @Test
-    public void should_throw_when_same_case_is_presented_with_different_appeal_type() {
+    public void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_appeal_type() {
 
-        dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+        final String originalAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
 
-        assertThatThrownBy(() -> dbAppealReferenceNumberGenerator.generate(1, AppealType.RP))
-            .isInstanceOf(IllegalStateException.class);
+        final String subsequentAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
+
+        assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
+        assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));
+    }
+
+    @Test
+    public void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_year() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2018, 12, 31));
+
+        final String originalAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 01, 01));
+
+        final String subsequentAppealReferenceNumber =
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+
+        assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
+        assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));
     }
 
     private void deleteAnyTestAppealReferenceNumbers() {

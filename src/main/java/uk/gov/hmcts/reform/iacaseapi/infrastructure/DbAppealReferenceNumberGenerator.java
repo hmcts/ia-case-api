@@ -95,9 +95,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         return jdbcTemplate.queryForObject(
             " SELECT CONCAT(type, '/', sequence, '/', year) "
             + " FROM ia_case_api.appeal_reference_numbers "
-            + "WHERE case_id = :caseId"
-            + "  AND type = :appealType"
-            + "  AND year = :year",
+            + "WHERE case_id = :caseId;",
             parameters,
             String.class
         );
