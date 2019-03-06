@@ -110,12 +110,20 @@ public class AsylumCase implements CaseData {
     private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> uploadAdditionalEvidenceActionAvailable = Optional.empty();
-    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
     private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
     private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<YesOrNo> respondentReviewAppealResponseAdded = Optional.empty();
+
+    // -----------------------------------------------------------------------------
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -170,12 +178,13 @@ public class AsylumCase implements CaseData {
         this.changeDirectionDueDateActionAvailable = asylumCaseBuilder.getChangeDirectionDueDateActionAvailable();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
         this.uploadAdditionalEvidenceActionAvailable = asylumCaseBuilder.getUploadAdditionalEvidenceActionAvailable();
-        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
         this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
         this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
         this.caseArgumentAvailable = asylumCaseBuilder.getCaseArgumentAvailable();
         this.appealResponseAvailable = asylumCaseBuilder.getAppealResponseAvailable();
         this.submissionOutOfTime = asylumCaseBuilder.getSubmissionOutOfTime();
+        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
+        this.respondentReviewAppealResponseAdded = asylumCaseBuilder.getRespondentReviewAppealResponseAdded();
     }
 
     public Optional<String> getHomeOfficeReferenceNumber() {
@@ -520,11 +529,6 @@ public class AsylumCase implements CaseData {
         return uploadAdditionalEvidenceActionAvailable;
     }
 
-    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
-        requireNonNull(caseBuildingReadyForSubmission);
-        return caseBuildingReadyForSubmission;
-    }
-
     public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
         requireNonNull(currentCaseStateVisibleToCaseOfficer);
         return currentCaseStateVisibleToCaseOfficer;
@@ -548,10 +552,6 @@ public class AsylumCase implements CaseData {
     public Optional<YesOrNo> getSubmissionOutOfTime() {
         requireNonNull(submissionOutOfTime);
         return submissionOutOfTime;
-    }
-
-    public void clearCaseBuildingReadyForSubmission() {
-        this.caseBuildingReadyForSubmission = Optional.empty();
     }
 
     public void setLegalRepresentativeName(String legalRepresentativeName) {
@@ -578,10 +578,6 @@ public class AsylumCase implements CaseData {
         this.uploadAdditionalEvidenceActionAvailable = Optional.ofNullable(uploadAdditionalEvidenceActionAvailable);
     }
 
-    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
-        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
-    }
-
     public void setCurrentCaseStateVisibleToCaseOfficer(State currentCaseStateVisibleToCaseOfficer) {
         this.currentCaseStateVisibleToCaseOfficer = Optional.ofNullable(currentCaseStateVisibleToCaseOfficer);
     }
@@ -600,5 +596,35 @@ public class AsylumCase implements CaseData {
 
     public void setSubmissionOutOfTime(YesOrNo submissionOutOfTime) {
         this.submissionOutOfTime = Optional.ofNullable(submissionOutOfTime);
+    }
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        requireNonNull(caseBuildingReadyForSubmission);
+        return caseBuildingReadyForSubmission;
+    }
+
+    public Optional<YesOrNo> getRespondentReviewAppealResponseAdded() {
+        requireNonNull(respondentReviewAppealResponseAdded);
+        return respondentReviewAppealResponseAdded;
+    }
+
+    public void clearCaseBuildingReadyForSubmission() {
+        this.caseBuildingReadyForSubmission = Optional.empty();
+    }
+
+    public void clearRespondentReviewAppealResponseAdded() {
+        this.respondentReviewAppealResponseAdded = Optional.empty();
+    }
+
+    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
+    }
+
+    public void setRespondentReviewAppealResponseAdded(YesOrNo respondentReviewAppealResponseAdded) {
+        this.respondentReviewAppealResponseAdded = Optional.ofNullable(respondentReviewAppealResponseAdded);
     }
 }

@@ -109,12 +109,20 @@ public class AsylumCaseBuilder {
     private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
     private Optional<YesOrNo> uploadAdditionalEvidenceActionAvailable = Optional.empty();
-    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
     private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
     private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<YesOrNo> respondentReviewAppealResponseAdded = Optional.empty();
+
+    // -----------------------------------------------------------------------------
 
     public AsylumCase build() {
         return new AsylumCase(this);
@@ -496,10 +504,6 @@ public class AsylumCaseBuilder {
         return uploadAdditionalEvidenceActionAvailable;
     }
 
-    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
-        return caseBuildingReadyForSubmission;
-    }
-
     public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
         return currentCaseStateVisibleToCaseOfficer;
     }
@@ -552,10 +556,6 @@ public class AsylumCaseBuilder {
         this.uploadAdditionalEvidenceActionAvailable = uploadAdditionalEvidenceActionAvailable;
     }
 
-    public void setCaseBuildingReadyForSubmission(Optional<YesOrNo> caseBuildingReadyForSubmission) {
-        this.caseBuildingReadyForSubmission = caseBuildingReadyForSubmission;
-    }
-
     public void setCurrentCaseStateVisibleToCaseOfficer(Optional<State> currentCaseStateVisibleToCaseOfficer) {
         this.currentCaseStateVisibleToCaseOfficer = currentCaseStateVisibleToCaseOfficer;
     }
@@ -574,5 +574,25 @@ public class AsylumCaseBuilder {
 
     public void setSubmissionOutOfTime(Optional<YesOrNo> submissionOutOfTime) {
         this.submissionOutOfTime = submissionOutOfTime;
+    }
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        return caseBuildingReadyForSubmission;
+    }
+
+    public Optional<YesOrNo> getRespondentReviewAppealResponseAdded() {
+        return respondentReviewAppealResponseAdded;
+    }
+
+    public void setCaseBuildingReadyForSubmission(Optional<YesOrNo> caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = caseBuildingReadyForSubmission;
+    }
+
+    public void setRespondentReviewAppealResponseAdded(Optional<YesOrNo> respondentReviewAppealResponseAdded) {
+        this.respondentReviewAppealResponseAdded = respondentReviewAppealResponseAdded;
     }
 }

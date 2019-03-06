@@ -110,12 +110,20 @@ public class AsylumCaseTest {
     private final YesOrNo changeDirectionDueDateActionAvailable = YesOrNo.YES;
     private final YesOrNo sendDirectionActionAvailable = YesOrNo.YES;
     private final YesOrNo uploadAdditionalEvidenceActionAvailable = YesOrNo.YES;
-    private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
     private final State currentCaseStateVisibleToCaseOfficer = State.APPEAL_SUBMITTED;
     private final State currentCaseStateVisibleToLegalRepresentative = State.APPEAL_SUBMITTED;
     private final YesOrNo caseArgumentAvailable = YesOrNo.YES;
     private final YesOrNo appealResponseAvailable = YesOrNo.NO;
     private final YesOrNo submissionOutOfTime = YesOrNo.YES;
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    private final YesOrNo caseBuildingReadyForSubmission = YesOrNo.YES;
+    private final YesOrNo respondentReviewAppealResponseAdded = YesOrNo.YES;
+
+    // -----------------------------------------------------------------------------
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -167,12 +175,13 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getChangeDirectionDueDateActionAvailable()).thenReturn(Optional.of(changeDirectionDueDateActionAvailable));
         when(asylumCaseBuilder.getSendDirectionActionAvailable()).thenReturn(Optional.of(sendDirectionActionAvailable));
         when(asylumCaseBuilder.getUploadAdditionalEvidenceActionAvailable()).thenReturn(Optional.of(uploadAdditionalEvidenceActionAvailable));
-        when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer()).thenReturn(Optional.of(currentCaseStateVisibleToCaseOfficer));
         when(asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative()).thenReturn(Optional.of(currentCaseStateVisibleToLegalRepresentative));
         when(asylumCaseBuilder.getCaseArgumentAvailable()).thenReturn(Optional.of(caseArgumentAvailable));
         when(asylumCaseBuilder.getAppealResponseAvailable()).thenReturn(Optional.of(appealResponseAvailable));
         when(asylumCaseBuilder.getSubmissionOutOfTime()).thenReturn(Optional.of(submissionOutOfTime));
+        when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
+        when(asylumCaseBuilder.getRespondentReviewAppealResponseAdded()).thenReturn(Optional.of(respondentReviewAppealResponseAdded));
     }
 
     @Test
@@ -225,12 +234,13 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(changeDirectionDueDateActionAvailable), asylumCase.getChangeDirectionDueDateActionAvailable());
         assertEquals(Optional.of(sendDirectionActionAvailable), asylumCase.getSendDirectionActionAvailable());
         assertEquals(Optional.of(uploadAdditionalEvidenceActionAvailable), asylumCase.getUploadAdditionalEvidenceActionAvailable());
-        assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(currentCaseStateVisibleToCaseOfficer), asylumCase.getCurrentCaseStateVisibleToCaseOfficer());
         assertEquals(Optional.of(currentCaseStateVisibleToLegalRepresentative), asylumCase.getCurrentCaseStateVisibleToLegalRepresentative());
         assertEquals(Optional.of(caseArgumentAvailable), asylumCase.getCaseArgumentAvailable());
         assertEquals(Optional.of(appealResponseAvailable), asylumCase.getAppealResponseAvailable());
         assertEquals(Optional.of(submissionOutOfTime), asylumCase.getSubmissionOutOfTime());
+        assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
+        assertEquals(Optional.of(respondentReviewAppealResponseAdded), asylumCase.getRespondentReviewAppealResponseAdded());
     }
 
     @Test
@@ -533,27 +543,6 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void case_building_ready_for_submission_flag_is_clearable() {
-
-        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
-
-        asylumCase.clearCaseBuildingReadyForSubmission();
-        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
-    }
-
-    @Test
-    public void case_building_ready_for_submission_flag_is_mutable() {
-
-        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
-
-        asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
-        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getCaseBuildingReadyForSubmission());
-
-        asylumCase.setCaseBuildingReadyForSubmission(null);
-        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
-    }
-
-    @Test
     public void current_case_state_visible_to_case_officer_flag_is_mutable() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
@@ -602,6 +591,30 @@ public class AsylumCaseTest {
     }
 
     @Test
+    public void case_building_ready_for_submission_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getCaseBuildingReadyForSubmission());
+
+        asylumCase.setCaseBuildingReadyForSubmission(null);
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
+    }
+
+    @Test
+    public void respondent_review_appeal_response_added_flag_is_mutable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.setRespondentReviewAppealResponseAdded(YesOrNo.NO);
+        assertEquals(Optional.of(YesOrNo.NO), asylumCase.getRespondentReviewAppealResponseAdded());
+
+        asylumCase.setRespondentReviewAppealResponseAdded(null);
+        assertEquals(Optional.empty(), asylumCase.getRespondentReviewAppealResponseAdded());
+    }
+
+    @Test
     public void editable_directions_are_clearable() {
 
         AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
@@ -625,5 +638,23 @@ public class AsylumCaseTest {
 
         asylumCase.setSubmissionOutOfTime(null);
         assertEquals(Optional.empty(), asylumCase.getSubmissionOutOfTime());
+    }
+
+    @Test
+    public void case_building_ready_for_submission_flag_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearCaseBuildingReadyForSubmission();
+        assertEquals(Optional.empty(), asylumCase.getCaseBuildingReadyForSubmission());
+    }
+
+    @Test
+    public void respondent_review_appeal_response_added_flag_is_clearable() {
+
+        AsylumCase asylumCase = new AsylumCase(asylumCaseBuilder);
+
+        asylumCase.clearRespondentReviewAppealResponseAdded();
+        assertEquals(Optional.empty(), asylumCase.getRespondentReviewAppealResponseAdded());
     }
 }

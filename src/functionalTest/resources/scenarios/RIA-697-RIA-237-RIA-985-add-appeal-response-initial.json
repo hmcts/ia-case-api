@@ -1,5 +1,5 @@
 {
-  "description": "RIA-697 & RIA-237 Add appeal response -- replace previous",
+  "description": "RIA-697 & RIA-237 & RIA-985 Add appeal response -- initial upload",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealResponseAvailable": "Yes",
+          "appealResponseAvailable": null,
           "appealResponseDocument": {
             "document_url": "http://document-store/AAA",
             "document_binary_url": "http://document-store/AAA/binary",
@@ -40,34 +40,7 @@
               }
             }
           ],
-          "respondentDocuments": [
-            {
-              "id": "2",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/XXX",
-                  "document_binary_url": "http://document-store/XXX/binary",
-                  "document_filename": "previous-appeal-response.pdf"
-                },
-                "description": "Previous appeal response",
-                "dateUploaded": "2018-12-01",
-                "tag": "appealResponse"
-              }
-            },
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/YYY",
-                  "document_binary_url": "http://document-store/YYY/binary",
-                  "document_filename": "previous-appeal-response-evidence.pdf"
-                },
-                "description": "Previous appeal response evidence",
-                "dateUploaded": "2018-12-01",
-                "tag": "appealResponse"
-              }
-            }
-          ],
+          "respondentReviewAppealResponseAdded": "No",
           "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
@@ -163,6 +136,7 @@
             }
           }
         ],
+        "respondentReviewAppealResponseAdded": "Yes",
         "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
