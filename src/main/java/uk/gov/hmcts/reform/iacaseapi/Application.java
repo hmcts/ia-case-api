@@ -6,8 +6,8 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 
-@EnableRetry
 @SpringBootApplication
+@EnableRetry
 @EnableCircuitBreaker
 @EnableFeignClients(basePackages =
     {

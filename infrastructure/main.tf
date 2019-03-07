@@ -114,6 +114,17 @@ data "azurerm_key_vault_secret" "s2s_url" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+module "ia_case_api_database" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.product}-${var.component}-postgres-db"
+  location           = "${var.location}"
+  env                = "${var.env}"
+  database_name      = "${var.postgresql_database_name}"
+  postgresql_user    = "${var.postgresql_user}"
+  postgresql_version = "10"
+  common_tags        = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+}
+
 module "ia_case_api" {
   source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                         = "${var.product}-${var.component}"
@@ -144,6 +155,12 @@ module "ia_case_api" {
     IA_IDAM_REDIRECT_URI          = "${data.azurerm_key_vault_secret.idam_redirect_uri.value}"
     IA_S2S_SECRET                 = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     IA_S2S_MICROSERVICE           = "${data.azurerm_key_vault_secret.s2s_microservice.value}"
+
+    POSTGRES_HOST     = "${module.ia_case_api_database.host_name}"
+    POSTGRES_PORT     = "${module.ia_case_api_database.postgresql_listen_port}"
+    POSTGRES_NAME     = "${module.ia_case_api_database.postgresql_database}"
+    POSTGRES_USERNAME = "${module.ia_case_api_database.user_name}"
+    POSTGRES_PASSWORD = "${module.ia_case_api_database.postgresql_password}"
 
     CCD_URL  = "${data.azurerm_key_vault_secret.ccd_url.value}"
     DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"

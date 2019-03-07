@@ -34,7 +34,7 @@ public class AsylumCaseTest {
     private final List<IdValue<Map<String, String>>> appellantNationalities = mock(List.class);
     private final YesOrNo appellantHasFixedAddress = YesOrNo.YES;
     private final AddressUk appellantAddress = mock(AddressUk.class);
-    private final String appealType = "I";
+    private final AppealType appealType = AppealType.RP;
     private final CheckValues<String> appealGroundsProtection = mock(CheckValues.class);
     private final CheckValues<String> appealGroundsHumanRights = mock(CheckValues.class);
     private final CheckValues<String> appealGroundsRevocation = mock(CheckValues.class);
