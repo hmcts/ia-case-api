@@ -11,7 +11,7 @@ cp /zap/api-report.html functional-output/
 cp /zap/api-report.xml functional-output/
 
 if [ -f zap-known-issues.xml ]; then
-  if diff -q zap-known-issues.xml functional-output/api-report.xml > /dev/null 2>&1; then
+  if diff -q zap-known-issues.xml functional-output/api-report.xml --ignore-all-space --ignore-matching-lines=OWASPZAPReport > /dev/null 2>&1; then
     echo
     echo Ignorning known vulnerabilities
     exit 0
