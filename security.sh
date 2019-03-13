@@ -10,25 +10,24 @@ ls -la /zap
 cp /zap/api-report.html functional-output/
 cp /zap/api-report.xml functional-output/
 
-#  if [ -f zap-known-issues.xml ]; then
-#    if diff -q zap-known-issues.xml functional-output/api-report.xml > /dev/null 2>&1; then
-#      echo
-#      echo Ignorning known vulnerabilities
-#      exit 0
-#    fi
-#  fi
-#
-#  echo
-#  echo ZAP Security vulnerabilities were found that were not ignored
-#  echo
-#  echo Check to see if these vulnerabilities apply to production
-#  echo and/or if they have fixes available. If they do not have
-#  echo fixes and they do not apply to production, you may ignore them
-#  echo
-#  echo To ignore these vulnerabilities, add them to:
-#  echo
-#  echo "./zap-known-issues.xml"
-#  echo
-#  echo and commit the change
+if [ -f zap-known-issues.xml ]; then
+  if diff -q zap-known-issues.xml functional-output/api-report.xml > /dev/null 2>&1; then
+    echo
+    echo Ignorning known vulnerabilities
+    exit 0
+  fi
+fi
+echo
+echo ZAP Security vulnerabilities were found that were not ignored
+echo
+echo Check to see if these vulnerabilities apply to production
+echo and/or if they have fixes available. If they do not have
+echo fixes and they do not apply to production, you may ignore them
+echo
+echo To ignore these vulnerabilities, add them to:
+echo
+echo "./zap-known-issues.xml"
+echo
+echo and commit the change
 
 zap-cli -p 1001 alerts -l Informational
