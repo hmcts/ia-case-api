@@ -28,6 +28,7 @@ public class DirectionTest {
         assertEquals(parties, direction.getParties());
         assertEquals(dateDue, direction.getDateDue());
         assertEquals(dateSent, direction.getDateSent());
+        assertEquals(tag, direction.getTag());
     }
 
     @Test

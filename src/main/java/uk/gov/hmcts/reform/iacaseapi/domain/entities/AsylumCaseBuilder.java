@@ -61,6 +61,7 @@ public class AsylumCaseBuilder {
     // -----------------------------------------------------------------------------
 
     private Optional<List<IdValue<DocumentWithMetadata>>> additionalEvidenceDocuments = Optional.empty();
+    private Optional<List<IdValue<DocumentWithMetadata>>> hearingDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
 
@@ -98,6 +99,19 @@ public class AsylumCaseBuilder {
     // -----------------------------------------------------------------------------
 
     private Optional<List<IdValue<DocumentWithDescription>>> additionalEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<HearingCentre> listCaseHearingCentre = Optional.empty();
+    private Optional<HearingLength> listCaseHearingLength = Optional.empty();
+    private Optional<String> listCaseHearingDate = Optional.empty();
+    private Optional<String> listCaseRequirementsVulnerabilities = Optional.empty();
+    private Optional<String> listCaseRequirementsMultimedia = Optional.empty();
+    private Optional<String> listCaseRequirementsSingleSexCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsInCameraCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsOther = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // internal API managed fields ...
@@ -364,6 +378,10 @@ public class AsylumCaseBuilder {
         return additionalEvidenceDocuments;
     }
 
+    public Optional<List<IdValue<DocumentWithMetadata>>> getHearingDocuments() {
+        return hearingDocuments;
+    }
+
     public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
         return legalRepresentativeDocuments;
     }
@@ -374,6 +392,10 @@ public class AsylumCaseBuilder {
 
     public void setAdditionalEvidenceDocuments(Optional<List<IdValue<DocumentWithMetadata>>> additionalEvidenceDocuments) {
         this.additionalEvidenceDocuments = additionalEvidenceDocuments;
+    }
+
+    public void setHearingDocuments(Optional<List<IdValue<DocumentWithMetadata>>> hearingDocuments) {
+        this.hearingDocuments = hearingDocuments;
     }
 
     public void setLegalRepresentativeDocuments(Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments) {
@@ -474,6 +496,74 @@ public class AsylumCaseBuilder {
 
     public void setAdditionalEvidence(Optional<List<IdValue<DocumentWithDescription>>> additionalEvidence) {
         this.additionalEvidence = additionalEvidence;
+    }
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<HearingCentre> getListCaseHearingCentre() {
+        return listCaseHearingCentre;
+    }
+
+    public Optional<HearingLength> getListCaseHearingLength() {
+        return listCaseHearingLength;
+    }
+
+    public Optional<String> getListCaseHearingDate() {
+        return listCaseHearingDate;
+    }
+
+    public Optional<String> getListCaseRequirementsVulnerabilities() {
+        return listCaseRequirementsVulnerabilities;
+    }
+
+    public Optional<String> getListCaseRequirementsMultimedia() {
+        return listCaseRequirementsMultimedia;
+    }
+
+    public Optional<String> getListCaseRequirementsSingleSexCourt() {
+        return listCaseRequirementsSingleSexCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsInCameraCourt() {
+        return listCaseRequirementsInCameraCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsOther() {
+        return listCaseRequirementsOther;
+    }
+
+    public void setListCaseHearingCentre(Optional<HearingCentre> listCaseHearingCentre) {
+        this.listCaseHearingCentre = listCaseHearingCentre;
+    }
+
+    public void setListCaseHearingLength(Optional<HearingLength> listCaseHearingLength) {
+        this.listCaseHearingLength = listCaseHearingLength;
+    }
+
+    public void setListCaseHearingDate(Optional<String> listCaseHearingDate) {
+        this.listCaseHearingDate = listCaseHearingDate;
+    }
+
+    public void setListCaseRequirementsVulnerabilities(Optional<String> listCaseRequirementsVulnerabilities) {
+        this.listCaseRequirementsVulnerabilities = listCaseRequirementsVulnerabilities;
+    }
+
+    public void setListCaseRequirementsMultimedia(Optional<String> listCaseRequirementsMultimedia) {
+        this.listCaseRequirementsMultimedia = listCaseRequirementsMultimedia;
+    }
+
+    public void setListCaseRequirementsSingleSexCourt(Optional<String> listCaseRequirementsSingleSexCourt) {
+        this.listCaseRequirementsSingleSexCourt = listCaseRequirementsSingleSexCourt;
+    }
+
+    public void setListCaseRequirementsInCameraCourt(Optional<String> listCaseRequirementsInCameraCourt) {
+        this.listCaseRequirementsInCameraCourt = listCaseRequirementsInCameraCourt;
+    }
+
+    public void setListCaseRequirementsOther(Optional<String> listCaseRequirementsOther) {
+        this.listCaseRequirementsOther = listCaseRequirementsOther;
     }
 
     // -----------------------------------------------------------------------------

@@ -29,6 +29,6 @@ public enum HearingCentre {
 
     @Override
     public String toString() {
-        return value;
+        return getValue();
     }
 }

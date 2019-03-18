@@ -62,6 +62,7 @@ public class AsylumCase implements CaseData {
     // -----------------------------------------------------------------------------
 
     private Optional<List<IdValue<DocumentWithMetadata>>> additionalEvidenceDocuments = Optional.empty();
+    private Optional<List<IdValue<DocumentWithMetadata>>> hearingDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
 
@@ -99,6 +100,19 @@ public class AsylumCase implements CaseData {
     // -----------------------------------------------------------------------------
 
     private Optional<List<IdValue<DocumentWithDescription>>> additionalEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<HearingCentre> listCaseHearingCentre = Optional.empty();
+    private Optional<HearingLength> listCaseHearingLength = Optional.empty();
+    private Optional<String> listCaseHearingDate = Optional.empty();
+    private Optional<String> listCaseRequirementsVulnerabilities = Optional.empty();
+    private Optional<String> listCaseRequirementsMultimedia = Optional.empty();
+    private Optional<String> listCaseRequirementsSingleSexCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsInCameraCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsOther = Optional.empty();
 
     // -----------------------------------------------------------------------------
     // internal API managed fields ...
@@ -154,24 +168,43 @@ public class AsylumCase implements CaseData {
         this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.appealGroundsForDisplay = asylumCaseBuilder.getAppealGroundsForDisplay();
         this.hearingCentre = asylumCaseBuilder.getHearingCentre();
+
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
+
         this.editableDirections = asylumCaseBuilder.getEditableDirections();
+
         this.additionalEvidenceDocuments = asylumCaseBuilder.getAdditionalEvidenceDocuments();
         this.legalRepresentativeDocuments = asylumCaseBuilder.getLegalRepresentativeDocuments();
+        this.hearingDocuments = asylumCaseBuilder.getHearingDocuments();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
+
         this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
+
         this.caseArgumentDocument = asylumCaseBuilder.getCaseArgumentDocument();
         this.caseArgumentDescription = asylumCaseBuilder.getCaseArgumentDescription();
         this.caseArgumentEvidence = asylumCaseBuilder.getCaseArgumentEvidence();
+
         this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
         this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
+
         this.applicationOutOfTimeExplanation = asylumCaseBuilder.getApplicationOutOfTimeExplanation();
         this.applicationOutOfTimeDocument = asylumCaseBuilder.getApplicationOutOfTimeDocument();
+
         this.additionalEvidence = asylumCaseBuilder.getAdditionalEvidence();
+
+        this.listCaseHearingCentre = asylumCaseBuilder.getListCaseHearingCentre();
+        this.listCaseHearingLength = asylumCaseBuilder.getListCaseHearingLength();
+        this.listCaseHearingDate = asylumCaseBuilder.getListCaseHearingDate();
+        this.listCaseRequirementsVulnerabilities = asylumCaseBuilder.getListCaseRequirementsVulnerabilities();
+        this.listCaseRequirementsMultimedia = asylumCaseBuilder.getListCaseRequirementsMultimedia();
+        this.listCaseRequirementsSingleSexCourt = asylumCaseBuilder.getListCaseRequirementsSingleSexCourt();
+        this.listCaseRequirementsInCameraCourt = asylumCaseBuilder.getListCaseRequirementsInCameraCourt();
+        this.listCaseRequirementsOther = asylumCaseBuilder.getListCaseRequirementsOther();
+
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
@@ -181,11 +214,17 @@ public class AsylumCase implements CaseData {
         this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
         this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
         this.caseArgumentAvailable = asylumCaseBuilder.getCaseArgumentAvailable();
+
         this.appealResponseAvailable = asylumCaseBuilder.getAppealResponseAvailable();
         this.submissionOutOfTime = asylumCaseBuilder.getSubmissionOutOfTime();
+
         this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
         this.respondentReviewAppealResponseAdded = asylumCaseBuilder.getRespondentReviewAppealResponseAdded();
     }
+
+    // -----------------------------------------------------------------------------
+    // legal rep appeal ...
+    // -----------------------------------------------------------------------------
 
     public Optional<String> getHomeOfficeReferenceNumber() {
         requireNonNull(homeOfficeReferenceNumber);
@@ -370,7 +409,7 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer directions ...
+    // change direction due date ...
     // -----------------------------------------------------------------------------
 
     public Optional<List<IdValue<EditableDirection>>> getEditableDirections() {
@@ -395,6 +434,11 @@ public class AsylumCase implements CaseData {
         return additionalEvidenceDocuments;
     }
 
+    public Optional<List<IdValue<DocumentWithMetadata>>> getHearingDocuments() {
+        requireNonNull(hearingDocuments);
+        return hearingDocuments;
+    }
+
     public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
         requireNonNull(legalRepresentativeDocuments);
         return legalRepresentativeDocuments;
@@ -407,6 +451,10 @@ public class AsylumCase implements CaseData {
 
     public void setAdditionalEvidenceDocuments(List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments) {
         this.additionalEvidenceDocuments = Optional.ofNullable(additionalEvidenceDocuments);
+    }
+
+    public void setHearingDocuments(List<IdValue<DocumentWithMetadata>> hearingDocuments) {
+        this.hearingDocuments = Optional.ofNullable(hearingDocuments);
     }
 
     public void setLegalRepresentativeDocuments(List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments) {
@@ -493,6 +541,54 @@ public class AsylumCase implements CaseData {
 
     public void clearAdditionalEvidence() {
         this.additionalEvidence = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<HearingCentre> getListCaseHearingCentre() {
+        requireNonNull(listCaseHearingCentre);
+        return listCaseHearingCentre;
+    }
+
+    public Optional<HearingLength> getListCaseHearingLength() {
+        requireNonNull(listCaseHearingLength);
+        return listCaseHearingLength;
+    }
+
+    public Optional<String> getListCaseHearingDate() {
+        requireNonNull(listCaseHearingDate);
+        return listCaseHearingDate;
+    }
+
+    public Optional<String> getListCaseRequirementsVulnerabilities() {
+        requireNonNull(listCaseRequirementsVulnerabilities);
+        return listCaseRequirementsVulnerabilities;
+    }
+
+    public Optional<String> getListCaseRequirementsMultimedia() {
+        requireNonNull(listCaseRequirementsMultimedia);
+        return listCaseRequirementsMultimedia;
+    }
+
+    public Optional<String> getListCaseRequirementsSingleSexCourt() {
+        requireNonNull(listCaseRequirementsSingleSexCourt);
+        return listCaseRequirementsSingleSexCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsInCameraCourt() {
+        requireNonNull(listCaseRequirementsInCameraCourt);
+        return listCaseRequirementsInCameraCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsOther() {
+        requireNonNull(listCaseRequirementsOther);
+        return listCaseRequirementsOther;
+    }
+
+    public void setListCaseHearingCentre(HearingCentre listCaseHearingCentre) {
+        this.listCaseHearingCentre = Optional.ofNullable(listCaseHearingCentre);
     }
 
     // -----------------------------------------------------------------------------

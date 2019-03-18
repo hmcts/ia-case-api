@@ -18,6 +18,7 @@ public enum Event {
     REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
+    LIST_CASE("listCase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
