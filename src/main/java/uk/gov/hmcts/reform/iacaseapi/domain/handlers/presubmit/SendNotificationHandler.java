@@ -41,7 +41,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                Arrays.asList(
                    Event.SUBMIT_APPEAL,
                    Event.REQUEST_RESPONDENT_EVIDENCE,
-                   Event.UPLOAD_RESPONDENT_EVIDENCE
+                   Event.UPLOAD_RESPONDENT_EVIDENCE,
+                   Event.ADD_APPEAL_RESPONSE
                ).contains(callback.getEvent());
     }
 
