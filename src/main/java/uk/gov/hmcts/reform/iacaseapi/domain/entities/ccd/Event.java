@@ -19,6 +19,7 @@ public enum Event {
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
     LIST_CASE("listCase"),
+    CREATE_CASE_SUMMARY("createCaseSummary"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

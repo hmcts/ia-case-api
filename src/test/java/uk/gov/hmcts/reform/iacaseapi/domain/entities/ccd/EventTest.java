@@ -23,11 +23,12 @@ public class EventTest {
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
         assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
+        assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(16, Event.values().length);
+        assertEquals(17, Event.values().length);
     }
 }

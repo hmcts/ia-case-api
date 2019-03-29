@@ -115,6 +115,13 @@ public class AsylumCase implements CaseData {
     private Optional<String> listCaseRequirementsOther = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> caseSummaryDocument = Optional.empty();
+    private Optional<String> caseSummaryDescription = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -204,6 +211,9 @@ public class AsylumCase implements CaseData {
         this.listCaseRequirementsSingleSexCourt = asylumCaseBuilder.getListCaseRequirementsSingleSexCourt();
         this.listCaseRequirementsInCameraCourt = asylumCaseBuilder.getListCaseRequirementsInCameraCourt();
         this.listCaseRequirementsOther = asylumCaseBuilder.getListCaseRequirementsOther();
+
+        this.caseSummaryDocument = asylumCaseBuilder.getCaseSummaryDocument();
+        this.caseSummaryDescription = asylumCaseBuilder.getCaseSummaryDescription();
 
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
@@ -589,6 +599,20 @@ public class AsylumCase implements CaseData {
 
     public void setListCaseHearingCentre(HearingCentre listCaseHearingCentre) {
         this.listCaseHearingCentre = Optional.ofNullable(listCaseHearingCentre);
+    }
+
+    // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getCaseSummaryDocument() {
+        requireNonNull(caseSummaryDocument);
+        return caseSummaryDocument;
+    }
+
+    public Optional<String> getCaseSummaryDescription() {
+        requireNonNull(caseSummaryDescription);
+        return caseSummaryDescription;
     }
 
     // -----------------------------------------------------------------------------

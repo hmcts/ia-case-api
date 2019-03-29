@@ -121,6 +121,13 @@ public class AsylumCaseTest {
     private String listCaseRequirementsOther = "some-other";
 
     // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    private final Document caseSummaryDocument = mock(Document.class);
+    private final String caseSummaryDescription = "Case summary...";
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -209,6 +216,9 @@ public class AsylumCaseTest {
         when(asylumCaseBuilder.getListCaseRequirementsInCameraCourt()).thenReturn(Optional.of(listCaseRequirementsInCameraCourt));
         when(asylumCaseBuilder.getListCaseRequirementsOther()).thenReturn(Optional.of(listCaseRequirementsOther));
 
+        when(asylumCaseBuilder.getCaseSummaryDocument()).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCaseBuilder.getCaseSummaryDescription()).thenReturn(Optional.of(caseSummaryDescription));
+
         when(asylumCaseBuilder.getLegalRepresentativeName()).thenReturn(Optional.of(legalRepresentativeName));
         when(asylumCaseBuilder.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of(legalRepresentativeEmailAddress));
         when(asylumCaseBuilder.getNotificationsSent()).thenReturn(Optional.of(notificationsSent));
@@ -288,6 +298,9 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(listCaseRequirementsSingleSexCourt), asylumCase.getListCaseRequirementsSingleSexCourt());
         assertEquals(Optional.of(listCaseRequirementsInCameraCourt), asylumCase.getListCaseRequirementsInCameraCourt());
         assertEquals(Optional.of(listCaseRequirementsOther), asylumCase.getListCaseRequirementsOther());
+
+        assertEquals(Optional.of(caseSummaryDocument), asylumCase.getCaseSummaryDocument());
+        assertEquals(Optional.of(caseSummaryDescription), asylumCase.getCaseSummaryDescription());
 
         assertEquals(Optional.of(legalRepresentativeName), asylumCase.getLegalRepresentativeName());
         assertEquals(Optional.of(legalRepresentativeEmailAddress), asylumCase.getLegalRepresentativeEmailAddress());

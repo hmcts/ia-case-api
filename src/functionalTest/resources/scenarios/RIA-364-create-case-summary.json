@@ -1,0 +1,53 @@
+{
+  "description": "RIA-364 Create case summary",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "createCaseSummary",
+      "state": "finalBundling",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseSummaryDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "case-summary.pdf"
+          },
+          "caseSummaryDescription": "Case summary",
+          "hearingDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseSummaryDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-summary.pdf"
+        },
+        "caseSummaryDescription": "Case summary",
+        "hearingDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "case-summary.pdf"
+              },
+              "description": "Case summary",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseSummary"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

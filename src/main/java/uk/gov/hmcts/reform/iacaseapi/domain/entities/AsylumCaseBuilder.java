@@ -114,6 +114,13 @@ public class AsylumCaseBuilder {
     private Optional<String> listCaseRequirementsOther = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> caseSummaryDocument = Optional.empty();
+    private Optional<String> caseSummaryDescription = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -564,6 +571,26 @@ public class AsylumCaseBuilder {
 
     public void setListCaseRequirementsOther(Optional<String> listCaseRequirementsOther) {
         this.listCaseRequirementsOther = listCaseRequirementsOther;
+    }
+
+    // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getCaseSummaryDocument() {
+        return caseSummaryDocument;
+    }
+
+    public Optional<String> getCaseSummaryDescription() {
+        return caseSummaryDescription;
+    }
+
+    public void setCaseSummaryDocument(Optional<Document> caseSummaryDocument) {
+        this.caseSummaryDocument = caseSummaryDocument;
+    }
+
+    public void setCaseSummaryDescription(Optional<String> caseSummaryDescription) {
+        this.caseSummaryDescription = caseSummaryDescription;
     }
 
     // -----------------------------------------------------------------------------
