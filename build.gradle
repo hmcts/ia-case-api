@@ -177,6 +177,8 @@ sonarqube {
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/config/**," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
                                      "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java"
+        property "sonar.cpd.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/AsylumCase.java," +
+                                         "src/main/java/uk/gov/hmcts/reform/iacaseapi/domain/entities/AsylumCaseBuilder.java"
     }
 }
 

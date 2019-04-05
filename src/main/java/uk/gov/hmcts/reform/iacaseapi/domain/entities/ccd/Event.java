@@ -20,6 +20,7 @@ public enum Event {
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
     LIST_CASE("listCase"),
     CREATE_CASE_SUMMARY("createCaseSummary"),
+    REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -65,31 +65,40 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                 .getDirections()
                 .orElse(Collections.emptyList());
 
-        List<IdValue<Direction>> allDirections =
-            directionAppender.append(
-                existingDirections,
-                "You must now build your case by uploading your appeal argument and evidence.\n\n"
-                + "Advice on writing an appeal argument\n"
-                + "You must write a full argument that references:\n"
-                + "- all the evidence you have or plan to rely on, including any witness statements\n"
-                + "- the grounds and issues of the case\n"
-                + "- any new matters\n"
-                + "- any legal authorities you plan to rely on and why they are applicable to your case\n\n"
-                + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all "
-                + "the information for the Home Office to conduct a thorough review of their decision at this stage.\n\n"
-                + "Next steps\n"
-                + "Once you have uploaded your appeal argument and all evidence, submit your case. The case officer will "
-                + "then review everything you've added. If your case looks ready, the case officer will send it to the "
-                + "respondent for their review. The respondent then has 14 days to respond.",
-                Parties.LEGAL_REPRESENTATIVE,
-                dateProvider
-                    .now()
-                    .plusDays(buildCaseDueInDays)
-                    .toString(),
-                DirectionTag.BUILD_CASE
-            );
+        boolean directionAlreadyExists =
+            existingDirections
+                .stream()
+                .map(IdValue::getValue)
+                .anyMatch(direction -> direction.getTag() == DirectionTag.BUILD_CASE);
 
-        asylumCase.setDirections(allDirections);
+        if (!directionAlreadyExists) {
+
+            List<IdValue<Direction>> allDirections =
+                directionAppender.append(
+                    existingDirections,
+                    "You must now build your case by uploading your appeal argument and evidence.\n\n"
+                    + "Advice on writing an appeal argument\n"
+                    + "You must write a full argument that references:\n"
+                    + "- all the evidence you have or plan to rely on, including any witness statements\n"
+                    + "- the grounds and issues of the case\n"
+                    + "- any new matters\n"
+                    + "- any legal authorities you plan to rely on and why they are applicable to your case\n\n"
+                    + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all "
+                    + "the information for the Home Office to conduct a thorough review of their decision at this stage.\n\n"
+                    + "Next steps\n"
+                    + "Once you have uploaded your appeal argument and all evidence, submit your case. The case officer will "
+                    + "then review everything you've added. If your case looks ready, the case officer will send it to the "
+                    + "respondent for their review. The respondent then has 14 days to respond.",
+                    Parties.LEGAL_REPRESENTATIVE,
+                    dateProvider
+                        .now()
+                        .plusDays(buildCaseDueInDays)
+                        .toString(),
+                    DirectionTag.BUILD_CASE
+                );
+
+            asylumCase.setDirections(allDirections);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
