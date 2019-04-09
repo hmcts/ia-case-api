@@ -42,7 +42,8 @@ public class GenerateDocumentHandlerTest {
 
         Arrays.asList(
             Event.SUBMIT_APPEAL,
-            Event.LIST_CASE
+            Event.LIST_CASE,
+            Event.GENERATE_HEARING_BUNDLE
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -96,7 +97,8 @@ public class GenerateDocumentHandlerTest {
                     &&
                     Arrays.asList(
                         Event.SUBMIT_APPEAL,
-                        Event.LIST_CASE
+                        Event.LIST_CASE,
+                        Event.GENERATE_HEARING_BUNDLE
                     ).contains(event)) {
 
                     assertTrue(canHandle);

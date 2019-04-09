@@ -45,7 +45,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
                &&
                Arrays.asList(
                    Event.SUBMIT_APPEAL,
-                   Event.LIST_CASE
+                   Event.LIST_CASE,
+                   Event.GENERATE_HEARING_BUNDLE
                ).contains(callback.getEvent());
     }
 
