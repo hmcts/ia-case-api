@@ -39,6 +39,7 @@ public class SendNotificationHandlerTest {
 
         Arrays.asList(
             Event.SUBMIT_APPEAL,
+            Event.SEND_DIRECTION,
             Event.REQUEST_RESPONDENT_EVIDENCE,
             Event.UPLOAD_RESPONDENT_EVIDENCE,
             Event.ADD_APPEAL_RESPONSE
@@ -74,7 +75,7 @@ public class SendNotificationHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -95,6 +96,7 @@ public class SendNotificationHandlerTest {
                     &&
                     Arrays.asList(
                         Event.SUBMIT_APPEAL,
+                        Event.SEND_DIRECTION,
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.UPLOAD_RESPONDENT_EVIDENCE,
                         Event.ADD_APPEAL_RESPONSE
