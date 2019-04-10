@@ -44,7 +44,10 @@ public final class MapFieldAssertor {
                     String pathWithKeyAndIndex = pathWithKey + "." + i;
 
                     Object expectedValueItem = expectedValueCollection.get(i);
-                    Object actualValueItem = actualValueCollection.get(i);
+                    Object actualValueItem =
+                        i < actualValueCollection.size()
+                            ? actualValueCollection.get(i)
+                            : null;
 
                     assertValue(expectedValueItem, actualValueItem, pathWithKeyAndIndex);
                 }
