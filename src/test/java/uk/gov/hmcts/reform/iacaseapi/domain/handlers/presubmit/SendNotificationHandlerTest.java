@@ -42,6 +42,7 @@ public class SendNotificationHandlerTest {
             Event.SEND_DIRECTION,
             Event.REQUEST_RESPONDENT_EVIDENCE,
             Event.UPLOAD_RESPONDENT_EVIDENCE,
+            Event.REQUEST_RESPONDENT_REVIEW,
             Event.ADD_APPEAL_RESPONSE
         ).forEach(event -> {
 
@@ -99,6 +100,7 @@ public class SendNotificationHandlerTest {
                         Event.SEND_DIRECTION,
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.UPLOAD_RESPONDENT_EVIDENCE,
+                        Event.REQUEST_RESPONDENT_REVIEW,
                         Event.ADD_APPEAL_RESPONSE
                     ).contains(event)) {
 
