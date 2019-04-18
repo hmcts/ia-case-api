@@ -54,6 +54,8 @@ cache:
   appealReferenceNumbers:
     expirationTimeInSeconds: 60
 
+appealOutOfTimeDays: 14
+
 defaultHearingCentre: taylorHouse
 hearingCentreCatchmentAreas:
     manchester:
@@ -114,14 +116,19 @@ security:
       - "submitAppeal"
       - "buildCase"
       - "submitCase"
+      - "uploadAdditionalEvidence"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
+      - "requestCaseEdit"
       - "requestHearingRequirements"
       - "requestRespondentEvidence"
       - "uploadRespondentEvidence"
       - "requestRespondentReview"
       - "addAppealResponse"
+      - "listCase"
+      - "createCaseSummary"
+      - "revertStateToAwaitingRespondentEvidence"
 
 ### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}

@@ -8,7 +8,7 @@
       "state": "caseUnderReview",
       "id": 1234,
       "caseData": {
-        "template": "empty-case.json"
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },

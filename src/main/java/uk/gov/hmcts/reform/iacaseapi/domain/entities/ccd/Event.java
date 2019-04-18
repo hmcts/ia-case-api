@@ -12,10 +12,15 @@ public enum Event {
     UPLOAD_RESPONDENT_EVIDENCE("uploadRespondentEvidence"),
     BUILD_CASE("buildCase"),
     SUBMIT_CASE("submitCase"),
+    REQUEST_CASE_EDIT("requestCaseEdit"),
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     ADD_APPEAL_RESPONSE("addAppealResponse"),
     REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
+    UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
+    LIST_CASE("listCase"),
+    CREATE_CASE_SUMMARY("createCaseSummary"),
+    REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

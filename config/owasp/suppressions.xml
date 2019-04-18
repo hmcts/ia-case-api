@@ -51,4 +51,10 @@
         ]]></notes>
     <cve>CVE-2018-1258</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+	   Insecure randomness vulnerability when using SecureRandomFactoryBean#setSeed to configure a SecureRandom instance. However we do not use the offending Bean.
+	   ]]></notes>
+    <cve>CVE-2019-3795</cve>
+  </suppress>
 </suppressions>

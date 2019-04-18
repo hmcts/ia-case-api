@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -16,16 +17,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @Component
-public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DirectionAppender directionAppender;
+    private final DirectionPartiesResolver directionPartiesResolver;
+    private final DirectionTagResolver directionTagResolver;
 
-    public SendDirectionHandler(
-        DirectionAppender directionAppender
+    public DirectionHandler(
+        DirectionAppender directionAppender,
+        DirectionPartiesResolver directionPartiesResolver,
+        DirectionTagResolver directionTagResolver
     ) {
         this.directionAppender = directionAppender;
+        this.directionPartiesResolver = directionPartiesResolver;
+        this.directionTagResolver = directionTagResolver;
     }
 
     public boolean canHandle(
@@ -35,8 +44,14 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SEND_DIRECTION;
+        return
+            callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+            && Arrays.asList(
+                Event.SEND_DIRECTION,
+                Event.REQUEST_CASE_EDIT,
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW
+            ).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -57,15 +72,13 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase
                 .getSendDirectionExplanation()
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
-        Parties sendDirectionParties =
-            asylumCase
-                .getSendDirectionParties()
-                .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
-
         String sendDirectionDateDue =
             asylumCase
                 .getSendDirectionDateDue()
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
+
+        Parties directionParties = directionPartiesResolver.resolve(callback);
+        DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());
 
         final List<IdValue<Direction>> existingDirections =
             asylumCase
@@ -76,9 +89,9 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase
             directionAppender.append(
                 existingDirections,
                 sendDirectionExplanation,
-                sendDirectionParties,
+                directionParties,
                 sendDirectionDateDue,
-                DirectionTag.NONE
+                directionTag
             );
 
         asylumCase.setDirections(allDirections);

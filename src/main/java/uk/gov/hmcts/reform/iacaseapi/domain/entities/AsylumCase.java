@@ -61,6 +61,8 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    private Optional<List<IdValue<DocumentWithMetadata>>> additionalEvidenceDocuments = Optional.empty();
+    private Optional<List<IdValue<DocumentWithMetadata>>> hearingDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocuments = Optional.empty();
     private Optional<List<IdValue<DocumentWithMetadata>>> respondentDocuments = Optional.empty();
 
@@ -87,6 +89,39 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<DocumentWithDescription>>> appealResponseEvidence = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> applicationOutOfTimeExplanation = Optional.empty();
+    private Optional<Document> applicationOutOfTimeDocument = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // upload additional evidence ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<List<IdValue<DocumentWithDescription>>> additionalEvidence = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<HearingCentre> listCaseHearingCentre = Optional.empty();
+    private Optional<HearingLength> listCaseHearingLength = Optional.empty();
+    private Optional<String> listCaseHearingDate = Optional.empty();
+    private Optional<String> listCaseRequirementsVulnerabilities = Optional.empty();
+    private Optional<String> listCaseRequirementsMultimedia = Optional.empty();
+    private Optional<String> listCaseRequirementsSingleSexCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsInCameraCourt = Optional.empty();
+    private Optional<String> listCaseRequirementsOther = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<Document> caseSummaryDocument = Optional.empty();
+    private Optional<String> caseSummaryDescription = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -95,11 +130,21 @@ public class AsylumCase implements CaseData {
     private Optional<List<IdValue<String>>> notificationsSent = Optional.empty();
     private Optional<YesOrNo> changeDirectionDueDateActionAvailable = Optional.empty();
     private Optional<YesOrNo> sendDirectionActionAvailable = Optional.empty();
-    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<YesOrNo> uploadAdditionalEvidenceActionAvailable = Optional.empty();
     private Optional<State> currentCaseStateVisibleToCaseOfficer = Optional.empty();
     private Optional<State> currentCaseStateVisibleToLegalRepresentative = Optional.empty();
     private Optional<YesOrNo> caseArgumentAvailable = Optional.empty();
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
+    private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<YesOrNo> caseBuildingReadyForSubmission = Optional.empty();
+    private Optional<YesOrNo> respondentReviewAppealResponseAdded = Optional.empty();
+
+    // -----------------------------------------------------------------------------
 
     private AsylumCase() {
         // noop -- for deserializers
@@ -130,31 +175,66 @@ public class AsylumCase implements CaseData {
         this.appellantNameForDisplay = asylumCaseBuilder.getAppellantNameForDisplay();
         this.appealGroundsForDisplay = asylumCaseBuilder.getAppealGroundsForDisplay();
         this.hearingCentre = asylumCaseBuilder.getHearingCentre();
+
         this.sendDirectionExplanation = asylumCaseBuilder.getSendDirectionExplanation();
         this.sendDirectionParties = asylumCaseBuilder.getSendDirectionParties();
         this.sendDirectionDateDue = asylumCaseBuilder.getSendDirectionDateDue();
         this.directions = asylumCaseBuilder.getDirections();
+
         this.editableDirections = asylumCaseBuilder.getEditableDirections();
+
+        this.additionalEvidenceDocuments = asylumCaseBuilder.getAdditionalEvidenceDocuments();
         this.legalRepresentativeDocuments = asylumCaseBuilder.getLegalRepresentativeDocuments();
+        this.hearingDocuments = asylumCaseBuilder.getHearingDocuments();
         this.respondentDocuments = asylumCaseBuilder.getRespondentDocuments();
+
         this.respondentEvidence = asylumCaseBuilder.getRespondentEvidence();
+
         this.caseArgumentDocument = asylumCaseBuilder.getCaseArgumentDocument();
         this.caseArgumentDescription = asylumCaseBuilder.getCaseArgumentDescription();
         this.caseArgumentEvidence = asylumCaseBuilder.getCaseArgumentEvidence();
+
         this.appealResponseDocument = asylumCaseBuilder.getAppealResponseDocument();
         this.appealResponseDescription = asylumCaseBuilder.getAppealResponseDescription();
         this.appealResponseEvidence = asylumCaseBuilder.getAppealResponseEvidence();
+
+        this.applicationOutOfTimeExplanation = asylumCaseBuilder.getApplicationOutOfTimeExplanation();
+        this.applicationOutOfTimeDocument = asylumCaseBuilder.getApplicationOutOfTimeDocument();
+
+        this.additionalEvidence = asylumCaseBuilder.getAdditionalEvidence();
+
+        this.listCaseHearingCentre = asylumCaseBuilder.getListCaseHearingCentre();
+        this.listCaseHearingLength = asylumCaseBuilder.getListCaseHearingLength();
+        this.listCaseHearingDate = asylumCaseBuilder.getListCaseHearingDate();
+        this.listCaseRequirementsVulnerabilities = asylumCaseBuilder.getListCaseRequirementsVulnerabilities();
+        this.listCaseRequirementsMultimedia = asylumCaseBuilder.getListCaseRequirementsMultimedia();
+        this.listCaseRequirementsSingleSexCourt = asylumCaseBuilder.getListCaseRequirementsSingleSexCourt();
+        this.listCaseRequirementsInCameraCourt = asylumCaseBuilder.getListCaseRequirementsInCameraCourt();
+        this.listCaseRequirementsOther = asylumCaseBuilder.getListCaseRequirementsOther();
+
+        this.caseSummaryDocument = asylumCaseBuilder.getCaseSummaryDocument();
+        this.caseSummaryDescription = asylumCaseBuilder.getCaseSummaryDescription();
+
         this.legalRepresentativeName = asylumCaseBuilder.getLegalRepresentativeName();
         this.legalRepresentativeEmailAddress = asylumCaseBuilder.getLegalRepresentativeEmailAddress();
         this.notificationsSent = asylumCaseBuilder.getNotificationsSent();
         this.changeDirectionDueDateActionAvailable = asylumCaseBuilder.getChangeDirectionDueDateActionAvailable();
         this.sendDirectionActionAvailable = asylumCaseBuilder.getSendDirectionActionAvailable();
-        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
+        this.uploadAdditionalEvidenceActionAvailable = asylumCaseBuilder.getUploadAdditionalEvidenceActionAvailable();
         this.currentCaseStateVisibleToCaseOfficer = asylumCaseBuilder.getCurrentCaseStateVisibleToCaseOfficer();
         this.currentCaseStateVisibleToLegalRepresentative = asylumCaseBuilder.getCurrentCaseStateVisibleToLegalRepresentative();
         this.caseArgumentAvailable = asylumCaseBuilder.getCaseArgumentAvailable();
+
         this.appealResponseAvailable = asylumCaseBuilder.getAppealResponseAvailable();
+        this.submissionOutOfTime = asylumCaseBuilder.getSubmissionOutOfTime();
+
+        this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
+        this.respondentReviewAppealResponseAdded = asylumCaseBuilder.getRespondentReviewAppealResponseAdded();
     }
+
+    // -----------------------------------------------------------------------------
+    // legal rep appeal ...
+    // -----------------------------------------------------------------------------
 
     public Optional<String> getHomeOfficeReferenceNumber() {
         requireNonNull(homeOfficeReferenceNumber);
@@ -339,7 +419,7 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
-    // case officer directions ...
+    // change direction due date ...
     // -----------------------------------------------------------------------------
 
     public Optional<List<IdValue<EditableDirection>>> getEditableDirections() {
@@ -359,6 +439,16 @@ public class AsylumCase implements CaseData {
     // case documents ...
     // -----------------------------------------------------------------------------
 
+    public Optional<List<IdValue<DocumentWithMetadata>>> getAdditionalEvidenceDocuments() {
+        requireNonNull(additionalEvidenceDocuments);
+        return additionalEvidenceDocuments;
+    }
+
+    public Optional<List<IdValue<DocumentWithMetadata>>> getHearingDocuments() {
+        requireNonNull(hearingDocuments);
+        return hearingDocuments;
+    }
+
     public Optional<List<IdValue<DocumentWithMetadata>>> getLegalRepresentativeDocuments() {
         requireNonNull(legalRepresentativeDocuments);
         return legalRepresentativeDocuments;
@@ -367,6 +457,14 @@ public class AsylumCase implements CaseData {
     public Optional<List<IdValue<DocumentWithMetadata>>> getRespondentDocuments() {
         requireNonNull(respondentDocuments);
         return respondentDocuments;
+    }
+
+    public void setAdditionalEvidenceDocuments(List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments) {
+        this.additionalEvidenceDocuments = Optional.ofNullable(additionalEvidenceDocuments);
+    }
+
+    public void setHearingDocuments(List<IdValue<DocumentWithMetadata>> hearingDocuments) {
+        this.hearingDocuments = Optional.ofNullable(hearingDocuments);
     }
 
     public void setLegalRepresentativeDocuments(List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments) {
@@ -429,6 +527,95 @@ public class AsylumCase implements CaseData {
     }
 
     // -----------------------------------------------------------------------------
+    // out of time reason ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getApplicationOutOfTimeExplanation() {
+        requireNonNull(applicationOutOfTimeExplanation);
+        return applicationOutOfTimeExplanation;
+    }
+
+    public Optional<Document> getApplicationOutOfTimeDocument() {
+        requireNonNull(applicationOutOfTimeDocument);
+        return applicationOutOfTimeDocument;
+    }
+
+    // -----------------------------------------------------------------------------
+    // upload additional evidence ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<List<IdValue<DocumentWithDescription>>> getAdditionalEvidence() {
+        requireNonNull(additionalEvidence);
+        return additionalEvidence;
+    }
+
+    public void clearAdditionalEvidence() {
+        this.additionalEvidence = Optional.empty();
+    }
+
+    // -----------------------------------------------------------------------------
+    // list case ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<HearingCentre> getListCaseHearingCentre() {
+        requireNonNull(listCaseHearingCentre);
+        return listCaseHearingCentre;
+    }
+
+    public Optional<HearingLength> getListCaseHearingLength() {
+        requireNonNull(listCaseHearingLength);
+        return listCaseHearingLength;
+    }
+
+    public Optional<String> getListCaseHearingDate() {
+        requireNonNull(listCaseHearingDate);
+        return listCaseHearingDate;
+    }
+
+    public Optional<String> getListCaseRequirementsVulnerabilities() {
+        requireNonNull(listCaseRequirementsVulnerabilities);
+        return listCaseRequirementsVulnerabilities;
+    }
+
+    public Optional<String> getListCaseRequirementsMultimedia() {
+        requireNonNull(listCaseRequirementsMultimedia);
+        return listCaseRequirementsMultimedia;
+    }
+
+    public Optional<String> getListCaseRequirementsSingleSexCourt() {
+        requireNonNull(listCaseRequirementsSingleSexCourt);
+        return listCaseRequirementsSingleSexCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsInCameraCourt() {
+        requireNonNull(listCaseRequirementsInCameraCourt);
+        return listCaseRequirementsInCameraCourt;
+    }
+
+    public Optional<String> getListCaseRequirementsOther() {
+        requireNonNull(listCaseRequirementsOther);
+        return listCaseRequirementsOther;
+    }
+
+    public void setListCaseHearingCentre(HearingCentre listCaseHearingCentre) {
+        this.listCaseHearingCentre = Optional.ofNullable(listCaseHearingCentre);
+    }
+
+    // -----------------------------------------------------------------------------
+    // create case summary ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<Document> getCaseSummaryDocument() {
+        requireNonNull(caseSummaryDocument);
+        return caseSummaryDocument;
+    }
+
+    public Optional<String> getCaseSummaryDescription() {
+        requireNonNull(caseSummaryDescription);
+        return caseSummaryDescription;
+    }
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -457,9 +644,9 @@ public class AsylumCase implements CaseData {
         return sendDirectionActionAvailable;
     }
 
-    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
-        requireNonNull(caseBuildingReadyForSubmission);
-        return caseBuildingReadyForSubmission;
+    public Optional<YesOrNo> getUploadAdditionalEvidenceActionAvailable() {
+        requireNonNull(uploadAdditionalEvidenceActionAvailable);
+        return uploadAdditionalEvidenceActionAvailable;
     }
 
     public Optional<State> getCurrentCaseStateVisibleToCaseOfficer() {
@@ -478,12 +665,13 @@ public class AsylumCase implements CaseData {
     }
 
     public Optional<YesOrNo> getAppealResponseAvailable() {
-        requireNonNull(caseArgumentAvailable);
+        requireNonNull(appealResponseAvailable);
         return appealResponseAvailable;
     }
 
-    public void clearCaseBuildingReadyForSubmission() {
-        this.caseBuildingReadyForSubmission = Optional.empty();
+    public Optional<YesOrNo> getSubmissionOutOfTime() {
+        requireNonNull(submissionOutOfTime);
+        return submissionOutOfTime;
     }
 
     public void setLegalRepresentativeName(String legalRepresentativeName) {
@@ -506,8 +694,8 @@ public class AsylumCase implements CaseData {
         this.sendDirectionActionAvailable = Optional.ofNullable(sendDirectionActionAvailable);
     }
 
-    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
-        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
+    public void setUploadAdditionalEvidenceActionAvailable(YesOrNo uploadAdditionalEvidenceActionAvailable) {
+        this.uploadAdditionalEvidenceActionAvailable = Optional.ofNullable(uploadAdditionalEvidenceActionAvailable);
     }
 
     public void setCurrentCaseStateVisibleToCaseOfficer(State currentCaseStateVisibleToCaseOfficer) {
@@ -524,5 +712,39 @@ public class AsylumCase implements CaseData {
 
     public void setAppealResponseAvailable(YesOrNo appealResponseAvailable) {
         this.appealResponseAvailable = Optional.ofNullable(appealResponseAvailable);
+    }
+
+    public void setSubmissionOutOfTime(YesOrNo submissionOutOfTime) {
+        this.submissionOutOfTime = Optional.ofNullable(submissionOutOfTime);
+    }
+
+    // -----------------------------------------------------------------------------
+    // sub-state flags ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<YesOrNo> getCaseBuildingReadyForSubmission() {
+        requireNonNull(caseBuildingReadyForSubmission);
+        return caseBuildingReadyForSubmission;
+    }
+
+    public Optional<YesOrNo> getRespondentReviewAppealResponseAdded() {
+        requireNonNull(respondentReviewAppealResponseAdded);
+        return respondentReviewAppealResponseAdded;
+    }
+
+    public void clearCaseBuildingReadyForSubmission() {
+        this.caseBuildingReadyForSubmission = Optional.empty();
+    }
+
+    public void clearRespondentReviewAppealResponseAdded() {
+        this.respondentReviewAppealResponseAdded = Optional.empty();
+    }
+
+    public void setCaseBuildingReadyForSubmission(YesOrNo caseBuildingReadyForSubmission) {
+        this.caseBuildingReadyForSubmission = Optional.ofNullable(caseBuildingReadyForSubmission);
+    }
+
+    public void setRespondentReviewAppealResponseAdded(YesOrNo respondentReviewAppealResponseAdded) {
+        this.respondentReviewAppealResponseAdded = Optional.ofNullable(respondentReviewAppealResponseAdded);
     }
 }

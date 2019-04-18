@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
@@ -140,6 +141,29 @@ public class AutoBuildCaseDirectionHandlerTest {
         assertEquals(0, actualExistingDirections.size());
 
         verify(asylumCase, times(1)).setDirections(allDirections);
+    }
+
+    @Test
+    public void should_not_add_new_direction_if_same_direction_already_exists() {
+
+        final Direction existingDirection = mock(Direction.class);
+        final List<IdValue<Direction>> existingDirections =
+            Collections.singletonList(new IdValue<>("1", existingDirection));
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(existingDirection.getTag()).thenReturn(DirectionTag.BUILD_CASE);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            autoBuildCaseDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, never()).append(any(), any(), any(), any(), any());
+        verify(asylumCase, never()).setDirections(any());
     }
 
     @Test

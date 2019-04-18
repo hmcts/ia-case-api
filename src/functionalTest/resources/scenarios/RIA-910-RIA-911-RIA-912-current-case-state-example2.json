@@ -10,7 +10,8 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "currentCaseStateVisibleToCaseOfficer": "respondentReview",
-          "currentCaseStateVisibleToLegalRepresentative": "respondentReview"
+          "currentCaseStateVisibleToLegalRepresentative": "respondentReview",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -22,7 +23,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "currentCaseStateVisibleToCaseOfficer": "submitHearingRequirements",
-        "currentCaseStateVisibleToLegalRepresentative": "submitHearingRequirements"
+        "currentCaseStateVisibleToLegalRepresentative": "submitHearingRequirements",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

@@ -7,7 +7,7 @@
       "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
-        "template": "empty-case.json"
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },

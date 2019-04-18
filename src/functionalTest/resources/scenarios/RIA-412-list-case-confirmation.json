@@ -1,0 +1,21 @@
+{
+  "description": "RIA-412 List case confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "listCase",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have listed the case",
+      "body": "#### What happens next\n\nThe hearing notice has been generated. All parties will be notified by email."
+    }
+  }
+}

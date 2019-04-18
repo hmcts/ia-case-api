@@ -16,15 +16,20 @@ public class EventTest {
         assertEquals("uploadRespondentEvidence", Event.UPLOAD_RESPONDENT_EVIDENCE.toString());
         assertEquals("buildCase", Event.BUILD_CASE.toString());
         assertEquals("submitCase", Event.SUBMIT_CASE.toString());
+        assertEquals("requestCaseEdit", Event.REQUEST_CASE_EDIT.toString());
         assertEquals("requestRespondentReview", Event.REQUEST_RESPONDENT_REVIEW.toString());
         assertEquals("addAppealResponse", Event.ADD_APPEAL_RESPONSE.toString());
         assertEquals("requestHearingRequirements", Event.REQUEST_HEARING_REQUIREMENTS.toString());
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
+        assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
+        assertEquals("listCase", Event.LIST_CASE.toString());
+        assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
+        assertEquals("revertStateToAwaitingRespondentEvidence", Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(13, Event.values().length);
+        assertEquals(18, Event.values().length);
     }
 }

@@ -1,5 +1,5 @@
 {
-  "description": "RIA-697 & RIA-237 Add appeal response -- replace previous",
+  "description": "RIA-697 & RIA-237 & RIA-985 Add appeal response -- replace previous",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -67,7 +67,9 @@
                 "tag": "appealResponse"
               }
             }
-          ]
+          ],
+          "respondentReviewAppealResponseAdded": "No",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -161,7 +163,9 @@
               "tag": "appealResponse"
             }
           }
-        ]
+        ],
+        "respondentReviewAppealResponseAdded": "Yes",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

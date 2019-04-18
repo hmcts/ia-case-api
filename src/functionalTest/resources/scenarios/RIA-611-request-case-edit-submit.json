@@ -1,0 +1,63 @@
+{
+  "description": "RIA-611 Request case edit - create direction",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestCaseEdit",
+      "state": "caseUnderReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Please revise your case and resubmit",
+          "sendDirectionDateDue": "2022-01-01",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Do the first thing",
+                "parties": "legalRepresentative",
+                "dateDue": "2018-12-31",
+                "dateSent": "2018-12-25",
+                "tag": ""
+              }
+            }
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "2",
+            "value": {
+              "explanation": "Please revise your case and resubmit",
+              "parties": "legalRepresentative",
+              "dateDue": "2022-01-01",
+              "dateSent": "{$TODAY}",
+              "tag": "caseEdit"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Do the first thing",
+              "parties": "legalRepresentative",
+              "dateDue": "2018-12-31",
+              "dateSent": "2018-12-25",
+              "tag": ""
+            }
+          }
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
