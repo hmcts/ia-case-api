@@ -21,6 +21,7 @@ public enum Event {
     LIST_CASE("listCase"),
     CREATE_CASE_SUMMARY("createCaseSummary"),
     REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
+    DECISION_AND_REASONS_STARTED("decisionAndReasonsStarted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
