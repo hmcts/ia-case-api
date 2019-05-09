@@ -60,7 +60,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
     private Optional<String> getAppellantPostcode(
         CaseDataMap CaseDataMap
     ) {
-        if (CaseDataMap.getAppellantHasFixedAddress().orElse(YesOrNo.No) == YesOrNo.Yes) {
+        if (CaseDataMap.getAppellantHasFixedAddress().orElse(YesOrNo.NO) == YesOrNo.YES) {
 
             Optional<AddressUk> optionalAppellantAddress = CaseDataMap.getAppellantAddress();
 

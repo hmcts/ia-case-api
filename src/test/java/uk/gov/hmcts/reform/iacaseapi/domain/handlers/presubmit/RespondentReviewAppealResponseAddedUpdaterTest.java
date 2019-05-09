@@ -52,7 +52,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(CaseDataMap.getAppealResponseAvailable()).thenReturn(Optional.of(YesOrNo.Yes));
+            when(CaseDataMap.getAppealResponseAvailable()).thenReturn(Optional.of(YesOrNo.YES));
 
             PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
@@ -63,11 +63,11 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
 
             if (state == State.RESPONDENT_REVIEW) {
 
-                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.Yes);
+                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
 
             } else {
-                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.No);
-                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.Yes);
+                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
+                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
                 verify(CaseDataMap, times(1)).clearRespondentReviewAppealResponseAdded();
             }
 
@@ -81,7 +81,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
         List<Optional<YesOrNo>> appealResponseNotAvailableInidications =
             Arrays.asList(
                 Optional.empty(),
-                Optional.of(YesOrNo.No)
+                Optional.of(YesOrNo.NO)
             );
 
         appealResponseNotAvailableInidications
@@ -96,7 +96,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
                 assertNotNull(callbackResponse);
                 assertEquals(CaseDataMap, callbackResponse.getData());
 
-                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.No);
+                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
                 verify(CaseDataMap, never()).clearRespondentReviewAppealResponseAdded();
 
                 reset(CaseDataMap);

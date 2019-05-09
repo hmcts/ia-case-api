@@ -71,9 +71,9 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.Yes);
+                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.YES);
             } else {
-                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.No);
+                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
             }
 
             reset(CaseDataMap);
@@ -98,7 +98,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
             assertNotNull(callbackResponse);
             assertEquals(CaseDataMap, callbackResponse.getData());
 
-            verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.No);
+            verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
 
             reset(CaseDataMap);
         }

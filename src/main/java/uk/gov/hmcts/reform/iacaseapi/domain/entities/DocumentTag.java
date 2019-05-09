@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DocumentTag {
 
@@ -15,6 +16,7 @@ public enum DocumentTag {
     @JsonEnumDefaultValue
     NONE("");
 
+    @JsonValue
     private final String id;
 
     DocumentTag(String id) {

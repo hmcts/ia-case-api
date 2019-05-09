@@ -53,9 +53,9 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             State.FINAL_BUNDLING,
             State.PRE_HEARING
         ).contains(caseDetails.getState())) {
-            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.Yes);
+            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.YES);
         } else {
-            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.No);
+            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);

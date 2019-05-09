@@ -45,9 +45,9 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
         if (caseState == State.CASE_BUILDING) {
 
             if (CaseDataMap.getCaseArgumentDocument().isPresent()) {
-                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.Yes);
+                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.YES);
             } else {
-                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.No);
+                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.NO);
             }
 
         } else {

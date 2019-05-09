@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -38,7 +38,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<Ca
                 requireNonNull(callback.getCaseDetails().getCaseData().getSubmissionOutOfTime()
                         .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
-        if (submissionOutOfTime.equals(No)) {
+        if (submissionOutOfTime.equals(NO)) {
 
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
             postSubmitResponse.setConfirmationBody(

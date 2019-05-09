@@ -128,7 +128,7 @@ public class AddAppealResponseHandlerTest {
             );
 
         verify(CaseDataMap, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(CaseDataMap, times(1)).setAppealResponseAvailable(YesOrNo.Yes);
+        verify(CaseDataMap, times(1)).setAppealResponseAvailable(YesOrNo.YES);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class AddAppealResponseHandlerTest {
         assertEquals(0, respondentDocuments.size());
 
         verify(CaseDataMap, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(CaseDataMap, times(1)).setAppealResponseAvailable(YesOrNo.Yes);
+        verify(CaseDataMap, times(1)).setAppealResponseAvailable(YesOrNo.YES);
     }
 
     @Test

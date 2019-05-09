@@ -47,9 +47,9 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             State.LISTING
         ).contains(caseDetails.getState())) {
 
-            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.Yes);
+            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
         } else {
-            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.No);
+            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);

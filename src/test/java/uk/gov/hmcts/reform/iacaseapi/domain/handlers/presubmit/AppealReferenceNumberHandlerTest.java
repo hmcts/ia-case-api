@@ -65,10 +65,10 @@ public class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
-        when(appealReferenceNumberGenerator.generate(123, AppealType.protection))
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(CaseDataMap.getAppealType()).thenReturn(Optional.of(AppealType.protection));
+        when(CaseDataMap.getAppealType()).thenReturn(Optional.of(AppealType.PA));
         when(CaseDataMap.getAppealReferenceNumber()).thenReturn(Optional.of("DRAFT"));
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
@@ -85,10 +85,10 @@ public class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
-        when(appealReferenceNumberGenerator.generate(123, AppealType.protection))
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(CaseDataMap.getAppealType()).thenReturn(Optional.of(AppealType.protection));
+        when(CaseDataMap.getAppealType()).thenReturn(Optional.of(AppealType.PA));
         when(CaseDataMap.getAppealReferenceNumber()).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =

@@ -45,7 +45,7 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
         if (caseState == State.RESPONDENT_REVIEW) {
 
             CaseDataMap.setRespondentReviewAppealResponseAdded(
-                CaseDataMap.getAppealResponseAvailable().orElse(YesOrNo.No)
+                CaseDataMap.getAppealResponseAvailable().orElse(YesOrNo.NO)
             );
 
         } else {

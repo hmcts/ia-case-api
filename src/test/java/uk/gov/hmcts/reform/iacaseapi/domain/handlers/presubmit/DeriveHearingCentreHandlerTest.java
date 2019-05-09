@@ -47,7 +47,7 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(CaseDataMap.getHearingCentre()).thenReturn(Optional.empty());
-        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.Yes));
+        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.YES));
         when(CaseDataMap.getAppellantAddress()).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(HearingCentre.MANCHESTER);
@@ -68,7 +68,7 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(CaseDataMap.getHearingCentre()).thenReturn(Optional.empty());
-        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.No));
+        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.NO));
         when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(HearingCentre.TAYLOR_HOUSE);
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =

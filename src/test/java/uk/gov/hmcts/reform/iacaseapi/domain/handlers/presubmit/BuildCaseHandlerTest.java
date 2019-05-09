@@ -121,7 +121,7 @@ public class BuildCaseHandlerTest {
             );
 
         verify(CaseDataMap, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
-        verify(CaseDataMap, times(1)).setCaseArgumentAvailable(YesOrNo.Yes);
+        verify(CaseDataMap, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
     }
 
     @Test
@@ -191,7 +191,7 @@ public class BuildCaseHandlerTest {
         assertEquals(0, legalRepresentativeDocuments.size());
 
         verify(CaseDataMap, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
-        verify(CaseDataMap, times(1)).setCaseArgumentAvailable(YesOrNo.Yes);
+        verify(CaseDataMap, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
     }
 
     @Test

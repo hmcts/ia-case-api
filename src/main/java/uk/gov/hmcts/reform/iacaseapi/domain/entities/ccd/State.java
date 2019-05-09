@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum State {
 
@@ -22,6 +23,7 @@ public enum State {
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
+    @JsonValue
     private final String id;
 
     State(String id) {

@@ -62,9 +62,9 @@ public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCa
         ).contains(caseDetails.getState())
             && !CaseDataMap.getDirections().orElse(Collections.emptyList()).isEmpty()) {
 
-            CaseDataMap.setChangeDirectionDueDateActionAvailable(YesOrNo.Yes);
+            CaseDataMap.setChangeDirectionDueDateActionAvailable(YesOrNo.YES);
         } else {
-            CaseDataMap.setChangeDirectionDueDateActionAvailable(YesOrNo.No);
+            CaseDataMap.setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);

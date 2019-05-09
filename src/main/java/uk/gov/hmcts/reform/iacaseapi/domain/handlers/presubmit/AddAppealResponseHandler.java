@@ -112,7 +112,7 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<CaseDa
 
         CaseDataMap.setRespondentDocuments(allRespondentDocuments);
 
-        CaseDataMap.setAppealResponseAvailable(YesOrNo.Yes);
+        CaseDataMap.setAppealResponseAvailable(YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);
     }

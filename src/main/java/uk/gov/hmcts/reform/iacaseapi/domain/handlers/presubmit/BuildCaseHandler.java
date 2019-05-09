@@ -107,7 +107,7 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
         CaseDataMap.setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
 
-        CaseDataMap.setCaseArgumentAvailable(YesOrNo.Yes);
+        CaseDataMap.setCaseArgumentAvailable(YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);
     }

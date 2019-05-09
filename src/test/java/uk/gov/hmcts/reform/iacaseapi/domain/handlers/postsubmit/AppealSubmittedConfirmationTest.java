@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class AppealSubmittedConfirmationTest {
     @Test
     public void should_return_standard_confirmation_when_not_out_of_time() {
 
-        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(No));
+        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(NO));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -66,7 +66,7 @@ public class AppealSubmittedConfirmationTest {
     @Test
     public void should_return_out_of_time_confirmation_when_out_of_time() {
 
-        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(Yes));
+        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(YES));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 

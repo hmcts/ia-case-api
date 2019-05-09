@@ -46,8 +46,8 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertEquals(CaseDataMap, callbackResponse.getData());
 
         verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.No);
+        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.YES);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
     }
 
     @Test
@@ -66,8 +66,8 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertEquals(CaseDataMap, callbackResponse.getData());
 
         verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
-        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.No);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
+        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.NO);
     }
 
     @Test
@@ -85,8 +85,8 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertEquals(CaseDataMap, callbackResponse.getData());
 
         verify(CaseDataMap, times(1)).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.No);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
     }
 
     @Test

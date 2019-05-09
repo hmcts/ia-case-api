@@ -6,8 +6,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -63,7 +63,7 @@ public class HomeOfficeDecisionDateCheckerTest {
 
         verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(No);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class HomeOfficeDecisionDateCheckerTest {
 
         verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(Yes);
+        assertThat(outOfTime.getValue()).isEqualTo(YES);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class HomeOfficeDecisionDateCheckerTest {
 
         verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(Yes);
+        assertThat(outOfTime.getValue()).isEqualTo(YES);
     }
 
     @Test

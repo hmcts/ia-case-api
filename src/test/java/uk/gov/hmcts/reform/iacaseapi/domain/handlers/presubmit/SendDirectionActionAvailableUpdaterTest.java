@@ -60,9 +60,9 @@ public class SendDirectionActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.Yes);
+                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.YES);
             } else {
-                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.No);
+                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.NO);
             }
 
             reset(CaseDataMap);

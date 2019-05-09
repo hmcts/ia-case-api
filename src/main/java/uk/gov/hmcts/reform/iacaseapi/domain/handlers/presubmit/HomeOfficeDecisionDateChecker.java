@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,9 +60,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<C
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
 
         if (homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
-            CaseDataMap.setSubmissionOutOfTime(Yes);
+            CaseDataMap.setSubmissionOutOfTime(YES);
         } else {
-            CaseDataMap.setSubmissionOutOfTime(No);
+            CaseDataMap.setSubmissionOutOfTime(NO);
         }
 
         return new PreSubmitCallbackResponse<>(CaseDataMap);

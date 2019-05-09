@@ -53,9 +53,9 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
                 State.LISTING
             ).contains(state)) {
 
-                verify(CaseDataMap, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.Yes);
+                verify(CaseDataMap, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
             } else {
-                verify(CaseDataMap, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.No);
+                verify(CaseDataMap, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
             }
 
             reset(CaseDataMap);
