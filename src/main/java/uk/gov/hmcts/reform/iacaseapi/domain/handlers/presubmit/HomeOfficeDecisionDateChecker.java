@@ -2,15 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
 
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<AsylumCase> {
+public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final DateProvider dateProvider;
     private final int appealOutOfTimeDays;
@@ -33,7 +33,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -42,29 +42,29 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        final CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         LocalDate homeOfficeDecisionDate =
-            parse(asylumCase.getHomeOfficeDecisionDate()
+            parse(CaseDataMap.getHomeOfficeDecisionDate()
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
 
         if (homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
-            asylumCase.setSubmissionOutOfTime(YES);
+            CaseDataMap.setSubmissionOutOfTime(Yes);
         } else {
-            asylumCase.setSubmissionOutOfTime(NO);
+            CaseDataMap.setSubmissionOutOfTime(No);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class AppellantNameForDisplayFormatterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private AppellantNameForDisplayFormatter appellantNameForDisplayFormatter =
         new AppellantNameForDisplayFormatter();
@@ -40,7 +40,7 @@ public class AppellantNameForDisplayFormatterTest {
                     Pair.of(" Matt ", " Jones "), "Matt Jones");
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
         exampleInputOutputs
             .entrySet()
@@ -49,17 +49,17 @@ public class AppellantNameForDisplayFormatterTest {
                 final Pair<String, String> input = inputOutput.getKey();
                 final String output = inputOutput.getValue();
 
-                when(asylumCase.getAppellantGivenNames()).thenReturn(Optional.of(input.getKey()));
-                when(asylumCase.getAppellantFamilyName()).thenReturn(Optional.of(input.getValue()));
+                when(CaseDataMap.getAppellantGivenNames()).thenReturn(Optional.of(input.getKey()));
+                when(CaseDataMap.getAppellantFamilyName()).thenReturn(Optional.of(input.getValue()));
 
-                PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                     appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
                 assertNotNull(callbackResponse);
-                assertEquals(asylumCase, callbackResponse.getData());
-                verify(asylumCase, times(1)).setAppellantNameForDisplay(output);
+                assertEquals(CaseDataMap, callbackResponse.getData());
+                verify(CaseDataMap, times(1)).setAppellantNameForDisplay(output);
 
-                reset(asylumCase);
+                reset(CaseDataMap);
             });
     }
 
@@ -67,8 +67,8 @@ public class AppellantNameForDisplayFormatterTest {
     public void should_throw_when_appellant_given_names_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getAppellantGivenNames()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getAppellantGivenNames()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("appellantGivenNames is not present")
@@ -79,9 +79,9 @@ public class AppellantNameForDisplayFormatterTest {
     public void should_throw_when_appellant_family_name_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getAppellantGivenNames()).thenReturn(Optional.of("John"));
-        when(asylumCase.getAppellantFamilyName()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getAppellantGivenNames()).thenReturn(Optional.of("John"));
+        when(CaseDataMap.getAppellantFamilyName()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("appellantFamilyName is not present")

@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
-public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final int reviewDueInDays;
     private final DateProvider dateProvider;
@@ -38,7 +38,7 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -47,21 +47,21 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
                && callback.getEvent() == Event.ADD_APPEAL_RESPONSE;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
+            CaseDataMap
                 .getDirections()
                 .orElse(Collections.emptyList());
 
@@ -82,8 +82,8 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
                 DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
             );
 
-        asylumCase.setDirections(allDirections);
+        CaseDataMap.setDirections(allDirections);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

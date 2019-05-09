@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 public enum YesOrNo {
 
-    NO("No"),
-    YES("Yes");
+    No("No"),
+    Yes("Yes");
 
     private final String id;
 

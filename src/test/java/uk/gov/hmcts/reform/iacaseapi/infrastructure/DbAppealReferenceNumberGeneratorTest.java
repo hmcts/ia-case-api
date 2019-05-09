@@ -33,7 +33,7 @@ public class DbAppealReferenceNumberGeneratorTest {
     @Captor private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
 
     private final long caseId = 123;
-    private final AppealType appealType = AppealType.PA;
+    private final AppealType appealType = AppealType.protection;
     private final int currentYear = 2017;
 
     private MapSqlParameterSource expectedParameters;

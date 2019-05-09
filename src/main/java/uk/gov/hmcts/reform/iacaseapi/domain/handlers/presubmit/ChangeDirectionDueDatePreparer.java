@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -29,21 +29,21 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
                && callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        final CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         List<IdValue<EditableDirection>> editableDirections =
-            asylumCase
+            CaseDataMap
                 .getDirections()
                 .orElse(Collections.emptyList())
                 .stream()
@@ -59,8 +59,8 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
                 )
                 .collect(Collectors.toList());
 
-        asylumCase.setEditableDirections(editableDirections);
+        CaseDataMap.setEditableDirections(editableDirections);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

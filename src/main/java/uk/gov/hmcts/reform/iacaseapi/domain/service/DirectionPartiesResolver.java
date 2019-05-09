@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 public class DirectionPartiesResolver {
 
     public Parties resolve(
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 

@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 public class LegalRepresentativeDetailsHandlerTest {
 
     @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
     @Mock private UserDetails userDetails;
 
     private LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
@@ -51,17 +51,17 @@ public class LegalRepresentativeDetailsHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getLegalRepresentativeName()).thenReturn(Optional.empty());
-        when(asylumCase.getLegalRepresentativeEmailAddress()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getLegalRepresentativeName()).thenReturn(Optional.empty());
+        when(CaseDataMap.getLegalRepresentativeEmailAddress()).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).setLegalRepresentativeName(expectedLegalRepresentativeName);
-        verify(asylumCase, times(1)).setLegalRepresentativeEmailAddress(expectedLegalRepresentativeEmailAddress);
+        assertEquals(CaseDataMap, callbackResponse.getData());
+        verify(CaseDataMap, times(1)).setLegalRepresentativeName(expectedLegalRepresentativeName);
+        verify(CaseDataMap, times(1)).setLegalRepresentativeEmailAddress(expectedLegalRepresentativeEmailAddress);
     }
 
     @Test
@@ -71,17 +71,17 @@ public class LegalRepresentativeDetailsHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getLegalRepresentativeName()).thenReturn(Optional.of("existing"));
-        when(asylumCase.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of("existing"));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getLegalRepresentativeName()).thenReturn(Optional.of("existing"));
+        when(CaseDataMap.getLegalRepresentativeEmailAddress()).thenReturn(Optional.of("existing"));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).setLegalRepresentativeName(any());
-        verify(asylumCase, never()).setLegalRepresentativeEmailAddress(any());
+        assertEquals(CaseDataMap, callbackResponse.getData());
+        verify(CaseDataMap, never()).setLegalRepresentativeName(any());
+        verify(CaseDataMap, never()).setLegalRepresentativeEmailAddress(any());
     }
 
     @Test

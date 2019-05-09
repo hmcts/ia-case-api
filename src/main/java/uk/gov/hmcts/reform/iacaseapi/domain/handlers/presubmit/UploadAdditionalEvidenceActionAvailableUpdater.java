@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -26,19 +26,19 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDetails<AsylumCase> caseDetails =
+        CaseDetails<CaseDataMap> caseDetails =
             callback
                 .getCaseDetails();
 
-        AsylumCase asylumCase = caseDetails.getCaseData();
+        CaseDataMap CaseDataMap = caseDetails.getCaseData();
 
         if (Arrays.asList(
             State.CASE_UNDER_REVIEW,
@@ -47,11 +47,11 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             State.LISTING
         ).contains(caseDetails.getState())) {
 
-            asylumCase.setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
+            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.Yes);
         } else {
-            asylumCase.setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
+            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.No);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -11,11 +11,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -23,9 +23,9 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumC
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -33,14 +33,14 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumC
 
         State currentCaseState = callback.getCaseDetails().getState();
 
-        AsylumCase asylumCase =
+        CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.setCurrentCaseStateVisibleToCaseOfficer(currentCaseState);
-        asylumCase.setCurrentCaseStateVisibleToLegalRepresentative(currentCaseState);
+        CaseDataMap.setCurrentCaseStateVisibleToCaseOfficer(currentCaseState);
+        CaseDataMap.setCurrentCaseStateVisibleToLegalRepresentative(currentCaseState);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

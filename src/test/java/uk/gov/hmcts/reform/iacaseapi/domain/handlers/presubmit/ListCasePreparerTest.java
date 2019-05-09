@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,9 +22,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class ListCasePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private ListCasePreparer listCasePreparer;
 
@@ -36,35 +36,35 @@ public class ListCasePreparerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
     }
 
     @Test
     public void should_set_default_list_case_hearing_centre_field() {
 
-        when(asylumCase.getHearingCentre()).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(CaseDataMap.getHearingCentre()).thenReturn(Optional.of(HearingCentre.MANCHESTER));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setListCaseHearingCentre(HearingCentre.MANCHESTER);
+        verify(CaseDataMap, times(1)).setListCaseHearingCentre(HearingCentre.MANCHESTER);
     }
 
     @Test
     public void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
-        when(asylumCase.getHearingCentre()).thenReturn(Optional.empty());
+        when(CaseDataMap.getHearingCentre()).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, never()).setListCaseHearingCentre(any());
+        verify(CaseDataMap, never()).setListCaseHearingCentre(any());
     }
 
     @Test

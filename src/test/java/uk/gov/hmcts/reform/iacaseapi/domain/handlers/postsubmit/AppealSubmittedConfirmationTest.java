@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 public class AppealSubmittedConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation =
         new AppealSubmittedConfirmation();
@@ -35,13 +35,13 @@ public class AppealSubmittedConfirmationTest {
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
     }
 
     @Test
     public void should_return_standard_confirmation_when_not_out_of_time() {
 
-        when(asylumCase.getSubmissionOutOfTime()).thenReturn(Optional.of(NO));
+        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(No));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -66,7 +66,7 @@ public class AppealSubmittedConfirmationTest {
     @Test
     public void should_return_out_of_time_confirmation_when_out_of_time() {
 
-        when(asylumCase.getSubmissionOutOfTime()).thenReturn(Optional.of(YES));
+        when(CaseDataMap.getSubmissionOutOfTime()).thenReturn(Optional.of(Yes));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 

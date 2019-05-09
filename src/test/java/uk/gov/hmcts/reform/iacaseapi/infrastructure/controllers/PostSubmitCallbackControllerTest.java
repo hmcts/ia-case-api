@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher
 @RunWith(MockitoJUnitRunner.class)
 public class PostSubmitCallbackControllerTest {
 
-    @Mock private PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock private PostSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher;
     @Mock private PostSubmitCallbackResponse callbackResponse;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
 
     private PostSubmitCallbackController postSubmitCallbackController;
 

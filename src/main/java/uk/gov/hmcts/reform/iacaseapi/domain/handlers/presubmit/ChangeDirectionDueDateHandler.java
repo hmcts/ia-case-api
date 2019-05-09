@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -17,11 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -30,21 +30,21 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                && callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        final CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         final Map<String, Direction> existingDirectionsById =
-            asylumCase
+            CaseDataMap
                 .getDirections()
                 .orElseThrow(() -> new IllegalStateException("directions is not present"))
                 .stream()
@@ -54,7 +54,7 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                 ));
 
         List<IdValue<Direction>> changedDirections =
-            asylumCase
+            CaseDataMap
                 .getEditableDirections()
                 .orElse(Collections.emptyList())
                 .stream()
@@ -82,9 +82,9 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                 })
                 .collect(Collectors.toList());
 
-        asylumCase.clearEditableDirections();
-        asylumCase.setDirections(changedDirections);
+        CaseDataMap.clearEditableDirections();
+        CaseDataMap.setDirections(changedDirections);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

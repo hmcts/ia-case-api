@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 public class CaseBuildingReadyForSubmissionUpdaterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private CaseBuildingReadyForSubmissionUpdater caseBuildingReadyForSubmissionUpdater =
         new CaseBuildingReadyForSubmissionUpdater();
@@ -34,59 +34,59 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
     public void should_set_case_building_ready_for_submission_flag_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.of(mock(Document.class)));
+        when(CaseDataMap.getCaseArgumentDocument()).thenReturn(Optional.of(mock(Document.class)));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, never()).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
+        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.No);
     }
 
     @Test
     public void should_set_case_building_ready_for_submission_flag_to_no_if_argument_not_uploaded() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.empty());
+        when(CaseDataMap.getCaseArgumentDocument()).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, never()).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
+        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.No);
     }
 
     @Test
     public void should_clear_case_building_ready_for_submission_flag_when_not_in_case_building_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(CaseDataMap, times(1)).clearCaseBuildingReadyForSubmission();
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.Yes);
+        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.No);
     }
 
     @Test

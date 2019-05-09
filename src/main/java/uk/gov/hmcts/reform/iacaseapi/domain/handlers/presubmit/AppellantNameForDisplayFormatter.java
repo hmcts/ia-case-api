@@ -3,18 +3,18 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandler<AsylumCase> {
+public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -22,35 +22,35 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        final CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         final String appellantGivenNames =
-            asylumCase
+            CaseDataMap
                 .getAppellantGivenNames()
                 .orElseThrow(() -> new IllegalStateException("appellantGivenNames is not present"));
 
         final String appellantFamilyName =
-            asylumCase
+            CaseDataMap
                 .getAppellantFamilyName()
                 .orElseThrow(() -> new IllegalStateException("appellantFamilyName is not present"));
 
         String appellantNameForDisplay = appellantGivenNames + " " + appellantFamilyName;
 
-        asylumCase.setAppellantNameForDisplay(
+        CaseDataMap.setAppellantNameForDisplay(
             appellantNameForDisplay.replaceAll("\\s+", " ").trim()
         );
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

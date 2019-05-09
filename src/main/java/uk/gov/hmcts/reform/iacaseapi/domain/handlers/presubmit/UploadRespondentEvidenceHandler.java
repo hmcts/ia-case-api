@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
@@ -35,7 +35,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -44,21 +44,21 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        final CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         List<DocumentWithMetadata> respondentEvidence =
-            asylumCase
+            CaseDataMap
                 .getRespondentEvidence()
                 .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"))
                 .stream()
@@ -69,17 +69,17 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .collect(Collectors.toList());
 
         final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
-            asylumCase
+            CaseDataMap
                 .getRespondentDocuments()
                 .orElse(Collections.emptyList());
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(existingRespondentDocuments, respondentEvidence);
 
-        asylumCase.setRespondentDocuments(allRespondentDocuments);
+        CaseDataMap.setRespondentDocuments(allRespondentDocuments);
 
-        asylumCase.clearRespondentEvidence();
+        CaseDataMap.clearRespondentEvidence();
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

@@ -25,7 +25,7 @@ public class EventTest {
         assertEquals("listCase", Event.LIST_CASE.toString());
         assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
         assertEquals("revertStateToAwaitingRespondentEvidence", Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
-        assertEquals("decisionAndReasons", Event.DECISION_AND_REASONS.toString());
+        assertEquals("decisionAndReasonsStarted", Event.DECISION_AND_REASONS_STARTED.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 

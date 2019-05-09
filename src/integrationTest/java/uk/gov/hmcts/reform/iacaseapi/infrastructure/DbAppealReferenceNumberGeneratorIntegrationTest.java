@@ -49,10 +49,10 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 12, 31));
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(2, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.revocationOfProtection);
 
         assertThat(firstAppealReferenceNumber, is("PA/50020/2019"));
         assertThat(secondAppealReferenceNumber, is("RP/50020/2019"));
@@ -62,13 +62,13 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     public void should_generate_sequential_appeal_reference_number_for_protection_appeal() {
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(2, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.protection);
 
         final String thirdAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(3, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(3, AppealType.protection);
 
         assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
         assertThat(secondAppealReferenceNumber, is("PA/50002/2018"));
@@ -79,13 +79,13 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     public void should_generate_sequential_appeal_reference_number_for_revocation_appeal() {
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.revocationOfProtection);
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(2, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.revocationOfProtection);
 
         final String thirdAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(3, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(3, AppealType.revocationOfProtection);
 
         assertThat(firstAppealReferenceNumber, is("RP/50001/2018"));
         assertThat(secondAppealReferenceNumber, is("RP/50002/2018"));
@@ -96,16 +96,16 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     public void should_use_distinct_number_range_for_each_appeal_type() {
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(2, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.revocationOfProtection);
 
         final String thirdAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(3, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(3, AppealType.protection);
 
         final String fourthAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(4, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(4, AppealType.revocationOfProtection);
 
         assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
         assertThat(secondAppealReferenceNumber, is("RP/50001/2018"));
@@ -117,13 +117,13 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     public void should_always_return_same_appeal_reference_number_for_same_case() {
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String thirdAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
         assertThat(secondAppealReferenceNumber, is("PA/50001/2018"));
@@ -136,17 +136,17 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         when(dateProvider.now()).thenReturn(LocalDate.of(2022, 12, 31));
 
         final String firstAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2023, 01, 01));
 
         final String secondAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(2, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(2, AppealType.protection);
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2024, 12, 31));
 
         final String thirdAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(3, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(3, AppealType.protection);
 
         assertThat(firstAppealReferenceNumber, is("PA/50001/2022"));
         assertThat(secondAppealReferenceNumber, is("PA/50001/2023"));
@@ -161,7 +161,7 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
                 .submit(() ->
                     LongStream.rangeClosed(1000000000000001L, 1000000000000000L + 10000L)
                         .parallel()
-                        .mapToObj(caseId -> dbAppealReferenceNumberGenerator.generate(caseId, AppealType.PA))
+                        .mapToObj(caseId -> dbAppealReferenceNumberGenerator.generate(caseId, AppealType.protection))
                         .collect(Collectors.toSet())
                 ).get();
 
@@ -176,10 +176,10 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
     public void should_return_original_appeal_reference_number_when_same_case_is_presented_with_different_appeal_type() {
 
         final String originalAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         final String subsequentAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.revocationOfProtection);
 
         assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
         assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));
@@ -191,12 +191,12 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         when(dateProvider.now()).thenReturn(LocalDate.of(2018, 12, 31));
 
         final String originalAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 01, 01));
 
         final String subsequentAppealReferenceNumber =
-            dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
+            dbAppealReferenceNumberGenerator.generate(1, AppealType.protection);
 
         assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
         assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));

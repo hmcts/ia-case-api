@@ -26,9 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 public class ChangeDirectionDueDatePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     @Captor private ArgumentCaptor<List<IdValue<EditableDirection>>> editableDirectionsCaptor;
 
@@ -63,16 +63,16 @@ public class ChangeDirectionDueDatePreparerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getDirections()).thenReturn(Optional.of(existingDirections));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             changeDirectionDueDatePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setEditableDirections(editableDirectionsCaptor.capture());
+        verify(CaseDataMap, times(1)).setEditableDirections(editableDirectionsCaptor.capture());
 
         List<IdValue<EditableDirection>> actualEditableDirections = editableDirectionsCaptor.getAllValues().get(0);
 

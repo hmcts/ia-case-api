@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHandler<AsylumCase> {
+public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -25,21 +25,21 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         String homeOfficeReferenceNumber =
-            asylumCase
+            CaseDataMap
                 .getHomeOfficeReferenceNumber()
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
 
@@ -50,9 +50,9 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 truncatedReferenceNumber = truncatedReferenceNumber.substring(0, 8);
             }
 
-            asylumCase.setHomeOfficeReferenceNumber(truncatedReferenceNumber);
+            CaseDataMap.setHomeOfficeReferenceNumber(truncatedReferenceNumber);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

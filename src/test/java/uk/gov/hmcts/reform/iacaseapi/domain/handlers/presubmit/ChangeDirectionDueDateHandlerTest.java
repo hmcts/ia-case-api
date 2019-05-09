@@ -26,9 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 public class ChangeDirectionDueDateHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> directionsCaptor;
 
@@ -77,17 +77,17 @@ public class ChangeDirectionDueDateHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
-        when(asylumCase.getEditableDirections()).thenReturn(Optional.of(editableDirections));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(CaseDataMap.getEditableDirections()).thenReturn(Optional.of(editableDirections));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             changeDirectionDueDateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setDirections(directionsCaptor.capture());
+        verify(CaseDataMap, times(1)).setDirections(directionsCaptor.capture());
 
         List<IdValue<Direction>> actualDirections = directionsCaptor.getAllValues().get(0);
 

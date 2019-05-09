@@ -14,7 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -33,9 +33,9 @@ public class UploadRespondentEvidenceHandlerTest {
 
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
     @Mock private DocumentWithDescription respondentEvidence1;
     @Mock private DocumentWithDescription respondentEvidence2;
     @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
@@ -73,9 +73,9 @@ public class UploadRespondentEvidenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
+        when(CaseDataMap.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
 
         when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
@@ -86,21 +86,21 @@ public class UploadRespondentEvidenceHandlerTest {
         when(documentsAppender.append(existingRespondentDocuments, respondentEvidenceWithMetadata))
             .thenReturn(allRespondentDocuments);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getRespondentEvidence();
+        verify(CaseDataMap, times(1)).getRespondentEvidence();
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingRespondentDocuments, respondentEvidenceWithMetadata);
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).clearRespondentEvidence();
+        verify(CaseDataMap, times(1)).setRespondentDocuments(allRespondentDocuments);
+        verify(CaseDataMap, times(1)).clearRespondentEvidence();
     }
 
     @Test
@@ -111,9 +111,9 @@ public class UploadRespondentEvidenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.getRespondentDocuments()).thenReturn(Optional.empty());
+        when(CaseDataMap.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
 
         when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
@@ -121,13 +121,13 @@ public class UploadRespondentEvidenceHandlerTest {
         when(documentsAppender.append(any(List.class), eq(respondentEvidenceWithMetadata)))
             .thenReturn(allRespondentDocuments);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getRespondentEvidence();
+        verify(CaseDataMap, times(1)).getRespondentEvidence();
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
@@ -140,8 +140,8 @@ public class UploadRespondentEvidenceHandlerTest {
 
         assertEquals(0, actualExistingRespondentDocuments.size());
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).clearRespondentEvidence();
+        verify(CaseDataMap, times(1)).setRespondentDocuments(allRespondentDocuments);
+        verify(CaseDataMap, times(1)).clearRespondentEvidence();
     }
 
     @Test
@@ -149,9 +149,9 @@ public class UploadRespondentEvidenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.empty());
+        when(CaseDataMap.getRespondentEvidence()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("respondentEvidence is not present")

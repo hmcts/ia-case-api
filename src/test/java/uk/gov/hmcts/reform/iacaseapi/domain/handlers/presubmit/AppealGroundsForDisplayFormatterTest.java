@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class AppealGroundsForDisplayFormatterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
         new AppealGroundsForDisplayFormatter();
@@ -59,18 +59,18 @@ public class AppealGroundsForDisplayFormatterTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
-        when(asylumCase.getAppealGroundsProtection()).thenReturn(Optional.of(appealGroundsProtection));
-        when(asylumCase.getAppealGroundsHumanRights()).thenReturn(Optional.of(appealGroundsHumanRights));
-        when(asylumCase.getAppealGroundsRevocation()).thenReturn(Optional.of(appealGroundsRevocation));
+        when(CaseDataMap.getAppealGroundsProtection()).thenReturn(Optional.of(appealGroundsProtection));
+        when(CaseDataMap.getAppealGroundsHumanRights()).thenReturn(Optional.of(appealGroundsHumanRights));
+        when(CaseDataMap.getAppealGroundsRevocation()).thenReturn(Optional.of(appealGroundsRevocation));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).setAppealGroundsForDisplay(expectedAppealGrounds);
+        assertEquals(CaseDataMap, callbackResponse.getData());
+        verify(CaseDataMap, times(1)).setAppealGroundsForDisplay(expectedAppealGrounds);
     }
 
     @Test
@@ -79,18 +79,18 @@ public class AppealGroundsForDisplayFormatterTest {
         final List<String> expectedAppealGrounds = Arrays.asList();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
-        when(asylumCase.getAppealGroundsProtection()).thenReturn(Optional.empty());
-        when(asylumCase.getAppealGroundsHumanRights()).thenReturn(Optional.empty());
-        when(asylumCase.getAppealGroundsRevocation()).thenReturn(Optional.empty());
+        when(CaseDataMap.getAppealGroundsProtection()).thenReturn(Optional.empty());
+        when(CaseDataMap.getAppealGroundsHumanRights()).thenReturn(Optional.empty());
+        when(CaseDataMap.getAppealGroundsRevocation()).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).setAppealGroundsForDisplay(expectedAppealGrounds);
+        assertEquals(CaseDataMap, callbackResponse.getData());
+        verify(CaseDataMap, times(1)).setAppealGroundsForDisplay(expectedAppealGrounds);
     }
 
     @Test

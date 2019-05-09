@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -26,19 +26,19 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDetails<AsylumCase> caseDetails =
+        CaseDetails<CaseDataMap> caseDetails =
             callback
                 .getCaseDetails();
 
-        AsylumCase asylumCase = caseDetails.getCaseData();
+        CaseDataMap CaseDataMap = caseDetails.getCaseData();
 
         if (Arrays.asList(
             State.APPEAL_SUBMITTED,
@@ -53,11 +53,11 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             State.FINAL_BUNDLING,
             State.PRE_HEARING
         ).contains(caseDetails.getState())) {
-            asylumCase.setSendDirectionActionAvailable(YesOrNo.YES);
+            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.Yes);
         } else {
-            asylumCase.setSendDirectionActionAvailable(YesOrNo.NO);
+            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.No);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

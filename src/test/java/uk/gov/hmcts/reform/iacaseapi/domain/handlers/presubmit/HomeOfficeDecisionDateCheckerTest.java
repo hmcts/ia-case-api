@@ -6,8 +6,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.Yes;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -30,9 +30,9 @@ public class HomeOfficeDecisionDateCheckerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
     @Mock private DateProvider dateProvider;
 
     private HomeOfficeDecisionDateChecker homeOfficeDecisionDateChecker;
@@ -50,33 +50,33 @@ public class HomeOfficeDecisionDateCheckerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
     }
 
     @Test
     public void handles_edge_case_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
-        when(asylumCase.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2019-01-01"));
+        when(CaseDataMap.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2019-01-01"));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).setSubmissionOutOfTime(outOfTime.capture());
+        verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(NO);
+        assertThat(outOfTime.getValue()).isEqualTo(No);
     }
 
     @Test
     public void handles_edge_case_when_easily_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
-        when(asylumCase.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2015-01-01"));
+        when(CaseDataMap.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2015-01-01"));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).setSubmissionOutOfTime(outOfTime.capture());
+        verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(YES);
+        assertThat(outOfTime.getValue()).isEqualTo(Yes);
     }
 
     @Test
@@ -92,13 +92,13 @@ public class HomeOfficeDecisionDateCheckerTest {
     public void handles_edge_case_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-16"));
-        when(asylumCase.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2019-01-01"));
+        when(CaseDataMap.getHomeOfficeDecisionDate()).thenReturn(Optional.of("2019-01-01"));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).setSubmissionOutOfTime(outOfTime.capture());
+        verify(CaseDataMap).setSubmissionOutOfTime(outOfTime.capture());
 
-        assertThat(outOfTime.getValue()).isEqualTo(YES);
+        assertThat(outOfTime.getValue()).isEqualTo(Yes);
     }
 
     @Test

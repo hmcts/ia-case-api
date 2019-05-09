@@ -6,8 +6,8 @@ import java.util.Optional;
 
 public enum AppealType {
 
-    RP("revocationOfProtection"),
-    PA("protection");
+    revocationOfProtection("revocationOfProtection"),
+    protection("protection");
 
     private String value;
 

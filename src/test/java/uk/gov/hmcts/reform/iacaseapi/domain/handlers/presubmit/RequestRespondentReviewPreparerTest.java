@@ -14,7 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -29,9 +29,9 @@ public class RequestRespondentReviewPreparerTest {
     private static final int DUE_IN_DAYS = 14;
 
     @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     @Captor private ArgumentCaptor<String> sendDirectionExplanationCaptor;
 
@@ -53,15 +53,15 @@ public class RequestRespondentReviewPreparerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setSendDirectionExplanation(sendDirectionExplanationCaptor.capture());
+        verify(CaseDataMap, times(1)).setSendDirectionExplanation(sendDirectionExplanationCaptor.capture());
 
         String actualExplanation = sendDirectionExplanationCaptor.getAllValues().get(0);
 
@@ -75,8 +75,8 @@ public class RequestRespondentReviewPreparerTest {
             containsString(expectedExplanationContains)
         );
 
-        verify(asylumCase, times(1)).setSendDirectionParties(expectedParties);
-        verify(asylumCase, times(1)).setSendDirectionDateDue(expectedDateDue);
+        verify(CaseDataMap, times(1)).setSendDirectionParties(expectedParties);
+        verify(CaseDataMap, times(1)).setSendDirectionDateDue(expectedDateDue);
     }
 
     @Test

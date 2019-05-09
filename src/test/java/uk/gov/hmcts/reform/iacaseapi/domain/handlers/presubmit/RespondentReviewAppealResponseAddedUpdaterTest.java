@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -26,9 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 public class RespondentReviewAppealResponseAddedUpdaterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     private RespondentReviewAppealResponseAddedUpdater respondentReviewAppealResponseAddedUpdater =
         new RespondentReviewAppealResponseAddedUpdater();
@@ -37,7 +37,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     public void setUp() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
         when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
     }
 
@@ -52,26 +52,26 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(asylumCase.getAppealResponseAvailable()).thenReturn(Optional.of(YesOrNo.YES));
+            when(CaseDataMap.getAppealResponseAvailable()).thenReturn(Optional.of(YesOrNo.Yes));
 
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(asylumCase, callbackResponse.getData());
+            assertEquals(CaseDataMap, callbackResponse.getData());
 
             if (state == State.RESPONDENT_REVIEW) {
 
-                verify(asylumCase, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
+                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.Yes);
 
             } else {
-                verify(asylumCase, never()).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
-                verify(asylumCase, never()).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
-                verify(asylumCase, times(1)).clearRespondentReviewAppealResponseAdded();
+                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.No);
+                verify(CaseDataMap, never()).setRespondentReviewAppealResponseAdded(YesOrNo.Yes);
+                verify(CaseDataMap, times(1)).clearRespondentReviewAppealResponseAdded();
             }
 
-            reset(asylumCase);
+            reset(CaseDataMap);
         }
     }
 
@@ -81,25 +81,25 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
         List<Optional<YesOrNo>> appealResponseNotAvailableInidications =
             Arrays.asList(
                 Optional.empty(),
-                Optional.of(YesOrNo.NO)
+                Optional.of(YesOrNo.No)
             );
 
         appealResponseNotAvailableInidications
             .forEach(appealResponseNotAvailableInidication -> {
 
-                when(asylumCase.getAppealResponseAvailable()).thenReturn(appealResponseNotAvailableInidication);
+                when(CaseDataMap.getAppealResponseAvailable()).thenReturn(appealResponseNotAvailableInidication);
 
-                PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                     respondentReviewAppealResponseAddedUpdater
                         .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
                 assertNotNull(callbackResponse);
-                assertEquals(asylumCase, callbackResponse.getData());
+                assertEquals(CaseDataMap, callbackResponse.getData());
 
-                verify(asylumCase, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
-                verify(asylumCase, never()).clearRespondentReviewAppealResponseAdded();
+                verify(CaseDataMap, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.No);
+                verify(CaseDataMap, never()).clearRespondentReviewAppealResponseAdded();
 
-                reset(asylumCase);
+                reset(CaseDataMap);
             });
     }
 

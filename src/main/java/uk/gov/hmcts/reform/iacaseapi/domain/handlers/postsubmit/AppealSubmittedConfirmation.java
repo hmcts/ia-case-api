@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.No;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -13,10 +13,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -24,7 +24,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
     }
 
     public PostSubmitCallbackResponse handle(
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -38,7 +38,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 requireNonNull(callback.getCaseDetails().getCaseData().getSubmissionOutOfTime()
                         .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
-        if (submissionOutOfTime.equals(NO)) {
+        if (submissionOutOfTime.equals(No)) {
 
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
             postSubmitResponse.setConfirmationBody(

@@ -15,7 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -34,9 +34,9 @@ public class CreateCaseSummaryHandlerTest {
 
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
     @Mock private Document caseSummaryDocument;
     private String caseSummaryDescription = "Case summary description";
     @Mock private DocumentWithMetadata caseSummaryWithMetadata;
@@ -57,7 +57,7 @@ public class CreateCaseSummaryHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.CREATE_CASE_SUMMARY);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
 
         when(documentReceiver.receive(
             caseSummaryDocument,
@@ -75,18 +75,18 @@ public class CreateCaseSummaryHandlerTest {
     @Test
     public void should_append_case_summary_to_hearing_documents_for_the_case() {
 
-        when(asylumCase.getHearingDocuments()).thenReturn(Optional.of(existingHearingDocuments));
-        when(asylumCase.getCaseSummaryDocument()).thenReturn(Optional.of(caseSummaryDocument));
-        when(asylumCase.getCaseSummaryDescription()).thenReturn(Optional.of(caseSummaryDescription));
+        when(CaseDataMap.getHearingDocuments()).thenReturn(Optional.of(existingHearingDocuments));
+        when(CaseDataMap.getCaseSummaryDocument()).thenReturn(Optional.of(caseSummaryDocument));
+        when(CaseDataMap.getCaseSummaryDescription()).thenReturn(Optional.of(caseSummaryDescription));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getCaseSummaryDocument();
-        verify(asylumCase, times(1)).getCaseSummaryDescription();
+        verify(CaseDataMap, times(1)).getCaseSummaryDocument();
+        verify(CaseDataMap, times(1)).getCaseSummaryDescription();
 
         verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
@@ -97,24 +97,24 @@ public class CreateCaseSummaryHandlerTest {
                 DocumentTag.CASE_SUMMARY
             );
 
-        verify(asylumCase, times(1)).setHearingDocuments(allHearingDocuments);
+        verify(CaseDataMap, times(1)).setHearingDocuments(allHearingDocuments);
     }
 
     @Test
     public void should_add_case_summary_to_the_case_when_no_hearing_documents_exist() {
 
-        when(asylumCase.getHearingDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getCaseSummaryDocument()).thenReturn(Optional.of(caseSummaryDocument));
-        when(asylumCase.getCaseSummaryDescription()).thenReturn(Optional.of(caseSummaryDescription));
+        when(CaseDataMap.getHearingDocuments()).thenReturn(Optional.empty());
+        when(CaseDataMap.getCaseSummaryDocument()).thenReturn(Optional.of(caseSummaryDocument));
+        when(CaseDataMap.getCaseSummaryDescription()).thenReturn(Optional.of(caseSummaryDescription));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getCaseSummaryDocument();
-        verify(asylumCase, times(1)).getCaseSummaryDescription();
+        verify(CaseDataMap, times(1)).getCaseSummaryDocument();
+        verify(CaseDataMap, times(1)).getCaseSummaryDescription();
 
         verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
@@ -132,13 +132,13 @@ public class CreateCaseSummaryHandlerTest {
 
         assertEquals(0, hearingDocuments.size());
 
-        verify(asylumCase, times(1)).setHearingDocuments(allHearingDocuments);
+        verify(CaseDataMap, times(1)).setHearingDocuments(allHearingDocuments);
     }
 
     @Test
     public void should_throw_when_case_summary_document_is_not_present() {
 
-        when(asylumCase.getCaseSummaryDocument()).thenReturn(Optional.empty());
+        when(CaseDataMap.getCaseSummaryDocument()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("caseSummaryDocument is not present")

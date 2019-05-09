@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @Component
-public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final DirectionAppender directionAppender;
     private final DirectionPartiesResolver directionPartiesResolver;
@@ -39,7 +39,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -54,26 +54,26 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
             ).contains(callback.getEvent());
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDataMap CaseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         String sendDirectionExplanation =
-            asylumCase
+            CaseDataMap
                 .getSendDirectionExplanation()
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
         String sendDirectionDateDue =
-            asylumCase
+            CaseDataMap
                 .getSendDirectionDateDue()
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 
@@ -81,7 +81,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());
 
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
+            CaseDataMap
                 .getDirections()
                 .orElse(Collections.emptyList());
 
@@ -94,12 +94,12 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 directionTag
             );
 
-        asylumCase.setDirections(allDirections);
+        CaseDataMap.setDirections(allDirections);
 
-        asylumCase.clearSendDirectionExplanation();
-        asylumCase.clearSendDirectionParties();
-        asylumCase.clearSendDirectionDateDue();
+        CaseDataMap.clearSendDirectionExplanation();
+        CaseDataMap.clearSendDirectionParties();
+        CaseDataMap.clearSendDirectionDateDue();
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(CaseDataMap);
     }
 }

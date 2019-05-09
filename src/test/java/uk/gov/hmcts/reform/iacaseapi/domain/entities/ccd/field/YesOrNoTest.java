@@ -8,8 +8,8 @@ public class YesOrNoTest {
 
     @Test
     public void has_correct_values() {
-        assertEquals("No", YesOrNo.NO.toString());
-        assertEquals("Yes", YesOrNo.YES.toString());
+        assertEquals("No", YesOrNo.No.toString());
+        assertEquals("Yes", YesOrNo.Yes.toString());
     }
 
     @Test
