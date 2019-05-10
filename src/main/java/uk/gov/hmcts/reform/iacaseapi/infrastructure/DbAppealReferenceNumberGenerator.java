@@ -44,7 +44,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("caseId", caseId);
-        parameters.addValue("appealType", appealType.getValue());
+        parameters.addValue("appealType", appealType.name());
         parameters.addValue("year", currentYear);
         parameters.addValue("seed", appealReferenceSequenceSeed);
 

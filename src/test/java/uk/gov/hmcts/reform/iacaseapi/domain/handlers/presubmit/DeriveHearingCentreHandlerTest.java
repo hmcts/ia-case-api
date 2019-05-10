@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class DeriveHearingCentreHandlerTest {
 
     @Mock private Callback<CaseDataMap> callback;
     @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private CaseDataMap caseDataMap;
     @Mock private AddressUk addressUk;
 
     @Mock private HearingCentreFinder hearingCentreFinder;
@@ -45,10 +46,10 @@ public class DeriveHearingCentreHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getHearingCentre()).thenReturn(Optional.empty());
-        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.YES));
-        when(CaseDataMap.getAppellantAddress()).thenReturn(Optional.of(addressUk));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(caseDataMap.get(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(caseDataMap.get(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(HearingCentre.MANCHESTER);
 
@@ -56,9 +57,9 @@ public class DeriveHearingCentreHandlerTest {
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
         verify(hearingCentreFinder, times(1)).find("A123 4BC");
-        verify(CaseDataMap, times(1)).setHearingCentre(HearingCentre.MANCHESTER);
+        verify(caseDataMap, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
     @Test
@@ -66,17 +67,17 @@ public class DeriveHearingCentreHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getHearingCentre()).thenReturn(Optional.empty());
-        when(CaseDataMap.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.NO));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(caseDataMap.get(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(HearingCentre.TAYLOR_HOUSE);
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
-        verify(CaseDataMap, times(1)).setHearingCentre(HearingCentre.TAYLOR_HOUSE);
+        assertEquals(caseDataMap, callbackResponse.getData());
+        verify(caseDataMap, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
     }
 
     @Test
@@ -86,15 +87,15 @@ public class DeriveHearingCentreHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getHearingCentre()).thenReturn(Optional.of(existingHearingCentre));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
-        verify(CaseDataMap, never()).setHearingCentre(any());
+        assertEquals(caseDataMap, callbackResponse.getData());
+        verify(caseDataMap, never()).write(any(), any());
     }
 
     @Test

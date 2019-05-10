@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ public class DirectionHandlerTest {
     @Mock private DirectionTagResolver directionTagResolver;
     @Mock private Callback<CaseDataMap> callback;
     @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private CaseDataMap caseDataMap;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
@@ -69,10 +70,10 @@ public class DirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getDirections()).thenReturn(Optional.of(existingDirections));
-        when(CaseDataMap.getSendDirectionExplanation()).thenReturn(Optional.of(expectedExplanation));
-        when(CaseDataMap.getSendDirectionDateDue()).thenReturn(Optional.of(expectedDateDue));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(caseDataMap.get(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(caseDataMap.get(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
 
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
@@ -88,10 +89,10 @@ public class DirectionHandlerTest {
             directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).getSendDirectionExplanation();
-        verify(CaseDataMap, times(1)).getSendDirectionDateDue();
+        verify(caseDataMap, times(1)).get(SEND_DIRECTION_EXPLANATION, String.class);
+        verify(caseDataMap, times(1)).get(SEND_DIRECTION_DATE_DUE, String.class);
 
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
@@ -103,11 +104,11 @@ public class DirectionHandlerTest {
             expectedDirectionTag
         );
 
-        verify(CaseDataMap, times(1)).setDirections(allDirections);
+        verify(caseDataMap, times(1)).write(DIRECTIONS, allDirections);
 
-        verify(CaseDataMap, times(1)).clearSendDirectionExplanation();
-        verify(CaseDataMap, times(1)).clearSendDirectionParties();
-        verify(CaseDataMap, times(1)).clearSendDirectionDateDue();
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_EXPLANATION);
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_PARTIES);
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
     @Test
@@ -124,10 +125,10 @@ public class DirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getDirections()).thenReturn(Optional.empty());
-        when(CaseDataMap.getSendDirectionExplanation()).thenReturn(Optional.of(expectedExplanation));
-        when(CaseDataMap.getSendDirectionDateDue()).thenReturn(Optional.of(expectedDateDue));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.empty());
+        when(caseDataMap.get(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(caseDataMap.get(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
 
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
@@ -143,10 +144,10 @@ public class DirectionHandlerTest {
             directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).getSendDirectionExplanation();
-        verify(CaseDataMap, times(1)).getSendDirectionDateDue();
+        verify(caseDataMap, times(1)).get(SEND_DIRECTION_DATE_DUE, String.class);
+        verify(caseDataMap, times(1)).get(SEND_DIRECTION_EXPLANATION, String.class);
 
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
@@ -165,11 +166,11 @@ public class DirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(CaseDataMap, times(1)).setDirections(allDirections);
+        verify(caseDataMap, times(1)).write(DIRECTIONS, allDirections);
 
-        verify(CaseDataMap, times(1)).clearSendDirectionExplanation();
-        verify(CaseDataMap, times(1)).clearSendDirectionParties();
-        verify(CaseDataMap, times(1)).clearSendDirectionDateDue();
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_EXPLANATION);
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_PARTIES);
+        verify(caseDataMap, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
     @Test
@@ -177,9 +178,9 @@ public class DirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
 
-        when(CaseDataMap.getSendDirectionExplanation()).thenReturn(Optional.empty());
+        when(caseDataMap.get(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionExplanation is not present")
@@ -191,10 +192,10 @@ public class DirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
 
-        when(CaseDataMap.getSendDirectionExplanation()).thenReturn(Optional.of("Do the thing"));
-        when(CaseDataMap.getSendDirectionDateDue()).thenReturn(Optional.empty());
+        when(caseDataMap.get(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of("Do the thing"));
+        when(caseDataMap.get(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionDateDue is not present")

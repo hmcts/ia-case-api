@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<Ca
 
 
         YesOrNo submissionOutOfTime =
-                requireNonNull(callback.getCaseDetails().getCaseData().getSubmissionOutOfTime()
+                requireNonNull(callback.getCaseDetails().getCaseData().get(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
                         .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
         if (submissionOutOfTime.equals(NO)) {

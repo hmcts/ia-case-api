@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_BUILDING_READY_FOR_SUBMISSION;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
@@ -37,23 +39,23 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
                 .getCaseDetails()
                 .getState();
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         if (caseState == State.CASE_BUILDING) {
 
-            if (CaseDataMap.getCaseArgumentDocument().isPresent()) {
-                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.YES);
+            if (caseDataMap.get(CASE_ARGUMENT_DOCUMENT).isPresent()) {
+                caseDataMap.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
             } else {
-                CaseDataMap.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+                caseDataMap.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
             }
 
         } else {
-            CaseDataMap.clearCaseBuildingReadyForSubmission();
+            caseDataMap.clear(CASE_BUILDING_READY_FOR_SUBMISSION);
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

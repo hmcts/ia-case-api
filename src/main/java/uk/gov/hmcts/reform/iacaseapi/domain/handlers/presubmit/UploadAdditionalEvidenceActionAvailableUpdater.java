@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             callback
                 .getCaseDetails();
 
-        CaseDataMap CaseDataMap = caseDetails.getCaseData();
+        CaseDataMap caseDataMap = caseDetails.getCaseData();
 
         if (Arrays.asList(
             State.CASE_UNDER_REVIEW,
@@ -46,12 +47,11 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             State.SUBMIT_HEARING_REQUIREMENTS,
             State.LISTING
         ).contains(caseDetails.getState())) {
-
-            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
+            caseDataMap.write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
-            CaseDataMap.setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
+            caseDataMap.write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

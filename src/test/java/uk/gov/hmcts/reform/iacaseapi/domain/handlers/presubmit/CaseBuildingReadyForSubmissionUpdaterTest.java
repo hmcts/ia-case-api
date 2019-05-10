@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_BUILDING_READY_FOR_SUBMISSION;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -25,7 +27,7 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
 
     @Mock private Callback<CaseDataMap> callback;
     @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private CaseDataMap caseDataMap;
 
     private CaseBuildingReadyForSubmissionUpdater caseBuildingReadyForSubmissionUpdater =
         new CaseBuildingReadyForSubmissionUpdater();
@@ -34,47 +36,47 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
     public void should_set_case_building_ready_for_submission_flag_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(CaseDataMap.getCaseArgumentDocument()).thenReturn(Optional.of(mock(Document.class)));
+        when(caseDataMap.get(CASE_ARGUMENT_DOCUMENT)).thenReturn(Optional.of(mock(Document.class)));
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(caseDataMap, never()).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(caseDataMap, times(1)).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(caseDataMap, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test
     public void should_set_case_building_ready_for_submission_flag_to_no_if_argument_not_uploaded() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(CaseDataMap.getCaseArgumentDocument()).thenReturn(Optional.empty());
+        when(caseDataMap.get(CASE_ARGUMENT_DOCUMENT)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, never()).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(CaseDataMap, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(caseDataMap, never()).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(caseDataMap, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(caseDataMap, times(1)).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test
     public void should_clear_case_building_ready_for_submission_flag_when_not_in_case_building_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
         when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
@@ -82,11 +84,11 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
                 .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).clearCaseBuildingReadyForSubmission();
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(CaseDataMap, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(caseDataMap, times(1)).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(caseDataMap, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(caseDataMap, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test

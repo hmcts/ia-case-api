@@ -1,14 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.EDITABLE_DIRECTIONS;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -38,25 +43,28 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<C
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<Direction>>> maybeDirections = caseDataMap.get(DIRECTIONS);
+
         final Map<String, Direction> existingDirectionsById =
-            CaseDataMap
-                .getDirections()
+            maybeDirections
                 .orElseThrow(() -> new IllegalStateException("directions is not present"))
                 .stream()
-                .collect(Collectors.toMap(
+                .collect(toMap(
                     IdValue::getId,
                     IdValue::getValue
                 ));
 
+        Optional<List<IdValue<EditableDirection>>> maybeEditableDirections =
+                caseDataMap.get(EDITABLE_DIRECTIONS);
+
         List<IdValue<Direction>> changedDirections =
-            CaseDataMap
-                .getEditableDirections()
-                .orElse(Collections.emptyList())
+            maybeEditableDirections
+                .orElse(emptyList())
                 .stream()
                 .map(idValue -> {
 
@@ -80,11 +88,11 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<C
                     );
 
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
 
-        CaseDataMap.clearEditableDirections();
-        CaseDataMap.setDirections(changedDirections);
+        caseDataMap.clear(EDITABLE_DIRECTIONS);
+        caseDataMap.write(DIRECTIONS, changedDirections);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

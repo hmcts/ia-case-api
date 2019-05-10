@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import org.junit.Test;
@@ -60,9 +61,9 @@ public class SendDirectionActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.YES);
+                verify(CaseDataMap, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(CaseDataMap, times(1)).setSendDirectionActionAvailable(YesOrNo.NO);
+                verify(CaseDataMap, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
             reset(CaseDataMap);

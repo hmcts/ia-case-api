@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
@@ -62,28 +64,29 @@ public class DirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         String sendDirectionExplanation =
-            CaseDataMap
-                .getSendDirectionExplanation()
+            caseDataMap
+                .get(SEND_DIRECTION_EXPLANATION, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
         String sendDirectionDateDue =
-            CaseDataMap
-                .getSendDirectionDateDue()
+            caseDataMap
+                .get(SEND_DIRECTION_DATE_DUE, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 
         Parties directionParties = directionPartiesResolver.resolve(callback);
         DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());
 
+        Optional<List<IdValue<Direction>>> maybeExistingDirections =
+                caseDataMap.get(DIRECTIONS);
+
         final List<IdValue<Direction>> existingDirections =
-            CaseDataMap
-                .getDirections()
-                .orElse(Collections.emptyList());
+                maybeExistingDirections.orElse(emptyList());
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
@@ -94,12 +97,12 @@ public class DirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
                 directionTag
             );
 
-        CaseDataMap.setDirections(allDirections);
+        caseDataMap.write(DIRECTIONS, allDirections);
 
-        CaseDataMap.clearSendDirectionExplanation();
-        CaseDataMap.clearSendDirectionParties();
-        CaseDataMap.clearSendDirectionDateDue();
+        caseDataMap.clear(SEND_DIRECTION_EXPLANATION);
+        caseDataMap.clear(SEND_DIRECTION_PARTIES);
+        caseDataMap.clear(SEND_DIRECTION_DATE_DUE);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

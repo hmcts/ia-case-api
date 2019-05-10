@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -55,19 +57,16 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        final List<IdValue<Direction>> existingDirections =
-            CaseDataMap
-                .getDirections()
-                .orElse(Collections.emptyList());
+        Optional<List<IdValue<Direction>>> maybeDirections = caseDataMap.get(DIRECTIONS);
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
-                existingDirections,
+                    maybeDirections.orElse(emptyList()),
                 "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\n"
                 + "Next steps\n"
                 + "You have " + reviewDueInDays + " days to review the response. "
@@ -82,8 +81,8 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
                 DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
             );
 
-        CaseDataMap.setDirections(allDirections);
+        caseDataMap.write(DIRECTIONS, allDirections);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

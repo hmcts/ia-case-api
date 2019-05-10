@@ -11,8 +11,8 @@ public class AppealTypeTest {
 
     @Test
     public void has_correct_asylum_appeal_types() {
-        assertThat(AppealType.from("RP").get(), is(AppealType.RP));
-        assertThat(AppealType.from("PA").get(), is(AppealType.PA));
+        assertThat(AppealType.from("revocationOfProtection").get(), is(AppealType.RP));
+        assertThat(AppealType.from("protection").get(), is(AppealType.PA));
     }
 
     @Test

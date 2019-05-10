@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -46,12 +47,12 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        CaseDataMap.setSendDirectionExplanation(
+        caseDataMap.write(SEND_DIRECTION_EXPLANATION,
             "You must now review this case.\n\n"
             + "You have " + requestRespondentReviewDueInDays + " days to review the appeal argument and evidence. "
             + "You must explain whether the appellant's appeal argument makes a valid case for overturning the "
@@ -68,15 +69,15 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
             + "If you do not respond in time, the case officer will decide how the case should proceed."
         );
 
-        CaseDataMap.setSendDirectionParties(Parties.RESPONDENT);
+        caseDataMap.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        CaseDataMap.setSendDirectionDateDue(
+        caseDataMap.write(SEND_DIRECTION_DATE_DUE,
             dateProvider
                 .now()
                 .plusDays(requestRespondentReviewDueInDays)
                 .toString()
         );
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

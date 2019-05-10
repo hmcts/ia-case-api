@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.util.*;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
@@ -249,11 +249,11 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse =
+            PreSubmitCallbackResponse<CaseDataMap> preSubmitCallbackResponse =
                 new PreSubmitCallbackResponse<>(
                     objectMapper.readValue(
                         MapSerializer.serialize(caseData),
-                        new TypeReference<AsylumCase>() {
+                        new TypeReference<CaseDataMap>() {
                         }
                     )
                 );

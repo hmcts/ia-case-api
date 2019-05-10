@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_PARTIES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
@@ -33,13 +34,13 @@ public class RequestCaseEditPreparer implements PreSubmitCallbackHandler<CaseDat
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        CaseDataMap.setSendDirectionParties(Parties.LEGAL_REPRESENTATIVE);
+        caseDataMap.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

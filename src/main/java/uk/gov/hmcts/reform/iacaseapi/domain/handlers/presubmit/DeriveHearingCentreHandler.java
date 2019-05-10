@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -44,25 +47,26 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!CaseDataMap.getHearingCentre().isPresent()) {
+        if (!caseDataMap.get(HEARING_CENTRE).isPresent()) {
 
-            trySetHearingCentreFromPostcode(CaseDataMap);
+            trySetHearingCentreFromPostcode(caseDataMap);
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 
     private Optional<String> getAppellantPostcode(
-        CaseDataMap CaseDataMap
+        CaseDataMap caseDataMap
     ) {
-        if (CaseDataMap.getAppellantHasFixedAddress().orElse(YesOrNo.NO) == YesOrNo.YES) {
+        if (caseDataMap.get(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
+                .orElse(NO) == YES) {
 
-            Optional<AddressUk> optionalAppellantAddress = CaseDataMap.getAppellantAddress();
+            Optional<AddressUk> optionalAppellantAddress = caseDataMap.get(APPELLANT_ADDRESS);
 
             if (optionalAppellantAddress.isPresent()) {
 
@@ -76,19 +80,19 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
     }
 
     private void trySetHearingCentreFromPostcode(
-        CaseDataMap CaseDataMap
+        CaseDataMap caseDataMap
     ) {
-        Optional<String> optionalAppellantPostcode = getAppellantPostcode(CaseDataMap);
+        Optional<String> optionalAppellantPostcode = getAppellantPostcode(caseDataMap);
 
         if (optionalAppellantPostcode.isPresent()) {
 
             String appellantPostcode = optionalAppellantPostcode.get();
-            CaseDataMap.setHearingCentre(
+            caseDataMap.write(HEARING_CENTRE,
                 hearingCentreFinder.find(appellantPostcode)
             );
 
         } else {
-            CaseDataMap.setHearingCentre(hearingCentreFinder.getDefaultHearingCentre());
+            caseDataMap.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
         }
     }
 }

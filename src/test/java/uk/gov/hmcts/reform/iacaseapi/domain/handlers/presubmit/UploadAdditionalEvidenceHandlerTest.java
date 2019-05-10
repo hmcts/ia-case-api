@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.ADDITIONAL_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.ADDITIONAL_EVIDENCE_DOCUMENTS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +78,8 @@ public class UploadAdditionalEvidenceHandlerTest {
                 additionalEvidence2WithMetadata
             );
 
-        when(CaseDataMap.getAdditionalEvidenceDocuments()).thenReturn(Optional.of(existingAdditionalEvidenceDocuments));
-        when(CaseDataMap.getAdditionalEvidence()).thenReturn(Optional.of(additionalEvidence));
+        when(CaseDataMap.get(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(existingAdditionalEvidenceDocuments));
+        when(CaseDataMap.get(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
 
         when(documentReceiver.tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE))
             .thenReturn(Optional.of(additionalEvidence1WithMetadata));
@@ -94,15 +96,15 @@ public class UploadAdditionalEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).getAdditionalEvidence();
+        verify(CaseDataMap, times(1)).get(ADDITIONAL_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE);
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence2, DocumentTag.ADDITIONAL_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingAdditionalEvidenceDocuments, additionalEvidenceWithMetadata);
 
-        verify(CaseDataMap, times(1)).setAdditionalEvidenceDocuments(allAdditionalEvidenceDocuments);
-        verify(CaseDataMap, times(1)).clearAdditionalEvidence();
+        verify(CaseDataMap, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
+        verify(CaseDataMap, times(1)).clear(ADDITIONAL_EVIDENCE);
     }
 
     @Test
@@ -111,8 +113,8 @@ public class UploadAdditionalEvidenceHandlerTest {
         List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
         List<DocumentWithMetadata> additionalEvidenceWithMetadata = Arrays.asList(additionalEvidence1WithMetadata);
 
-        when(CaseDataMap.getAdditionalEvidenceDocuments()).thenReturn(Optional.empty());
-        when(CaseDataMap.getAdditionalEvidence()).thenReturn(Optional.of(additionalEvidence));
+        when(CaseDataMap.get(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.empty());
+        when(CaseDataMap.get(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
 
         when(documentReceiver.tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE))
             .thenReturn(Optional.of(additionalEvidence1WithMetadata));
@@ -126,7 +128,7 @@ public class UploadAdditionalEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).getAdditionalEvidence();
+        verify(CaseDataMap, times(1)).get(ADDITIONAL_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE);
 
@@ -139,14 +141,14 @@ public class UploadAdditionalEvidenceHandlerTest {
 
         assertEquals(0, actualExistingAdditionalDocuments.size());
 
-        verify(CaseDataMap, times(1)).setAdditionalEvidenceDocuments(allAdditionalEvidenceDocuments);
-        verify(CaseDataMap, times(1)).clearAdditionalEvidence();
+        verify(CaseDataMap, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
+        verify(CaseDataMap, times(1)).clear(ADDITIONAL_EVIDENCE);
     }
 
     @Test
     public void should_throw_when_new_evidence_is_not_present() {
 
-        when(CaseDataMap.getAdditionalEvidence()).thenReturn(Optional.empty());
+        when(CaseDataMap.get(ADDITIONAL_EVIDENCE)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("additionalEvidence is not present")

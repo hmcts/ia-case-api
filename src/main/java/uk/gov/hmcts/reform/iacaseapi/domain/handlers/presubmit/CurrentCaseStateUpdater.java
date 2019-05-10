@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
@@ -33,14 +35,14 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<CaseDat
 
         State currentCaseState = callback.getCaseDetails().getState();
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        CaseDataMap.setCurrentCaseStateVisibleToCaseOfficer(currentCaseState);
-        CaseDataMap.setCurrentCaseStateVisibleToLegalRepresentative(currentCaseState);
+        caseDataMap.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentCaseState);
+        caseDataMap.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

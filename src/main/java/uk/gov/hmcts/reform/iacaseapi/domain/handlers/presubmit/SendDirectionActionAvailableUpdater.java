@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             callback
                 .getCaseDetails();
 
-        CaseDataMap CaseDataMap = caseDetails.getCaseData();
+        CaseDataMap caseDataMap = caseDetails.getCaseData();
 
         if (Arrays.asList(
             State.APPEAL_SUBMITTED,
@@ -53,11 +54,11 @@ public class SendDirectionActionAvailableUpdater implements PreSubmitCallbackHan
             State.FINAL_BUNDLING,
             State.PRE_HEARING
         ).contains(caseDetails.getState())) {
-            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.YES);
+            caseDataMap.write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
-            CaseDataMap.setSendDirectionActionAvailable(YesOrNo.NO);
+            caseDataMap.write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.NO);
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

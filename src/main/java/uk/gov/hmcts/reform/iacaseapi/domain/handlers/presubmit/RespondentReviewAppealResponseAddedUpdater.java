@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_RESPONSE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
@@ -37,21 +40,22 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
                 .getCaseDetails()
                 .getState();
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         if (caseState == State.RESPONDENT_REVIEW) {
 
-            CaseDataMap.setRespondentReviewAppealResponseAdded(
-                CaseDataMap.getAppealResponseAvailable().orElse(YesOrNo.NO)
+            caseDataMap.write(
+                    RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED,
+                    caseDataMap.get(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class).orElse(NO)
             );
 
         } else {
-            CaseDataMap.clearRespondentReviewAppealResponseAdded();
+            caseDataMap.clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

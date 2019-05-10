@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -51,25 +54,26 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDa
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         final Document caseSummaryDocument =
-            CaseDataMap
-                .getCaseSummaryDocument()
+            caseDataMap
+                .get(CASE_SUMMARY_DOCUMENT, Document.class)
                 .orElseThrow(() -> new IllegalStateException("caseSummaryDocument is not present"));
 
         final String caseSummaryDescription =
-            CaseDataMap
-                .getCaseSummaryDescription()
+            caseDataMap
+                .get(CASE_SUMMARY_DESCRIPTION, String.class)
                 .orElse("");
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+                caseDataMap.get(HEARING_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            CaseDataMap
-                .getHearingDocuments()
-                .orElse(Collections.emptyList());
+            maybeHearingDocuments.orElse(emptyList());
 
         DocumentWithMetadata caseSummaryDocumentWithMetadata =
             documentReceiver.receive(
@@ -81,12 +85,12 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDa
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
                 hearingDocuments,
-                Collections.singletonList(caseSummaryDocumentWithMetadata),
+                singletonList(caseSummaryDocumentWithMetadata),
                 DocumentTag.CASE_SUMMARY
             );
 
-        CaseDataMap.setHearingDocuments(allHearingDocuments);
+        caseDataMap.write(HEARING_DOCUMENTS, allHearingDocuments);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

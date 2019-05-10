@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.EDITABLE_DIRECTIONS;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -37,14 +41,16 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<Direction>>> maybeDirections = caseDataMap
+                .get(DIRECTIONS);
+
         List<IdValue<EditableDirection>> editableDirections =
-            CaseDataMap
-                .getDirections()
+            maybeDirections
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(idValue ->
@@ -59,8 +65,8 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
                 )
                 .collect(Collectors.toList());
 
-        CaseDataMap.setEditableDirections(editableDirections);
+        caseDataMap.write(EDITABLE_DIRECTIONS, editableDirections);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

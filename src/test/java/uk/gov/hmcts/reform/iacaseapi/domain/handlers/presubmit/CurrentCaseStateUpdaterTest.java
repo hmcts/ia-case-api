@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +46,8 @@ public class CurrentCaseStateUpdaterTest {
             assertNotNull(callbackResponse);
             assertEquals(CaseDataMap, callbackResponse.getData());
 
-            verify(CaseDataMap, times(1)).setCurrentCaseStateVisibleToCaseOfficer(state);
-            verify(CaseDataMap, times(1)).setCurrentCaseStateVisibleToLegalRepresentative(state);
+            verify(CaseDataMap, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
+            verify(CaseDataMap, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
 
             reset(CaseDataMap);
         }

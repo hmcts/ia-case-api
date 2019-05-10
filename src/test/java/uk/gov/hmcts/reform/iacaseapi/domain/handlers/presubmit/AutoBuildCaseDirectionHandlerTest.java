@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     @Mock private DirectionAppender directionAppender;
     @Mock private Callback<CaseDataMap> callback;
     @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private CaseDataMap caseDataMap;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
@@ -69,8 +70,8 @@ public class AutoBuildCaseDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
             eq(existingDirections),
             contains(expectedExplanationPart),
@@ -83,7 +84,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             autoBuildCaseDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             eq(existingDirections),
@@ -93,7 +94,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             eq(expectedTag)
         );
 
-        verify(CaseDataMap, times(1)).setDirections(allDirections);
+        verify(caseDataMap, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -109,8 +110,8 @@ public class AutoBuildCaseDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getDirections()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
             any(List.class),
             contains(expectedExplanationPart),
@@ -123,7 +124,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             autoBuildCaseDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             existingDirectionsCaptor.capture(),
@@ -140,7 +141,7 @@ public class AutoBuildCaseDirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(CaseDataMap, times(1)).setDirections(allDirections);
+        verify(caseDataMap, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -152,18 +153,18 @@ public class AutoBuildCaseDirectionHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(existingDirection.getTag()).thenReturn(DirectionTag.BUILD_CASE);
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             autoBuildCaseDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
         verify(directionAppender, never()).append(any(), any(), any(), any(), any());
-        verify(CaseDataMap, never()).setDirections(any());
+        verify(caseDataMap, never()).write(any(), any());
     }
 
     @Test

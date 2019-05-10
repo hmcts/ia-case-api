@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.LEGAL_REPRESENTATIVE_NAME;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
@@ -18,25 +20,25 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
     private final UserDetailsProvider userDetailsProvider;
 
     public LegalRepresentativeDetailsHandler(
-        UserDetailsProvider userDetailsProvider
+            UserDetailsProvider userDetailsProvider
     ) {
         this.userDetailsProvider = userDetailsProvider;
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+                && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<CaseDataMap> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -44,23 +46,25 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
 
         UserDetails userDetails = userDetailsProvider.getUserDetails();
 
-        final CaseDataMap CaseDataMap =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        final CaseDataMap caseDataMap =
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
-        if (!CaseDataMap.getLegalRepresentativeName().isPresent()) {
-            CaseDataMap.setLegalRepresentativeName(
-                userDetails.getForename() + " " + userDetails.getSurname()
+        if (!caseDataMap.get(LEGAL_REPRESENTATIVE_NAME).isPresent()) {
+            caseDataMap.write(
+                    LEGAL_REPRESENTATIVE_NAME,
+                    userDetails.getForename() + " " + userDetails.getSurname()
             );
         }
 
-        if (!CaseDataMap.getLegalRepresentativeEmailAddress().isPresent()) {
-            CaseDataMap.setLegalRepresentativeEmailAddress(
-                userDetails.getEmailAddress()
+        if (!caseDataMap.get(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isPresent()) {
+            caseDataMap.write(
+                    LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
+                    userDetails.getEmailAddress()
             );
         }
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_TYPE;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -48,27 +50,27 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<Ca
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMap =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         if (callback.getEvent() == Event.START_APPEAL) {
-            CaseDataMap.setAppealReferenceNumber(DRAFT);
-            return new PreSubmitCallbackResponse<>(CaseDataMap);
+            caseDataMap.write(APPEAL_REFERENCE_NUMBER, DRAFT);
+            return new PreSubmitCallbackResponse<>(caseDataMap);
         }
 
         PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
-            new PreSubmitCallbackResponse<>(CaseDataMap);
+            new PreSubmitCallbackResponse<>(caseDataMap);
 
-        Optional<String> existingAppealReferenceNumber = CaseDataMap.getAppealReferenceNumber();
+        Optional<String> existingAppealReferenceNumber = caseDataMap.get(APPEAL_REFERENCE_NUMBER);
 
         if (!existingAppealReferenceNumber.isPresent()
             || existingAppealReferenceNumber.get().equals(DRAFT)) {
 
             AppealType appealType =
-                CaseDataMap
-                    .getAppealType()
+                caseDataMap
+                    .get(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
             String appealReferenceNumber =
@@ -77,7 +79,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<Ca
                     appealType
                 );
 
-            CaseDataMap.setAppealReferenceNumber(appealReferenceNumber);
+            caseDataMap.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         }
 
         return callbackResponse;

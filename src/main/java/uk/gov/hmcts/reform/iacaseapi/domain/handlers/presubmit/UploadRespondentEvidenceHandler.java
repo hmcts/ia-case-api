@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.RESPONDENT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.RESPONDENT_EVIDENCE;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -52,14 +55,16 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence =
+                caseDataMap.get(RESPONDENT_EVIDENCE);
+
         List<DocumentWithMetadata> respondentEvidence =
-            CaseDataMap
-                .getRespondentEvidence()
+            maybeRespondentEvidence
                 .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
@@ -68,18 +73,19 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingRespondentDocuments =
+                caseDataMap.get(RESPONDENT_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
-            CaseDataMap
-                .getRespondentDocuments()
-                .orElse(Collections.emptyList());
+                maybeExistingRespondentDocuments.orElse(emptyList());
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(existingRespondentDocuments, respondentEvidence);
 
-        CaseDataMap.setRespondentDocuments(allRespondentDocuments);
+        caseDataMap.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        CaseDataMap.clearRespondentEvidence();
+        caseDataMap.clear(RESPONDENT_EVIDENCE);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

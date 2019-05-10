@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_PARTIES;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class RequestCaseEditPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(CaseDataMap, callbackResponse.getData());
 
-        verify(CaseDataMap, times(1)).setSendDirectionParties(expectedParties);
+        verify(CaseDataMap, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
     }
 
     @Test

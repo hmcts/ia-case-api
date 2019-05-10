@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.ADDITIONAL_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.ADDITIONAL_EVIDENCE_DOCUMENTS;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -52,14 +55,16 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap CaseDataMap =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<DocumentWithDescription>>> maybeAdditionalEvidence =
+                caseDataMap.get(ADDITIONAL_EVIDENCE);
+
         List<DocumentWithMetadata> additionalEvidenceDocuments =
-            CaseDataMap
-                .getAdditionalEvidence()
+            maybeAdditionalEvidence
                 .orElseThrow(() -> new IllegalStateException("additionalEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
@@ -68,18 +73,19 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceDocuments =
+                caseDataMap.get(ADDITIONAL_EVIDENCE_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> existingAdditionalEvidenceDocuments =
-            CaseDataMap
-                .getAdditionalEvidenceDocuments()
-                .orElse(Collections.emptyList());
+            maybeExistingAdditionalEvidenceDocuments.orElse(Collections.emptyList());
 
         List<IdValue<DocumentWithMetadata>> allAdditionalEvidenceDocuments =
             documentsAppender.append(existingAdditionalEvidenceDocuments, additionalEvidenceDocuments);
 
-        CaseDataMap.setAdditionalEvidenceDocuments(allAdditionalEvidenceDocuments);
+        caseDataMap.write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
 
-        CaseDataMap.clearAdditionalEvidence();
+        caseDataMap.clear(ADDITIONAL_EVIDENCE);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMap);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +30,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
 
     @Mock private Callback<CaseDataMap> callback;
     @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private CaseDataMap caseDataMap;
 
     private ChangeDirectionDueDateActionAvailableUpdater changeDirectionDueDateActionAvailableUpdater =
         new ChangeDirectionDueDateActionAvailableUpdater();
@@ -37,12 +39,12 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
     public void should_set_action_available_flag_to_yes_when_state_applies_and_directions_exists() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
 
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(CaseDataMap.getDirections()).thenReturn(
+            when(caseDataMap.get(DIRECTIONS)).thenReturn(
                 Optional.of(
                     Arrays.asList(
                         new IdValue<>("1", mock(Direction.class))
@@ -55,7 +57,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(CaseDataMap, callbackResponse.getData());
+            assertEquals(caseDataMap, callbackResponse.getData());
 
             if (Arrays.asList(
                 State.APPEAL_SUBMITTED,
@@ -71,12 +73,12 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.YES);
+                verify(caseDataMap, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+                verify(caseDataMap, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
-            reset(CaseDataMap);
+            reset(caseDataMap);
         }
     }
 
@@ -84,23 +86,23 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
     public void should_set_not_action_available_flag_to_yes_when_there_are_no_directions() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
 
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(CaseDataMap.getDirections()).thenReturn(Optional.of(Collections.emptyList()));
+            when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(Collections.emptyList()));
 
             PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                 changeDirectionDueDateActionAvailableUpdater
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(CaseDataMap, callbackResponse.getData());
+            assertEquals(caseDataMap, callbackResponse.getData());
 
-            verify(CaseDataMap, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+            verify(caseDataMap, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.NO);
 
-            reset(CaseDataMap);
+            reset(caseDataMap);
         }
     }
 
