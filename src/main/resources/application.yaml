@@ -132,6 +132,7 @@ security:
       - "revertStateToAwaitingRespondentEvidence"
 
 ### dependency configuration
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
 auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}

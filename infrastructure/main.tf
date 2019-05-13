@@ -99,6 +99,11 @@ data "azurerm_key_vault_secret" "ccd_url" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "ccd_gw_url" {
+  name      = "ccd-gw-url"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "dm_url" {
   name      = "dm-url"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
@@ -163,6 +168,7 @@ module "ia_case_api" {
     POSTGRES_PASSWORD = "${module.ia_case_api_database.postgresql_password}"
 
     CCD_URL  = "${data.azurerm_key_vault_secret.ccd_url.value}"
+    CCD_GW_URL = "${data.azurerm_key_vault_secret.ccd_gw_url.value}"
     DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
