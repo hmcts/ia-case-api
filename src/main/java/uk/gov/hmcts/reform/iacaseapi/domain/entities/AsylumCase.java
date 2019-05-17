@@ -737,68 +737,6 @@ public class AsylumCase implements CaseData {
         this.submissionOutOfTime = Optional.ofNullable(submissionOutOfTime);
     }
 
-
-    // -----------------------------------------------------------------------------
-    // start decision and reasons ...
-    // -----------------------------------------------------------------------------
-
-    public Optional<String> getCaseIntroductionDescription() {
-        return caseIntroductionDescription;
-    }
-
-    public Optional<String> getAppellantCaseSummaryTitle() {
-        return appellantCaseSummaryTitle;
-    }
-
-    public Optional<String> getAppellantCaseSummaryDescription() {
-        return appellantCaseSummaryDescription;
-    }
-
-    public Optional<YesOrNo> getImmigrationHistoryAgreement() {
-        return immigrationHistoryAgreement;
-    }
-
-    public Optional<String> getAgreedImmigrationHistoryDescription() {
-        return agreedImmigrationHistoryDescription;
-    }
-
-    public Optional<String> getImmigrationDisagreementInstructionsLabel() {
-        return immigrationDisagreementInstructionsLabel;
-    }
-
-    public Optional<String> getRespondentsImmigrationHistoryDescription() {
-        return respondentsImmigrationHistoryDescription;
-    }
-
-    public Optional<String> getImmigrationHistoryDisagreementDescription() {
-        return immigrationHistoryDisagreementDescription;
-    }
-
-    public Optional<YesOrNo> getScheduleOfIssuesAgreement() {
-        return scheduleOfIssuesAgreement;
-    }
-
-    public Optional<String> getAgreedScheduleOfIssuesDescription() {
-        return agreedScheduleOfIssuesDescription;
-    }
-
-    public Optional<String> getScheduleOfIssuesAgreementInstructionsLabel() {
-        return scheduleOfIssuesAgreementInstructionsLabel;
-    }
-
-    public Optional<String> getScheduleOfIssuesDisagreementInstructionsLabel() {
-        return scheduleOfIssuesDisagreementInstructionsLabel;
-    }
-
-    public Optional<String> getRespondentsScheduleOfIssuesDescription() {
-        return respondentsScheduleOfIssuesDescription;
-    }
-
-    public Optional<String> getScheduleOfIssuesDisagreementDescription() {
-        return scheduleOfIssuesDisagreementDescription;
-    }
-
-
     // -----------------------------------------------------------------------------
     // sub-state flags ...
     // -----------------------------------------------------------------------------
