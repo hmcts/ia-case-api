@@ -122,6 +122,25 @@ public class AsylumCase implements CaseData {
     private Optional<String> caseSummaryDescription = Optional.empty();
 
     // -----------------------------------------------------------------------------
+    // start decision and reasons ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> caseIntroductionDescription = Optional.empty();
+    private Optional<String> appellantCaseSummaryTitle = Optional.empty();
+    private Optional<String> appellantCaseSummaryDescription = Optional.empty();
+    private Optional<YesOrNo> immigrationHistoryAgreement = Optional.empty();
+    private Optional<String> agreedImmigrationHistoryDescription = Optional.empty();
+    private Optional<String> immigrationDisagreementInstructionsLabel = Optional.empty();
+    private Optional<String> respondentsImmigrationHistoryDescription = Optional.empty();
+    private Optional<String> immigrationHistoryDisagreementDescription = Optional.empty();
+    private Optional<YesOrNo> scheduleOfIssuesAgreement = Optional.empty();
+    private Optional<String> agreedScheduleOfIssuesDescription = Optional.empty();
+    private Optional<String> scheduleOfIssuesAgreementInstructionsLabel = Optional.empty();
+    private Optional<String> scheduleOfIssuesDisagreementInstructionsLabel = Optional.empty();
+    private Optional<String> respondentsScheduleOfIssuesDescription = Optional.empty();
+    private Optional<String> scheduleOfIssuesDisagreementDescription = Optional.empty();
+
+    // -----------------------------------------------------------------------------
     // internal API managed fields ...
     // -----------------------------------------------------------------------------
 
@@ -717,6 +736,68 @@ public class AsylumCase implements CaseData {
     public void setSubmissionOutOfTime(YesOrNo submissionOutOfTime) {
         this.submissionOutOfTime = Optional.ofNullable(submissionOutOfTime);
     }
+
+
+    // -----------------------------------------------------------------------------
+    // start decision and reasons ...
+    // -----------------------------------------------------------------------------
+
+    public Optional<String> getCaseIntroductionDescription() {
+        return caseIntroductionDescription;
+    }
+
+    public Optional<String> getAppellantCaseSummaryTitle() {
+        return appellantCaseSummaryTitle;
+    }
+
+    public Optional<String> getAppellantCaseSummaryDescription() {
+        return appellantCaseSummaryDescription;
+    }
+
+    public Optional<YesOrNo> getImmigrationHistoryAgreement() {
+        return immigrationHistoryAgreement;
+    }
+
+    public Optional<String> getAgreedImmigrationHistoryDescription() {
+        return agreedImmigrationHistoryDescription;
+    }
+
+    public Optional<String> getImmigrationDisagreementInstructionsLabel() {
+        return immigrationDisagreementInstructionsLabel;
+    }
+
+    public Optional<String> getRespondentsImmigrationHistoryDescription() {
+        return respondentsImmigrationHistoryDescription;
+    }
+
+    public Optional<String> getImmigrationHistoryDisagreementDescription() {
+        return immigrationHistoryDisagreementDescription;
+    }
+
+    public Optional<YesOrNo> getScheduleOfIssuesAgreement() {
+        return scheduleOfIssuesAgreement;
+    }
+
+    public Optional<String> getAgreedScheduleOfIssuesDescription() {
+        return agreedScheduleOfIssuesDescription;
+    }
+
+    public Optional<String> getScheduleOfIssuesAgreementInstructionsLabel() {
+        return scheduleOfIssuesAgreementInstructionsLabel;
+    }
+
+    public Optional<String> getScheduleOfIssuesDisagreementInstructionsLabel() {
+        return scheduleOfIssuesDisagreementInstructionsLabel;
+    }
+
+    public Optional<String> getRespondentsScheduleOfIssuesDescription() {
+        return respondentsScheduleOfIssuesDescription;
+    }
+
+    public Optional<String> getScheduleOfIssuesDisagreementDescription() {
+        return scheduleOfIssuesDisagreementDescription;
+    }
+
 
     // -----------------------------------------------------------------------------
     // sub-state flags ...

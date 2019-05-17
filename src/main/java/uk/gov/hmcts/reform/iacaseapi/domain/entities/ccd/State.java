@@ -16,7 +16,7 @@ public enum State {
     PREPARE_FOR_HEARING("prepareForHearing"),
     FINAL_BUNDLING("finalBundling"),
     PRE_HEARING("preHearing"),
-    HEARING_AND_OUTCOME("hearingAndOutcome"),
+    DECISION("decision"),
     DECIDED("decided"),
 
     @JsonEnumDefaultValue

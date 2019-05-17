@@ -22,6 +22,7 @@ public enum Event {
     CREATE_CASE_SUMMARY("createCaseSummary"),
     REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),
     GENERATE_HEARING_BUNDLE("generateHearingBundle"),
+    DECISION_AND_REASONS_STARTED("decisionAndReasonsStarted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
