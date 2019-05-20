@@ -33,6 +33,7 @@ public class GenerateDocumentHandlerTest {
         generateDocumentHandler =
             new GenerateDocumentHandler(
                 true,
+                true,
                 documentGenerator
             );
     }
@@ -103,7 +104,7 @@ public class GenerateDocumentHandlerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    assertFalse("failed callback: " + callbackStage + ", failed event " + event, canHandle);
                 }
             }
 
@@ -117,6 +118,7 @@ public class GenerateDocumentHandlerTest {
         generateDocumentHandler =
             new GenerateDocumentHandler(
                 false,
+                true,
                 documentGenerator
             );
 
@@ -133,6 +135,40 @@ public class GenerateDocumentHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    public void it_cannot_handle_generate_if_em_stitching_not_enabled() {
+
+        generateDocumentHandler =
+            new GenerateDocumentHandler(
+                true,
+                false,
+                documentGenerator
+            );
+
+        for (Event event : Event.values()) {
+
+            when(callback.getEvent()).thenReturn(event);
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
+
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && (event == Event.SUBMIT_APPEAL || event == Event.LIST_CASE)) {
+                    assertTrue(canHandle);
+                } else if (event == Event.GENERATE_HEARING_BUNDLE) {
+                    assertFalse(canHandle);
+                } else {
+                    assertFalse("event: " + event + ", stage: " + callbackStage, canHandle);
+                }
+
+            }
+
+            reset(callback);
+        }
+
     }
 
     @Test

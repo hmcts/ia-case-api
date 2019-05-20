@@ -37,7 +37,9 @@ spring:
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
   jackson.date-format: yyyy-MM-dd
 
-featureFlag.docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
+featureFlag:
+  docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
+  isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeHearingRequirements.dueInDays: 5
