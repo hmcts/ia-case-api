@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
+import com.google.common.collect.Lists;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -18,13 +19,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isDocmosisEnabled;
+    private final boolean isEmStitchingEnabled;
     private final DocumentGenerator<AsylumCase> documentGenerator;
 
     public GenerateDocumentHandler(
         @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
+        @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
         DocumentGenerator<AsylumCase> documentGenerator
     ) {
         this.isDocmosisEnabled = isDocmosisEnabled;
+        this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
     }
 
@@ -40,14 +44,18 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        List<Event> allowedEvents = Lists.newArrayList(Event.SUBMIT_APPEAL, Event.LIST_CASE);
+        if (isEmStitchingEnabled) {
+            allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
+        }
+
         return isDocmosisEnabled
+               && isEmStitchingEnabled
                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               &&
-               Arrays.asList(
-                   Event.SUBMIT_APPEAL,
-                   Event.LIST_CASE,
-                   Event.GENERATE_HEARING_BUNDLE
-               ).contains(callback.getEvent());
+               && allowedEvents.contains(callback.getEvent())
+               || isDocmosisEnabled
+                  && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                  && allowedEvents.contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
