@@ -39,6 +39,11 @@ data "azurerm_key_vault_secret" "docmosis_enabled" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "em_stitching_enabled" {
+  name      = "em-stitching-enabled"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "test_caseofficer_username" {
   name      = "test-caseofficer-username"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
@@ -152,6 +157,7 @@ module "ia_case_api" {
     IA_CASE_DOCUMENTS_API_URL     = "${data.azurerm_key_vault_secret.case_documents_api_url.value}"
     IA_CASE_NOTIFICATIONS_API_URL = "${data.azurerm_key_vault_secret.case_notifications_api_url.value}"
     IA_DOCMOSIS_ENABLED           = "${data.azurerm_key_vault_secret.docmosis_enabled.value}"
+    IA_EM_STITCHING_ENABLED       = "${data.azurerm_key_vault_secret.em_stitching_enabled.value}"
 
     IA_SYSTEM_USERNAME            = "${data.azurerm_key_vault_secret.system_username.value}"
     IA_SYSTEM_PASSWORD            = "${data.azurerm_key_vault_secret.system_password.value}"
