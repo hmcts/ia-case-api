@@ -246,6 +246,18 @@ public class AsylumCase implements CaseData {
 
         this.caseBuildingReadyForSubmission = asylumCaseBuilder.getCaseBuildingReadyForSubmission();
         this.respondentReviewAppealResponseAdded = asylumCaseBuilder.getRespondentReviewAppealResponseAdded();
+
+        this.caseIntroductionDescription = asylumCaseBuilder.getCaseIntroductionDescription();
+        this.appellantCaseSummaryDescription = asylumCaseBuilder.getAppellantCaseSummaryDescription();
+        this.immigrationHistoryAgreement = asylumCaseBuilder.getImmigrationHistoryAgreement();
+        this.agreedImmigrationHistoryDescription = asylumCaseBuilder.getAgreedImmigrationHistoryDescription();
+        this.respondentsImmigrationHistoryDescription = asylumCaseBuilder.getRespondentsImmigrationHistoryDescription();
+        this.immigrationHistoryDisagreementDescription = asylumCaseBuilder.getImmigrationHistoryDisagreementDescription();
+        this.scheduleOfIssuesAgreement = asylumCaseBuilder.getScheduleOfIssuesAgreement();
+        this.respondentsAgreedScheduleOfIssuesDescription = asylumCaseBuilder.getRespondentsAgreedScheduleOfIssuesDescription();
+        this.respondentsScheduleOfIssuesDescription = asylumCaseBuilder.getRespondentsScheduleOfIssuesDescription();
+        this.respondentsDisputedScheduleOfIssuesDescription = asylumCaseBuilder.getRespondentsDisputedScheduleOfIssuesDescription();
+        this.scheduleOfIssuesDisagreementDescription = asylumCaseBuilder.getScheduleOfIssuesDisagreementDescription();
     }
 
     // -----------------------------------------------------------------------------

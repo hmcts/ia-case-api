@@ -151,6 +151,22 @@ public class AsylumCaseTest {
     private final YesOrNo respondentReviewAppealResponseAdded = YesOrNo.YES;
 
     // -----------------------------------------------------------------------------
+    // start decision and reasons ...
+    // -----------------------------------------------------------------------------
+
+    private String caseIntroductionDescription = "a";
+    private String appellantCaseSummaryDescription = "a";
+    private YesOrNo immigrationHistoryAgreement = YesOrNo.YES;
+    private String agreedImmigrationHistoryDescription = "a";
+    private String respondentsImmigrationHistoryDescription = "a";
+    private String immigrationHistoryDisagreementDescription = "a";
+    private YesOrNo scheduleOfIssuesAgreement = YesOrNo.YES;
+    private String respondentsAgreedScheduleOfIssuesDescription = "a";
+    private String respondentsScheduleOfIssuesDescription = "a";
+    private String respondentsDisputedScheduleOfIssuesDescription = "a";
+    private String scheduleOfIssuesDisagreementDescription = "a";
+
+    // -----------------------------------------------------------------------------
 
     @Mock AsylumCaseBuilder asylumCaseBuilder;
 
@@ -233,6 +249,18 @@ public class AsylumCaseTest {
 
         when(asylumCaseBuilder.getCaseBuildingReadyForSubmission()).thenReturn(Optional.of(caseBuildingReadyForSubmission));
         when(asylumCaseBuilder.getRespondentReviewAppealResponseAdded()).thenReturn(Optional.of(respondentReviewAppealResponseAdded));
+
+        when(asylumCaseBuilder.getCaseIntroductionDescription()).thenReturn(Optional.of(caseIntroductionDescription));
+        when(asylumCaseBuilder.getAppellantCaseSummaryDescription()).thenReturn(Optional.of(appellantCaseSummaryDescription));
+        when(asylumCaseBuilder.getImmigrationHistoryAgreement()).thenReturn(Optional.of(immigrationHistoryAgreement));
+        when(asylumCaseBuilder.getAgreedImmigrationHistoryDescription()).thenReturn(Optional.of(agreedImmigrationHistoryDescription));
+        when(asylumCaseBuilder.getRespondentsImmigrationHistoryDescription()).thenReturn(Optional.of(respondentsImmigrationHistoryDescription));
+        when(asylumCaseBuilder.getImmigrationHistoryDisagreementDescription()).thenReturn(Optional.of(immigrationHistoryDisagreementDescription));
+        when(asylumCaseBuilder.getScheduleOfIssuesAgreement()).thenReturn(Optional.of(scheduleOfIssuesAgreement));
+        when(asylumCaseBuilder.getRespondentsAgreedScheduleOfIssuesDescription()).thenReturn(Optional.of(respondentsAgreedScheduleOfIssuesDescription));
+        when(asylumCaseBuilder.getRespondentsScheduleOfIssuesDescription()).thenReturn(Optional.of(respondentsScheduleOfIssuesDescription));
+        when(asylumCaseBuilder.getRespondentsDisputedScheduleOfIssuesDescription()).thenReturn(Optional.of(respondentsDisputedScheduleOfIssuesDescription));
+        when(asylumCaseBuilder.getScheduleOfIssuesDisagreementDescription()).thenReturn(Optional.of(scheduleOfIssuesDisagreementDescription));
     }
 
     @Test
@@ -313,6 +341,18 @@ public class AsylumCaseTest {
         assertEquals(Optional.of(caseArgumentAvailable), asylumCase.getCaseArgumentAvailable());
         assertEquals(Optional.of(appealResponseAvailable), asylumCase.getAppealResponseAvailable());
         assertEquals(Optional.of(submissionOutOfTime), asylumCase.getSubmissionOutOfTime());
+
+        assertEquals(Optional.of(caseIntroductionDescription), asylumCase.getCaseIntroductionDescription());
+        assertEquals(Optional.of(appellantCaseSummaryDescription), asylumCase.getAppellantCaseSummaryDescription());
+        assertEquals(Optional.of(immigrationHistoryAgreement), asylumCase.getImmigrationHistoryAgreement());
+        assertEquals(Optional.of(agreedImmigrationHistoryDescription), asylumCase.getAgreedImmigrationHistoryDescription());
+        assertEquals(Optional.of(respondentsImmigrationHistoryDescription), asylumCase.getRespondentsImmigrationHistoryDescription());
+        assertEquals(Optional.of(immigrationHistoryDisagreementDescription), asylumCase.getImmigrationHistoryDisagreementDescription());
+        assertEquals(Optional.of(scheduleOfIssuesAgreement), asylumCase.getScheduleOfIssuesAgreement());
+        assertEquals(Optional.of(respondentsAgreedScheduleOfIssuesDescription), asylumCase.getRespondentsAgreedScheduleOfIssuesDescription());
+        assertEquals(Optional.of(respondentsScheduleOfIssuesDescription), asylumCase.getRespondentsScheduleOfIssuesDescription());
+        assertEquals(Optional.of(respondentsDisputedScheduleOfIssuesDescription), asylumCase.getRespondentsDisputedScheduleOfIssuesDescription());
+        assertEquals(Optional.of(scheduleOfIssuesDisagreementDescription), asylumCase.getScheduleOfIssuesDisagreementDescription());
 
         assertEquals(Optional.of(caseBuildingReadyForSubmission), asylumCase.getCaseBuildingReadyForSubmission());
         assertEquals(Optional.of(respondentReviewAppealResponseAdded), asylumCase.getRespondentReviewAppealResponseAdded());

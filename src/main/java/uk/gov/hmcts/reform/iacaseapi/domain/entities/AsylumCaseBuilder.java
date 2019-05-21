@@ -136,6 +136,23 @@ public class AsylumCaseBuilder {
     private Optional<YesOrNo> appealResponseAvailable = Optional.empty();
     private Optional<YesOrNo> submissionOutOfTime = Optional.empty();
 
+
+    // -----------------------------------------------------------------------------
+    // start decision and reasons ...
+    // -----------------------------------------------------------------------------
+
+    private Optional<String> caseIntroductionDescription = Optional.empty();
+    private Optional<String> appellantCaseSummaryDescription = Optional.empty();
+    private Optional<YesOrNo> immigrationHistoryAgreement = Optional.empty();
+    private Optional<String> agreedImmigrationHistoryDescription = Optional.empty();
+    private Optional<String> respondentsImmigrationHistoryDescription = Optional.empty();
+    private Optional<String> immigrationHistoryDisagreementDescription = Optional.empty();
+    private Optional<YesOrNo> scheduleOfIssuesAgreement = Optional.empty();
+    private Optional<String> respondentsAgreedScheduleOfIssuesDescription = Optional.empty();
+    private Optional<String> respondentsScheduleOfIssuesDescription = Optional.empty();
+    private Optional<String> respondentsDisputedScheduleOfIssuesDescription = Optional.empty();
+    private Optional<String> scheduleOfIssuesDisagreementDescription = Optional.empty();
+
     // -----------------------------------------------------------------------------
     // sub-state flags ...
     // -----------------------------------------------------------------------------
@@ -711,5 +728,49 @@ public class AsylumCaseBuilder {
 
     public void setRespondentReviewAppealResponseAdded(Optional<YesOrNo> respondentReviewAppealResponseAdded) {
         this.respondentReviewAppealResponseAdded = respondentReviewAppealResponseAdded;
+    }
+
+    public Optional<String> getCaseIntroductionDescription() {
+        return caseIntroductionDescription;
+    }
+
+    public Optional<String> getAppellantCaseSummaryDescription() {
+        return appellantCaseSummaryDescription;
+    }
+
+    public Optional<YesOrNo> getImmigrationHistoryAgreement() {
+        return immigrationHistoryAgreement;
+    }
+
+    public Optional<String> getAgreedImmigrationHistoryDescription() {
+        return agreedImmigrationHistoryDescription;
+    }
+
+    public Optional<String> getRespondentsImmigrationHistoryDescription() {
+        return respondentsImmigrationHistoryDescription;
+    }
+
+    public Optional<String> getImmigrationHistoryDisagreementDescription() {
+        return immigrationHistoryDisagreementDescription;
+    }
+
+    public Optional<YesOrNo> getScheduleOfIssuesAgreement() {
+        return scheduleOfIssuesAgreement;
+    }
+
+    public Optional<String> getRespondentsAgreedScheduleOfIssuesDescription() {
+        return respondentsAgreedScheduleOfIssuesDescription;
+    }
+
+    public Optional<String> getRespondentsScheduleOfIssuesDescription() {
+        return respondentsScheduleOfIssuesDescription;
+    }
+
+    public Optional<String> getRespondentsDisputedScheduleOfIssuesDescription() {
+        return respondentsDisputedScheduleOfIssuesDescription;
+    }
+
+    public Optional<String> getScheduleOfIssuesDisagreementDescription() {
+        return scheduleOfIssuesDisagreementDescription;
     }
 }
