@@ -67,8 +67,7 @@ public class CcdScenarioRunnerTest {
             verifiers.isEmpty()
         );
 
-        //String scenarioPattern = System.getProperty("scenario");
-        String scenarioPattern = "RIA-941";
+        String scenarioPattern = System.getProperty("scenario");
         if (scenarioPattern == null) {
             scenarioPattern = "*.json";
         } else {
@@ -150,7 +149,7 @@ public class CcdScenarioRunnerTest {
                     .body()
                     .asString();
 
-            System.out.println(">>>> response body: " + actualResponseBody);
+            System.out.println("Response body: " + actualResponseBody);
 
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
