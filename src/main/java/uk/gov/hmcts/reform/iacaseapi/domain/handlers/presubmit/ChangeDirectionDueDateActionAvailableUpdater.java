@@ -1,26 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -33,19 +39,21 @@ public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCa
         return DispatchPriority.LATEST;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDetails<AsylumCase> caseDetails =
+        CaseDetails<CaseDataMap> caseDetails =
             callback
                 .getCaseDetails();
 
-        AsylumCase asylumCase = caseDetails.getCaseData();
+        CaseDataMap caseDataMap = caseDetails.getCaseData();
+
+        Optional<List<IdValue<Direction>>> maybeDirections = caseDataMap.get(DIRECTIONS);
 
         if (Arrays.asList(
             State.APPEAL_SUBMITTED,
@@ -59,14 +67,12 @@ public class ChangeDirectionDueDateActionAvailableUpdater implements PreSubmitCa
             State.PREPARE_FOR_HEARING,
             State.FINAL_BUNDLING,
             State.PRE_HEARING
-        ).contains(caseDetails.getState())
-            && !asylumCase.getDirections().orElse(Collections.emptyList()).isEmpty()) {
-
-            asylumCase.setChangeDirectionDueDateActionAvailable(YesOrNo.YES);
+        ).contains(caseDetails.getState()) && !maybeDirections.orElse(emptyList()).isEmpty()) {
+            caseDataMap.write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
-            asylumCase.setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+            caseDataMap.write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.NO);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

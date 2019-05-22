@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -20,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
-public class LegalRepresentativeHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class LegalRepresentativeHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
@@ -38,7 +40,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -47,23 +49,23 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
                && callback.getEvent() == Event.REQUEST_HEARING_REQUIREMENTS;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<Direction>>> maybeDirections = caseDataMap.get(DIRECTIONS);
+
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
-                .getDirections()
-                .orElse(Collections.emptyList());
+            maybeDirections.orElse(emptyList());
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
@@ -82,8 +84,8 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
                 DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS
             );
 
-        asylumCase.setDirections(allDirections);
+        caseDataMap.write(DIRECTIONS, allDirections);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

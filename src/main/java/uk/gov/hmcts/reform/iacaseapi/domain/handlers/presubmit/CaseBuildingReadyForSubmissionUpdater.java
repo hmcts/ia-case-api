@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CASE_BUILDING_READY_FOR_SUBMISSION;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -12,11 +14,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -24,9 +26,9 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -37,23 +39,23 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
                 .getCaseDetails()
                 .getState();
 
-        final AsylumCase asylumCase =
+        final CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         if (caseState == State.CASE_BUILDING) {
 
-            if (asylumCase.getCaseArgumentDocument().isPresent()) {
-                asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.YES);
+            if (caseDataMap.get(CASE_ARGUMENT_DOCUMENT).isPresent()) {
+                caseDataMap.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
             } else {
-                asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+                caseDataMap.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
             }
 
         } else {
-            asylumCase.clearCaseBuildingReadyForSubmission();
+            caseDataMap.clear(CASE_BUILDING_READY_FOR_SUBMISSION);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

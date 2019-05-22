@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -33,10 +33,10 @@ public class PreSubmitCallbackController {
 
     private static final org.slf4j.Logger LOG = getLogger(PreSubmitCallbackController.class);
 
-    private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    private final PreSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher;
 
     public PreSubmitCallbackController(
-        PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
+        PreSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher
     ) {
         requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
@@ -78,8 +78,8 @@ public class PreSubmitCallbackController {
     })
 
     @PostMapping(path = "/ccdAboutToStart")
-    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToStart(
-        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+    public ResponseEntity<PreSubmitCallbackResponse<CaseDataMap>> ccdAboutToStart(
+        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<CaseDataMap> callback
     ) {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_START, callback);
     }
@@ -118,15 +118,15 @@ public class PreSubmitCallbackController {
     })
 
     @PostMapping(path = "/ccdAboutToSubmit")
-    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdAboutToSubmit(
-        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+    public ResponseEntity<PreSubmitCallbackResponse<CaseDataMap>> ccdAboutToSubmit(
+        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<CaseDataMap> callback
     ) {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
-    private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> performStageRequest(
+    private ResponseEntity<PreSubmitCallbackResponse<CaseDataMap>> performStageRequest(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         LOG.info(
             "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
@@ -135,7 +135,7 @@ public class PreSubmitCallbackController {
             callback.getCaseDetails().getId()
         );
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             callbackDispatcher.handle(callbackStage, callback);
 
         LOG.info(

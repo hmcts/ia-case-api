@@ -15,14 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AsylumCaseCallbackDeserializerTest {
 
     @Mock private ObjectMapper mapper;
-    @Mock private Callback<AsylumCase> expectedAsylumCaseCallback;
+    @Mock private Callback<CaseDataMap> expectedAsylumCaseCallback;
 
     private AsylumCaseCallbackDeserializer asylumCaseCallbackDeserializer;
 
@@ -40,7 +40,7 @@ public class AsylumCaseCallbackDeserializerTest {
             .when(mapper)
             .readValue(eq(source), isA(TypeReference.class));
 
-        Callback<AsylumCase> actualAsylumCaseCallback = asylumCaseCallbackDeserializer.deserialize(source);
+        Callback<CaseDataMap> actualAsylumCaseCallback = asylumCaseCallbackDeserializer.deserialize(source);
 
         assertEquals(expectedAsylumCaseCallback, actualAsylumCaseCallback);
     }

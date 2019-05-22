@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 @SuppressWarnings("unchecked")
 public class GenerateDocumentHandlerTest {
 
-    @Mock private DocumentGenerator<AsylumCase> documentGenerator;
-    @Mock private Callback<AsylumCase> callback;
+    @Mock private DocumentGenerator<CaseDataMap> documentGenerator;
+    @Mock private Callback<CaseDataMap> callback;
 
     private GenerateDocumentHandler generateDocumentHandler;
 
@@ -47,12 +47,12 @@ public class GenerateDocumentHandlerTest {
             Event.GENERATE_HEARING_BUNDLE
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+            CaseDataMap expectedUpdatedCase = mock(CaseDataMap.class);
 
             when(callback.getEvent()).thenReturn(event);
             when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                 generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);

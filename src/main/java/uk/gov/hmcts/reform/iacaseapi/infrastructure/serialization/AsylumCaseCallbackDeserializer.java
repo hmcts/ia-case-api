@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @Component
-public class AsylumCaseCallbackDeserializer implements Deserializer<Callback<AsylumCase>> {
+public class AsylumCaseCallbackDeserializer implements Deserializer<Callback<CaseDataMap>> {
 
     private final ObjectMapper mapper;
 
@@ -18,14 +18,14 @@ public class AsylumCaseCallbackDeserializer implements Deserializer<Callback<Asy
         this.mapper = mapper;
     }
 
-    public Callback<AsylumCase> deserialize(
+    public Callback<CaseDataMap> deserialize(
         String source
     ) {
         try {
 
             return mapper.readValue(
                 source,
-                new TypeReference<Callback<AsylumCase>>() {
+                new TypeReference<Callback<CaseDataMap>>() {
                 }
             );
 

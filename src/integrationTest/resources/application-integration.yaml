@@ -9,3 +9,8 @@ spring:
   flyway.enabled: true
 
 appealReferenceSequenceSeed: 50000
+
+security:
+
+  authorisedServices:
+    - "ia"

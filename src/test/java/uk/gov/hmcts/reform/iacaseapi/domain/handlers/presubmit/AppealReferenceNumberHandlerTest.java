@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -13,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -25,9 +27,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerat
 @SuppressWarnings("unchecked")
 public class AppealReferenceNumberHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap caseDataMap;
 
     @Mock private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
@@ -41,7 +43,7 @@ public class AppealReferenceNumberHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
     }
 
     @Test
@@ -49,13 +51,13 @@ public class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("DRAFT");
+        verify(caseDataMap, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
 
         verifyZeroInteractions(appealReferenceNumberGenerator);
     }
@@ -68,16 +70,16 @@ public class AppealReferenceNumberHandlerTest {
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(asylumCase.getAppealType()).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(Optional.of("DRAFT"));
+        when(caseDataMap.get(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(caseDataMap.get(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("the-next-appeal-reference-number");
+        verify(caseDataMap, times(1)).write(APPEAL_REFERENCE_NUMBER,"the-next-appeal-reference-number");
     }
 
     @Test
@@ -88,30 +90,30 @@ public class AppealReferenceNumberHandlerTest {
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(asylumCase.getAppealType()).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(Optional.empty());
+        when(caseDataMap.get(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(caseDataMap.get(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(caseDataMap, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("the-next-appeal-reference-number");
+        verify(caseDataMap, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
     }
 
     @Test
     public void should_do_nothing_if_non_draft_number_already_present() {
 
-        Optional<String> appealReference = Optional.of("some-existing-reference-number");
+        Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(appealReference);
+        when(caseDataMap.get(APPEAL_REFERENCE_NUMBER)).thenReturn(appealReference);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verifyZeroInteractions(appealReferenceNumberGenerator);
-        verify(asylumCase, never()).setAppealReferenceNumber(any());
+        verify(caseDataMap, never()).write(any(), any());
     }
 
     @Test

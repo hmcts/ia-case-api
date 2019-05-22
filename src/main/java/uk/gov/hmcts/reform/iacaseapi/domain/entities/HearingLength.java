@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
 public enum HearingLength {
@@ -19,6 +20,7 @@ public enum HearingLength {
     LENGTH_5_HOURS_30_MINUTES(330),
     LENGTH_6_HOURS(360);
 
+    @JsonValue
     private final int value;
 
     HearingLength(int value) {

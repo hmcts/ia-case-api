@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -36,9 +37,9 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<CaseDataMap> callback;
+    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private CaseDataMap CaseDataMap;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
@@ -68,8 +69,8 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
             eq(existingDirections),
             contains(expectedExplanationPart),
@@ -78,11 +79,11 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             eq(expectedTag)
         )).thenReturn(allDirections);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             eq(existingDirections),
@@ -92,7 +93,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             eq(expectedTag)
         );
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(CaseDataMap, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -108,8 +109,8 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(CaseDataMap.get(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
             any(List.class),
             contains(expectedExplanationPart),
@@ -118,11 +119,11 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
             eq(expectedTag)
         )).thenReturn(allDirections);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
             legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(CaseDataMap, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             existingDirectionsCaptor.capture(),
@@ -139,7 +140,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(CaseDataMap, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test

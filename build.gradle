@@ -261,6 +261,7 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
     testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true

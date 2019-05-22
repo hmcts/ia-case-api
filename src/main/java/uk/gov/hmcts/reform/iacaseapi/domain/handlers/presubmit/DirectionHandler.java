@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -21,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @Component
-public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DirectionHandler implements PreSubmitCallbackHandler<CaseDataMap> {
 
     private final DirectionAppender directionAppender;
     private final DirectionPartiesResolver directionPartiesResolver;
@@ -39,7 +41,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -54,36 +56,37 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
             ).contains(callback.getEvent());
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
+    public PreSubmitCallbackResponse<CaseDataMap> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
+        CaseDataMap caseDataMap =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         String sendDirectionExplanation =
-            asylumCase
-                .getSendDirectionExplanation()
+            caseDataMap
+                .get(SEND_DIRECTION_EXPLANATION, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
         String sendDirectionDateDue =
-            asylumCase
-                .getSendDirectionDateDue()
+            caseDataMap
+                .get(SEND_DIRECTION_DATE_DUE, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 
         Parties directionParties = directionPartiesResolver.resolve(callback);
         DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());
 
+        Optional<List<IdValue<Direction>>> maybeExistingDirections =
+                caseDataMap.get(DIRECTIONS);
+
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
-                .getDirections()
-                .orElse(Collections.emptyList());
+                maybeExistingDirections.orElse(emptyList());
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
@@ -94,12 +97,12 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 directionTag
             );
 
-        asylumCase.setDirections(allDirections);
+        caseDataMap.write(DIRECTIONS, allDirections);
 
-        asylumCase.clearSendDirectionExplanation();
-        asylumCase.clearSendDirectionParties();
-        asylumCase.clearSendDirectionDateDue();
+        caseDataMap.clear(SEND_DIRECTION_EXPLANATION);
+        caseDataMap.clear(SEND_DIRECTION_PARTIES);
+        caseDataMap.clear(SEND_DIRECTION_DATE_DUE);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(caseDataMap);
     }
 }

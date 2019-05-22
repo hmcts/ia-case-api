@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 @SuppressWarnings("unchecked")
 public class SendNotificationHandlerTest {
 
-    @Mock private NotificationSender<AsylumCase> notificationSender;
-    @Mock private Callback<AsylumCase> callback;
+    @Mock private NotificationSender<CaseDataMap> notificationSender;
+    @Mock private Callback<CaseDataMap> callback;
 
     private SendNotificationHandler sendNotificationHandler;
 
@@ -47,12 +47,12 @@ public class SendNotificationHandlerTest {
             Event.REQUEST_HEARING_REQUIREMENTS
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+            CaseDataMap expectedUpdatedCase = mock(CaseDataMap.class);
 
             when(callback.getEvent()).thenReturn(event);
             when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
 
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
                 sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);

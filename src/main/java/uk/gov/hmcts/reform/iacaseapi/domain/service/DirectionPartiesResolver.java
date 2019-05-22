@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_PARTIES;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
@@ -11,7 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 public class DirectionPartiesResolver {
 
     public Parties resolve(
-        Callback<AsylumCase> callback
+        Callback<CaseDataMap> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -25,11 +27,12 @@ public class DirectionPartiesResolver {
                 return Parties.RESPONDENT;
 
             case SEND_DIRECTION:
-                return
-                    callback
+                Optional<Parties> sendDirectionParties = callback
                         .getCaseDetails()
                         .getCaseData()
-                        .getSendDirectionParties()
+                        .get(SEND_DIRECTION_PARTIES);
+                return
+                    sendDirectionParties
                         .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
 
             default:
