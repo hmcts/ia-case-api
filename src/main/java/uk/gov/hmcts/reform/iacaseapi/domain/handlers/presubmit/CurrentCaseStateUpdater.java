@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<CaseDataMap> {
+public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -25,9 +25,9 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<CaseDat
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -35,14 +35,14 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<CaseDat
 
         State currentCaseState = callback.getCaseDetails().getState();
 
-        CaseDataMap caseDataMap =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        caseDataMap.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentCaseState);
-        caseDataMap.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentCaseState);
+        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

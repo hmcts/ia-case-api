@@ -3,12 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
@@ -37,7 +37,7 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDa
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -46,31 +46,31 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDa
                && callback.getEvent() == Event.CREATE_CASE_SUMMARY;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap caseDataMap =
+        final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         final Document caseSummaryDocument =
-            caseDataMap
-                .get(CASE_SUMMARY_DOCUMENT, Document.class)
+            asylumCase
+                .read(CASE_SUMMARY_DOCUMENT, Document.class)
                 .orElseThrow(() -> new IllegalStateException("caseSummaryDocument is not present"));
 
         final String caseSummaryDescription =
-            caseDataMap
-                .get(CASE_SUMMARY_DESCRIPTION, String.class)
+            asylumCase
+                .read(CASE_SUMMARY_DESCRIPTION, String.class)
                 .orElse("");
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-                caseDataMap.get(HEARING_DOCUMENTS);
+                asylumCase.read(HEARING_DOCUMENTS);
 
         final List<IdValue<DocumentWithMetadata>> hearingDocuments =
             maybeHearingDocuments.orElse(emptyList());
@@ -89,8 +89,8 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<CaseDa
                 DocumentTag.CASE_SUMMARY
             );
 
-        caseDataMap.write(HEARING_DOCUMENTS, allHearingDocuments);
+        asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 
 public class IaCaseApiClient {
@@ -32,7 +32,7 @@ public class IaCaseApiClient {
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.add("ServiceAuthorization", JWT_TOKEN);
 
-        HttpEntity<CaseDetails<CaseDataMap>> request =
+        HttpEntity<CaseDetails<AsylumCase>> request =
                 new HttpEntity<>(caseDetails, headers);
 
         ResponseEntity<Map> responseEntity;

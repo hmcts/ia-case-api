@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class AppellantNameForDisplayFormatterTest {
 
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap caseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private AppellantNameForDisplayFormatter appellantNameForDisplayFormatter =
         new AppellantNameForDisplayFormatter();
@@ -41,7 +41,7 @@ public class AppellantNameForDisplayFormatterTest {
                     Pair.of(" Matt ", " Jones "), "Matt Jones");
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         exampleInputOutputs
             .entrySet()
@@ -50,17 +50,17 @@ public class AppellantNameForDisplayFormatterTest {
                 final Pair<String, String> input = inputOutput.getKey();
                 final String output = inputOutput.getValue();
 
-                when(caseDataMap.get(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(input.getKey()));
-                when(caseDataMap.get(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(input.getValue()));
+                when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(input.getKey()));
+                when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(input.getValue()));
 
-                PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+                PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
                 assertNotNull(callbackResponse);
-                assertEquals(caseDataMap, callbackResponse.getData());
-                verify(caseDataMap, times(1)).write(APPELLANT_NAME_FOR_DISPLAY, output);
+                assertEquals(asylumCase, callbackResponse.getData());
+                verify(asylumCase, times(1)).write(APPELLANT_NAME_FOR_DISPLAY, output);
 
-                reset(caseDataMap);
+                reset(asylumCase);
             });
     }
 
@@ -68,8 +68,8 @@ public class AppellantNameForDisplayFormatterTest {
     public void should_throw_when_appellant_given_names_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
-        when(caseDataMap.get(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("appellantGivenNames is not present")
@@ -80,9 +80,9 @@ public class AppellantNameForDisplayFormatterTest {
     public void should_throw_when_appellant_family_name_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
-        when(caseDataMap.get(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
-        when(caseDataMap.get(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
+        when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("appellantFamilyName is not present")

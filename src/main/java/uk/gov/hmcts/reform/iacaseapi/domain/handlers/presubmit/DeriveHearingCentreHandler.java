@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
 @Component
-public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HearingCentreFinder hearingCentreFinder;
 
@@ -30,7 +30,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -39,34 +39,34 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
                && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap caseDataMap =
+        final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!caseDataMap.get(HEARING_CENTRE).isPresent()) {
+        if (!asylumCase.read(HEARING_CENTRE).isPresent()) {
 
-            trySetHearingCentreFromPostcode(caseDataMap);
+            trySetHearingCentreFromPostcode(asylumCase);
         }
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private Optional<String> getAppellantPostcode(
-        CaseDataMap caseDataMap
+        AsylumCase asylumCase
     ) {
-        if (caseDataMap.get(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
+        if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
                 .orElse(NO) == YES) {
 
-            Optional<AddressUk> optionalAppellantAddress = caseDataMap.get(APPELLANT_ADDRESS);
+            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
             if (optionalAppellantAddress.isPresent()) {
 
@@ -80,19 +80,19 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Case
     }
 
     private void trySetHearingCentreFromPostcode(
-        CaseDataMap caseDataMap
+        AsylumCase asylumCase
     ) {
-        Optional<String> optionalAppellantPostcode = getAppellantPostcode(caseDataMap);
+        Optional<String> optionalAppellantPostcode = getAppellantPostcode(asylumCase);
 
         if (optionalAppellantPostcode.isPresent()) {
 
             String appellantPostcode = optionalAppellantPostcode.get();
-            caseDataMap.write(HEARING_CENTRE,
+            asylumCase.write(HEARING_CENTRE,
                 hearingCentreFinder.find(appellantPostcode)
             );
 
         } else {
-            caseDataMap.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
         }
     }
 }

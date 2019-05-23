@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class RequestCaseEditPreparer implements PreSubmitCallbackHandler<CaseDataMap> {
+public class RequestCaseEditPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -26,21 +26,21 @@ public class RequestCaseEditPreparer implements PreSubmitCallbackHandler<CaseDat
                && callback.getEvent() == Event.REQUEST_CASE_EDIT;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap caseDataMap =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        caseDataMap.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
+        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

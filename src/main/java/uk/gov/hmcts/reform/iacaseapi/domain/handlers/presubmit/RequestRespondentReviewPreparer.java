@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler<CaseDataMap> {
+public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int requestRespondentReviewDueInDays;
     private final DateProvider dateProvider;
@@ -30,7 +30,7 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -39,20 +39,20 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                && callback.getEvent() == Event.REQUEST_RESPONDENT_REVIEW;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap caseDataMap =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        caseDataMap.write(SEND_DIRECTION_EXPLANATION,
+        asylumCase.write(SEND_DIRECTION_EXPLANATION,
             "You must now review this case.\n\n"
             + "You have " + requestRespondentReviewDueInDays + " days to review the appeal argument and evidence. "
             + "You must explain whether the appellant's appeal argument makes a valid case for overturning the "
@@ -69,15 +69,15 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
             + "If you do not respond in time, the case officer will decide how the case should proceed."
         );
 
-        caseDataMap.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
+        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        caseDataMap.write(SEND_DIRECTION_DATE_DUE,
+        asylumCase.write(SEND_DIRECTION_DATE_DUE,
             dateProvider
                 .now()
                 .plusDays(requestRespondentReviewDueInDays)
                 .toString()
         );
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

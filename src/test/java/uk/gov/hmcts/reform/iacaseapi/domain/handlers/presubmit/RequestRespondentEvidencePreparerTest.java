@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,8 +16,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -32,12 +32,12 @@ public class RequestRespondentEvidencePreparerTest {
     private static final int DUE_IN_DAYS = 14;
 
     @Mock private DateProvider dateProvider;
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap caseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor private ArgumentCaptor<String> asylumCaseValuesCaptor;
-    @Captor private ArgumentCaptor<AsylumExtractor> asylumExtractorCaptor;
+    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
 
@@ -57,17 +57,17 @@ public class RequestRespondentEvidencePreparerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(caseDataMap, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(caseDataMap, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
 
-        List<AsylumExtractor> extractors = asylumExtractorCaptor.getAllValues();
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
         List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
 
         assertThat(
@@ -80,8 +80,8 @@ public class RequestRespondentEvidencePreparerTest {
                 containsString(expectedExplanationContains)
         );
 
-        verify(caseDataMap, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
-        verify(caseDataMap, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test

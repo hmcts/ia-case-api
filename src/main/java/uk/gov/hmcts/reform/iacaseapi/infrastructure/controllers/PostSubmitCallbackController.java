@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
@@ -32,10 +32,10 @@ public class PostSubmitCallbackController {
 
     private static final org.slf4j.Logger LOG = getLogger(PostSubmitCallbackController.class);
 
-    private final PostSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher;
+    private final PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
     public PostSubmitCallbackController(
-        PostSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher
+        PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
     ) {
         requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
@@ -80,7 +80,7 @@ public class PostSubmitCallbackController {
     })
     @PostMapping(path = "/ccdSubmitted")
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
-        @ApiParam(value = "Asylum case data", required = true) @RequestBody Callback<CaseDataMap> callback
+        @ApiParam(value = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
         LOG.info(
             "Asylum Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",

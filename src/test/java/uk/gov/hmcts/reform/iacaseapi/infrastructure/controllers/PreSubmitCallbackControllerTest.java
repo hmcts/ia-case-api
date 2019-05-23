@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -20,10 +20,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 @RunWith(MockitoJUnitRunner.class)
 public class PreSubmitCallbackControllerTest {
 
-    @Mock private PreSubmitCallbackDispatcher<CaseDataMap> callbackDispatcher;
-    @Mock private PreSubmitCallbackResponse<CaseDataMap> callbackResponse;
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
+    @Mock private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
 
     private PreSubmitCallbackController preSubmitCallbackController;
 
@@ -44,7 +44,7 @@ public class PreSubmitCallbackControllerTest {
             .when(callbackDispatcher)
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        ResponseEntity<PreSubmitCallbackResponse<CaseDataMap>> actualResponse =
+        ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
             preSubmitCallbackController.ccdAboutToStart(callback);
 
         assertNotNull(actualResponse);
@@ -64,7 +64,7 @@ public class PreSubmitCallbackControllerTest {
             .when(callbackDispatcher)
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        ResponseEntity<PreSubmitCallbackResponse<CaseDataMap>> actualResponse =
+        ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> actualResponse =
             preSubmitCallbackController.ccdAboutToSubmit(callback);
 
         assertNotNull(actualResponse);

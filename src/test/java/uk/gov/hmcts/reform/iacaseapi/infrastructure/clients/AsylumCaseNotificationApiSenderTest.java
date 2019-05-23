@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -20,7 +20,7 @@ public class AsylumCaseNotificationApiSenderTest {
     private static final String ABOUT_TO_SUBMIT_PATH = "/path";
 
     @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock private Callback<CaseDataMap> callback;
+    @Mock private Callback<AsylumCase> callback;
 
     private AsylumCaseDocumentApiGenerator asylumCaseDocumentApiGenerator;
 
@@ -38,12 +38,12 @@ public class AsylumCaseNotificationApiSenderTest {
     @Test
     public void should_delegate_callback_to_downstream_api() {
 
-        final CaseDataMap notifiedAsylumCase = mock(CaseDataMap.class);
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenReturn(notifiedAsylumCase);
 
-        final CaseDataMap actualAsylumCase = asylumCaseDocumentApiGenerator.generate(callback);
+        final AsylumCase actualAsylumCase = asylumCaseDocumentApiGenerator.generate(callback);
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);

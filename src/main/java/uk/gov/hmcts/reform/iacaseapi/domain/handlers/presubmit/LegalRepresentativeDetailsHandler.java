@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.LEGAL_REPRESENTATIVE_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final UserDetailsProvider userDetailsProvider;
 
@@ -27,7 +27,7 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
-            Callback<CaseDataMap> callback
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -36,9 +36,9 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
                 && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
-            Callback<CaseDataMap> callback
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -46,25 +46,25 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
 
         UserDetails userDetails = userDetailsProvider.getUserDetails();
 
-        final CaseDataMap caseDataMap =
+        final AsylumCase asylumCase =
                 callback
                         .getCaseDetails()
                         .getCaseData();
 
-        if (!caseDataMap.get(LEGAL_REPRESENTATIVE_NAME).isPresent()) {
-            caseDataMap.write(
+        if (!asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isPresent()) {
+            asylumCase.write(
                     LEGAL_REPRESENTATIVE_NAME,
                     userDetails.getForename() + " " + userDetails.getSurname()
             );
         }
 
-        if (!caseDataMap.get(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isPresent()) {
-            caseDataMap.write(
+        if (!asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isPresent()) {
+            asylumCase.write(
                     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
                     userDetails.getEmailAddress()
             );
         }
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

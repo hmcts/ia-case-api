@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -25,9 +25,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class ListCasePreparerTest {
 
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap caseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private ListCasePreparer listCasePreparer;
 
@@ -39,35 +39,35 @@ public class ListCasePreparerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
     public void should_set_default_list_case_hearing_centre_field() {
 
-        when(caseDataMap.get(AsylumExtractor.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(caseDataMap, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(caseDataMap, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
     @Test
     public void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
-        when(caseDataMap.get(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(caseDataMap, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(caseDataMap, never()).write(any(), any());
+        verify(asylumCase, never()).write(any(), any());
     }
 
     @Test

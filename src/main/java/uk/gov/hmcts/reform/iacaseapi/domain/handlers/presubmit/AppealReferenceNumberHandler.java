@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
 @Service
-public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String DRAFT = "DRAFT";
 
@@ -31,7 +31,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<Ca
     @Override
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -42,35 +42,35 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<Ca
     }
 
     @Override
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback) {
+        Callback<AsylumCase> callback) {
 
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap caseDataMap =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         if (callback.getEvent() == Event.START_APPEAL) {
-            caseDataMap.write(APPEAL_REFERENCE_NUMBER, DRAFT);
-            return new PreSubmitCallbackResponse<>(caseDataMap);
+            asylumCase.write(APPEAL_REFERENCE_NUMBER, DRAFT);
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
-            new PreSubmitCallbackResponse<>(caseDataMap);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<String> existingAppealReferenceNumber = caseDataMap.get(APPEAL_REFERENCE_NUMBER);
+        Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
 
         if (!existingAppealReferenceNumber.isPresent()
             || existingAppealReferenceNumber.get().equals(DRAFT)) {
 
             AppealType appealType =
-                caseDataMap
-                    .get(APPEAL_TYPE, AppealType.class)
+                asylumCase
+                    .read(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
             String appealReferenceNumber =
@@ -79,7 +79,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<Ca
                     appealType
                 );
 
-            caseDataMap.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
+            asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         }
 
         return callbackResponse;

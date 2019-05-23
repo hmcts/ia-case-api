@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -36,8 +36,8 @@ public class AsylumCaseCallbackApiDelegator {
         this.restTemplate = restTemplate;
     }
 
-    public CaseDataMap delegate(
-        Callback<CaseDataMap> callback,
+    public AsylumCase delegate(
+        Callback<AsylumCase> callback,
         String endpoint
     ) {
         requireNonNull(callback, "callback must not be null");
@@ -52,9 +52,9 @@ public class AsylumCaseCallbackApiDelegator {
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
         headers.set(HttpHeaders.AUTHORIZATION, accessToken);
 
-        HttpEntity<Callback<CaseDataMap>> requestEntity = new HttpEntity<>(callback, headers);
+        HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse;
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
         try {
 
@@ -64,7 +64,7 @@ public class AsylumCaseCallbackApiDelegator {
                         endpoint,
                         HttpMethod.POST,
                         requestEntity,
-                        new ParameterizedTypeReference<PreSubmitCallbackResponse<CaseDataMap>>() {
+                        new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
                         }
                     ).getBody();
 

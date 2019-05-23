@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.EDITABLE_DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,12 +28,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 public class ChangeDirectionDueDateHandlerTest {
 
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap caseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> asylumValueCaptor;
-    @Captor private ArgumentCaptor<AsylumExtractor> asylumExtractorCaptor;
+    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private ChangeDirectionDueDateHandler changeDirectionDueDateHandler;
 
@@ -80,24 +80,24 @@ public class ChangeDirectionDueDateHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
-        when(caseDetails.getCaseData()).thenReturn(caseDataMap);
-        when(caseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
-        when(caseDataMap.get(EDITABLE_DIRECTIONS)).thenReturn(Optional.of(editableDirections));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(EDITABLE_DIRECTIONS)).thenReturn(Optional.of(editableDirections));
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             changeDirectionDueDateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(caseDataMap, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(caseDataMap, times(1)).write(
+        verify(asylumCase, times(1)).write(
                 asylumExtractorCaptor.capture(),
                 asylumValueCaptor.capture());
 
-        List<AsylumExtractor> asylumExtractors = asylumExtractorCaptor.getAllValues();
+        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
 
-        List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumExtractors.indexOf(DIRECTIONS));
+        List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
 
         assertEquals(
                 existingDirections.size(),

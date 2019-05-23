@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<CaseDataMap> {
+public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -25,7 +25,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<Ca
     }
 
     public PostSubmitCallbackResponse handle(
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -36,7 +36,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<Ca
 
 
         YesOrNo submissionOutOfTime =
-                requireNonNull(callback.getCaseDetails().getCaseData().get(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
+                requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
                         .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
         if (submissionOutOfTime.equals(NO)) {

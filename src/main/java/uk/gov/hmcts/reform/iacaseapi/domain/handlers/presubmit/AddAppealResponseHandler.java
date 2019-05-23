@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class AddAppealResponseHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class AddAppealResponseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
@@ -44,7 +44,7 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<CaseDa
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -53,38 +53,38 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<CaseDa
                && callback.getEvent() == Event.ADD_APPEAL_RESPONSE;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap caseDataMap =
+        final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        final Optional<Document> maybeDocument = caseDataMap
-                .get(APPEAL_RESPONSE_DOCUMENT);
+        final Optional<Document> maybeDocument = asylumCase
+                .read(APPEAL_RESPONSE_DOCUMENT);
 
         final Document appealResponseDocument =
                 maybeDocument.orElseThrow(() -> new IllegalStateException("appealResponseDocument is not present"));
 
         final String appealResponseDescription =
-            caseDataMap
-                .get(APPEAL_RESPONSE_DESCRIPTION, String.class)
+            asylumCase
+                .read(APPEAL_RESPONSE_DESCRIPTION, String.class)
                 .orElse("");
 
         final Optional<List<IdValue<DocumentWithDescription>>> maybeAppealResponseEvidence =
-                caseDataMap.get(APPEAL_RESPONSE_EVIDENCE);
+                asylumCase.read(APPEAL_RESPONSE_EVIDENCE);
 
         final List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             maybeAppealResponseEvidence.orElse(Collections.emptyList());
 
         final Optional<List<IdValue<DocumentWithMetadata>>> maybeRespondentDocuments =
-            caseDataMap.get(RESPONDENT_DOCUMENTS);
+            asylumCase.read(RESPONDENT_DOCUMENTS);
 
         final List<IdValue<DocumentWithMetadata>> respondentDocuments = maybeRespondentDocuments.orElse(Collections.emptyList());
 
@@ -114,10 +114,10 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<CaseDa
                 DocumentTag.APPEAL_RESPONSE
             );
 
-        caseDataMap.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
+        asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        caseDataMap.write(APPEAL_RESPONSE_AVAILABLE, YES);
+        asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YES);
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

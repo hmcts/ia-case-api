@@ -4,12 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
 @Service
-public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<CaseDataMap> {
+public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumCase> {
 
     private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
     private final String documentsApiEndpoint;
@@ -25,8 +25,8 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<CaseDat
         this.aboutToSubmitPath = aboutToSubmitPath;
     }
 
-    public CaseDataMap generate(
-        Callback<CaseDataMap> callback
+    public AsylumCase generate(
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 

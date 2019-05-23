@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @Component
-public class SendNotificationHandler implements PreSubmitCallbackHandler<CaseDataMap> {
+public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final NotificationSender<CaseDataMap> notificationSender;
+    private final NotificationSender<AsylumCase> notificationSender;
 
     public SendNotificationHandler(
-        NotificationSender<CaseDataMap> notificationSender
+        NotificationSender<AsylumCase> notificationSender
     ) {
         this.notificationSender = notificationSender;
     }
@@ -31,7 +31,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<CaseDat
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -49,16 +49,16 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<CaseDat
                ).contains(callback.getEvent());
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        CaseDataMap CaseDataMapWithNotificationMarker = notificationSender.send(callback);
+        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
-        return new PreSubmitCallbackResponse<>(CaseDataMapWithNotificationMarker);
+        return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 }

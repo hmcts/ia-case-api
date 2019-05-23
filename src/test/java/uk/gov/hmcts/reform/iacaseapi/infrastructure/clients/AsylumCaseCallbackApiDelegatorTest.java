@@ -18,7 +18,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -34,8 +34,8 @@ public class AsylumCaseCallbackApiDelegatorTest {
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private AccessTokenProvider accessTokenProvider;
     @Mock private RestTemplate restTemplate;
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private PreSubmitCallbackResponse<CaseDataMap> callbackResponse;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
 
@@ -55,7 +55,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
-        final CaseDataMap notifiedAsylumCase = mock(CaseDataMap.class);
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
@@ -70,7 +70,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
                 any(ParameterizedTypeReference.class)
             );
 
-        final CaseDataMap actualAsylumCase = asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT);
+        final AsylumCase actualAsylumCase = asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT);
 
         ArgumentCaptor<HttpEntity> requestEntityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
 
@@ -87,7 +87,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
         final String actualAcceptHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.ACCEPT);
         final String actualServiceAuthorizationHeader = actualRequestEntity.getHeaders().getFirst(SERVICE_AUTHORIZATION);
         final String actualAuthorizationHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        final Callback<CaseDataMap> actualPostBody = (Callback<CaseDataMap>) actualRequestEntity.getBody();
+        final Callback<AsylumCase> actualPostBody = (Callback<AsylumCase>) actualRequestEntity.getBody();
 
         assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE, actualContentTypeHeader);
         assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE, actualAcceptHeader);

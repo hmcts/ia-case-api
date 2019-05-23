@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class AppealGroundsForDisplayFormatterTest {
 
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase AsylumCase;
 
     private AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
         new AppealGroundsForDisplayFormatter();
@@ -60,18 +60,18 @@ public class AppealGroundsForDisplayFormatterTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
 
-        when(CaseDataMap.get(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGroundsProtection));
-        when(CaseDataMap.get(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.of(appealGroundsHumanRights));
-        when(CaseDataMap.get(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGroundsRevocation));
+        when(AsylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGroundsProtection));
+        when(AsylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.of(appealGroundsHumanRights));
+        when(AsylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGroundsRevocation));
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
-        verify(CaseDataMap, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+        assertEquals(AsylumCase, callbackResponse.getData());
+        verify(AsylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
     }
 
     @Test
@@ -80,18 +80,18 @@ public class AppealGroundsForDisplayFormatterTest {
         final List<String> expectedAppealGrounds = Arrays.asList();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
+        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
 
-        when(CaseDataMap.get(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.empty());
-        when(CaseDataMap.get(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.empty());
-        when(CaseDataMap.get(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.empty());
+        when(AsylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.empty());
+        when(AsylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.empty());
+        when(AsylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.empty());
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
-        verify(CaseDataMap, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+        assertEquals(AsylumCase, callbackResponse.getData());
+        verify(AsylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
     }
 
     @Test

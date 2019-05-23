@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -37,9 +37,9 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
-    @Mock private Callback<CaseDataMap> callback;
-    @Mock private CaseDetails<CaseDataMap> caseDetails;
-    @Mock private CaseDataMap CaseDataMap;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase AsylumCase;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
@@ -69,8 +69,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.get(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(AsylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
             eq(existingDirections),
             contains(expectedExplanationPart),
@@ -79,11 +79,11 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedTag)
         )).thenReturn(allDirections);
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(AsylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             eq(existingDirections),
@@ -93,7 +93,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedTag)
         );
 
-        verify(CaseDataMap, times(1)).write(DIRECTIONS, allDirections);
+        verify(AsylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -109,8 +109,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
-        when(caseDetails.getCaseData()).thenReturn(CaseDataMap);
-        when(CaseDataMap.get(DIRECTIONS)).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(AsylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
             any(List.class),
             contains(expectedExplanationPart),
@@ -119,11 +119,11 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedTag)
         )).thenReturn(allDirections);
 
-        PreSubmitCallbackResponse<CaseDataMap> callbackResponse =
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(CaseDataMap, callbackResponse.getData());
+        assertEquals(AsylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             existingDirectionsCaptor.capture(),
@@ -140,7 +140,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(CaseDataMap, times(1)).write(DIRECTIONS, allDirections);
+        verify(AsylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test

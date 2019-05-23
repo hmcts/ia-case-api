@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumExtractor.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseDataMap;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandler<CaseDataMap> {
+public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
@@ -28,42 +28,42 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
     }
 
-    public PreSubmitCallbackResponse<CaseDataMap> handle(
+    public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<CaseDataMap> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final CaseDataMap caseDataMap =
+        final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
         Set<String> appealGrounds = new LinkedHashSet<>();
 
-        Optional<CheckValues<String>> maybeAppealGroundsProtection = caseDataMap.get(APPEAL_GROUNDS_PROTECTION);
+        Optional<CheckValues<String>> maybeAppealGroundsProtection = asylumCase.read(APPEAL_GROUNDS_PROTECTION);
 
         maybeAppealGroundsProtection
             .ifPresent(appealGroundsProtection ->
                 appealGrounds.addAll(appealGroundsProtection.getValues()));
 
-        Optional<CheckValues<String>> maybeAppealGroundsHumanRights = caseDataMap.get(APPEAL_GROUNDS_HUMAN_RIGHTS);
+        Optional<CheckValues<String>> maybeAppealGroundsHumanRights = asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS);
 
         maybeAppealGroundsHumanRights.ifPresent(appealGroundsHumanRights ->
                 appealGrounds.addAll(appealGroundsHumanRights.getValues()));
 
-        Optional<CheckValues<String>> maybeAppealGroundsRevocation = caseDataMap.get(APPEAL_GROUNDS_REVOCATION);
+        Optional<CheckValues<String>> maybeAppealGroundsRevocation = asylumCase.read(APPEAL_GROUNDS_REVOCATION);
 
         maybeAppealGroundsRevocation
             .ifPresent(appealGroundsRevocation -> appealGrounds.addAll(appealGroundsRevocation.getValues()));
 
-        caseDataMap.write(
+        asylumCase.write(
             APPEAL_GROUNDS_FOR_DISPLAY,
             new ArrayList<>(appealGrounds)
         );
 
-        return new PreSubmitCallbackResponse<>(caseDataMap);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
