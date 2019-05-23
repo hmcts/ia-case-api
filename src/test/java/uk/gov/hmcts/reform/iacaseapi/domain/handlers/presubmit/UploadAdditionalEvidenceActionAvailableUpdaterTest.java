@@ -25,7 +25,7 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     private UploadAdditionalEvidenceActionAvailableUpdater uploadAdditionalEvidenceActionAvailableUpdater =
         new UploadAdditionalEvidenceActionAvailableUpdater();
@@ -34,7 +34,7 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
     public void should_set_action_available_flag_to_yes_when_state_applies() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         for (State state : State.values()) {
 
@@ -45,7 +45,7 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(AsylumCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             if (Arrays.asList(
                 State.CASE_UNDER_REVIEW,
@@ -54,12 +54,12 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
                 State.LISTING
             ).contains(state)) {
 
-                verify(AsylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
+                verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(AsylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
+                verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
-            reset(AsylumCase);
+            reset(asylumCase);
         }
     }
 

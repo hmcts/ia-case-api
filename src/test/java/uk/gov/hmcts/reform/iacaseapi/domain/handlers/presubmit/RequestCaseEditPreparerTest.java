@@ -24,7 +24,7 @@ public class RequestCaseEditPreparerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     private RequestCaseEditPreparer requestCaseEditPreparer;
 
@@ -41,15 +41,15 @@ public class RequestCaseEditPreparerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
     }
 
     @Test

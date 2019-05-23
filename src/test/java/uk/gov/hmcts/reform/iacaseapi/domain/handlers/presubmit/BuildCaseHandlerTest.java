@@ -38,7 +38,7 @@ public class BuildCaseHandlerTest {
     @Mock private DocumentsAppender documentsAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
     @Mock private Document caseArgumentDocument;
     private String caseArgumentDescription = "Case argument description";
     @Mock private DocumentWithMetadata caseArgumentWithMetadata;
@@ -86,11 +86,11 @@ public class BuildCaseHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
-        when(AsylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepresentativeDocuments));
-        when(AsylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
-        when(AsylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
-        when(AsylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepresentativeDocuments));
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
+        when(asylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
+        when(asylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentWithMetadata);
@@ -105,11 +105,11 @@ public class BuildCaseHandlerTest {
             buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
         verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
@@ -121,8 +121,8 @@ public class BuildCaseHandlerTest {
                 DocumentTag.CASE_ARGUMENT
             );
 
-        verify(AsylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
-        verify(AsylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -149,11 +149,11 @@ public class BuildCaseHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
-        when(AsylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.empty());
-        when(AsylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
-        when(AsylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
-        when(AsylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
+        when(asylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
+        when(asylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentWithMetadata);
@@ -168,11 +168,11 @@ public class BuildCaseHandlerTest {
             buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
-        verify(AsylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
         verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
@@ -191,8 +191,8 @@ public class BuildCaseHandlerTest {
 
         assertEquals(0, legalRepresentativeDocuments.size());
 
-        verify(AsylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
-        verify(AsylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -200,9 +200,9 @@ public class BuildCaseHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(AsylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("caseArgumentDocument is not present")

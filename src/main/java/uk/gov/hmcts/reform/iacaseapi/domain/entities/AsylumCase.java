@@ -14,6 +14,10 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
         objectMapper.registerModule(new Jdk8Module());
     }
 
+    public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {
+        return this.read(extractor);
+    }
+
     public <T> Optional<T> read(AsylumCaseFieldDefinition extractor) {
 
         Object o = this.get(extractor.value());
@@ -33,9 +37,5 @@ public class AsylumCase extends HashMap<String, Object> implements CaseData {
 
     public void clear(AsylumCaseFieldDefinition extractor) {
         this.put(extractor.value(), null);
-    }
-
-    public <T> Optional<T> read(AsylumCaseFieldDefinition extractor, Class<T> type) {
-        return this.read(extractor);
     }
 }

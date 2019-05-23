@@ -44,8 +44,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER);
 
         String homeOfficeReferenceNumber =
-                maybeHomeOfficeReferenceNumber.orElseThrow(
-                        () -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
+                maybeHomeOfficeReferenceNumber.orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
 
         if (homeOfficeReferenceNumber.contains("/") || homeOfficeReferenceNumber.length() > 8) {
             String truncatedReferenceNumber = homeOfficeReferenceNumber.split("/")[0];

@@ -37,7 +37,7 @@ public class UploadAdditionalEvidenceHandlerTest {
     @Mock private DocumentsAppender documentsAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
     @Mock private DocumentWithDescription additionalEvidence1;
     @Mock private DocumentWithDescription additionalEvidence2;
     @Mock private DocumentWithMetadata additionalEvidence1WithMetadata;
@@ -60,7 +60,7 @@ public class UploadAdditionalEvidenceHandlerTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
@@ -78,8 +78,8 @@ public class UploadAdditionalEvidenceHandlerTest {
                 additionalEvidence2WithMetadata
             );
 
-        when(AsylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(existingAdditionalEvidenceDocuments));
-        when(AsylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
+        when(asylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(existingAdditionalEvidenceDocuments));
+        when(asylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
 
         when(documentReceiver.tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE))
             .thenReturn(Optional.of(additionalEvidence1WithMetadata));
@@ -94,17 +94,17 @@ public class UploadAdditionalEvidenceHandlerTest {
             uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(1)).read(ADDITIONAL_EVIDENCE);
+        verify(asylumCase, times(1)).read(ADDITIONAL_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE);
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence2, DocumentTag.ADDITIONAL_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingAdditionalEvidenceDocuments, additionalEvidenceWithMetadata);
 
-        verify(AsylumCase, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
-        verify(AsylumCase, times(1)).clear(ADDITIONAL_EVIDENCE);
+        verify(asylumCase, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
+        verify(asylumCase, times(1)).clear(ADDITIONAL_EVIDENCE);
     }
 
     @Test
@@ -113,8 +113,8 @@ public class UploadAdditionalEvidenceHandlerTest {
         List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
         List<DocumentWithMetadata> additionalEvidenceWithMetadata = Arrays.asList(additionalEvidence1WithMetadata);
 
-        when(AsylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.empty());
-        when(AsylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
+        when(asylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
 
         when(documentReceiver.tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE))
             .thenReturn(Optional.of(additionalEvidence1WithMetadata));
@@ -126,9 +126,9 @@ public class UploadAdditionalEvidenceHandlerTest {
             uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(1)).read(ADDITIONAL_EVIDENCE);
+        verify(asylumCase, times(1)).read(ADDITIONAL_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDITIONAL_EVIDENCE);
 
@@ -141,14 +141,14 @@ public class UploadAdditionalEvidenceHandlerTest {
 
         assertEquals(0, actualExistingAdditionalDocuments.size());
 
-        verify(AsylumCase, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
-        verify(AsylumCase, times(1)).clear(ADDITIONAL_EVIDENCE);
+        verify(asylumCase, times(1)).write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
+        verify(asylumCase, times(1)).clear(ADDITIONAL_EVIDENCE);
     }
 
     @Test
     public void should_throw_when_new_evidence_is_not_present() {
 
-        when(AsylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.empty());
+        when(asylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("additionalEvidence is not present")

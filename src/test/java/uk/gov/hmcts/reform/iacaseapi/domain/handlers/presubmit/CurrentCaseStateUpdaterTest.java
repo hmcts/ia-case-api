@@ -24,7 +24,7 @@ public class CurrentCaseStateUpdaterTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     private CurrentCaseStateUpdater currentCaseStateUpdater =
         new CurrentCaseStateUpdater();
@@ -33,7 +33,7 @@ public class CurrentCaseStateUpdaterTest {
     public void should_set_case_building_ready_for_submission_flag_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         for (State state : State.values()) {
 
@@ -44,12 +44,12 @@ public class CurrentCaseStateUpdaterTest {
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(AsylumCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(AsylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
-            verify(AsylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
 
-            reset(AsylumCase);
+            reset(asylumCase);
         }
     }
 

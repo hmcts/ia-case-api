@@ -39,7 +39,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     @Mock private DirectionAppender directionAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
@@ -69,8 +69,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
-        when(AsylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
             eq(existingDirections),
             contains(expectedExplanationPart),
@@ -83,7 +83,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             eq(existingDirections),
@@ -93,7 +93,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedTag)
         );
 
-        verify(AsylumCase, times(1)).write(DIRECTIONS, allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -109,8 +109,8 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
-        when(AsylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
             any(List.class),
             contains(expectedExplanationPart),
@@ -123,7 +123,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
             existingDirectionsCaptor.capture(),
@@ -140,7 +140,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(AsylumCase, times(1)).write(DIRECTIONS, allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test

@@ -44,8 +44,7 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
         Optional<HearingCentre> maybeHearingCentre =
                 asylumCase.read(HEARING_CENTRE);
 
-        maybeHearingCentre.ifPresent(
-                hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
+        maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

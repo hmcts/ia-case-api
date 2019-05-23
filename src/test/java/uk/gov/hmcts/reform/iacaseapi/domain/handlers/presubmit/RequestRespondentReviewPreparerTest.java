@@ -34,7 +34,7 @@ public class RequestRespondentReviewPreparerTest {
     @Mock private DateProvider dateProvider;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     @Captor private ArgumentCaptor<String> asylumValueCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
@@ -57,15 +57,15 @@ public class RequestRespondentReviewPreparerTest {
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(AsylumCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(AsylumCase, times(3)).write(
+        verify(asylumCase, times(3)).write(
                 asylumExtractorCaptor.capture(),
                 asylumValueCaptor.capture());
 
@@ -82,8 +82,8 @@ public class RequestRespondentReviewPreparerTest {
             containsString(expectedExplanationContains)
         );
 
-        verify(AsylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
-        verify(AsylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test

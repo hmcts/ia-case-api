@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.fixtures;
 
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;

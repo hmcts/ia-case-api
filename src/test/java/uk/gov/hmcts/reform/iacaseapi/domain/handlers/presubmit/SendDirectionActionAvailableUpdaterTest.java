@@ -25,7 +25,7 @@ public class SendDirectionActionAvailableUpdaterTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase AsylumCase;
+    @Mock private AsylumCase asylumCase;
 
     private SendDirectionActionAvailableUpdater sendDirectionActionAvailableUpdater =
         new SendDirectionActionAvailableUpdater();
@@ -34,7 +34,7 @@ public class SendDirectionActionAvailableUpdaterTest {
     public void should_set_action_available_flag_to_yes_when_state_applies() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(AsylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         for (State state : State.values()) {
 
@@ -45,7 +45,7 @@ public class SendDirectionActionAvailableUpdaterTest {
                     .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(AsylumCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             if (Arrays.asList(
                 State.APPEAL_SUBMITTED,
@@ -61,12 +61,12 @@ public class SendDirectionActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(AsylumCase, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
+                verify(asylumCase, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(AsylumCase, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.NO);
+                verify(asylumCase, times(1)).write(SEND_DIRECTION_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
-            reset(AsylumCase);
+            reset(asylumCase);
         }
     }
 
