@@ -37,7 +37,9 @@ spring:
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
   jackson.date-format: yyyy-MM-dd
 
-featureFlag.docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
+featureFlag:
+  docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
+  isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeHearingRequirements.dueInDays: 5
@@ -128,9 +130,11 @@ security:
       - "addAppealResponse"
       - "listCase"
       - "createCaseSummary"
+      - "generateHearingBundle"
       - "revertStateToAwaitingRespondentEvidence"
 
 ### dependency configuration
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
 auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}
