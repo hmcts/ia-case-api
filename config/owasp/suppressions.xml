@@ -16,14 +16,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-	The offending library and class and not used in our code
-	https://tools.hmcts.net/jira/browse/RIA-951
-	]]></notes>
-    <gav regex="true">.*</gav>
-    <cve>CVE-2018-8088</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
          Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
          Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
         ]]></notes>
