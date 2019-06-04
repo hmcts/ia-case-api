@@ -15,11 +15,12 @@ public class DocumentTagTest {
         assertEquals("additionalEvidence", DocumentTag.ADDITIONAL_EVIDENCE.toString());
         assertEquals("hearingNotice", DocumentTag.HEARING_NOTICE.toString());
         assertEquals("caseSummary", DocumentTag.CASE_SUMMARY.toString());
+        assertEquals("hearingBundle", DocumentTag.HEARING_BUNDLE.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(8, DocumentTag.values().length);
+        assertEquals(9, DocumentTag.values().length);
     }
 }

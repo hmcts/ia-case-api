@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
 import uk.gov.hmcts.reform.iacaseapi.util.*;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
@@ -39,8 +40,10 @@ public class CcdScenarioRunnerTest {
 
     @Autowired private Environment environment;
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
+    @Autowired private MapValueExpander mapValueExpander;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private List<Verifier> verifiers;
+    @Autowired private List<Fixture> fixtures;
 
     @Before
     public void setUp() {
@@ -52,12 +55,17 @@ public class CcdScenarioRunnerTest {
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
 
+        loadPropertiesIntoMapValueExpander();
+
+        for (Fixture fixture : fixtures) {
+            fixture.prepare();
+        }
+
+
         assertFalse(
             "Verifiers are configured",
             verifiers.isEmpty()
         );
-
-        loadPropertiesIntoMapValueExpander();
 
         String scenarioPattern = System.getProperty("scenario");
         if (scenarioPattern == null) {
@@ -141,6 +149,8 @@ public class CcdScenarioRunnerTest {
                     .body()
                     .asString();
 
+            System.out.println("Response body: " + actualResponseBody);
+
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
                 templatesByFilename
@@ -178,7 +188,7 @@ public class CcdScenarioRunnerTest {
         String source
     ) throws IOException {
         Map<String, Object> data = MapSerializer.deserialize(source);
-        MapValueExpander.expandValues(data);
+        mapValueExpander.expandValues(data);
         return data;
     }
 

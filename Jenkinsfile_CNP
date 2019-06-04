@@ -23,6 +23,7 @@ List<LinkedHashMap<String, Object>> secrets = [
     secret('s2s-secret', 'IA_S2S_SECRET'),
     secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
     secret('ccd-url', 'CCD_URL'),
+    secret('ccd-gw-url', 'CCD_GW_URL'),
     secret('dm-url', 'DM_URL'),
     secret('idam-url', 'IDAM_URL'),
     secret('s2s-url', 'S2S_URL'),
