@@ -18,7 +18,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '3.2.1'
     id 'org.sonarqube' version '2.6.2'
-    id 'org.springframework.boot' version '2.0.5.RELEASE'
+    id 'org.springframework.boot' version '2.0.6.RELEASE'
 }
 
 apply plugin: 'java'
@@ -32,7 +32,7 @@ def versions = [
     reformLogging   : '3.0.4',
     serenity        : '2.0.11',
     sonarPitest     : '0.5',
-    springBoot      : '2.0.4.RELEASE',
+    springBoot      : '2.0.6.RELEASE',
     springHystrix   : '2.0.2.RELEASE',
     springfoxSwagger: '2.9.2'
 ]
@@ -218,8 +218,8 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.8'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.9'
     compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.4.0'
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.4.0'
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
