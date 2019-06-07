@@ -6,9 +6,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +50,10 @@ public class PreSubmitCallbackDispatcherTest {
 
     @Before
     public void setUp() {
+        when(handler1.getDispatchPriority()).thenReturn(DispatchPriority.LATE);
+        when(handler2.getDispatchPriority()).thenReturn(DispatchPriority.LATE);
+        when(handler3.getDispatchPriority()).thenReturn(DispatchPriority.LATE);
+
         preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher<>(
             ccdEventAuthorizor,
             Arrays.asList(
@@ -91,6 +97,16 @@ public class PreSubmitCallbackDispatcherTest {
             when(handler3.getDispatchPriority()).thenReturn(DispatchPriority.EARLY);
             when(handler3.canHandle(eq(callbackStage), any(Callback.class))).thenReturn(true);
             when(handler3.handle(eq(callbackStage), any(Callback.class))).thenReturn(response3);
+
+            // re-assing to use handler dispatch priority sorting feature
+            preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher<>(
+                ccdEventAuthorizor,
+                Arrays.asList(
+                    handler1,
+                    handler2,
+                    handler3
+                )
+            );
 
             PreSubmitCallbackResponse<CaseData> callbackResponse =
                 preSubmitCallbackDispatcher.handle(callbackStage, callback);
@@ -254,4 +270,94 @@ public class PreSubmitCallbackDispatcherTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    public void should_sort_handlers_by_name() {
+        PreSubmitCallbackHandler<CaseData> h1 = new AaaNameTestHandler();
+        PreSubmitCallbackHandler<CaseData> h2 = new BbbNameTestHandler();
+        PreSubmitCallbackHandler<CaseData> h3 = new CccNameTestHandler();
+
+        preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher<>(
+            ccdEventAuthorizor,
+            Arrays.asList(
+                h2,
+                h3,
+                h1
+            )
+        );
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(caseData);
+
+            when(response1.getData()).thenReturn(caseData);
+            when(response1.getErrors()).thenReturn(Collections.emptySet());
+
+            when(response2.getData()).thenReturn(caseData);
+            when(response2.getErrors()).thenReturn(Collections.emptySet());
+
+            when(response3.getData()).thenReturn(caseData);
+            when(response3.getErrors()).thenReturn(Collections.emptySet());
+
+            preSubmitCallbackDispatcher.handle(callbackStage, callback);
+
+            InOrder inOrder = inOrder(response3, response1, response2);
+
+            inOrder.verify(response3, times(1)).getData();
+            inOrder.verify(response3, times(1)).getErrors();
+
+            inOrder.verify(response1, times(1)).getData();
+            inOrder.verify(response1, times(1)).getErrors();
+
+            inOrder.verify(response2, times(1)).getData();
+            inOrder.verify(response2, times(1)).getErrors();
+        }
+
+        reset(ccdEventAuthorizor);
+    }
+
+
+    // created real handler classes, because you cannot mock getClass final method in mockito - use powermock?
+    class AaaNameTestHandler implements PreSubmitCallbackHandler<CaseData> {
+        @Override
+        public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return true;
+        }
+
+        @Override
+        public PreSubmitCallbackResponse<CaseData> handle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return response1;
+        }
+    }
+
+    class BbbNameTestHandler implements PreSubmitCallbackHandler<CaseData> {
+        @Override
+        public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return true;
+        }
+
+        @Override
+        public PreSubmitCallbackResponse<CaseData> handle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return response2;
+        }
+    }
+
+    class CccNameTestHandler implements PreSubmitCallbackHandler<CaseData> {
+        @Override
+        public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return true;
+        }
+
+        @Override
+        public PreSubmitCallbackResponse<CaseData> handle(PreSubmitCallbackStage callbackStage, Callback<CaseData> callback) {
+            return response3;
+        }
+
+        @Override
+        public DispatchPriority getDispatchPriority() {
+            return DispatchPriority.EARLY;
+        }
+    }
+
 }
