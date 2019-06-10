@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -17,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
     private final CcdEventAuthorizor ccdEventAuthorizor;
-    private final List<PreSubmitCallbackHandler<T>> callbackHandlers;
+    private final List<PreSubmitCallbackHandler<T>> sortedCallbackHandlers;
 
     public PreSubmitCallbackDispatcher(
         CcdEventAuthorizor ccdEventAuthorizor,
@@ -26,7 +29,10 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizor must not be null");
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
         this.ccdEventAuthorizor = ccdEventAuthorizor;
-        this.callbackHandlers = callbackHandlers;
+        this.sortedCallbackHandlers = callbackHandlers.stream()
+            // sorting handlers by handler class name
+            .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
+            .collect(Collectors.toList());
     }
 
     public PreSubmitCallbackResponse<T> handle(
@@ -46,10 +52,10 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse =
             new PreSubmitCallbackResponse<>(caseData);
 
-        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
-        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.EARLY);
-        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.LATE);
-        dispatchToHandlers(callbackStage, callback, callbackHandlers, callbackResponse, DispatchPriority.LATEST);
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
+        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
 
         return callbackResponse;
     }
