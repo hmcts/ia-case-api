@@ -20,7 +20,7 @@ public class StateTest {
         assertEquals("prepareForHearing", State.PREPARE_FOR_HEARING.toString());
         assertEquals("finalBundling", State.FINAL_BUNDLING.toString());
         assertEquals("preHearing", State.PRE_HEARING.toString());
-        assertEquals("hearingAndOutcome", State.HEARING_AND_OUTCOME.toString());
+        assertEquals("decision", State.DECISION.toString());
         assertEquals("decided", State.DECIDED.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
     }
