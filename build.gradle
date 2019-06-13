@@ -263,6 +263,8 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
+    testCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.0'
+
     testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true
     }
@@ -320,5 +322,17 @@ bootJar {
 // this setting only applies when running via gradle bootRun -- see web.config for the
 // java flag that configures the deployed appllications
 applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+
+task ccdToJson(type: JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+
+    main = 'uk.gov.hmcts.reform.iacaseapi.infrastructure.CcdDefinitionConverter'
+}
+
+task ccdToCompare(type: JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+
+    main = 'uk.gov.hmcts.reform.iacaseapi.infrastructure.CcdDefinitionComparator'
+}
 
 
