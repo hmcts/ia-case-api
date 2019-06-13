@@ -31,28 +31,28 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase AsylumCase =
+        final AsylumCase asylumCase =
                 callback
                         .getCaseDetails()
                         .getCaseData();
 
         final String appellantGivenNames =
-                AsylumCase
+                asylumCase
                         .read(APPELLANT_GIVEN_NAMES, String.class)
                         .orElseThrow(() -> new IllegalStateException("appellantGivenNames is not present"));
 
         final String appellantFamilyName =
-                AsylumCase
+                asylumCase
                         .read(APPELLANT_FAMILY_NAME, String.class)
                         .orElseThrow(() -> new IllegalStateException("appellantFamilyName is not present"));
 
         String appellantNameForDisplay = appellantGivenNames + " " + appellantFamilyName;
 
-        AsylumCase.write(
+        asylumCase.write(
                 APPELLANT_NAME_FOR_DISPLAY,
                 appellantNameForDisplay.replaceAll("\\s+", " ").trim()
         );
 
-        return new PreSubmitCallbackResponse<>(AsylumCase);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
