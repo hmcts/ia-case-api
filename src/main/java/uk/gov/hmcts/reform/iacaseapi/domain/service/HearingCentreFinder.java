@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 
-@Service
 public class HearingCentreFinder {
 
     private static final Pattern POSTCODE_AREA_PATTERN = Pattern.compile("([A-Za-z]+).*");

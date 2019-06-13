@@ -1,0 +1,8 @@
+java:
+  # Don't modify below here
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+
+postgresql:
+  #Whether to deploy the Postgres Chart or not
+  enabled: true

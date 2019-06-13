@@ -2,9 +2,12 @@ server:
   port: ${PORT:8090}
 
 management:
+  endpoint:
+    health:
+      show-details: "always"
   endpoints:
     web:
-      base-path: /
+      base-path: "/"
 
 spring:
   application:
@@ -98,6 +101,7 @@ security:
   anonymousPaths:
     - "/"
     - "/health"
+    - "/health/liveness"
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"
