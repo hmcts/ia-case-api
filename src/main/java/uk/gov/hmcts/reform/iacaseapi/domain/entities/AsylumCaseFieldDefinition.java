@@ -137,7 +137,7 @@ public enum AsylumCaseFieldDefinition {
     SCHEDULE_OF_ISSUES_AGREEMENT(
             "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>(){}),
 
-    AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+    RESPONDENTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
             "respondentsAgreedScheduleOfIssuesDescription", new TypeReference<String>(){}),
 
     RESPONDENTS_SCHEDULE_OF_ISSUES_DESCRIPTION(
