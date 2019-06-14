@@ -186,7 +186,11 @@ public enum AsylumCaseFieldDefinition {
             "submissionOutOfTime", new TypeReference<YesOrNo>(){}),
 
     DIRECTIONS(
-            "directions", new TypeReference<List<IdValue<Direction>>>(){});
+            "directions", new TypeReference<List<IdValue<Direction>>>(){}),
+
+    DECISION_AND_REASONS_AVAILABLE(
+            "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
+    ;
 
     private final String value;
     private final TypeReference typeReference;
