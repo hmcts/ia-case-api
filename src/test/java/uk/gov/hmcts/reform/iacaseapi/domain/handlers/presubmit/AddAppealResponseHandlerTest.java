@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,10 +95,10 @@ public class AddAppealResponseHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
-        when(asylumCase.getAppealResponseDocument()).thenReturn(Optional.of(appealResponseDocument));
-        when(asylumCase.getAppealResponseDescription()).thenReturn(Optional.of(appealResponseDescription));
-        when(asylumCase.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(existingRespondentDocuments));
+        when(asylumCase.read(APPEAL_RESPONSE_DOCUMENT)).thenReturn(Optional.of(appealResponseDocument));
+        when(asylumCase.read(APPEAL_RESPONSE_DESCRIPTION, String.class)).thenReturn(Optional.of(appealResponseDescription));
+        when(asylumCase.read(APPEAL_RESPONSE_EVIDENCE)).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseWithMetadata);
@@ -113,9 +115,9 @@ public class AddAppealResponseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getAppealResponseDocument();
-        verify(asylumCase, times(1)).getAppealResponseDescription();
-        verify(asylumCase, times(1)).getAppealResponseEvidence();
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_DOCUMENT);
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
         verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
@@ -127,8 +129,8 @@ public class AddAppealResponseHandlerTest {
                 DocumentTag.APPEAL_RESPONSE
             );
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).setAppealResponseAvailable(YesOrNo.YES);
+        verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
+        verify(asylumCase, times(1)).write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -156,10 +158,10 @@ public class AddAppealResponseHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getAppealResponseDocument()).thenReturn(Optional.of(appealResponseDocument));
-        when(asylumCase.getAppealResponseDescription()).thenReturn(Optional.of(appealResponseDescription));
-        when(asylumCase.getAppealResponseEvidence()).thenReturn(Optional.of(appealResponseEvidence));
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_RESPONSE_DOCUMENT)).thenReturn(Optional.of(appealResponseDocument));
+        when(asylumCase.read(APPEAL_RESPONSE_DESCRIPTION, String.class)).thenReturn(Optional.of(appealResponseDescription));
+        when(asylumCase.read(APPEAL_RESPONSE_EVIDENCE)).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseWithMetadata);
@@ -176,9 +178,9 @@ public class AddAppealResponseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getAppealResponseDocument();
-        verify(asylumCase, times(1)).getAppealResponseDescription();
-        verify(asylumCase, times(1)).getAppealResponseEvidence();
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_DOCUMENT);
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(APPEAL_RESPONSE_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
         verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
@@ -197,8 +199,8 @@ public class AddAppealResponseHandlerTest {
 
         assertEquals(0, respondentDocuments.size());
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).setAppealResponseAvailable(YesOrNo.YES);
+        verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
+        verify(asylumCase, times(1)).write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -208,7 +210,7 @@ public class AddAppealResponseHandlerTest {
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getAppealResponseDocument()).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_RESPONSE_DOCUMENT)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("appealResponseDocument is not present")
@@ -235,7 +237,7 @@ public class AddAppealResponseHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            for (PreSubmitCallbackStage callbackStage : values()) {
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = addAppealResponseHandler.canHandle(callbackStage, callback);
 

@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -33,7 +36,8 @@ public class RequestRespondentEvidencePreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> sendDirectionExplanationCaptor;
+    @Captor private ArgumentCaptor<String> asylumCaseValuesCaptor;
+    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
 
@@ -61,22 +65,23 @@ public class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setSendDirectionExplanation(sendDirectionExplanationCaptor.capture());
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
 
-        String actualExplanation = sendDirectionExplanationCaptor.getAllValues().get(0);
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
 
         assertThat(
-            actualExplanation,
-            containsString("You have " + DUE_IN_DAYS + " days")
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
+                containsString("You have " + DUE_IN_DAYS + " days")
         );
 
         assertThat(
-            actualExplanation,
-            containsString(expectedExplanationContains)
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
+                containsString(expectedExplanationContains)
         );
 
-        verify(asylumCase, times(1)).setSendDirectionParties(expectedParties);
-        verify(asylumCase, times(1)).setSendDirectionDateDue(expectedDateDue);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
     }
 
     @Test

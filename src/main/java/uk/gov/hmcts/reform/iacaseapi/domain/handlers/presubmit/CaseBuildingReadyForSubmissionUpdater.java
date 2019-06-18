@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUILDING_READY_FOR_SUBMISSION;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -44,14 +46,14 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
 
         if (caseState == State.CASE_BUILDING) {
 
-            if (asylumCase.getCaseArgumentDocument().isPresent()) {
-                asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.YES);
+            if (asylumCase.read(CASE_ARGUMENT_DOCUMENT).isPresent()) {
+                asylumCase.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
             } else {
-                asylumCase.setCaseBuildingReadyForSubmission(YesOrNo.NO);
+                asylumCase.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
             }
 
         } else {
-            asylumCase.clearCaseBuildingReadyForSubmission();
+            asylumCase.clear(CASE_BUILDING_READY_FOR_SUBMISSION);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

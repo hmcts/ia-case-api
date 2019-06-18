@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -55,7 +57,7 @@ public class AppealReferenceNumberHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("DRAFT");
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
 
         verifyZeroInteractions(appealReferenceNumberGenerator);
     }
@@ -68,8 +70,8 @@ public class AppealReferenceNumberHandlerTest {
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(asylumCase.getAppealType()).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(Optional.of("DRAFT"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -77,7 +79,7 @@ public class AppealReferenceNumberHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("the-next-appeal-reference-number");
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER,"the-next-appeal-reference-number");
     }
 
     @Test
@@ -88,8 +90,8 @@ public class AppealReferenceNumberHandlerTest {
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
-        when(asylumCase.getAppealType()).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -97,21 +99,21 @@ public class AppealReferenceNumberHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setAppealReferenceNumber("the-next-appeal-reference-number");
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
     }
 
     @Test
     public void should_do_nothing_if_non_draft_number_already_present() {
 
-        Optional<String> appealReference = Optional.of("some-existing-reference-number");
+        Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
-        when(asylumCase.getAppealReferenceNumber()).thenReturn(appealReference);
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(appealReference);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verifyZeroInteractions(appealReferenceNumberGenerator);
-        verify(asylumCase, never()).setAppealReferenceNumber(any());
+        verify(asylumCase, never()).write(any(), any());
     }
 
     @Test

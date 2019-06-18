@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -58,18 +61,19 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
 
         final Document caseSummaryDocument =
             asylumCase
-                .getCaseSummaryDocument()
+                .read(CASE_SUMMARY_DOCUMENT, Document.class)
                 .orElseThrow(() -> new IllegalStateException("caseSummaryDocument is not present"));
 
         final String caseSummaryDescription =
             asylumCase
-                .getCaseSummaryDescription()
+                .read(CASE_SUMMARY_DESCRIPTION, String.class)
                 .orElse("");
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+                asylumCase.read(HEARING_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            asylumCase
-                .getHearingDocuments()
-                .orElse(Collections.emptyList());
+            maybeHearingDocuments.orElse(emptyList());
 
         DocumentWithMetadata caseSummaryDocumentWithMetadata =
             documentReceiver.receive(
@@ -81,11 +85,11 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
                 hearingDocuments,
-                Collections.singletonList(caseSummaryDocumentWithMetadata),
+                singletonList(caseSummaryDocumentWithMetadata),
                 DocumentTag.CASE_SUMMARY
             );
 
-        asylumCase.setHearingDocuments(allHearingDocuments);
+        asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

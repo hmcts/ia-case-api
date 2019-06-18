@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -54,21 +56,21 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                 .getCaseData();
 
         if (callback.getEvent() == Event.START_APPEAL) {
-            asylumCase.setAppealReferenceNumber(DRAFT);
+            asylumCase.write(APPEAL_REFERENCE_NUMBER, DRAFT);
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<String> existingAppealReferenceNumber = asylumCase.getAppealReferenceNumber();
+        Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
 
         if (!existingAppealReferenceNumber.isPresent()
             || existingAppealReferenceNumber.get().equals(DRAFT)) {
 
             AppealType appealType =
                 asylumCase
-                    .getAppealType()
+                    .read(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("appealType is not present"));
 
             String appealReferenceNumber =
@@ -77,7 +79,7 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                     appealType
                 );
 
-            asylumCase.setAppealReferenceNumber(appealReferenceNumber);
+            asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
         }
 
         return callbackResponse;

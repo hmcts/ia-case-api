@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import org.junit.Test;
@@ -53,9 +54,9 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
                 State.LISTING
             ).contains(state)) {
 
-                verify(asylumCase, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
+                verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(asylumCase, times(1)).setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
+                verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
             reset(asylumCase);

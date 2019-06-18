@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -17,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -64,27 +66,29 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
                 .getCaseDetails()
                 .getCaseData();
 
+        final Optional<Document> maybeDocument = asylumCase
+                .read(APPEAL_RESPONSE_DOCUMENT);
+
         final Document appealResponseDocument =
-            asylumCase
-                .getAppealResponseDocument()
-                .orElseThrow(() -> new IllegalStateException("appealResponseDocument is not present"));
+                maybeDocument.orElseThrow(() -> new IllegalStateException("appealResponseDocument is not present"));
 
         final String appealResponseDescription =
             asylumCase
-                .getAppealResponseDescription()
+                .read(APPEAL_RESPONSE_DESCRIPTION, String.class)
                 .orElse("");
 
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeAppealResponseEvidence =
+                asylumCase.read(APPEAL_RESPONSE_EVIDENCE);
+
         final List<IdValue<DocumentWithDescription>> appealResponseEvidence =
-            asylumCase
-                .getAppealResponseEvidence()
-                .orElse(Collections.emptyList());
+            maybeAppealResponseEvidence.orElse(Collections.emptyList());
 
-        final List<IdValue<DocumentWithMetadata>> respondentDocuments =
-            asylumCase
-                .getRespondentDocuments()
-                .orElse(Collections.emptyList());
+        final Optional<List<IdValue<DocumentWithMetadata>>> maybeRespondentDocuments =
+            asylumCase.read(RESPONDENT_DOCUMENTS);
 
-        List<DocumentWithMetadata> appealResponseDocuments = new ArrayList<>();
+        final List<IdValue<DocumentWithMetadata>> respondentDocuments = maybeRespondentDocuments.orElse(Collections.emptyList());
+
+        final List<DocumentWithMetadata> appealResponseDocuments = new ArrayList<>();
 
         appealResponseDocuments.add(
             documentReceiver
@@ -110,9 +114,9 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
                 DocumentTag.APPEAL_RESPONSE
             );
 
-        asylumCase.setRespondentDocuments(allRespondentDocuments);
+        asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        asylumCase.setAppealResponseAvailable(YesOrNo.YES);
+        asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

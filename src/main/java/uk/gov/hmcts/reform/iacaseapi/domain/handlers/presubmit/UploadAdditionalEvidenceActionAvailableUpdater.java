@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -46,10 +47,9 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             State.SUBMIT_HEARING_REQUIREMENTS,
             State.LISTING
         ).contains(caseDetails.getState())) {
-
-            asylumCase.setUploadAdditionalEvidenceActionAvailable(YesOrNo.YES);
+            asylumCase.write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
-            asylumCase.setUploadAdditionalEvidenceActionAvailable(YesOrNo.NO);
+            asylumCase.write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

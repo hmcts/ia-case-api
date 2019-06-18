@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,9 +71,9 @@ public class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
-        when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.getSendDirectionDateDue()).thenReturn(Optional.of(expectedDateDue));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
 
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
@@ -90,8 +91,8 @@ public class DirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getSendDirectionExplanation();
-        verify(asylumCase, times(1)).getSendDirectionDateDue();
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
 
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
@@ -103,11 +104,11 @@ public class DirectionHandlerTest {
             expectedDirectionTag
         );
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
 
-        verify(asylumCase, times(1)).clearSendDirectionExplanation();
-        verify(asylumCase, times(1)).clearSendDirectionParties();
-        verify(asylumCase, times(1)).clearSendDirectionDateDue();
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
     @Test
@@ -125,9 +126,9 @@ public class DirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.empty());
-        when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.getSendDirectionDateDue()).thenReturn(Optional.of(expectedDateDue));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
 
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
@@ -145,8 +146,8 @@ public class DirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getSendDirectionExplanation();
-        verify(asylumCase, times(1)).getSendDirectionDateDue();
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
 
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
@@ -165,11 +166,11 @@ public class DirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
 
-        verify(asylumCase, times(1)).clearSendDirectionExplanation();
-        verify(asylumCase, times(1)).clearSendDirectionParties();
-        verify(asylumCase, times(1)).clearSendDirectionDateDue();
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
+        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
     @Test
@@ -179,7 +180,7 @@ public class DirectionHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.empty());
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionExplanation is not present")
@@ -193,8 +194,8 @@ public class DirectionHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getSendDirectionExplanation()).thenReturn(Optional.of("Do the thing"));
-        when(asylumCase.getSendDirectionDateDue()).thenReturn(Optional.empty());
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of("Do the thing"));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("sendDirectionDateDue is not present")

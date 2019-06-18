@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -57,9 +60,11 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence =
+                asylumCase.read(RESPONDENT_EVIDENCE);
+
         List<DocumentWithMetadata> respondentEvidence =
-            asylumCase
-                .getRespondentEvidence()
+            maybeRespondentEvidence
                 .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
@@ -68,17 +73,18 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingRespondentDocuments =
+                asylumCase.read(RESPONDENT_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> existingRespondentDocuments =
-            asylumCase
-                .getRespondentDocuments()
-                .orElse(Collections.emptyList());
+                maybeExistingRespondentDocuments.orElse(emptyList());
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(existingRespondentDocuments, respondentEvidence);
 
-        asylumCase.setRespondentDocuments(allRespondentDocuments);
+        asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        asylumCase.clearRespondentEvidence();
+        asylumCase.clear(RESPONDENT_EVIDENCE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

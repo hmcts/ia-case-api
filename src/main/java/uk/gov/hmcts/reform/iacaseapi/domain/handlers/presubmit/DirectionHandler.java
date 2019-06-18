@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
@@ -69,21 +71,22 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         String sendDirectionExplanation =
             asylumCase
-                .getSendDirectionExplanation()
+                .read(SEND_DIRECTION_EXPLANATION, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
         String sendDirectionDateDue =
             asylumCase
-                .getSendDirectionDateDue()
+                .read(SEND_DIRECTION_DATE_DUE, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 
         Parties directionParties = directionPartiesResolver.resolve(callback);
         DirectionTag directionTag = directionTagResolver.resolve(callback.getEvent());
 
+        Optional<List<IdValue<Direction>>> maybeExistingDirections =
+                asylumCase.read(DIRECTIONS);
+
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
-                .getDirections()
-                .orElse(Collections.emptyList());
+                maybeExistingDirections.orElse(emptyList());
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
@@ -94,11 +97,11 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 directionTag
             );
 
-        asylumCase.setDirections(allDirections);
+        asylumCase.write(DIRECTIONS, allDirections);
 
-        asylumCase.clearSendDirectionExplanation();
-        asylumCase.clearSendDirectionParties();
-        asylumCase.clearSendDirectionDateDue();
+        asylumCase.clear(SEND_DIRECTION_EXPLANATION);
+        asylumCase.clear(SEND_DIRECTION_PARTIES);
+        asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

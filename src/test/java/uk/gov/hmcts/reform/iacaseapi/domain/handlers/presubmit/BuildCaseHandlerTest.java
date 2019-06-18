@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -86,10 +87,10 @@ public class BuildCaseHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getLegalRepresentativeDocuments()).thenReturn(Optional.of(existingLegalRepresentativeDocuments));
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.of(caseArgumentDocument));
-        when(asylumCase.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
-        when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.of(existingLegalRepresentativeDocuments));
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
+        when(asylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
+        when(asylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentWithMetadata);
@@ -106,9 +107,9 @@ public class BuildCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getCaseArgumentDocument();
-        verify(asylumCase, times(1)).getCaseArgumentDescription();
-        verify(asylumCase, times(1)).getCaseArgumentEvidence();
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
         verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
@@ -120,8 +121,8 @@ public class BuildCaseHandlerTest {
                 DocumentTag.CASE_ARGUMENT
             );
 
-        verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
-        verify(asylumCase, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -149,10 +150,10 @@ public class BuildCaseHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getLegalRepresentativeDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.of(caseArgumentDocument));
-        when(asylumCase.getCaseArgumentDescription()).thenReturn(Optional.of(caseArgumentDescription));
-        when(asylumCase.getCaseArgumentEvidence()).thenReturn(Optional.of(caseArgumentEvidence));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.of(caseArgumentDocument));
+        when(asylumCase.read(CASE_ARGUMENT_DESCRIPTION, String.class)).thenReturn(Optional.of(caseArgumentDescription));
+        when(asylumCase.read(CASE_ARGUMENT_EVIDENCE)).thenReturn(Optional.of(caseArgumentEvidence));
 
         when(documentReceiver.receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT))
             .thenReturn(caseArgumentWithMetadata);
@@ -169,9 +170,9 @@ public class BuildCaseHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getCaseArgumentDocument();
-        verify(asylumCase, times(1)).getCaseArgumentDescription();
-        verify(asylumCase, times(1)).getCaseArgumentEvidence();
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_DESCRIPTION, String.class);
+        verify(asylumCase, times(1)).read(CASE_ARGUMENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).receive(caseArgumentDocument, caseArgumentDescription, DocumentTag.CASE_ARGUMENT);
         verify(documentReceiver, times(1)).tryReceiveAll(caseArgumentEvidence, DocumentTag.CASE_ARGUMENT);
@@ -190,8 +191,8 @@ public class BuildCaseHandlerTest {
 
         assertEquals(0, legalRepresentativeDocuments.size());
 
-        verify(asylumCase, times(1)).setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
-        verify(asylumCase, times(1)).setCaseArgumentAvailable(YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
+        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -201,7 +202,7 @@ public class BuildCaseHandlerTest {
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT, Document.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("caseArgumentDocument is not present")

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.setSendDirectionExplanation(
+        asylumCase.write(SEND_DIRECTION_EXPLANATION,
             "A notice of appeal has been lodged against this asylum decision.\n\n"
             + "You must now send all documents to the case officer. The case officer will send them to the other party. "
             + "You have " + requestRespondentEvidenceDueInDays + " days to supply these documents.\n\n"
@@ -65,9 +66,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             + "- the notice of any other appealable decision made in relation to the appellant"
         );
 
-        asylumCase.setSendDirectionParties(Parties.RESPONDENT);
+        asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        asylumCase.setSendDirectionDateDue(
+        asylumCase.write(SEND_DIRECTION_DATE_DUE,
             dateProvider
                 .now()
                 .plusDays(requestRespondentEvidenceDueInDays)

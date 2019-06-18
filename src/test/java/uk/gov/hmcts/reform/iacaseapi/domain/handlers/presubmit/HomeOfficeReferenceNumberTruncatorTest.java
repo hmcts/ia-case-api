@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -54,14 +55,14 @@ public class HomeOfficeReferenceNumberTruncatorTest {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(callback.getEvent()).thenReturn(Event.START_APPEAL);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(asylumCase.getHomeOfficeReferenceNumber()).thenReturn(Optional.of(input));
+                when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of(input));
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
                 assertNotNull(callbackResponse);
                 assertEquals(asylumCase, callbackResponse.getData());
-                verify(asylumCase, times(1)).setHomeOfficeReferenceNumber(output);
+                verify(asylumCase, times(1)).write(HOME_OFFICE_REFERENCE_NUMBER, output);
 
                 reset(asylumCase);
             });
@@ -87,14 +88,14 @@ public class HomeOfficeReferenceNumberTruncatorTest {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(asylumCase.getHomeOfficeReferenceNumber()).thenReturn(Optional.of(input));
+                when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of(input));
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
                 assertNotNull(callbackResponse);
                 assertEquals(asylumCase, callbackResponse.getData());
-                verify(asylumCase, never()).setHomeOfficeReferenceNumber(output);
+                verify(asylumCase, never()).write(HOME_OFFICE_REFERENCE_NUMBER, output);
 
                 reset(asylumCase);
             });
@@ -106,7 +107,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getHomeOfficeReferenceNumber()).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("homeOfficeReferenceNumber is not present")

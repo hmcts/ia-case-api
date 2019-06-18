@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -55,14 +58,16 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
+
         LocalDate homeOfficeDecisionDate =
-            parse(asylumCase.getHomeOfficeDecisionDate()
+            parse(maybeHomeOfficeDecisionDate
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
 
         if (homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
-            asylumCase.setSubmissionOutOfTime(YES);
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
-            asylumCase.setSubmissionOutOfTime(NO);
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

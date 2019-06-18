@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -16,7 +19,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -61,23 +63,26 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         final Document caseArgumentDocument =
             asylumCase
-                .getCaseArgumentDocument()
+                .read(CASE_ARGUMENT_DOCUMENT, Document.class)
                 .orElseThrow(() -> new IllegalStateException("caseArgumentDocument is not present"));
 
         final String caseArgumentDescription =
             asylumCase
-                .getCaseArgumentDescription()
+                .read(CASE_ARGUMENT_DESCRIPTION, String.class)
                 .orElse("");
 
+        Optional<List<IdValue<DocumentWithDescription>>> maybeCaseArgumentEvidence =
+                asylumCase.read(CASE_ARGUMENT_EVIDENCE);
+
         final List<IdValue<DocumentWithDescription>> caseArgumentEvidence =
-            asylumCase
-                .getCaseArgumentEvidence()
-                .orElse(Collections.emptyList());
+            maybeCaseArgumentEvidence
+                .orElse(emptyList());
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeLegalRepresentativeDocuments =
+                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
         final List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
-            asylumCase
-                .getLegalRepresentativeDocuments()
-                .orElse(Collections.emptyList());
+            maybeLegalRepresentativeDocuments.orElse(emptyList());
 
         List<DocumentWithMetadata> caseArgumentDocuments = new ArrayList<>();
 
@@ -105,9 +110,9 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 DocumentTag.CASE_ARGUMENT
             );
 
-        asylumCase.setLegalRepresentativeDocuments(allLegalRepresentativeDocuments);
+        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
 
-        asylumCase.setCaseArgumentAvailable(YesOrNo.YES);
+        asylumCase.write(CASE_ARGUMENT_AVAILABLE, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -46,9 +47,9 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getHearingCentre()).thenReturn(Optional.empty());
-        when(asylumCase.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.getAppellantAddress()).thenReturn(Optional.of(addressUk));
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(HearingCentre.MANCHESTER);
 
@@ -58,7 +59,7 @@ public class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(hearingCentreFinder, times(1)).find("A123 4BC");
-        verify(asylumCase, times(1)).setHearingCentre(HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
     @Test
@@ -67,8 +68,8 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getHearingCentre()).thenReturn(Optional.empty());
-        when(asylumCase.getAppellantHasFixedAddress()).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(HearingCentre.TAYLOR_HOUSE);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -76,7 +77,7 @@ public class DeriveHearingCentreHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).setHearingCentre(HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
     }
 
     @Test
@@ -87,14 +88,14 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getHearingCentre()).thenReturn(Optional.of(existingHearingCentre));
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, never()).setHearingCentre(any());
+        verify(asylumCase, never()).write(any(), any());
     }
 
     @Test

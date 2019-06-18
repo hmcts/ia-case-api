@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +44,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(asylumCase.getDirections()).thenReturn(
+            when(asylumCase.read(DIRECTIONS)).thenReturn(
                 Optional.of(
                     Arrays.asList(
                         new IdValue<>("1", mock(Direction.class))
@@ -71,9 +73,9 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
                 State.PRE_HEARING
             ).contains(state)) {
 
-                verify(asylumCase, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.YES);
+                verify(asylumCase, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
-                verify(asylumCase, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+                verify(asylumCase, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.NO);
             }
 
             reset(asylumCase);
@@ -89,7 +91,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(asylumCase.getDirections()).thenReturn(Optional.of(Collections.emptyList()));
+            when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(Collections.emptyList()));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 changeDirectionDueDateActionAvailableUpdater
@@ -98,7 +100,7 @@ public class ChangeDirectionDueDateActionAvailableUpdaterTest {
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(asylumCase, times(1)).setChangeDirectionDueDateActionAvailable(YesOrNo.NO);
+            verify(asylumCase, times(1)).write(CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE, YesOrNo.NO);
 
             reset(asylumCase);
         }

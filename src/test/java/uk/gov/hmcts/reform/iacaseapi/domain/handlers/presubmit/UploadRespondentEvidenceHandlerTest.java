@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -74,8 +76,8 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.of(existingRespondentDocuments));
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(existingRespondentDocuments));
+        when(asylumCase.read(RESPONDENT_EVIDENCE)).thenReturn(Optional.of(respondentEvidence));
 
         when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
@@ -92,15 +94,15 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getRespondentEvidence();
+        verify(asylumCase, times(1)).read(RESPONDENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
 
         verify(documentsAppender, times(1)).append(existingRespondentDocuments, respondentEvidenceWithMetadata);
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).clearRespondentEvidence();
+        verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
+        verify(asylumCase, times(1)).clear(RESPONDENT_EVIDENCE);
     }
 
     @Test
@@ -112,8 +114,8 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getRespondentDocuments()).thenReturn(Optional.empty());
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.of(respondentEvidence));
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(RESPONDENT_EVIDENCE)).thenReturn(Optional.of(respondentEvidence));
 
         when(documentReceiver.tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE))
             .thenReturn(Optional.of(respondentEvidence1WithMetadata));
@@ -127,7 +129,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).getRespondentEvidence();
+        verify(asylumCase, times(1)).read(RESPONDENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
@@ -140,8 +142,8 @@ public class UploadRespondentEvidenceHandlerTest {
 
         assertEquals(0, actualExistingRespondentDocuments.size());
 
-        verify(asylumCase, times(1)).setRespondentDocuments(allRespondentDocuments);
-        verify(asylumCase, times(1)).clearRespondentEvidence();
+        verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
+        verify(asylumCase, times(1)).clear(RESPONDENT_EVIDENCE);
     }
 
     @Test
@@ -151,7 +153,7 @@ public class UploadRespondentEvidenceHandlerTest {
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.getRespondentEvidence()).thenReturn(Optional.empty());
+        when(asylumCase.read(RESPONDENT_EVIDENCE)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("respondentEvidence is not present")

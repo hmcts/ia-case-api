@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +54,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
         for (State state : State.values()) {
 
             when(caseDetails.getState()).thenReturn(state);
-            when(asylumCase.getAppealResponseAvailable()).thenReturn(Optional.of(YesOrNo.YES));
+            when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 respondentReviewAppealResponseAddedUpdater
@@ -63,12 +65,12 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
 
             if (state == State.RESPONDENT_REVIEW) {
 
-                verify(asylumCase, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
+                verify(asylumCase, times(1)).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
 
             } else {
-                verify(asylumCase, never()).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
-                verify(asylumCase, never()).setRespondentReviewAppealResponseAdded(YesOrNo.YES);
-                verify(asylumCase, times(1)).clearRespondentReviewAppealResponseAdded();
+                verify(asylumCase, never()).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.NO);
+                verify(asylumCase, never()).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.YES);
+                verify(asylumCase, times(1)).clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
             }
 
             reset(asylumCase);
@@ -78,16 +80,16 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     @Test
     public void should_set_action_available_flag_to_no_when_state_applies_and_appeal_response_not_available() {
 
-        List<Optional<YesOrNo>> appealResponseNotAvailableInidications =
+        List<Optional<YesOrNo>> appealResponseNotAvailableIndications =
             Arrays.asList(
                 Optional.empty(),
                 Optional.of(YesOrNo.NO)
             );
 
-        appealResponseNotAvailableInidications
-            .forEach(appealResponseNotAvailableInidication -> {
+        appealResponseNotAvailableIndications
+            .forEach(appealResponseNotAvailableIndication -> {
 
-                when(asylumCase.getAppealResponseAvailable()).thenReturn(appealResponseNotAvailableInidication);
+                when(asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class)).thenReturn(appealResponseNotAvailableIndication);
 
                 PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                     respondentReviewAppealResponseAddedUpdater
@@ -96,8 +98,8 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
                 assertNotNull(callbackResponse);
                 assertEquals(asylumCase, callbackResponse.getData());
 
-                verify(asylumCase, times(1)).setRespondentReviewAppealResponseAdded(YesOrNo.NO);
-                verify(asylumCase, never()).clearRespondentReviewAppealResponseAdded();
+                verify(asylumCase, times(1)).write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YesOrNo.NO);
+                verify(asylumCase, never()).clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
 
                 reset(asylumCase);
             });

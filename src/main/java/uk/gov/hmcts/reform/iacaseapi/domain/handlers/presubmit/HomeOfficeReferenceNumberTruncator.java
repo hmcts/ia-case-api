@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -38,10 +40,11 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<String> maybeHomeOfficeReferenceNumber =
+                asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER);
+
         String homeOfficeReferenceNumber =
-            asylumCase
-                .getHomeOfficeReferenceNumber()
-                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
+                maybeHomeOfficeReferenceNumber.orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
 
         if (homeOfficeReferenceNumber.contains("/") || homeOfficeReferenceNumber.length() > 8) {
             String truncatedReferenceNumber = homeOfficeReferenceNumber.split("/")[0];
@@ -50,7 +53,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 truncatedReferenceNumber = truncatedReferenceNumber.substring(0, 8);
             }
 
-            asylumCase.setHomeOfficeReferenceNumber(truncatedReferenceNumber);
+            asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER, truncatedReferenceNumber);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

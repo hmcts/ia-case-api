@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class DirectionPartiesResolverTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getSendDirectionParties()).thenReturn(Optional.of(expectedDirectionParties));
+        when(asylumCase.read(SEND_DIRECTION_PARTIES)).thenReturn(Optional.of(expectedDirectionParties));
 
         Map<Event, Parties> exampleInputOutputs =
             ImmutableMap

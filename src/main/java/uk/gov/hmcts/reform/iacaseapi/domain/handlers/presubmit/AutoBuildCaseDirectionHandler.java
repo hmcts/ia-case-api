@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -60,10 +62,11 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<Direction>>> maybeDirections =
+                asylumCase.read(DIRECTIONS);
+
         final List<IdValue<Direction>> existingDirections =
-            asylumCase
-                .getDirections()
-                .orElse(Collections.emptyList());
+            maybeDirections.orElse(Collections.emptyList());
 
         boolean directionAlreadyExists =
             existingDirections
@@ -97,7 +100,7 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
                     DirectionTag.BUILD_CASE
                 );
 
-            asylumCase.setDirections(allDirections);
+            asylumCase.write(DIRECTIONS, allDirections);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

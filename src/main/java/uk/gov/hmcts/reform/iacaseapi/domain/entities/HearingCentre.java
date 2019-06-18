@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.stream;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
 public enum HearingCentre {
@@ -9,6 +10,7 @@ public enum HearingCentre {
     MANCHESTER("manchester"),
     TAYLOR_HOUSE("taylorHouse");
 
+    @JsonValue
     private final String value;
 
     HearingCentre(String value) {

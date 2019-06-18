@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
             eq(existingDirections),
             contains(expectedExplanationPart),
@@ -93,7 +94,7 @@ public class AutoBuildCaseDirectionHandlerTest {
             eq(expectedTag)
         );
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -110,7 +111,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.empty());
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
             any(List.class),
             contains(expectedExplanationPart),
@@ -140,7 +141,7 @@ public class AutoBuildCaseDirectionHandlerTest {
 
         assertEquals(0, actualExistingDirections.size());
 
-        verify(asylumCase, times(1)).setDirections(allDirections);
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
     }
 
     @Test
@@ -153,7 +154,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(existingDirection.getTag()).thenReturn(DirectionTag.BUILD_CASE);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -163,7 +164,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, never()).append(any(), any(), any(), any(), any());
-        verify(asylumCase, never()).setDirections(any());
+        verify(asylumCase, never()).write(any(), any());
     }
 
     @Test

@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -49,7 +52,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!asylumCase.getHearingCentre().isPresent()) {
+        if (!asylumCase.read(HEARING_CENTRE).isPresent()) {
 
             trySetHearingCentreFromPostcode(asylumCase);
         }
@@ -60,9 +63,10 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     private Optional<String> getAppellantPostcode(
         AsylumCase asylumCase
     ) {
-        if (asylumCase.getAppellantHasFixedAddress().orElse(YesOrNo.NO) == YesOrNo.YES) {
+        if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
+                .orElse(NO) == YES) {
 
-            Optional<AddressUk> optionalAppellantAddress = asylumCase.getAppellantAddress();
+            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
             if (optionalAppellantAddress.isPresent()) {
 
@@ -83,12 +87,12 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         if (optionalAppellantPostcode.isPresent()) {
 
             String appellantPostcode = optionalAppellantPostcode.get();
-            asylumCase.setHearingCentre(
+            asylumCase.write(HEARING_CENTRE,
                 hearingCentreFinder.find(appellantPostcode)
             );
 
         } else {
-            asylumCase.setHearingCentre(hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
         }
     }
 }

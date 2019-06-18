@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,7 @@ public class ChangeDirectionDueDatePreparerTest {
     @Mock private AsylumCase asylumCase;
 
     @Captor private ArgumentCaptor<List<IdValue<EditableDirection>>> editableDirectionsCaptor;
+    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private ChangeDirectionDueDatePreparer changeDirectionDueDatePreparer;
 
@@ -64,7 +67,7 @@ public class ChangeDirectionDueDatePreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.getDirections()).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             changeDirectionDueDatePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -72,13 +75,18 @@ public class ChangeDirectionDueDatePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).setEditableDirections(editableDirectionsCaptor.capture());
+        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
         List<IdValue<EditableDirection>> actualEditableDirections = editableDirectionsCaptor.getAllValues().get(0);
 
         assertEquals(
-            existingDirections.size(),
-            actualEditableDirections.size()
+                EDITABLE_DIRECTIONS,
+                asylumExtractorCaptor.getValue()
+        );
+
+        assertEquals(
+                existingDirections.size(),
+                actualEditableDirections.size()
         );
 
         assertEquals(existingDirections.get(0).getId(), actualEditableDirections.get(0).getId());

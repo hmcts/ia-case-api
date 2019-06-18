@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUILDING_READY_FOR_SUBMISSION;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -36,7 +38,7 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.of(mock(Document.class)));
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT)).thenReturn(Optional.of(mock(Document.class)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
@@ -45,9 +47,9 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never()).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(asylumCase, never()).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(asylumCase, times(1)).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(asylumCase, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test
@@ -56,7 +58,7 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
-        when(asylumCase.getCaseArgumentDocument()).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_ARGUMENT_DOCUMENT)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             caseBuildingReadyForSubmissionUpdater
@@ -65,9 +67,9 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never()).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, times(1)).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(asylumCase, never()).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(asylumCase, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test
@@ -84,9 +86,9 @@ public class CaseBuildingReadyForSubmissionUpdaterTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).clearCaseBuildingReadyForSubmission();
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.YES);
-        verify(asylumCase, never()).setCaseBuildingReadyForSubmission(YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        verify(asylumCase, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
+        verify(asylumCase, never()).write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
     }
 
     @Test

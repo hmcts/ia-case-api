@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -57,9 +60,11 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<IdValue<DocumentWithDescription>>> maybeAdditionalEvidence =
+                asylumCase.read(ADDITIONAL_EVIDENCE);
+
         List<DocumentWithMetadata> additionalEvidenceDocuments =
-            asylumCase
-                .getAdditionalEvidence()
+            maybeAdditionalEvidence
                 .orElseThrow(() -> new IllegalStateException("additionalEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
@@ -68,17 +73,18 @@ public class UploadAdditionalEvidenceHandler implements PreSubmitCallbackHandler
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceDocuments =
+                asylumCase.read(ADDITIONAL_EVIDENCE_DOCUMENTS);
+
         final List<IdValue<DocumentWithMetadata>> existingAdditionalEvidenceDocuments =
-            asylumCase
-                .getAdditionalEvidenceDocuments()
-                .orElse(Collections.emptyList());
+            maybeExistingAdditionalEvidenceDocuments.orElse(Collections.emptyList());
 
         List<IdValue<DocumentWithMetadata>> allAdditionalEvidenceDocuments =
             documentsAppender.append(existingAdditionalEvidenceDocuments, additionalEvidenceDocuments);
 
-        asylumCase.setAdditionalEvidenceDocuments(allAdditionalEvidenceDocuments);
+        asylumCase.write(ADDITIONAL_EVIDENCE_DOCUMENTS, allAdditionalEvidenceDocuments);
 
-        asylumCase.clearAdditionalEvidence();
+        asylumCase.clear(ADDITIONAL_EVIDENCE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

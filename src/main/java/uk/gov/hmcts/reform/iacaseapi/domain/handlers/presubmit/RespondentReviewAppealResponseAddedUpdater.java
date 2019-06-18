@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -44,12 +47,13 @@ public class RespondentReviewAppealResponseAddedUpdater implements PreSubmitCall
 
         if (caseState == State.RESPONDENT_REVIEW) {
 
-            asylumCase.setRespondentReviewAppealResponseAdded(
-                asylumCase.getAppealResponseAvailable().orElse(YesOrNo.NO)
+            asylumCase.write(
+                    RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED,
+                    asylumCase.read(APPEAL_RESPONSE_AVAILABLE, YesOrNo.class).orElse(NO)
             );
 
         } else {
-            asylumCase.clearRespondentReviewAppealResponseAdded();
+            asylumCase.clear(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
