@@ -60,7 +60,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "additionalDocuments": [
+        "additionalEvidenceDocuments": [
           {
             "id": "3",
             "value": {
