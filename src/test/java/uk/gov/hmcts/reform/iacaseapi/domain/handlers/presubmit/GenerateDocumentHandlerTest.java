@@ -44,7 +44,8 @@ public class GenerateDocumentHandlerTest {
         Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.LIST_CASE,
-            Event.GENERATE_HEARING_BUNDLE
+            Event.GENERATE_HEARING_BUNDLE,
+            Event.GENERATE_DECISION_AND_REASONS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -99,7 +100,8 @@ public class GenerateDocumentHandlerTest {
                     Arrays.asList(
                         Event.SUBMIT_APPEAL,
                         Event.LIST_CASE,
-                        Event.GENERATE_HEARING_BUNDLE
+                        Event.GENERATE_HEARING_BUNDLE,
+                        Event.GENERATE_DECISION_AND_REASONS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -156,7 +158,7 @@ public class GenerateDocumentHandlerTest {
                 boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (event == Event.SUBMIT_APPEAL || event == Event.LIST_CASE)) {
+                    && (event == Event.SUBMIT_APPEAL || event == Event.LIST_CASE || event == Event.GENERATE_DECISION_AND_REASONS)) {
                     assertTrue(canHandle);
                 } else if (event == Event.GENERATE_HEARING_BUNDLE) {
                     assertFalse(canHandle);

@@ -133,6 +133,7 @@ security:
       - "generateHearingBundle"
       - "revertStateToAwaitingRespondentEvidence"
       - "decisionAndReasonsStarted"
+      - "generateDecisionAndReasons"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

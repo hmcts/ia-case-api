@@ -44,7 +44,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        List<Event> allowedEvents = Lists.newArrayList(Event.SUBMIT_APPEAL, Event.LIST_CASE);
+        List<Event> allowedEvents = Lists.newArrayList(
+                Event.SUBMIT_APPEAL,
+                Event.LIST_CASE,
+                Event.GENERATE_DECISION_AND_REASONS);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
         }
