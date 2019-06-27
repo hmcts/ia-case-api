@@ -19,6 +19,7 @@
 *.iws
 *.iml
 *.ipr
+.editorconfig
 /out/
 
 ### NetBeans ###
