@@ -6,9 +6,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +19,9 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -24,6 +30,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -253,5 +263,38 @@ public class PreSubmitCallbackDispatcherTest {
         assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void should_sort_handlers_by_name() {
+        PreSubmitCallbackHandler<AsylumCase> h1 = new AppealGroundsForDisplayFormatter();
+        PreSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));
+        PreSubmitCallbackHandler<AsylumCase> h3 = new LegalRepresentativeDetailsHandler(mock(UserDetailsProvider.class));
+        PreSubmitCallbackHandler<AsylumCase> h4 = new RequestCaseEditPreparer();
+        PreSubmitCallbackHandler<AsylumCase> h5 = new RespondentReviewAppealResponseAddedUpdater();
+        PreSubmitCallbackHandler<AsylumCase> h6 = new SendNotificationHandler(mock(NotificationSender.class));
+
+        PreSubmitCallbackDispatcher<AsylumCase> dispatcher = new PreSubmitCallbackDispatcher<>(
+            ccdEventAuthorizor,
+            Arrays.asList(
+                h6,
+                h5,
+                h2,
+                h3,
+                h1,
+                h4
+            )
+        );
+
+        List<PreSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
+            (List<PreSubmitCallbackHandler<AsylumCase>>) ReflectionTestUtils.getField(dispatcher, "sortedCallbackHandlers");
+
+        assertEquals(6, sortedDispatcher.size());
+        assertEquals(h1, sortedDispatcher.get(0));
+        assertEquals(h2, sortedDispatcher.get(1));
+        assertEquals(h3, sortedDispatcher.get(2));
+        assertEquals(h4, sortedDispatcher.get(3));
+        assertEquals(h5, sortedDispatcher.get(4));
+        assertEquals(h6, sortedDispatcher.get(5));
     }
 }

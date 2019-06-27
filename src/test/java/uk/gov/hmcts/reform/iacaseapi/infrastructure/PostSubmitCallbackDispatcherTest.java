@@ -6,16 +6,20 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -105,5 +109,37 @@ public class PostSubmitCallbackDispatcherTest {
         assertThatThrownBy(() -> postSubmitCallbackDispatcher.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void should_sort_handlers_by_name() {
+        PostSubmitCallbackHandler<AsylumCase> h1 = new AppealResponseAddedConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h3 = new GenerateHearingBundleConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h4 = new RequestCaseEditConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h5 = new SendDirectionConfirmation();
+        PostSubmitCallbackHandler<AsylumCase> h6 = new UploadRespondentEvidenceConfirmation();
+
+        PostSubmitCallbackDispatcher<AsylumCase> dispatcher = new PostSubmitCallbackDispatcher<>(
+            Arrays.asList(
+                h4,
+                h2,
+                h3,
+                h1,
+                h6,
+                h5
+            )
+        );
+
+        List<PostSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
+            (List<PostSubmitCallbackHandler<AsylumCase>>) ReflectionTestUtils.getField(dispatcher, "sortedCallbackHandlers");
+
+        assertEquals(6, sortedDispatcher.size());
+        assertEquals(h1, sortedDispatcher.get(0));
+        assertEquals(h2, sortedDispatcher.get(1));
+        assertEquals(h3, sortedDispatcher.get(2));
+        assertEquals(h4, sortedDispatcher.get(3));
+        assertEquals(h5, sortedDispatcher.get(4));
+        assertEquals(h6, sortedDispatcher.get(5));
     }
 }
