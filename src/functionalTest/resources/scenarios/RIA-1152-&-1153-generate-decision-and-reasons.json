@@ -33,7 +33,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "decisionAndReasonsAvailable": "Yes",
-        "draftDecisionAndReasonsDocuments": [
+        "decisionAndReasonsDocuments": [
           {
             "id": "1",
             "value": {
