@@ -4,6 +4,7 @@ properties([
     pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
+
 @Library("Infrastructure")
 
 def type = "java"
@@ -42,7 +43,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     enableDockerBuild()
-//    installCharts()
+    installCharts()
 
     setVaultName('ia')
     loadVaultSecrets(secrets)
