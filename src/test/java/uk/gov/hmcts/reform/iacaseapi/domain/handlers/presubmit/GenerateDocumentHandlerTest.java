@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,10 +45,10 @@ public class GenerateDocumentHandlerTest {
     public void should_generate_document_and_update_the_case() {
 
         Arrays.asList(
-            Event.SUBMIT_APPEAL,
-            Event.LIST_CASE,
-            Event.GENERATE_HEARING_BUNDLE,
-            Event.GENERATE_DECISION_AND_REASONS
+            SUBMIT_APPEAL,
+            LIST_CASE,
+            GENERATE_HEARING_BUNDLE,
+            GENERATE_DECISION_AND_REASONS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -98,10 +101,11 @@ public class GenerateDocumentHandlerTest {
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     &&
                     Arrays.asList(
-                        Event.SUBMIT_APPEAL,
-                        Event.LIST_CASE,
-                        Event.GENERATE_HEARING_BUNDLE,
-                        Event.GENERATE_DECISION_AND_REASONS
+                        SUBMIT_APPEAL,
+                        LIST_CASE,
+                        GENERATE_HEARING_BUNDLE,
+                        GENERATE_DECISION_AND_REASONS,
+                        SEND_DECISION_AND_REASONS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -157,10 +161,16 @@ public class GenerateDocumentHandlerTest {
 
                 boolean canHandle = generateDocumentHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (event == Event.SUBMIT_APPEAL || event == Event.LIST_CASE || event == Event.GENERATE_DECISION_AND_REASONS)) {
+                ImmutableSet<Event> eventsThatDontRequireStitching =
+                    immutableEnumSet(
+                        SUBMIT_APPEAL,
+                        LIST_CASE,
+                        GENERATE_DECISION_AND_REASONS,
+                        SEND_DECISION_AND_REASONS);
+
+                if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && (eventsThatDontRequireStitching.contains(event))) {
                     assertTrue(canHandle);
-                } else if (event == Event.GENERATE_HEARING_BUNDLE) {
+                } else if (event.equals(GENERATE_HEARING_BUNDLE)) {
                     assertFalse(canHandle);
                 } else {
                     assertFalse("event: " + event + ", stage: " + callbackStage, canHandle);

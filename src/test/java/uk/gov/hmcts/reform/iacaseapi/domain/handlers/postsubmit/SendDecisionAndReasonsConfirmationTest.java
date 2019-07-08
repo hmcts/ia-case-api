@@ -17,20 +17,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class GenerateDecisionAndReasonsConfirmationTest {
+public class SendDecisionAndReasonsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
 
-    private GenerateDecisionAndReasonsConfirmation generateDecisionAndReasonsConfirmation = new GenerateDecisionAndReasonsConfirmation();
+    private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation = new SendDecisionAndReasonsConfirmation();
 
     @Test
     public void should_return_confirmation() {
 
-        when(callback.getEvent()).thenReturn(Event.GENERATE_DECISION_AND_REASONS);
+        when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
 
         PostSubmitCallbackResponse callbackResponse =
-                generateDecisionAndReasonsConfirmation.handle(callback);
+                sendDecisionAndReasonsConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -38,19 +38,19 @@ public class GenerateDecisionAndReasonsConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationHeader().get(),
-                containsString("# You have generated the decision and reasons document")
+                containsString("# You have sent the decision and reasons")
         );
 
         assertThat(
                 callbackResponse.getConfirmationBody().get(),
-                containsString("Go to the documents tab to download the decision and reasons document.")
+                containsString("Both parties will now be notified of the decision and reasons.")
         );
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> generateDecisionAndReasonsConfirmation.handle(callback))
+        assertThatThrownBy(() -> sendDecisionAndReasonsConfirmation.handle(callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -62,9 +62,9 @@ public class GenerateDecisionAndReasonsConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = generateDecisionAndReasonsConfirmation.canHandle(callback);
+            boolean canHandle = sendDecisionAndReasonsConfirmation.canHandle(callback);
 
-            if (event == Event.GENERATE_DECISION_AND_REASONS) {
+            if (event == Event.SEND_DECISION_AND_REASONS) {
 
                 assertTrue(canHandle);
             } else {
@@ -78,11 +78,11 @@ public class GenerateDecisionAndReasonsConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> generateDecisionAndReasonsConfirmation.canHandle(null))
+        assertThatThrownBy(() -> sendDecisionAndReasonsConfirmation.canHandle(null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateDecisionAndReasonsConfirmation.handle(null))
+        assertThatThrownBy(() -> sendDecisionAndReasonsConfirmation.handle(null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
