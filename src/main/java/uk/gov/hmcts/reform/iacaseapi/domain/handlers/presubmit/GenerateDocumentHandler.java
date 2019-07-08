@@ -51,13 +51,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
                 Event.SEND_DECISION_AND_REASONS);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
+            allowedEvents.add(Event.SUBMIT_CASE);
         }
 
         return isDocmosisEnabled
-               && isEmStitchingEnabled
-               && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && allowedEvents.contains(callback.getEvent())
-               || isDocmosisEnabled
                   && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                   && allowedEvents.contains(callback.getEvent());
     }
