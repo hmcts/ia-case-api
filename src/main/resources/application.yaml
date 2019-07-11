@@ -139,6 +139,7 @@ security:
       - "decisionAndReasonsStarted"
       - "generateDecisionAndReasons"
       - "sendDecisionAndReasons"
+      - "addCaseNote"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

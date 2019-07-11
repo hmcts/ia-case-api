@@ -1,0 +1,40 @@
+{
+  "description": "RIA-575-add-case-note",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "addCaseNote",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseNotes": [],
+          "addCaseNoteSubject": "some case note subject",
+          "addCaseNoteDescription": "some case note description"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "some case note subject",
+              "caseNoteDescription": "some case note description",
+              "user": "Case Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
