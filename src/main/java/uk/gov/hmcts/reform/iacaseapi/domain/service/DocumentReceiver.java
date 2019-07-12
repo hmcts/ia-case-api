@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -45,7 +46,14 @@ public class DocumentReceiver {
 
     public Optional<DocumentWithMetadata> tryReceive(
         DocumentWithDescription documentWithDescription,
-        DocumentTag tag
+        DocumentTag tag) {
+        return tryReceive(documentWithDescription, tag, null);
+    }
+
+    public Optional<DocumentWithMetadata> tryReceive(
+        DocumentWithDescription documentWithDescription,
+        DocumentTag tag,
+        String suppliedBy
     ) {
         requireNonNull(documentWithDescription, "documentWithDescription must not be null");
         requireNonNull(tag, "tag must not be null");
@@ -62,7 +70,8 @@ public class DocumentReceiver {
                     document,
                     documentWithDescription.getDescription().orElse(""),
                     dateUploaded,
-                    tag
+                    tag,
+                    suppliedBy
                 )
             );
         }
