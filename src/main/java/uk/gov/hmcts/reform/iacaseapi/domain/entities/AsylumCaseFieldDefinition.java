@@ -190,7 +190,18 @@ public enum AsylumCaseFieldDefinition {
 
     DECISION_AND_REASONS_AVAILABLE(
             "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
-    ;
+
+    ADD_CASE_NOTE_SUBJECT(
+        "addCaseNoteSubject", new TypeReference<String>(){}),
+
+    ADD_CASE_NOTE_DESCRIPTION(
+        "addCaseNoteDescription", new TypeReference<String>(){}),
+
+    CASE_NOTES(
+        "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
+
+    ADD_CASE_NOTE_DOCUMENT(
+        "addCaseNoteDocument", new TypeReference<Document>(){});
 
     private final String value;
     private final TypeReference typeReference;
