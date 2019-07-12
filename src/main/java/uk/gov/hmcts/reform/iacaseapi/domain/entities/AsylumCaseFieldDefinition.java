@@ -143,8 +143,8 @@ public enum AsylumCaseFieldDefinition {
     RESPONDENTS_SCHEDULE_OF_ISSUES_DESCRIPTION(
             "respondentsScheduleOfIssuesDescription", new TypeReference<String>(){}),
 
-    RESPONDENTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION(
-            "respondentsDisputedScheduleOfIssuesDescription", new TypeReference<String>(){}),
+    APPELLANTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+            "appellantsDisputedScheduleOfIssuesDescription", new TypeReference<String>(){}),
 
     SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
             "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
