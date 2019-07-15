@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.58")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.60")
     }
 }
 
@@ -31,7 +31,7 @@ def versions = [
     pitest             : '1.4.2',
     reformLogging      : '3.0.4',
     reformHealthStarter: '0.0.4',
-    serenity           : '2.0.58',
+    serenity           : '2.0.60',
     sonarPitest        : '0.5',
     springBoot         : '2.1.6.RELEASE',
     springHystrix      : '2.1.1.RELEASE',
@@ -57,7 +57,7 @@ compileTestJava {
 
 sourceSets {
 
-    testIntegration {
+    integrationTest {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
@@ -66,7 +66,7 @@ sourceSets {
         resources.srcDir file('src/integrationTest/resources')
     }
 
-    testFunctional {
+    functionalTest {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
@@ -87,22 +87,20 @@ sourceSets {
 
 idea {
     module {
-        testSourceDirs += project.sourceSets.testIntegration.java.srcDirs
-        testResourceDirs += project.sourceSets.testIntegration.resources.srcDirs
-        testSourceDirs += project.sourceSets.testFunctional.java.srcDirs
-        testResourceDirs += project.sourceSets.testFunctional.resources.srcDirs
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+        testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
         testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
         testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
     }
 }
 
 configurations {
-    testIntegrationCompile.extendsFrom testCompile
-    testIntegrationRuntime.extendsFrom testRuntime
-//    functionalTestCompile.extendsFrom testCompile
-//    functionalTestRuntime.extendsFrom testRuntime
-    testFunctionalCompile.extendsFrom testCompile
-    testFunctionalRuntime.extendsFrom testRuntime
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+    functionalTestCompile.extendsFrom testCompile
+    functionalTestRuntime.extendsFrom testRuntime
 }
 
 checkstyle {
@@ -115,7 +113,7 @@ checkstyle {
 pmd {
     toolVersion = '6.12.0'
     ignoreFailures = true
-    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.testIntegration, sourceSets.testFunctional, sourceSets.smokeTest]
+    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
     ruleSets = [
         'category/java/errorprone.xml',
@@ -124,16 +122,16 @@ pmd {
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
-    testClassesDirs = sourceSets.testIntegration.output.classesDirs
-    classpath = sourceSets.testIntegration.runtimeClasspath
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
 
     systemProperty "scenario", System.getProperty('scenario')
 
-    testClassesDirs = sourceSets.testFunctional.output.classesDirs
-    classpath = sourceSets.testFunctional.runtimeClasspath
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
     finalizedBy aggregate
 }
 
@@ -210,7 +208,12 @@ dependencyManagement {
 
 dependencies {
 
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot) {
+        exclude group: "org.seleniumhq.selenium", module: "selenium-opera-driver"
+
+//        compile group: '', name: 'selenium-opera-driver', version: '3.141.59'
+
+    }
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
@@ -253,42 +256,65 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
-    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot)
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot)
 
     testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
     testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
     testCompile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
 
     testCompile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.19.v20190610'
-    testCompile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+    testCompile(group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59') {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-opera-driver'
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
 
-    testCompile(group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity)
+//    compile group: 'org.webjars.bower', name: 'jquery', version: '3.4.1'
 
-    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    testCompile group: 'org.seleniumhq.selenium', name: 'jetty-repacked', version: '9.4.12.v20180830.1'
+
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    testCompile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.14.2'
+
+    testCompile(group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity) {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-opera-driver'
+        exclude group: 'org.jruby', module: 'jruby-complete'
+
+    }
+
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity) {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-opera-driver'
+        exclude group: 'org.jruby', module: 'jruby-complete'
+
+    }
+    testCompile(group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
+
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-opera-driver'
+        exclude group: 'org.jruby', module: 'jruby-complete'
+
+    }
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
+    testCompile group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.23.2'
+
 
     testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true
     }
 
-    testIntegrationCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true
     }
 
-    testFunctionalCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true
     }
 
-    testIntegrationCompile sourceSets.main.runtimeClasspath
-    testIntegrationCompile sourceSets.test.runtimeClasspath
+    integrationTestCompile sourceSets.main.runtimeClasspath
+    integrationTestCompile sourceSets.test.runtimeClasspath
 
-    testFunctionalCompile sourceSets.main.runtimeClasspath
-    testFunctionalCompile sourceSets.test.runtimeClasspath
+    functionalTestCompile sourceSets.main.runtimeClasspath
+    functionalTestCompile sourceSets.test.runtimeClasspath
 
     smokeTestCompile sourceSets.main.runtimeClasspath
     smokeTestCompile sourceSets.test.runtimeClasspath
@@ -304,6 +330,7 @@ dependencyCheck {
         // Disable scanning of .NET related binaries
         assemblyEnabled = false
     }
+    skipTestGroups = true
 }
 
 dependencyUpdates.resolutionStrategy = {
