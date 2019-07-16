@@ -141,6 +141,8 @@ security:
       - "sendDecisionAndReasons"
       - "addCaseNote"
       - "uploadAddendumEvidence"
+    caseworker-ia-admofficer:
+      - "listCase"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
