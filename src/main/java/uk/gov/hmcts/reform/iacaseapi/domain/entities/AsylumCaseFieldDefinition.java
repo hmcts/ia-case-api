@@ -199,6 +199,9 @@ public enum AsylumCaseFieldDefinition {
 
     IS_APPELLANT_RESPONDENT(
         "isAppellantRespondent", new TypeReference<String>(){}),
+
+    ARIA_LISTING_REFERENCE(
+        "ariaListingReference", new TypeReference<String>(){}),
     ;
 
     private final String value;

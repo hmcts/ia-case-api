@@ -1,9 +1,9 @@
 {
-  "description": "RIA-412 Create hearing notice PDF (Docmosis enabled)",
+  "description": "RIA-412 RIA-1571 Create hearing notice PDF (Docmosis enabled)",
   "enabled": "{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "AdminOfficer",
     "input": {
       "eventId": "listCase",
       "state": "listing",
@@ -19,7 +19,8 @@
           "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
           "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
           "listCaseRequirementsOther": "something around Other",
-          "uploadAdditionalEvidenceActionAvailable": "Yes"
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "ariaListingReference": "LP/12345/2019"
         }
       }
     }
@@ -53,7 +54,8 @@
         "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
         "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
         "listCaseRequirementsOther": "something around Other",
-        "uploadAdditionalEvidenceActionAvailable": "Yes"
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "ariaListingReference": "LP/12345/2019"
       }
     }
   }
