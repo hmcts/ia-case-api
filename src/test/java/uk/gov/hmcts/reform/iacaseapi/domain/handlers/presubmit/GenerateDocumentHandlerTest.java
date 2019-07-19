@@ -46,6 +46,7 @@ public class GenerateDocumentHandlerTest {
 
         Arrays.asList(
             SUBMIT_APPEAL,
+            SUBMIT_CASE,
             LIST_CASE,
             GENERATE_HEARING_BUNDLE,
             GENERATE_DECISION_AND_REASONS
@@ -102,6 +103,7 @@ public class GenerateDocumentHandlerTest {
                     &&
                     Arrays.asList(
                         SUBMIT_APPEAL,
+                        SUBMIT_CASE,
                         LIST_CASE,
                         GENERATE_HEARING_BUNDLE,
                         GENERATE_DECISION_AND_REASONS,
