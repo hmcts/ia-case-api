@@ -133,6 +133,7 @@ module "ia_case_api_database" {
   postgresql_user    = "${var.postgresql_user}"
   postgresql_version = "10"
   common_tags        = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  subscription       = "${var.subscription}"
 }
 
 module "ia_case_api" {
