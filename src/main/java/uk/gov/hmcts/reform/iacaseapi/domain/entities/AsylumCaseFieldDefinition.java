@@ -116,39 +116,6 @@ public enum AsylumCaseFieldDefinition {
     CASE_SUMMARY_DESCRIPTION(
             "caseSummaryDescription", new TypeReference<String>(){}),
 
-    CASE_INTRODUCTION_DESCRIPTION(
-            "caseIntroductionDescription", new TypeReference<String>(){}),
-
-    APPELLANT_CASE_SUMMARY_DESCRIPTION(
-            "appellantCaseSummaryDescription", new TypeReference<String>(){}),
-
-    IMMIGRATION_HISTORY_AGREEMENT(
-            "immigrationHistoryAgreement", new TypeReference<YesOrNo>(){}),
-
-    AGREED_IMMIGRATION_HISTORY_DESCRIPTION(
-            "agreedImmigrationHistoryDescription", new TypeReference<String>(){}),
-
-    RESPONDENTS_IMMIGRATION_HISTORY_DESCRIPTION(
-            "respondentsImmigrationHistoryDescription", new TypeReference<String>(){}),
-
-    IMMIGRATION_HISTORY_DISAGREEMENT_DESCRIPTION(
-            "immigrationHistoryDisagreementDescription", new TypeReference<String>(){}),
-
-    SCHEDULE_OF_ISSUES_AGREEMENT(
-            "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>(){}),
-
-    RESPONDENTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
-            "respondentsAgreedScheduleOfIssuesDescription", new TypeReference<String>(){}),
-
-    RESPONDENTS_SCHEDULE_OF_ISSUES_DESCRIPTION(
-            "respondentsScheduleOfIssuesDescription", new TypeReference<String>(){}),
-
-    RESPONDENTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION(
-            "respondentsDisputedScheduleOfIssuesDescription", new TypeReference<String>(){}),
-
-    SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
-            "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
-
     LEGAL_REPRESENTATIVE_NAME(
             "legalRepresentativeName", new TypeReference<String>(){}),
 
@@ -201,7 +168,22 @@ public enum AsylumCaseFieldDefinition {
         "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
 
     ADD_CASE_NOTE_DOCUMENT(
-        "addCaseNoteDocument", new TypeReference<Document>(){});
+        "addCaseNoteDocument", new TypeReference<Document>(){}),
+
+    // VALUES IN TRANSITION, ONLY USED IN DATA FIXING SERVICE
+    APPELLANTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+        "appellantsAgreedScheduleOfIssuesDescription", new TypeReference<String>(){}),
+    APPELLANTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+        "appellantsDisputedScheduleOfIssuesDescription", new TypeReference<String>(){}),
+    RESPONDENTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+        "respondentsAgreedScheduleOfIssuesDescription", new TypeReference<String>(){}),
+    RESPONDENTS_DISPUTED_SCHEDULE_OF_ISSUES_DESCRIPTION(
+        "respondentsDisputedScheduleOfIssuesDescription", new TypeReference<String>(){}),
+    DRAFT_DECISION_AND_REASONS_DOCUMENTS(
+        "draftDecisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    DECISION_AND_REASONS_DOCUMENTS(
+        "decisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    ;
 
     private final String value;
     private final TypeReference typeReference;
