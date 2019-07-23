@@ -1,0 +1,27 @@
+{
+  "description": "RIA-1603 Upload addendum evidence action becomes available in appropriate state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateHearingBundle",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAddendumEvidenceActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAddendumEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

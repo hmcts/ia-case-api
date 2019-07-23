@@ -183,6 +183,19 @@ public enum AsylumCaseFieldDefinition {
         "draftDecisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     DECISION_AND_REASONS_DOCUMENTS(
         "decisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+
+    UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE(
+        "uploadAddendumEvidenceActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    ADDENDUM_EVIDENCE(
+        "addendumEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    ADDENDUM_EVIDENCE_DOCUMENTS(
+        "addendumEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    IS_APPELLANT_RESPONDENT(
+        "isAppellantRespondent", new TypeReference<String>(){}),
     ;
 
     private final String value;
