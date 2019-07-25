@@ -3,19 +3,20 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 import java.util.Base64;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
+@Slf4j
 @Service
 public class IdamAuthorizor {
 
@@ -72,7 +73,10 @@ public class IdamAuthorizor {
 
         try {
 
-            response =
+            log.info("IDAM auth code request url: POST {}", baseUrl + "/oauth2/authorize");
+            log.info("IDAM auth code request entity: {}", requestEntity);
+
+            ResponseEntity<Map<String, String>> responseEntity =
                 restTemplate
                     .exchange(
                         baseUrl + "/oauth2/authorize",
@@ -80,10 +84,23 @@ public class IdamAuthorizor {
                         requestEntity,
                         new ParameterizedTypeReference<Map<String, String>>() {
                         }
-                    ).getBody();
+                    );
 
+            response = responseEntity.getBody();
+
+            log.info("IDAM auth code response status code: {}", responseEntity.getStatusCodeValue());
+            log.info("IDAM auth code response headers: {}", responseEntity.getHeaders());
+            log.info("IDAM auth code response body: {}", requestEntity.getBody());
+
+        } catch (HttpClientErrorException e) {
+            log.error("Could not get auth code with IDAM, HTTP response: {}" + e.getResponseBodyAsString());
+            throw new IdentityManagerResponseException(
+                AlertLevel.P2,
+                "Could not get auth code with IDAM",
+                e
+            );
         } catch (RestClientException e) {
-
+            log.error("Could not get auth code with IDAM, message {}, caused by", e.getMessage(), e.getCause());
             throw new IdentityManagerResponseException(
                 AlertLevel.P2,
                 "Could not get auth code with IDAM",
