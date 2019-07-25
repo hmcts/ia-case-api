@@ -93,7 +93,7 @@ public class IdamAuthorizor {
             log.info("IDAM auth code response body: {}", requestEntity.getBody());
 
         } catch (HttpClientErrorException e) {
-            log.error("Could not get auth code with IDAM, HTTP response: {}" + e.getResponseBodyAsString());
+            log.error("Could not get auth code with IDAM, message: {}, HTTP response: {}", e.getMessage(), e.getResponseBodyAsString(), e.getCause());
             throw new IdentityManagerResponseException(
                 AlertLevel.P2,
                 "Could not get auth code with IDAM",
