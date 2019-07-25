@@ -63,6 +63,7 @@ public class IdamAuthorizor {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(HttpHeaders.AUTHORIZATION, basicAuthorization);
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.set("response_type", "code");
