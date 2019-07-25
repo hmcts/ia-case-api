@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
@@ -66,9 +64,9 @@ public class IdamAuthorizor {
         headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.set("response_type", "code");
-        body.set("client_id", clientId);
-        body.set("redirect_uri", clientRedirectUri);
+        body.add("response_type", "code");
+        body.add("client_id", clientId);
+        body.add("redirect_uri", clientRedirectUri);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
