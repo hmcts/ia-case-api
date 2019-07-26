@@ -77,6 +77,8 @@ To successfully interact with the above dependencies a few environment variables
 
 | Environment Variable | *Example values*  |
 |----------------------|----------|
+| TEST_ADMINOFFICER_USERNAME  | ia-adminofficer@example.com |
+| TEST_ADMINOFFICER_PASSWORD  |  password                   |
 | TEST_CASEOFFICER_USERNAME  |  ia-caseofficer@example.com |
 | TEST_CASEOFFICER_PASSWORD  |  password |
 | TEST_JUDICIARY_USERNAME  |  ia-judiciary@example.com |
