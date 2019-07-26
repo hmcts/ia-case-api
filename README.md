@@ -107,6 +107,28 @@ If the API is running (either inside a Docker container or via `gradle bootRun`)
 ./gradlew smoke
 ```
 
+### Running contract or pact tests:
+
+You can run contract or pact tests as follows:
+
+```
+./gradlew contract
+```
+
+You can then publish your pact tests locally by first running the pact docker-compose:
+
+```
+docker-compose -f docker-pactbroker-compose.yml up
+
+```
+
+and then using it to publish your tests:
+
+```
+./gradlew pactPublish
+```
+
+
 ### Running mutation tests tests:
 
 If you have some time to spare, you can run the *mutation tests* as follows:
