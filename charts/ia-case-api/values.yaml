@@ -1,5 +1,5 @@
 java:
-  image: 'https://hmcts.azurecr.io/hmcts/ia-case-api:latest'
+  image: 'https://hmctspublic.azurecr.io/ia/case-api:latest'
   applicationPort: 8090
   environment:
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
