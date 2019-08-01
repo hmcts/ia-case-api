@@ -44,7 +44,8 @@ public class SendNotificationHandlerTest {
             Event.UPLOAD_RESPONDENT_EVIDENCE,
             Event.REQUEST_RESPONDENT_REVIEW,
             Event.ADD_APPEAL_RESPONSE,
-            Event.REQUEST_HEARING_REQUIREMENTS
+            Event.REQUEST_HEARING_REQUIREMENTS,
+            Event.LIST_CASE
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -63,6 +64,27 @@ public class SendNotificationHandlerTest {
             reset(callback);
             reset(notificationSender);
         });
+    }
+
+    @Test
+    public void should_notify_case_officer_that_case_is_listed() {
+
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+
+        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+        verify(notificationSender, times(1)).send(callback);
+
+        reset(callback);
+        reset(notificationSender);
     }
 
     @Test
@@ -103,7 +125,8 @@ public class SendNotificationHandlerTest {
                         Event.UPLOAD_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.ADD_APPEAL_RESPONSE,
-                        Event.REQUEST_HEARING_REQUIREMENTS
+                        Event.REQUEST_HEARING_REQUIREMENTS,
+                        Event.LIST_CASE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
