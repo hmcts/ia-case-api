@@ -236,6 +236,8 @@ public enum AsylumCaseFieldDefinition {
     DISABLE_OVERVIEW_PAGE(
         "disableOverviewPage", new TypeReference<String>(){}),
 
+    HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED(
+        "haveHearingAttendeesAndDurationBeenRecorded", new TypeReference<YesOrNo>(){})
     ;
 
     private final String value;

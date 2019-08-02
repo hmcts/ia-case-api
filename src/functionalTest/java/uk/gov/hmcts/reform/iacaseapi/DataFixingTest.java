@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
+@SuppressWarnings("Unchecked")
 public class DataFixingTest {
 
     @Value("${targetInstance}")

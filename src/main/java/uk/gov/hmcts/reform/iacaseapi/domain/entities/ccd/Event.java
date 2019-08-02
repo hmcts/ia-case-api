@@ -30,6 +30,8 @@ public enum Event {
     ADD_CASE_NOTE("addCaseNote"),
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
+    RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
+
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
