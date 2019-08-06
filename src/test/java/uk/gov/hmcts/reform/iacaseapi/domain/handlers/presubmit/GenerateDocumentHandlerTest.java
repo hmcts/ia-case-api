@@ -48,6 +48,7 @@ public class GenerateDocumentHandlerTest {
             SUBMIT_APPEAL,
             SUBMIT_CASE,
             LIST_CASE,
+            EDIT_CASE_LISTING,
             GENERATE_HEARING_BUNDLE,
             GENERATE_DECISION_AND_REASONS
         ).forEach(event -> {
@@ -105,6 +106,7 @@ public class GenerateDocumentHandlerTest {
                         SUBMIT_APPEAL,
                         SUBMIT_CASE,
                         LIST_CASE,
+                        EDIT_CASE_LISTING,
                         GENERATE_HEARING_BUNDLE,
                         GENERATE_DECISION_AND_REASONS,
                         SEND_DECISION_AND_REASONS
@@ -168,6 +170,7 @@ public class GenerateDocumentHandlerTest {
                         SUBMIT_APPEAL,
                         LIST_CASE,
                         GENERATE_DECISION_AND_REASONS,
+                        EDIT_CASE_LISTING,
                         SEND_DECISION_AND_REASONS);
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && (eventsThatDontRequireStitching.contains(event))) {

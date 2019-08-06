@@ -140,6 +140,7 @@ security:
       - "sendDecisionAndReasons"
       - "addCaseNote"
       - "uploadAddendumEvidence"
+      - "editCaseListing"
     caseworker-ia-admofficer:
       - "listCase"
 
