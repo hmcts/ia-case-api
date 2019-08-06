@@ -37,3 +37,5 @@ java:
         - dm-url
         - idam-url
         - s2s-url
+        - docmosis-enabled
+        - em-stitching-enabled
