@@ -30,6 +30,8 @@ List<LinkedHashMap<String, Object>> secrets = [
     secret('dm-url', 'DM_URL'),
     secret('idam-url', 'IDAM_URL'),
     secret('s2s-url', 'S2S_URL'),
+    secret('docmosis_enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('em_stitching_enabled', 'IA_EM_STITCHING_ENABLED'),
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {

@@ -3,6 +3,3 @@ targetInstance: ${TEST_URL:http://localhost:8090}
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 
 spring.flyway.enabled: false
-
-featureFlag:
-  docmosisEnabled: ${IA_DOCMOSIS_ENABLED:true}
