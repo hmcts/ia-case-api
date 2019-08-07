@@ -1,0 +1,51 @@
+{
+  "description": "RIA-823 end appeal",
+  "enabled": "{$featureFlag.docmosisEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "endAppeal",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "endAppealOutcome": "Abandoned",
+          "endAppealOutcomeReason": "some reason",
+          "endAppealApproverType": "Judge",
+          "endAppealApproverName": "John Doe",
+          "tribunalDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "endAppealOutcome": "Abandoned",
+        "endAppealOutcomeReason": "some reason",
+        "endAppealApproverType": "Judge",
+        "endAppealApproverName": "John Doe",
+        "endAppealDate": "{$TODAY}",
+        "tribunalDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-NoticeOfEndedAppeal.PDF"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "endAppeal"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

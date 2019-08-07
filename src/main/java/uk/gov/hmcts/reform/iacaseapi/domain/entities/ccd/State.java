@@ -19,6 +19,7 @@ public enum State {
     PRE_HEARING("preHearing"),
     DECISION("decision"),
     DECIDED("decided"),
+    ENDED("ended"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
