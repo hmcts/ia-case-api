@@ -29,6 +29,7 @@ public enum Event {
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     ADD_CASE_NOTE("addCaseNote"),
     EDIT_CASE_LISTING("editCaseListing"),
+    RECORD_APPLICATION("recordApplication"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

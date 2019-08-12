@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -41,7 +39,18 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<AsylumC
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentCaseState);
+        boolean disableCaseOfficerChange = asylumCase.read(DISABLE_OVERVIEW_PAGE, String.class)
+            .map(flag -> flag.equals("Yes"))
+            .orElse(false);
+        boolean isUnknown = asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)
+            .map(state -> state.equals(State.UNKNOWN))
+            .orElse(false);
+        if (disableCaseOfficerChange && isUnknown) {
+            // do not update Case Officer state unless certain action is taken
+        } else {
+            asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentCaseState);
+        }
+
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, currentCaseState);
 

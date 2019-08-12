@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,6 +48,34 @@ public class CurrentCaseStateUpdaterTest {
 
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
+            reset(asylumCase);
+        }
+    }
+
+    @Test
+    public void should_not_set_case_officer_state_when_overview_disabled() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        for (State state : State.values()) {
+
+            when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)).thenReturn(Optional.of(State.UNKNOWN));
+            when(asylumCase.read(DISABLE_OVERVIEW_PAGE, String.class)).thenReturn(Optional.of("Yes"));
+
+            when(caseDetails.getState()).thenReturn(state);
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                currentCaseStateUpdater
+                    .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(asylumCase, callbackResponse.getData());
+
+            verify(asylumCase, times(0)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
 
             reset(asylumCase);
         }

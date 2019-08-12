@@ -20,17 +20,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseNoteAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @Component
 public class AddCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final CaseNoteAppender caseNoteAppender;
+    private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetailsProvider userDetailsProvider;
 
     public AddCaseNoteHandler(
-        CaseNoteAppender caseNoteAppender,
+        Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
         @Qualifier("requestUser") UserDetailsProvider userDetailsProvider
     ) {

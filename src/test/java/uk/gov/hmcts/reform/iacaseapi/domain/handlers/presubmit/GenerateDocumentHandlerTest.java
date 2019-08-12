@@ -1,24 +1,37 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,6 +40,21 @@ public class GenerateDocumentHandlerTest {
 
     @Mock private DocumentGenerator<AsylumCase> documentGenerator;
     @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+
+    private State state = State.UNKNOWN;
+    private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
+        Collections.emptyList(),
+        "Legal representative",
+        "Expedite",
+        "applicationReason",
+        "30/01/2019",
+        "Granted",
+        "decisionReason",
+        "31/01/2019",
+        "In progress"
+    )));
 
     private GenerateDocumentHandler generateDocumentHandler;
 
@@ -56,6 +84,13 @@ public class GenerateDocumentHandlerTest {
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
 
             when(callback.getEvent()).thenReturn(event);
+            if (event.equals(EDIT_CASE_LISTING)) {
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getState()).thenReturn(state);
+                when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
+                when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
+            }
+
             when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -65,6 +100,14 @@ public class GenerateDocumentHandlerTest {
             assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
             verify(documentGenerator, times(1)).generate(callback);
+
+            if (event.equals(EDIT_CASE_LISTING)) {
+                verify(expectedUpdatedCase).clear(DISABLE_OVERVIEW_PAGE);
+                verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
+                verify(expectedUpdatedCase).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
+                verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+                assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+            }
 
             reset(callback);
             reset(documentGenerator);

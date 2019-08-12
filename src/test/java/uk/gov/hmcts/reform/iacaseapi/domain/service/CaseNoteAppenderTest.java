@@ -22,7 +22,7 @@ public class CaseNoteAppenderTest {
     @Mock private CaseNote oldCaseNote;
     @Mock private CaseNote oldestCaseNote;
 
-    private CaseNoteAppender caseNoteAppender;
+    private Appender<CaseNote> caseNoteAppender;
     private List<IdValue<CaseNote>> oldCaseNotes = new ArrayList<>();
 
     @Before
@@ -36,7 +36,7 @@ public class CaseNoteAppenderTest {
             "1",
             oldestCaseNote));
 
-        caseNoteAppender = new CaseNoteAppender();
+        caseNoteAppender = new Appender<>();
     }
 
     @Test

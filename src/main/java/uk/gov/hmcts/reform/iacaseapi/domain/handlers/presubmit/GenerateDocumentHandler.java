@@ -1,17 +1,26 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.Lists;
+
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
@@ -45,19 +54,19 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         List<Event> allowedEvents = Lists.newArrayList(
-                Event.SUBMIT_APPEAL,
-                Event.LIST_CASE,
-                Event.GENERATE_DECISION_AND_REASONS,
-                Event.SEND_DECISION_AND_REASONS,
-                Event.EDIT_CASE_LISTING);
+            Event.SUBMIT_APPEAL,
+            Event.LIST_CASE,
+            Event.GENERATE_DECISION_AND_REASONS,
+            Event.SEND_DECISION_AND_REASONS,
+            Event.EDIT_CASE_LISTING);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
             allowedEvents.add(Event.SUBMIT_CASE);
         }
 
         return isDocmosisEnabled
-                  && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                  && allowedEvents.contains(callback.getEvent());
+               && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && allowedEvents.contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -70,6 +79,63 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
 
         AsylumCase asylumCaseWithGeneratedDocument = documentGenerator.generate(callback);
 
+        if (Event.EDIT_CASE_LISTING.equals(callback.getEvent())) {
+            removeFlagsForRecordedApplication(
+                asylumCaseWithGeneratedDocument,
+                callback.getCaseDetails().getState()
+            );
+            changeEditListingApplicationsToCompleted(asylumCaseWithGeneratedDocument);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCaseWithGeneratedDocument);
+    }
+
+    private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {
+        asylumCase.write(APPLICATIONS, asylumCase.<List<IdValue<Application>>>read(APPLICATIONS)
+            .orElse(emptyList())
+            .stream()
+            .map(application -> {
+                String applicationType = application.getValue().getApplicationType();
+                if (ApplicationType.ADJOURN.toString().equals(applicationType)
+                    || ApplicationType.EXPEDITE.toString().equals(applicationType)
+                    || ApplicationType.TRANSFER.toString().equals(applicationType)) {
+
+                    return new IdValue<>(application.getId(), new Application(
+                        application.getValue().getApplicationDocuments(),
+                        application.getValue().getApplicationSupplier(),
+                        applicationType,
+                        application.getValue().getApplicationReason(),
+                        application.getValue().getApplicationDate(),
+                        application.getValue().getApplicationDecision(),
+                        application.getValue().getApplicationDecisionReason(),
+                        application.getValue().getApplicationDateOfDecision(),
+                        "Completed"
+                    ));
+                }
+
+                return application;
+            })
+            .collect(Collectors.toList())
+        );
+    }
+
+    private void removeFlagsForRecordedApplication(AsylumCase asylumCase, State currentState) {
+
+        boolean isApplicationRecorded = asylumCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)
+            .map(flag -> flag.equalsIgnoreCase("Yes"))
+            .orElse(false);
+
+        if (isApplicationRecorded) {
+            asylumCase.clear(APPLICATION_EDIT_LISTING_EXISTS);
+
+            boolean isWithdrawExists = asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)
+                .map(flag -> flag.equalsIgnoreCase("Yes"))
+                .orElse(false);
+
+            if (!isWithdrawExists) {
+                asylumCase.clear(DISABLE_OVERVIEW_PAGE);
+                asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, currentState);
+            }
+        }
     }
 }

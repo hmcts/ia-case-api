@@ -141,6 +141,7 @@ security:
       - "addCaseNote"
       - "uploadAddendumEvidence"
       - "editCaseListing"
+      - "recordApplication"
     caseworker-ia-admofficer:
       - "listCase"
 

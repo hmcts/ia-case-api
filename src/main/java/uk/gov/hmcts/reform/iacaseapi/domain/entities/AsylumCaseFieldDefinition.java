@@ -200,8 +200,42 @@ public enum AsylumCaseFieldDefinition {
     IS_APPELLANT_RESPONDENT(
         "isAppellantRespondent", new TypeReference<String>(){}),
 
-    ARIA_LISTING_REFERENCE(
-        "ariaListingReference", new TypeReference<String>(){}),
+    APPLICATION_DOCUMENTS(
+        "applicationDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    APPLICATION_REASON(
+        "applicationReason", new TypeReference<String>(){}),
+
+    APPLICATION_DATE(
+        "applicationDate", new TypeReference<String>(){}),
+
+    APPLICATION_DECISION(
+        "applicationDecision", new TypeReference<String>(){}),
+
+    APPLICATION_DECISION_REASON(
+        "applicationDecisionReason", new TypeReference<String>(){}),
+
+    APPLICATION_TYPE(
+        "applicationType", new TypeReference<String>(){}),
+
+    APPLICATION_SUPPLIER(
+        "applicationSupplier", new TypeReference<String>(){}),
+
+    APPLICATIONS(
+        "applications", new TypeReference<List<IdValue<Application>>>(){}),
+
+    APPLICATION_WITHDRAW_EXISTS(
+        "applicationWithdrawExists", new TypeReference<String>(){}),
+
+    APPLICATION_TIME_EXTENSION_EXISTS(
+        "applicationTimeExtensionExists", new TypeReference<String>(){}),
+
+    APPLICATION_EDIT_LISTING_EXISTS(
+        "applicationEditListingExists", new TypeReference<String>(){}),
+
+    DISABLE_OVERVIEW_PAGE(
+        "disableOverviewPage", new TypeReference<String>(){}),
+
     ;
 
     private final String value;

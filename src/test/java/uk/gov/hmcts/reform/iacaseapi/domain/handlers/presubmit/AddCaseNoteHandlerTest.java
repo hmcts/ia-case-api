@@ -29,14 +29,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseNoteAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class AddCaseNoteHandlerTest {
 
     @Mock
-    private CaseNoteAppender caseNoteAppender;
+    private Appender<CaseNote> caseNoteAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
