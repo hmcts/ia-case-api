@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCaseValueInitializerFixer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumFieldNameFixer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
 
@@ -28,5 +30,12 @@ public class AsylumCaseDataConfiguration {
         return new AsylumFieldNameFixer(
             AsylumCaseFieldDefinition.DECISION_AND_REASONS_DOCUMENTS,
             AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS);
+    }
+
+    @Bean
+    public DataFixer hearingAttendeesAndDurationInitializer() {
+        return new AsylumCaseValueInitializerFixer<>(
+            AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED,
+            YesOrNo.NO);
     }
 }

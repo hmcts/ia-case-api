@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 
 public class IaCaseApiClient {
@@ -12,10 +13,12 @@ public class IaCaseApiClient {
 
     private final String aboutToSubmitUrl;
     private final RestTemplate restTemplate;
+    private final String ccdSubmittedUrl;
 
     public IaCaseApiClient(int port) {
         this.restTemplate = new RestTemplate();
         this.aboutToSubmitUrl = "http://localhost:" + port + "/asylum/ccdAboutToSubmit";
+        this.ccdSubmittedUrl = "http://localhost:" + port + "/asylum/ccdSubmitted";
     }
 
     public PreSubmitCallbackResponseForTest aboutToSubmit(CallbackForTest.CallbackForTestBuilder callback) {
@@ -29,6 +32,21 @@ public class IaCaseApiClient {
                 HttpMethod.POST,
                 requestEntity,
                 PreSubmitCallbackResponseForTest.class);
+
+        return responseEntity.getBody();
+    }
+
+    public PostSubmitCallbackResponseForTest ccdSubmitted(CallbackForTest.CallbackForTestBuilder callback) {
+
+        HttpEntity<CallbackForTest> requestEntity =
+            new HttpEntity<>(callback.build(), getHeaders());
+
+        ResponseEntity<PostSubmitCallbackResponseForTest> responseEntity =
+            restTemplate.exchange(
+                ccdSubmittedUrl,
+                HttpMethod.POST,
+                requestEntity,
+                PostSubmitCallbackResponseForTest.class);
 
         return responseEntity.getBody();
     }
