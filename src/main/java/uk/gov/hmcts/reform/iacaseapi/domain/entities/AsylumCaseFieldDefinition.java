@@ -237,7 +237,17 @@ public enum AsylumCaseFieldDefinition {
         "disableOverviewPage", new TypeReference<String>(){}),
 
     HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED(
-        "haveHearingAttendeesAndDurationBeenRecorded", new TypeReference<YesOrNo>(){})
+        "haveHearingAttendeesAndDurationBeenRecorded", new TypeReference<YesOrNo>(){}),
+
+    IS_DECISION_ALLOWED(
+        "isDecisionAllowed", new TypeReference<AppealDecision>(){}),
+
+    APPEAL_DECISION(
+        "appealDecision", new TypeReference<String>(){}),
+
+    APPEAL_DATE(
+        "appealDate", new TypeReference<String>(){})
+
     ;
 
     private final String value;

@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -30,15 +33,18 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private final boolean isDocmosisEnabled;
     private final boolean isEmStitchingEnabled;
     private final DocumentGenerator<AsylumCase> documentGenerator;
+    private final DateProvider dateProvider;
 
     public GenerateDocumentHandler(
         @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
         @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
-        DocumentGenerator<AsylumCase> documentGenerator
+        DocumentGenerator<AsylumCase> documentGenerator,
+        DateProvider dateProvider
     ) {
         this.isDocmosisEnabled = isDocmosisEnabled;
         this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
+        this.dateProvider = dateProvider;
     }
 
     @Override
@@ -87,7 +93,23 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             changeEditListingApplicationsToCompleted(asylumCaseWithGeneratedDocument);
         }
 
+        if (Event.SEND_DECISION_AND_REASONS.equals(callback.getEvent())) {
+            saveDecisionDetails(asylumCaseWithGeneratedDocument);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCaseWithGeneratedDocument);
+    }
+
+    private void saveDecisionDetails(AsylumCase asylumCase) {
+        asylumCase.write(
+            APPEAL_DECISION,
+            StringUtils.capitalize(
+                asylumCase.read(IS_DECISION_ALLOWED, AppealDecision.class)
+                    .orElseThrow(() -> new IllegalStateException("decision property must be set"))
+                    .getValue()
+            )
+        );
+        asylumCase.write(APPEAL_DATE, dateProvider.now().toString());
     }
 
     private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {

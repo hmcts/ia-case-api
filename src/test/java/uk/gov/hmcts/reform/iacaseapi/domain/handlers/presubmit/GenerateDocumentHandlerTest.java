@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -41,20 +45,31 @@ public class GenerateDocumentHandlerTest {
     @Mock private DocumentGenerator<AsylumCase> documentGenerator;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private DateProvider dateProvider;
     @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
     private State state = State.UNKNOWN;
+    private String applicationSupplier = "Legal representative";
+    private String applicationReason = "applicationReason";
+    private String applicationDate = "30/01/2019";
+    private String applicationDecision = "Granted";
+    private String applicationDecisionReason = "Granted";
+    private String applicationDateOfDecision = "31/01/2019";
+    private String applicationStatus = "In progress";
+
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
-        "Legal representative",
-        "Expedite",
-        "applicationReason",
-        "30/01/2019",
-        "Granted",
-        "decisionReason",
-        "31/01/2019",
-        "In progress"
+        applicationSupplier,
+        ApplicationType.EXPEDITE.toString(),
+        applicationReason,
+        applicationDate,
+        applicationDecision,
+        applicationDecisionReason,
+        applicationDateOfDecision,
+        applicationStatus
     )));
+
+    private LocalDate now = LocalDate.now();
 
     private GenerateDocumentHandler generateDocumentHandler;
 
@@ -65,7 +80,8 @@ public class GenerateDocumentHandlerTest {
             new GenerateDocumentHandler(
                 true,
                 true,
-                documentGenerator
+                documentGenerator,
+                dateProvider
             );
     }
 
@@ -78,7 +94,8 @@ public class GenerateDocumentHandlerTest {
             LIST_CASE,
             EDIT_CASE_LISTING,
             GENERATE_HEARING_BUNDLE,
-            GENERATE_DECISION_AND_REASONS
+            GENERATE_DECISION_AND_REASONS,
+            SEND_DECISION_AND_REASONS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -89,6 +106,11 @@ public class GenerateDocumentHandlerTest {
                 when(caseDetails.getState()).thenReturn(state);
                 when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
                 when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
+            }
+
+            if (event.equals(SEND_DECISION_AND_REASONS)) {
+                when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class)).thenReturn(Optional.of(AppealDecision.ALLOWED));
+                when(dateProvider.now()).thenReturn(now);
             }
 
             when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
@@ -109,7 +131,59 @@ public class GenerateDocumentHandlerTest {
                 assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
             }
 
+            if (event.equals(SEND_DECISION_AND_REASONS)) {
+                verify(expectedUpdatedCase).write(APPEAL_DECISION, "Allowed");
+                verify(expectedUpdatedCase).write(APPEAL_DATE, now.toString());
+            }
+
             reset(callback);
+            reset(documentGenerator);
+        });
+    }
+
+    @Test
+    public void should_handle_edit_listing_with_withdrawn() {
+
+        Arrays.asList(
+            ApplicationType.ADJOURN,
+            ApplicationType.TRANSFER,
+            ApplicationType.EXPEDITE
+        ).forEach(applicationType -> {
+
+            List<IdValue<Application>> expectedApplications = newArrayList(new IdValue<>("1", new Application(
+                Collections.emptyList(),
+                applicationSupplier,
+                applicationType.toString(),
+                applicationReason,
+                applicationDate,
+                applicationDecision,
+                applicationDecisionReason,
+                applicationDateOfDecision,
+                applicationStatus
+            )));
+
+            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+            when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getState()).thenReturn(state);
+            when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
+            when(expectedUpdatedCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
+            when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(expectedApplications));
+
+            when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+            verify(documentGenerator, times(1)).generate(callback);
+
+            verify(expectedUpdatedCase).clear(APPLICATION_EDIT_LISTING_EXISTS);
+            verify(expectedUpdatedCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+            assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+
             reset(documentGenerator);
         });
     }
@@ -172,7 +246,8 @@ public class GenerateDocumentHandlerTest {
             new GenerateDocumentHandler(
                 false,
                 true,
-                documentGenerator
+                documentGenerator,
+                dateProvider
             );
 
         for (Event event : Event.values()) {
@@ -197,7 +272,8 @@ public class GenerateDocumentHandlerTest {
             new GenerateDocumentHandler(
                 true,
                 false,
-                documentGenerator
+                documentGenerator,
+                dateProvider
             );
 
         for (Event event : Event.values()) {
