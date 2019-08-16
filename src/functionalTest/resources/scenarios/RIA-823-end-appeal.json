@@ -14,7 +14,9 @@
           "endAppealOutcomeReason": "some reason",
           "endAppealApproverType": "Judge",
           "endAppealApproverName": "John Doe",
-          "tribunalDocuments": []
+          "tribunalDocuments": [],
+          "recordApplicationActionDisabled": "No",
+          "addCaseNoteActionDisabled": "No"
         }
       }
     }
@@ -44,7 +46,9 @@
               "tag": "endAppeal"
             }
           }
-        ]
+        ],
+        "recordApplicationActionDisabled": "Yes",
+        "addCaseNoteActionDisabled": "Yes"
       }
     }
   }

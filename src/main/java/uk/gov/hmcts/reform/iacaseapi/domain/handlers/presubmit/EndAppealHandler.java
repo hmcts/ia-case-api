@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
@@ -53,6 +56,9 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseData();
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
+
+        asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        asylumCase.write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
