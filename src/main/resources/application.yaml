@@ -142,6 +142,7 @@ security:
       - "uploadAddendumEvidence"
       - "editCaseListing"
       - "recordApplication"
+      - "endAppeal"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

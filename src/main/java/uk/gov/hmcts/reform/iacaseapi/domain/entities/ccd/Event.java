@@ -31,7 +31,7 @@ public enum Event {
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
-
+    END_APPEAL("endAppeal"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
