@@ -235,6 +235,21 @@ public class CcdScenarioRunnerTest {
         callback.put("event_id", MapValueExtractor.extractOrThrow(input, "eventId"));
         callback.put("case_details", caseDetails);
 
+        if (input.containsKey("caseDataBefore")) {
+            Map<String, Object> caseDataBefore = buildCaseData(
+                MapValueExtractor.extract(input, "caseDataBefore"),
+                templatesByFilename
+            );
+
+            Map<String, Object> caseDetailsBefore = new HashMap<>();
+            caseDetailsBefore.put("id", testCaseId);
+            caseDetailsBefore.put("jurisdiction", MapValueExtractor.extractOrDefault(input, "jurisdiction", "IA"));
+            caseDetailsBefore.put("state", MapValueExtractor.extractOrThrow(input, "state"));
+            caseDetailsBefore.put("created_date", createdDate);
+            caseDetailsBefore.put("case_data", caseDataBefore);
+            callback.put("case_details_before", caseDetailsBefore);
+        }
+
         return MapSerializer.serialize(callback);
     }
 
