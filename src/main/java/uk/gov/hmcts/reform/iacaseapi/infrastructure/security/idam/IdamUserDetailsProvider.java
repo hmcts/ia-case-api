@@ -14,7 +14,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 public class IdamUserDetailsProvider implements UserDetailsProvider {
 
@@ -64,7 +63,6 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
         } catch (RestClientException ex) {
 
             throw new IdentityManagerResponseException(
-                AlertLevel.P2,
                 "Could not get user details with IDAM",
                 ex
             );

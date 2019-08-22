@@ -20,7 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -139,8 +138,7 @@ public class IdamAuthorizorTest {
 
         assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+            .hasMessage("Could not get auth code with IDAM");
 
     }
 
@@ -163,8 +161,7 @@ public class IdamAuthorizorTest {
 
         assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+            .hasMessage("Could not get auth code with IDAM");
 
     }
 
@@ -195,8 +192,7 @@ public class IdamAuthorizorTest {
 
         assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth token with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+            .hasMessage("Could not get auth token with IDAM");
 
     }
 
@@ -227,8 +223,7 @@ public class IdamAuthorizorTest {
 
         assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth token with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2);
+            .hasMessage("Could not get auth token with IDAM");
 
     }
 
