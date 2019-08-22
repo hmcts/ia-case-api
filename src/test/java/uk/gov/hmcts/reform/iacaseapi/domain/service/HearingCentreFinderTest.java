@@ -21,11 +21,11 @@ public class HearingCentreFinderTest {
             .<HearingCentre, List<String>>builder()
             .put(
                 HearingCentre.MANCHESTER,
-                Arrays.asList("AB", "MAN", "XA", "MM")
+                Arrays.asList("AB", "BB", "BL", "CH", "CW", "FY", "LL", "ST", "MAN", "XA", "MM")
             )
             .put(
                 HearingCentre.TAYLOR_HOUSE,
-                Arrays.asList("X", "XB")
+                Arrays.asList("AL", "BR", "CO", "CR", "CT", "DA", "E", "EC", "EN", "IG", "NW", "RM", "SG", "SS", "TN", "W", "WC", "X", "XB")
             )
             .build();
 
@@ -42,9 +42,11 @@ public class HearingCentreFinderTest {
             ImmutableMap
                 .<String, HearingCentre>builder()
                 .put("AB4 1XB", HearingCentre.MANCHESTER)
+                .put("BL3 6AB", HearingCentre.MANCHESTER)
                 .put("MAN3 4ZZ", HearingCentre.MANCHESTER)
                 .put("MM", HearingCentre.MANCHESTER)
                 .put("XA1 2ZZ", HearingCentre.MANCHESTER)
+                .put("SG1 1EA", HearingCentre.TAYLOR_HOUSE)
                 .put("X1 2ZZ", HearingCentre.TAYLOR_HOUSE)
                 .put("XB1 2ZZ", HearingCentre.TAYLOR_HOUSE)
                 .build();
@@ -71,6 +73,7 @@ public class HearingCentreFinderTest {
                 .put("A123 4ZZ", defaultHearingCentre)
                 .put("W1 2AB", defaultHearingCentre)
                 .put("YY", defaultHearingCentre)
+                .put("SW15 6SG", defaultHearingCentre)
                 .build();
 
         exampleInputOutputs
