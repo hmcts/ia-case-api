@@ -21,7 +21,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -269,7 +268,6 @@ public class IdamUserDetailsProviderTest {
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
             .hasMessage("Could not get user details with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(restClientException);
 
     }
@@ -291,7 +289,6 @@ public class IdamUserDetailsProviderTest {
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .isExactlyInstanceOf(IdentityManagerResponseException.class)
             .hasMessage("Could not get user details with IDAM")
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasCause(restClientException);
     }
 }

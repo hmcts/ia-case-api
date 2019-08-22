@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -130,7 +129,6 @@ public class AsylumCaseCallbackApiDelegatorTest {
 
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasMessageContaining("Couldn't delegate callback to API")
             .hasCause(underlyingException);
     }
@@ -155,7 +153,6 @@ public class AsylumCaseCallbackApiDelegatorTest {
 
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class)
-            .hasFieldOrPropertyWithValue("alertLevel", AlertLevel.P2)
             .hasMessageContaining("Couldn't delegate callback to API")
             .hasCause(underlyingException);
     }

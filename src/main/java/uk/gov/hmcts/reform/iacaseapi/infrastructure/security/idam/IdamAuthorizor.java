@@ -14,7 +14,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.logging.exception.AlertLevel;
 
 @Service
 public class IdamAuthorizor {
@@ -85,7 +84,6 @@ public class IdamAuthorizor {
         } catch (RestClientException e) {
 
             throw new IdentityManagerResponseException(
-                AlertLevel.P2,
                 "Could not get auth code with IDAM",
                 e
             );
@@ -126,7 +124,6 @@ public class IdamAuthorizor {
         } catch (RestClientException e) {
 
             throw new IdentityManagerResponseException(
-                AlertLevel.P2,
                 "Could not get auth token with IDAM",
                 e
             );
