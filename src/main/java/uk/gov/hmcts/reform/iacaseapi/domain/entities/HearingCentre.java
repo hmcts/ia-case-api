@@ -7,7 +7,9 @@ import java.util.Optional;
 
 public enum HearingCentre {
 
+    BRADFORD("bradford"),
     MANCHESTER("manchester"),
+    NEWPORT("newport"),
     TAYLOR_HOUSE("taylorHouse");
 
     @JsonValue

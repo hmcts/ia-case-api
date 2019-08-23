@@ -33,7 +33,12 @@ def secrets = [
         secret('ccd-gw-url', 'CCD_GW_URL'),
         secret('dm-url', 'DM_URL'),
         secret('idam-url', 'IDAM_URL'),
-        secret('s2s-url', 'S2S_URL')
+        secret('s2s-url', 'S2S_URL'),
+
+        secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
+        secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
+        secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
+        secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE')
 
     ]
 ]
