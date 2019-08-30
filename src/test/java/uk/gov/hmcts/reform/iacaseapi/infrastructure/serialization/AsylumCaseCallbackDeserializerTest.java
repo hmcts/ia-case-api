@@ -18,6 +18,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
+// suppress warning because of changes in jackson-core library API version: 2.10.0.pr3
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class AsylumCaseCallbackDeserializerTest {
 

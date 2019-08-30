@@ -55,7 +55,6 @@ public class RecordApplicationConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(refused));
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(editListing));
@@ -86,7 +85,6 @@ public class RecordApplicationConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(granted));
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(editListing));
@@ -105,7 +103,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("This case must be relisted in ARIA. Once you have a new hearing date, you must then [edit case listing](/case/IA/Asylum/" + caseId + "/trigger/editCaseListing). A new hearing notice will be issued.")
+            containsString("The application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.")
         );
 
         verify(asylumCase).clear(APPLICATION_DECISION);
@@ -117,7 +115,6 @@ public class RecordApplicationConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(granted));
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(changeDate));

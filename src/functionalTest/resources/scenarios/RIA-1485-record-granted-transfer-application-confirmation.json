@@ -20,7 +20,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have recorded an application",
-      "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. This case must be relisted in ARIA. Once you have a new hearing date, you must then [edit case listing](/case/IA/Asylum/1234/trigger/editCaseListing). A new hearing notice will be issued."
+      "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued."
     }
   }
 }

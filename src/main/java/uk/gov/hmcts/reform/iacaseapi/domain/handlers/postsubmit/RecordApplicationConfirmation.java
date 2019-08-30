@@ -70,7 +70,7 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
                 return "You must now [end the appeal](/case/IA/Asylum/" + id +  "/trigger/endAppeal).";
 
             } else if (ADJOURN.toString().equalsIgnoreCase(type) || EXPEDITE.toString().equalsIgnoreCase(type) || TRANSFER.toString().equalsIgnoreCase(type)) {
-                return "This case must be relisted in ARIA. Once you have a new hearing date, you must then [edit case listing](/case/IA/Asylum/" + id + "/trigger/editCaseListing). A new hearing notice will be issued.";
+                return "Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.";
             }
 
             // default empty in case of new application type
