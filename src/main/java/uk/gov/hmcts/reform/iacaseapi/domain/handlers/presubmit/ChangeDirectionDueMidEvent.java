@@ -1,13 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -17,8 +9,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+
 @Component
-public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class ChangeDirectionDueMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -27,7 +29,7 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE;
     }
 
@@ -46,6 +48,20 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
 
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
+        DynamicList directionList = asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_LIST, DynamicList.class).orElse(null);
+
+        maybeDirections
+            .orElse(emptyList())
+            .stream()
+            .filter(idValue -> directionList.getValue().getCode().contains("Direction " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1)))
+            .forEach(idValue -> {
+
+                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_EXPLANATION, idValue.getValue().getExplanation());
+                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties());
+                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, idValue.getValue().getDateDue());
+                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_SENT, idValue.getValue().getDateSent());
+            });
+
         List<Value> directionListElements = maybeDirections
             .orElse(Collections.emptyList())
             .stream()
@@ -53,8 +69,8 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
             .collect(Collectors.toList());
 
         Collections.reverse(directionListElements);
-        DynamicList directionList = new DynamicList(directionListElements.get(0), directionListElements);
-        asylumCase.write(DIRECTION_LIST, directionList);
+        DynamicList newDirectionList = new DynamicList(new Value(directionList.getValue().getCode(), directionList.getValue().getCode()), directionListElements);
+        asylumCase.write(DIRECTION_LIST, newDirectionList);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

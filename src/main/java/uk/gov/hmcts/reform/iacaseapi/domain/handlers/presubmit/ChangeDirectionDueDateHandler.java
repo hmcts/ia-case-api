@@ -5,15 +5,16 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -48,49 +49,33 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
-
-        final Map<String, Direction> existingDirectionsById =
-            maybeDirections
-                .orElseThrow(() -> new IllegalStateException("directions is not present"))
-                .stream()
-                .collect(toMap(
-                    IdValue::getId,
-                    IdValue::getValue
-                ));
-
-        Optional<List<IdValue<EditableDirection>>> maybeEditableDirections =
-                asylumCase.read(EDITABLE_DIRECTIONS);
+        final Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+        final DynamicList directionList = asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_LIST, DynamicList.class).orElse(null);
 
         List<IdValue<Direction>> changedDirections =
-            maybeEditableDirections
-                .orElse(emptyList())
+            maybeDirections.orElse(emptyList())
                 .stream()
                 .map(idValue -> {
 
-                    Direction existingDirection =
-                        existingDirectionsById
-                            .get(idValue.getId());
-
-                    if (existingDirection == null) {
-                        throw new IllegalStateException("Cannot find original direction to update");
+                    if(directionList.getValue().getCode().contains("Direction " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1))) {
+                        return new IdValue<>(
+                            idValue.getId(),
+                            new Direction(
+                                asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_EXPLANATION, String.class).orElse(""),
+                                asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, Parties.class).orElseThrow(() -> new IllegalStateException("")),
+                                asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
+                                LocalDate.now().toString(),
+                                idValue.getValue().getTag()
+                            )
+                        );
+                    } else {
+                        return idValue;
                     }
-
-                    return new IdValue<>(
-                        idValue.getId(),
-                        new Direction(
-                            existingDirection.getExplanation(),
-                            existingDirection.getParties(),
-                            idValue.getValue().getDateDue(),
-                            existingDirection.getDateSent(),
-                            existingDirection.getTag()
-                        )
-                    );
-
                 })
                 .collect(toList());
 
-        asylumCase.clear(EDITABLE_DIRECTIONS);
+        asylumCase.clear(DIRECTION_LIST);
+
         asylumCase.write(DIRECTIONS, changedDirections);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
