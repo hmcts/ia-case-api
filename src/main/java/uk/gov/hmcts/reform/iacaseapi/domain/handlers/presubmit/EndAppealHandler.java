@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_ACTION_DISABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
@@ -56,9 +57,11 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseData();
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
-
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
         asylumCase.write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.YES);
+
+        asylumCase.clear(APPLICATION_WITHDRAW_EXISTS);
+        asylumCase.clear(DISABLE_OVERVIEW_PAGE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

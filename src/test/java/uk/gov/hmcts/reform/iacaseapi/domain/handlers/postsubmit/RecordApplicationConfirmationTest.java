@@ -167,7 +167,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("You must now end the appeal.")
+            containsString("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).")
         );
 
         verify(asylumCase).clear(APPLICATION_DECISION);

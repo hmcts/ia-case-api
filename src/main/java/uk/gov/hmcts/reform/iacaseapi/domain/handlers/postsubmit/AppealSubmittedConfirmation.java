@@ -37,7 +37,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         YesOrNo submissionOutOfTime =
                 requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
-                        .orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
+                        .<RequiredFieldMissingException>orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
         if (submissionOutOfTime.equals(NO)) {
 

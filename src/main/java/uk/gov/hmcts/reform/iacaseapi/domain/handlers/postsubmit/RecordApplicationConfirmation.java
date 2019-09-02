@@ -67,7 +67,7 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
                 return "You must change the direction due date to send an updated direction. You will need to find the direction in the list of directions and only edit the due date.";
 
             } else if (WITHDRAW.toString().equalsIgnoreCase(type)) {
-                return "You must now end the appeal.";
+                return "You must now [end the appeal](/case/IA/Asylum/" + id +  "/trigger/endAppeal).";
 
             } else if (ADJOURN.toString().equalsIgnoreCase(type) || EXPEDITE.toString().equalsIgnoreCase(type) || TRANSFER.toString().equalsIgnoreCase(type)) {
                 return "This case must be relisted in ARIA. Once you have a new hearing date, you must then [edit case listing](/case/IA/Asylum/" + id + "/trigger/editCaseListing). A new hearing notice will be issued.";
