@@ -311,6 +311,30 @@ public class CcdScenarioRunnerTest {
                 .getAdminOfficerAuthorization();
         }
 
+        if ("HomeOfficeApc".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficeApcAuthorization();
+        }
+
+        if ("HomeOfficeLart".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficeLartAuthorization();
+        }
+
+        if ("HomeOfficePou".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficePouAuthorization();
+        }
+
+        if ("HomeOfficeGeneric".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getHomeOfficeGenericAuthorization();
+        }
+
         return new Headers();
     }
 }

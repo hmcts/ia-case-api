@@ -57,4 +57,60 @@ public class AuthorizationHeadersProvider {
             new Header("Authorization", accessToken)
         );
     }
+
+    public Headers getHomeOfficeApcAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            System.getenv("TEST_HOMEOFFICE_APC_USERNAME"),
+            System.getenv("TEST_HOMEOFFICE_APC_PASSWORD")
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
+
+    public Headers getHomeOfficeLartAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            System.getenv("TEST_HOMEOFFICE_LART_USERNAME"),
+            System.getenv("TEST_HOMEOFFICE_LART_PASSWORD")
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
+
+    public Headers getHomeOfficePouAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            System.getenv("TEST_HOMEOFFICE_POU_USERNAME"),
+            System.getenv("TEST_HOMEOFFICE_POU_PASSWORD")
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
+
+    public Headers getHomeOfficeGenericAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            System.getenv("TEST_HOMEOFFICE_GENERIC_USERNAME"),
+            System.getenv("TEST_HOMEOFFICE_GENERIC_PASSWORD")
+        );
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
 }
