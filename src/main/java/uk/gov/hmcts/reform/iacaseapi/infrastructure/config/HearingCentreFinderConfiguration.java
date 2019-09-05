@@ -15,9 +15,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 public class HearingCentreFinderConfiguration {
 
     private Map<HearingCentre, List<String>> hearingCentreCatchmentAreas = new EnumMap<>(HearingCentre.class);
+    private Map<HearingCentre, String> hearingCentreActivationDates = new EnumMap<>(HearingCentre.class);
 
     public Map<HearingCentre, List<String>> getHearingCentreCatchmentAreas() {
         return hearingCentreCatchmentAreas;
+    }
+
+    public Map<HearingCentre, String> getHearingCentreActivationDates() {
+        return hearingCentreActivationDates;
     }
 
     @Bean
@@ -28,7 +33,8 @@ public class HearingCentreFinderConfiguration {
             HearingCentre
                 .from(defaultHearingCentre)
                 .orElseThrow(() -> new IllegalArgumentException("Hearing centre not found")),
-            hearingCentreCatchmentAreas
+            hearingCentreCatchmentAreas,
+            hearingCentreActivationDates
         );
     }
 }
