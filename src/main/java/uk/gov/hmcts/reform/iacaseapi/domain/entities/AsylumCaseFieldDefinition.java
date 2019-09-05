@@ -137,6 +137,9 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE(
             "currentCaseStateVisibleToLegalRepresentative", new TypeReference<State>(){}),
 
+    CURRENT_CASE_STATE_VISIBLE_TO_RESPONDENT_OFFICER(
+            "currentCaseStateVisibleToRespondentOfficer", new TypeReference<State>(){}),
+
     CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
             "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
 
