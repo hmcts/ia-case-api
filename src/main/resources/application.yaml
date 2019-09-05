@@ -127,6 +127,14 @@ security:
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
+    caseworker-ia-homeofficeapc:
+      - "uploadRespondentEvidence"
+    caseworker-ia-homeofficelart:
+      - "addAppealResponse"
+    caseworker-ia-homeofficepou:
+      - "sendDirection"
+    caseworker-ia-respondentofficer:
+      - "sendDirection"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
