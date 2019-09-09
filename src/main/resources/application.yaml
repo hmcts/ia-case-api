@@ -130,30 +130,14 @@ security:
       - "recordAttendeesAndDuration"
       - "editCaseListing"
     caseworker-ia-homeofficeapc:
-      - "uploadRespondentEvidence"
+      - "uploadHomeOfficeBundle"
     caseworker-ia-homeofficelart:
       - "addAppealResponse"
     caseworker-ia-homeofficepou:
       - "sendDirection"
     caseworker-ia-respondentofficer:
-      - "sendDirection"
-      - "changeDirectionDueDate"
-      - "requestCaseEdit"
-      - "requestHearingRequirements"
-      - "requestRespondentEvidence"
-      - "uploadRespondentEvidence"
-      - "requestRespondentReview"
+      - "uploadHomeOfficeBundle"
       - "addAppealResponse"
-      - "createCaseSummary"
-      - "generateHearingBundle"
-      - "revertStateToAwaitingRespondentEvidence"
-      - "decisionAndReasonsStarted"
-      - "generateDecisionAndReasons"
-      - "sendDecisionAndReasons"
-      - "addCaseNote"
-      - "uploadAddendumEvidence"
-      - "editCaseListing"
-      - "recordApplication"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

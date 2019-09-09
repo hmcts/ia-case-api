@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_BUNDLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
 
@@ -44,7 +45,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
+               && (callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE || callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -61,7 +62,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .getCaseData();
 
         Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence =
-                asylumCase.read(RESPONDENT_EVIDENCE);
+                asylumCase.read(RESPONDENT_EVIDENCE).isPresent() ? asylumCase.read(RESPONDENT_EVIDENCE) : asylumCase.read(HOME_OFFICE_BUNDLE);
 
         List<DocumentWithMetadata> respondentEvidence =
             maybeRespondentEvidence
