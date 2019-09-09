@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -104,6 +106,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).clear(RESPONDENT_EVIDENCE);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
@@ -145,6 +148,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).clear(RESPONDENT_EVIDENCE);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
@@ -159,6 +163,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("respondentEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
+        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
@@ -172,6 +177,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test

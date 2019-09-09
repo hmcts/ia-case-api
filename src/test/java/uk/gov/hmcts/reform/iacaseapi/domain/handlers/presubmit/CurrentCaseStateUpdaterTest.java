@@ -49,6 +49,10 @@ public class CurrentCaseStateUpdaterTest {
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC, state);
             reset(asylumCase);
         }
     }
@@ -76,7 +80,10 @@ public class CurrentCaseStateUpdaterTest {
             verify(asylumCase, times(0)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
             verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
-
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU, state);
+            verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC, state);
             reset(asylumCase);
         }
     }
