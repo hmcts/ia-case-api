@@ -11,6 +11,7 @@ public enum DirectionTag {
     LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS("legalRepresentativeHearingRequirements"),
     RESPONDENT_EVIDENCE("respondentEvidence"),
     RESPONDENT_REVIEW("respondentReview"),
+    REQUEST_CASE_BUILDING("requestCaseBuilding"),
 
     @JsonEnumDefaultValue
     NONE("");

@@ -25,6 +25,9 @@ public class DirectionTagResolver {
             case REQUEST_RESPONDENT_REVIEW:
                 return DirectionTag.RESPONDENT_REVIEW;
 
+            case REQUEST_CASE_BUILDING:
+                return DirectionTag.REQUEST_CASE_BUILDING;
+
             default:
                 return DirectionTag.NONE;
         }

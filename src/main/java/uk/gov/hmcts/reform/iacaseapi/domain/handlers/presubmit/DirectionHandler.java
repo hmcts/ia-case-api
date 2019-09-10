@@ -52,7 +52,8 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 Event.SEND_DIRECTION,
                 Event.REQUEST_CASE_EDIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE,
-                Event.REQUEST_RESPONDENT_REVIEW
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.REQUEST_CASE_BUILDING
             ).contains(callback.getEvent());
     }
 
@@ -102,6 +103,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(SEND_DIRECTION_EXPLANATION);
         asylumCase.clear(SEND_DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
+        asylumCase.clear(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

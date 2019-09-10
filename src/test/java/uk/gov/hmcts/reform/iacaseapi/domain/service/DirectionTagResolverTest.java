@@ -39,6 +39,7 @@ public class DirectionTagResolverTest {
                 .put(Event.REQUEST_CASE_EDIT, DirectionTag.CASE_EDIT)
                 .put(Event.REQUEST_RESPONDENT_EVIDENCE, DirectionTag.RESPONDENT_EVIDENCE)
                 .put(Event.REQUEST_RESPONDENT_REVIEW, DirectionTag.RESPONDENT_REVIEW)
+                .put(Event.REQUEST_CASE_BUILDING, DirectionTag.REQUEST_CASE_BUILDING)
                 .build();
 
         exampleInputOutputs

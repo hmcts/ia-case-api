@@ -48,7 +48,8 @@ public class SendNotificationHandlerTest {
             Event.LIST_CASE,
             Event.EDIT_CASE_LISTING,
             Event.END_APPEAL,
-            Event.UPLOAD_HOME_OFFICE_BUNDLE
+            Event.UPLOAD_HOME_OFFICE_BUNDLE,
+            Event.REQUEST_CASE_BUILDING
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -132,7 +133,8 @@ public class SendNotificationHandlerTest {
                         Event.LIST_CASE,
                         Event.EDIT_CASE_LISTING,
                         Event.END_APPEAL,
-                        Event.UPLOAD_HOME_OFFICE_BUNDLE
+                        Event.UPLOAD_HOME_OFFICE_BUNDLE,
+                        Event.REQUEST_CASE_BUILDING
                     ).contains(event)) {
 
                     assertTrue(canHandle);

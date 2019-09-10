@@ -1,0 +1,47 @@
+{
+  "description": "RIA-1789 Request case building direction to legal representative",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1789,
+      "eventId": "requestCaseBuilding",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "You must now build your case by uploading your appeal argument and evidence.\n\n# You must write a full skeleton argument that references:\n\n- all the evidence you have (or plan) to rely on, including witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent’s decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n# Next steps\n\nOnce you've uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\nIf your case looks ready, the Tribunal case worker will send it to the respondent to review. The respondent then has 14 days to respond.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You must now build your case by uploading your appeal argument and evidence.\n\n# You must write a full skeleton argument that references:\n\n- all the evidence you have (or plan) to rely on, including witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent’s decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n# Next steps\n\nOnce you've uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\nIf your case looks ready, the Tribunal case worker will send it to the respondent to review. The respondent then has 14 days to respond.",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestCaseBuilding"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "1789_LEGAL_REPRESENTATIVE_REQUEST_CASE_BUILDING",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

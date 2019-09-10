@@ -125,6 +125,7 @@ security:
       - "editCaseListing"
       - "recordApplication"
       - "endAppeal"
+      - "requestCaseBuilding"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
