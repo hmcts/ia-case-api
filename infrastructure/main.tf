@@ -124,6 +124,26 @@ data "azurerm_key_vault_secret" "s2s_url" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_bradford" {
+  name      = "hearing-centre-activation-date-bradford"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_manchester" {
+  name      = "hearing-centre-activation-date-manchester"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_newport" {
+  name      = "hearing-centre-activation-date-newport"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_taylor_house" {
+  name      = "hearing-centre-activation-date-taylor-house"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 module "ia_case_api_database" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.product}-${var.component}-postgres-db"
@@ -180,9 +200,15 @@ module "ia_case_api" {
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
 
+    IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD       = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_bradford.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER     = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_manchester.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT        = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_newport.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE   = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_taylor_house.value}"
+
     ROOT_LOGGING_LEVEL   = "${var.root_logging_level}"
     LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
     LOG_LEVEL_IA         = "${var.log_level_ia}"
     EXCEPTION_LENGTH     = 100
+
   }
 }

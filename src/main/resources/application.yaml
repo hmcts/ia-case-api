@@ -37,6 +37,9 @@ spring:
       remove-abandoned-timeout: 60
       log-abandoned: true
       abandon-when-percentage-full: 0
+  profiles:
+    include:
+      - postcodes
   flyway.enabled: true
   flyway.baselineOnMigrate: true
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
@@ -64,29 +67,6 @@ cache:
 appealOutOfTimeDays: 14
 
 defaultHearingCentre: taylorHouse
-hearingCentreCatchmentAreas:
-    manchester:
-      - "L"
-      - "LA"
-      - "M"
-      - "OL"
-      - "PR"
-      - "SK"
-      - "WA"
-      - "WN"
-    taylorHouse:
-      - "BN"
-      - "CB"
-      - "CM"
-      - "HP"
-      - "IP"
-      - "ME"
-      - "N"
-      - "NR"
-      - "RH"
-      - "SE"
-      - "TN"
-      - "W"
 
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
@@ -147,6 +127,31 @@ security:
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
+    caseworker-ia-homeofficeapc:
+      - "uploadRespondentEvidence"
+    caseworker-ia-homeofficelart:
+      - "addAppealResponse"
+    caseworker-ia-homeofficepou:
+      - "sendDirection"
+    caseworker-ia-respondentofficer:
+      - "sendDirection"
+      - "changeDirectionDueDate"
+      - "requestCaseEdit"
+      - "requestHearingRequirements"
+      - "requestRespondentEvidence"
+      - "uploadRespondentEvidence"
+      - "requestRespondentReview"
+      - "addAppealResponse"
+      - "createCaseSummary"
+      - "generateHearingBundle"
+      - "revertStateToAwaitingRespondentEvidence"
+      - "decisionAndReasonsStarted"
+      - "generateDecisionAndReasons"
+      - "sendDecisionAndReasons"
+      - "addCaseNote"
+      - "uploadAddendumEvidence"
+      - "editCaseListing"
+      - "recordApplication"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

@@ -23,6 +23,15 @@ def secrets = [
         secret('test-adminofficer-username', 'TEST_ADMINOFFICER_USERNAME'),
         secret('test-adminofficer-password', 'TEST_ADMINOFFICER_PASSWORD'),
 
+        secret('test-homeoffice-apc-username', 'TEST_HOMEOFFICE_APC_USERNAME'),
+        secret('test-homeoffice-apc-password', 'TEST_HOMEOFFICE_APC_PASSWORD'),
+        secret('test-homeoffice-lart-username', 'TEST_HOMEOFFICE_LART_USERNAME'),
+        secret('test-homeoffice-lart-password', 'TEST_HOMEOFFICE_LART_PASSWORD'),
+        secret('test-homeoffice-pou-username', 'TEST_HOMEOFFICE_POU_USERNAME'),
+        secret('test-homeoffice-pou-password', 'TEST_HOMEOFFICE_POU_PASSWORD'),
+        secret('test-homeoffice-generic-username', 'TEST_HOMEOFFICE_GENERIC_USERNAME'),
+        secret('test-homeoffice-generic-password', 'TEST_HOMEOFFICE_GENERIC_PASSWORD'),
+
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
         secret('idam-redirect-uri', 'IA_IDAM_REDIRECT_URI'),
@@ -32,7 +41,12 @@ def secrets = [
         secret('ccd-gw-url', 'CCD_GW_URL'),
         secret('dm-url', 'DM_URL'),
         secret('idam-url', 'IDAM_URL'),
-        secret('s2s-url', 'S2S_URL')
+        secret('s2s-url', 'S2S_URL'),
+
+        secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
+        secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
+        secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
+        secret('hearing-centre-activation-date-taylor-house', 'IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE')
 
     ]
 ]
