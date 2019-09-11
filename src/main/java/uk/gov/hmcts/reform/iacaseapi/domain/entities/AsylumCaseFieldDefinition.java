@@ -167,6 +167,9 @@ public enum AsylumCaseFieldDefinition {
     SUBMISSION_OUT_OF_TIME(
             "submissionOutOfTime", new TypeReference<YesOrNo>(){}),
 
+    HOME_OFFICE_EVIDENCE_UPLOADED(
+        "homeOfficeEvidenceUploaded", new TypeReference<YesOrNo>(){}),
+
     DIRECTIONS(
             "directions", new TypeReference<List<IdValue<Direction>>>(){}),
 
