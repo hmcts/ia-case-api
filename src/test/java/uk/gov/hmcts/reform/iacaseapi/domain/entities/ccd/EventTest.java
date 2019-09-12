@@ -34,11 +34,12 @@ public class EventTest {
         assertEquals("editCaseListing", Event.EDIT_CASE_LISTING.toString());
         assertEquals("recordApplication", Event.RECORD_APPLICATION.toString());
         assertEquals("recordAttendeesAndDuration", Event.RECORD_ATTENDEES_AND_DURATION.toString());
+        assertEquals("endAppeal", Event.END_APPEAL.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(27, Event.values().length);
+        assertEquals(28, Event.values().length);
     }
 }

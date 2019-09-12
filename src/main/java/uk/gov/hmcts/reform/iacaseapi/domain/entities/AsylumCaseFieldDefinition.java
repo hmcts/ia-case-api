@@ -236,6 +236,12 @@ public enum AsylumCaseFieldDefinition {
     DISABLE_OVERVIEW_PAGE(
         "disableOverviewPage", new TypeReference<String>(){}),
 
+    ARIA_LISTING_REFERENCE(
+        "ariaListingReference", new TypeReference<String>(){}),
+
+    END_APPEAL_DATE(
+        "endAppealDate", new TypeReference<String>(){}),
+
     HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED(
         "haveHearingAttendeesAndDurationBeenRecorded", new TypeReference<YesOrNo>(){}),
 
