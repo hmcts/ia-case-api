@@ -252,7 +252,13 @@ public enum AsylumCaseFieldDefinition {
         "appealDecision", new TypeReference<String>(){}),
 
     APPEAL_DATE(
-        "appealDate", new TypeReference<String>(){})
+        "appealDate", new TypeReference<String>(){}),
+
+    ADD_CASE_NOTE_ACTION_DISABLED(
+        "addCaseNoteActionDisabled", new TypeReference<YesOrNo>(){}),
+
+    RECORD_APPLICATION_ACTION_DISABLED(
+        "recordApplicationActionDisabled", new TypeReference<YesOrNo>(){})
 
     ;
 
