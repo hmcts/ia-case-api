@@ -1,4 +1,21 @@
+hearingCentreActivationDates:
+  bradford: ${IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD:2019-09-16}
+  manchester: ${IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER:2019-01-01}
+  newport: ${IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT:2019-09-23}
+  taylorHouse: ${IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE:2019-01-01}
+
 hearingCentreCatchmentAreas:
+  bradford:
+    - "BD"
+    - "DN"
+    - "HD"
+    - "HG"
+    - "HU"
+    - "HX"
+    - "LS"
+    - "S"
+    - "WF"
+    - "YO"
   manchester:
     - "BB"
     - "BL"
@@ -15,6 +32,22 @@ hearingCentreCatchmentAreas:
     - "SK"
     - "WA"
     - "WN"
+  newport:
+    - "BA"
+    - "BS"
+    - "CF"
+    - "DT"
+    - "EX"
+    - "HR"
+    - "LD"
+    - "NP"
+    - "PL"
+    - "SA"
+    - "SN"
+    - "SP"
+    - "TA"
+    - "TQ"
+    - "TR"
   taylorHouse:
     - "AL"
     - "BN"
