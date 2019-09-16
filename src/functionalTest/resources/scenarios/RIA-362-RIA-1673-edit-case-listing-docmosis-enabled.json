@@ -1,5 +1,5 @@
 {
-  "description": "RIA-362 Edit hearing notice PDF (Docmosis enabled)",
+  "description": "RIA-362-RIA-1673 Edit hearing notice PDF (Docmosis enabled)",
   "enabled": "{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -8,6 +8,36 @@
       "eventId": "editCaseListing",
       "state": "decision",
       "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "manchester",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2018-12-31T12:34:56",
+          "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+          "listCaseRequirementsMultimedia": "something around Multimedia",
+          "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+          "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+          "listCaseRequirementsOther": "something around Other",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "ariaListingReference": "LP/12345/2019",
+          "hearingDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "old-hearing-notice",
+                  "document_binary_url": "old-hearing-notice",
+                  "document_filename": "old-hearing-notice"
+                },
+                "description": "OLD HEARING NOTICE",
+                "dateUploaded": "2019-01-01",
+                "tag": "hearingNotice"
+              }
+            }
+          ]
+        }
+      },
+      "caseDataBefore": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "listCaseHearingCentre": "manchester",
