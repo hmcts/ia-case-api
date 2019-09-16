@@ -4,6 +4,7 @@
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
     "input": {
+      "id": 1234,
       "eventId": "recordApplication",
       "state": "caseBuilding",
       "caseData": {
@@ -19,7 +20,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have recorded an application",
-      "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. You must now end the appeal."
+      "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. You must now [end the appeal](/case/IA/Asylum/1234/trigger/endAppeal)."
     }
   }
 }
