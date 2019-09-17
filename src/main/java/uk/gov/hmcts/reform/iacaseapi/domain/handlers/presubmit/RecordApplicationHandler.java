@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
 @Component
@@ -48,13 +50,16 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
 
     private final Appender<Application> appender;
     private final DateProvider dateProvider;
+    private final NotificationSender<AsylumCase> notificationSender;
 
     public RecordApplicationHandler(
         Appender<Application> appender,
-        DateProvider dateProvider
+        DateProvider dateProvider,
+        NotificationSender<AsylumCase> notificationSender
     ) {
         this.appender = appender;
         this.dateProvider = dateProvider;
+        this.notificationSender = notificationSender;
     }
 
     public boolean canHandle(
@@ -161,13 +166,28 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
 
         asylumCase.write(APPLICATIONS, allApplications);
 
-        asylumCase.clear(APPLICATION_SUPPLIER);
-        asylumCase.clear(APPLICATION_REASON);
-        asylumCase.clear(APPLICATION_DATE);
-        asylumCase.clear(APPLICATION_DECISION_REASON);
-        asylumCase.clear(APPLICATION_DOCUMENTS);
+        // call ia-case-notification-api in this handler because we need to do some cleanups after call and use above validation
+        AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(
+            new Callback<>(
+                new CaseDetails<>(
+                    callback.getCaseDetails().getId(),
+                    callback.getCaseDetails().getJurisdiction(),
+                    callback.getCaseDetails().getState(),
+                    asylumCase,
+                    callback.getCaseDetails().getCreatedDate()
+                ),
+                callback.getCaseDetailsBefore(),
+                callback.getEvent()
+            )
+        );
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        asylumCaseWithNotificationMarker.clear(APPLICATION_SUPPLIER);
+        asylumCaseWithNotificationMarker.clear(APPLICATION_REASON);
+        asylumCaseWithNotificationMarker.clear(APPLICATION_DATE);
+        asylumCaseWithNotificationMarker.clear(APPLICATION_DECISION_REASON);
+        asylumCaseWithNotificationMarker.clear(APPLICATION_DOCUMENTS);
+
+        return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 
     private boolean isAllowedToRecordApplication(String applicationType, State state) {

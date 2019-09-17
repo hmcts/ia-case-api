@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,12 +57,12 @@ public class RecordApplicationHandlerTest {
         State.RESPONDENT_REVIEW,
         State.SUBMIT_HEARING_REQUIREMENTS
     );
-
-    @Mock
-    private Appender<Application> appender;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Appender<Application> appender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCaseWithNotifications;
     @Mock private DateProvider dateProvider;
     @Mock private UserDetailsProvider userProvider;
     @Mock private Application existingApplication;
@@ -107,7 +108,9 @@ public class RecordApplicationHandlerTest {
         when(appender.append(any(Application.class), anyList()))
             .thenReturn(allAppendedApplications);
 
-        recordApplicationHandler = new RecordApplicationHandler(appender, dateProvider);
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
+
+        recordApplicationHandler = new RecordApplicationHandler(appender, dateProvider, notificationSender);
     }
 
     @Test
@@ -138,13 +141,14 @@ public class RecordApplicationHandlerTest {
 
         verify(asylumCase, times(1)).write(APPLICATIONS, allAppendedApplications);
 
-        verify(asylumCase, times(1)).clear(APPLICATION_SUPPLIER);
-        verify(asylumCase, times(1)).clear(APPLICATION_REASON);
-        verify(asylumCase, times(1)).clear(APPLICATION_DATE);
-        verify(asylumCase, times(1)).clear(APPLICATION_DECISION_REASON);
-        verify(asylumCase, times(1)).clear(APPLICATION_DOCUMENTS);
+        verify(notificationSender).send(any(Callback.class));
+        verify(asylumCaseWithNotifications, times(1)).clear(APPLICATION_SUPPLIER);
+        verify(asylumCaseWithNotifications, times(1)).clear(APPLICATION_REASON);
+        verify(asylumCaseWithNotifications, times(1)).clear(APPLICATION_DATE);
+        verify(asylumCaseWithNotifications, times(1)).clear(APPLICATION_DECISION_REASON);
+        verify(asylumCaseWithNotifications, times(1)).clear(APPLICATION_DOCUMENTS);
 
-        assertThat(callbackResponse.getData()).isEqualTo(callbackResponse.getData());
+        assertThat(callbackResponse.getData()).isEqualTo(asylumCaseWithNotifications);
     }
 
     @Test
