@@ -46,7 +46,8 @@ public class SendNotificationHandlerTest {
             Event.ADD_APPEAL_RESPONSE,
             Event.REQUEST_HEARING_REQUIREMENTS,
             Event.LIST_CASE,
-            Event.EDIT_CASE_LISTING
+            Event.EDIT_CASE_LISTING,
+            Event.END_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -128,7 +129,8 @@ public class SendNotificationHandlerTest {
                         Event.ADD_APPEAL_RESPONSE,
                         Event.REQUEST_HEARING_REQUIREMENTS,
                         Event.LIST_CASE,
-                        Event.EDIT_CASE_LISTING
+                        Event.EDIT_CASE_LISTING,
+                        Event.END_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
