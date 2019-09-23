@@ -12,6 +12,8 @@ public enum DirectionTag {
     RESPONDENT_EVIDENCE("respondentEvidence"),
     RESPONDENT_REVIEW("respondentReview"),
     REQUEST_CASE_BUILDING("requestCaseBuilding"),
+    REQUEST_RESPONSE_REVIEW("requestResponseReview"),
+    REQUEST_RESPONSE_AMEND("requestResponseAmend"),
 
     @JsonEnumDefaultValue
     NONE("");

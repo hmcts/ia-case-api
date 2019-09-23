@@ -21,8 +21,10 @@ public class DirectionPartiesResolver {
 
             case REQUEST_CASE_EDIT:
             case REQUEST_CASE_BUILDING:
+            case REQUEST_RESPONSE_REVIEW:
                 return Parties.LEGAL_REPRESENTATIVE;
 
+            case REQUEST_RESPONSE_AMEND:
             case REQUEST_RESPONDENT_EVIDENCE:
             case REQUEST_RESPONDENT_REVIEW:
                 return Parties.RESPONDENT;

@@ -126,6 +126,8 @@ security:
       - "recordApplication"
       - "endAppeal"
       - "requestCaseBuilding"
+      - "requestResponseReview"
+      - "requestResponseAmend"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
