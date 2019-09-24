@@ -1,0 +1,134 @@
+{
+  "description": "RIA-1309 Upload appeal response (Home Office LART)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "HomeOfficeLart",
+    "input": {
+      "id": 1234,
+      "eventId": "uploadHomeOfficeAppealResponse",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealResponseAvailable": null,
+          "homeOfficeAppealResponseDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "appeal-response.pdf"
+          },
+          "homeOfficeAppealResponseDescription": "Appeal response",
+          "homeOfficeAppealResponseEvidence": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-appeal-response-evidence.pdf"
+                },
+                "description": "Some appeal response evidence"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-more-appeal-response-evidence.pdf"
+                },
+                "description": "Some more appeal response evidence"
+              }
+            }
+          ],
+          "respondentReviewAppealResponseAdded": "No",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealResponseAvailable": "Yes",
+        "homeOfficeAppealResponseDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "appeal-response.pdf"
+        },
+        "homeOfficeAppealResponseDescription": "Appeal response",
+        "homeOfficeAppealResponseEvidence": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-appeal-response-evidence.pdf"
+              },
+              "description": "Some more appeal response evidence"
+            }
+          }
+        ],
+        "respondentDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "appeal-response.pdf"
+              },
+              "description": "Appeal response",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-more-appeal-response-evidence.pdf"
+              },
+              "description": "Some more appeal response evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          }
+        ],
+        "respondentReviewAppealResponseAdded": "Yes",
+        "uploadHomeOfficeAppealResponseActionAvailable": "No",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

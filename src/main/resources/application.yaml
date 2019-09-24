@@ -133,12 +133,12 @@ security:
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
     caseworker-ia-homeofficelart:
-      - "addAppealResponse"
+      - "uploadHomeOfficeAppealResponse"
     caseworker-ia-homeofficepou:
       - "sendDirection"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
-      - "addAppealResponse"
+      - "uploadHomeOfficeAppealResponse"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
