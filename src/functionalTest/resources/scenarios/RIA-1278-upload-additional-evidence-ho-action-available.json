@@ -1,0 +1,27 @@
+{
+  "description": "RIA-1278 Upload additional Home Office evidence action becomes available in appropriate state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateHearingBundle",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAdditionalEvidenceHomeOfficeActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceHomeOfficeActionAvailable": "Yes"
+      }
+    }
+  }
+}
