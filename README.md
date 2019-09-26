@@ -77,23 +77,31 @@ To successfully interact with the above dependencies a few environment variables
 
 | Environment Variable | *Example values*  |
 |----------------------|----------|
-| TEST_ADMINOFFICER_USERNAME  | ia-adminofficer@example.com |
-| TEST_ADMINOFFICER_PASSWORD  |  password                   |
-| TEST_CASEOFFICER_USERNAME  |  ia-caseofficer@example.com |
-| TEST_CASEOFFICER_PASSWORD  |  password |
-| TEST_JUDICIARY_USERNAME  |  ia-judiciary@example.com |
-| TEST_JUDICIARY_PASSWORD  |  password |
-| TEST_LAW_FIRM_A_USERNAME  |  ia-law-firm-a@example.com |
-| TEST_LAW_FIRM_A_PASSWORD  |  password |
-| TEST_LAW_FIRM_B_USERNAME  |  ia-system-user@example.com |
-| TEST_LAW_FIRM_B_PASSWORD  |  password |
-| IA_SYSTEM_USERNAME  |  ia-system-user@example.com |
-| IA_SYSTEM_PASSWORD  |  password |
-| IA_IDAM_CLIENT_ID  |  some-idam-client-id |
-| IA_IDAM_SECRET  |  some-idam-secret |
-| IA_IDAM_REDIRECT_URI  |  http://localhost:3451/oauth2redirect |
-| IA_S2S_SECRET  |  some-s2s-secret |
-| IA_S2S_MICROSERVICE  |  some-s2s-gateway |
+| TEST_ADMINOFFICER_USERNAME        |  ia-adminofficer@example.com          |
+| TEST_ADMINOFFICER_PASSWORD        |  password                             |
+| TEST_HOMEOFFICE_APC_USERNAME      |  ia-respondentapc@example.com         |
+| TEST_HOMEOFFICE_APC_PASSWORD      |  password                             |
+| TEST_HOMEOFFICE_LART_USERNAME     |  ia-respondentlart@example.com        |
+| TEST_HOMEOFFICE_LART_PASSWORD     |  password                             |
+| TEST_HOMEOFFICE_POU_USERNAME      |  ia-respondentpou@example.com         |
+| TEST_HOMEOFFICE_POU_PASSWORD      |  password                             |
+| TEST_HOMEOFFICE_GENERIC_USERNAME  |  ia-respondentgen@example.com         |
+| TEST_HOMEOFFICE_GENERIC_PASSWORD  |  password                             |
+| TEST_CASEOFFICER_USERNAME         |  ia-caseofficer@example.com           |
+| TEST_CASEOFFICER_PASSWORD         |  password                             |
+| TEST_JUDICIARY_USERNAME           |  ia-judiciary@example.com             |
+| TEST_JUDICIARY_PASSWORD           |  password                             |
+| TEST_LAW_FIRM_A_USERNAME          |  ia-law-firm-a@example.com            |
+| TEST_LAW_FIRM_A_PASSWORD          |  password                             |
+| TEST_LAW_FIRM_B_USERNAME          |  ia-system-user@example.com           |
+| TEST_LAW_FIRM_B_PASSWORD          |  password                             |
+| IA_SYSTEM_USERNAME                |  ia-system-user@example.com           |
+| IA_SYSTEM_PASSWORD                |  password                             |
+| IA_IDAM_CLIENT_ID                 |  some-idam-client-id                  |
+| IA_IDAM_SECRET                    |  some-idam-secret                     |
+| IA_IDAM_REDIRECT_URI              |  http://localhost:3451/oauth2redirect |
+| IA_S2S_SECRET                     |  some-s2s-secret                      |
+| IA_S2S_MICROSERVICE               |  some-s2s-gateway                     |
 
 If you want to run a specific scenario use this command:
 
