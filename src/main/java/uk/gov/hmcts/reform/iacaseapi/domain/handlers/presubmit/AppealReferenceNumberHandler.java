@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -20,11 +20,15 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
     private static final String DRAFT = "DRAFT";
 
+    private final DateProvider dateProvider;
+
     private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     public AppealReferenceNumberHandler(
+        DateProvider dateProvider,
         AppealReferenceNumberGenerator appealReferenceNumberGenerator
     ) {
+        this.dateProvider = dateProvider;
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
     }
 
@@ -80,6 +84,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                 );
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
+
+            asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
         }
 
         return callbackResponse;

@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
@@ -62,6 +61,20 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
             asylumCase.write(
                     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
                     userDetails.getEmailAddress()
+            );
+        }
+
+        if (!asylumCase.read(LEGAL_REP_COMPANY).isPresent()) {
+            asylumCase.write(
+                LEGAL_REP_COMPANY,
+                asylumCase.read(LEGAL_REP_COMPANY, String.class).orElse("")
+            );
+        }
+
+        if (!asylumCase.read(LEGAL_REP_NAME).isPresent()) {
+            asylumCase.write(
+                LEGAL_REP_NAME,
+                asylumCase.read(LEGAL_REP_NAME, String.class).orElse("")
             );
         }
 
