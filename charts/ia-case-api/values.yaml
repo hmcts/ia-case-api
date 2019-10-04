@@ -13,8 +13,6 @@ java:
     postgresqlUsername: ia_case_api
     postgresqlPassword: ia_case_api
     postgresqlDatabase: ia_case_api
-    service:
-      port: 5432
   keyVaults:
     ia:
       resourceGroup: ia
