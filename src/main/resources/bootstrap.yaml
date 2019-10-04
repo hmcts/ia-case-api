@@ -13,7 +13,7 @@ spring:
         idam-client-id: IA_IDAM_CLIENT_ID
         idam-secret: IA_IDAM_SECRET
         idam-redirect-uri: IA_IDAM_REDIRECT_URI
-        s2s-secret: IA_S2S_SECRET
+        s2s-secret: idam.s2s-auth.totp_secret
         s2s-microservice: IA_S2S_MICROSERVICE
         ccd-url: CCD_URL
         ccd-gw-url: CCD_GW_URL
