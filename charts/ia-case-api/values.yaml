@@ -10,8 +10,6 @@ java:
     LOGBACK_REQUIRE_ALERT_LEVEL: 'false'
     LOGBACK_REQUIRE_ERROR_CODE: 'false'
   postgresql:
-    image:
-      tag: 10.7.0-r68
     postgresqlUsername: ia_case_api
     postgresqlPassword: ia_case_api
     postgresqlDatabase: ia_case_api
