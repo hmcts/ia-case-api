@@ -24,3 +24,5 @@ spring:
         hearing-centre-activation-date-manchester: IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER
         hearing-centre-activation-date-newport: IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT
         hearing-centre-activation-date-taylor-house: IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE
+        case-api-POSTGRES-PASS: spring.datasource.password
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key

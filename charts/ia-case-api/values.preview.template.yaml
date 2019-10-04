@@ -2,6 +2,33 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  aadIdentityName:
+  environment:
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+  keyVaults:
+    ia:
+      secrets:
+        - case-documents-api-url
+        - case-notifications-api-url
+        - docmosis-enabled
+        - em-stitching-enabled
+        - system-username
+        - system-password
+        - idam-client-id
+        - idam-secret
+        - idam-redirect-uri
+        - s2s-secret
+        - s2s-microservice
+        - ccd-url
+        - ccd-gw-url
+        - dm-url
+        - idam-url
+        - s2s-url
+        - docmosis-enabled
+        - em-stitching-enabled
 
 postgresql:
   #Whether to deploy the Postgres Chart or not

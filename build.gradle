@@ -31,7 +31,7 @@ apply plugin: 'idea'
 def versions = [
     gradlePitest       : '1.3.0',
     pitest             : '1.4.2',
-    reformLogging      : '5.1.0',
+    reformLogging      : '5.1.1-BETA',
     reformHealthStarter: '0.0.4',
     serenity           : '2.0.11',
     sonarPitest        : '0.5',

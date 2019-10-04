@@ -1,14 +1,12 @@
 java:
   image: 'https://hmctspublic.azurecr.io/ia/case-api:latest'
   applicationPort: 8090
+  aadIdentityName: ia
   environment:
-    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     POSTGRES_PORT: 5432
-    LOGBACK_REQUIRE_ALERT_LEVEL: 'false'
-    LOGBACK_REQUIRE_ERROR_CODE: 'false'
+    POSTGRES_HOST: ia-case-api-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_USERNAME: ia_case_api@ia-case-api-postgres-db-{{ .Values.global.environment }}
+    POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
   postgresql:
     postgresqlUsername: ia_case_api
     postgresqlPassword: ia_case_api
@@ -17,7 +15,6 @@ java:
       port: 5432
   keyVaults:
     ia:
-      resourceGroup: ia
       secrets:
         - case-documents-api-url
         - case-notifications-api-url
@@ -37,3 +34,5 @@ java:
         - s2s-url
         - docmosis-enabled
         - em-stitching-enabled
+        - case-api-POSTGRES-PASS
+        - AppInsightsInstrumentationKey
