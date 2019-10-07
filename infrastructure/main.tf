@@ -156,6 +156,12 @@ module "ia_case_api_database" {
   subscription       = "${var.subscription}"
 }
 
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name         = "${var.component}-POSTGRES-PASS"
+  value        = "${module.ia_case_api_database.postgresql_password}"
+  key_vault_id = "${data.azurerm_key_vault.ia_key_vault.id}"
+}
+
 module "ia_case_api" {
   source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                         = "${var.product}-${var.component}"
