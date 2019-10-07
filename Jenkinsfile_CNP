@@ -63,6 +63,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     enableDockerBuild()
     installCharts()
+    enableAksStagingDeployment()
+    disableLegacyDeploymentOnAAT()
 
     loadVaultSecrets(secrets)
 
