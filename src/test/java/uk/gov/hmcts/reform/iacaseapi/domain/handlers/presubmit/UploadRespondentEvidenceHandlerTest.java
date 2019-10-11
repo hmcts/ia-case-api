@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -94,7 +95,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(RESPONDENT_EVIDENCE);
+        verify(asylumCase, times(2)).read(RESPONDENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence2, DocumentTag.RESPONDENT_EVIDENCE);
@@ -108,8 +109,8 @@ public class UploadRespondentEvidenceHandlerTest {
     @Test
     public void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
 
-        List<IdValue<DocumentWithDescription>> respondentEvidence = Arrays.asList(new IdValue<>("1", respondentEvidence1));
-        List<DocumentWithMetadata> respondentEvidenceWithMetadata = Arrays.asList(respondentEvidence1WithMetadata);
+        List<IdValue<DocumentWithDescription>> respondentEvidence = singletonList(new IdValue<>("1", respondentEvidence1));
+        List<DocumentWithMetadata> respondentEvidenceWithMetadata = singletonList(respondentEvidence1WithMetadata);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
@@ -129,7 +130,7 @@ public class UploadRespondentEvidenceHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(RESPONDENT_EVIDENCE);
+        verify(asylumCase, times(2)).read(RESPONDENT_EVIDENCE);
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
@@ -184,7 +185,7 @@ public class UploadRespondentEvidenceHandlerTest {
 
                 boolean canHandle = uploadRespondentEvidenceHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.UPLOAD_RESPONDENT_EVIDENCE
+                if ((event == Event.UPLOAD_RESPONDENT_EVIDENCE || event == Event.UPLOAD_HOME_OFFICE_BUNDLE)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

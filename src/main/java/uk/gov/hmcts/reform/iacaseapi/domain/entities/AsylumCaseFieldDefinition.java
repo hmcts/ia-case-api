@@ -83,6 +83,9 @@ public enum AsylumCaseFieldDefinition {
     RESPONDENT_EVIDENCE(
             "respondentEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    HOME_OFFICE_BUNDLE(
+        "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     CASE_ARGUMENT_DOCUMENT(
             "caseArgumentDocument", new TypeReference<Document>(){}),
 
