@@ -134,6 +134,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE(
             "uploadAdditionalEvidenceActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE(
+        "uploadHomeOfficeBundleActionAvailable", new TypeReference<YesOrNo>(){}),
+
     CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER(
             "currentCaseStateVisibleToCaseOfficer", new TypeReference<State>(){}),
 
@@ -142,6 +145,18 @@ public enum AsylumCaseFieldDefinition {
 
     CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
             "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
+
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC(
+        "currentCaseStateVisibleToHomeOfficeApc", new TypeReference<State>(){}),
+
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_LART(
+        "currentCaseStateVisibleToHomeOfficeLart", new TypeReference<State>(){}),
+
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_POU(
+        "currentCaseStateVisibleToHomeOfficePou", new TypeReference<State>(){}),
+
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC(
+        "currentCaseStateVisibleToHomeOfficeGeneric", new TypeReference<State>(){}),
 
     CASE_ARGUMENT_AVAILABLE(
             "caseArgumentAvailable", new TypeReference<YesOrNo>(){}),

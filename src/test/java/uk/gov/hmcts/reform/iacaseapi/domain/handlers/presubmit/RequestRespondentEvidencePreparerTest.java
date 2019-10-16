@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -65,7 +66,7 @@ public class RequestRespondentEvidencePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumCaseValuesCaptor.capture());
 
         List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
         List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
@@ -82,6 +83,7 @@ public class RequestRespondentEvidencePreparerTest {
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
