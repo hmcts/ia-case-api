@@ -54,7 +54,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                    Event.REQUEST_CASE_BUILDING,
                    Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
                    Event.REQUEST_RESPONSE_REVIEW,
-                   Event.SUBMIT_CASE
+                   Event.SUBMIT_CASE,
+                   Event.SEND_DECISION_AND_REASONS
                ).contains(callback.getEvent());
     }
 
