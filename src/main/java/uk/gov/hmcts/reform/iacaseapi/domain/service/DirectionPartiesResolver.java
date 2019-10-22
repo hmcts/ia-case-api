@@ -20,6 +20,7 @@ public class DirectionPartiesResolver {
         switch (callback.getEvent()) {
 
             case REQUEST_CASE_EDIT:
+            case REQUEST_CASE_BUILDING:
                 return Parties.LEGAL_REPRESENTATIVE;
 
             case REQUEST_RESPONDENT_EVIDENCE:

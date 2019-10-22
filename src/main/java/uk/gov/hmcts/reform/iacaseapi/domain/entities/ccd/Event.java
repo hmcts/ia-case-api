@@ -33,6 +33,8 @@ public enum Event {
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
     END_APPEAL("endAppeal"),
+    REQUEST_CASE_BUILDING("requestCaseBuilding"),
+
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
