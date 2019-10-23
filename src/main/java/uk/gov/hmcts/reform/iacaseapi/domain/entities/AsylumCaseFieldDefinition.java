@@ -158,6 +158,9 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_GENERIC(
         "currentCaseStateVisibleToHomeOfficeGeneric", new TypeReference<State>(){}),
 
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL(
+        "currentCaseStateVisibleToHomeOfficeAll", new TypeReference<State>(){}),
+
     CASE_ARGUMENT_AVAILABLE(
             "caseArgumentAvailable", new TypeReference<YesOrNo>(){}),
 
