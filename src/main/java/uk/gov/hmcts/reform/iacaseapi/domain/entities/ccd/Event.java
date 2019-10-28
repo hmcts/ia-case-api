@@ -17,6 +17,7 @@ public enum Event {
     REQUEST_CASE_EDIT("requestCaseEdit"),
     REQUEST_RESPONDENT_REVIEW("requestRespondentReview"),
     ADD_APPEAL_RESPONSE("addAppealResponse"),
+    UPLOAD_HOME_OFFICE_APPEAL_RESPONSE("uploadHomeOfficeAppealResponse"),
     REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),

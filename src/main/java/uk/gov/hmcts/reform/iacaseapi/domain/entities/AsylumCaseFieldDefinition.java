@@ -104,6 +104,15 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_RESPONSE_EVIDENCE(
             "appealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT(
+            "homeOfficeAppealResponseDocument", new TypeReference<Document>(){}),
+
+    HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION(
+            "homeOfficeAppealResponseDescription", new TypeReference<String>(){}),
+
+    HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE(
+            "homeOfficeAppealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     ADDITIONAL_EVIDENCE(
             "additionalEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
@@ -136,6 +145,9 @@ public enum AsylumCaseFieldDefinition {
 
     UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE(
         "uploadHomeOfficeBundleActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE(
+        "uploadHomeOfficeAppealResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER(
             "currentCaseStateVisibleToCaseOfficer", new TypeReference<State>(){}),
