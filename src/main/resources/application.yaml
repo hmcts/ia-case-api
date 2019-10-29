@@ -132,13 +132,17 @@ security:
       - "editCaseListing"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
+      - "uploadAdditionalEvidenceHomeOffice"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
+      - "uploadAdditionalEvidenceHomeOffice"
     caseworker-ia-homeofficepou:
       - "sendDirection"
+      - "uploadAdditionalEvidenceHomeOffice"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
+      - "uploadAdditionalEvidenceHomeOffice"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

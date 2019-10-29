@@ -291,7 +291,13 @@ public enum AsylumCaseFieldDefinition {
         "addCaseNoteActionDisabled", new TypeReference<YesOrNo>(){}),
 
     RECORD_APPLICATION_ACTION_DISABLED(
-        "recordApplicationActionDisabled", new TypeReference<YesOrNo>(){})
+        "recordApplicationActionDisabled", new TypeReference<YesOrNo>(){}),
+
+    UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE(
+        "uploadAdditionalEvidenceHomeOfficeActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    ADDITIONAL_EVIDENCE_HOME_OFFICE(
+        "additionalEvidenceHomeOffice", new TypeReference<List<IdValue<DocumentWithDescription>>>(){})
 
     ;
 

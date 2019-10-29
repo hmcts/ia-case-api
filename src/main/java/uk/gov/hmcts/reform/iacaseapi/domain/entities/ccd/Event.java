@@ -35,7 +35,7 @@ public enum Event {
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),
     END_APPEAL("endAppeal"),
     REQUEST_CASE_BUILDING("requestCaseBuilding"),
-
+    UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE("uploadAdditionalEvidenceHomeOffice"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

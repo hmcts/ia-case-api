@@ -38,11 +38,12 @@ public class EventTest {
         assertEquals("recordAttendeesAndDuration", Event.RECORD_ATTENDEES_AND_DURATION.toString());
         assertEquals("endAppeal", Event.END_APPEAL.toString());
         assertEquals("requestCaseBuilding", Event.REQUEST_CASE_BUILDING.toString());
+        assertEquals("uploadAdditionalEvidenceHomeOffice", Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(31, Event.values().length);
+        assertEquals(32, Event.values().length);
     }
 }
