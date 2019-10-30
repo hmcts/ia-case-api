@@ -51,6 +51,8 @@ public class DirectionPartiesResolverTest {
                 .put(Event.REQUEST_CASE_EDIT, Parties.LEGAL_REPRESENTATIVE)
                 .put(Event.REQUEST_RESPONDENT_EVIDENCE, Parties.RESPONDENT)
                 .put(Event.REQUEST_RESPONDENT_REVIEW, Parties.RESPONDENT)
+                .put(Event.REQUEST_RESPONSE_REVIEW, Parties.LEGAL_REPRESENTATIVE)
+                .put(Event.REQUEST_RESPONSE_AMEND, Parties.RESPONDENT)
                 .build();
 
         exampleInputOutputs

@@ -28,6 +28,12 @@ public class DirectionTagResolver {
             case REQUEST_CASE_BUILDING:
                 return DirectionTag.REQUEST_CASE_BUILDING;
 
+            case REQUEST_RESPONSE_REVIEW:
+                return DirectionTag.REQUEST_RESPONSE_REVIEW;
+
+            case REQUEST_RESPONSE_AMEND:
+                return DirectionTag.REQUEST_RESPONSE_AMEND;
+
             default:
                 return DirectionTag.NONE;
         }

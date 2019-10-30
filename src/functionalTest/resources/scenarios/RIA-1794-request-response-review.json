@@ -1,0 +1,49 @@
+{
+  "description": "RIA-1794 Request response review direction to legal representative",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1794,
+      "eventId": "requestResponseReview",
+      "state": "respondentReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\nNext steps\nIf you would like to respond, you must email the Tribunal caseworker within 5 days.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
+          "sendDirectionDateDue": "{$TODAY+5}",
+          "notificationsSent": [],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\nNext steps\nIf you would like to respond, you must email the Tribunal caseworker within 5 days.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+5}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestResponseReview"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "1794_LEGAL_REPRESENTATIVE_REQUEST_RESPONSE_REVIEW",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

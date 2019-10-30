@@ -1,12 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -124,6 +119,12 @@ public class UploadHomeOfficeAppealResponseHandler implements PreSubmitCallbackH
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
         asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YES);
+
+        asylumCase.write(RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED, YES);
+
+        asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YES);
+
+        asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YES);
 
         asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, NO);
 
