@@ -17,49 +17,52 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class RequestCaseBuildingHandlerTest {
+public class RequestRespondentEvidenceAmendHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private RequestCaseBuildingHandler requestCaseBuildingHandler;
+    private RequestRespondentEvidenceAmendHandler requestRespondentEvidenceAmendHandler;
 
     @Before
     public void setUp() {
-        requestCaseBuildingHandler =
-            new RequestCaseBuildingHandler();
+        requestRespondentEvidenceAmendHandler =
+            new RequestRespondentEvidenceAmendHandler();
     }
 
     @Test
     public void should_set_the_flag_on_valid_case_data() {
 
-        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        requestCaseBuildingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        verify(asylumCase).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
+        requestRespondentEvidenceAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> requestCaseBuildingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestCaseBuildingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
     }
 
     @Test
@@ -68,13 +71,17 @@ public class RequestCaseBuildingHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(caseDetails.getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = requestCaseBuildingHandler.canHandle(callbackStage, callback);
+                boolean canHandle = requestRespondentEvidenceAmendHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_CASE_BUILDING
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                if (event == Event.SEND_DIRECTION
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE) {
 
                     assertTrue(canHandle);
                 } else {
@@ -89,19 +96,19 @@ public class RequestCaseBuildingHandlerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> requestCaseBuildingHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestCaseBuildingHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestCaseBuildingHandler.handle(null, callback))
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestCaseBuildingHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestRespondentEvidenceAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

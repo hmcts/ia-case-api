@@ -1,0 +1,62 @@
+{
+  "description": "RIA-2034 respondent evidence (Case Officer)- list uploaded files",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "uploadRespondentEvidence",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "notificationsSent": [],
+          "respondentDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "existing-evidence.pdf"
+                },
+                "description": "Existing evidence",
+                "dateUploaded": "2018-12-25",
+                "tag": "respondentEvidence"
+              }
+            }
+          ],
+          "homeOfficeBundle": [],
+          "uploadHomeOfficeBundleAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "notificationsSent": [],
+        "respondentDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "existing-evidence.pdf"
+              },
+              "description": "Existing evidence",
+              "dateUploaded": "2018-12-25",
+              "tag": "respondentEvidence"
+            }
+          }
+        ],
+        "uploadHomeOfficeBundleAvailable": "No",
+        "uploadedHomeOfficeBundleDocs": "- existing-evidence.pdf\r\n"
+      }
+    }
+  }
+}

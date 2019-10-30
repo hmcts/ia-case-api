@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1308 Upload respondent evidence (Home Office Super user)- upload case documents",
+  "description": "RIA-1308/RIA-2034 Upload NEW respondent evidence (HO - GENERIC)- upload Home Office bundle",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "HomeOfficeGeneric",
@@ -11,22 +11,8 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "notificationsSent": [],
-          "respondentDocuments": [
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "http://document-store/AAA",
-                  "document_binary_url": "http://document-store/AAA/binary",
-                  "document_filename": "existing-evidence.pdf"
-                },
-                "description": "Existing evidence",
-                "dateUploaded": "2018-12-25",
-                "tag": "respondentEvidence"
-              }
-            }
-          ],
-          "respondentEvidence": [
+          "respondentDocuments": [],
+          "homeOfficeBundle": [
             {
               "id": "1",
               "value": {
@@ -63,7 +49,7 @@
         "notificationsSent": [],
         "respondentDocuments": [
           {
-            "id": "3",
+            "id": "2",
             "value": {
               "document": {
                 "document_url": "http://document-store/BBB",
@@ -76,7 +62,7 @@
             }
           },
           {
-            "id": "2",
+            "id": "1",
             "value": {
               "document": {
                 "document_url": "http://document-store/CCC",
@@ -87,21 +73,9 @@
               "dateUploaded": "{$TODAY}",
               "tag": "respondentEvidence"
             }
-          },
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/AAA",
-                "document_binary_url": "http://document-store/AAA/binary",
-                "document_filename": "existing-evidence.pdf"
-              },
-              "description": "Existing evidence",
-              "dateUploaded": "2018-12-25",
-              "tag": "respondentEvidence"
-            }
           }
-        ]
+        ],
+        "uploadHomeOfficeBundleActionAvailable": "No"
       }
     }
   }

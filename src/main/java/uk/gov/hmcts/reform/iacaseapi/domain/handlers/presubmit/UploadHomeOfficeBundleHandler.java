@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_BUNDLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,17 +20,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadHomeOfficeBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UploadRespondentEvidenceHandler(
+    public UploadHomeOfficeBundleHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -44,7 +47,7 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE;
+               && callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -60,10 +63,10 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<List<IdValue<DocumentWithDescription>>> maybeRespondentEvidence = asylumCase.read(RESPONDENT_EVIDENCE);
+        Optional<List<IdValue<DocumentWithDescription>>> maybeHomeOfficeBundle = asylumCase.read(HOME_OFFICE_BUNDLE);
 
         List<DocumentWithMetadata> respondentEvidence =
-            maybeRespondentEvidence
+            maybeHomeOfficeBundle
                 .orElseThrow(() -> new IllegalStateException("respondentEvidence is not present"))
                 .stream()
                 .map(IdValue::getValue)
@@ -83,7 +86,11 @@ public class UploadRespondentEvidenceHandler implements PreSubmitCallbackHandler
 
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        asylumCase.clear(RESPONDENT_EVIDENCE);
+        asylumCase.clear(HOME_OFFICE_BUNDLE);
+
+        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+
+        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

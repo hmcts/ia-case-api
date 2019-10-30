@@ -13,28 +13,35 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RequestRespondentEvidenceHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+    public boolean canHandle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REQUEST_CASE_BUILDING;
+               && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
-
+    public PreSubmitCallbackResponse<AsylumCase> handle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
-        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
+        // Set a new flag here to be used for validation in the preparer.
+        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -13,14 +14,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RequestRespondentEvidenceAmendHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REQUEST_CASE_BUILDING;
+            && callback.getEvent() == Event.SEND_DIRECTION
+            && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -30,11 +32,12 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
         }
 
         AsylumCase asylumCase =
-                callback
-                        .getCaseDetails()
-                        .getCaseData();
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
-        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
+        asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.YES);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
