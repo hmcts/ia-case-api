@@ -36,7 +36,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "applications": []
+        "applications": [],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }
