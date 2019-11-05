@@ -8,12 +8,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -31,6 +33,7 @@ public class AppealReferenceNumberHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
+    @Mock private DateProvider dateProvider;
     @Mock private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     private AppealReferenceNumberHandler appealReferenceNumberHandler;
@@ -39,7 +42,7 @@ public class AppealReferenceNumberHandlerTest {
     public void setUp() {
 
         appealReferenceNumberHandler =
-            new AppealReferenceNumberHandler(appealReferenceNumberGenerator);
+            new AppealReferenceNumberHandler(dateProvider, appealReferenceNumberGenerator);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
@@ -67,6 +70,8 @@ public class AppealReferenceNumberHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
+
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");
 
@@ -86,6 +91,8 @@ public class AppealReferenceNumberHandlerTest {
     public void should_set_next_appeal_reference_number_if_not_present() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
 
         when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
             .thenReturn("the-next-appeal-reference-number");

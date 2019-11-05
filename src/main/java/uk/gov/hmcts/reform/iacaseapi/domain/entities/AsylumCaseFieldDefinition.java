@@ -131,6 +131,12 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REPRESENTATIVE_NAME(
             "legalRepresentativeName", new TypeReference<String>(){}),
 
+    LEGAL_REP_COMPANY(
+        "legalRepCompany", new TypeReference<String>(){}),
+
+    LEGAL_REP_NAME(
+        "legalRepName", new TypeReference<String>(){}),
+
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
             "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
 
@@ -303,7 +309,10 @@ public enum AsylumCaseFieldDefinition {
         "reviewResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     AMEND_RESPONSE_ACTION_AVAILABLE(
-        "amendResponseActionAvailable", new TypeReference<YesOrNo>(){})
+        "amendResponseActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    APPEAL_SUBMISSION_DATE(
+        "appealSubmissionDate", new TypeReference<String>(){})
 
     ;
 
