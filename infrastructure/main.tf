@@ -167,6 +167,7 @@ module "ia_case_api" {
   product                         = "${var.product}-${var.component}"
   location                        = "${var.location}"
   env                             = "${var.env}"
+  enable_ase                      = "${var.enable_ase}"
   ilbIp                           = "${var.ilbIp}"
   resource_group_name             = "${azurerm_resource_group.rg.name}"
   subscription                    = "${var.subscription}"

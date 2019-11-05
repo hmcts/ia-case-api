@@ -60,3 +60,7 @@ variable "postgresql_database_name" {
 variable "postgresql_user" {
   default = "ia_case_api"
 }
+
+variable "enable_ase" {
+  default = false
+}
