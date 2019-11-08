@@ -9,7 +9,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "uploadAdditionalEvidenceHomeOfficeActionAvailable": "No"
+          "uploadAdditionalEvidenceHomeOfficeActionAvailable": "No",
+          "listCaseHearingCentre": "taylorHouse"
         }
       }
     }
@@ -20,7 +21,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "uploadAdditionalEvidenceHomeOfficeActionAvailable": "Yes"
+        "uploadAdditionalEvidenceHomeOfficeActionAvailable": "Yes",
+        "listCaseHearingCentre": "taylorHouse"
       }
     }
   }

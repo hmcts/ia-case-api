@@ -1,5 +1,5 @@
 {
-  "description": "RIA-941-generate-hearing-ready-bundle (stitching enabled)",
+  "description": "RIA-941-generate-hearing-ready-bundle (stitching enabled) RIA-942-notification-to-ho-and-legal-rep",
   "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -10,6 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "ariaListingReference": "LP/12345/2019",
+          "legalRepReferenceNumber": "REF54321",
           "hearingDocuments": [
             {
               "id": "2",
