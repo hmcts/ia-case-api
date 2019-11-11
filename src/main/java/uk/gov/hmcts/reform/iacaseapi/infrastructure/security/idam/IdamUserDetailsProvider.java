@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -16,6 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 public class IdamUserDetailsProvider implements UserDetailsProvider {
+
+    private static final org.slf4j.Logger log = getLogger(IdamUserDetailsProvider.class);
 
     private final AccessTokenProvider accessTokenProvider;
     private final RestTemplate restTemplate;
@@ -38,8 +42,11 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
     }
 
     public IdamUserDetails getUserDetails() {
+        long startTime = System.currentTimeMillis();
 
         final String accessToken = accessTokenProvider.getAccessToken();
+
+        log.info("Request for access token processed in {}ms", System.currentTimeMillis() - startTime);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, accessToken);
@@ -50,6 +57,8 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
 
         try {
 
+            startTime = System.currentTimeMillis();
+
             response =
                 restTemplate
                     .exchange(
@@ -59,6 +68,8 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
                         new ParameterizedTypeReference<Map<String, Object>>() {
                         }
                     ).getBody();
+
+            log.info("Request for user details processed in {}ms", System.currentTimeMillis() - startTime);
 
         } catch (RestClientException ex) {
 
