@@ -312,7 +312,10 @@ public enum AsylumCaseFieldDefinition {
         "amendResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     APPEAL_SUBMISSION_DATE(
-        "appealSubmissionDate", new TypeReference<String>(){})
+        "appealSubmissionDate", new TypeReference<String>(){}),
+
+    HEARING_DATE_RANGE_DESCRIPTION(
+        "hearingDateRangeDescription", new TypeReference<String>(){})
 
     ;
 

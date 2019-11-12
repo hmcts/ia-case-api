@@ -39,6 +39,7 @@ public enum Event {
     UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE("uploadAdditionalEvidenceHomeOffice"),
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
+    SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
 
 
     @JsonEnumDefaultValue
