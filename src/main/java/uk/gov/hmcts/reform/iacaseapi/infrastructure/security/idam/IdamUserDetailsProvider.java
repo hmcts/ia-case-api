@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static java.util.Objects.requireNonNull;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -17,9 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
+@Slf4j
 public class IdamUserDetailsProvider implements UserDetailsProvider {
-
-    private static final org.slf4j.Logger log = getLogger(IdamUserDetailsProvider.class);
 
     private final AccessTokenProvider accessTokenProvider;
     private final RestTemplate restTemplate;

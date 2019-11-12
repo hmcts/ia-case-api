@@ -1,19 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
+@Slf4j
 public class CcdEventAuthorizor {
-
-    private static final org.slf4j.Logger log = getLogger(CcdEventAuthorizor.class);
 
     private final Map<String, List<Event>> roleEventAccess;
     private final UserDetailsProvider userDetailsProvider;
