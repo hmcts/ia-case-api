@@ -107,6 +107,7 @@ security:
       - "submitCase"
       - "uploadAdditionalEvidence"
       - "uploadAddendumEvidenceLegalRep"
+      - "draftHearingRequirements"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
