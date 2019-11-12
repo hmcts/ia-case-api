@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.docs;
 
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -8,10 +7,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import java.io.File;
 import java.io.FileOutputStream;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,12 +24,11 @@ import uk.gov.hmcts.reform.iacaseapi.Application;
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
 @ActiveProfiles("integration")
 public class SwaggerPublisher {
-
-    private static final Logger LOG = getLogger(SwaggerPublisher.class);
 
     private static final String SWAGGER_DOC_JSON_FILE = "/tmp/swagger-specs.json";
 
@@ -46,7 +45,7 @@ public class SwaggerPublisher {
     @Test
     public void shouldGenerateDocs() throws Exception {
 
-        LOG.info("Generating Swagger Docs");
+        log.info("Generating Swagger Docs");
 
         File linuxTmpDir = new File("/tmp");
         if (!linuxTmpDir.exists()) {
@@ -63,7 +62,7 @@ public class SwaggerPublisher {
             outputStream.write(specs);
         }
 
-        LOG.info("Completed Generating Swagger docs to the following location {}",
+        log.info("Completed Generating Swagger docs to the following location {}",
             SWAGGER_DOC_JSON_FILE);
     }
 }

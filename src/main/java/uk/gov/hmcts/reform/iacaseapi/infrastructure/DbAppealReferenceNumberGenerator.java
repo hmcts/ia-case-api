@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,10 +13,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
+@Slf4j
 @Service
 public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGenerator {
-
-    private static final Logger LOG = getLogger(DbAppealReferenceNumberGenerator.class);
 
     private static final String EXCEPTION_MESSAGE = "Appeal reference number could not be generated";
 
@@ -58,7 +55,7 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
 
             String appealReferenceNumber = selectAppealReferenceNumberForCase(parameters);
 
-            LOG.info("Generated appeal reference number: {} for case {}", appealReferenceNumber, caseId);
+            log.info("Generated appeal reference number: {} for case {}", appealReferenceNumber, caseId);
 
             return appealReferenceNumber;
 

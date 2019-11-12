@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static java.util.Objects.requireNonNull;
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
 
 
+@Slf4j
 @Api(
     value = "/asylum",
     consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -29,8 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher
 )
 @RestController
 public class PostSubmitCallbackController {
-
-    private static final org.slf4j.Logger LOG = getLogger(PostSubmitCallbackController.class);
 
     private final PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
@@ -82,7 +81,7 @@ public class PostSubmitCallbackController {
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
         @ApiParam(value = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
     ) {
-        LOG.info(
+        log.info(
             "Asylum Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",
             callback.getEvent(),
             callback.getCaseDetails().getId()
@@ -91,7 +90,7 @@ public class PostSubmitCallbackController {
         PostSubmitCallbackResponse callbackResponse =
             callbackDispatcher.handle(callback);
 
-        LOG.info(
+        log.info(
             "Asylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
             callback.getEvent(),
             callback.getCaseDetails().getId()

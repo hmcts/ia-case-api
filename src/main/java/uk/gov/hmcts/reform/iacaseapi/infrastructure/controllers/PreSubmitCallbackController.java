@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static java.util.Objects.requireNonNull;
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.annotations.*;
 import javax.validation.constraints.NotNull;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 
+@Slf4j
 @Api(
     value = "/asylum",
     consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -30,8 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 )
 @RestController
 public class PreSubmitCallbackController {
-
-    private static final org.slf4j.Logger LOG = getLogger(PreSubmitCallbackController.class);
 
     private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
@@ -128,7 +128,7 @@ public class PreSubmitCallbackController {
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        LOG.info(
+        log.info(
             "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
             callbackStage,
             callback.getEvent(),
@@ -138,7 +138,7 @@ public class PreSubmitCallbackController {
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             callbackDispatcher.handle(callbackStage, callback);
 
-        LOG.info(
+        log.info(
             "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
             callbackStage,
             callback.getEvent(),

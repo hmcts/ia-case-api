@@ -5,6 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
+@Slf4j
 public class IdamUserDetailsProvider implements UserDetailsProvider {
 
     private final AccessTokenProvider accessTokenProvider;
@@ -38,8 +41,11 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
     }
 
     public IdamUserDetails getUserDetails() {
+        long startTime = System.currentTimeMillis();
 
         final String accessToken = accessTokenProvider.getAccessToken();
+
+        log.info("Request for access token processed in {}ms", System.currentTimeMillis() - startTime);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, accessToken);
@@ -50,6 +56,8 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
 
         try {
 
+            startTime = System.currentTimeMillis();
+
             response =
                 restTemplate
                     .exchange(
@@ -59,6 +67,8 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
                         new ParameterizedTypeReference<Map<String, Object>>() {
                         }
                     ).getBody();
+
+            log.info("Request for user details processed in {}ms", System.currentTimeMillis() - startTime);
 
         } catch (RestClientException ex) {
 
