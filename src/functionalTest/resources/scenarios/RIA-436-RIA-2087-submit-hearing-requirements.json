@@ -1,0 +1,119 @@
+{
+  "description": "RIA-436 RIA-2087 Draft and submit hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "draftHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAppellantAttendTheHearing": "Yes",
+          "isAppellantGivingOralEvidence": "Yes",
+          "isWitnessesAttending": "Yes",
+          "witnessDetails": [
+            {
+              "id": "1",
+              "value": {
+                "value": "WitnessName"
+              }
+            }
+          ],
+          "isInterpreterServicesNeeded": "Yes",
+          "interpreterLanguage": [
+            {
+              "id": "1",
+              "value": {
+                "code": "zu",
+                "interpreterDialect": "opt"
+              }
+            }
+          ],
+          "isHearingRoomNeeded": "Yes",
+          "isHearingLoopNeeded": "Yes",
+          "physicalOrMentalHealthIssues": "Yes",
+          "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+          "pastExperiences": "Yes",
+          "pastExperiencesDescription": "Past experiences",
+          "multimediaEvidence": "Yes",
+          "multimediaEvidenceDescription": "Multimedia evidence",
+          "singleSexCourt": "Yes",
+          "singleSexCourtType": "All female",
+          "singleSexCourtTypeDescription": "Requirement for single sex court",
+          "inCameraCourt": "Yes",
+          "inCameraCourtDescription": "In camera court description",
+          "additionalRequests": "Yes",
+          "additionalRequestsDescription": "Additional requests description",
+          "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "hearingDateRange": [
+            {
+              "id": "1",
+              "value": {
+                "datesToAvoid": "2019-12-25",
+                "datesToAvoidReason": "Xmas"
+              }
+            }
+          ],
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAppellantAttendTheHearing": "Yes",
+        "isAppellantGivingOralEvidence": "Yes",
+        "isWitnessesAttending": "Yes",
+        "witnessDetails": [
+          {
+            "id": "1",
+            "value": {
+              "value": "WitnessName"
+            }
+          }
+        ],
+        "isInterpreterServicesNeeded": "Yes",
+        "interpreterLanguage": [
+          {
+            "id": "1",
+            "value": {
+              "code": "zu",
+              "interpreterDialect": "opt"
+            }
+          }
+        ],
+        "isHearingRoomNeeded": "Yes",
+        "isHearingLoopNeeded": "Yes",
+        "physicalOrMentalHealthIssues": "Yes",
+        "physicalOrMentalHealthIssuesDescription": "Physical or mental health issues description",
+        "pastExperiences": "Yes",
+        "pastExperiencesDescription": "Past experiences",
+        "multimediaEvidence": "Yes",
+        "multimediaEvidenceDescription": "Multimedia evidence",
+        "singleSexCourt": "Yes",
+        "singleSexCourtType": "All female",
+        "singleSexCourtTypeDescription": "Requirement for single sex court",
+        "inCameraCourt": "Yes",
+        "inCameraCourtDescription": "In camera court description",
+        "additionalRequests": "Yes",
+        "additionalRequestsDescription": "Additional requests description",
+        "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+        "hearingDateRange": [
+          {
+            "id": "1",
+            "value": {
+              "datesToAvoid": "2019-12-25",
+              "datesToAvoidReason": "Xmas"
+            }
+          }
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
