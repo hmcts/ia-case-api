@@ -105,6 +105,7 @@ security:
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
+      - "draftHearingRequirements"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
