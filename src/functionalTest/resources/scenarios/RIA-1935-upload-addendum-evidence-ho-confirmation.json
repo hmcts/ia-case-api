@@ -1,0 +1,22 @@
+{
+  "description": "RIA-1935 Upload addendum evidence Home Office confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "eventId": "uploadAddendumEvidenceHomeOffice",
+      "state": "preHearing",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have uploaded\n# additional evidence",
+      "body": "#### What happens next\n\nThe evidence is now available in the documents tab. This is not included in the hearing bundle, it is added as an addendum."
+    }
+  }
+}

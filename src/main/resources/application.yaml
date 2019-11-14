@@ -137,16 +137,20 @@ security:
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     citizen:
       - "startAppeal"
       - "editAppeal"

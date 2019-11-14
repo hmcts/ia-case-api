@@ -1,0 +1,31 @@
+{
+  "description": "RIA-1935 Upload addendum evidence Home Office action becomes available in appropriate state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "addCaseNote",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "addCaseNoteSubject": "second case note subject",
+          "addCaseNoteDescription": "second case note description",
+          "uploadAddendumEvidenceHomeOfficeActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
+        "uploadAddendumEvidenceHomeOfficeActionAvailable": "Yes"
+      }
+    }
+  }
+}

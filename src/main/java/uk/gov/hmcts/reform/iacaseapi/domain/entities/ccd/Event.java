@@ -39,6 +39,8 @@ public enum Event {
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP("uploadAddendumEvidenceLegalRep"),
+    UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE("uploadAddendumEvidenceHomeOffice"),
+
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

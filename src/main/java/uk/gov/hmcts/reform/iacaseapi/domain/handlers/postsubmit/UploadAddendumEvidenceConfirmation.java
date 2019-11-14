@@ -17,7 +17,9 @@ public class UploadAddendumEvidenceConfirmation implements PostSubmitCallbackHan
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP;
+        return callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE
+               || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
+               || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE;
     }
 
     public PostSubmitCallbackResponse handle(

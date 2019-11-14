@@ -48,9 +48,7 @@ public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdater implements
             State.RESPONDENT_REVIEW,
             State.SUBMIT_HEARING_REQUIREMENTS,
             State.LISTING,
-            State.PREPARE_FOR_HEARING,
-            State.FINAL_BUNDLING,
-            State.PRE_HEARING
+            State.PREPARE_FOR_HEARING
         ).contains(caseDetails.getState())) {
             asylumCase.write(UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
