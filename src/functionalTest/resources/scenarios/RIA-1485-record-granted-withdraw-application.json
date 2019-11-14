@@ -61,7 +61,8 @@
               "applicationStatus": "In progress"
             }
           }
-        ]
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

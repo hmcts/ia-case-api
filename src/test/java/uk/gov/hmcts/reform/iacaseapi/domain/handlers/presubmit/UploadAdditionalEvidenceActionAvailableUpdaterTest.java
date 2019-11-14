@@ -51,7 +51,8 @@ public class UploadAdditionalEvidenceActionAvailableUpdaterTest {
                 State.CASE_UNDER_REVIEW,
                 State.RESPONDENT_REVIEW,
                 State.SUBMIT_HEARING_REQUIREMENTS,
-                State.LISTING
+                State.LISTING,
+                State.PREPARE_FOR_HEARING
             ).contains(state)) {
 
                 verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);

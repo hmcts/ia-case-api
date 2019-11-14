@@ -45,7 +45,8 @@ public class UploadAdditionalEvidenceActionAvailableUpdater implements PreSubmit
             State.CASE_UNDER_REVIEW,
             State.RESPONDENT_REVIEW,
             State.SUBMIT_HEARING_REQUIREMENTS,
-            State.LISTING
+            State.LISTING,
+            State.PREPARE_FOR_HEARING
         ).contains(caseDetails.getState())) {
             asylumCase.write(UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
