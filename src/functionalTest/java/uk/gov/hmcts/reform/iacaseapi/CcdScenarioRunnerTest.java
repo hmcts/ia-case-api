@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import static org.junit.Assert.assertFalse;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -54,19 +52,6 @@ public class CcdScenarioRunnerTest {
 
     @Test
     public void scenarios_should_behave_as_specified() throws IOException {
-
-        loadPropertiesIntoMapValueExpander();
-
-        for (Fixture fixture : fixtures) {
-            fixture.prepare();
-        }
-
-
-        assertFalse(
-            "Verifiers are configured",
-            verifiers.isEmpty()
-        );
-
         String scenarioPattern = System.getProperty("scenario");
         if (scenarioPattern == null) {
             scenarioPattern = "*.json";
@@ -86,6 +71,8 @@ public class CcdScenarioRunnerTest {
         for (String scenarioSource : scenarioSources) {
 
             Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
+
+            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
             String description = MapValueExtractor.extract(scenario, "description");
 
@@ -130,7 +117,7 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
+
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 

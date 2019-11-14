@@ -97,6 +97,7 @@ security:
     - "iac"
   authorisedRoles:
     - "caseworker-ia"
+    - "citizen"
   roleEventAccess:
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
@@ -145,6 +146,13 @@ security:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
+    citizen:
+      - "startAppeal"
+      - "editAppeal"
+      - "submitAppeal"
+      - "buildCase"
+      - "submitCase"
+      - "uploadAdditionalEvidence"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
