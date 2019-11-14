@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,13 +23,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
+
 @Component
-public class UploadAddendumEvidenceLegalRepHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadAddendumEvidenceLegalRepHomeOfficeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UploadAddendumEvidenceLegalRepHandler(
+    public UploadAddendumEvidenceLegalRepHomeOfficeHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -44,7 +46,7 @@ public class UploadAddendumEvidenceLegalRepHandler implements PreSubmitCallbackH
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP;
+               && (callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -60,13 +62,15 @@ public class UploadAddendumEvidenceLegalRepHandler implements PreSubmitCallbackH
                 .getCaseDetails()
                 .getCaseData();
 
+        String party = callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE ? "The respondent" : "The appellant";
+
         List<DocumentWithMetadata> addendumEvidenceDocuments =
             asylumCase
                 .<List<IdValue<DocumentWithDescription>>>read(ADDENDUM_EVIDENCE)
                 .orElseThrow(() -> new IllegalStateException("additionalEvidence is not present"))
                 .stream()
                 .map(IdValue::<DocumentWithDescription>getValue)
-                .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDENDUM_EVIDENCE, "The appellant"))
+                .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDENDUM_EVIDENCE, party))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

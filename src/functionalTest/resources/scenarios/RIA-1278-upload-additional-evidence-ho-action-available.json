@@ -4,13 +4,27 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "generateHearingBundle",
-      "state": "preHearing",
+      "eventId": "recordApplication",
+      "state": "prepareForHearing",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "uploadAdditionalEvidenceHomeOfficeActionAvailable": "No",
-          "listCaseHearingCentre": "taylorHouse"
+          "applications": [],
+          "applicationDocuments": [{
+            "id": "1",
+            "value": {
+              "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+              "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+              "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+            }
+          }],
+          "applicationSupplier": "The legal representative",
+          "applicationType": "Withdraw",
+          "applicationReason": "some reason",
+          "applicationDate": "2019-01-01",
+          "applicationDecision": "Granted",
+          "applicationDecisionReason": "some decision reason",
+          "uploadAdditionalEvidenceHomeOfficeActionAvailable": "No"
         }
       }
     }
@@ -22,7 +36,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "uploadAdditionalEvidenceHomeOfficeActionAvailable": "Yes",
-        "listCaseHearingCentre": "taylorHouse"
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

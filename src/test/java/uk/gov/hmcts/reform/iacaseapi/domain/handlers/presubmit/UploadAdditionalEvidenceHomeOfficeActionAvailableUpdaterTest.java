@@ -54,9 +54,7 @@ public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
                 State.RESPONDENT_REVIEW,
                 State.SUBMIT_HEARING_REQUIREMENTS,
                 State.LISTING,
-                State.PREPARE_FOR_HEARING,
-                State.FINAL_BUNDLING,
-                State.PRE_HEARING
+                State.PREPARE_FOR_HEARING
             ).contains(state)) {
 
                 verify(asylumCase, times(1)).write(UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
