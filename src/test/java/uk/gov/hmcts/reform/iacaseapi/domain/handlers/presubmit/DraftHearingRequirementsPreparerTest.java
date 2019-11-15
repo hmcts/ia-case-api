@@ -13,8 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -22,6 +25,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 public class DraftHearingRequirementsPreparerTest {
 
     @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private DraftHearingRequirementsPreparer draftHearingRequirementsPreparer;
 
@@ -29,6 +34,10 @@ public class DraftHearingRequirementsPreparerTest {
     public void setUp() {
         draftHearingRequirementsPreparer =
             new DraftHearingRequirementsPreparer();
+
+        when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
@@ -38,6 +47,18 @@ public class DraftHearingRequirementsPreparerTest {
 
         assertEquals("Only include dates between 24 Nov 2019 and 2 Feb 2020.", draftHearingRequirementsPreparer.getDateRangeText(localDate));
 
+    }
+
+    @Test
+    public void should_write_date_description_field() {
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.HEARING_DATE_RANGE_DESCRIPTION, "Only include dates between 2 Dec 2019 and 10 Feb 2020.");
     }
 
     @Test

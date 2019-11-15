@@ -64,3 +64,7 @@ variable "postgresql_user" {
 variable "enable_ase" {
   default = false
 }
+
+variable "submit_hearing_requirements_enabled" {
+  default = false
+}
