@@ -46,12 +46,12 @@
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
           "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
-          "hearingDateRange": [
+          "datesToAvoid": [
             {
               "id": "1",
               "value": {
-                "datesToAvoid": "2019-12-25",
-                "datesToAvoidReason": "Xmas"
+                "dateToAvoid": "2019-12-25",
+                "dateToAvoidReason": "Xmas"
               }
             }
           ],
@@ -103,12 +103,12 @@
         "additionalRequests": "Yes",
         "additionalRequestsDescription": "Additional requests description",
         "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
-        "hearingDateRange": [
+        "datesToAvoid": [
           {
             "id": "1",
             "value": {
-              "datesToAvoid": "2019-12-25",
-              "datesToAvoidReason": "Xmas"
+              "dateToAvoid": "2019-12-25",
+              "dateToAvoidReason": "Xmas"
             }
           }
         ],

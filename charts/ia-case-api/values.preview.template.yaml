@@ -16,6 +16,7 @@ java:
         - case-notifications-api-url
         - docmosis-enabled
         - em-stitching-enabled
+        - submit-hearing-requirements-enabled
         - system-username
         - system-password
         - idam-client-id

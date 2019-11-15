@@ -8,6 +8,7 @@ spring:
         case-notifications-api-url: IA_CASE_NOTIFICATIONS_API_URL
         docmosis-enabled: IA_DOCMOSIS_ENABLED
         em-stitching-enabled: IA_EM_STITCHING_ENABLED
+        submit-hearing-requirements-enabled: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED
         system-username: IA_SYSTEM_USERNAME
         system-password: IA_SYSTEM_PASSWORD
         idam-client-id: IA_IDAM_CLIENT_ID
