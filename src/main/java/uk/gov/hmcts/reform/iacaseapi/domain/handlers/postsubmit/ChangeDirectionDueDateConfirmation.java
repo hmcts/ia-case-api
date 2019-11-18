@@ -38,7 +38,7 @@ public class ChangeDirectionDueDateConfirmation implements PostSubmitCallbackHan
         postSubmitResponse.setConfirmationHeader("# You have changed the due date");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "You can see the status of the direction in the "
+            + "The party has been notified of their time extension. You can see the status of the direction in the "
             + "[directions tab](" + directionsTabUrl + ")"
         );
 

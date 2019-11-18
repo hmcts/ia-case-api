@@ -1,7 +1,7 @@
 {
-  "description": "RIA-602 Change direction due date - prefill editable directions",
+  "description": "RIA-723 Change direction mid event handler",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "changeDirectionDueDate",
@@ -31,24 +31,7 @@
               }
             }
           ],
-          "editableDirections": [
-            {
-              "id": "2",
-              "value": {
-                "explanation": "Do the second thing",
-                "parties": "legalRepresentative",
-                "dateDue": "2033-01-01"
-              }
-            },
-            {
-              "id": "1",
-              "value": {
-                "explanation": "Do the first thing",
-                "parties": "legalRepresentative",
-                "dateDue": "2044-12-31"
-              }
-            }
-          ]
+          "directionList": "Direction 1"
         }
       }
     }
@@ -65,7 +48,7 @@
             "value": {
               "explanation": "Do the second thing",
               "parties": "legalRepresentative",
-              "dateDue": "2033-01-01",
+              "dateDue": "2022-01-01",
               "dateSent": "2021-01-01",
               "tag": ""
             }
@@ -75,13 +58,32 @@
             "value": {
               "explanation": "Do the first thing",
               "parties": "legalRepresentative",
-              "dateDue": "2044-12-31",
+              "dateDue": "2018-12-31",
               "dateSent": "2018-12-25",
               "tag": ""
             }
           }
         ],
-        "editableDirections": null
+        "directionEditExplanation": "Do the second thing",
+        "directionEditParties": "legalRepresentative",
+        "directionEditDateDue": "2022-01-01",
+        "directionEditDateSent": "2021-01-01",
+        "directionList": {
+          "value": {
+            "code": "Direction 1",
+            "label": "Direction 1"
+          },
+          "list_items": [
+            {
+              "code": "Direction 1",
+              "label": "Direction 1"
+            },
+            {
+              "code": "Direction 2",
+              "label": "Direction 2"
+            }
+          ]
+        }
       }
     }
   }

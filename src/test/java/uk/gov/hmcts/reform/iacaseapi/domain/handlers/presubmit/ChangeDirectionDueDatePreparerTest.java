@@ -4,11 +4,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +35,11 @@ public class ChangeDirectionDueDatePreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<List<IdValue<EditableDirection>>> editableDirectionsCaptor;
+    @Captor private ArgumentCaptor<Object> editableDirectionsCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+
+    private String direction1 = "Direction 1";
+    private String direction2 = "Direction 2";
 
     private ChangeDirectionDueDatePreparer changeDirectionDueDatePreparer;
 
@@ -53,14 +59,16 @@ public class ChangeDirectionDueDatePreparerTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
+                    Collections.emptyList()
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW
+                    DirectionTag.RESPONDENT_REVIEW,
+                    Collections.emptyList()
                 ))
             );
 
@@ -75,18 +83,34 @@ public class ChangeDirectionDueDatePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
+        verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        List<IdValue<EditableDirection>> actualEditableDirections = editableDirectionsCaptor.getAllValues().get(0);
+        DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().get(0);
 
         assertEquals(
-                EDITABLE_DIRECTIONS,
-                asylumExtractorCaptor.getValue()
+            DIRECTION_LIST,
+            asylumExtractorCaptor.getAllValues().get(0)
+        );
+
+        assertEquals(direction2, dynamicList.getValue().getCode());
+        assertEquals(direction2, dynamicList.getValue().getLabel());
+
+        assertEquals(2, dynamicList.getListItems().size());
+        assertEquals(direction2, dynamicList.getListItems().get(0).getCode());
+        assertEquals(direction2, dynamicList.getListItems().get(0).getLabel());
+        assertEquals(direction1, dynamicList.getListItems().get(1).getCode());
+        assertEquals(direction1, dynamicList.getListItems().get(1).getLabel());
+
+        List<IdValue<EditableDirection>> actualEditableDirections = (List<IdValue<EditableDirection>>) editableDirectionsCaptor.getAllValues().get(1);
+
+        assertEquals(
+            EDITABLE_DIRECTIONS,
+            asylumExtractorCaptor.getAllValues().get(1)
         );
 
         assertEquals(
-                existingDirections.size(),
-                actualEditableDirections.size()
+            existingDirections.size(),
+            actualEditableDirections.size()
         );
 
         assertEquals(existingDirections.get(0).getId(), actualEditableDirections.get(0).getId());
