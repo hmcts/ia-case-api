@@ -65,7 +65,7 @@ public class UploadAddendumEvidenceConfirmationTest {
 
             boolean canHandle = uploadAddendumEvidenceConfirmation.canHandle(callback);
 
-            if (event == Event.UPLOAD_ADDENDUM_EVIDENCE) {
+            if (event == Event.UPLOAD_ADDENDUM_EVIDENCE || event == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP) {
 
                 assertTrue(canHandle);
             } else {
