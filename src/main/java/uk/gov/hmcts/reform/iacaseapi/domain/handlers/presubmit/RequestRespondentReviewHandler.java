@@ -13,17 +13,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class RequestResponseAmendHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RequestRespondentReviewHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+    public boolean canHandle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REQUEST_RESPONSE_AMEND;
+               && callback.getEvent() == Event.REQUEST_RESPONDENT_REVIEW;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+    public PreSubmitCallbackResponse<AsylumCase> handle(
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
+    ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }

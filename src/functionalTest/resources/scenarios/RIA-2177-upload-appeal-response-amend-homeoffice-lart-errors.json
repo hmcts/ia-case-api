@@ -1,12 +1,12 @@
 {
-  "description": "RIA-2034 respondent evidence (Case Officer)- list uploaded files",
+  "description": "RIA-2034 Amend respondent evidence when action not available (HO - APC) - return error message",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
-    "credentials": "CaseOfficer",
+    "credentials": "HomeOfficeLart",
     "input": {
       "id": 1234,
-      "eventId": "uploadRespondentEvidence",
-      "state": "awaitingRespondentEvidence",
+      "eventId": "uploadHomeOfficeAppealResponse",
+      "state": "respondentReview",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -18,23 +18,23 @@
                 "document": {
                   "document_url": "http://document-store/AAA",
                   "document_binary_url": "http://document-store/AAA/binary",
-                  "document_filename": "existing-evidence.pdf"
+                  "document_filename": "appeal-response.pdf"
                 },
-                "description": "Existing evidence",
+                "description": "Appeal response",
                 "dateUploaded": "{$TODAY}",
-                "tag": "respondentEvidence"
+                "tag": "appealResponse"
               }
             }
           ],
           "homeOfficeBundle": [],
-          "uploadHomeOfficeBundleAvailable": "No"
+          "uploadHomeOfficeAppealResponseActionAvailable": "No"
         }
       }
     }
   },
   "expectation": {
     "status": 200,
-    "errors": [],
+    "errors": ["You cannot upload more documents until your response has been reviewed"],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
@@ -46,16 +46,15 @@
               "document": {
                 "document_url": "http://document-store/AAA",
                 "document_binary_url": "http://document-store/AAA/binary",
-                "document_filename": "existing-evidence.pdf"
+                "document_filename": "appeal-response.pdf"
               },
-              "description": "Existing evidence",
+              "description": "Appeal response",
               "dateUploaded": "{$TODAY}",
-              "tag": "respondentEvidence"
+              "tag": "appealResponse"
             }
           }
         ],
-        "uploadHomeOfficeBundleAvailable": "No",
-        "uploadedHomeOfficeBundleDocs": "- existing-evidence.pdf\r\n"
+        "uploadHomeOfficeAppealResponseActionAvailable": "No"
       }
     }
   }

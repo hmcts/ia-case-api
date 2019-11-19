@@ -47,7 +47,7 @@
                   "document_filename": "existing-evidence.pdf"
                 },
                 "description": "Existing evidence",
-                "dateUploaded": "2018-12-25",
+                "dateUploaded": "{$TODAY}",
                 "tag": "respondentEvidence"
               }
             }
@@ -83,7 +83,8 @@
             }
           ],
           "respondentReviewAppealResponseAdded": "No",
-          "uploadAdditionalEvidenceActionAvailable": "Yes"
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "uploadHomeOfficeAppealResponseActionAvailable": "Yes"
         }
       }
     }
@@ -95,40 +96,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealResponseAvailable": "Yes",
-        "homeOfficeAppealResponseDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "appeal-response.pdf"
-        },
-        "homeOfficeAppealResponseDescription": "Appeal response",
-        "homeOfficeAppealResponseEvidence": [
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-appeal-response-evidence.pdf"
-              },
-              "description": "Some appeal response evidence"
-            }
-          },
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-appeal-response-NEW.pdf"
-              },
-              "description": "Some appeal response - NEW"
-            }
-          }
-        ],
-
         "respondentDocuments": [
           {
-            "id": "4",
+            "id": "6",
             "value": {
               "document": {
                 "document_url": "http://document-store/AAA",
@@ -141,7 +111,7 @@
             }
           },
           {
-            "id": "3",
+            "id": "5",
             "value": {
               "document": {
                 "document_url": "http://document-store/BBB",
@@ -154,7 +124,7 @@
             }
           },
           {
-            "id": "2",
+            "id": "4",
             "value": {
               "document": {
                 "document_url": "http://document-store/CCC",
@@ -162,6 +132,32 @@
                 "document_filename": "some-appeal-response-NEW.pdf"
               },
               "description": "Some appeal response - NEW",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "appeal-response.pdf"
+              },
+              "description": "Appeal response",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealResponse"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-appeal-response-evidence.pdf"
+              },
+              "description": "Some appeal response evidence",
               "dateUploaded": "{$TODAY}",
               "tag": "appealResponse"
             }
@@ -175,7 +171,7 @@
                 "document_filename": "existing-evidence.pdf"
               },
               "description": "Existing evidence",
-              "dateUploaded": "2018-12-25",
+              "dateUploaded": "{$TODAY}",
               "tag": "respondentEvidence"
             }
           }
