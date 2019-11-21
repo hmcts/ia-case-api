@@ -112,8 +112,7 @@ public class UploadHomeOfficeAppealResponseHandler implements PreSubmitCallbackH
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(
                 respondentDocuments,
-                appealResponseDocuments,
-                DocumentTag.APPEAL_RESPONSE
+                appealResponseDocuments
             );
 
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
@@ -127,6 +126,10 @@ public class UploadHomeOfficeAppealResponseHandler implements PreSubmitCallbackH
         asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YES);
 
         asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, NO);
+
+        asylumCase.clear(HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT);
+        asylumCase.clear(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION);
+        asylumCase.clear(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

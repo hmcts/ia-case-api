@@ -119,7 +119,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         when(documentReceiver.tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseEvidenceWithMetadata);
 
-        when(documentsAppender.append(existingRespondentDocuments, appealResponseDocumentsWithMetadata, DocumentTag.APPEAL_RESPONSE))
+        when(documentsAppender.append(existingRespondentDocuments, appealResponseDocumentsWithMetadata))
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -138,8 +138,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         verify(documentsAppender, times(1))
             .append(
                 existingRespondentDocuments,
-                appealResponseDocumentsWithMetadata,
-                DocumentTag.APPEAL_RESPONSE
+                appealResponseDocumentsWithMetadata
             );
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
@@ -183,7 +182,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         when(documentReceiver.tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE))
             .thenReturn(appealResponseEvidenceWithMetadata);
 
-        when(documentsAppender.append(any(List.class), eq(appealResponseDocumentsWithMetadata), eq(DocumentTag.APPEAL_RESPONSE)))
+        when(documentsAppender.append(any(List.class), eq(appealResponseDocumentsWithMetadata)))
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -202,8 +201,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         verify(documentsAppender, times(1))
             .append(
                 respondentDocumentsCaptor.capture(),
-                eq(appealResponseDocumentsWithMetadata),
-                eq(DocumentTag.APPEAL_RESPONSE)
+                eq(appealResponseDocumentsWithMetadata)
             );
 
         List<IdValue<DocumentWithMetadata>> respondentDocuments =

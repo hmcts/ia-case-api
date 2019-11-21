@@ -38,6 +38,7 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
         this.documentsAppender = documentsAppender;
     }
 
+    @Override
     public DispatchPriority getDispatchPriority() {
         return DispatchPriority.EARLY;
     }
@@ -110,8 +111,7 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(
                 respondentDocuments,
-                appealResponseDocuments,
-                DocumentTag.APPEAL_RESPONSE
+                appealResponseDocuments
             );
 
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
@@ -120,6 +120,10 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
 
         asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YES);
         asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YES);
+
+        asylumCase.clear(APPEAL_RESPONSE_DOCUMENT);
+        asylumCase.clear(APPEAL_RESPONSE_DESCRIPTION);
+        asylumCase.clear(APPEAL_RESPONSE_EVIDENCE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

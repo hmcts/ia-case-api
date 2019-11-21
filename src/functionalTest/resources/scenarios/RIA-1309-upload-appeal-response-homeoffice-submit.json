@@ -42,7 +42,8 @@
             }
           ],
           "respondentReviewAppealResponseAdded": "No",
-          "uploadAdditionalEvidenceActionAvailable": "Yes"
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "uploadHomeOfficeAppealResponseActionAvailable": "Yes"
         }
       }
     }
@@ -54,36 +55,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealResponseAvailable": "Yes",
-        "homeOfficeAppealResponseDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "appeal-response.pdf"
-        },
-        "homeOfficeAppealResponseDescription": "Appeal response",
-        "homeOfficeAppealResponseEvidence": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-appeal-response-evidence.pdf"
-              },
-              "description": "Some appeal response evidence"
-            }
-          },
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-more-appeal-response-evidence.pdf"
-              },
-              "description": "Some more appeal response evidence"
-            }
-          }
-        ],
         "respondentDocuments": [
           {
             "id": "3",

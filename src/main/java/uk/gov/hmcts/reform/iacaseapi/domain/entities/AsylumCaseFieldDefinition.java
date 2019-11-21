@@ -113,6 +113,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE(
             "homeOfficeAppealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOADED_HOME_OFFICE_APPEAL_RESPONSE_DOCS(
+        "uploadedHomeOfficeAppealResponseDocs", new TypeReference<String>(){}),
+
     ADDITIONAL_EVIDENCE(
             "additionalEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 

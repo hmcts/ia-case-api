@@ -1,12 +1,12 @@
 {
-  "description": "RIA-2034 respondent evidence (Case Officer)- list uploaded files",
+  "description": "RIA-2177 Amend appeal response is add only (Case Officer) - list uploaded files",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
     "input": {
       "id": 1234,
-      "eventId": "uploadRespondentEvidence",
-      "state": "awaitingRespondentEvidence",
+      "eventId": "addAppealResponse",
+      "state": "respondentReview",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -18,16 +18,16 @@
                 "document": {
                   "document_url": "http://document-store/AAA",
                   "document_binary_url": "http://document-store/AAA/binary",
-                  "document_filename": "existing-evidence.pdf"
+                  "document_filename": "appeal-response.pdf"
                 },
-                "description": "Existing evidence",
+                "description": "Appeal response",
                 "dateUploaded": "{$TODAY}",
-                "tag": "respondentEvidence"
+                "tag": "appealResponse"
               }
             }
           ],
           "homeOfficeBundle": [],
-          "uploadHomeOfficeBundleAvailable": "No"
+          "uploadHomeOfficeAppealResponseActionAvailable": "Yes"
         }
       }
     }
@@ -46,16 +46,16 @@
               "document": {
                 "document_url": "http://document-store/AAA",
                 "document_binary_url": "http://document-store/AAA/binary",
-                "document_filename": "existing-evidence.pdf"
+                "document_filename": "appeal-response.pdf"
               },
-              "description": "Existing evidence",
+              "description": "Appeal response",
               "dateUploaded": "{$TODAY}",
-              "tag": "respondentEvidence"
+              "tag": "appealResponse"
             }
           }
         ],
-        "uploadHomeOfficeBundleAvailable": "No",
-        "uploadedHomeOfficeBundleDocs": "- existing-evidence.pdf\r\n"
+        "uploadHomeOfficeAppealResponseActionAvailable": "Yes",
+        "uploadedHomeOfficeAppealResponseDocs": "- appeal-response.pdf\r\n"
       }
     }
   }

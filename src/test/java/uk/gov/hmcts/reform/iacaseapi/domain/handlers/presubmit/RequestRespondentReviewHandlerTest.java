@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class RequestResponseAmendHandlerTest {
+public class RequestRespondentReviewHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -40,22 +40,22 @@ public class RequestResponseAmendHandlerTest {
     @Captor private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    private RequestResponseAmendHandler requestResponseAmendHandler;
+    private RequestRespondentReviewHandler requestRespondentReviewHandler;
 
     @Before
     public void setUp() {
-        requestResponseAmendHandler = new RequestResponseAmendHandler();
+        requestRespondentReviewHandler = new RequestRespondentReviewHandler();
     }
 
     @Test
     public void should_prepare_ho_appeal_response_action_field() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_AMEND);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestResponseAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -75,12 +75,12 @@ public class RequestResponseAmendHandlerTest {
 
     @Test
     public void handling_should_throw_if_cannot_actual_handle() {
-        assertThatThrownBy(() -> requestResponseAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestResponseAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -94,9 +94,9 @@ public class RequestResponseAmendHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = requestResponseAmendHandler.canHandle(callbackStage, callback);
+                boolean canHandle = requestRespondentReviewHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_RESPONSE_AMEND
+                if (event == Event.REQUEST_RESPONDENT_REVIEW
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -109,19 +109,19 @@ public class RequestResponseAmendHandlerTest {
 
     @Test
     public void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> requestResponseAmendHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestResponseAmendHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestResponseAmendHandler.handle(null, callback))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestResponseAmendHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

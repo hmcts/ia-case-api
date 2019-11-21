@@ -30,13 +30,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealResponseAvailable": "Yes",
-        "appealResponseDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "appeal-response.pdf"
-        },
-        "appealResponseDescription": "Appeal response",
-        "appealResponseEvidence": [],
         "directions": [
           {
             "id": "1",
