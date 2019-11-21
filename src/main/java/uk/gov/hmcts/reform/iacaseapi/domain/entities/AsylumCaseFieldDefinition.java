@@ -83,6 +83,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOADED_HOME_OFFICE_BUNDLE_DOCS(
+        "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),
+
     CASE_ARGUMENT_DOCUMENT(
             "caseArgumentDocument", new TypeReference<Document>(){}),
 
@@ -148,6 +151,9 @@ public enum AsylumCaseFieldDefinition {
 
     UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE(
         "uploadHomeOfficeBundleActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE(
+        "uploadHomeOfficeBundleAvailable", new TypeReference<YesOrNo>(){}),
 
     UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE(
         "uploadHomeOfficeAppealResponseActionAvailable", new TypeReference<YesOrNo>(){}),
