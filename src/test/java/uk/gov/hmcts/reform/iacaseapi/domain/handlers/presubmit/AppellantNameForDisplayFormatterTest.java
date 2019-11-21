@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -91,6 +93,9 @@ public class AppellantNameForDisplayFormatterTest {
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -101,23 +106,84 @@ public class AppellantNameForDisplayFormatterTest {
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
-
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
 
                 boolean canHandle = appellantNameForDisplayFormatter.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-
-                    assertTrue(canHandle);
+                    assertTrue("Can handle event " + event, canHandle);
                 } else {
-                    assertFalse(canHandle);
+                    assertFalse("Cannot handle event " + event, canHandle);
                 }
             }
 
             reset(callback);
         }
+    }
+
+    @Test
+    public void cannot_handle_Aip_start_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(canHandle, is(false));
+    }
+
+    @Test
+    public void cannot_handle_Aip_edit_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+
+        boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(canHandle, is(false));
+    }
+
+    @Test
+    public void can_handle_Aip_other_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
+
+        boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(canHandle, is(true));
+    }
+
+    @Test
+    public void can_handle_Rep_start_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.REP));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(canHandle, is(true));
+    }
+
+    @Test
+    public void can_handle_JourneyType_not_set_start_event() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertThat(canHandle, is(true));
     }
 
     @Test

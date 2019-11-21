@@ -395,3 +395,4 @@ bootJar {
 // java flag that configures the deployed appllications
 applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
+

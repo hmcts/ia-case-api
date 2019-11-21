@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -315,8 +312,10 @@ public enum AsylumCaseFieldDefinition {
         "amendResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     APPEAL_SUBMISSION_DATE(
-        "appealSubmissionDate", new TypeReference<String>(){})
+        "appealSubmissionDate", new TypeReference<String>(){}),
 
+    JOURNEY_TYPE(
+            "journeyType", new TypeReference<JourneyType>(){})
     ;
 
     private final String value;
