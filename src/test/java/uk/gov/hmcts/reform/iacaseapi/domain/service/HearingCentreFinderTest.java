@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 
 import com.google.common.collect.ImmutableMap;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -42,10 +44,35 @@ public class HearingCentreFinderTest {
             )
             .put(
                 HearingCentre.TAYLOR_HOUSE,
-                Arrays.asList("AL", "BR", "CO", "CR", "CT",
-                    "DA", "E", "EC", "EN", "IG",
-                    "NW", "RM", "SG", "SS", "TN",
-                    "W", "WC", "X", "XB")
+                Arrays.asList("AL", "BN", "BR", "CB", "CM",
+                    "CO", "CR", "CT", "DA", "E",
+                    "EC", "EN", "IG", "IP", "ME",
+                    "N", "NR", "NW", "RH", "RM",
+                    "SE", "SG", "SS", "TN", "W",
+                    "WC"
+                )
+            )
+            .put(
+                HearingCentre.NORTH_SHIELDS,
+                Arrays.asList("CA", "DH", "DL", "NE", "SR",
+                    "TS")
+            )
+            .put(
+                HearingCentre.BIRMINGHAM,
+                Arrays.asList("B", "CV", "DY", "GL", "HP",
+                    "LU", "NN", "OX", "RG", "SY",
+                    "TF", "WD", "WR", "WS", "WV")
+            )
+            .put(
+                HearingCentre.HATTON_CROSS,
+                Arrays.asList("BH", "GU", "HA", "KT", "PO",
+                    "SL", "SM", "SO", "SW", "TW", "UB")
+            )
+            .put(
+                HearingCentre.GLASGOW,
+                Arrays.asList("AB", "DD", "DG", "EH", "FK",
+                    "G", "HS", "IV", "KA", "KW", "KY",
+                    "ML", "PA", "PH", "TD", "ZE")
             )
             .build();
 
@@ -56,6 +83,10 @@ public class HearingCentreFinderTest {
             .put(HearingCentre.MANCHESTER, "2019-01-01")
             .put(HearingCentre.NEWPORT, "2019-01-01")
             .put(HearingCentre.TAYLOR_HOUSE, "2019-01-01")
+            .put(HearingCentre.NORTH_SHIELDS, "2019-01-01")
+            .put(HearingCentre.BIRMINGHAM, "2019-01-01")
+            .put(HearingCentre.HATTON_CROSS, "2019-01-01")
+            .put(HearingCentre.GLASGOW, "2019-01-01")
             .build();
 
     private final HearingCentreFinder hearingCentreFinder =
@@ -66,7 +97,7 @@ public class HearingCentreFinderTest {
         );
 
     @Test
-    public void should_find_phoenix_house_hearing_centre_for_bradford_postcodes() {
+    public void should_find_bradford_hearing_centre_for_bradford_postcodes() {
 
         Map<String, HearingCentre> exampleInputOutputs =
             ImmutableMap
@@ -133,7 +164,7 @@ public class HearingCentreFinderTest {
     }
 
     @Test
-    public void should_find_columbus_house_hearing_centre_for_newport_postcodes() {
+    public void should_find_newport_hearing_centre_for_newport_postcodes() {
 
         Map<String, HearingCentre> exampleInputOutputs =
             ImmutableMap
@@ -174,9 +205,6 @@ public class HearingCentreFinderTest {
         Map<String, HearingCentre> exampleInputOutputs =
             ImmutableMap
                 .<String, HearingCentre>builder()
-                .put("SG1 1EA", HearingCentre.TAYLOR_HOUSE)
-                .put("X1 2ZZ", HearingCentre.TAYLOR_HOUSE)
-                .put("XB1 2ZZ", HearingCentre.TAYLOR_HOUSE)
                 .put("AL1 3AA", HearingCentre.TAYLOR_HOUSE)     // St Albans
                 .put("BN2 1RF", HearingCentre.TAYLOR_HOUSE)     // Brighton
                 .put("BR1 1EZ", HearingCentre.TAYLOR_HOUSE)     // Bromley
@@ -186,23 +214,155 @@ public class HearingCentreFinderTest {
                 .put("CR9 1HT", HearingCentre.TAYLOR_HOUSE)     // Croydon
                 .put("CT1 2LB", HearingCentre.TAYLOR_HOUSE)     // Canterbury
                 .put("DA1 1DT", HearingCentre.TAYLOR_HOUSE)     // Dartford
+                .put("E13 8RY", HearingCentre.TAYLOR_HOUSE)     // London
+                .put("EC1V 9QN", HearingCentre.TAYLOR_HOUSE)    // London
                 .put("EN2 7HW", HearingCentre.TAYLOR_HOUSE)     // Enfield
                 .put("IG1 4LZ", HearingCentre.TAYLOR_HOUSE)     // Ilford
                 .put("IP4 1JL", HearingCentre.TAYLOR_HOUSE)     // Ipswitch
-                .put("E13 8RY", HearingCentre.TAYLOR_HOUSE)     // London
-                .put("EC1V 9QN", HearingCentre.TAYLOR_HOUSE)    // London
-                .put("N3 3HP", HearingCentre.TAYLOR_HOUSE)      // London
-                .put("SE10 9EQ", HearingCentre.TAYLOR_HOUSE)    // London
-                .put("W1K 4PA", HearingCentre.TAYLOR_HOUSE)     // London
-                .put("WC1V 7RL", HearingCentre.TAYLOR_HOUSE)    // London
-                .put("NW1 0LU", HearingCentre.TAYLOR_HOUSE)     // London
                 .put("ME2 4LA", HearingCentre.TAYLOR_HOUSE)     // Medway
+                .put("N3 3HP", HearingCentre.TAYLOR_HOUSE)      // London
                 .put("NR3 1AA", HearingCentre.TAYLOR_HOUSE)     // Norwich
+                .put("NW1 0LU", HearingCentre.TAYLOR_HOUSE)     // London
                 .put("RH1 1BD", HearingCentre.TAYLOR_HOUSE)     // Redhill
                 .put("RM1 2LH", HearingCentre.TAYLOR_HOUSE)     // Romford
+                .put("SE10 9EQ", HearingCentre.TAYLOR_HOUSE)    // London
                 .put("SG2 9XH", HearingCentre.TAYLOR_HOUSE)     // Stevenage
                 .put("SS2 9BQ", HearingCentre.TAYLOR_HOUSE)     // Southend-on-Sea
                 .put("TN9 1SQ", HearingCentre.TAYLOR_HOUSE)     // Tonbridge
+                .put("W1K 4PA", HearingCentre.TAYLOR_HOUSE)     // London
+                .put("WC1V 7RL", HearingCentre.TAYLOR_HOUSE)    // London
+                .build();
+
+        exampleInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final String postcode = inputOutput.getKey();
+                final HearingCentre expectedHearingCentre = inputOutput.getValue();
+
+                HearingCentre actualHearingCentre = hearingCentreFinder.find(postcode);
+
+                assertEquals(expectedHearingCentre, actualHearingCentre);
+            });
+    }
+
+    @Test
+    public void should_find_north_shields_hearing_centre_for_north_shields_postcodes() {
+
+        Map<String, HearingCentre> exampleInputOutputs =
+            ImmutableMap
+                .<String, HearingCentre>builder()
+                .put("CA3 8JY", HearingCentre.NORTH_SHIELDS)      // Carlisle
+                .put("DH1 3NJ", HearingCentre.NORTH_SHIELDS)      // Durham
+                .put("DL1 2EQ", HearingCentre.NORTH_SHIELDS)      // Darlington
+                .put("NE1 7DQ", HearingCentre.NORTH_SHIELDS)      // Newcastle
+                .put("SR1 1RR", HearingCentre.NORTH_SHIELDS)      // Sunderland
+                .put("TS1 2NR", HearingCentre.NORTH_SHIELDS)      // Cleveland
+                .build();
+
+        exampleInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final String postcode = inputOutput.getKey();
+                final HearingCentre expectedHearingCentre = inputOutput.getValue();
+
+                HearingCentre actualHearingCentre = hearingCentreFinder.find(postcode);
+
+                assertEquals(expectedHearingCentre, actualHearingCentre);
+            });
+    }
+
+    @Test
+    public void should_find_birmingham_hearing_centre_for_birmingham_postcodes() {
+
+        Map<String, HearingCentre> exampleInputOutputs =
+            ImmutableMap
+                .<String, HearingCentre>builder()
+                .put("B2 4AA", HearingCentre.BIRMINGHAM)       // Birmingham
+                .put("CV1 4ET", HearingCentre.BIRMINGHAM)      // Coventry
+                .put("DY1 1PY", HearingCentre.BIRMINGHAM)      // Dudley
+                .put("GL1 4SS", HearingCentre.BIRMINGHAM)      // Gloucester
+                .put("HP3 8EW", HearingCentre.BIRMINGHAM)      // Hemel Hempstead
+                .put("LU1 1EX", HearingCentre.BIRMINGHAM)      // Luton
+                .put("NN1 1AF", HearingCentre.BIRMINGHAM)      // Northampton
+                .put("OX2 6HA", HearingCentre.BIRMINGHAM)      // Oxford
+                .put("RG1 2AD", HearingCentre.BIRMINGHAM)      // Reading
+                .put("SY1 2LE", HearingCentre.BIRMINGHAM)      // Shrewsbury
+                .put("TF4 2DZ", HearingCentre.BIRMINGHAM)      // Telford
+                .put("WD17 2QN", HearingCentre.BIRMINGHAM)     // Watford
+                .put("WR1 2EH", HearingCentre.BIRMINGHAM)      // Worcester
+                .put("WS1 1NW", HearingCentre.BIRMINGHAM)      // Walsall
+                .put("WV1 4HW", HearingCentre.BIRMINGHAM)      // Wolverhampton
+                .build();
+
+        exampleInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final String postcode = inputOutput.getKey();
+                final HearingCentre expectedHearingCentre = inputOutput.getValue();
+
+                HearingCentre actualHearingCentre = hearingCentreFinder.find(postcode);
+
+                assertEquals(expectedHearingCentre, actualHearingCentre);
+            });
+    }
+
+    @Test
+    public void should_find_hatton_cross_hearing_centre_for_hatton_cross_postcodes() {
+
+        Map<String, HearingCentre> exampleInputOutputs =
+            ImmutableMap
+                .<String, HearingCentre>builder()
+                .put("BH1 1DY", HearingCentre.HATTON_CROSS)      // Bournemouth
+                .put("GU1 3ES", HearingCentre.HATTON_CROSS)      // Guildford
+                .put("HA3 5QL", HearingCentre.HATTON_CROSS)      // Harrow
+                .put("KT1 1BL", HearingCentre.HATTON_CROSS)      // Kingston upon Thames
+                .put("PO2 8HS", HearingCentre.HATTON_CROSS)      // Portsmouth
+                .put("SL1 1JN", HearingCentre.HATTON_CROSS)      // Slough
+                .put("SM1 1LZ", HearingCentre.HATTON_CROSS)      // Sutton
+                .put("SO15 2WW", HearingCentre.HATTON_CROSS)     // Southampton
+                .put("SW15 6SG", HearingCentre.HATTON_CROSS)     // London
+                .put("TW1 3SZ", HearingCentre.HATTON_CROSS)      // Twickenham
+                .put("UB1 2LF", HearingCentre.HATTON_CROSS)      // Southall
+                .build();
+
+        exampleInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final String postcode = inputOutput.getKey();
+                final HearingCentre expectedHearingCentre = inputOutput.getValue();
+
+                HearingCentre actualHearingCentre = hearingCentreFinder.find(postcode);
+
+                assertEquals(expectedHearingCentre, actualHearingCentre);
+            });
+    }
+
+    @Test
+    public void should_find_glasgow_hearing_centre_for_glasgow_postcodes() {
+
+        Map<String, HearingCentre> exampleInputOutputs =
+            ImmutableMap
+                .<String, HearingCentre>builder()
+                .put("AB11 5BB", HearingCentre.GLASGOW)     // Aberdeen
+                .put("DD1 4AF", HearingCentre.GLASGOW)      // Dundee
+                .put("DG1 2QF", HearingCentre.GLASGOW)      // Dumfries
+                .put("EH1 1SX", HearingCentre.GLASGOW)      // Edinburgh
+                .put("FK8 2EE", HearingCentre.GLASGOW)      // Stirling
+                .put("G1 2RD", HearingCentre.GLASGOW)       // Glasgow
+                .put("HS1 2SF", HearingCentre.GLASGOW)      // Hebrides
+                .put("IV2 3JT", HearingCentre.GLASGOW)      // Inverness
+                .put("KA1 1NP", HearingCentre.GLASGOW)      // Kilmarnock
+                .put("KW15 1DD", HearingCentre.GLASGOW)     // Kirkwall
+                .put("KY1 1JT", HearingCentre.GLASGOW)      // Kirklady
+                .put("ML1 1BN", HearingCentre.GLASGOW)      // Motherwell
+                .put("PA15 1UL", HearingCentre.GLASGOW)     // Gateside
+                .put("PH1 5TJ", HearingCentre.GLASGOW)      // Perth
+                .put("TD1 1BJ", HearingCentre.GLASGOW)      // Galashiels
+                .put("ZE1 0EH", HearingCentre.GLASGOW)      // Lerwick
                 .build();
 
         exampleInputOutputs
@@ -224,10 +384,10 @@ public class HearingCentreFinderTest {
         Map<String, HearingCentre> exampleInputOutputs =
             ImmutableMap
                 .<String, HearingCentre>builder()
-                .put("A123 4ZZ", defaultHearingCentre)
-                .put("W1 2AB", defaultHearingCentre)
-                .put("YY", defaultHearingCentre)
-                .put("SW15 6SG", defaultHearingCentre)
+                .put("PP 1AB", defaultHearingCentre)
+                .put("TT 1AB", defaultHearingCentre)
+                .put("YY 1AB", defaultHearingCentre)
+                .put("ZZ 1AB", defaultHearingCentre)
                 .build();
 
         exampleInputOutputs
@@ -249,10 +409,14 @@ public class HearingCentreFinderTest {
         Map<HearingCentre, String> hearingCentreActivationDates =
             ImmutableMap
                 .<HearingCentre, String>builder()
-                .put(HearingCentre.BRADFORD, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.BRADFORD, "2019-01-01")
                 .put(HearingCentre.MANCHESTER, "2019-01-01")
-                .put(HearingCentre.NEWPORT, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.NEWPORT, "2019-01-01")
                 .put(HearingCentre.TAYLOR_HOUSE, "2019-01-01")
+                .put(HearingCentre.NORTH_SHIELDS, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.BIRMINGHAM, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.HATTON_CROSS, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.GLASGOW, LocalDate.now().plusDays(5).toString())
                 .build();
 
         HearingCentreFinder hearingCentreFinder =
@@ -265,10 +429,10 @@ public class HearingCentreFinderTest {
         Map<String, HearingCentre> exampleInputOutputs =
             ImmutableMap
                 .<String, HearingCentre>builder()
-                .put("BA1 1RT", defaultHearingCentre)   // Bath (Newport)
-                .put("BS5 ORB", defaultHearingCentre)   // Bristol (Newport)
-                .put("DN1 2QA", defaultHearingCentre)   // Doncaster (Bradford)
-                .put("HD1 2BQ", defaultHearingCentre)   // Huddersfield (Bradford)
+                .put("DL1 2EQ", defaultHearingCentre)   // Darlington (North Shields)
+                .put("RG1 2AD", defaultHearingCentre)   // Reading (Birmingham)
+                .put("PO2 8HS", defaultHearingCentre)   // Portsmouth (Hatton Cross)
+                .put("IV2 3JT", defaultHearingCentre)   // Inverness (Glasgow)
                 .build();
 
         exampleInputOutputs
@@ -326,6 +490,86 @@ public class HearingCentreFinderTest {
                 final String activationDate = inputOutput.getKey().toString();
                 final boolean expectedHearingCentreIsActive = inputOutput.getValue();
                 final boolean actualHearingCentreIsActive = hearingCentreFinder.hearingCentreIsActive(activationDate);
+
+                assertEquals(expectedHearingCentreIsActive, actualHearingCentreIsActive);
+            });
+    }
+
+    @Test
+    public void should_return_true_for_hearing_centres_with_past_activation_dates() {
+
+        final Map<HearingCentre, String> hearingCentreActivationDates =
+            ImmutableMap
+                .<HearingCentre, String>builder()
+                .put(HearingCentre.BRADFORD, "2019-01-01")
+                .put(HearingCentre.MANCHESTER, "2019-01-01")
+                .put(HearingCentre.NEWPORT, "2019-01-01")
+                .put(HearingCentre.TAYLOR_HOUSE, "2019-01-01")
+                .build();
+
+        HearingCentreFinder hearingCentreFinder =
+            new HearingCentreFinder(
+                defaultHearingCentre,
+                hearingCentreCatchmentAreas,
+                hearingCentreActivationDates
+            );
+
+        Map<HearingCentre, Boolean> exampleHearingCentreInputOutputs =
+            ImmutableMap
+                .<HearingCentre, Boolean>builder()
+                .put(HearingCentre.BRADFORD, true)
+                .put(HearingCentre.MANCHESTER, true)
+                .put(HearingCentre.NEWPORT, true)
+                .put(HearingCentre.TAYLOR_HOUSE, true)
+                .build();
+
+        exampleHearingCentreInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final HearingCentre hearingCentre = inputOutput.getKey();
+                final boolean expectedHearingCentreIsActive = inputOutput.getValue();
+                final boolean actualHearingCentreIsActive = hearingCentreFinder.hearingCentreIsActive(hearingCentre);
+
+                assertEquals(expectedHearingCentreIsActive, actualHearingCentreIsActive);
+            });
+    }
+
+    @Test
+    public void should_return_false_for_hearing_centres_with_future_activation_dates() {
+
+        final Map<HearingCentre, String> hearingCentreActivationDates =
+            ImmutableMap
+                .<HearingCentre, String>builder()
+                .put(HearingCentre.NORTH_SHIELDS, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.BIRMINGHAM, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.HATTON_CROSS, LocalDate.now().plusDays(5).toString())
+                .put(HearingCentre.GLASGOW, LocalDate.now().plusDays(5).toString())
+                .build();
+
+        HearingCentreFinder hearingCentreFinder =
+            new HearingCentreFinder(
+                defaultHearingCentre,
+                hearingCentreCatchmentAreas,
+                hearingCentreActivationDates
+            );
+
+        Map<HearingCentre, Boolean> exampleHearingCentreInputOutputs =
+            ImmutableMap
+                .<HearingCentre, Boolean>builder()
+                .put(HearingCentre.NORTH_SHIELDS, false)
+                .put(HearingCentre.BIRMINGHAM, false)
+                .put(HearingCentre.HATTON_CROSS, false)
+                .put(HearingCentre.GLASGOW, false)
+                .build();
+
+        exampleHearingCentreInputOutputs
+            .entrySet()
+            .forEach(inputOutput -> {
+
+                final HearingCentre hearingCentre = inputOutput.getKey();
+                final boolean expectedHearingCentreIsActive = inputOutput.getValue();
+                final boolean actualHearingCentreIsActive = hearingCentreFinder.hearingCentreIsActive(hearingCentre);
 
                 assertEquals(expectedHearingCentreIsActive, actualHearingCentreIsActive);
             });

@@ -3,6 +3,10 @@ hearingCentreActivationDates:
   manchester: ${IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER:2019-01-01}
   newport: ${IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT:2019-09-23}
   taylorHouse: ${IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE:2019-01-01}
+  northShields: ${IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS:2019-11-26}
+  birmingham: ${IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM:2019-12-03}
+  hattonCross: ${IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS:2019-12-10}
+  glasgow: ${IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW:2020-01-14}
 
 hearingCentreCatchmentAreas:
   bradford:
@@ -76,3 +80,55 @@ hearingCentreCatchmentAreas:
     - "TN"
     - "W"
     - "WC"
+  northShields:
+    - "CA"
+    - "DH"
+    - "DL"
+    - "NE"
+    - "SR"
+    - "TS"
+  birmingham:
+    - "B"
+    - "CV"
+    - "DY"
+    - "GL"
+    - "HP"
+    - "LU"
+    - "NN"
+    - "OX"
+    - "RG"
+    - "SY"
+    - "TF"
+    - "WD"
+    - "WR"
+    - "WS"
+    - "WV"
+  hattonCross:
+    - "BH"
+    - "GU"
+    - "HA"
+    - "KT"
+    - "PO"
+    - "SL"
+    - "SM"
+    - "SO"
+    - "SW"
+    - "TW"
+    - "UB"
+  glasgow:
+    - "AB"
+    - "DD"
+    - "DG"
+    - "EH"
+    - "FK"
+    - "G"
+    - "HS"
+    - "IV"
+    - "KA"
+    - "KW"
+    - "KY"
+    - "ML"
+    - "PA"
+    - "PH"
+    - "TD"
+    - "ZE"
