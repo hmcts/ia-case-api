@@ -1,0 +1,30 @@
+{
+  "description": "RIA-606 Errors when Home Office decision date is in the future during editAppeal",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY+15}",
+          "appellantDateOfBirth": "{$TODAY-15}"
+
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You've entered an invalid date. You cannot enter a date in the future."],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "homeOfficeDecisionDate": "{$TODAY+15}",
+        "appellantDateOfBirth": "{$TODAY-15}"
+      }
+    }
+  }
+}

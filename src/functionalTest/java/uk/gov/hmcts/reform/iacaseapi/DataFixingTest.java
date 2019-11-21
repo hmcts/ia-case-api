@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -113,6 +114,8 @@ public class DataFixingTest {
         caseData.put("appellantGivenNames", "some-given-name");
         caseData.put("appellantFamilyName", "some-family-name");
         caseData.put("homeOfficeReferenceNumber", "some-ref-number");
+        caseData.put("homeOfficeDecisionDate", LocalDate.now().minusDays(10).toString());
+        caseData.put("appellantDateOfBirth", LocalDate.now().minusYears(20).toString());
 
         LocalDateTime createdDate = LocalDateTime.now();
 

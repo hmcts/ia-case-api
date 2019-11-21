@@ -22,6 +22,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_FAMILY_NAME(
         "appellantFamilyName", new TypeReference<String>(){}),
 
+    APPELLANT_DATE_OF_BIRTH(
+            "appellantDateOfBirth", new TypeReference<String>(){}),
+
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 

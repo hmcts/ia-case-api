@@ -8,6 +8,7 @@ public class PreSubmitCallbackStageTest {
 
     @Test
     public void has_correct_case_event_ids() {
+        assertEquals("midEvent", PreSubmitCallbackStage.MID_EVENT.toString());
         assertEquals("aboutToStart", PreSubmitCallbackStage.ABOUT_TO_START.toString());
         assertEquals("aboutToSubmit", PreSubmitCallbackStage.ABOUT_TO_SUBMIT.toString());
         assertEquals("midEvent", PreSubmitCallbackStage.MID_EVENT.toString());
