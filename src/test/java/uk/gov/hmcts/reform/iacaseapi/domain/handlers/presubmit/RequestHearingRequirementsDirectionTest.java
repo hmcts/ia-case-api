@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
@@ -32,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
+public class RequestHearingRequirementsDirectionTest {
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
 
@@ -44,12 +47,12 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
-    private LegalRepresentativeHearingRequirementsDirectionHandler legalRepresentativeHearingRequirementsDirectionHandler;
+    private RequestHearingRequirementsDirectionHandler requestHearingRequirementsDirectionHandler;
 
     @Before
     public void setUp() {
-        legalRepresentativeHearingRequirementsDirectionHandler =
-            new LegalRepresentativeHearingRequirementsDirectionHandler(
+        requestHearingRequirementsDirectionHandler =
+            new RequestHearingRequirementsDirectionHandler(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
                 dateProvider,
                 directionAppender
@@ -57,18 +60,18 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void can_handle_submit_hearing_requirements_enabled() {
+    public void can_handle_request_hearing_requirements_feature() {
 
-        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
 
-        legalRepresentativeHearingRequirementsDirectionHandler =
-            new LegalRepresentativeHearingRequirementsDirectionHandler(
+        requestHearingRequirementsDirectionHandler =
+            new RequestHearingRequirementsDirectionHandler(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
                 dateProvider,
                 directionAppender
             );
 
-        boolean canHandle = legalRepresentativeHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        boolean canHandle = requestHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertTrue(canHandle);
     }
@@ -79,14 +82,14 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
-        final String expectedExplanationPart = "Your appeal is going to a hearing.";
+        final String expectedExplanationPart = "Visit the online service and use the reference given in this email to find the case. You'll be able to submit the hearing requirements using the Overview tab.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
@@ -98,7 +101,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -119,14 +122,14 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
-        final String expectedExplanationPart = "Your appeal is going to a hearing.";
+        final String expectedExplanationPart = "Visit the online service and use the reference given in this email to find the case. You'll be able to submit the hearing requirements using the Overview tab.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-20"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
@@ -138,7 +141,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -164,12 +167,12 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -183,9 +186,9 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = legalRepresentativeHearingRequirementsDirectionHandler.canHandle(callbackStage, callback);
+                boolean canHandle = requestHearingRequirementsDirectionHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REQUEST_HEARING_REQUIREMENTS
+                if (event == Event.REQUEST_HEARING_REQUIREMENTS_FEATURE
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -201,19 +204,19 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.handle(null, callback))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> requestHearingRequirementsDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
