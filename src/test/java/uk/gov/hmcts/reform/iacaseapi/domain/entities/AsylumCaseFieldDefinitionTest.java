@@ -12,8 +12,8 @@ public class AsylumCaseFieldDefinitionTest {
     @Test
     public void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseFieldDefinition.values())
-                .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
-                        .isEqualTo(v.value()));
+            .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
+                .isEqualTo(v.value()));
     }
 
 }

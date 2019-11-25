@@ -1,0 +1,66 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/refdata/external/v1/organisations/users"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "users": [
+        {
+          "userIdentifier": "271a2429-5508-4715-8e65-8873405c813f",
+          "firstName": "legalrep",
+          "lastName": "orgcreator",
+          "email": "ia.legalrep.orgcreator@gmail.com",
+          "roles": [
+            "caseworker-publiclaw-solicitor",
+            "pui-case-manager",
+            "caseworker",
+            "caseworker-divorce-solicitor",
+            "caseworker-ia",
+            "pui-user-manager",
+            "caseworker-publiclaw",
+            "caseworker-ia-legalrep-solicitor",
+            "caseworker-probate-solicitor",
+            "pui-organisation-manager",
+            "caseworker-divorce",
+            "caseworker-divorce-financialremedy",
+            "prd-admin",
+            "pui-finance-manager",
+            "caseworker-probate",
+            "caseworker-divorce-financialremedy-solicitor"
+          ],
+          "idamStatus": "ACTIVE",
+          "idamStatusCode": "200",
+          "idamMessage": "11 OK"
+        },
+        {
+          "userIdentifier": "6c4fd62d-9d3c-4d11-962c-57080df16871",
+          "firstName": "xui",
+          "lastName": "Legal RepA",
+          "email": "ia.legalrep.a.xui@gmail.com",
+          "roles": [
+            "caseworker-publiclaw-solicitor",
+            "pui-case-manager",
+            "caseworker",
+            "caseworker-divorce",
+            "caseworker-divorce-financialremedy",
+            "caseworker-divorce-solicitor",
+            "caseworker-probate",
+            "caseworker-ia",
+            "caseworker-divorce-financialremedy-solicitor",
+            "caseworker-publiclaw",
+            "caseworker-ia-legalrep-solicitor",
+            "caseworker-probate-solicitor"
+          ],
+          "idamStatus": "ACTIVE",
+          "idamStatusCode": "200",
+          "idamMessage": "11 OK"
+        }
+      ]
+    }
+  }
+}

@@ -46,6 +46,7 @@ public enum Event {
 
     REMOVE_APPEAL_FROM_ONLINE("removeAppealFromOnline"),
 
+    SHARE_A_CASE("shareACase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
