@@ -144,6 +144,26 @@ data "azurerm_key_vault_secret" "hearing_centre_activation_date_taylor_house" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_north_shields" {
+  name      = "hearing-centre-activation-date-north-shields"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_birmingham" {
+  name      = "hearing-centre-activation-date-birmingham"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_hatton_cross" {
+  name      = "hearing-centre-activation-date-hatton-cross"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "hearing_centre_activation_date_glasgow" {
+  name      = "hearing-centre-activation-date-glasgow"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 module "ia_case_api_database" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.product}-${var.component}-postgres-db"
@@ -211,6 +231,10 @@ module "ia_case_api" {
     IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER     = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_manchester.value}"
     IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT        = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_newport.value}"
     IA_HEARING_CENTRE_ACTIVATION_DATE_TAYLOR_HOUSE   = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_taylor_house.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_NORTH_SHIELDS  = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_north_shields.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM     = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_birmingham.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS   = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_hatton_cross.value}"
+    IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW        = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_glasgow.value}"
 
     ROOT_LOGGING_LEVEL   = "${var.root_logging_level}"
     LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"

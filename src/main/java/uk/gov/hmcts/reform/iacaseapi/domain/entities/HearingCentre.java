@@ -10,7 +10,11 @@ public enum HearingCentre {
     BRADFORD("bradford"),
     MANCHESTER("manchester"),
     NEWPORT("newport"),
-    TAYLOR_HOUSE("taylorHouse");
+    TAYLOR_HOUSE("taylorHouse"),
+    NORTH_SHIELDS("northShields"),
+    BIRMINGHAM("birmingham"),
+    HATTON_CROSS("hattonCross"),
+    GLASGOW("glasgow");
 
     @JsonValue
     private final String value;

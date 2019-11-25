@@ -50,7 +50,6 @@ public class HearingCentreFinder {
                     .findFirst();
 
             if (hearingCentre.isPresent()) {
-
                 if (hearingCentreIsActive(hearingCentreActivationDates.get(hearingCentre.get()))) {
                     return hearingCentre.get();
                 }
@@ -61,11 +60,13 @@ public class HearingCentreFinder {
     }
 
     public boolean hearingCentreIsActive(String hearingCentreActivationDate) {
-
         if (LocalDate.parse(hearingCentreActivationDate).isAfter(LocalDate.now())) {
             return false;
         }
-
         return true;
+    }
+
+    public boolean hearingCentreIsActive(HearingCentre hearingCentre) {
+        return hearingCentreIsActive(hearingCentreActivationDates.get(hearingCentre));
     }
 }

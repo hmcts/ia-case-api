@@ -1,4 +1,5 @@
 {
+  "disabled": true,
   "description": "RIA-941-generate-hearing-ready-bundle (stitching enabled) RIA-942-notification-to-ho-and-legal-rep",
   "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "request": {
