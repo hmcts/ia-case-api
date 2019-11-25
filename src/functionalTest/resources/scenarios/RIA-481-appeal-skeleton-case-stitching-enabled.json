@@ -1,4 +1,5 @@
 {
+  "disabled": true,
   "description": "RIA-481 appeal skeleton (stitching enabled)",
   "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "request": {

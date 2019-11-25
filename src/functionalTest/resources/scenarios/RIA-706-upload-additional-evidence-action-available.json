@@ -1,4 +1,5 @@
 {
+  "disabled": true,
   "description": "RIA-706 Upload additional evidence action becomes available in appropriate state",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
