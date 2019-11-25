@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCa
     "S2S_URL=http://127.0.0.1:8990/serviceAuth",
     "IDAM_URL=http://127.0.0.1:8990/userAuth",
     "IA_CASE_DOCUMENTS_API_URL=http://localhost:8990/ia-case-documents-api",
+    "PROFESSIONAL_REF_DATA_URL=http://localhost:8990/refdata/",
     "IA_DOCMOSIS_ENABLED=true"})
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class SpringBootIntegrationTest {

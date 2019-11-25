@@ -63,9 +63,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     enableDockerBuild()
     installCharts()
-    enableAksStagingDeployment()
-    disableLegacyDeployment()
 
+    if ("demo" != "${env.BRANCH_NAME}") {
+        enableAksStagingDeployment()
+        disableLegacyDeployment()
+    }
     loadVaultSecrets(secrets)
 
     after('functionalTest:preview') {

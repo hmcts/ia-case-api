@@ -8,9 +8,14 @@ locals {
   non_preview_app_service_plan = "${var.product}-${var.env}"
   app_service_plan             = "${var.env == "preview" || var.env == "spreview" ? local.preview_app_service_plan : local.non_preview_app_service_plan}"
 
+  local_ase = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+
   preview_vault_name     = "${var.raw_product}-aat"
   non_preview_vault_name = "${var.raw_product}-${var.env}"
   key_vault_name         = "${var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name}"
+
+  prof_ref_data_url                      = "http://rd-professional-api-${var.env}.service.${local.local_ase}.internal"
+
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -206,6 +211,7 @@ module "ia_case_api" {
     DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
+    PROF_REF_DATA_URL  = "${local.prof_ref_data_url}"
 
     IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD       = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_bradford.value}"
     IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER     = "${data.azurerm_key_vault_secret.hearing_centre_activation_date_manchester.value}"

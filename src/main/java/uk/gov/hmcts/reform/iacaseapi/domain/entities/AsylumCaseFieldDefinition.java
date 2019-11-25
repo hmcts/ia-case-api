@@ -314,6 +314,12 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_SUBMISSION_DATE(
         "appealSubmissionDate", new TypeReference<String>(){}),
 
+    SHARED_WITH_COLLEAGUE_ID(
+        "SharedWithColleagueID", new TypeReference<String>(){}),
+
+    ORG_LIST_OF_USERS(
+        "OrgListOfUsers", new TypeReference<DynamicList>(){}),
+
     JOURNEY_TYPE(
             "journeyType", new TypeReference<JourneyType>(){}),
 
@@ -330,7 +336,7 @@ public enum AsylumCaseFieldDefinition {
         "directionEditDateDue", new TypeReference<String>(){}),
 
     DIRECTION_EDIT_DATE_SENT(
-        "directionEditDateSent", new TypeReference<String>(){})
+        "directionEditDateSent", new TypeReference<String>(){}),
 
     ;
 

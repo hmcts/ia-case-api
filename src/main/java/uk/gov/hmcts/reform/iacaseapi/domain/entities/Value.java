@@ -6,7 +6,7 @@ public class Value {
     private String label;
 
     private Value() {
-
+        //no op constructor
     }
 
     public Value(String code, String label) {
