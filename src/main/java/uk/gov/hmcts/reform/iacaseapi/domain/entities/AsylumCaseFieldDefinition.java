@@ -331,6 +331,10 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>(){}),
 
+
+    REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP(
+        "reviewHomeOfficeResponseByLegalRep", new TypeReference<YesOrNo>(){}),
+
     REMOVE_APPEAL_FROM_ONLINE_DATE(
         "removeAppealFromOnlineDate", new TypeReference<String>() {}),
 
