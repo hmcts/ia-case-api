@@ -31,6 +31,6 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
 
-postgresql:
-  #Whether to deploy the Postgres Chart or not
-  enabled: true
+  postgresql:
+    #Whether to deploy the Postgres Chart or not
+    enabled: true
