@@ -1,5 +1,6 @@
 {
   "description": "RIA-436 RIA-2087 Draft and submit hearing requirements",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -16,7 +17,7 @@
             {
               "id": "1",
               "value": {
-                "witnessName": "WitnessName"
+                "witnessName": "AWitness"
               }
             }
           ],
@@ -73,7 +74,7 @@
           {
             "id": "1",
             "value": {
-              "witnessName": "WitnessName"
+              "witnessName": "AWitness"
             }
           }
         ],
