@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE;
 
 import java.util.Arrays;
@@ -61,9 +62,12 @@ public class UploadAddendumEvidenceActionAvailableUpdaterTest {
 
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.YES);
+                verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.NO);
+                verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.NO);
+
             }
 
             reset(asylumCase);
