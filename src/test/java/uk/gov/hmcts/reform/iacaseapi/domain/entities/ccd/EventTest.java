@@ -22,6 +22,8 @@ public class EventTest {
         assertEquals("addAppealResponse", Event.ADD_APPEAL_RESPONSE.toString());
         assertEquals("uploadHomeOfficeAppealResponse", Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE.toString());
         assertEquals("requestHearingRequirements", Event.REQUEST_HEARING_REQUIREMENTS.toString());
+        assertEquals("requestHearingRequirementsFeature", Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString());
+        assertEquals("draftHearingRequirements", Event.DRAFT_HEARING_REQUIREMENTS.toString());
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
         assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
@@ -48,6 +50,6 @@ public class EventTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(36, Event.values().length);
+        assertEquals(39, Event.values().length);
     }
 }

@@ -327,7 +327,11 @@ public enum AsylumCaseFieldDefinition {
         "appealSubmissionDate", new TypeReference<String>(){}),
 
     JOURNEY_TYPE(
-            "journeyType", new TypeReference<JourneyType>(){})
+            "journeyType", new TypeReference<JourneyType>(){}),
+
+    HEARING_DATE_RANGE_DESCRIPTION(
+        "hearingDateRangeDescription", new TypeReference<String>(){})
+
     ;
 
     private final String value;

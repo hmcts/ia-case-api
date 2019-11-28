@@ -50,9 +50,28 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
         legalRepresentativeHearingRequirementsDirectionHandler =
             new LegalRepresentativeHearingRequirementsDirectionHandler(
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                false,
                 dateProvider,
                 directionAppender
             );
+    }
+
+    @Test
+    public void can_handle_submit_hearing_requirements_enabled() {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
+
+        legalRepresentativeHearingRequirementsDirectionHandler =
+            new LegalRepresentativeHearingRequirementsDirectionHandler(
+                HEARING_REQUIREMENTS_DUE_IN_DAYS,
+                true,
+                dateProvider,
+                directionAppender
+            );
+
+        boolean canHandle = legalRepresentativeHearingRequirementsDirectionHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertTrue(canHandle);
     }
 
     @Test

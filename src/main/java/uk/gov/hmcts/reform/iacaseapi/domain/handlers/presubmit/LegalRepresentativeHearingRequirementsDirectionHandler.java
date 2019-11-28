@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -27,13 +28,16 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
+    private final boolean isSubmitHearingRequirementsEnabled;
 
     public LegalRepresentativeHearingRequirementsDirectionHandler(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
+        @Value("${featureFlag.isSubmitHearingRequirementsEnabled}") boolean isSubmitHearingRequirementsEnabled,
         DateProvider dateProvider,
         DirectionAppender directionAppender
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
+        this.isSubmitHearingRequirementsEnabled = isSubmitHearingRequirementsEnabled;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -45,6 +49,10 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        if (isSubmitHearingRequirementsEnabled) {
+            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                   && callback.getEvent() == Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
+        }
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_HEARING_REQUIREMENTS;
     }
