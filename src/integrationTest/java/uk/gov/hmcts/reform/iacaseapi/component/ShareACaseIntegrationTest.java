@@ -38,7 +38,6 @@ public class ShareACaseIntegrationTest extends SpringBootIntegrationTest {
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
 
-
     @org.springframework.beans.factory.annotation.Value("${prof.ref.data.path.org.users}")
     private String refDataPath;
 

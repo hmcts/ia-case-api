@@ -1,86 +1,119 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUser;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProfessionalUsersRetrieverTest {
 
+    private ProfessionalUsersRetriever professionalUsersRetriever;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private String refdataUrl = "http:/some-url";
+    private String refdataPath = "/some-path";
 
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity responseEntity;
 
-    private String userData =
-        "{\n"
-        + "  \"users\": "
-        + "[\n"
-        + "    {\n"
-        + "      \"userIdentifier\": \"146bd2bd-0e26-4b26-b83a-e4fae21cf04b\",\n"
-        + "      \"firstName\": \"fname1\",\n"
-        + "      \"lastName\": \"lname1\",\n"
-        + "      \"email\": \"someone1@email.com\",\n"
-        + "      \"userStatus\": \"ACTIVE\"\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"userIdentifier\": \"146bd2bd-0e26-4b26-b83a-e4fae21cf04c\",\n"
-        + "      \"firstName\": \"fname2\",\n"
-        + "      \"lastName\": \"lname2\",\n"
-        + "      \"email\": \"someone2@email.com\",\n"
-        + "      \"userStatus\": \"ACTIVE\"\n"
-        + "    }\n"
-        + "  ]\n"
-        + "}\n"
-        + "\n";
+    @Before
+    public void setup() {
 
-    private String userData2 =
-        "[\n"
-        + "    {\n"
-        + "      \"userIdentifier\": \"146bd2bd-0e26-4b26-b83a-e4fae21cf04b\",\n"
-        + "      \"firstName\": \"fname1\",\n"
-        + "      \"lastName\": \"lname1\",\n"
-        + "      \"email\": \"someone1@email.com\",\n"
-        + "      \"userStatus\": \"ACTIVE\"\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"userIdentifier\": \"146bd2bd-0e26-4b26-b83a-e4fae21cf04c\",\n"
-        + "      \"firstName\": \"fname2\",\n"
-        + "      \"lastName\": \"lname2\",\n"
-        + "      \"email\": \"someone2@email.com\",\n"
-        + "      \"userStatus\": \"ACTIVE\"\n"
-        + "    }\n"
-        + "  ]\n"
-        + "\n";
+        professionalUsersRetriever = new ProfessionalUsersRetriever(restTemplate,
+            serviceAuthTokenGenerator,
+            userDetailsProvider,
+            refdataUrl,
+            refdataPath);
 
+    }
 
     @Test
-    public void should_deserialize() throws JsonProcessingException {
+    public void should_successfully_get_prof_users_response() {
 
-        //new ParameterizedTypeReference<PreSubmitCallbackResponse<BundleCaseData>>() {
-        //}
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+        final ProfessionalUsersResponse professionalUsersResponse =
+            mock(ProfessionalUsersResponse.class);
+        final UserDetails userDetails = mock(UserDetails.class);
 
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getAccessToken()).thenReturn(expectedAccessToken);
 
-        ProfessionalUsersResponse response =
-            objectMapper.readValue(userData, new TypeReference<ProfessionalUsersResponse>() {
-                });
+        doReturn(responseEntity)
+            .when(restTemplate)
+            .exchange(
+                eq(refdataUrl + refdataPath),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
 
-        List<ProfessionalUser> users = response.getProfessionalUsers();
-        assertThat(users.size()).isEqualTo(2);
+        when(responseEntity.getBody()).thenReturn(professionalUsersResponse);
 
-        users.forEach(professionalUser ->  System.out.println(professionalUser.getEmail()));
+        ProfessionalUsersResponse response = professionalUsersRetriever.retrieve();
 
-        System.out.println(response);
+        assertThat(response).isNotNull();
+        assertThat(response).isInstanceOf(ProfessionalUsersResponse.class);
+
+        verify(restTemplate).exchange(anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class));
+
+        verifyNoMoreInteractions(professionalUsersResponse);
+
+    }
+
+    public void wraps_http_exception_correctly_when_calling_prof_ref_data() {
+
+        final String expectedServiceToken = "ABCDEFG";
+        final String expectedAccessToken = "HIJKLMN";
+        final UserDetails userDetails = mock(UserDetails.class);
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getAccessToken()).thenReturn(expectedAccessToken);
+
+        final RestClientResponseException restException = mock(RestClientResponseException.class);
+        doThrow(restException)
+            .when(restTemplate)
+            .exchange(
+                eq(refdataUrl + refdataPath),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
+
+        assertThatThrownBy(() -> professionalUsersRetriever.retrieve())
+            .isInstanceOf(ReferenceDataIntegrationException.class)
+            .hasCauseInstanceOf(RestClientResponseException.class)
+            .hasCause(restException);
+
+        verify(restTemplate).exchange(anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class));
 
     }
 

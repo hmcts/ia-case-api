@@ -30,12 +30,12 @@ public class ProfessionalUsersRetriever {
     public ProfessionalUsersRetriever(RestTemplate refDataRestTemplate,
                                       AuthTokenGenerator serviceAuthTokenGenerator,
                                       UserDetailsProvider userDetailsProvider,
-                                      @Value("${prof.ref.data.url}") String refDataEndpoint,
+                                      @Value("${prof.ref.data.url}") String refDataApiUrl,
                                       @Value("${prof.ref.data.path.org.users}") String refDataApiPath) {
         this.refDataRestTemplate = refDataRestTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
-        this.refDataApiUrl = refDataEndpoint;
+        this.refDataApiUrl = refDataApiUrl;
         this.refDataApiPath = refDataApiPath;
     }
 

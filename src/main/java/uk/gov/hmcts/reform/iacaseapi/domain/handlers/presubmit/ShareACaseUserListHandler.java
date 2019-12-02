@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,28 +38,37 @@ public class ShareACaseUserListHandler implements PreSubmitCallbackHandler<Asylu
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
                                                         Callback<AsylumCase> callback) {
-
-        ProfessionalUsersResponse profUsersResponse = professionalUsersRetriever.retrieve();
-
-        return mapToAsylumCase(callback, profUsersResponse);
+        canHandle(callbackStage, callback);
+        return mapToAsylumCase(callback, professionalUsersRetriever.retrieve());
 
     }
 
     private PreSubmitCallbackResponse<AsylumCase> mapToAsylumCase(Callback<AsylumCase> callback,
-                                                                ProfessionalUsersResponse usersResponse) {
+                                                                  ProfessionalUsersResponse usersResponse) {
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         asylumCase.clear(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS);
 
-        List<Value> values = usersResponse.getProfessionalUsers()
-            .stream()
-            .map(professionalUser ->
-                new Value(professionalUser.getUserIdentifier(),
-                    professionalUser.getEmail()))
-            .collect(Collectors.toList());
+        DynamicList dynamicList;
 
-        asylumCase.write(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS,
-            new DynamicList(values.get(0), values));
+        final List<Value> values =
+            usersResponse.getProfessionalUsers()
+                .stream()
+                .map(professionalUser ->
+                    new Value(
+                        professionalUser.getUserIdentifier(),
+                        professionalUser.getEmail()
+                    )
+                )
+                .collect(Collectors.toList());
+
+        if (!values.isEmpty()) {
+            dynamicList = new DynamicList(values.get(0), values);
+        } else {
+            dynamicList = new DynamicList("");
+        }
+
+        asylumCase.write(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, dynamicList);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
 
