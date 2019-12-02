@@ -93,8 +93,6 @@ public class ShareACaseUserListHandlerTest {
 
         when(professionalUsersRetriever.retrieve()).thenReturn(professionalUsersResponse);
         when(professionalUsersResponse.getProfessionalUsers()).thenReturn(professionalUsers);
-        when(professionalUser.getUserIdentifier()).thenReturn("12345");
-        when(professionalUser.getEmail()).thenReturn("some-email@somewhere.com");
 
         PreSubmitCallbackResponse<AsylumCase> response =
             shareACaseUserListHandler.handle(
