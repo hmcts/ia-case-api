@@ -72,11 +72,6 @@ public class ProfessionalUsersRetriever {
                     ).getBody();
 
         } catch (RestClientResponseException ex) {
-
-            //TODO - output in the ControllerAdvice
-            log.error(ex.getStatusText());
-            log.error(ex.getResponseBodyAsString());
-
             throw new ReferenceDataIntegrationException(
                 "Couldn't retrieve organisations using API: " + refDataApiUrl + refDataApiPath,
                 ex
