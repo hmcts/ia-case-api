@@ -11,76 +11,76 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_REFERENCE_NUMBER(
-            "homeOfficeReferenceNumber", new TypeReference<String>(){}),
+        "homeOfficeReferenceNumber", new TypeReference<String>(){}),
 
     HOME_OFFICE_DECISION_DATE(
-            "homeOfficeDecisionDate", new TypeReference<String>(){}),
+        "homeOfficeDecisionDate", new TypeReference<String>(){}),
 
     APPELLANT_GIVEN_NAMES(
-            "appellantGivenNames", new TypeReference<String>(){}),
+        "appellantGivenNames", new TypeReference<String>(){}),
 
     APPELLANT_FAMILY_NAME(
-            "appellantFamilyName", new TypeReference<String>(){}),
+        "appellantFamilyName", new TypeReference<String>(){}),
 
     APPELLANT_HAS_FIXED_ADDRESS(
-            "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
+        "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_ADDRESS(
-            "appellantAddress", new TypeReference<AddressUk>(){}),
+        "appellantAddress", new TypeReference<AddressUk>(){}),
 
     APPEAL_TYPE(
-            "appealType", new TypeReference<AppealType>(){}),
+        "appealType", new TypeReference<AppealType>(){}),
 
     APPEAL_GROUNDS_PROTECTION(
-            "appealGroundsProtection", new TypeReference<CheckValues<String>>(){}),
+        "appealGroundsProtection", new TypeReference<CheckValues<String>>(){}),
 
     APPEAL_GROUNDS_HUMAN_RIGHTS(
-            "appealGroundsHumanRights", new TypeReference<CheckValues<String>>(){}),
+        "appealGroundsHumanRights", new TypeReference<CheckValues<String>>(){}),
 
     APPEAL_GROUNDS_REVOCATION(
-            "appealGroundsRevocation", new TypeReference<CheckValues<String>>(){}),
+        "appealGroundsRevocation", new TypeReference<CheckValues<String>>(){}),
 
     HAS_OTHER_APPEALS(
-            "hasOtherAppeals", new TypeReference<String>(){}),
+        "hasOtherAppeals", new TypeReference<String>(){}),
 
     APPEAL_REFERENCE_NUMBER(
-            "appealReferenceNumber", new TypeReference<String>(){}),
+        "appealReferenceNumber", new TypeReference<String>(){}),
 
     APPELLANT_NAME_FOR_DISPLAY(
-            "appellantNameForDisplay", new TypeReference<String>(){}),
+        "appellantNameForDisplay", new TypeReference<String>(){}),
 
     APPEAL_GROUNDS_FOR_DISPLAY(
-            "appealGroundsForDisplay", new TypeReference<List<String>>(){}),
+        "appealGroundsForDisplay", new TypeReference<List<String>>(){}),
 
     HEARING_CENTRE(
-            "hearingCentre", new TypeReference<HearingCentre>(){}),
+        "hearingCentre", new TypeReference<HearingCentre>(){}),
 
     SEND_DIRECTION_EXPLANATION(
-            "sendDirectionExplanation", new TypeReference<String>(){}),
+        "sendDirectionExplanation", new TypeReference<String>(){}),
 
     SEND_DIRECTION_PARTIES(
-            "sendDirectionParties", new TypeReference<Parties>(){}),
+        "sendDirectionParties", new TypeReference<Parties>(){}),
 
     SEND_DIRECTION_DATE_DUE(
-            "sendDirectionDateDue", new TypeReference<String>(){}),
+        "sendDirectionDateDue", new TypeReference<String>(){}),
 
     EDITABLE_DIRECTIONS(
-            "editableDirections", new TypeReference<List<IdValue<EditableDirection>>>(){}),
+        "editableDirections", new TypeReference<List<IdValue<EditableDirection>>>(){}),
 
     ADDITIONAL_EVIDENCE_DOCUMENTS(
-            "additionalEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+        "additionalEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     HEARING_DOCUMENTS(
-            "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+        "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     LEGAL_REPRESENTATIVE_DOCUMENTS(
-            "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+        "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     RESPONDENT_DOCUMENTS(
-            "respondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+        "respondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     RESPONDENT_EVIDENCE(
-            "respondentEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "respondentEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -89,52 +89,52 @@ public enum AsylumCaseFieldDefinition {
         "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),
 
     CASE_ARGUMENT_DOCUMENT(
-            "caseArgumentDocument", new TypeReference<Document>(){}),
+        "caseArgumentDocument", new TypeReference<Document>(){}),
 
     CASE_ARGUMENT_DESCRIPTION(
-            "caseArgumentDescription", new TypeReference<String>(){}),
+        "caseArgumentDescription", new TypeReference<String>(){}),
 
     CASE_ARGUMENT_EVIDENCE(
-            "caseArgumentEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "caseArgumentEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     APPEAL_RESPONSE_DOCUMENT(
-            "appealResponseDocument", new TypeReference<Document>(){}),
+        "appealResponseDocument", new TypeReference<Document>(){}),
 
     APPEAL_RESPONSE_DESCRIPTION(
-            "appealResponseDescription", new TypeReference<String>(){}),
+        "appealResponseDescription", new TypeReference<String>(){}),
 
     APPEAL_RESPONSE_EVIDENCE(
-            "appealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "appealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT(
-            "homeOfficeAppealResponseDocument", new TypeReference<Document>(){}),
+        "homeOfficeAppealResponseDocument", new TypeReference<Document>(){}),
 
     HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION(
-            "homeOfficeAppealResponseDescription", new TypeReference<String>(){}),
+        "homeOfficeAppealResponseDescription", new TypeReference<String>(){}),
 
     HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE(
-            "homeOfficeAppealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "homeOfficeAppealResponseEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     UPLOADED_HOME_OFFICE_APPEAL_RESPONSE_DOCS(
         "uploadedHomeOfficeAppealResponseDocs", new TypeReference<String>(){}),
 
     ADDITIONAL_EVIDENCE(
-            "additionalEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "additionalEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     LIST_CASE_HEARING_CENTRE(
-            "listCaseHearingCentre", new TypeReference<HearingCentre>(){}),
+        "listCaseHearingCentre", new TypeReference<HearingCentre>(){}),
 
     LIST_CASE_HEARING_DATE(
-            "listCaseHearingDate", new TypeReference<String>(){}),
+        "listCaseHearingDate", new TypeReference<String>(){}),
 
     CASE_SUMMARY_DOCUMENT(
-            "caseSummaryDocument", new TypeReference<Document>(){}),
+        "caseSummaryDocument", new TypeReference<Document>(){}),
 
     CASE_SUMMARY_DESCRIPTION(
-            "caseSummaryDescription", new TypeReference<String>(){}),
+        "caseSummaryDescription", new TypeReference<String>(){}),
 
     LEGAL_REPRESENTATIVE_NAME(
-            "legalRepresentativeName", new TypeReference<String>(){}),
+        "legalRepresentativeName", new TypeReference<String>(){}),
 
     LEGAL_REP_COMPANY(
         "legalRepCompany", new TypeReference<String>(){}),
@@ -143,16 +143,16 @@ public enum AsylumCaseFieldDefinition {
         "legalRepName", new TypeReference<String>(){}),
 
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
-            "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
+        "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
 
     CHANGE_DIRECTION_DUE_DATE_ACTION_AVAILABLE(
-            "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
+        "changeDirectionDueDateActionAvailable", new TypeReference<YesOrNo>(){}),
 
     SEND_DIRECTION_ACTION_AVAILABLE(
-            "sendDirectionActionAvailable", new TypeReference<YesOrNo>(){}),
+        "sendDirectionActionAvailable", new TypeReference<YesOrNo>(){}),
 
     UPLOAD_ADDITIONAL_EVIDENCE_ACTION_AVAILABLE(
-            "uploadAdditionalEvidenceActionAvailable", new TypeReference<YesOrNo>(){}),
+        "uploadAdditionalEvidenceActionAvailable", new TypeReference<YesOrNo>(){}),
 
     UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE(
         "uploadHomeOfficeBundleActionAvailable", new TypeReference<YesOrNo>(){}),
@@ -164,13 +164,13 @@ public enum AsylumCaseFieldDefinition {
         "uploadHomeOfficeAppealResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER(
-            "currentCaseStateVisibleToCaseOfficer", new TypeReference<State>(){}),
+        "currentCaseStateVisibleToCaseOfficer", new TypeReference<State>(){}),
 
     CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE(
-            "currentCaseStateVisibleToLegalRepresentative", new TypeReference<State>(){}),
+        "currentCaseStateVisibleToLegalRepresentative", new TypeReference<State>(){}),
 
     CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
-            "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
+        "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
 
     CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC(
         "currentCaseStateVisibleToHomeOfficeApc", new TypeReference<State>(){}),
@@ -188,25 +188,25 @@ public enum AsylumCaseFieldDefinition {
         "currentCaseStateVisibleToHomeOfficeAll", new TypeReference<State>(){}),
 
     CASE_ARGUMENT_AVAILABLE(
-            "caseArgumentAvailable", new TypeReference<YesOrNo>(){}),
+        "caseArgumentAvailable", new TypeReference<YesOrNo>(){}),
 
     APPEAL_RESPONSE_AVAILABLE(
-            "appealResponseAvailable", new TypeReference<YesOrNo>(){}),
+        "appealResponseAvailable", new TypeReference<YesOrNo>(){}),
 
     CASE_BUILDING_READY_FOR_SUBMISSION(
-            "caseBuildingReadyForSubmission", new TypeReference<YesOrNo>(){}),
+        "caseBuildingReadyForSubmission", new TypeReference<YesOrNo>(){}),
 
     RESPONDENT_REVIEW_APPEAL_RESPONSE_ADDED(
-            "respondentReviewAppealResponseAdded", new TypeReference<YesOrNo>(){}),
+        "respondentReviewAppealResponseAdded", new TypeReference<YesOrNo>(){}),
 
     SUBMISSION_OUT_OF_TIME(
-            "submissionOutOfTime", new TypeReference<YesOrNo>(){}),
+        "submissionOutOfTime", new TypeReference<YesOrNo>(){}),
 
     DIRECTIONS(
-            "directions", new TypeReference<List<IdValue<Direction>>>(){}),
+        "directions", new TypeReference<List<IdValue<Direction>>>(){}),
 
     DECISION_AND_REASONS_AVAILABLE(
-            "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
+        "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
 
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
@@ -314,22 +314,31 @@ public enum AsylumCaseFieldDefinition {
         "recordApplicationActionDisabled", new TypeReference<YesOrNo>(){}),
 
     UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE(
-        "uploadAdditionalEvidenceHomeOfficeActionAvailable", new TypeReference<YesOrNo>(){}),
+        "uploadAdditionalEvidenceHomeOfficeActionAvailable", new TypeReference<YesOrNo>() {}),
 
     ADDITIONAL_EVIDENCE_HOME_OFFICE(
-        "additionalEvidenceHomeOffice", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+        "additionalEvidenceHomeOffice", new TypeReference<List<IdValue<DocumentWithDescription>>>() {}),
 
     REVIEW_RESPONSE_ACTION_AVAILABLE(
         "reviewResponseActionAvailable", new TypeReference<YesOrNo>(){}),
 
     AMEND_RESPONSE_ACTION_AVAILABLE(
-        "amendResponseActionAvailable", new TypeReference<YesOrNo>(){}),
+        "amendResponseActionAvailable", new TypeReference<YesOrNo>() {}),
 
     APPEAL_SUBMISSION_DATE(
-        "appealSubmissionDate", new TypeReference<String>(){}),
+        "appealSubmissionDate", new TypeReference<String>() {}),
+
+    JOURNEY_TYPE(
+        "journeyType", new TypeReference<JourneyType>(){}),
 
     HEARING_DATE_RANGE_DESCRIPTION(
-        "hearingDateRangeDescription", new TypeReference<String>(){}),
+        "hearingDateRangeDescription", new TypeReference<String>() {}),
+
+    WITNESS_COUNT(
+        "witnessCount", new TypeReference<String>() {}),
+
+    REVIEWED_HEARING_REQUIREMENTS(
+        "reviewedHearingRequirements", new TypeReference<YesOrNo>() {}),
 
     ORG_LIST_OF_USERS(
         "orgListOfUsers", new TypeReference<DynamicList>(){}),
@@ -353,16 +362,20 @@ public enum AsylumCaseFieldDefinition {
         "removeAppealFromOnlineDate", new TypeReference<String>() {}),
 
     WITNESS_DETAILS(
-        "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>(){}),
+        "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
 
-    WITNESS_COUNT(
-        "witnessCount", new TypeReference<String>(){}),
+    WITNESS_DETAILS_READONLY(
+        "witnessDetailsReadonly", new TypeReference<List<IdValue<WitnessDetails>>>() {}),
+
+    INTERPRETER_LANGUAGE(
+        "interpreterLanguage", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
+
+    INTERPRETER_LANGUAGE_READONLY(
+        "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
-        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>(){}),
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {})
 
-    JOURNEY_TYPE(
-            "journeyType", new TypeReference<JourneyType>(){})
     ;
 
     private final String value;
@@ -381,4 +394,3 @@ public enum AsylumCaseFieldDefinition {
         return typeReference;
     }
 }
-
