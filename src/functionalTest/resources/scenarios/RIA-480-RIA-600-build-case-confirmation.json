@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-480 & RIA-600 Build case confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",

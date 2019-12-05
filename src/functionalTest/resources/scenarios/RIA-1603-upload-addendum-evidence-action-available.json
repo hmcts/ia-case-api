@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-1603 Upload addendum evidence action becomes available in appropriate state",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

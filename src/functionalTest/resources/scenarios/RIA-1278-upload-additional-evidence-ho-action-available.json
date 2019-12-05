@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-1278 Upload additional Home Office evidence action becomes available in appropriate state",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

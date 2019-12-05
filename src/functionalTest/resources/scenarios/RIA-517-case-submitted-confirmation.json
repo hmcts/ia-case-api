@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-517 Submit case confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
