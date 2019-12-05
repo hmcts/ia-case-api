@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-1845 Upload addendum evidence Legal Rep action becomes available in appropriate state",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
