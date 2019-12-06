@@ -48,7 +48,7 @@ spring:
 featureFlag:
   docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
-  isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
+  isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeHearingRequirements.dueInDays: 5
