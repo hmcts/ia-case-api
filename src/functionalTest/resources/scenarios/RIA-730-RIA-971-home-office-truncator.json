@@ -4,10 +4,10 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "startAppeal",
-      "state": "appealStarted",
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
       "caseData": {
-        "template": "minimal-appeal-started.json",
+        "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "Z12345678/001"
         }
@@ -18,7 +18,7 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-started.json",
+      "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "Z1234567"
       }
