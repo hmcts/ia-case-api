@@ -1,0 +1,22 @@
+{
+  "description": "RIA-1147 exit appeal from the online service confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "removeAppealFromOnline",
+      "state": "caseUnderReview",
+      "id": 1147,
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've removed this appeal from the online service",
+      "body": "## Do this next\nYou now need to:</br>1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>2.Save all files associated with the appeal to the shared drive.</br>3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
+    }
+  }
+}

@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.List;
+
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
@@ -330,7 +332,10 @@ public enum AsylumCaseFieldDefinition {
             "journeyType", new TypeReference<JourneyType>(){}),
 
     HEARING_DATE_RANGE_DESCRIPTION(
-        "hearingDateRangeDescription", new TypeReference<String>(){})
+        "hearingDateRangeDescription", new TypeReference<String>(){}),
+
+    REMOVE_APPEAL_FROM_ONLINE_DATE(
+        "removeAppealFromOnlineDate", new TypeReference<String>() {}),
 
     ;
 

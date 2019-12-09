@@ -44,6 +44,8 @@ public enum Event {
     UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE("uploadAddendumEvidenceHomeOffice"),
     SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
 
+    REMOVE_APPEAL_FROM_ONLINE("removeAppealFromOnline"),
+
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

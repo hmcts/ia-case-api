@@ -133,6 +133,7 @@ security:
       - "requestResponseReview"
       - "requestResponseAmend"
       - "requestHearingRequirementsFeature"
+      - "removeAppealFromOnline"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

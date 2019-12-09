@@ -20,6 +20,7 @@ public enum State {
     DECISION("decision"),
     DECIDED("decided"),
     ENDED("ended"),
+    APPEAL_TAKEN_OFFLINE("appealTakenOffline"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
