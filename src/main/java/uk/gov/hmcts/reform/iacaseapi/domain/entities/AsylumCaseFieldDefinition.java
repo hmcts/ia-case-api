@@ -328,15 +328,23 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_SUBMISSION_DATE(
         "appealSubmissionDate", new TypeReference<String>(){}),
 
-    JOURNEY_TYPE(
-            "journeyType", new TypeReference<JourneyType>(){}),
-
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>(){}),
 
     REMOVE_APPEAL_FROM_ONLINE_DATE(
         "removeAppealFromOnlineDate", new TypeReference<String>() {}),
 
+    WITNESS_DETAILS(
+        "witnessDetails", new TypeReference<List<IdValue<WitnessDetails>>>(){}),
+
+    WITNESS_COUNT(
+        "witnessCount", new TypeReference<String>(){}),
+
+    SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>(){}),
+
+    JOURNEY_TYPE(
+            "journeyType", new TypeReference<JourneyType>(){})
     ;
 
     private final String value;
