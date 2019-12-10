@@ -16,6 +16,26 @@ public class AuthorizationHeadersProvider {
     @Autowired
     private IdamAuthorizor idamAuthorizor;
 
+    public Headers getXuiLegalRepresentativeAuthorization() {
+
+        String serviceToken = serviceAuthTokenGenerator.generate();
+        String accessToken = idamAuthorizor.exchangeForAccessToken(
+            "ia.legalrep.a.xui@gmail.com",
+            "Aldg@teT0wer"
+        );
+
+        System.out.println("\n\n\n ===============================================\n\n\n");
+        System.out.println("ServiceAuthorization=" + serviceToken);
+        System.out.println("Authorization=" + accessToken);
+        System.out.println("\n\n\n ===============================================\n\n\n");
+
+        return new Headers(
+            new Header("ServiceAuthorization", serviceToken),
+            new Header("Authorization", accessToken)
+        );
+    }
+
+
     public Headers getLegalRepresentativeAuthorization() {
 
         String serviceToken = serviceAuthTokenGenerator.generate();

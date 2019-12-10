@@ -3,6 +3,7 @@
 /target/
 !gradle/wrapper/gradle-wrapper.jar
 /node_modules
+/infrastructure/.terraform/
 
 ### STS ###
 .apt_generated

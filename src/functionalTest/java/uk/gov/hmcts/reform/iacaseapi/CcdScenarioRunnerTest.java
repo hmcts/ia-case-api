@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,17 @@ public class CcdScenarioRunnerTest {
     }
 
     @Test
+    public void get_authorization_headers() {
+
+        System.out.println("Running header provider test in aat");
+        authorizationHeadersProvider.getXuiLegalRepresentativeAuthorization();
+        System.out.println("Finished header provider test in aat");
+
+    }
+
+
+    @Test
+    @Ignore
     public void scenarios_should_behave_as_specified() throws IOException {
 
         loadPropertiesIntoMapValueExpander();
