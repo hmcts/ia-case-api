@@ -178,6 +178,5 @@ document_management.url: ${DM_URL:http://127.0.0.1:4506}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
-#prof.ref.data.url: ${PROF_REF_DATA_URL:http://rd-professional-api-demo.service.core-compute-demo.internal}
-prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8990}
+prof.ref.data.url: ${PROF_REF_DATA_URL:http://rd-professional-api-demo.service.core-compute-demo.internal}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
