@@ -124,6 +124,13 @@ public class PreSubmitCallbackController {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
+    @PostMapping(path = "/ccdMidEvent")
+    public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdMidEvent(
+        @ApiParam(value = "Asylum case data", required = true) @NotNull @RequestBody Callback<AsylumCase> callback
+    ) {
+        return performStageRequest(PreSubmitCallbackStage.MID_EVENT, callback);
+    }
+
     private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> performStageRequest(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
