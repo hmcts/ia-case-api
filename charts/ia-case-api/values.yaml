@@ -34,6 +34,7 @@ java:
         - dm-url
         - idam-url
         - s2s-url
+        - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
         - case-api-POSTGRES-PASS
