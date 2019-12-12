@@ -59,9 +59,11 @@ public class HearingCentreFinderTest {
             )
             .put(
                 HearingCentre.BIRMINGHAM,
-                Arrays.asList("B", "CV", "DY", "GL", "HP",
-                    "LU", "NN", "OX", "RG", "SY",
-                    "TF", "WD", "WR", "WS", "WV")
+                Arrays.asList("B", "CV", "DE", "DY", "GL",
+                    "HP", "LE", "LN", "LU", "MK",
+                    "NG", "NN", "OX", "PE", "RG",
+                    "SY", "TF", "WD", "WR", "WS",
+                    "WV")
             )
             .put(
                 HearingCentre.HATTON_CROSS,
@@ -281,12 +283,18 @@ public class HearingCentreFinderTest {
                 .<String, HearingCentre>builder()
                 .put("B2 4AA", HearingCentre.BIRMINGHAM)       // Birmingham
                 .put("CV1 4ET", HearingCentre.BIRMINGHAM)      // Coventry
+                .put("DE1 1SD", HearingCentre.BIRMINGHAM)      // Derby
                 .put("DY1 1PY", HearingCentre.BIRMINGHAM)      // Dudley
                 .put("GL1 4SS", HearingCentre.BIRMINGHAM)      // Gloucester
                 .put("HP3 8EW", HearingCentre.BIRMINGHAM)      // Hemel Hempstead
+                .put("LE3 9AR", HearingCentre.BIRMINGHAM)      // Leicester
+                .put("LN1 3LJ", HearingCentre.BIRMINGHAM)      // Lincoln
                 .put("LU1 1EX", HearingCentre.BIRMINGHAM)      // Luton
+                .put("MK6 5BZ", HearingCentre.BIRMINGHAM)      // Milton Keynes
                 .put("NN1 1AF", HearingCentre.BIRMINGHAM)      // Northampton
+                .put("NG7 3HE", HearingCentre.BIRMINGHAM)      // Nottingham
                 .put("OX2 6HA", HearingCentre.BIRMINGHAM)      // Oxford
+                .put("PE1 1DP", HearingCentre.BIRMINGHAM)      // Peterborough
                 .put("RG1 2AD", HearingCentre.BIRMINGHAM)      // Reading
                 .put("SY1 2LE", HearingCentre.BIRMINGHAM)      // Shrewsbury
                 .put("TF4 2DZ", HearingCentre.BIRMINGHAM)      // Telford
