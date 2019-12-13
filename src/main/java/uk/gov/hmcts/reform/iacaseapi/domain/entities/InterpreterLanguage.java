@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WitnessDetails {
+public class InterpreterLanguage {
 
-    private String witnessName;
+    private String language;
+    private String languageDialect;
+
 }
