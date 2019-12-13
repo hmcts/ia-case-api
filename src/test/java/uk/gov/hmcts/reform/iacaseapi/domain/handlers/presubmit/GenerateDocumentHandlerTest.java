@@ -223,6 +223,7 @@ public class GenerateDocumentHandlerTest {
                     Arrays.asList(
                         SUBMIT_APPEAL,
                         SUBMIT_CASE,
+                        DRAFT_HEARING_REQUIREMENTS,
                         LIST_CASE,
                         EDIT_CASE_LISTING,
                         GENERATE_HEARING_BUNDLE,
@@ -289,6 +290,7 @@ public class GenerateDocumentHandlerTest {
                 ImmutableSet<Event> eventsThatDontRequireStitching =
                     immutableEnumSet(
                         SUBMIT_APPEAL,
+                        DRAFT_HEARING_REQUIREMENTS,
                         LIST_CASE,
                         GENERATE_DECISION_AND_REASONS,
                         EDIT_CASE_LISTING,
