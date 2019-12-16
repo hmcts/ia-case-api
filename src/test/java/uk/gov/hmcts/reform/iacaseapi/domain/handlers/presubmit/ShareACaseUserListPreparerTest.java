@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -32,6 +33,7 @@ public class ShareACaseUserListPreparerTest {
     @Mock ProfessionalUsersRetriever professionalUsersRetriever;
     @Mock ProfessionalUsersResponse professionalUsersResponse;
     @Mock ProfessionalUser professionalUser;
+    @Mock UserDetailsProvider userDetailsProvider;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -41,7 +43,8 @@ public class ShareACaseUserListPreparerTest {
     @Before
     public void setUp() throws Exception {
         shareACaseUserListPreparer = new ShareACaseUserListPreparer(
-            professionalUsersRetriever
+            professionalUsersRetriever,
+            userDetailsProvider
         );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

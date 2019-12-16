@@ -334,6 +334,12 @@ public enum AsylumCaseFieldDefinition {
     ORG_LIST_OF_USERS(
         "orgListOfUsers", new TypeReference<DynamicList>(){}),
 
+    SHARE_A_CASE_USER_LIST(
+        "shareACaseUserList", new TypeReference<List<IdValue<String>>>(){}),
+
+    SHARE_A_CASE_USER_LIST_READ_ONLY(
+        "shareACaseUserListReadOnly", new TypeReference<String>(){}),
+
     DIRECTION_LIST(
         "directionList", new TypeReference<DynamicList>(){}),
 

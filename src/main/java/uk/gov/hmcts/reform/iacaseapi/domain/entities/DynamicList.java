@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -13,6 +14,7 @@ public class DynamicList {
 
     public DynamicList(String value) {
         this.value = new Value(value, value);
+        this.listItems = new ArrayList<>();
     }
 
     private DynamicList() {
