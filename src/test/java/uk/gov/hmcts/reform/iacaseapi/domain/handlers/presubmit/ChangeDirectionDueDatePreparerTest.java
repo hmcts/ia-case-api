@@ -59,16 +59,14 @@ public class ChangeDirectionDueDatePreparerTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
-                    emptyList()
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW,
-                    emptyList()
+                    DirectionTag.RESPONDENT_REVIEW
                 ))
             );
 
