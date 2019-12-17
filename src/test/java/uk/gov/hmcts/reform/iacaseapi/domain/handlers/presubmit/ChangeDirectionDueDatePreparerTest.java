@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -9,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +34,11 @@ public class ChangeDirectionDueDatePreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<List<IdValue<EditableDirection>>> editableDirectionsCaptor;
+    @Captor private ArgumentCaptor<Object> editableDirectionsCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+
+    private String direction1 = "Direction 1";
+    private String direction2 = "Direction 2";
 
     private ChangeDirectionDueDatePreparer changeDirectionDueDatePreparer;
 
@@ -77,16 +82,32 @@ public class ChangeDirectionDueDatePreparerTest {
 
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        List<IdValue<EditableDirection>> actualEditableDirections = editableDirectionsCaptor.getAllValues().get(0);
+        //DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().get(0);
+        //
+        //assertEquals(
+        //    DIRECTION_LIST,
+        //    asylumExtractorCaptor.getAllValues().get(0)
+        //);
+        //
+        //assertEquals(direction2, dynamicList.getValue().getCode());
+        //assertEquals(direction2, dynamicList.getValue().getLabel());
+        //
+        //assertEquals(2, dynamicList.getListItems().size());
+        //assertEquals(direction2, dynamicList.getListItems().get(0).getCode());
+        //assertEquals(direction2, dynamicList.getListItems().get(0).getLabel());
+        //assertEquals(direction1, dynamicList.getListItems().get(1).getCode());
+        //assertEquals(direction1, dynamicList.getListItems().get(1).getLabel());
+
+        List<IdValue<EditableDirection>> actualEditableDirections = (List<IdValue<EditableDirection>>) editableDirectionsCaptor.getAllValues().get(0);
 
         assertEquals(
-                EDITABLE_DIRECTIONS,
-                asylumExtractorCaptor.getValue()
+            EDITABLE_DIRECTIONS,
+            asylumExtractorCaptor.getAllValues().get(0)
         );
 
         assertEquals(
-                existingDirections.size(),
-                actualEditableDirections.size()
+            existingDirections.size(),
+            actualEditableDirections.size()
         );
 
         assertEquals(existingDirections.get(0).getId(), actualEditableDirections.get(0).getId());
@@ -98,6 +119,26 @@ public class ChangeDirectionDueDatePreparerTest {
         assertEquals(existingDirections.get(1).getValue().getExplanation(), actualEditableDirections.get(1).getValue().getExplanation());
         assertEquals(existingDirections.get(1).getValue().getParties(), actualEditableDirections.get(1).getValue().getParties());
         assertEquals(existingDirections.get(1).getValue().getDateDue(), actualEditableDirections.get(1).getValue().getDateDue());
+    }
+
+
+    @Test
+    public void handling_should_return_error_when_direction_is_empty_list() {
+
+        final List<IdValue<Direction>> existingDirections = emptyList();
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            changeDirectionDueDatePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(1, callbackResponse.getErrors().size());
+        assertTrue(callbackResponse.getErrors().contains("There is no direction to edit"));
     }
 
     @Test

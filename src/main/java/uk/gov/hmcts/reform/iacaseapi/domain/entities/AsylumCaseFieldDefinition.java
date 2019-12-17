@@ -331,6 +331,24 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>(){}),
 
+    ORG_LIST_OF_USERS(
+        "orgListOfUsers", new TypeReference<DynamicList>(){}),
+
+    DIRECTION_LIST(
+        "directionList", new TypeReference<DynamicList>(){}),
+
+    DIRECTION_EDIT_EXPLANATION(
+        "directionEditExplanation", new TypeReference<String>(){}),
+
+    DIRECTION_EDIT_PARTIES(
+        "directionEditParties", new TypeReference<Parties>(){}),
+
+    DIRECTION_EDIT_DATE_DUE(
+        "directionEditDateDue", new TypeReference<String>(){}),
+
+    DIRECTION_EDIT_DATE_SENT(
+        "directionEditDateSent", new TypeReference<String>(){}),
+
     REMOVE_APPEAL_FROM_ONLINE_DATE(
         "removeAppealFromOnlineDate", new TypeReference<String>() {}),
 

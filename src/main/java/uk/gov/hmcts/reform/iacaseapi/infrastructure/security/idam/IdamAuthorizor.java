@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -81,7 +82,7 @@ public class IdamAuthorizor {
                         }
                     ).getBody();
 
-        } catch (RestClientException e) {
+        } catch (RestClientResponseException e) {
 
             throw new IdentityManagerResponseException(
                 "Could not get auth code with IDAM",
