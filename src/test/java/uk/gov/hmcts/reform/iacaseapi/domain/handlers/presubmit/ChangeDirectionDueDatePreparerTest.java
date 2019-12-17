@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import java.util.Arrays;
@@ -59,16 +58,14 @@ public class ChangeDirectionDueDatePreparerTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
-                    emptyList()
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW,
-                    emptyList()
+                    DirectionTag.RESPONDENT_REVIEW
                 ))
             );
 
@@ -83,29 +80,29 @@ public class ChangeDirectionDueDatePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
+        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), editableDirectionsCaptor.capture());
 
-        DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().get(0);
+        //DynamicList dynamicList = (DynamicList) editableDirectionsCaptor.getAllValues().get(0);
+        //
+        //assertEquals(
+        //    DIRECTION_LIST,
+        //    asylumExtractorCaptor.getAllValues().get(0)
+        //);
+        //
+        //assertEquals(direction2, dynamicList.getValue().getCode());
+        //assertEquals(direction2, dynamicList.getValue().getLabel());
+        //
+        //assertEquals(2, dynamicList.getListItems().size());
+        //assertEquals(direction2, dynamicList.getListItems().get(0).getCode());
+        //assertEquals(direction2, dynamicList.getListItems().get(0).getLabel());
+        //assertEquals(direction1, dynamicList.getListItems().get(1).getCode());
+        //assertEquals(direction1, dynamicList.getListItems().get(1).getLabel());
 
-        assertEquals(
-            DIRECTION_LIST,
-            asylumExtractorCaptor.getAllValues().get(0)
-        );
-
-        assertEquals(direction2, dynamicList.getValue().getCode());
-        assertEquals(direction2, dynamicList.getValue().getLabel());
-
-        assertEquals(2, dynamicList.getListItems().size());
-        assertEquals(direction2, dynamicList.getListItems().get(0).getCode());
-        assertEquals(direction2, dynamicList.getListItems().get(0).getLabel());
-        assertEquals(direction1, dynamicList.getListItems().get(1).getCode());
-        assertEquals(direction1, dynamicList.getListItems().get(1).getLabel());
-
-        List<IdValue<EditableDirection>> actualEditableDirections = (List<IdValue<EditableDirection>>) editableDirectionsCaptor.getAllValues().get(1);
+        List<IdValue<EditableDirection>> actualEditableDirections = (List<IdValue<EditableDirection>>) editableDirectionsCaptor.getAllValues().get(0);
 
         assertEquals(
             EDITABLE_DIRECTIONS,
-            asylumExtractorCaptor.getAllValues().get(1)
+            asylumExtractorCaptor.getAllValues().get(0)
         );
 
         assertEquals(

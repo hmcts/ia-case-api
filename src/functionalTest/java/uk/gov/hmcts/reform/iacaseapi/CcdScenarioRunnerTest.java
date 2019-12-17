@@ -134,8 +134,6 @@ public class CcdScenarioRunnerTest {
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 
-            System.out.println();
-
             String actualResponseBody =
                 SerenityRest
                     .given()

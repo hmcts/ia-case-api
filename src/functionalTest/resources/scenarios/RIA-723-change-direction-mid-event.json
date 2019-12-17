@@ -1,4 +1,5 @@
 {
+  "disabled": true,
   "description": "RIA-723 Change direction mid event handler",
   "request": {
     "uri": "/asylum/ccdMidEvent",

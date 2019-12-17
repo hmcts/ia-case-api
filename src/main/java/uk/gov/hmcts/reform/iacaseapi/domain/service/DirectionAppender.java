@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -41,8 +40,7 @@ public class DirectionAppender {
             parties,
             dateDue,
             dateProvider.now().toString(),
-            tag,
-            Collections.emptyList()
+            tag
         );
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();

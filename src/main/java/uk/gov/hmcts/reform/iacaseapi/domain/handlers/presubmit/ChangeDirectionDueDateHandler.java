@@ -6,7 +6,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
 
 import java.util.*;
@@ -62,32 +61,33 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
         // new path when dynamic list is present
         if (dynamicList.isPresent()) {
 
-            List<IdValue<Direction>> changedDirections =
-                maybeDirections.orElse(emptyList())
-                    .stream()
-                    .map(idValue -> {
-
-                        if (dynamicList.get().getValue().getCode().contains("Direction " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1))) {
-                            return new IdValue<>(
-                                idValue.getId(),
-                                new Direction(
-                                    idValue.getValue().getExplanation(),
-                                    idValue.getValue().getParties(),
-                                    asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
-                                    dateProvider.now().toString(),
-                                    idValue.getValue().getTag(),
-                                    appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
-                                )
-                            );
-                        } else {
-                            return idValue;
-                        }
-                    })
-                    .collect(toList());
-
-            asylumCase.clear(DIRECTION_LIST);
-
-            asylumCase.write(DIRECTIONS, changedDirections);
+            // commented to prioritise release queue
+            //List<IdValue<Direction>> changedDirections =
+            //    maybeDirections.orElse(emptyList())
+            //        .stream()
+            //        .map(idValue -> {
+            //
+            //            if (dynamicList.get().getValue().getCode().contains("Direction " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1))) {
+            //                return new IdValue<>(
+            //                    idValue.getId(),
+            //                    new Direction(
+            //                        idValue.getValue().getExplanation(),
+            //                        idValue.getValue().getParties(),
+            //                        asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
+            //                        dateProvider.now().toString(),
+            //                        idValue.getValue().getTag(),
+            //                        appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
+            //                    )
+            //                );
+            //            } else {
+            //                return idValue;
+            //            }
+            //        })
+            //        .collect(toList());
+            //
+            //asylumCase.clear(DIRECTION_LIST);
+            //
+            //asylumCase.write(DIRECTIONS, changedDirections);
 
         } /* compatibility with old CCD definitions (remove on next release) */ else {
 
@@ -124,8 +124,7 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                                 existingDirection.getParties(),
                                 idValue.getValue().getDateDue(),
                                 existingDirection.getDateSent(),
-                                existingDirection.getTag(),
-                                Collections.emptyList()
+                                existingDirection.getTag()
                             )
                         );
 
