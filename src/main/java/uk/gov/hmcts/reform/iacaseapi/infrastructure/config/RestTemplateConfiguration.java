@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -35,4 +36,25 @@ public class RestTemplateConfiguration {
     ) {
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
+
+    @Bean
+    public RestTemplate refDataRestTemplate(
+        @Qualifier("refDataObjectMapper") ObjectMapper refDataObjectMapper
+    ) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate
+            .getMessageConverters()
+            .add(0, refDataMappingJackson2HttpMessageConverter(refDataObjectMapper));
+
+        return restTemplate;
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter refDataMappingJackson2HttpMessageConverter(
+        @Qualifier("refDataObjectMapper") ObjectMapper refDataObjectMapper
+    ) {
+        return new MappingJackson2HttpMessageConverter(refDataObjectMapper);
+    }
+
+
 }

@@ -58,4 +58,5 @@ public class Direction {
         requireNonNull(tag);
         return tag;
     }
+
 }

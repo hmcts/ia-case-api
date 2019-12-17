@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -41,13 +39,29 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase
-                .read(DIRECTIONS);
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+
+        List<Value> directionListElements = maybeDirections
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(idValue -> new Value("Direction " + idValue.getId(), "Direction " + idValue.getId()))
+            .collect(Collectors.toList());
+
+        if (directionListElements.isEmpty()) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("There is no direction to edit");
+            return response;
+        }
+
+        Collections.reverse(directionListElements);
+        DynamicList directionList = new DynamicList(directionListElements.get(0), directionListElements);
+        // remove for now RIA-723
+        //asylumCase.write(DIRECTION_LIST, directionList);
 
         List<IdValue<EditableDirection>> editableDirections =
             maybeDirections
@@ -64,7 +78,6 @@ public class ChangeDirectionDueDatePreparer implements PreSubmitCallbackHandler<
                     )
                 )
                 .collect(Collectors.toList());
-
         asylumCase.write(EDITABLE_DIRECTIONS, editableDirections);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
