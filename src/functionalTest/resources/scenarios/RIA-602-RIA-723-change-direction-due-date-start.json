@@ -1,5 +1,5 @@
 {
-  "description": "RIA-602 Change direction due date - prefill editable directions",
+  "description": "RIA-602/RIA-723 Change direction due date - prefill editable directions",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
@@ -81,7 +81,23 @@
               "dateDue": "2018-12-31"
             }
           }
-        ]
+        ],
+        "directionList": {
+          "value": {
+            "code": "Direction 1",
+            "label": "Direction 1"
+          },
+          "list_items": [
+            {
+              "code": "Direction 1",
+              "label": "Direction 1"
+            },
+            {
+              "code": "Direction 2",
+              "label": "Direction 2"
+            }
+          ]
+        }
       }
     }
   }
