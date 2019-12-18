@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,14 +56,16 @@ public class ChangeDirectionDueMidEventTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
+                    Collections.emptyList()
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW
+                    DirectionTag.RESPONDENT_REVIEW,
+                    Collections.emptyList()
                 ))
             );
 

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static com.beust.jcommander.internal.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -7,11 +8,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -46,12 +47,13 @@ public class ChangeDirectionDueDateHandlerTest {
 
     @Before
     public void setUp() {
+        when(dateProvider.now()).thenReturn(dateSent);
+
         changeDirectionDueDateHandler =
             new ChangeDirectionDueDateHandler(dateProvider);
     }
 
     @Test
-    @Ignore("new direction handling is ignored until RIA-723 is released")
     public void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
 
         List<IdValue<Direction>> existingDirections =
@@ -61,14 +63,16 @@ public class ChangeDirectionDueDateHandlerTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
+                    Collections.emptyList()
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW
+                    DirectionTag.RESPONDENT_REVIEW,
+                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01")))
                 ))
             );
 
@@ -112,13 +116,13 @@ public class ChangeDirectionDueDateHandlerTest {
         assertEquals("2222-12-01", actualDirections.get(1).getValue().getDateDue());
         assertEquals(dateSent.toString(), actualDirections.get(1).getValue().getDateSent());
         assertEquals(DirectionTag.RESPONDENT_REVIEW, actualDirections.get(1).getValue().getTag());
-        //assertEquals(2, actualDirections.get(1).getValue().getPreviousDates().size());
-        //assertEquals("2", actualDirections.get(1).getValue().getPreviousDates().get(0).getId());
-        //assertEquals("2020-11-01", actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateDue());
-        //assertEquals("2019-11-01", actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateSent());
-        //assertEquals("1", actualDirections.get(1).getValue().getPreviousDates().get(1).getId());
-        //assertEquals("2018-05-01", actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateDue());
-        //assertEquals("2018-03-01", actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
+        assertEquals(2, actualDirections.get(1).getValue().getPreviousDates().size());
+        assertEquals("2", actualDirections.get(1).getValue().getPreviousDates().get(0).getId());
+        assertEquals("2020-11-01", actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateDue());
+        assertEquals("2019-11-01", actualDirections.get(1).getValue().getPreviousDates().get(0).getValue().getDateSent());
+        assertEquals("1", actualDirections.get(1).getValue().getPreviousDates().get(1).getId());
+        assertEquals("2018-05-01", actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateDue());
+        assertEquals("2018-03-01", actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
     }
 
     @Test
@@ -189,14 +193,16 @@ public class ChangeDirectionDueDateHandlerTest {
                     Parties.LEGAL_REPRESENTATIVE,
                     "2020-12-01",
                     "2019-12-01",
-                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW
+                    DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
+                    Collections.emptyList()
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
-                    DirectionTag.RESPONDENT_REVIEW
+                    DirectionTag.RESPONDENT_REVIEW,
+                    Collections.emptyList()
                 ))
             );
 

@@ -1,5 +1,4 @@
 {
-  "disabled": true,
   "description": "RIA-602/RIA-723 Change direction due date - submit editable directions",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
