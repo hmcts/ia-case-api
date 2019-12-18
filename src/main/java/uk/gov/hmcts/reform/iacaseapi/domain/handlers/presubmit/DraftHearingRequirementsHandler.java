@@ -53,6 +53,7 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         asylumCase.write(WITNESS_COUNT, witnessDetails.size());
 
         asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
+        asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

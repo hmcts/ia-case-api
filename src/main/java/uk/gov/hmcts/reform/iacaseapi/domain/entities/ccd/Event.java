@@ -20,6 +20,7 @@ public enum Event {
     UPLOAD_HOME_OFFICE_APPEAL_RESPONSE("uploadHomeOfficeAppealResponse"),
     REQUEST_HEARING_REQUIREMENTS("requestHearingRequirements"),
     REQUEST_HEARING_REQUIREMENTS_FEATURE("requestHearingRequirementsFeature"),
+    REVIEW_HEARING_REQUIREMENTS("reviewHearingRequirements"),
     DRAFT_HEARING_REQUIREMENTS("draftHearingRequirements"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),

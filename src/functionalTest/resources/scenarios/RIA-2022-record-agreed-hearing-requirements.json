@@ -1,0 +1,41 @@
+{
+  "description": "RIA-2022 Draft and submit hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reviewHearingRequirements",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "reviewedHearingRequirements": "No",
+          "listCaseHearingLength": "300",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "additionalTribunalResponse": "additional reason",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "reviewedHearingRequirements": "Yes",
+        "listCaseHearingLength": "300",
+        "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+        "multimediaTribunalResponse": "multimedia reason",
+        "singleSexCourtTribunalResponse": "singleSexCourt reason",
+        "inCameraCourtTribunalResponse": "inCameraCourt reason",
+        "additionalTribunalResponse": "additional reason",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
