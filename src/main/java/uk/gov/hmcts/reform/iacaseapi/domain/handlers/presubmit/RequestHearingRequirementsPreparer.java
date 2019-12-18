@@ -1,26 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RequestHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -29,8 +22,8 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.DRAFT_HEARING_REQUIREMENTS;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+               && callback.getEvent() == Event.REQUEST_HEARING_REQUIREMENTS_FEATURE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -41,21 +34,18 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase =
+        AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        final Optional<List<IdValue<WitnessDetails>>> mayBeWitnessDetails = asylumCase.read(WITNESS_DETAILS);
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final List<WitnessDetails> witnessDetails = mayBeWitnessDetails.orElse(Collections.emptyList()).stream().map(IdValue::getValue).collect(Collectors.toList());
+        if (asylumCase.read(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
+            response.addError("You cannot submit your hearing requirements before the Home Office response has been uploaded.");
+        }
 
-        asylumCase.write(WITNESS_COUNT, witnessDetails.size());
-
-        asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
-        asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.NO);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 
 }

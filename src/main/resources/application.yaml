@@ -111,6 +111,7 @@ security:
       - "uploadAddendumEvidenceLegalRep"
       - "draftHearingRequirements"
       - "shareACase"
+      - "requestHearingRequirementsFeature"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -136,6 +137,7 @@ security:
       - "requestResponseAmend"
       - "requestHearingRequirementsFeature"
       - "removeAppealFromOnline"
+      - "reviewHearingRequirements"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

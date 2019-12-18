@@ -61,10 +61,12 @@ public class ReviewAmendDirectionHandler extends DirectionHandler implements Pre
         if (callback.getEvent().equals(Event.REQUEST_RESPONSE_REVIEW)) {
             asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
+            asylumCase.write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.YES);
         } else {
             asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.NO);
+            asylumCase.write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
