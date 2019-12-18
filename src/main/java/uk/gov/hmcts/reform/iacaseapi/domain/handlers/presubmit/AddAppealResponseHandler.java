@@ -117,7 +117,6 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
         asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YES);
-
         asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YES);
         asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YES);
 

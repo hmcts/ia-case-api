@@ -334,9 +334,6 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
 
-    REVIEWED_HEARING_REQUIREMENTS(
-        "reviewedHearingRequirements", new TypeReference<YesOrNo>() {}),
-
     ORG_LIST_OF_USERS(
         "orgListOfUsers", new TypeReference<DynamicList>(){}),
 
@@ -357,6 +354,9 @@ public enum AsylumCaseFieldDefinition {
 
     REVIEWED_HEARING_REQUIREMENTS(
         "reviewedHearingRequirements", new TypeReference<YesOrNo>() {}),
+
+    REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP(
+        "reviewHomeOfficeResponseByLegalRep", new TypeReference<YesOrNo>(){}),
 
     REMOVE_APPEAL_FROM_ONLINE_DATE(
         "removeAppealFromOnlineDate", new TypeReference<String>() {}),
