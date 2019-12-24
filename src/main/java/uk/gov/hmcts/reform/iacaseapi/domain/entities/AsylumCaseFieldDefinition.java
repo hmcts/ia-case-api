@@ -334,6 +334,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
 
+    DATES_TO_AVOID_DESCRIPTION(
+        "datesToAvoidDescription", new TypeReference<String>() {}),
+
     ORG_LIST_OF_USERS(
         "orgListOfUsers", new TypeReference<DynamicList>(){}),
 

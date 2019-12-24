@@ -61,6 +61,7 @@ public class DraftHearingRequirementsPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.HEARING_DATE_RANGE_DESCRIPTION, draftHearingRequirementsPreparer.getDateRangeText(localDate));
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.DATES_TO_AVOID_DESCRIPTION, "Tell us which dates and explain why the case cannot be heard on these dates.");
     }
 
     @Test

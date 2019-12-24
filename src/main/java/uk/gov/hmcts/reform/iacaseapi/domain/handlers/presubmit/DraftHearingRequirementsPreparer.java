@@ -42,6 +42,7 @@ public class DraftHearingRequirementsPreparer implements PreSubmitCallbackHandle
                 .getCaseData();
 
         asylumCase.write(HEARING_DATE_RANGE_DESCRIPTION, getDateRangeText(LocalDate.now()));
+        asylumCase.write(DATES_TO_AVOID_DESCRIPTION, "Tell us which dates and explain why the case cannot be heard on these dates.");
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
