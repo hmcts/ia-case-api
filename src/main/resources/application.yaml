@@ -138,6 +138,7 @@ security:
       - "requestHearingRequirementsFeature"
       - "removeAppealFromOnline"
       - "reviewHearingRequirements"
+      - "listCaseWithoutHearingRequirements"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

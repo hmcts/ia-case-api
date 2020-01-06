@@ -1,0 +1,33 @@
+{
+  "description": "RIA-2041 List case without submit hearing requirements",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "listCaseWithoutHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "listCaseHearingLength": "90"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "submitHearingRequirementsAvailable": "Yes",
+        "reviewedHearingRequirements": "Yes",
+        "caseListedWithoutHearingRequirements": "Yes",
+        "listCaseHearingLength": "90"
+      }
+    }
+  }
+}

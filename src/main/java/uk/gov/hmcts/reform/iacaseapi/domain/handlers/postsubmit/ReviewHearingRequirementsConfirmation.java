@@ -2,12 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+
 
 @Component
 public class ReviewHearingRequirementsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
@@ -17,7 +19,10 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS;
+        return Arrays.asList(
+            Event.REVIEW_HEARING_REQUIREMENTS,
+            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
+        ).contains(callback.getEvent());
     }
 
     public PostSubmitCallbackResponse handle(
