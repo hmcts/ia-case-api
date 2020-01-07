@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import com.google.common.collect.Lists;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +41,27 @@ public class ChangeDirectionDueDateHandlerTest {
 
     @Captor private ArgumentCaptor<List<IdValue<Direction>>> asylumValueCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+
+    private String applicationSupplier = "Legal representative";
+    private String applicationReason = "applicationReason";
+    private String applicationDate = "09/01/2020";
+    private String applicationDecision = "Granted";
+    private String applicationDecisionReason = "Granted";
+    private String applicationDateOfDecision = "10/01/2020";
+    private String applicationStatus = "In progress";
+
+    private List<IdValue<Application>> applications = Lists.newArrayList(new IdValue<>("1", new Application(
+        Collections.emptyList(),
+        applicationSupplier,
+        ApplicationType.TIME_EXTENSION.toString(),
+        applicationReason,
+        applicationDate,
+        applicationDecision,
+        applicationDecisionReason,
+        applicationDateOfDecision,
+        applicationStatus
+    )));
 
     private String direction1 = "Direction 1";
     private LocalDate dateSent = LocalDate.now();
@@ -84,6 +107,7 @@ public class ChangeDirectionDueDateHandlerTest {
         // "Direction 1" in UI is equivalent of Direction with IdValue "2" in backend
         when(asylumCase.read(DIRECTION_LIST, DynamicList.class)).thenReturn(Optional.of(new DynamicList(direction1)));
         when(asylumCase.read(DIRECTION_EDIT_DATE_DUE, String.class)).thenReturn(Optional.of("2222-12-01"));
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             changeDirectionDueDateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -91,9 +115,13 @@ public class ChangeDirectionDueDateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+        verify(asylumCase, times(2)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
 
         verify(asylumCase).clear(DIRECTION_LIST);
+        verify(asylumCase).clear(DISABLE_OVERVIEW_PAGE);
+        verify(asylumCase).clear(APPLICATION_TIME_EXTENSION_EXISTS);
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
 
         List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();

@@ -1,9 +1,10 @@
 {
-  "description": "RIA-1485 record granted time extension application confirmation",
+  "description": "RIA-1485-RIA-1500 record granted time extension application confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
     "input": {
+      "id": 1234,
       "eventId": "recordApplication",
       "state": "caseBuilding",
       "caseData": {
@@ -19,7 +20,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have recorded an application",
-      "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. You must change the direction due date to send an updated direction. You will need to find the direction in the list of directions and only edit the due date."
+      "body": "#### What happens next\n\nYou must now [change the direction due date](/case/IA/Asylum/1234/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab."
     }
   }
 }

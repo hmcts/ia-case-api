@@ -5,11 +5,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -86,8 +85,11 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                     .collect(toList());
 
             asylumCase.clear(DIRECTION_LIST);
-
             asylumCase.write(DIRECTIONS, changedDirections);
+            asylumCase.clear(DISABLE_OVERVIEW_PAGE);
+            asylumCase.clear(APPLICATION_TIME_EXTENSION_EXISTS);
+            changeTimeExtensionApplicationsToCompleted(asylumCase);
+
 
         } /* compatibility with old CCD definitions (remove on next release) */ else {
 
@@ -134,6 +136,7 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
 
             asylumCase.clear(EDITABLE_DIRECTIONS);
             asylumCase.write(DIRECTIONS, changedDirections);
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -157,5 +160,32 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
 
             return allPreviousDates;
         }
+    }
+
+    private void changeTimeExtensionApplicationsToCompleted(AsylumCase asylumCase) {
+        asylumCase.write(APPLICATIONS, asylumCase.<List<IdValue<Application>>>read(APPLICATIONS)
+            .orElse(emptyList())
+            .stream()
+            .map(application -> {
+                String applicationType = application.getValue().getApplicationType();
+                if (ApplicationType.TIME_EXTENSION.toString().equals(applicationType)) {
+
+                    return new IdValue<>(application.getId(), new Application(
+                        application.getValue().getApplicationDocuments(),
+                        application.getValue().getApplicationSupplier(),
+                        applicationType,
+                        application.getValue().getApplicationReason(),
+                        application.getValue().getApplicationDate(),
+                        application.getValue().getApplicationDecision(),
+                        application.getValue().getApplicationDecisionReason(),
+                        application.getValue().getApplicationDateOfDecision(),
+                        "Completed"
+                    ));
+                }
+
+                return application;
+            })
+            .collect(Collectors.toList())
+        );
     }
 }

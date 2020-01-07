@@ -49,8 +49,6 @@ public class RecordApplicationHandlerTest {
     );
 
     private final List<State> timeExtensionSates = newArrayList(
-        State.APPEAL_SUBMITTED,
-        State.APPEAL_SUBMITTED_OUT_OF_TIME,
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
