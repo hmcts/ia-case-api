@@ -147,6 +147,8 @@ public class SendNotificationHandlerTest {
                         Event.REQUEST_CASE_BUILDING,
                         Event.UPLOAD_HOME_OFFICE_BUNDLE,
                         Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         Event.REQUEST_RESPONSE_REVIEW,
                         Event.SUBMIT_CASE,
                         Event.SEND_DECISION_AND_REASONS,
