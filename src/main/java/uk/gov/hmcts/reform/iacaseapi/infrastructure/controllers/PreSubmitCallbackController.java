@@ -145,12 +145,23 @@ public class PreSubmitCallbackController {
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             callbackDispatcher.handle(callbackStage, callback);
 
-        log.info(
-            "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
-            callbackStage,
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+        if (!callbackResponse.getErrors().isEmpty()) {
+            log.warn(
+                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}` with errors `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId(),
+                callbackResponse.getErrors()
+            );
+        } else {
+
+            log.info(
+                "Asylum Case CCD `{}` event `{}` handled for Case ID `{}`",
+                callbackStage,
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+            );
+        }
 
         return ok(callbackResponse);
     }

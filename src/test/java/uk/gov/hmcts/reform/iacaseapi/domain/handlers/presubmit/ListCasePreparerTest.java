@@ -7,6 +7,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 
 import java.util.Optional;
+
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -68,6 +71,83 @@ public class ListCasePreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    public void should_set_error_when_requirements_not_reviewed() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
+
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
+        verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+    }
+
+    @Test
+    public void should_set_error_when_reviewed_requirements_flag_not_set() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
+
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
+        verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+    }
+
+    @Test
+    public void should_not_set_error_when_requirements_have_been_reviewed() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).isEmpty();
+
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+    }
+
+    @Test
+    public void should_work_for_old_flow_when_requirements_not_captured() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).isEmpty();
+
+        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, never()).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
     @Test
