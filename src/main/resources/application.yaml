@@ -112,6 +112,7 @@ security:
       - "draftHearingRequirements"
       - "shareACase"
       - "requestHearingRequirementsFeature"
+      - "uploadAddendumEvidenceLegalRep"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -146,18 +147,22 @@ security:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
+      - "uploadAddendumEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
     citizen:
       - "startAppeal"
