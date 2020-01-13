@@ -112,6 +112,7 @@ security:
       - "draftHearingRequirements"
       - "shareACase"
       - "requestHearingRequirementsFeature"
+      - "uploadAddendumEvidenceLegalRep"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
