@@ -3,12 +3,6 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   aadIdentityName:
-  environment:
-    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
-    POSTGRES_CONNECTION_OPTIONS: ""
   keyVaults:
     ia:
       secrets:
@@ -32,7 +26,3 @@ java:
         - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
-
-  postgresql:
-    #Whether to deploy the Postgres Chart or not
-    enabled: true

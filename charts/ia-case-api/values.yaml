@@ -3,17 +3,7 @@ java:
   applicationPort: 8090
   aadIdentityName: ia
   environment:
-    POSTGRES_PORT: 5432
-    POSTGRES_HOST: ia-case-api-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com
-    POSTGRES_USERNAME: ia_case_api@ia-case-api-postgres-db-{{ .Values.global.environment }}
-    POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
     PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-  postgresql:
-    postgresqlUsername: ia_case_api
-    postgresqlPassword: ia_case_api
-    postgresqlDatabase: ia_case_api
-    service:
-      port: 5432
   keyVaults:
     ia:
       secrets:
@@ -37,5 +27,4 @@ java:
         - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
-        - case-api-POSTGRES-PASS
         - AppInsightsInstrumentationKey

@@ -30,5 +30,4 @@ spring:
         hearing-centre-activation-date-birmingham: IA_HEARING_CENTRE_ACTIVATION_DATE_BIRMINGHAM
         hearing-centre-activation-date-hatton-cross: IA_HEARING_CENTRE_ACTIVATION_DATE_HATTON_CROSS
         hearing-centre-activation-date-glasgow: IA_HEARING_CENTRE_ACTIVATION_DATE_GLASGOW
-        case-api-POSTGRES-PASS: spring.datasource.password
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key

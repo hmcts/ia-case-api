@@ -53,14 +53,6 @@ variable "log_level_ia" {
   default = "INFO"
 }
 
-variable "postgresql_database_name" {
-  default = "ia_case_api"
-}
-
-variable "postgresql_user" {
-  default = "ia_case_api"
-}
-
 variable "enable_ase" {
   default = false
 }

@@ -14,35 +14,9 @@ spring:
     name: Immigration & Asylum case API
   main:
     allow-bean-definition-overriding: true
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5000}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
-    username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:}
-    properties:
-      charSet: UTF-8
-    tomcat:
-      max-active: 10
-      max-idle: 10
-      min-idle: 2
-      max-wait: 10000
-      test-on-borrow: true
-      test-on-connect: true
-      test-on-idle: true
-      validation-query: "SELECT 1"
-      time-between-eviction-runs-millis: 10000
-      test-while-idle: true
-      test-on-return: true
-      remove-abandoned: true
-      remove-abandoned-timeout: 60
-      log-abandoned: true
-      abandon-when-percentage-full: 0
   profiles:
     include:
       - postcodes
-  flyway.enabled: true
-  flyway.baselineOnMigrate: true
-  flyway.schemas: ${POSTGRES_NAME:ia_case_api}
   jackson.date-format: yyyy-MM-dd
 
 featureFlag:
@@ -59,12 +33,6 @@ requestRespondentReview.dueInDays: 14
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
 core_case_data_api_permissions_path: "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users"
-
-appealReferenceSequenceSeed: 50000
-
-cache:
-  appealReferenceNumbers:
-    expirationTimeInSeconds: 60
 
 appealOutOfTimeDays: 14
 

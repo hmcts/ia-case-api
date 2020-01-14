@@ -20,7 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5}\/[0-9]{4}/"
+        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{16}/"
       }
     }
   }

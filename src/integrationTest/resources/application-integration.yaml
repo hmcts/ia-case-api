@@ -1,15 +1,4 @@
 
-spring:
-  datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ia_case_api
-    username: sa
-    password:
-    platform: h2
-  flyway.enabled: true
-
-appealReferenceSequenceSeed: 50000
-
 security:
 
   authorisedServices:
