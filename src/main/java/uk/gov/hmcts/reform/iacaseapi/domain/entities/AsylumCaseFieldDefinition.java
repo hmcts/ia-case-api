@@ -28,6 +28,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
+    SEARCH_POSTCODE(
+        "searchPostcode", new TypeReference<String>(){}),
+
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
