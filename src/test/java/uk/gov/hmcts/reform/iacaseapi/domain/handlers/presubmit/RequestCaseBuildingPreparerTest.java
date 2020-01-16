@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 public class RequestCaseBuildingPreparerTest {
 
     private static final int DUE_IN_DAYS = 28;
+    private static final int DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
 
     @Mock private DateProvider dateProvider;
     @Mock private Callback<AsylumCase> callback;
@@ -43,17 +46,18 @@ public class RequestCaseBuildingPreparerTest {
     @Before
     public void setUp() {
         requestCaseBuildingPreparer =
-                new RequestCaseBuildingPreparer(DUE_IN_DAYS, dateProvider);
+                new RequestCaseBuildingPreparer(DUE_IN_DAYS, DUE_IN_DAYS_FROM_SUBMISSION_DATE, dateProvider);
     }
 
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 28 days from the date of this email to complete this.";
+        final String expectedExplanationContains = "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2019-10-08";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-10"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2019-08-10"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -136,4 +140,33 @@ public class RequestCaseBuildingPreparerTest {
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    public void should_return_submission_date_plus_42_days_when_submission_date_is_2_days_ago() {
+
+        LocalDate submissionDateWithin42Days = LocalDate.now().minusDays(2);
+
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of(submissionDateWithin42Days.toString()));
+
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+
+        final LocalDate buildCaseDirectionDueDate = RequestCaseBuildingPreparer.getBuildCaseDirectionDueDate(asylumCase, dateProvider, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS);
+
+        Assertions.assertThat(buildCaseDirectionDueDate).isEqualTo(submissionDateWithin42Days.plusDays(DUE_IN_DAYS_FROM_SUBMISSION_DATE));
+    }
+
+    @Test
+    public void should_return_current_date_plus_28_days_when_submission_date_is_20_days_ago() {
+
+        LocalDate submissionDateWithin42Days = LocalDate.now().minusDays(20);
+
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of(submissionDateWithin42Days.toString()));
+
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+
+        final LocalDate buildCaseDirectionDueDate = RequestCaseBuildingPreparer.getBuildCaseDirectionDueDate(asylumCase, dateProvider, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS);
+
+        Assertions.assertThat(buildCaseDirectionDueDate).isEqualTo(LocalDate.now().plusDays(DUE_IN_DAYS));
+    }
+
 }

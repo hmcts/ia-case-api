@@ -51,6 +51,7 @@ featureFlag:
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
+legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
 legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14

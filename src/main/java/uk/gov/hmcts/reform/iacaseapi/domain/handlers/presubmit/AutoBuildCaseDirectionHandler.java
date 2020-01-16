@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.RequestCaseBuildingPreparer.getBuildCaseDirectionDueDate;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,15 +26,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int buildCaseDueInDays;
+    private final int legalRepresentativeBuildCaseDueFromSubmissionDate;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
     public AutoBuildCaseDirectionHandler(
         @Value("${legalRepresentativeBuildCase.dueInDays}") int buildCaseDueInDays,
+        @Value("${legalRepresentativeBuildCase.dueInDaysFromSubmissionDate}") int legalRepresentativeBuildCaseDueFromSubmissionDate,
         DateProvider dateProvider,
         DirectionAppender directionAppender
     ) {
         this.buildCaseDueInDays = buildCaseDueInDays;
+        this.legalRepresentativeBuildCaseDueFromSubmissionDate = legalRepresentativeBuildCaseDueFromSubmissionDate;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -79,24 +83,18 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
             List<IdValue<Direction>> allDirections =
                 directionAppender.append(
                     existingDirections,
-                    "You must now build your case by uploading your appeal argument and evidence.\n\n"
-                    + "Advice on writing an appeal argument\n"
-                    + "You must write a full argument that references:\n"
-                    + "- all the evidence you have or plan to rely on, including any witness statements\n"
+                    "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\n"
+                    + "You must write a full skeleton argument that references:\n\n"
+                    + "- all the evidence you have (or plan) to rely on, including witness statements\n"
                     + "- the grounds and issues of the case\n"
                     + "- any new matters\n"
                     + "- any legal authorities you plan to rely on and why they are applicable to your case\n\n"
-                    + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all "
-                    + "the information for the Home Office to conduct a thorough review of their decision at this stage.\n\n"
-                    + "Next steps\n"
-                    + "Once you have uploaded your appeal argument and all evidence, submit your case. The case officer will "
-                    + "then review everything you've added. If your case looks ready, the case officer will send it to the "
-                    + "respondent for their review. The respondent then has 14 days to respond.",
+                    + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n"
+                    + "# Next steps\n\n"
+                    + "Once you have uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\n"
+                    + "If your case looks ready, the Tribunal case worker will send it to the respondent to review.",
                     Parties.LEGAL_REPRESENTATIVE,
-                    dateProvider
-                        .now()
-                        .plusDays(buildCaseDueInDays)
-                        .toString(),
+                    getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, buildCaseDueInDays).toString(),
                     DirectionTag.BUILD_CASE
                 );
 
