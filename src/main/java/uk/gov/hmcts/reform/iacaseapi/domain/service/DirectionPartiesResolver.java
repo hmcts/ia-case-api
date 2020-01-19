@@ -30,6 +30,7 @@ public class DirectionPartiesResolver {
                 return Parties.RESPONDENT;
 
             case SEND_DIRECTION:
+            case CHANGE_DIRECTION_DUE_DATE:
                 Optional<Parties> sendDirectionParties = callback
                         .getCaseDetails()
                         .getCaseData()

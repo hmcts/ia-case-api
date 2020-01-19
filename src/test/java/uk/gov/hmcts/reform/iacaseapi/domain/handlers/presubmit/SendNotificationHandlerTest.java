@@ -40,6 +40,7 @@ public class SendNotificationHandlerTest {
         Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
+            Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
             Event.UPLOAD_RESPONDENT_EVIDENCE,
             Event.REQUEST_RESPONDENT_REVIEW,
@@ -51,13 +52,17 @@ public class SendNotificationHandlerTest {
             Event.LIST_CASE,
             Event.EDIT_CASE_LISTING,
             Event.END_APPEAL,
-            Event.REQUEST_CASE_BUILDING,
             Event.UPLOAD_HOME_OFFICE_BUNDLE,
+            Event.REQUEST_CASE_BUILDING,
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.SUBMIT_CASE,
             Event.SEND_DECISION_AND_REASONS,
-            Event.GENERATE_HEARING_BUNDLE
+            Event.GENERATE_HEARING_BUNDLE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -133,6 +138,7 @@ public class SendNotificationHandlerTest {
                     Arrays.asList(
                         Event.SUBMIT_APPEAL,
                         Event.SEND_DIRECTION,
+                        Event.CHANGE_DIRECTION_DUE_DATE,
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.UPLOAD_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
@@ -144,15 +150,17 @@ public class SendNotificationHandlerTest {
                         Event.LIST_CASE,
                         Event.EDIT_CASE_LISTING,
                         Event.END_APPEAL,
-                        Event.REQUEST_CASE_BUILDING,
                         Event.UPLOAD_HOME_OFFICE_BUNDLE,
+                        Event.REQUEST_CASE_BUILDING,
                         Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         Event.REQUEST_RESPONSE_REVIEW,
                         Event.SUBMIT_CASE,
                         Event.SEND_DECISION_AND_REASONS,
-                        Event.GENERATE_HEARING_BUNDLE
+                        Event.GENERATE_HEARING_BUNDLE,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE,
+                        Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
                     ).contains(event)) {
 
                     assertTrue(canHandle);

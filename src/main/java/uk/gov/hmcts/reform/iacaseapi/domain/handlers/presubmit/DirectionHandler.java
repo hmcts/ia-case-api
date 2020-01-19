@@ -50,6 +50,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && Arrays.asList(
                 Event.SEND_DIRECTION,
+                Event.CHANGE_DIRECTION_DUE_DATE,
                 Event.REQUEST_CASE_EDIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE,
                 Event.REQUEST_RESPONDENT_REVIEW,
@@ -70,13 +71,19 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        String sendDirectionExplanation =
-            asylumCase
+        String sendDirectionExplanation = callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+            ? asylumCase
+                .read(DIRECTION_EDIT_EXPLANATION, String.class)
+                .orElseThrow(() -> new IllegalStateException("changeDirectionExplanation is not present"))
+            : asylumCase
                 .read(SEND_DIRECTION_EXPLANATION, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionExplanation is not present"));
 
-        String sendDirectionDateDue =
-            asylumCase
+        String sendDirectionDateDue = callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+            ? asylumCase
+                .read(DIRECTION_EDIT_DATE_DUE, String.class)
+                .orElseThrow(() -> new IllegalStateException("directionEditDueDate is not present"))
+            : asylumCase
                 .read(SEND_DIRECTION_DATE_DUE, String.class)
                 .orElseThrow(() -> new IllegalStateException("sendDirectionDateDue is not present"));
 

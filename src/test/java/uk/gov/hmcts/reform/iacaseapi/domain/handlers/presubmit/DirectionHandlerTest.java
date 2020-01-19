@@ -230,6 +230,7 @@ public class DirectionHandlerTest {
                     &&
                     Arrays.asList(
                         Event.SEND_DIRECTION,
+                        Event.CHANGE_DIRECTION_DUE_DATE,
                         Event.REQUEST_CASE_EDIT,
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,

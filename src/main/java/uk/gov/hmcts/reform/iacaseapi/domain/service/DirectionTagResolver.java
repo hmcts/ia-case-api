@@ -16,6 +16,9 @@ public class DirectionTagResolver {
 
         switch (event) {
 
+            case CHANGE_DIRECTION_DUE_DATE:
+                return DirectionTag.CHANGE_DIRECTION_DUE_DATE;
+
             case REQUEST_CASE_EDIT:
                 return DirectionTag.CASE_EDIT;
 

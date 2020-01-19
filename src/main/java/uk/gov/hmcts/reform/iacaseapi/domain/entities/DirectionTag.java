@@ -7,6 +7,7 @@ public enum DirectionTag {
 
     BUILD_CASE("buildCase"),
     CASE_EDIT("caseEdit"),
+    CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     LEGAL_REPRESENTATIVE_REVIEW("legalRepresentativeReview"),
     LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS("legalRepresentativeHearingRequirements"),
     RESPONDENT_EVIDENCE("respondentEvidence"),
