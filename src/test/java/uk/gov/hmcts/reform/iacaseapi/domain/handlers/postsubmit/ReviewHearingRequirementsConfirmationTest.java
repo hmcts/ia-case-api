@@ -55,6 +55,29 @@ public class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
+    public void should_return_confirmation_when_list_case_without_requirements() {
+
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
+
+        PostSubmitCallbackResponse callbackResponse =
+            reviewHearingRequirementsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("You've recorded the agreed hearing adjustments")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.")
+        );
+    }
+
+    @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.handle(callback))
@@ -71,7 +94,7 @@ public class ReviewHearingRequirementsConfirmationTest {
 
             boolean canHandle = reviewHearingRequirementsConfirmation.canHandle(callback);
 
-            if (event == Event.REVIEW_HEARING_REQUIREMENTS) {
+            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS) {
 
                 assertTrue(canHandle);
             } else {
