@@ -20,7 +20,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -29,8 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest {
 
     @Autowired
-    @Qualifier("refDataObjectMapper")
-    private ObjectMapper refDataObjectMapper;
+    private ObjectMapper objectMapper;
 
     private ProfessionalUsersResponse prdSuccessResponse;
 
@@ -48,8 +46,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
         assertThat(prdResponseJson).isNotBlank();
 
-        prdSuccessResponse = refDataObjectMapper.readValue(prdResponseJson,
-            ProfessionalUsersResponse.class);
+        prdSuccessResponse = objectMapper.readValue(prdResponseJson, ProfessionalUsersResponse.class);
 
         stubFor(get(urlEqualTo(refDataPath))
             .willReturn(aResponse()

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
-import java.util.Base64;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -43,68 +41,22 @@ public class IdamAuthorizor {
         @NotNull String username,
         @NotNull String password
     ) {
-        String basicAuthorization =
-            "Basic "
-            + Base64
-                .getEncoder()
-                .encodeToString(
-                    (username + ":" + password).getBytes()
-                );
 
-        return "Bearer " + fetchTokenAuthorization(fetchCodeAuthorization(basicAuthorization));
+        return "Bearer " + fetchTokenAuthorization(username, password);
     }
 
-    private String fetchCodeAuthorization(
-        String basicAuthorization
-    ) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(HttpHeaders.AUTHORIZATION, basicAuthorization);
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("response_type", "code");
-        body.add("client_id", clientId);
-        body.add("redirect_uri", clientRedirectUri);
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-
-        Map<String, String> response;
-
-        try {
-
-            response =
-                restTemplate
-                    .exchange(
-                        baseUrl + "/oauth2/authorize",
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<Map<String, String>>() {
-                        }
-                    ).getBody();
-
-        } catch (RestClientResponseException e) {
-
-            throw new IdentityManagerResponseException(
-                "Could not get auth code with IDAM",
-                e
-            );
-        }
-
-        return response.getOrDefault("code", "");
-    }
-
-    private String fetchTokenAuthorization(
-        String code
-    ) {
+    private String fetchTokenAuthorization(String username, String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("code", code);
-        body.add("grant_type", "authorization_code");
+        body.add("username", username);
+        body.add("password", password);
+        body.add("grant_type", "password");
         body.add("redirect_uri", clientRedirectUri);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
+        body.add("scope", "openid profile roles");
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
@@ -115,7 +67,7 @@ public class IdamAuthorizor {
             response =
                 restTemplate
                     .exchange(
-                        baseUrl + "/oauth2/token",
+                        baseUrl + "/o/token",
                         HttpMethod.POST,
                         requestEntity,
                         new ParameterizedTypeReference<Map<String, String>>() {

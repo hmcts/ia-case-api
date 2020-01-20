@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Base64;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,19 +50,10 @@ public class IdamAuthorizorTest {
         String username = "username";
         String password = "password";
 
-        doReturn(new ResponseEntity<>(ImmutableMap.of("code", "ABC"), HttpStatus.OK))
-            .when(restTemplate)
-            .exchange(
-                eq(BASE_URL + "/oauth2/authorize"),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
-
         doReturn(new ResponseEntity<>(ImmutableMap.of("access_token", "XYZ"), HttpStatus.OK))
             .when(restTemplate)
             .exchange(
-                eq(BASE_URL + "/oauth2/token"),
+                eq(BASE_URL + "/o/token"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -75,32 +63,10 @@ public class IdamAuthorizorTest {
 
         assertEquals("Bearer XYZ", actualAccessToken);
 
-        ArgumentCaptor<HttpEntity> authorizeHttpEntityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-
-        verify(restTemplate, times(1)).exchange(
-            eq(BASE_URL + "/oauth2/authorize"),
-            eq(HttpMethod.POST),
-            authorizeHttpEntityCaptor.capture(),
-            any(ParameterizedTypeReference.class)
-        );
-
-        HttpEntity authorizeHttpEntity = authorizeHttpEntityCaptor.getAllValues().get(0);
-
-        HttpHeaders actualAuthorizeHeaders = authorizeHttpEntity.getHeaders();
-        String actualAuthorizationHeader = authorizeHttpEntity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        assertThat(actualAuthorizationHeader, CoreMatchers.startsWith("Basic "));
-        assertEquals("username:password", new String(Base64.getDecoder().decode(actualAuthorizationHeader.replaceFirst("Basic ", ""))));
-
-        MultiValueMap actualAuthorizeParameters = (MultiValueMap) authorizeHttpEntity.getBody();
-        assertEquals(MediaType.APPLICATION_FORM_URLENCODED, actualAuthorizeHeaders.getContentType());
-        assertEquals("code", actualAuthorizeParameters.getFirst("response_type"));
-        assertEquals(CLIENT_ID, actualAuthorizeParameters.getFirst("client_id"));
-        assertEquals(CLIENT_REDIRECT_URI, actualAuthorizeParameters.getFirst("redirect_uri"));
-
         ArgumentCaptor<HttpEntity> tokenHttpEntityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
 
         verify(restTemplate, times(1)).exchange(
-            eq(BASE_URL + "/oauth2/token"),
+            eq(BASE_URL + "/o/token"),
             eq(HttpMethod.POST),
             tokenHttpEntityCaptor.capture(),
             any(ParameterizedTypeReference.class)
@@ -112,57 +78,13 @@ public class IdamAuthorizorTest {
         assertEquals(MediaType.APPLICATION_FORM_URLENCODED, actualTokenHeaders.getContentType());
 
         MultiValueMap actualTokenParameters = (MultiValueMap) tokenHttpEntity.getBody();
-        assertEquals("ABC", actualTokenParameters.getFirst("code"));
-        assertEquals("authorization_code", actualTokenParameters.getFirst("grant_type"));
+        assertEquals(username, actualTokenParameters.getFirst("username"));
+        assertEquals(password, actualTokenParameters.getFirst("password"));
+        assertEquals("openid profile roles", actualTokenParameters.getFirst("scope"));
+        assertEquals("password", actualTokenParameters.getFirst("grant_type"));
         assertEquals(CLIENT_REDIRECT_URI, actualTokenParameters.getFirst("redirect_uri"));
         assertEquals(CLIENT_ID, actualTokenParameters.getFirst("client_id"));
         assertEquals(CLIENT_SECRET, actualTokenParameters.getFirst("client_secret"));
-    }
-
-    @Test
-    public void wrap_client_exception_when_calling_oauth_authorize() {
-
-        HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
-
-        String username = "username";
-        String password = "password";
-
-        when(restTemplate
-            .exchange(
-                eq(BASE_URL + "/oauth2/authorize"),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            )
-        ).thenThrow(underlyingException);
-
-        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
-            .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with IDAM");
-
-    }
-
-    @Test
-    public void wrap_server_exception_when_calling_oauth_authorize() {
-
-        HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
-
-        String username = "username";
-        String password = "password";
-
-        when(restTemplate
-            .exchange(
-                eq(BASE_URL + "/oauth2/authorize"),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            )
-        ).thenThrow(underlyingException);
-
-        assertThatThrownBy(() -> idamAuthorizor.exchangeForAccessToken(username, password))
-            .isExactlyInstanceOf(IdentityManagerResponseException.class)
-            .hasMessage("Could not get auth code with IDAM");
-
     }
 
     @Test
@@ -173,18 +95,9 @@ public class IdamAuthorizorTest {
         String username = "username";
         String password = "password";
 
-        doReturn(new ResponseEntity<>(ImmutableMap.of("code", "ABC"), HttpStatus.OK))
-            .when(restTemplate)
-            .exchange(
-                eq(BASE_URL + "/oauth2/authorize"),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
-
         when(restTemplate
             .exchange(
-                eq(BASE_URL + "/oauth2/token"),
+                eq(BASE_URL + "/o/token"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -204,18 +117,9 @@ public class IdamAuthorizorTest {
         String username = "username";
         String password = "password";
 
-        doReturn(new ResponseEntity<>(ImmutableMap.of("code", "ABC"), HttpStatus.OK))
-            .when(restTemplate)
-            .exchange(
-                eq(BASE_URL + "/oauth2/authorize"),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
-
         when(restTemplate
             .exchange(
-                eq(BASE_URL + "/oauth2/token"),
+                eq(BASE_URL + "/o/token"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -226,6 +130,5 @@ public class IdamAuthorizorTest {
             .hasMessage("Could not get auth token with IDAM");
 
     }
-
 
 }

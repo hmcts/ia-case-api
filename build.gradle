@@ -266,6 +266,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealthStarter
 
+    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.4'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
     compile(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4')
 

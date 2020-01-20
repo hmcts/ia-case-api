@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ProfessionalUser {
 
-    public ProfessionalUser() {
+    private ProfessionalUser() {
         //no op
     }
 

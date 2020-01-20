@@ -1,18 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
-@JsonRootName("users")
 public class ProfessionalUsersResponse implements CaseData {
 
+    @JsonAlias("users")
     private List<ProfessionalUser> professionalUsers;
 
-    @JsonCreator
-    public ProfessionalUsersResponse(List<ProfessionalUser> professionalUsers) {
-        this.professionalUsers = professionalUsers;
+    private ProfessionalUsersResponse() {
+        //no op
     }
 
     public List<ProfessionalUser> getProfessionalUsers() {
