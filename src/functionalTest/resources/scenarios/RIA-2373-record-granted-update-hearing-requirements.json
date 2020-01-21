@@ -1,0 +1,66 @@
+{
+  "description": "RIA-2373 record granted update hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordApplication",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "applications": [],
+          "applicationDocuments": [{
+            "id": "1",
+            "value": {
+              "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+              "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+              "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+            }
+          }],
+          "applicationSupplier": "The legal representative",
+          "applicationType": "Update hearing requirements",
+          "applicationReason": "Updating hearing requirements",
+          "applicationDate": "2020-01-21",
+          "applicationDecision": "Granted",
+          "applicationDecisionReason": "some decision reason"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "disableOverviewPage": "Yes",
+        "currentCaseStateVisibleToCaseOfficer": "unknown",
+        "applications": [
+          {
+            "id": "1",
+            "value": {
+              "applicationDocuments": [{
+                "id": "1",
+                "value": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                }
+              }],
+              "applicationSupplier": "The legal representative",
+              "applicationType": "Update hearing requirements",
+              "applicationReason": "Updating hearing requirements",
+              "applicationDate": "2020-01-21",
+              "applicationDecision": "Granted",
+              "applicationDecisionReason": "some decision reason",
+              "applicationDateOfDecision": "{$TODAY}",
+              "applicationStatus": "In progress"
+            }
+          }
+        ],
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}
