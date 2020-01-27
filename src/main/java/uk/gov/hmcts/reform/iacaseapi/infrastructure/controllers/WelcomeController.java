@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(
     value = "/",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 
 @RestController
@@ -46,7 +46,7 @@ public class WelcomeController {
     })
     @GetMapping(
         path = "/",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<String> welcome() {
