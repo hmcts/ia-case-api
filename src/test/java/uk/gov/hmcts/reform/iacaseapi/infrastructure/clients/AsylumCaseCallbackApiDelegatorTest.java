@@ -88,8 +88,8 @@ public class AsylumCaseCallbackApiDelegatorTest {
         final String actualAuthorizationHeader = actualRequestEntity.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         final Callback<AsylumCase> actualPostBody = (Callback<AsylumCase>) actualRequestEntity.getBody();
 
-        assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE, actualContentTypeHeader);
-        assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE, actualAcceptHeader);
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, actualContentTypeHeader);
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, actualAcceptHeader);
         assertEquals(expectedServiceToken, actualServiceAuthorizationHeader);
         assertEquals(expectedAccessToken, actualAuthorizationHeader);
         assertEquals(actualPostBody, callback);

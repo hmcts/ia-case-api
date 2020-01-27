@@ -22,13 +22,13 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 @Slf4j
 @Api(
     value = "/asylum",
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 @RequestMapping(
     path = "/asylum",
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 @RestController
 public class PreSubmitCallbackController {

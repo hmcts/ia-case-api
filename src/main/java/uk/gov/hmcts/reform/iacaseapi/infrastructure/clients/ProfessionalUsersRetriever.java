@@ -46,8 +46,8 @@ public class ProfessionalUsersRetriever {
         final String accessToken = userDetails.getAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8_VALUE);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.AUTHORIZATION, accessToken);
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
 

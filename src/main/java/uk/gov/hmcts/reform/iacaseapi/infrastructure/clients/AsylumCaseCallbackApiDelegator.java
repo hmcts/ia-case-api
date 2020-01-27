@@ -47,8 +47,8 @@ public class AsylumCaseCallbackApiDelegator {
         final String accessToken = accessTokenProvider.getAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8_VALUE);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
         headers.set(HttpHeaders.AUTHORIZATION, accessToken);
 
