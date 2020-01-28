@@ -222,6 +222,7 @@ public class GenerateDocumentHandlerTest {
                         SUBMIT_APPEAL,
                         SUBMIT_CASE,
                         DRAFT_HEARING_REQUIREMENTS,
+                        UPDATE_HEARING_REQUIREMENTS,
                         LIST_CASE,
                         EDIT_CASE_LISTING,
                         GENERATE_HEARING_BUNDLE,
@@ -289,6 +290,7 @@ public class GenerateDocumentHandlerTest {
                     immutableEnumSet(
                         SUBMIT_APPEAL,
                         DRAFT_HEARING_REQUIREMENTS,
+                        UPDATE_HEARING_REQUIREMENTS,
                         LIST_CASE,
                         GENERATE_DECISION_AND_REASONS,
                         EDIT_CASE_LISTING,

@@ -22,6 +22,7 @@ public enum Event {
     REQUEST_HEARING_REQUIREMENTS_FEATURE("requestHearingRequirementsFeature"),
     REVIEW_HEARING_REQUIREMENTS("reviewHearingRequirements"),
     DRAFT_HEARING_REQUIREMENTS("draftHearingRequirements"),
+    UPDATE_HEARING_REQUIREMENTS("updateHearingRequirements"),
     CHANGE_DIRECTION_DUE_DATE("changeDirectionDueDate"),
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
     UPLOAD_ADDENDUM_EVIDENCE("uploadAddendumEvidence"),
