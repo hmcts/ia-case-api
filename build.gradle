@@ -272,7 +272,7 @@ dependencies {
     compile(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4')
 
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
-    compile 'org.projectlombok:lombok:1.18.2'
+    compile 'org.projectlombok:lombok:1.18.10'
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
