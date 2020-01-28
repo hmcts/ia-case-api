@@ -17,10 +17,10 @@ For information about the software versions used to build this API and a complet
 
 ### Running the application
 
-To run the API quickly use the docker helper script as follows:
+To run the API quickly use the docker helper script as follows: (make sure to have the required environment variables set as under functional tests section)
 
 ```
-./bin/run-in-docker.sh install
+./bin/run-in-docker.sh --clean --install
 ```
 
 
