@@ -21,6 +21,10 @@ public enum State {
     DECIDED("decided"),
     ENDED("ended"),
     APPEAL_TAKEN_OFFLINE("appealTakenOffline"),
+    AWAITING_REASONS_FOR_APPEAL("awaitingReasonsForAppeal"),
+    REASONS_FOR_APPEAL_SUBMITTED("reasonsForAppealSubmitted"),
+    AWAITING_CLARIFYING_ANSWERS("awaitingClarifyingAnswers"),
+    CLARIFYING_ANSWERS_SUBMITTED("clarifyingAnswersSubmitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

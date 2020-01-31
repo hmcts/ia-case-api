@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidForJourneyType;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidForJourneyTypeChecker;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @Component
@@ -21,10 +23,12 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
     private final CcdEventAuthorizor ccdEventAuthorizor;
     private final List<PreSubmitCallbackHandler<T>> sortedCallbackHandlers;
+    private final EventValidForJourneyTypeChecker<T> eventValidForJourneyTypeChecker;
 
     public PreSubmitCallbackDispatcher(
         CcdEventAuthorizor ccdEventAuthorizor,
-        List<PreSubmitCallbackHandler<T>> callbackHandlers
+        List<PreSubmitCallbackHandler<T>> callbackHandlers,
+        EventValidForJourneyTypeChecker<T> eventValidForJourneyTypeChecker
     ) {
         requireNonNull(ccdEventAuthorizor, "ccdEventAuthorizor must not be null");
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
@@ -33,6 +37,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
             // sorting handlers by handler class name
             .sorted(Comparator.comparing(h -> h.getClass().getSimpleName()))
             .collect(Collectors.toList());
+        this.eventValidForJourneyTypeChecker = eventValidForJourneyTypeChecker;
     }
 
     public PreSubmitCallbackResponse<T> handle(
@@ -52,11 +57,16 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         PreSubmitCallbackResponse<T> callbackResponse =
             new PreSubmitCallbackResponse<>(caseData);
 
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
-        dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
+        EventValidForJourneyType check = eventValidForJourneyTypeChecker.check(callback);
 
+        if (check.isValid()) {
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
+        } else {
+            callbackResponse.addError(check.getInvalidReason());
+        }
         return callbackResponse;
     }
 

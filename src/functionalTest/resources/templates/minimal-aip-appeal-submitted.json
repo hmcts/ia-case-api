@@ -1,0 +1,34 @@
+{
+  "homeOfficeReferenceNumber": "A123456",
+  "homeOfficeDecisionDate": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "appellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "Iceland": "IS"
+      }
+    }
+  ],
+  "appellantHasFixedAddress": "No",
+  "appealType": "protection",
+  "appealGroundsProtection": {
+    "values": [
+      "refugeeConvention"
+    ]
+  },
+  "hasNewMatters": "No",
+  "hasOtherAppeals": "No",
+  "appellantNameForDisplay": "Talha Awan",
+  "appealReferenceNumber": "PA/12345/2018",
+  "legalRepresentativeName": "A Legal Rep",
+  "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+  "sendDirectionActionAvailable": "Yes",
+  "hearingCentre": "taylorHouse",
+  "submissionOutOfTime": "No",
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "journeyType": "aip"
+}

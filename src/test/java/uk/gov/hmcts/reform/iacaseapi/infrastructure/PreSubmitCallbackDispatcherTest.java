@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -34,6 +35,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.AsylumCaseEventValidForJourneyTypeChecker;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidForJourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +47,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Mock private PreSubmitCallbackHandler<CaseData> handler1;
     @Mock private PreSubmitCallbackHandler<CaseData> handler2;
     @Mock private PreSubmitCallbackHandler<CaseData> handler3;
+    @Mock private AsylumCaseEventValidForJourneyTypeChecker eventValidForJourneyTypeChecker;
     @Mock private Callback<CaseData> callback;
     @Mock private CaseDetails<CaseData> caseDetails;
     @Mock private CaseData caseData;
@@ -58,14 +62,28 @@ public class PreSubmitCallbackDispatcherTest {
 
     @Before
     public void setUp() {
-        preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher<>(
+        preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher(
             ccdEventAuthorizor,
             Arrays.asList(
                 handler1,
                 handler2,
                 handler3
-            )
+            ),
+            eventValidForJourneyTypeChecker
         );
+
+        when(eventValidForJourneyTypeChecker.check(any(Callback.class))).thenReturn(new EventValidForJourneyType());
+    }
+
+    @Test
+    public void should_add_errors_if_events_invalid_for_journey_type() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(caseData);
+        when(eventValidForJourneyTypeChecker.check(any(Callback.class))).thenReturn(new EventValidForJourneyType("Invalid reason"));
+
+        PreSubmitCallbackResponse<CaseData> callbackResponse = preSubmitCallbackDispatcher.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse.getErrors(), is(ImmutableSet.of("Invalid reason")));
     }
 
     @Test
@@ -209,7 +227,7 @@ public class PreSubmitCallbackDispatcherTest {
     public void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
-            new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, Collections.emptyList());
+            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidForJourneyTypeChecker);
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -240,7 +258,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_ccd_event_authorizor() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList()))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidForJourneyTypeChecker))
             .hasMessage("ccdEventAuthorizor must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -248,7 +266,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidForJourneyTypeChecker))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -260,7 +278,7 @@ public class PreSubmitCallbackDispatcherTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -283,7 +301,8 @@ public class PreSubmitCallbackDispatcherTest {
                 h3,
                 h1,
                 h4
-            )
+            ),
+            eventValidForJourneyTypeChecker
         );
 
         List<PreSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
