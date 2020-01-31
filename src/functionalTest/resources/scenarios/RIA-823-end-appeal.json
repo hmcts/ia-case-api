@@ -16,7 +16,30 @@
           "endAppealApproverName": "John Doe",
           "tribunalDocuments": [],
           "recordApplicationActionDisabled": "No",
-          "addCaseNoteActionDisabled": "No"
+          "addCaseNoteActionDisabled": "No",
+          "applications": [
+            {
+              "id": "1",
+              "value": {
+                "applicationDocuments": [{
+                  "id": "1",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
+                }],
+                "applicationSupplier": "The legal representative",
+                "applicationType": "Withdraw",
+                "applicationReason": "some reason",
+                "applicationDate": "2019-01-01",
+                "applicationDecision": "Granted",
+                "applicationDecisionReason": "some decision reason",
+                "applicationDateOfDecision": "{$TODAY}",
+                "applicationStatus": "In progress"
+              }
+            }
+          ]
         }
       }
     }
@@ -48,7 +71,30 @@
           }
         ],
         "recordApplicationActionDisabled": "Yes",
-        "addCaseNoteActionDisabled": "Yes"
+        "addCaseNoteActionDisabled": "Yes",
+        "applications": [
+          {
+            "id": "1",
+            "value": {
+              "applicationDocuments": [{
+                "id": "1",
+                "value": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                }
+              }],
+              "applicationSupplier": "The legal representative",
+              "applicationType": "Withdraw",
+              "applicationReason": "some reason",
+              "applicationDate": "2019-01-01",
+              "applicationDecision": "Granted",
+              "applicationDecisionReason": "some decision reason",
+              "applicationDateOfDecision": "{$TODAY}",
+              "applicationStatus": "Completed"
+            }
+          }
+        ]
       }
     }
   }
