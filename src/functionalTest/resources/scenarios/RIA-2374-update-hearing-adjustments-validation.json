@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2374 update hearing adjustments errors when 'updatedHearingRequirements' is not available",
+  "description": "RIA-2374 update hearing adjustments errors when updated Hearing Requirements are not available",
   "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
@@ -17,8 +17,7 @@
           "singleSexCourtTribunalResponse": "singleSexCourt reason",
           "inCameraCourtTribunalResponse": "inCameraCourt reason",
           "additionalTribunalResponse": "additional reason",
-          "uploadAdditionalEvidenceActionAvailable": "Yes",
-          "updatedHearingRequirements": "No"
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
     }
@@ -38,8 +37,7 @@
         "singleSexCourtTribunalResponse": "singleSexCourt reason",
         "inCameraCourtTribunalResponse": "inCameraCourt reason",
         "additionalTribunalResponse": "additional reason",
-        "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "updatedHearingRequirements": "No"
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }

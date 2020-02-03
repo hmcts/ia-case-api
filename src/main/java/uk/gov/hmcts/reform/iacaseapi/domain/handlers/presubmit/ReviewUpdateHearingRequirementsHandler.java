@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -35,6 +36,7 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.YES);
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, callback.getCaseDetails().getState());
         asylumCase.clear(DISABLE_OVERVIEW_PAGE);
         asylumCase.clear(UPDATE_HEARING_REQUIREMENTS_EXISTS);
