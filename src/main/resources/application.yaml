@@ -5,9 +5,30 @@ management:
   endpoint:
     health:
       show-details: "always"
+      status:
+        http-mapping:
+          UP: 200
+          DOWN: 503
   endpoints:
     web:
       base-path: "/"
+
+health:
+  services:
+    documentsApi:
+      uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
+      response: '"status":"UP"'
+    notificationApi:
+      uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
+      response: '"status":"UP"'
+    professionalApi:
+      uri: ${PROF_REF_DATA_URL:http://127.0.0.1:8990}/health
+    idam:
+      uri: ${IDAM_URL:http://127.0.0.1:4501}/health
+      response: '"status":"UP"'
+    serviceAuth:
+      uri: ${S2S_URL:http://127.0.0.1:4502}/health
+      response: '"status":"UP"'
 
 spring:
   application:
@@ -93,6 +114,7 @@ security:
     - "/swagger-resources/**"
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
+    - "/favicon.ico"
   authorisedServices:
     - "ccd"
     - "ccd_data"
