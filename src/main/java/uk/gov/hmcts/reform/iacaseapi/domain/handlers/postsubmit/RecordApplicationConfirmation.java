@@ -50,7 +50,6 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
         postSubmitResponse.setConfirmationHeader("# You have recorded an application");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The application decision has been recorded and is now available in the applications tab. "
             + getMessageAction(applicationDecision, applicationType, callback.getCaseDetails().getId())
         );
 
@@ -61,23 +60,26 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
     }
 
     private String getMessageAction(String decision, String type, long id) {
+
+        final String defaultResponse = "The application decision has been recorded and is now available in the applications tab. ";
+
         if (GRANTED.toString().equalsIgnoreCase(decision)) {
 
             if (TIME_EXTENSION.toString().equalsIgnoreCase(type)) {
-                return "You must change the direction due date to send an updated direction. You will need to find the direction in the list of directions and only edit the due date.";
+                return "You must now [change the direction due date](/case/IA/Asylum/" + id + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.";
 
             } else if (WITHDRAW.toString().equalsIgnoreCase(type)) {
-                return "You must now [end the appeal](/case/IA/Asylum/" + id +  "/trigger/endAppeal).";
+                return defaultResponse + "You must now [end the appeal](/case/IA/Asylum/" + id +  "/trigger/endAppeal).";
 
             } else if (ADJOURN.toString().equalsIgnoreCase(type) || EXPEDITE.toString().equalsIgnoreCase(type) || TRANSFER.toString().equalsIgnoreCase(type)) {
-                return "Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.";
+                return defaultResponse + "Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.";
             }
 
             // default empty in case of new application type
             return "";
 
         } else {
-            return "A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.";
+            return defaultResponse + "A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.";
         }
     }
 }

@@ -115,6 +115,7 @@ public class RecordApplicationConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(granted));
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(changeDate));
@@ -133,7 +134,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("You must change the direction due date to send an updated direction. You will need to find the direction in the list of directions and only edit the due date.")
+            containsString("You must now [change the direction due date](/case/IA/Asylum/" + caseId + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.")
         );
 
         verify(asylumCase).clear(APPLICATION_DECISION);
