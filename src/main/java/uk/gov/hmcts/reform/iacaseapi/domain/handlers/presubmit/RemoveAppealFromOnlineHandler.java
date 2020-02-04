@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_ACTION_DISABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -45,6 +45,7 @@ public class RemoveAppealFromOnlineHandler implements PreSubmitCallbackHandler<A
 
         asylumCase.write(AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_DATE, dateProvider.now().toString());
         asylumCase.write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.YES);
+        asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

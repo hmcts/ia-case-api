@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -55,6 +56,7 @@ public class RemoveAppealFromOnlineHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(REMOVE_APPEAL_FROM_ONLINE_DATE, date.toString());
+        verify(asylumCase, times(1)).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
     }
 
     @Test

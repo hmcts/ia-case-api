@@ -383,7 +383,7 @@ public enum AsylumCaseFieldDefinition {
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
-        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {})
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
 
     ;
 
