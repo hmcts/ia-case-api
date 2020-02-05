@@ -139,6 +139,8 @@ security:
       - "removeAppealFromOnline"
       - "reviewHearingRequirements"
       - "listCaseWithoutHearingRequirements"
+      - "requestReasonsForAppeal"
+      - "requestClarifyingAnswers"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -167,6 +169,8 @@ security:
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
+      - "submitReasonsForAppeal"
+      - "submitClarifyingAnswers"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

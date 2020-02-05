@@ -1,0 +1,22 @@
+{
+  "description": "RIA-2493: Case officer cannot send request reasons for appeal event for a repped case",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "requestReasonsForAppeal",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [ "You've made an invalid request. The hearing must be submitted by an appellant to make this request." ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}
