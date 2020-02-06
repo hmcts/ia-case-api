@@ -34,6 +34,9 @@ public class DirectionTagResolver {
             case REQUEST_RESPONSE_AMEND:
                 return DirectionTag.REQUEST_RESPONSE_AMEND;
 
+            case REQUEST_REASONS_FOR_APPEAL:
+                return DirectionTag.REQUEST_REASONS_FOR_APPEAL;
+
             default:
                 return DirectionTag.NONE;
         }

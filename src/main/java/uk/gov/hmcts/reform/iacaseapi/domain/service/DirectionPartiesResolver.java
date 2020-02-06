@@ -37,7 +37,8 @@ public class DirectionPartiesResolver {
                 return
                     sendDirectionParties
                         .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
-
+            case REQUEST_REASONS_FOR_APPEAL:
+                return Parties.APPELLANT;
             default:
                 throw new IllegalArgumentException("Callback event is not for sending a direction");
         }
