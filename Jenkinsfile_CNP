@@ -68,7 +68,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-    enableDockerBuild()
     installCharts()
 
     if ("demo" != "${env.BRANCH_NAME}") {
