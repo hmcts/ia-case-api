@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 
 import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
