@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 

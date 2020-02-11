@@ -5,7 +5,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.annotations.*;
 import javax.validation.constraints.NotNull;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
