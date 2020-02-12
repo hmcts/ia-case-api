@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.time.LocalDate;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 public class AutoBuildCaseDirectionHandlerTest {
 
     private static final int BUILD_CASE_DUE_IN_DAYS = 28;
+    private static final int BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
@@ -51,6 +53,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         autoBuildCaseDirectionHandler =
             new AutoBuildCaseDirectionHandler(
                 BUILD_CASE_DUE_IN_DAYS,
+                BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE,
                 dateProvider,
                 directionAppender
             );
@@ -68,6 +71,7 @@ public class AutoBuildCaseDirectionHandlerTest {
         final DirectionTag expectedTag = DirectionTag.BUILD_CASE;
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-27"));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2018-10-27"));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

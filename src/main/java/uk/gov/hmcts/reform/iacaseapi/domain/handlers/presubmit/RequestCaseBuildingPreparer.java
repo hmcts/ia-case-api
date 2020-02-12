@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -18,13 +20,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int legalRepresentativeBuildCaseDueInDays;
+    private final int legalRepresentativeBuildCaseDueFromSubmissionDate;
     private final DateProvider dateProvider;
 
     public RequestCaseBuildingPreparer(
             @Value("${legalRepresentativeBuildCase.dueInDays}") int legalRepresentativeBuildCaseDueInDays,
+            @Value("${legalRepresentativeBuildCase.dueInDaysFromSubmissionDate}") int legalRepresentativeBuildCaseDueFromSubmissionDate,
             DateProvider dateProvider
     ) {
         this.legalRepresentativeBuildCaseDueInDays = legalRepresentativeBuildCaseDueInDays;
+        this.legalRepresentativeBuildCaseDueFromSubmissionDate = legalRepresentativeBuildCaseDueFromSubmissionDate;
         this.dateProvider = dateProvider;
     }
 
@@ -47,7 +52,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
                         .getCaseData();
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
-                "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 28 days from the date of this email to complete this.\n\n"
+                "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\n"
                         + "You must write a full skeleton argument that references:\n\n"
                         + "- all the evidence you have (or plan) to rely on, including any witness statements\n"
                         + "- the grounds and issues of the case\n"
@@ -61,13 +66,31 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.LEGAL_REPRESENTATIVE);
 
-        asylumCase.write(SEND_DIRECTION_DATE_DUE,
-                dateProvider
-                        .now()
-                        .plusDays(legalRepresentativeBuildCaseDueInDays)
-                        .toString()
-        );
+        LocalDate dueDate = getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, legalRepresentativeBuildCaseDueInDays);
+
+        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    public static LocalDate getBuildCaseDirectionDueDate(final AsylumCase asylumCase,
+                                                         final DateProvider dateProvider,
+                                                         final int legalRepresentativeBuildCaseDueFromSubmissionDate,
+                                                         final int legalRepresentativeBuildCaseDueInDays) {
+
+        final Optional<String> appealSubmittedDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class);
+
+
+        // Graceful handling if appeal submission date was not found. It should not happen though. For whatever reason if submission date was not found we
+        // default to legalRepresentativeBuildCaseDueInDays from current day.
+        final LocalDate deadlineBySubmissionDate =
+            appealSubmittedDate
+                .map(localDate -> LocalDate.parse(localDate).plusDays(legalRepresentativeBuildCaseDueFromSubmissionDate))
+                .orElseGet(() -> dateProvider.now().plusDays(legalRepresentativeBuildCaseDueInDays));
+
+        final LocalDate deadlineByLetterSentOrEvidenceSubmittedDate = dateProvider.now().plusDays(legalRepresentativeBuildCaseDueInDays);
+
+        return
+            deadlineBySubmissionDate.isAfter(deadlineByLetterSentOrEvidenceSubmittedDate) ? deadlineBySubmissionDate : deadlineByLetterSentOrEvidenceSubmittedDate;
     }
 }
