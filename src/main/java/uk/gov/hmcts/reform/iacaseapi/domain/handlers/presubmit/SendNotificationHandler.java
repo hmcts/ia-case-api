@@ -81,3 +81,4 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
     }
 }
+
