@@ -50,7 +50,8 @@
               }
             }
           ],
-          "uploadAddendumEvidenceLegalRepActionAvailable": "Yes"
+          "uploadAddendumEvidenceLegalRepActionAvailable": "Yes",
+          "listCaseHearingCentre": "taylorHouse"
         }
       }
     }
