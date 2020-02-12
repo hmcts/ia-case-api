@@ -335,6 +335,12 @@ public class CcdScenarioRunnerTest {
                 .getHomeOfficeGenericAuthorization();
         }
 
+        if ("LegalRepresentativeOrgA".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getLegalRepresentativeOrgAAuthorization();
+        }
+
         return new Headers();
     }
 }

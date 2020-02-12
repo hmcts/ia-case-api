@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.component;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
@@ -11,52 +10,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.Resource;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.RefDataIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 
-public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest {
-
-    @Autowired
-    @Qualifier("refDataObjectMapper")
-    private ObjectMapper refDataObjectMapper;
-
-    private ProfessionalUsersResponse prdSuccessResponse;
-
-    @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
-    private Resource resourceFile;
-
-    @org.springframework.beans.factory.annotation.Value("${prof.ref.data.path.org.users}")
-    private String refDataPath;
-
-    @Before
-    public void setupReferenceDataStub() throws IOException {
-
-        String prdResponseJson =
-            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
-
-        assertThat(prdResponseJson).isNotBlank();
-
-        prdSuccessResponse = refDataObjectMapper.readValue(prdResponseJson,
-            ProfessionalUsersResponse.class);
-
-        stubFor(get(urlEqualTo(refDataPath))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(prdResponseJson)));
-    }
+public class ShareACaseRefDataIntegrationTest extends RefDataIntegrationTest {
 
     @Test
     public void should_get_users_from_professional_ref_data() {
