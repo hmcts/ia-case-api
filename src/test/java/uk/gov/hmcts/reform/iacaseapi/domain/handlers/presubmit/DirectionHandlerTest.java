@@ -233,7 +233,8 @@ public class DirectionHandlerTest {
                         Event.REQUEST_CASE_EDIT,
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.REQUEST_CASE_BUILDING
+                        Event.REQUEST_CASE_BUILDING,
+                        Event.REQUEST_REASONS_FOR_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);

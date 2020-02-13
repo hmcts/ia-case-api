@@ -56,6 +56,7 @@ legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
+appellantReasonsForAppeal.dueInDays: 28
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
