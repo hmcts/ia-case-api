@@ -2,7 +2,6 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  aadIdentityName:
   environment:
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
     POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
