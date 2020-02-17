@@ -173,6 +173,7 @@ security:
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
+      - "editReasonsForAppeal"
       - "submitReasonsForAppeal"
       - "submitClarifyingAnswers"
 

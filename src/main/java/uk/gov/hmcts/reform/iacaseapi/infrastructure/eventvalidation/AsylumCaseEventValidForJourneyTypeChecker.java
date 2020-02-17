@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidChecker<AsylumCase> {
     private final List<Event> aipOnlyEvent = Arrays.asList(
             Event.REQUEST_REASONS_FOR_APPEAL,
+            Event.EDIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.REQUEST_CLARIFYING_ANSWERS,
             Event.SUBMIT_CLARIFYING_ANSWERS);

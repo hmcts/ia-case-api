@@ -52,6 +52,7 @@ public enum Event {
     SHARE_A_CASE("shareACase"),
 
     REQUEST_REASONS_FOR_APPEAL("requestReasonsForAppeal"),
+    EDIT_REASONS_FOR_APPEAL("editReasonsForAppeal"),
     SUBMIT_REASONS_FOR_APPEAL("submitReasonsForAppeal"),
     REQUEST_CLARIFYING_ANSWERS("requestClarifyingAnswers"),
     SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
