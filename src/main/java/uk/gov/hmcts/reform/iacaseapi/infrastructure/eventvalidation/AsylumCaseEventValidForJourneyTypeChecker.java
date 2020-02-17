@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @Slf4j
 @Component
-public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidForJourneyTypeChecker<AsylumCase> {
+public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidChecker<AsylumCase> {
     private final List<Event> aipOnlyEvent = Arrays.asList(
             Event.REQUEST_REASONS_FOR_APPEAL,
             Event.SUBMIT_REASONS_FOR_APPEAL,
@@ -27,20 +27,20 @@ public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidForJ
     );
 
     @Override
-    public EventValidForJourneyType check(Callback<AsylumCase> callback) {
+    public EventValid check(Callback<AsylumCase> callback) {
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final JourneyType journeyType = asylumCase.<JourneyType>read(AsylumCaseFieldDefinition.JOURNEY_TYPE).orElse(REP);
         final Event event = callback.getEvent();
 
         if (aipOnlyEvent.contains(event) && !AIP.equals(journeyType)) {
             log.info(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by an appellant to handle this event.", event, callback.getCaseDetails().getId()));
-            return new EventValidForJourneyType("You've made an invalid request. The hearing must be submitted by an appellant to make this request.");
+            return new EventValid("You've made an invalid request. The hearing must be submitted by an appellant to make this request.");
         }
         if (reppedOnlyEvent.contains(event) && !REP.equals(journeyType)) {
             log.info(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by a representative to handle this event.", event, callback.getCaseDetails().getId()));
-            return new EventValidForJourneyType("You've made an invalid request. The hearing must be submitted by a representative to make this request.");
+            return new EventValid("You've made an invalid request. The hearing must be submitted by a representative to make this request.");
         }
 
-        return new EventValidForJourneyType();
+        return new EventValid();
     }
 }

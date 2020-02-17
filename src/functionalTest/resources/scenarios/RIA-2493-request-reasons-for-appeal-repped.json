@@ -8,7 +8,13 @@
       "eventId": "requestReasonsForAppeal",
       "state": "awaitingRespondentEvidence",
       "caseData": {
-        "template": "minimal-appeal-submitted.json"
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "sendDirectionParties": "appellant",
+          "notificationsSent": []
+        }
       }
     }
   },

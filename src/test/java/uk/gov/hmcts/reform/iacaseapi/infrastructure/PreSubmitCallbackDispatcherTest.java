@@ -33,8 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.AsylumCaseEventValidForJourneyTypeChecker;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidForJourneyType;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValid;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCheckers;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,7 +45,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Mock private PreSubmitCallbackHandler<CaseData> handler1;
     @Mock private PreSubmitCallbackHandler<CaseData> handler2;
     @Mock private PreSubmitCallbackHandler<CaseData> handler3;
-    @Mock private AsylumCaseEventValidForJourneyTypeChecker eventValidForJourneyTypeChecker;
+    @Mock private EventValidCheckers<AsylumCase> eventValidChecker;
     @Mock private Callback<CaseData> callback;
     @Mock private CaseDetails<CaseData> caseDetails;
     @Mock private CaseData caseData;
@@ -67,17 +67,17 @@ public class PreSubmitCallbackDispatcherTest {
                 handler2,
                 handler3
             ),
-            eventValidForJourneyTypeChecker
+            eventValidChecker
         );
 
-        when(eventValidForJourneyTypeChecker.check(any(Callback.class))).thenReturn(new EventValidForJourneyType());
+        when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
     }
 
     @Test
     public void should_add_errors_if_events_invalid_for_journey_type() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(caseData);
-        when(eventValidForJourneyTypeChecker.check(any(Callback.class))).thenReturn(new EventValidForJourneyType("Invalid reason"));
+        when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid("Invalid reason"));
 
         PreSubmitCallbackResponse<CaseData> callbackResponse = preSubmitCallbackDispatcher.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -225,7 +225,7 @@ public class PreSubmitCallbackDispatcherTest {
     public void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
-            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidForJourneyTypeChecker);
+            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidChecker);
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -256,7 +256,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_ccd_event_authorizor() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidForJourneyTypeChecker))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidChecker))
             .hasMessage("ccdEventAuthorizor must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -264,7 +264,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidForJourneyTypeChecker))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -300,7 +300,7 @@ public class PreSubmitCallbackDispatcherTest {
                 h1,
                 h4
             ),
-            eventValidForJourneyTypeChecker
+                eventValidChecker
         );
 
         List<PreSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
