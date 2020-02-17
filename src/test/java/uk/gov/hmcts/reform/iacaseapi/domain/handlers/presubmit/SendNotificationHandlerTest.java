@@ -162,7 +162,9 @@ public class SendNotificationHandlerTest {
                         Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
                         Event.UPLOAD_ADDENDUM_EVIDENCE,
                         Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
-                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        Event.REQUEST_REASONS_FOR_APPEAL,
+                        Event.SUBMIT_REASONS_FOR_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
