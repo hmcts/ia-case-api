@@ -38,9 +38,9 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
 
     @Test
     public void canSendValidEvents() {
-        setupCallback(Event.SEND_DIRECTION, AIP);
+        setupCallback(Event.CHANGE_DIRECTION_DUE_DATE, AIP);
 
-        EventValidForJourneyType check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
+        EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
         assertThat(check.isValid(), is(true));
     }
@@ -49,7 +49,7 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
     public void cannotSendInvalidEventsForAip() {
         setupCallback(Event.REQUEST_CASE_BUILDING, AIP);
 
-        EventValidForJourneyType check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
+        EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
         assertThat(check.isValid(), is(false));
         assertThat(check.getInvalidReason(), is("You've made an invalid request. The hearing must be submitted by a representative to make this request."));
@@ -59,7 +59,7 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
     public void cannotSendInvalidEventsForLegalRep() {
         setupCallback(Event.REQUEST_REASONS_FOR_APPEAL, REP);
 
-        EventValidForJourneyType check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
+        EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
         assertThat(check.isValid(), is(false));
         assertThat(check.getInvalidReason(), is("You've made an invalid request. The hearing must be submitted by an appellant to make this request."));
