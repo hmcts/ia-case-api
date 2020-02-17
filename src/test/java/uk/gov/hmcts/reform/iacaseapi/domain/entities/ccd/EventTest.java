@@ -50,6 +50,8 @@ public class EventTest {
         assertEquals("removeAppealFromOnline", Event.REMOVE_APPEAL_FROM_ONLINE.toString());
         assertEquals("shareACase", Event.SHARE_A_CASE.toString());
         assertEquals("editReasonsForAppeal", Event.EDIT_REASONS_FOR_APPEAL.toString());
+        assertEquals("requestReasonsForAppeal", Event.REQUEST_REASONS_FOR_APPEAL.toString());
+        assertEquals("submitReasonsForAppeal", Event.SUBMIT_REASONS_FOR_APPEAL.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
