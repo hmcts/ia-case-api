@@ -81,7 +81,6 @@ public class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
-        verify(asylumCase).write(ADD_CASE_NOTE_ACTION_DISABLED, YesOrNo.YES);
     }
 
     @Test
