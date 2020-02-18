@@ -93,7 +93,7 @@ public class ReviewHearingRequirementsConfirmationTest {
 
             boolean canHandle = reviewHearingRequirementsConfirmation.canHandle(callback);
 
-            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS) {
+            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS || event == Event.UPDATE_HEARING_ADJUSTMENTS) {
 
                 assertTrue(canHandle);
             } else {

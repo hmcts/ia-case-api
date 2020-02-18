@@ -47,6 +47,12 @@
           "additionalRequests": "Yes",
           "additionalRequestsDescription": "Additional requests description",
           "hearingDateRangeDescription": "Only include dates between 27 Nov 2019 and 5 Feb 2020.",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "additionalTribunalResponse": "additional reason",
+          "reviewedHearingRequirements": "Yes",
           "datesToAvoid": [
             {
               "id": "1",
@@ -163,7 +169,13 @@
             }
           }
         ],
-        "updateHearingRequirementsExists": "Yes"
+        "updateHearingRequirementsExists": "Yes",
+        "reviewedHearingRequirements": null,
+        "vulnerabilitiesTribunalResponse": null,
+        "multimediaTribunalResponse": null,
+        "singleSexCourtTribunalResponse": null,
+        "inCameraCourtTribunalResponse": null,
+        "additionalTribunalResponse": null
       }
     }
   }

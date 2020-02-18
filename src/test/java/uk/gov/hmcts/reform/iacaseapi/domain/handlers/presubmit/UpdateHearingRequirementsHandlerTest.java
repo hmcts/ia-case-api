@@ -88,6 +88,13 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.UPDATE_HEARING_REQUIREMENTS_EXISTS), eq(YesOrNo.YES));
 
         verify(asylumCase).clear(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS);
+        // review fields should be cleared
+        verify(asylumCase).clear(REVIEWED_HEARING_REQUIREMENTS);
+        verify(asylumCase).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
@@ -111,6 +118,13 @@ public class UpdateHearingRequirementsHandlerTest {
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.UPDATE_HEARING_REQUIREMENTS_EXISTS), eq(YesOrNo.YES));
 
         verify(asylumCase).clear(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS);
+        // review fields should be cleared
+        verify(asylumCase).clear(REVIEWED_HEARING_REQUIREMENTS);
+        verify(asylumCase).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());

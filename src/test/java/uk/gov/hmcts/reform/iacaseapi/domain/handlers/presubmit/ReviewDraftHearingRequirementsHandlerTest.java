@@ -2,14 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,21 +19,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class ReviewHearingRequirementsHandlerTest {
+public class ReviewDraftHearingRequirementsHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private ReviewHearingRequirementsHandler reviewHearingRequirementsHandler;
+    private ReviewDraftHearingRequirementsHandler reviewDraftHearingRequirementsHandler;
 
     @Before
     public void setup() {
 
-        reviewHearingRequirementsHandler =
-            new ReviewHearingRequirementsHandler();
+        reviewDraftHearingRequirementsHandler =
+            new ReviewDraftHearingRequirementsHandler();
     }
 
     @Test
@@ -50,7 +45,7 @@ public class ReviewHearingRequirementsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -63,12 +58,12 @@ public class ReviewHearingRequirementsHandlerTest {
     @Test
     public void should_throw_error_if_cannot_handle_callback() {
 
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -82,10 +77,9 @@ public class ReviewHearingRequirementsHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = reviewHearingRequirementsHandler.canHandle(callbackStage, callback);
+                boolean canHandle = reviewDraftHearingRequirementsHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.REVIEW_HEARING_REQUIREMENTS
-                    && callbackStage == ABOUT_TO_SUBMIT) {
+                if (event == Event.REVIEW_HEARING_REQUIREMENTS && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {
@@ -100,19 +94,19 @@ public class ReviewHearingRequirementsHandlerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.canHandle(ABOUT_TO_START, null))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.canHandle(ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.handle(null, callback))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> reviewHearingRequirementsHandler.handle(ABOUT_TO_START, null))
+        assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

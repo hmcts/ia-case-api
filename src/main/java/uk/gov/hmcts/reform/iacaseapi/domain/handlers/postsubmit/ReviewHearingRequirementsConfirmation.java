@@ -21,7 +21,8 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
 
         return Arrays.asList(
             Event.REVIEW_HEARING_REQUIREMENTS,
-            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
+            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+            Event.UPDATE_HEARING_ADJUSTMENTS
         ).contains(callback.getEvent());
     }
 

@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class ReviewHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -56,27 +56,26 @@ public class ReviewHearingRequirementsPreparer implements PreSubmitCallbackHandl
             return asylumCasePreSubmitCallbackResponse;
         }
 
+        decorateWitnessAndInterpreterDetails(asylumCase);
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    static void decorateWitnessAndInterpreterDetails(AsylumCase asylumCase) {
+
         final Optional<List<IdValue<WitnessDetails>>> witnessDetails = asylumCase.read(WITNESS_DETAILS);
         final Optional<List<IdValue<InterpreterLanguage>>> interpreterLanguage = asylumCase.read(INTERPRETER_LANGUAGE);
 
-        if (witnessDetails.isPresent()) {
-            asylumCase.write(WITNESS_DETAILS_READONLY, witnessDetails
-                .get()
-                .stream()
-                .map(w ->
-                    "Name\t\t" + w.getValue().getWitnessName())
-                .collect(Collectors.joining("\n")));
-        }
+        witnessDetails.ifPresent(idValues -> asylumCase.write(WITNESS_DETAILS_READONLY, idValues
+            .stream()
+            .map(w ->
+                "Name\t\t" + w.getValue().getWitnessName())
+            .collect(Collectors.joining("\n"))));
 
-        if (interpreterLanguage.isPresent()) {
-            asylumCase.write(INTERPRETER_LANGUAGE_READONLY, interpreterLanguage
-                .get()
-                .stream()
-                .map(i ->
-                    "Language\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
-                .collect(Collectors.joining("\n")));
-        }
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
+            .stream()
+            .map(i ->
+                "Language\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
+            .collect(Collectors.joining("\n"))));
     }
 }

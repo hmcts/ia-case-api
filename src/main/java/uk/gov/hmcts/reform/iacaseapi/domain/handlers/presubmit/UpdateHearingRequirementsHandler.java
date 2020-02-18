@@ -8,10 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -62,6 +59,16 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
         changeUpdateHearingsApplicationsToCompleted(asylumCase);
         asylumCase.clear(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS);
+
+        // we need to clear this to reset the agreed adjustments
+        asylumCase.clear(REVIEWED_HEARING_REQUIREMENTS);
+
+        // Clear review fields once the update happens
+        asylumCase.clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        asylumCase.clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+        asylumCase.clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+        asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+        asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
