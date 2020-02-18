@@ -287,6 +287,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_EDIT_LISTING_EXISTS(
         "applicationEditListingExists", new TypeReference<String>(){}),
 
+    APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS(
+        "applicationUpdateHearingRequirementsExists", new TypeReference<String>() {}),
+
+    UPDATE_HEARING_REQUIREMENTS_EXISTS(
+        "updateHearingRequirementsExists", new TypeReference<String>(){}),
+
     DISABLE_OVERVIEW_PAGE(
         "disableOverviewPage", new TypeReference<String>(){}),
 
@@ -381,7 +387,7 @@ public enum AsylumCaseFieldDefinition {
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
-        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {})
 
     APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS(
         "applicationUpdateHearingRequirementsExists", new TypeReference<String>() {})

@@ -60,6 +60,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
         List<Event> allowedEvents = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
             Event.DRAFT_HEARING_REQUIREMENTS,
+            Event.UPDATE_HEARING_REQUIREMENTS,
             Event.LIST_CASE,
             Event.GENERATE_DECISION_AND_REASONS,
             Event.SEND_DECISION_AND_REASONS,
