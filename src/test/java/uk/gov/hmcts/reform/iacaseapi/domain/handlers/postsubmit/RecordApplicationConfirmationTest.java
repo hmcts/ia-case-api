@@ -47,6 +47,7 @@ public class RecordApplicationConfirmationTest {
     private String editListing = TRANSFER.toString();
     private String changeDate = TIME_EXTENSION.toString();
     private String withdraw = WITHDRAW.toString();
+    private String updateHearingRequirements = UPDATE_HEARING_REQUIREMENTS.toString();
     private long caseId = 1234;
 
     @Test
@@ -165,6 +166,37 @@ public class RecordApplicationConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).")
+        );
+
+        verify(asylumCase).clear(APPLICATION_DECISION);
+        verify(asylumCase).clear(APPLICATION_TYPE);
+    }
+
+    @Test
+    public void should_return_confirmation_application_granted_update_hearing_requirements() {
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(granted));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(updateHearingRequirements));
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordApplicationConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("# You have recorded an application")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("You must now [update the hearing requirements](/case/IA/Asylum/" + caseId + "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.")
         );
 
         verify(asylumCase).clear(APPLICATION_DECISION);

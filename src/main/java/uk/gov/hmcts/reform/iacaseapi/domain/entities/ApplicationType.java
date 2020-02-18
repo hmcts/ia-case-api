@@ -8,7 +8,8 @@ public enum ApplicationType {
     ADJOURN("Adjourn"),
     EXPEDITE("Expedite"),
     TRANSFER("Transfer"),
-    WITHDRAW("Withdraw");
+    WITHDRAW("Withdraw"),
+    UPDATE_HEARING_REQUIREMENTS("Update hearing requirements");
 
     @JsonValue
     private final String value;
