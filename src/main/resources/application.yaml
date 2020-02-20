@@ -183,7 +183,7 @@ security:
       - "generateDecisionAndReasons"
       - "endAppeal"
       - "sendDecisionAndReasons"
-
+      - "changeDirectionDueDate"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
