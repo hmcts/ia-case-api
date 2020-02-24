@@ -1,0 +1,44 @@
+{
+  "description": "RIA-2374 update hearing adjustments",
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateHearingAdjustments",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "reviewedHearingRequirements": "No",
+          "listCaseHearingLength": "300",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "additionalTribunalResponse": "additional reason",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "currentCaseStateVisibleToCaseOfficer": "unknown"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingLength": "300",
+        "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+        "multimediaTribunalResponse": "multimedia reason",
+        "singleSexCourtTribunalResponse": "singleSexCourt reason",
+        "inCameraCourtTribunalResponse": "inCameraCourt reason",
+        "additionalTribunalResponse": "additional reason",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "currentCaseStateVisibleToCaseOfficer": "prepareForHearing",
+        "reviewedHearingRequirements": "Yes"
+      }
+    }
+  }
+}

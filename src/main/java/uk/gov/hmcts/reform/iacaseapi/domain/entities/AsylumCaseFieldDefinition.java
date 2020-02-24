@@ -287,6 +287,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_EDIT_LISTING_EXISTS(
         "applicationEditListingExists", new TypeReference<String>(){}),
 
+    APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS(
+        "applicationUpdateHearingRequirementsExists", new TypeReference<String>() {}),
+
+    UPDATE_HEARING_REQUIREMENTS_EXISTS(
+        "updateHearingRequirementsExists", new TypeReference<YesOrNo>(){}),
+
     DISABLE_OVERVIEW_PAGE(
         "disableOverviewPage", new TypeReference<String>(){}),
 
@@ -380,8 +386,23 @@ public enum AsylumCaseFieldDefinition {
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
+    VULNERABILITIES_TRIBUNAL_RESPONSE(
+        "vulnerabilitiesTribunalResponse", new TypeReference<String>() {}),
+
+    MULTIMEDIA_TRIBUNAL_RESPONSE(
+        "multimediaTribunalResponse", new TypeReference<String>() {}),
+
+    SINGLE_SEX_COURT_TRIBUNAL_RESPONSE(
+        "singleSexCourtTribunalResponse", new TypeReference<String>() {}),
+
+    IN_CAMERA_COURT_TRIBUNAL_RESPONSE(
+        "inCameraCourtTribunalResponse", new TypeReference<String>() {}),
+
+    ADDITIONAL_TRIBUNAL_RESPONSE(
+        "additionalTribunalResponse", new TypeReference<String>() {}),
+
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
-        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {})
 
     ;
 

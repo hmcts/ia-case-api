@@ -144,6 +144,8 @@ security:
       - "listCaseWithoutHearingRequirements"
       - "requestReasonsForAppeal"
       - "requestClarifyingAnswers"
+      - "updateHearingRequirements"
+      - "updateHearingAdjustments"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

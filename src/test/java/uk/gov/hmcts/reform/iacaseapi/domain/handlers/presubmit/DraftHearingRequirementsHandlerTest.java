@@ -35,8 +35,7 @@ public class DraftHearingRequirementsHandlerTest {
 
     @Before
     public void setUp() {
-        draftHearingRequirementsHandler =
-            new DraftHearingRequirementsHandler();
+        draftHearingRequirementsHandler = new DraftHearingRequirementsHandler();
 
         when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -94,8 +93,7 @@ public class DraftHearingRequirementsHandlerTest {
 
                 boolean canHandle = draftHearingRequirementsHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.DRAFT_HEARING_REQUIREMENTS
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                if (event == Event.DRAFT_HEARING_REQUIREMENTS && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {

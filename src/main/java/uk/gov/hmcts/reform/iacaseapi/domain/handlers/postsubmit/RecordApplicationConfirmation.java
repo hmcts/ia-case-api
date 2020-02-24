@@ -73,6 +73,8 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
 
             } else if (ADJOURN.toString().equalsIgnoreCase(type) || EXPEDITE.toString().equalsIgnoreCase(type) || TRANSFER.toString().equalsIgnoreCase(type)) {
                 return defaultResponse + "Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.";
+            } else if (UPDATE_HEARING_REQUIREMENTS.toString().equalsIgnoreCase(type)) {
+                return "You must now [update the hearing requirements](/case/IA/Asylum/" + id +  "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.";
             }
 
             // default empty in case of new application type

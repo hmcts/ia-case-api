@@ -45,6 +45,14 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
         State.SUBMIT_HEARING_REQUIREMENTS
     );
 
+    private final List<State> updateHearingRequirementsStates = newArrayList(
+        State.PRE_HEARING,
+        State.FINAL_BUNDLING,
+        State.PREPARE_FOR_HEARING,
+        State.DECISION
+    );
+
+
     private final Appender<Application> appender;
     private final DateProvider dateProvider;
     private final NotificationSender<AsylumCase> notificationSender;
@@ -155,6 +163,10 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                 if (!asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class).isPresent()) {
                     asylumCase.write(APPLICATION_EDIT_LISTING_EXISTS, "Yes");
                 }
+            } else if (UPDATE_HEARING_REQUIREMENTS.toString().equalsIgnoreCase(applicationType)) {
+                if (!asylumCase.read(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, String.class).isPresent()) {
+                    asylumCase.write(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, "Yes");
+                }
             }
 
             asylumCase.write(DISABLE_OVERVIEW_PAGE, "Yes");
@@ -204,6 +216,12 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                 return true;
             } else {
                 return false;
+            }
+        } else if (UPDATE_HEARING_REQUIREMENTS.toString().equalsIgnoreCase(applicationType)) {
+            if (!updateHearingRequirementsStates.contains(state)) {
+                return false;
+            } else {
+                return true;
             }
         }
 

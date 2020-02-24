@@ -1,0 +1,42 @@
+{
+  "description": "RIA-2373 record granted update hearing requirements before per-hearing",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordApplication",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "applications": [],
+          "applicationDocuments": [{
+            "id": "1",
+            "value": {
+              "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+              "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+              "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+            }
+          }],
+          "applicationSupplier": "The legal representative",
+          "applicationType": "Update hearing requirements",
+          "applicationReason": "Updating hearing requirements",
+          "applicationDate": "2020-01-21",
+          "applicationDecision": "Granted",
+          "applicationDecisionReason": "some decision reason"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You can't record application with 'Update hearing requirements' type when case is in 'CASE_BUILDING' state"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "currentCaseStateVisibleToCaseOfficer": "caseBuilding",
+        "uploadAdditionalEvidenceActionAvailable": "No"
+      }
+    }
+  }
+}
