@@ -38,12 +38,12 @@ public class GenerateDecisionAndReasonsConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationHeader().get(),
-                containsString("# You have generated the decision and reasons document")
+                containsString("# The Decision and Reasons document is ready to download")
         );
 
         assertThat(
                 callbackResponse.getConfirmationBody().get(),
-                containsString("Go to the documents tab to download the decision and reasons document.")
+                containsString("Go to the documents tab to download the Decision and Reasons document.")
         );
     }
 
