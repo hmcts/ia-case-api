@@ -30,10 +30,10 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have sent the decision and reasons");
+        postSubmitResponse.setConfirmationHeader("# You've uploaded the Decision and Reasons document");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "Both parties will now be notified of the decision and reasons."
+            + "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab."
         );
 
         return postSubmitResponse;

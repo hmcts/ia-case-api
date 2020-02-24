@@ -38,12 +38,16 @@ public class SendDecisionAndReasonsConfirmationTest {
 
         assertThat(
                 callbackResponse.getConfirmationHeader().get(),
-                containsString("# You have sent the decision and reasons")
+                containsString("# You've uploaded the Decision and Reasons document")
         );
 
         assertThat(
                 callbackResponse.getConfirmationBody().get(),
-                containsString("Both parties will now be notified of the decision and reasons.")
+                containsString("What happens next")
+        );
+        assertThat(
+                callbackResponse.getConfirmationBody().get(),
+                containsString("Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.")
         );
     }
 

@@ -151,6 +151,7 @@ security:
       - "listCase"
       - "recordAttendeesAndDuration"
       - "editCaseListing"
+      - "sendDecisionAndReasons"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -181,6 +182,8 @@ security:
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
+      - "sendDecisionAndReasons"
+
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
