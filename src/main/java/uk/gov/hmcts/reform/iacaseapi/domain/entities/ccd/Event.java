@@ -49,7 +49,6 @@ public enum Event {
     SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
     REMOVE_APPEAL_FROM_ONLINE("removeAppealFromOnline"),
     SHARE_A_CASE("shareACase"),
-
     REQUEST_REASONS_FOR_APPEAL("requestReasonsForAppeal"),
     EDIT_REASONS_FOR_APPEAL("editReasonsForAppeal"),
     SUBMIT_REASONS_FOR_APPEAL("submitReasonsForAppeal"),
