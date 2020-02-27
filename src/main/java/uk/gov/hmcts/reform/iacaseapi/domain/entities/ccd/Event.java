@@ -47,11 +47,8 @@ public enum Event {
     UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP("uploadAddendumEvidenceLegalRep"),
     UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE("uploadAddendumEvidenceHomeOffice"),
     SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
-
     REMOVE_APPEAL_FROM_ONLINE("removeAppealFromOnline"),
-
     SHARE_A_CASE("shareACase"),
-
     REQUEST_REASONS_FOR_APPEAL("requestReasonsForAppeal"),
     EDIT_REASONS_FOR_APPEAL("editReasonsForAppeal"),
     SUBMIT_REASONS_FOR_APPEAL("submitReasonsForAppeal"),
