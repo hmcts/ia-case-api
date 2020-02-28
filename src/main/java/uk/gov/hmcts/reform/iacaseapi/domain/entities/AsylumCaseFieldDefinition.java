@@ -362,6 +362,9 @@ public enum AsylumCaseFieldDefinition {
     REVIEWED_HEARING_REQUIREMENTS(
         "reviewedHearingRequirements", new TypeReference<YesOrNo>() {}),
 
+    REVIEWED_UPDATED_HEARING_REQUIREMENTS(
+        "reviewedUpdatedHearingRequirements", new TypeReference<YesOrNo>() {}),
+
     CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS(
         "caseListedWithoutHearingRequirements", new TypeReference<YesOrNo>() {}),
 

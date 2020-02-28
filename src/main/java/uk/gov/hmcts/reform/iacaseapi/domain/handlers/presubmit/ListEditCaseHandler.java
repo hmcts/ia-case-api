@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -53,6 +54,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         if (!hearingCentreFinder.hearingCentreIsActive(maybeHearingCentre)) {
             asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         }
+        asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

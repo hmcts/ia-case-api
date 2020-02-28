@@ -58,6 +58,8 @@ public class ReviewUpdateHearingRequirementsHandlerTest {
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.PREPARE_FOR_HEARING);
         verify(asylumCase, times(1)).clear(DISABLE_OVERVIEW_PAGE);
         verify(asylumCase, times(1)).clear(UPDATE_HEARING_REQUIREMENTS_EXISTS);

@@ -36,8 +36,9 @@
         "inCameraCourtTribunalResponse": "inCameraCourt reason",
         "additionalTribunalResponse": "additional reason",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "currentCaseStateVisibleToCaseOfficer": "prepareForHearing",
-        "reviewedHearingRequirements": "Yes"
+        "reviewedHearingRequirements": "Yes",
+        "reviewedUpdatedHearingRequirements": "Yes",
+        "currentCaseStateVisibleToCaseOfficer": "prepareForHearing"
       }
     }
   }
