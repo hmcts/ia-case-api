@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath("org.yaml:snakeyaml:1.23")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.1.8")
     }
 }
 
