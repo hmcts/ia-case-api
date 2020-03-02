@@ -1,5 +1,5 @@
 {
-  "description": "RIA-910 & RIA-911 & RIA-912 Current case state is maintained in fields for Case Officer and Legal Representative #2",
+  "description": "RIA-910 & RIA-911 & RIA-912 & RIA-1360 Current case state is maintained in fields for Case Officer, Legal Representative and Judge #2",
   "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -12,6 +12,7 @@
         "replacements": {
           "currentCaseStateVisibleToCaseOfficer": "respondentReview",
           "currentCaseStateVisibleToLegalRepresentative": "respondentReview",
+          "currentCaseStateVisibleToJudge": "respondentReview",
           "uploadAdditionalEvidenceActionAvailable": "Yes"
         }
       }
@@ -25,6 +26,7 @@
       "replacements": {
         "currentCaseStateVisibleToCaseOfficer": "submitHearingRequirements",
         "currentCaseStateVisibleToLegalRepresentative": "submitHearingRequirements",
+        "currentCaseStateVisibleToJudge": "submitHearingRequirements",
         "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
