@@ -278,7 +278,7 @@ dependencies {
     }
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
-    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
+    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
