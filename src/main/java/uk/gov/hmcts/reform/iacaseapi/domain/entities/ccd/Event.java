@@ -55,6 +55,7 @@ public enum Event {
     SUBMIT_REASONS_FOR_APPEAL("submitReasonsForAppeal"),
     REQUEST_CLARIFYING_ANSWERS("requestClarifyingAnswers"),
     SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
+    SEND_TO_PREHEARING("sendToPreHearing"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

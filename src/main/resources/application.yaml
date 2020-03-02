@@ -146,6 +146,7 @@ security:
       - "requestClarifyingAnswers"
       - "updateHearingRequirements"
       - "updateHearingAdjustments"
+      - "sendToPreHearing"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
