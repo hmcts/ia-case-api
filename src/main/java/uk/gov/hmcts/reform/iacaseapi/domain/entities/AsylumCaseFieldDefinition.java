@@ -293,6 +293,9 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS(
         "applicationUpdateHearingRequirementsExists", new TypeReference<String>() {}),
 
+    APPLICATION_CHANGE_HEARING_CENTRE_EXISTS(
+        "applicationChangeHearingCentreExists", new TypeReference<String>() {}),
+
     UPDATE_HEARING_REQUIREMENTS_EXISTS(
         "updateHearingRequirementsExists", new TypeReference<YesOrNo>(){}),
 

@@ -52,6 +52,15 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
         State.DECISION
     );
 
+    private final List<State> changeHearingCentreStates = newArrayList(
+        State.AWAITING_RESPONDENT_EVIDENCE,
+        State.CASE_BUILDING,
+        State.CASE_UNDER_REVIEW,
+        State.RESPONDENT_REVIEW,
+        State.SUBMIT_HEARING_REQUIREMENTS,
+        State.LISTING
+    );
+
 
     private final Appender<Application> appender;
     private final DateProvider dateProvider;
@@ -167,6 +176,10 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                 if (!asylumCase.read(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, String.class).isPresent()) {
                     asylumCase.write(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, "Yes");
                 }
+            } else if (CHANGE_HEARING_CENTRE.toString().equalsIgnoreCase(applicationType)) {
+                if(!asylumCase.read(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS, String.class).isPresent()) {
+                    asylumCase.write(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS, "Yes");
+                }
             }
 
             asylumCase.write(DISABLE_OVERVIEW_PAGE, "Yes");
@@ -219,6 +232,12 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
             }
         } else if (UPDATE_HEARING_REQUIREMENTS.toString().equalsIgnoreCase(applicationType)) {
             if (!updateHearingRequirementsStates.contains(state)) {
+                return false;
+            } else {
+                return true;
+            }
+        } else if (CHANGE_HEARING_CENTRE.toString().equalsIgnoreCase(applicationType)) {
+            if (!changeHearingCentreStates.contains(state)) {
                 return false;
             } else {
                 return true;
