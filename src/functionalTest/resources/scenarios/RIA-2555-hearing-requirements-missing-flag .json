@@ -1,0 +1,21 @@
+{
+  "description": "RIA-2555 hearing requirements missing flag exceptions handled",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reviewHearingRequirements",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The case is already listed, you can't request hearing requirements"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

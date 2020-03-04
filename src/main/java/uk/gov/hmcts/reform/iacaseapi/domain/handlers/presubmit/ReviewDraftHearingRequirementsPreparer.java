@@ -46,11 +46,17 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
-        final YesOrNo reviewedHearingRequirements =
-            asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)
-            .orElseThrow(() -> new IllegalStateException("reviewHearingRequirements flag should be present"));
+        final Optional<YesOrNo> reviewedHearingRequirements =
+            asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
 
-        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.equals(YesOrNo.YES)) {
+        if (!reviewedHearingRequirements.isPresent()) {
+            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("The case is already listed, you can't request hearing requirements");
+            return asylumCasePreSubmitCallbackResponse;
+        }
+
+
+        if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.get().equals(YesOrNo.YES)) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
             return asylumCasePreSubmitCallbackResponse;

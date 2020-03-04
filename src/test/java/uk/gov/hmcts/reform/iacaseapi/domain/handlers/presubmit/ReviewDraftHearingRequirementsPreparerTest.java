@@ -78,14 +78,20 @@ public class ReviewDraftHearingRequirementsPreparerTest {
             "Language\t\tIrish\nDialect\t\t\tN/A\n");
     }
 
-
     @Test
-    public void should_throw_error_review_flag_is_missing() {
+    public void should_return_error_on_review_flag_is_missing() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback))
-            .isExactlyInstanceOf(IllegalStateException.class)
-            .hasMessage("reviewHearingRequirements flag should be present");
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertEquals(callbackResponse.getErrors().iterator().next(),
+            "The case is already listed, you can't request hearing requirements");
+
+        verify(asylumCase, times(0)).read(WITNESS_DETAILS);
+        verify(asylumCase, times(0)).read(INTERPRETER_LANGUAGE);
     }
 
     @Test
