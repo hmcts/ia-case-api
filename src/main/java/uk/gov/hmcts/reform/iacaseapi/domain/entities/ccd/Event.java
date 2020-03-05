@@ -57,6 +57,7 @@ public enum Event {
     SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
     SEND_TO_PREHEARING("sendToPreHearing"),
 
+    
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
