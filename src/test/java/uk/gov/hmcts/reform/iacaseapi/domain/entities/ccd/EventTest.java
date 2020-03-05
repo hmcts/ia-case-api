@@ -55,12 +55,12 @@ public class EventTest {
         assertEquals("editReasonsForAppeal", Event.EDIT_REASONS_FOR_APPEAL.toString());
         assertEquals("requestReasonsForAppeal", Event.REQUEST_REASONS_FOR_APPEAL.toString());
         assertEquals("submitReasonsForAppeal", Event.SUBMIT_REASONS_FOR_APPEAL.toString());
+        assertEquals("sendToPreHearing", Event.SEND_TO_PREHEARING.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        
-        assertEquals(51, Event.values().length);
+        assertEquals(52, Event.values().length);
     }
 }
