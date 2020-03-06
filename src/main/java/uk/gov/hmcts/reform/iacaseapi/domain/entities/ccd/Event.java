@@ -56,6 +56,7 @@ public enum Event {
     REQUEST_CLARIFYING_ANSWERS("requestClarifyingAnswers"),
     SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
     SEND_TO_PREHEARING("sendToPreHearing"),
+    CHANGE_HEARING_CENTRE("changeHearingCentre"),
 
     
     @JsonEnumDefaultValue
