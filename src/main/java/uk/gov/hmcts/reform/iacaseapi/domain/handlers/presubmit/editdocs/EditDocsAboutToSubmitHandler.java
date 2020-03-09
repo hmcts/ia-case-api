@@ -34,6 +34,8 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
 
     @Autowired
     private EditDocsCaseNoteService editDocsCaseNoteService;
+    @Autowired
+    private EditDocsService editDocService;
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -51,6 +53,7 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
         long caseId = callback.getCaseDetails().getId();
         restoreDocumentTagForDocs(asylumCase, asylumCaseBefore);
         editDocsCaseNoteService.writeAuditCaseNoteForGivenCaseId(caseId, asylumCase, asylumCaseBefore);
+        editDocService.cleanUpOverviewTabDocs(asylumCase, asylumCaseBefore);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

@@ -407,6 +407,10 @@ public enum AsylumCaseFieldDefinition {
     ADD_CASE_NOTE_DOCUMENT(
         "addCaseNoteDocument", new TypeReference<Document>(){}),
 
+    FINAL_DECISION_AND_REASONS_PDF(
+        "finalDecisionAndReasonsPdf", new TypeReference<Document>(){}),
+
+
     // VALUES IN TRANSITION, ONLY USED IN DATA FIXING SERVICE
     APPELLANTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
         "appellantsAgreedScheduleOfIssuesDescription", new TypeReference<String>(){}),
