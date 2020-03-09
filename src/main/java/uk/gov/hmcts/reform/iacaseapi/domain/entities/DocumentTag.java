@@ -20,6 +20,7 @@ public enum DocumentTag {
     FINAL_DECISION_AND_REASONS_PDF("finalDecisionAndReasonsPdf"),
     APPEAL_SKELETON_BUNDLE("submitCaseBundle"),
     END_APPEAL("endAppeal"),
+    FTPA_APPELLANT("ftpaAppellant"),
 
     @JsonEnumDefaultValue
     NONE("");

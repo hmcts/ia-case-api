@@ -91,6 +91,7 @@ cache:
     expirationTimeInSeconds: 60
 
 appealOutOfTimeDays: 14
+ftpaAppealOutOfTimeDays: 14
 
 defaultHearingCentre: taylorHouse
 
@@ -138,6 +139,7 @@ security:
       - "shareACase"
       - "requestHearingRequirementsFeature"
       - "uploadAddendumEvidenceLegalRep"
+      - "applyForFTPAAppellant"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

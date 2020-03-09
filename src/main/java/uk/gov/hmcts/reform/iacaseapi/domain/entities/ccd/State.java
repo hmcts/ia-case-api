@@ -25,6 +25,7 @@ public enum State {
     REASONS_FOR_APPEAL_SUBMITTED("reasonsForAppealSubmitted"),
     AWAITING_CLARIFYING_ANSWERS("awaitingClarifyingAnswers"),
     CLARIFYING_ANSWERS_SUBMITTED("clarifyingAnswersSubmitted"),
+    FTPA_SUBMITTED("ftpaSubmitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
