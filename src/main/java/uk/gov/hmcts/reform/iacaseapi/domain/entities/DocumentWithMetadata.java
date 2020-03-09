@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HasDocument;
 
-public class DocumentWithMetadata {
+@EqualsAndHashCode
+@ToString
+public class DocumentWithMetadata implements HasDocument {
 
     private Document document;
     private String description;
@@ -39,13 +44,13 @@ public class DocumentWithMetadata {
         this.suppliedBy = suppliedBy;
     }
 
+    @Override
     public Document getDocument() {
         requireNonNull(document);
         return document;
     }
 
     public String getDescription() {
-        requireNonNull(description);
         return description;
     }
 

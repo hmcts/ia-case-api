@@ -1,0 +1,55 @@
+{
+  "description": "RIA-2783 Edit documents",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "editDocuments",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "additionalEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "new-evidence.pdf"
+                },
+                "description": "some new added evidence",
+                "dateUploaded": "2018-12-25"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "additionalEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "new-evidence.pdf"
+              },
+              "description": "some new added evidence",
+              "dateUploaded": "2018-12-25",
+              "tag": ""
+            }
+          }
+        ]
+      }
+    }
+  }
+}

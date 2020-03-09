@@ -29,4 +29,5 @@ public class DocumentWithMetadataTest {
         assertEquals(dateUploaded, documentWithMetadata.getDateUploaded());
         assertEquals(tag, documentWithMetadata.getTag());
     }
+
 }
