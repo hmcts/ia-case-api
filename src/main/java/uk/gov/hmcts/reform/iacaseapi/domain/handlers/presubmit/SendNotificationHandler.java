@@ -70,7 +70,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                    Event.SUBMIT_REASONS_FOR_APPEAL,
                    Event.UPDATE_HEARING_ADJUSTMENTS,
                    Event.REMOVE_APPEAL_FROM_ONLINE,
-                   Event.CHANGE_HEARING_CENTRE
+                   Event.CHANGE_HEARING_CENTRE,
+                   Event.APPLY_FOR_FTPA_APPELLANT,
+                   Event.APPLY_FOR_FTPA_RESPONDENT
                ).contains(callback.getEvent());
     }
 
