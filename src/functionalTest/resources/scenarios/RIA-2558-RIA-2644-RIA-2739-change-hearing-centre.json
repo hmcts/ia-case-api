@@ -1,0 +1,89 @@
+{
+  "description": "RIA-2558 RIA-2644 RIA-2739 Change hearing centre",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 3333,
+      "eventId": "changeHearingCentre",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "currentCaseStateVisibleToHomeOfficeAll": "preHearing",
+          "applicationChangeHearingCentreExists": "Yes",
+          "applicationChangeDesignatedHearingCentre": "glasgow",
+          "notificationsSent": [],
+          "applications": [
+            {
+              "id": "1",
+              "value": {
+                "applicationDocuments": [{
+                  "id": "1",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
+                }],
+                "applicationSupplier": "The legal representative",
+                "applicationType": "Change hearing centre",
+                "applicationReason": "some reason",
+                "applicationDate": "2019-01-01",
+                "applicationDecision": "Granted",
+                "applicationDecisionReason": "some decision reason",
+                "applicationDateOfDecision": "{$TODAY}",
+                "applicationStatus": "In progress"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "glasgow",
+        "applicationChangeHearingCentreExists": null,
+        "currentCaseStateVisibleToCaseOfficer": "preHearing",
+        "applications": [
+          {
+            "id": "1",
+            "value": {
+              "applicationDocuments": [{
+                "id": "1",
+                "value": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                }
+              }],
+              "applicationSupplier": "The legal representative",
+              "applicationType": "Change hearing centre",
+              "applicationReason": "some reason",
+              "applicationDate": "2019-01-01",
+              "applicationDecision": "Granted",
+              "applicationDecisionReason": "some decision reason",
+              "applicationDateOfDecision": "{$TODAY}",
+              "applicationStatus": "Completed"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "3333_CHANGE_HEARING_CENTRE_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "3333_CHANGE_HEARING_CENTRE_NEW_HEARING_CENTRE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
