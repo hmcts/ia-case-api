@@ -170,6 +170,7 @@ security:
       - "updateHearingRequirements"
       - "updateHearingAdjustments"
       - "sendToPreHearing"
+      - "changeHearingCentre"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

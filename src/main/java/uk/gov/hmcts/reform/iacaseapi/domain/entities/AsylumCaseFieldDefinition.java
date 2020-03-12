@@ -411,7 +411,10 @@ public enum AsylumCaseFieldDefinition {
         "additionalTribunalResponse", new TypeReference<String>() {}),
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
-        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {})
+        "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
+
+    APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
+        "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 
     ;
 

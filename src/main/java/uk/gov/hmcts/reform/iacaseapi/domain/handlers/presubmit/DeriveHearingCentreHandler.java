@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -87,12 +88,14 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         if (optionalAppellantPostcode.isPresent()) {
 
             String appellantPostcode = optionalAppellantPostcode.get();
-            asylumCase.write(HEARING_CENTRE,
-                hearingCentreFinder.find(appellantPostcode)
-            );
+            HearingCentre hearingCentre = hearingCentreFinder.find(appellantPostcode);
+
+            asylumCase.write(HEARING_CENTRE, hearingCentre);
+            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
 
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
         }
     }
 }
