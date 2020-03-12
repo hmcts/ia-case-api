@@ -60,6 +60,7 @@ public enum Event {
     CHANGE_HEARING_CENTRE("changeHearingCentre"),
     APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
+    LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

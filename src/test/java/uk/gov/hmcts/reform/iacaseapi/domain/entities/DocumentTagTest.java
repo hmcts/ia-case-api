@@ -25,11 +25,12 @@ public class DocumentTagTest {
         assertEquals("endAppeal", DocumentTag.END_APPEAL.toString());
         assertEquals("ftpaAppellant", DocumentTag.FTPA_APPELLANT.toString());
         assertEquals("ftpaRespondent", DocumentTag.FTPA_RESPONDENT.toString());
+        assertEquals("ftpaDecisionAndReasons", DocumentTag.FTPA_DECISION_AND_REASONS.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(18, DocumentTag.values().length);
+        assertEquals(19, DocumentTag.values().length);
     }
 }

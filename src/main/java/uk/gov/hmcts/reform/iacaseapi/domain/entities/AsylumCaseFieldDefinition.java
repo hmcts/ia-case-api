@@ -105,11 +105,53 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DOCUMENTS(
         "ftpaAppellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    FTPA_APPLICANT_TYPE(
+        "ftpaApplicantType", new TypeReference<String>(){}),
+
     FTPA_APPELLANT_SUBMITTED(
         "ftpaAppellantSubmitted", new TypeReference<String>(){}),
 
+    FTPA_RESPONDENT_SUBMITTED(
+        "ftpaRespondentSubmitted", new TypeReference<String>(){}),
+
     FTPA_APPELLANT_APPLICATION_DATE(
         "ftpaAppellantApplicationDate", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_DOCUMENT(
+        "ftpaAppellantDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_DECISION_DOCUMENT(
+        "ftpaRespondentDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    ALL_FTPA_APPELLANT_DECISION_DOCS(
+        "allFtpaAppellantDecisionDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    ALL_FTPA_RESPONDENT_DECISION_DOCS(
+        "allFtpaRespondentDecisionDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    IS_FTPA_APPELLANT_DECIDED(
+        "isFtpaAppellantDecided", new TypeReference<YesOrNo>(){}),
+
+    IS_FTPA_RESPONDENT_DECIDED(
+        "isFtpaRespondentDecided", new TypeReference<YesOrNo>(){}),
+
+    IS_APPELLANT_FTPA_DECISION_VISIBLE_TO_RESPONDENT(
+        "isAppellantFtpaDecisionVisibleToRespondent", new TypeReference<String>(){}),
+
+    IS_RESPONDENT_FTPA_DECISION_VISIBLE_TO_APPELLANT(
+        "isRespondentFtpaDecisionVisibleToAppellant", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_DATE(
+        "ftpaAppellantDecisionDate", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_DATE(
+        "ftpaRespondentDecisionDate", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_OUTCOME_TYPE(
+        "ftpaAppellantDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_OUTCOME_TYPE(
+        "ftpaRespondentDecisionOutcomeType", new TypeReference<String>(){}),
 
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -125,9 +167,6 @@ public enum AsylumCaseFieldDefinition {
 
     FTPA_RESPONDENT_DOCUMENTS(
         "ftpaRespondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
-
-    FTPA_RESPONDENT_SUBMITTED(
-        "ftpaRespondentSubmitted", new TypeReference<String>(){}),
 
     FTPA_RESPONDENT_APPLICATION_DATE(
         "ftpaRespondentApplicationDate", new TypeReference<String>(){}),

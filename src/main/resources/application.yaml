@@ -217,6 +217,8 @@ security:
       - "changeDirectionDueDate"
       - "sendDirection"
       - "addCaseNote"
+      - "leadershipJudgeFtpaDecision"
+
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
