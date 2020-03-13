@@ -57,10 +57,6 @@ public class ProfessionalUsersRetriever {
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
 
-        //TODO Remove this (for Demo testing only
-        log.info("Authorization: {}", accessToken);
-        log.info("Service Authorization: {}", serviceAuthorizationToken);
-
         try {
             response =
                 refDataRestTemplate
