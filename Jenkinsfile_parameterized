@@ -35,6 +35,9 @@ def secrets = [
         secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
         secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
 
+        secret('test-judge-x-username', 'TEST_JUDGE_X_USERNAME'),
+        secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
+
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
         secret('idam-redirect-uri', 'IA_IDAM_REDIRECT_URI'),
