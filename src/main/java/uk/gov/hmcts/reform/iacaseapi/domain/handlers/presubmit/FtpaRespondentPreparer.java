@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -18,18 +18,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
+
 @Component
-public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
-    private final int ftpaAppellantAppealOutOfTimeDays;
+    private final int ftpaRespondentAppealOutOfTimeDays;
 
-    public FtpaAppellantPreparer(
+    public FtpaRespondentPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaAppellantAppealOutOfTimeDays}") int ftpaAppellantAppealOutOfTimeDays
+        @Value("${ftpaRespondentAppealOutOfTimeDays}") int ftpaRespondentAppealOutOfTimeDays
     ) {
         this.dateProvider = dateProvider;
-        this.ftpaAppellantAppealOutOfTimeDays = ftpaAppellantAppealOutOfTimeDays;
+        this.ftpaRespondentAppealOutOfTimeDays = ftpaRespondentAppealOutOfTimeDays;
     }
 
     public boolean canHandle(
@@ -40,7 +41,7 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.APPLY_FOR_FTPA_APPELLANT;
+               && callback.getEvent() == Event.APPLY_FOR_FTPA_RESPONDENT;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -56,9 +57,9 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
                 .getCaseDetails()
                 .getCaseData();
 
-        final Optional<String> mayBeAppellantAppealSubmitted = asylumCase.read(FTPA_APPELLANT_SUBMITTED);
+        final Optional<String> mayBeRespondentAppealSubmitted = asylumCase.read(FTPA_RESPONDENT_SUBMITTED);
 
-        if (mayBeAppellantAppealSubmitted.isPresent() && mayBeAppellantAppealSubmitted.get().equals("Yes")) {
+        if (mayBeRespondentAppealSubmitted.isPresent() && mayBeRespondentAppealSubmitted.get().equals("Yes")) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've already submitted an application. You can only make one application at a time.");
             return asylumCasePreSubmitCallbackResponse;
@@ -66,10 +67,10 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
 
         final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
 
-        if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaAppellantAppealOutOfTimeDays))).isPresent()) {
-            asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);
+        if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaRespondentAppealOutOfTimeDays))).isPresent()) {
+            asylumCase.write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YES);
         } else {
-            asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, NO);
+            asylumCase.write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -104,6 +104,25 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    FTPA_RESPONDENT_GROUNDS_DOCUMENTS(
+        "ftpaRespondentGroundsDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_EVIDENCE_DOCUMENTS(
+        "ftpaRespondentEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_OUT_OF_TIME_DOCUMENTS(
+        "ftpaRespondentOutOfTimeDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_DOCUMENTS(
+        "ftpaRespondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    FTPA_RESPONDENT_SUBMITTED(
+        "ftpaRespondentSubmitted", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_APPLICATION_DATE(
+        "ftpaRespondentApplicationDate", new TypeReference<String>(){}),
+
+
     UPLOADED_HOME_OFFICE_BUNDLE_DOCS(
         "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),
 
@@ -226,6 +245,9 @@ public enum AsylumCaseFieldDefinition {
 
     FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME(
         "ftpaAppellantSubmissionOutOfTime", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME(
+        "ftpaRespondentSubmissionOutOfTime", new TypeReference<YesOrNo>(){}),
 
     DIRECTIONS(
         "directions", new TypeReference<List<IdValue<Direction>>>(){}),

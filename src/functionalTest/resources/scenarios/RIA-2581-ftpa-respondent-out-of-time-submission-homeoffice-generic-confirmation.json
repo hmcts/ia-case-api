@@ -1,0 +1,26 @@
+{
+  "description": "RIA-2581 FTPA Respondent (Generic) application out of time confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "HomeOfficePou",
+    "input": {
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaRespondentSubmissionOutOfTime": "Yes"
+        }
+
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "",
+      "body": "![FTPA Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/ftpaOutOfTimeConfirmationSmall.png)\n#### What happens next\n\nThe First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons, it will consider your application and make a decision shortly.<br>"
+    }
+  }
+}

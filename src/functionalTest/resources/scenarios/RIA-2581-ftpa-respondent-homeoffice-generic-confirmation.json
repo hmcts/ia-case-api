@@ -1,0 +1,26 @@
+{
+  "description": "RIA-2581 FTPA Respondent (Generic) application confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaRespondentSubmissionOutOfTime": "No"
+        }
+
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've applied for permission to appeal to the Upper Tribunal",
+      "body": "#### What happens next\n\nThe First-tier Tribunal will review your application and decide shortly.<br>"
+    }
+  }
+}

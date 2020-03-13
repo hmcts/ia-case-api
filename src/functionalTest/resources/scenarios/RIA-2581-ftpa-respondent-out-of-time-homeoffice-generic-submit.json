@@ -1,0 +1,158 @@
+{
+  "description": "RIA-2581 FTPA respondent (Generic) out of time application submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "HomeOfficePou",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealResponseAvailable": null,
+          "homeOfficeAppealResponseDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "appeal-response.pdf"
+          },
+          "homeOfficeAppealResponseDescription": "Appeal response",
+          "ftpaRespondentDocuments": [],
+          "ftpaRespondentOutOfTimeDocuments": [
+            {
+              "id": "3",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "some-ftpa-respondent-out-of-time-reasons.pdf"
+                },
+                "description": "late FTPA respondent out of time application evidence"
+              }
+            }
+          ],
+          "ftpaRespondentGroundsDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                },
+                "description": "Some FTPA respondent grounds of application"
+              }
+            }
+          ],
+          "ftpaRespondentEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-respondent-evidence.pdf"
+                },
+                "description": "Some FTPA respondent application evidence"
+              }
+            }
+          ],
+          "ftpaRespondentSubmissionOutOfTime": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaRespondentSubmitted": "Yes",
+        "ftpaRespondentSubmissionOutOfTime": "Yes",
+        "ftpaRespondentApplicationDate": "{$TODAY}",
+        "ftpaRespondentDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "some-ftpa-respondent-out-of-time-reasons.pdf"
+              },
+              "description": "late FTPA respondent out of time application evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+              },
+              "description": "Some FTPA respondent grounds of application",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-respondent-evidence.pdf"
+              },
+              "description": "Some FTPA respondent application evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          }
+        ],
+        "ftpaRespondentOutOfTimeDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "some-ftpa-respondent-out-of-time-reasons.pdf"
+              },
+              "description": "late FTPA respondent out of time application evidence"
+            }
+          }
+        ],
+        "ftpaRespondentGroundsDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+              },
+              "description": "Some FTPA respondent grounds of application"
+            }
+          }
+        ],
+        "ftpaRespondentEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-respondent-evidence.pdf"
+              },
+              "description": "Some FTPA respondent application evidence"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

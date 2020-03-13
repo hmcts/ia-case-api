@@ -23,14 +23,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
+
 @Component
-public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public FtpaAppellantHandler(
+    public FtpaRespondentHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
@@ -48,7 +49,7 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.APPLY_FOR_FTPA_APPELLANT;
+               && callback.getEvent() == Event.APPLY_FOR_FTPA_RESPONDENT;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -64,59 +65,59 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                 .getCaseDetails()
                 .getCaseData();
 
-        final Optional<List<IdValue<DocumentWithDescription>>>  maybeOutOfTimeDocuments = asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS);
+        final Optional<List<IdValue<DocumentWithDescription>>>  maybeOutOfTimeDocuments = asylumCase.read(FTPA_RESPONDENT_OUT_OF_TIME_DOCUMENTS);
 
-        final List<IdValue<DocumentWithDescription>> ftpaAppellantOutOfTimeDocuments = maybeOutOfTimeDocuments.orElse(Collections.emptyList());
+        final List<IdValue<DocumentWithDescription>> ftpaRespondentOutOfTimeDocuments = maybeOutOfTimeDocuments.orElse(Collections.emptyList());
 
-        final Optional<List<IdValue<DocumentWithDescription>>>  maybeDocument = asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        final Optional<List<IdValue<DocumentWithDescription>>>  maybeDocument = asylumCase.read(FTPA_RESPONDENT_GROUNDS_DOCUMENTS);
 
-        final List<IdValue<DocumentWithDescription>> ftpaAppellantGrounds = maybeDocument.orElse(Collections.emptyList());
+        final List<IdValue<DocumentWithDescription>> ftpaRespondentGrounds = maybeDocument.orElse(Collections.emptyList());
 
-        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaAppellantEvidence = asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        final Optional<List<IdValue<DocumentWithDescription>>> maybeFtpaRespondentEvidence = asylumCase.read(FTPA_RESPONDENT_EVIDENCE_DOCUMENTS);
 
-        final List<IdValue<DocumentWithDescription>> ftpaAppellantEvidence = maybeFtpaAppellantEvidence.orElse(Collections.emptyList());
+        final List<IdValue<DocumentWithDescription>> ftpaRespondentEvidence = maybeFtpaRespondentEvidence.orElse(Collections.emptyList());
 
-        final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaAppellantDocuments = asylumCase.read(FTPA_APPELLANT_DOCUMENTS);
+        final Optional<List<IdValue<DocumentWithMetadata>>> maybeFtpaRespondentDocuments = asylumCase.read(FTPA_RESPONDENT_DOCUMENTS);
 
-        final List<IdValue<DocumentWithMetadata>> existingFtpaAppellantDocuments = maybeFtpaAppellantDocuments.orElse(Collections.emptyList());
+        final List<IdValue<DocumentWithMetadata>> existingFtpaRespondentDocuments = maybeFtpaRespondentDocuments.orElse(Collections.emptyList());
 
-        final List<DocumentWithMetadata> ftpaAppellantDocuments = new ArrayList<>();
+        final List<DocumentWithMetadata> ftpaRespondentDocuments = new ArrayList<>();
 
-        ftpaAppellantDocuments.addAll(
+        ftpaRespondentDocuments.addAll(
             documentReceiver
                 .tryReceiveAll(
-                    ftpaAppellantOutOfTimeDocuments,
-                    DocumentTag.FTPA_APPELLANT
+                    ftpaRespondentOutOfTimeDocuments,
+                    DocumentTag.FTPA_RESPONDENT
                 )
         );
 
-        ftpaAppellantDocuments.addAll(
+        ftpaRespondentDocuments.addAll(
             documentReceiver
                 .tryReceiveAll(
-                    ftpaAppellantGrounds,
-                    DocumentTag.FTPA_APPELLANT
+                    ftpaRespondentGrounds,
+                    DocumentTag.FTPA_RESPONDENT
                 )
         );
 
-        ftpaAppellantDocuments.addAll(
+        ftpaRespondentDocuments.addAll(
             documentReceiver
                 .tryReceiveAll(
-                    ftpaAppellantEvidence,
-                    DocumentTag.FTPA_APPELLANT
+                    ftpaRespondentEvidence,
+                    DocumentTag.FTPA_RESPONDENT
                 )
         );
 
-        List<IdValue<DocumentWithMetadata>> allAppellantDocuments =
+        List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(
-                existingFtpaAppellantDocuments,
-                ftpaAppellantDocuments
+                existingFtpaRespondentDocuments,
+                ftpaRespondentDocuments
             );
 
-        asylumCase.write(FTPA_APPELLANT_DOCUMENTS, allAppellantDocuments);
+        asylumCase.write(FTPA_RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
-        asylumCase.write(FTPA_APPELLANT_APPLICATION_DATE, dateProvider.now().toString());
+        asylumCase.write(FTPA_RESPONDENT_APPLICATION_DATE, dateProvider.now().toString());
 
-        asylumCase.write(FTPA_APPELLANT_SUBMITTED, YES);
+        asylumCase.write(FTPA_RESPONDENT_SUBMITTED, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

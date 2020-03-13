@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -24,65 +25,66 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class FtpaAppellantPreparerTest {
+public class FtpaRespondentPreparerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
 
-    private FtpaAppellantPreparer ftpaAppellantPreparer;
+    private FtpaRespondentPreparer ftpaRespondentPreparer;
 
 
     @Before
     public void setUp() {
-        ftpaAppellantPreparer =
-            new FtpaAppellantPreparer(dateProvider, 14);
+        ftpaRespondentPreparer =
+            new FtpaRespondentPreparer(dateProvider, 14);
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_no() {
+    public void should_set_out_of_date_submission_state_no() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
         final String appealDate = dateProvider.now().minusDays(1).toString();
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
 
-        ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
 
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_no_when_no_appeal_date() {
+    public void should_set_out_of_date_submission_state_no_when_no_appeal_date() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.empty());
 
-        ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
 
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_to_yes() {
+    public void should_set_out_of_date_submission_state_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
         final String appealDate = dateProvider.now().minusDays(15).toString();
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
 
-        ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
 
     }
 
@@ -90,18 +92,18 @@ public class FtpaAppellantPreparerTest {
     public void should_throw_error_of_appeal_is_already_submitted() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.of("Yes"));
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("Yes"));
 
-        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         assertEquals("You've already submitted an application. "
                      + "You can only make one application at a time.", callbackResponse.getErrors().iterator().next());
 
-        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        verify(asylumCase, never()).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
         verify(asylumCase, never()).read(APPEAL_DATE);
         verify(dateProvider, never()).now();
 
@@ -110,11 +112,11 @@ public class FtpaAppellantPreparerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -128,9 +130,9 @@ public class FtpaAppellantPreparerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = ftpaAppellantPreparer.canHandle(callbackStage, callback);
+                boolean canHandle = ftpaRespondentPreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.APPLY_FOR_FTPA_APPELLANT
+                if (event == Event.APPLY_FOR_FTPA_RESPONDENT
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -146,19 +148,19 @@ public class FtpaAppellantPreparerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.handle(null, callback))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
