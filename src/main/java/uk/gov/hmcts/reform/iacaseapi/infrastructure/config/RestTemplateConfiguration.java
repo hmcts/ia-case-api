@@ -23,9 +23,8 @@ public class RestTemplateConfiguration {
         ObjectMapper objectMapper
     ) {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate
-            .getMessageConverters()
-            .add(0, mappingJackson2HttpMessageConverter(objectMapper));
+        restTemplate.getMessageConverters().removeIf(converter -> converter instanceof MappingJackson2HttpMessageConverter);
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter(objectMapper));
 
         return restTemplate;
     }
@@ -55,6 +54,4 @@ public class RestTemplateConfiguration {
     ) {
         return new MappingJackson2HttpMessageConverter(refDataObjectMapper);
     }
-
-
 }
