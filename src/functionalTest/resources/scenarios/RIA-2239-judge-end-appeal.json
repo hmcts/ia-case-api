@@ -15,7 +15,7 @@
           "endAppealApproverType": "Judge",
           "endAppealApproverName": "John Doe",
           "tribunalDocuments": [],
-          "recordApplicationActionDisabled": "No",
+          "recordApplicationActionDisabled": "Yes",
           "addCaseNoteActionDisabled": "No",
           "applications": [
             {
@@ -70,8 +70,6 @@
             }
           }
         ],
-        "recordApplicationActionDisabled": "Yes",
-        "addCaseNoteActionDisabled": "Yes",
         "applications": [
           {
             "id": "1",

@@ -70,8 +70,6 @@
             }
           }
         ],
-        "recordApplicationActionDisabled": "Yes",
-        "addCaseNoteActionDisabled": "Yes",
         "applications": [
           {
             "id": "1",
