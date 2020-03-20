@@ -1,0 +1,73 @@
+{
+  "description": "RIA-2783 Edit documents",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "editDocuments",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "additionalEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "new-evidence.pdf"
+                },
+                "description": "some new added evidence",
+                "dateUploaded": "2018-12-25"
+              }
+            }
+          ],
+          "editDocumentsReason": "some reasons"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "additionalEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "new-evidence.pdf"
+              },
+              "description": "some new added evidence",
+              "dateUploaded": "2018-12-25",
+              "tag": ""
+            }
+          }
+        ],
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "Edit documents audit note",
+              "caseNoteDescription": "documentIds: []\nreason: some reasons\n",
+              "user": "Case Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "1234_APPEAL_DOCUMENT_DELETED",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
