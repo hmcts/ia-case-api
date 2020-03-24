@@ -147,6 +147,7 @@ security:
       - "requestHearingRequirementsFeature"
       - "uploadAddendumEvidenceLegalRep"
       - "applyForFTPAAppellant"
+      - "updateLegalRepresentativesDetails"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

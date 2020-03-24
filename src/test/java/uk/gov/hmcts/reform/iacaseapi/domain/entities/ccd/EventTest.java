@@ -72,6 +72,9 @@ public class EventTest {
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString());
         assertEquals("forceCaseToSubmitHearingRequirements", Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
+        assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
+        assertEquals("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString());
+        assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
