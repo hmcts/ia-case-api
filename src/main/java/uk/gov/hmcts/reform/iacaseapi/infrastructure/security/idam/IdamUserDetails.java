@@ -67,4 +67,9 @@ public class IdamUserDetails implements UserDetails {
     public String getSurname() {
         return surname;
     }
+
+    @Override
+    public String getForenameAndSurname() {
+        return forename + " " + surname;
+    }
 }

@@ -379,6 +379,8 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_RESPONSE_AVAILABLE(
         "appealResponseAvailable", new TypeReference<YesOrNo>(){}),
 
+    SHOW_PAGE_FLAG("showPageFlag", new TypeReference<YesOrNo>() {}),
+
     CASE_BUILDING_READY_FOR_SUBMISSION(
         "caseBuildingReadyForSubmission", new TypeReference<YesOrNo>(){}),
 
@@ -625,6 +627,9 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_TRIBUNAL_RESPONSE(
         "additionalTribunalResponse", new TypeReference<String>() {}),
+
+    REASON_TO_FORCE_REQUEST_CASE_BUILDING(
+        "reasonToForceRequestCaseBuilding", new TypeReference<String>(){}),
 
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
