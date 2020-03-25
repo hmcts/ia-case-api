@@ -60,6 +60,7 @@ public class DeriveHearingCentreHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(hearingCentreFinder, times(1)).find("A123 4BC");
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
     @Test
@@ -78,6 +79,7 @@ public class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
     }
 
     @Test
