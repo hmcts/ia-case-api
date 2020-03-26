@@ -83,7 +83,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
             changeEditAppealApplicationsToCompleted(asylumCase);
             asylumCase.clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
-            State maybePreviousState = asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
+            State maybePreviousState = asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class)
+                .orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
         }
