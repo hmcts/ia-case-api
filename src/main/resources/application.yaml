@@ -190,6 +190,7 @@ security:
       - "requestCmaRequirements"
       - "reviewCmaRequirements"
       - "forceCaseToCaseUnderReview"
+<<<<<<< HEAD
       - "updateDetailsAfterCma"
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"
@@ -198,6 +199,7 @@ security:
       - "editAppealAfterSubmit"
       - "linkAppeal"
       - "unlinkAppeal"
+      - "editAppealAfterSubmit"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
