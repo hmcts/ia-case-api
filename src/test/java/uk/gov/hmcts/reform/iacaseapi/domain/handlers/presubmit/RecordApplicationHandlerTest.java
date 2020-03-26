@@ -72,6 +72,18 @@ public class RecordApplicationHandlerTest {
         State.LISTING
     );
 
+    private final List<State> editAppealApplicationStates = newArrayList(
+        State.AWAITING_RESPONDENT_EVIDENCE,
+        State.CASE_BUILDING,
+        State.CASE_UNDER_REVIEW,
+        State.RESPONDENT_REVIEW,
+        State.SUBMIT_HEARING_REQUIREMENTS,
+        State.LISTING,
+        State.PREPARE_FOR_HEARING,
+        State.FINAL_BUNDLING,
+        State.PRE_HEARING
+    );
+
     @Mock private NotificationSender<AsylumCase> notificationSender;
     @Mock private Appender<Application> appender;
     @Mock private Callback<AsylumCase> callback;
@@ -276,6 +288,19 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
+    public void should_add_new_flag_for_edit_appeal_after_submit() {
+        when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(EDIT_APPEAL_AFTER_SUBMIT.toString()));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
+
+        recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS, "Yes");
+        verify(asylumCase, times(1)).write(DISABLE_OVERVIEW_PAGE, "Yes");
+        verify(asylumCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.UNKNOWN);
+    }
+
+    @Test
     public void should_return_client_error_when_application_type_does_not_suit_to_case_state() {
 
         for (ApplicationType type : ApplicationType.values()) {
@@ -293,7 +318,8 @@ public class RecordApplicationHandlerTest {
                     ||
                     ((type.equals(ApplicationType.ADJOURN) || type.equals(ApplicationType.EXPEDITE) || type.equals(ApplicationType.TRANSFER)) && !editListingStates.contains(state))
                     || (type.equals(ApplicationType.UPDATE_HEARING_REQUIREMENTS) && !updateHearingRequirementsStates.contains(state))
-                    || (type.equals(ApplicationType.CHANGE_HEARING_CENTRE) && !changeHearingCentreStates.contains(state))) {
+                    || (type.equals(ApplicationType.CHANGE_HEARING_CENTRE) && !changeHearingCentreStates.contains(state))
+                    || (type.equals(ApplicationType.EDIT_APPEAL_AFTER_SUBMIT) && !editAppealApplicationStates.contains(state))) {
 
                     assertThat(callbackResponse.getErrors().size()).isEqualTo(1);
                     assertThat(callbackResponse.getErrors().iterator().next()).isEqualTo("You can't record application with '" + type + "' type when case is in '" + state.name() + "' state");

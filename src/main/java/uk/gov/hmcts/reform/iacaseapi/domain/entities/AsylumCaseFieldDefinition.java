@@ -762,6 +762,15 @@ public enum AsylumCaseFieldDefinition {
     ADJOURN_HEARING_WITHOUT_DATE_REASONS(
             "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
 
+    APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS(
+        "applicationEditAppealAfterSubmitExists", new TypeReference<String>() {}),
+
+    APPLICATION_OUT_OF_TIME_EXPLANATION(
+        "applicationOutOfTimeExplanation", new TypeReference<String>() {}),
+
+    APPLICATION_OUT_OF_TIME_DOCUMENT(
+        "applicationOutOfTimeDocument", new TypeReference<Document>() {}),
+
     ;
 
     private final String value;

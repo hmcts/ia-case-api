@@ -77,6 +77,8 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
                 return "You must now [update the hearing requirements](/case/IA/Asylum/" + id +  "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.";
             } else if (CHANGE_HEARING_CENTRE.toString().equalsIgnoreCase(type)) {
                 return "You must now [change the designated hearing centre](/case/IA/Asylum/" + id +  "/trigger/changeHearingCentre) based on the new information provided in the application. The application decision is available to view in the Application tab.";
+            } else if (EDIT_APPEAL_AFTER_SUBMIT.toString().equalsIgnoreCase(type)) {
+                return "The application decision has been recorded and is available in the applications tab. You must now [edit the appeal details](/case/IA/Asylum/" + id +  "/trigger/editAppealAfterSubmit) based on the new information provided in the application.";
             }
 
             // default empty in case of new application type

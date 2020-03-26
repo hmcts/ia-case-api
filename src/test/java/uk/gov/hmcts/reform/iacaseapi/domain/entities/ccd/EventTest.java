@@ -80,6 +80,7 @@ public class EventTest {
         assertEquals("restoreStateFromAdjourn", Event.RESTORE_STATE_FROM_ADJOURN.toString());
         assertEquals("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString());
         assertEquals("listCma", Event.LIST_CMA.toString());
+        assertEquals("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString());
     }
 
     @Test
