@@ -260,8 +260,11 @@ security:
       - "sendDirection"
       - "addCaseNote"
       - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
+
+
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
