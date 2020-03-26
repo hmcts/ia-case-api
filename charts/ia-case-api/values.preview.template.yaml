@@ -8,11 +8,17 @@ java:
     POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     POSTGRES_CONNECTION_OPTIONS: ""
+    IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+    CCD_URL: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+    CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       secrets:
-        - case-documents-api-url
-        - case-notifications-api-url
         - docmosis-enabled
         - em-stitching-enabled
         - submit-hearing-requirements-enabled
@@ -20,18 +26,11 @@ java:
         - system-password
         - idam-client-id
         - idam-secret
-        - idam-redirect-uri
         - s2s-secret
         - s2s-microservice
-        - ccd-url
-        - ccd-gw-url
-        - dm-url
-        - idam-url
-        - s2s-url
         - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
-
   postgresql:
     #Whether to deploy the Postgres Chart or not
     enabled: true
