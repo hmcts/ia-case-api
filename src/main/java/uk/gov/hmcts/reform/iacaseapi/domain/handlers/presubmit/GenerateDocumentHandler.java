@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
@@ -111,6 +112,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             )
         );
         asylumCase.write(APPEAL_DATE, dateProvider.now().toString());
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
     }
 
     private void changeEditListingApplicationsToCompleted(AsylumCase asylumCase) {
