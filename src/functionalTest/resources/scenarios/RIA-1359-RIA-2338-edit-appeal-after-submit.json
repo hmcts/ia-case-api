@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1359 Edit appeal after submit",
+  "description": "RIA-1359 RIA-2338 Edit appeal after submit",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
@@ -84,6 +84,12 @@
             "dateUploaded": "{$TODAY}",
             "tag": "appealSubmission"
           }
+        }
+      ],
+      "notificationsSent": [
+        {
+          "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_LEGAL_REPRESENTATIVE",
+          "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
         }
       ]
     }
