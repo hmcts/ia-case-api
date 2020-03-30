@@ -379,8 +379,6 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_RESPONSE_AVAILABLE(
         "appealResponseAvailable", new TypeReference<YesOrNo>(){}),
 
-    SHOW_PAGE_FLAG("showPageFlag", new TypeReference<YesOrNo>() {}),
-
     CASE_BUILDING_READY_FOR_SUBMISSION(
         "caseBuildingReadyForSubmission", new TypeReference<YesOrNo>(){}),
 

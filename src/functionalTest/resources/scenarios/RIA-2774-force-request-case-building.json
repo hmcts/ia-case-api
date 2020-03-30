@@ -5,7 +5,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "id": 2774,
-      "eventId": "requestCaseBuilding",
+      "eventId": "forceRequestCaseBuilding",
       "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
@@ -51,10 +51,6 @@
         "notificationsSent": [
           {
             "id": "2774_RESPONDENT_FORCE_CASE_PROGRESSION",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
-          },
-          {
-            "id": "2774_LEGAL_REPRESENTATIVE_REQUEST_CASE_BUILDING",
             "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
