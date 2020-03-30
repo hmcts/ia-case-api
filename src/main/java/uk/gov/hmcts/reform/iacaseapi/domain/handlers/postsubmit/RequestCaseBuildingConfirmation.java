@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -14,8 +16,8 @@ public class RequestCaseBuildingConfirmation implements PostSubmitCallbackHandle
 
     public boolean canHandle(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");
-
-        return callback.getEvent() == Event.REQUEST_CASE_BUILDING;
+        List<Event> validEventList = Arrays.asList(Event.FORCE_REQUEST_CASE_BUILDING, Event.REQUEST_CASE_BUILDING);
+        return validEventList.contains(callback.getEvent());
     }
 
     public PostSubmitCallbackResponse handle(Callback<AsylumCase> callback) {
