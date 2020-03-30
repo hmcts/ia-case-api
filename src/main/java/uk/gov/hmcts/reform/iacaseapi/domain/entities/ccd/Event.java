@@ -61,6 +61,7 @@ public enum Event {
     APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
+    RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

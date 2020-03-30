@@ -462,6 +462,19 @@ public enum AsylumCaseFieldDefinition {
     DISABLE_OVERVIEW_PAGE(
         "disableOverviewPage", new TypeReference<String>(){}),
 
+    JUDGE_ALLOCATION_EXISTS(
+        "judgeAllocationExists", new TypeReference<YesOrNo>(){}),
+
+    ALLOCATED_JUDGE(
+        "allocatedJudge", new TypeReference<String>(){}),
+
+    ALLOCATED_JUDGE_EDIT(
+        "allocatedJudgeEdit", new TypeReference<String>(){}),
+
+    PREVIOUS_JUDGE_ALLOCATIONS(
+        "previousJudgeAllocations", new TypeReference<List<IdValue<String>>>(){}
+    ),
+
     ARIA_LISTING_REFERENCE(
         "ariaListingReference", new TypeReference<String>(){}),
 

@@ -1,0 +1,47 @@
+{
+  "description": "RIA-2520 Record Judge allocation",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "recordAllocatedJudge",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "previousJudgeAllocations": [
+            {
+              "id": "1",
+              "value": "Judge nr 1"
+            }
+          ],
+          "allocatedJudgeEdit": "Judge nr 3",
+          "allocatedJudge": "Judge nr 2"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "previousJudgeAllocations": [
+          {
+            "id": "2",
+            "value": "Judge nr 2"
+          },
+          {
+            "id": "1",
+            "value": "Judge nr 1"
+          }
+        ],
+        "allocatedJudgeEdit": "Judge nr 3",
+        "allocatedJudge": "Judge nr 3",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
