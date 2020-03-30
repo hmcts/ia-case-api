@@ -234,6 +234,7 @@ public class DirectionHandlerTest {
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.REQUEST_CASE_BUILDING,
+                        Event.FORCE_REQUEST_CASE_BUILDING,
                         Event.REQUEST_REASONS_FOR_APPEAL
                     ).contains(event)) {
 
