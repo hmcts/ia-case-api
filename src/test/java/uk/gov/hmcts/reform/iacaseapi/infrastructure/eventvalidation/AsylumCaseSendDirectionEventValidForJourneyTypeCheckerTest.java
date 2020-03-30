@@ -4,7 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -16,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
@@ -26,12 +33,24 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     @Mock
     private AsylumCase asylumCase;
 
+    private ListAppender<ILoggingEvent> loggingEventListAppender;
+
+    @Before
+    public void setUp() {
+
+        loggingEventListAppender = LoggerUtil.getListAppenderForClass(AsylumCaseSendDirectionEventValidForJourneyTypeChecker.class);
+    }
+
     @Test
     public void cannotSendDirectionForAipCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid, is(new EventValid("You cannot use this function to send a direction to an appellant in person.")));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Cannot send a direction for an AIP case", Level.ERROR));
     }
 
     @Test
@@ -48,6 +67,10 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
         assertThat(eventValid, is(new EventValid("This is a legally represented case. You cannot select appellant as the recipient.")));
+
+        Assertions.assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Cannot send an appellant a direction for a repped case", Level.ERROR));
     }
 
     @Test
