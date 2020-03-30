@@ -36,8 +36,10 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.REQUEST_CASE_BUILDING;
+        boolean validEvents = callback.getEvent() == Event.REQUEST_CASE_BUILDING
+            || callback.getEvent() == Event.FORCE_REQUEST_CASE_BUILDING;
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && validEvents;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
@@ -49,15 +51,15 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
-        createAndAppendNewNote(asylumCase);
+        createAndAppendNewNote(asylumCase, callback.getEvent());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void createAndAppendNewNote(AsylumCase asylumCase) {
-        String reason = asylumCase.read(REASON_TO_FORCE_REQUEST_CASE_BUILDING, String.class).orElse(null);
-        if (reason != null) {
+    private void createAndAppendNewNote(AsylumCase asylumCase, Event event) {
+        if (event.equals(Event.FORCE_REQUEST_CASE_BUILDING)) {
             Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes = asylumCase.read(CASE_NOTES);
             List<IdValue<CaseNote>> existingCaseNotes = maybeExistingCaseNotes.orElse(Collections.emptyList());
+            String reason = asylumCase.read(REASON_TO_FORCE_REQUEST_CASE_BUILDING, String.class).orElse("");
             List<IdValue<CaseNote>> allCaseNotes = appender.append(buildNewCaseNote(reason), existingCaseNotes);
             asylumCase.write(CASE_NOTES, allCaseNotes);
             asylumCase.clear(REASON_TO_FORCE_REQUEST_CASE_BUILDING);

@@ -91,6 +91,7 @@ public class RequestCaseBuildingHandlerTest {
         mockCallback(customAsylumCase);
         mockUserDetailsProvider();
         given(appender.append(any(CaseNote.class), anyList())).willReturn(expectedAppendedCaseNotes);
+        given(callback.getEvent()).willReturn(Event.FORCE_REQUEST_CASE_BUILDING);
 
         PreSubmitCallbackResponse<AsylumCase> currentResult =
             requestCaseBuildingHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -196,6 +197,7 @@ public class RequestCaseBuildingHandlerTest {
     @Test
     @Parameters({
         "ABOUT_TO_SUBMIT, REQUEST_CASE_BUILDING, true",
+        "ABOUT_TO_SUBMIT, FORCE_REQUEST_CASE_BUILDING, true",
         "MID_EVENT, REQUEST_CASE_BUILDING, false",
         "ABOUT_TO_SUBMIT, SUBMIT_CLARIFYING_ANSWERS, false"
     })

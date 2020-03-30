@@ -172,6 +172,7 @@ security:
       - "recordApplication"
       - "endAppeal"
       - "requestCaseBuilding"
+      - "forceRequestCaseBuilding"
       - "requestResponseReview"
       - "requestResponseAmend"
       - "requestHearingRequirementsFeature"
