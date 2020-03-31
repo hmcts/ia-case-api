@@ -58,6 +58,7 @@ public enum Event {
     SEND_TO_PREHEARING("sendToPreHearing"),
     CHANGE_HEARING_CENTRE("changeHearingCentre"),
     APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
+    APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

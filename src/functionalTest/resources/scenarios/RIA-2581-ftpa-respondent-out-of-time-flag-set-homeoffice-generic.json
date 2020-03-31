@@ -1,0 +1,30 @@
+{
+  "description": "RIA-2581 FTPA Respondent (Generic) sets out of time flag on late application submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealDate": "{$TODAY-20}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaRespondentSubmissionOutOfTime": "Yes",
+        "appealDate": "{$TODAY-20}",
+        "sendDirectionActionAvailable": "Yes"
+      }
+    }
+  }
+}

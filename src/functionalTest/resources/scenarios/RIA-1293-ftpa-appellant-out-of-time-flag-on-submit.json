@@ -1,0 +1,30 @@
+{
+  "description": "RIA-1293 FTPA appellant sets out of time flag on late application submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPAAppellant",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealDate": "{$TODAY-20}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantSubmissionOutOfTime": "Yes",
+        "appealDate": "{$TODAY-20}",
+        "sendDirectionActionAvailable": "Yes"
+      }
+    }
+  }
+}

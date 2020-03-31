@@ -1,0 +1,143 @@
+{
+  "description": "RIA-1293 FTPA appellant errors on duplicate application submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPAAppellant",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaAppellantSubmitted": "Yes",
+          "ftpaAppellantSubmissionOutOfTime": "No",
+          "ftpaAppellantApplicationDate": "{$TODAY}",
+          "ftpaAppellantDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                },
+                "description": "Some FTPA appellant grounds of application",
+                "dateUploaded": "{$TODAY}",
+                "tag": "ftpaAppellant"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-appellant-evidence.pdf"
+                },
+                "description": "Some FTPA appellant application evidence",
+                "dateUploaded": "{$TODAY}",
+                "tag": "ftpaAppellant"
+              }
+            }
+          ],
+          "ftpaAppellantOutOfTimeDocuments": [],
+          "ftpaAppellantGroundsDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                },
+                "description": "Some FTPA appellant grounds of application"
+              }
+            }
+          ],
+          "ftpaAppellantEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-appellant-evidence.pdf"
+                },
+                "description": "Some FTPA appellant application evidence"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantSubmitted": "Yes",
+        "ftpaAppellantSubmissionOutOfTime": "No",
+        "ftpaAppellantApplicationDate": "{$TODAY}",
+        "ftpaAppellantDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+              },
+              "description": "Some FTPA appellant grounds of application",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-appellant-evidence.pdf"
+              },
+              "description": "Some FTPA appellant application evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          }
+        ],
+        "ftpaAppellantOutOfTimeDocuments": [],
+        "ftpaAppellantGroundsDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+              },
+              "description": "Some FTPA appellant grounds of application"
+            }
+          }
+        ],
+        "ftpaAppellantEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-appellant-evidence.pdf"
+              },
+              "description": "Some FTPA appellant application evidence"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "Yes"
+      }
+    }
+  }
+}

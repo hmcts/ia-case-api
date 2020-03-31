@@ -21,6 +21,7 @@ public enum DocumentTag {
     APPEAL_SKELETON_BUNDLE("submitCaseBundle"),
     END_APPEAL("endAppeal"),
     FTPA_APPELLANT("ftpaAppellant"),
+    FTPA_RESPONDENT("ftpaRespondent"),
 
     @JsonEnumDefaultValue
     NONE("");

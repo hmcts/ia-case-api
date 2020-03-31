@@ -57,12 +57,13 @@ public class EventTest {
         assertEquals("submitReasonsForAppeal", Event.SUBMIT_REASONS_FOR_APPEAL.toString());
         assertEquals("sendToPreHearing", Event.SEND_TO_PREHEARING.toString());
         assertEquals("applyForFTPAAppellant", Event.APPLY_FOR_FTPA_APPELLANT.toString());
+        assertEquals("applyForFTPARespondent", Event.APPLY_FOR_FTPA_RESPONDENT.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(54, Event.values().length);
+        assertEquals(55, Event.values().length);
     }
 }

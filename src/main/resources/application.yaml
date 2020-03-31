@@ -91,7 +91,8 @@ cache:
     expirationTimeInSeconds: 60
 
 appealOutOfTimeDays: 14
-ftpaAppealOutOfTimeDays: 14
+ftpaAppellantAppealOutOfTimeDays: 14
+ftpaRespondentAppealOutOfTimeDays: 14
 
 defaultHearingCentre: taylorHouse
 
@@ -191,11 +192,13 @@ security:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "applyForFTPARespondent"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "applyForFTPARespondent"
     citizen:
       - "startAppeal"
       - "editAppeal"
