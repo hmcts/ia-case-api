@@ -57,8 +57,8 @@ public enum Event {
     SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
     SEND_TO_PREHEARING("sendToPreHearing"),
     CHANGE_HEARING_CENTRE("changeHearingCentre"),
+    APPLY_FOR_FTPA_APPELLANT("applyForFTPAAppellant"),
 
-    
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
