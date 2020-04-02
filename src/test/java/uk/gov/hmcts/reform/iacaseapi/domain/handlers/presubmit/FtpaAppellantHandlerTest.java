@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -81,6 +81,7 @@ public class FtpaAppellantHandlerTest {
         when(asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS)).thenReturn(Optional.of(groundsOfApplicationDocuments));
         when(asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(evidenceDocuments));
         when(asylumCase.read(FTPA_APPELLANT_DOCUMENTS)).thenReturn(Optional.of(existingAppellantDocuments));
+        when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class)).thenReturn(Optional.of("Some out of time explanation"));
 
         when(documentReceiver.tryReceiveAll(groundsOfApplicationDocuments, DocumentTag.FTPA_APPELLANT))
             .thenReturn(singletonList(groundsOfApplicationWithMetadata));
@@ -104,6 +105,7 @@ public class FtpaAppellantHandlerTest {
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
         verify(asylumCase, times(1)).read(FTPA_APPELLANT_DOCUMENTS);
+        verify(asylumCase, times(1)).read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class);
 
         verify(documentReceiver, times(1)).tryReceiveAll(groundsOfApplicationDocuments, DocumentTag.FTPA_APPELLANT);
         verify(documentReceiver, times(1)).tryReceiveAll(evidenceDocuments, DocumentTag.FTPA_APPELLANT);
@@ -113,7 +115,18 @@ public class FtpaAppellantHandlerTest {
 
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_DOCUMENTS, allAppellantDocuments);
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_APPLICATION_DATE, now.toString());
-        verify(asylumCase, times(1)).write(FTPA_APPELLANT_SUBMITTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(FTPA_APPELLANT_SUBMITTED, YES);
+
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_DECIDED, NO);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED, NO);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_DECIDED, NO);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, NO);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED, NO);
     }
 
     @Test
@@ -161,9 +174,9 @@ public class FtpaAppellantHandlerTest {
         verify(documentsAppender, times(1)).append(existingAppellantDocuments, ftpaAppellantDocumentsWithMetadata);
 
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_DOCUMENTS, allAppellantDocuments);
-        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_APPLICATION_DATE, now.toString());
-        verify(asylumCase, times(1)).write(FTPA_APPELLANT_SUBMITTED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(FTPA_APPELLANT_SUBMITTED, YES);
     }
 
     @Test
@@ -177,7 +190,7 @@ public class FtpaAppellantHandlerTest {
         assertThatThrownBy(() -> ftpaAppellantHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, NO);
     }
 
     @Test
