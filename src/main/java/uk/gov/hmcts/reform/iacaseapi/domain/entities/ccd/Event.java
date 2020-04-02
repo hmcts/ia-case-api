@@ -72,6 +72,7 @@ public enum Event {
     EDIT_CMA_REQUIREMENTS("editCmaRequirements"),
     SUBMIT_CMA_REQUIREMENTS("submitCmaRequirements"),
     FORCE_CASE_TO_CASE_UNDER_REVIEW("forceCaseToCaseUnderReview"),
+    FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

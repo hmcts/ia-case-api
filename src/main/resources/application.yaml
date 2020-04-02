@@ -187,6 +187,7 @@ security:
       - "removeFlag"
       - "requestCmaRequirements"
       - "forceCaseToCaseUnderReview"
+      - "forceCaseToSubmitHearingRequirements"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
