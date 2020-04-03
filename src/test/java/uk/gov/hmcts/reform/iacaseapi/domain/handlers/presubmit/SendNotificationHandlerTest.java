@@ -76,7 +76,8 @@ public class SendNotificationHandlerTest {
             Event.SUBMIT_TIME_EXTENSION,
             Event.SEND_DIRECTION_WITH_QUESTIONS,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            Event.REQUEST_CASE_EDIT
+            Event.REQUEST_CASE_EDIT,
+            Event.FORCE_CASE_TO_CASE_UNDER_REVIEW
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -188,7 +189,8 @@ public class SendNotificationHandlerTest {
                         Event.SUBMIT_TIME_EXTENSION,
                         Event.SEND_DIRECTION_WITH_QUESTIONS,
                         Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                        Event.REQUEST_CASE_EDIT
+                        Event.REQUEST_CASE_EDIT,
+                        Event.FORCE_CASE_TO_CASE_UNDER_REVIEW
                     ).contains(event)) {
 
                     assertTrue(canHandle);
