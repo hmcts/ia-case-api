@@ -1,0 +1,45 @@
+{
+  "description": "RIA-2775 Force case progression to case under review",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 3333,
+      "eventId": "forceCaseToCaseUnderReview",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "reasonToForceCaseToCaseUnderReview": "some reason"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "state": "caseUnderReview",
+      "replacements": {
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "Reason for forcing case progression to case under review",
+              "caseNoteDescription": "some reason",
+              "user": "Case Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "3333_FORCE_CASE_TO_CASE_UNDER_REVIEW_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
