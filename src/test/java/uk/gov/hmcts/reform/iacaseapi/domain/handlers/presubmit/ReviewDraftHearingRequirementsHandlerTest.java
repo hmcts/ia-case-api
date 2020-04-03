@@ -32,14 +32,12 @@ public class ReviewDraftHearingRequirementsHandlerTest {
 
     @Before
     public void setup() {
-
         reviewDraftHearingRequirementsHandler =
             new ReviewDraftHearingRequirementsHandler();
     }
 
     @Test
     public void should_submit_review_hearing_requirements() {
-
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

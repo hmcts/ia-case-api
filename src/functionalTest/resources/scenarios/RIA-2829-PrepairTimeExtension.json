@@ -1,0 +1,58 @@
+{
+  "description": "RIA-2829: Case officer can review a time extension request",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "reviewTimeExtension",
+      "state": "awaitingReasonsForAppeal",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "timeExtensions": [
+            {
+              "id": "123",
+              "value": {
+                "requestedDate": "2020-01-01",
+                "reason": "time extension reason",
+                "state": "awaitingReasonsForAppeal",
+                "status": "submitted",
+                "evidence": []
+              }
+            }
+          ],
+          "reviewTimeExtensionRequired": "Yes",
+          "reviewTimeExtensionDecision": "granted",
+          "reviewTimeExtensionDecisionReason": "decision reason"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "timeExtensions": [
+          {
+            "id": "123",
+            "value": {
+              "requestedDate": "2020-01-01",
+              "reason": "time extension reason",
+              "state": "awaitingReasonsForAppeal",
+              "status": "granted",
+              "decision": "granted",
+              "decisionReason": "decision reason",
+              "evidence": []
+            }
+          }
+        ],
+        "reviewTimeExtensionRequired": "No",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+

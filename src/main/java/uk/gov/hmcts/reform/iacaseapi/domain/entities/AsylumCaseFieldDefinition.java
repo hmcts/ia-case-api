@@ -607,6 +607,8 @@ public enum AsylumCaseFieldDefinition {
             "reviewTimeExtensionDecisionReason", new TypeReference<String>(){}),
     TIME_EXTENSIONS(
             "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
+    REVIEW_TIME_EXTENSION_REQUIRED(
+            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {})
     ;
 
     private final String value;

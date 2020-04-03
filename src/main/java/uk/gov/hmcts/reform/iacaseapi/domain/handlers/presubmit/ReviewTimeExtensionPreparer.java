@@ -64,10 +64,7 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
     }
 
     private Predicate<IdValue<TimeExtension>> submittedTimeExtensionForCurrentState(State currentState) {
-        return timeExtension -> {
-            return currentState == timeExtension.getValue().getState() &&
-                    timeExtension.getValue().getStatus() == SUBMITTED;
-        };
+        return timeExtension -> currentState == timeExtension.getValue().getState() && timeExtension.getValue().getStatus() == SUBMITTED;
     }
 
     private Function<IdValue<TimeExtension>, PreSubmitCallbackResponse<AsylumCase>> setReviewTimeExtensionValues(AsylumCase asylumCase) {
@@ -75,8 +72,10 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
             asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestedDate());
             asylumCase.write(REVIEW_TIME_EXTENSION_PARTY, Parties.APPELLANT);
             asylumCase.write(REVIEW_TIME_EXTENSION_REASON, timeExtensionIdValue.getValue().getReason());
+            asylumCase.write(REVIEW_TIME_EXTENSION_DECISION, null);
+            asylumCase.write(REVIEW_TIME_EXTENSION_DECISION_REASON, "");
 
-            return new PreSubmitCallbackResponse<AsylumCase>(asylumCase);
+            return new PreSubmitCallbackResponse<>(asylumCase);
         };
     }
 

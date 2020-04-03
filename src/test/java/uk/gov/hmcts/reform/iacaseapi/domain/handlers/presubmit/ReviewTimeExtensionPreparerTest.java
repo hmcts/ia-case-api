@@ -67,6 +67,8 @@ public class ReviewTimeExtensionPreparerTest {
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_DATE, "date2");
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_PARTY, Parties.APPELLANT);
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_REASON, "reasons2");
+        Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_DECISION, null);
+        Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_DECISION_REASON, "");
     }
 
     @Test

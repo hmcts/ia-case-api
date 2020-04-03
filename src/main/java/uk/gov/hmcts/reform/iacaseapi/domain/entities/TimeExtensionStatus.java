@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TimeExtensionStatus {
     IN_PROGRESS("inProgress"),
-    SUBMITTED("submitted");
+    SUBMITTED("submitted"),
+    GRANTED("granted"),
+    REFUSED("refused");
 
     @JsonValue
     private final String id;
