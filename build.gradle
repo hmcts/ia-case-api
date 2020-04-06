@@ -295,6 +295,8 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
+    testCompile 'pl.pragmatists:JUnitParams:1.1.1'
+
 //    testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.3.2'
     testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
@@ -309,19 +311,19 @@ dependencies {
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
-    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 

@@ -60,10 +60,11 @@ public class EventTest {
         assertEquals("applyForFTPARespondent", Event.APPLY_FOR_FTPA_RESPONDENT.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
+        assertEquals("editDocuments", Event.EDIT_DOCUMENTS.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(55, Event.values().length);
+        assertEquals(56, Event.values().length);
     }
 }

@@ -23,4 +23,5 @@ public class DocumentTest {
         assertEquals(documentBinaryUrl, document.getDocumentBinaryUrl());
         assertEquals(documentFilename, document.getDocumentFilename());
     }
+
 }

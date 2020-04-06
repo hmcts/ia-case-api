@@ -172,6 +172,7 @@ security:
       - "requestClarifyingAnswers"
       - "updateHearingRequirements"
       - "updateHearingAdjustments"
+      - "editDocuments"
       - "sendToPreHearing"
       - "changeHearingCentre"
     caseworker-ia-admofficer:

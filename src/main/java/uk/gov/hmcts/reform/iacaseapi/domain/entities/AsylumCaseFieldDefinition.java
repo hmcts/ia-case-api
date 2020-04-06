@@ -4,7 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -70,6 +74,12 @@ public enum AsylumCaseFieldDefinition {
 
     ADDITIONAL_EVIDENCE_DOCUMENTS(
         "additionalEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    HEARING_RECORDING_DOCUMENTS(
+        "hearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
+
+    TRIBUNAL_DOCUMENTS(
+        "tribunalDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>() {}),
 
     HEARING_DOCUMENTS(
         "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
@@ -281,6 +291,8 @@ public enum AsylumCaseFieldDefinition {
     DECISION_AND_REASONS_DOCUMENTS(
         "decisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    FINAL_DECISION_AND_REASONS_DOCUMENTS(
+        "finalDecisionAndReasonsDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE(
         "uploadAddendumEvidenceActionAvailable", new TypeReference<YesOrNo>(){}),
@@ -398,6 +410,9 @@ public enum AsylumCaseFieldDefinition {
 
     DIRECTION_EDIT_EXPLANATION(
         "directionEditExplanation", new TypeReference<String>(){}),
+
+    EDIT_DOCUMENTS_REASON(
+        "editDocumentsReason", new TypeReference<String>(){}),
 
     DIRECTION_EDIT_PARTIES(
         "directionEditParties", new TypeReference<Parties>(){}),
