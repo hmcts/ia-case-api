@@ -1,20 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditLogService.getListOfDocumentFields;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -59,7 +53,7 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
     }
 
     private void restoreDocumentTagForDocs(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
-        getFieldDefinitions().forEach(field -> {
+        getFieldDefinitionsWithTagField().forEach(field -> {
             Optional<List<IdValue<DocumentWithMetadata>>> idValuesOptional = asylumCase.read(field);
             idValuesOptional.ifPresent(idValues -> {
                 List<IdValue<DocumentWithMetadata>> idValuesBefore = getIdValuesBefore(asylumCaseBefore, field);
@@ -68,17 +62,10 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
         });
     }
 
-    private List<AsylumCaseFieldDefinition> getFieldDefinitions() {
-        return Arrays.asList(
-            ADDITIONAL_EVIDENCE_DOCUMENTS,
-            TRIBUNAL_DOCUMENTS,
-            HEARING_DOCUMENTS,
-            LEGAL_REPRESENTATIVE_DOCUMENTS,
-            ADDENDUM_EVIDENCE_DOCUMENTS,
-            RESPONDENT_DOCUMENTS,
-            DRAFT_DECISION_AND_REASONS_DOCUMENTS,
-            FINAL_DECISION_AND_REASONS_DOCUMENTS
-        );
+    private List<AsylumCaseFieldDefinition> getFieldDefinitionsWithTagField() {
+        return getListOfDocumentFields().stream()
+            .filter(f -> f.equals(HEARING_RECORDING_DOCUMENTS))
+            .collect(Collectors.toList());
     }
 
     private List<IdValue<DocumentWithMetadata>> getIdValuesBefore(AsylumCase asylumCaseBefore,
