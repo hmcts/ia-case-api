@@ -1,33 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.assertj.core.groups.Tuple;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.slf4j.LoggerFactory;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -41,7 +36,7 @@ public class EditDocsAuditLogHandlerTest {
     @InjectMocks
     private EditDocsAuditLogHandler editDocsAuditLogHandler;
     @Mock
-    private EditDocsAuditService editDocsAuditService = new EditDocsAuditService();
+    private EditDocsAuditLogService editDocsAuditLogService;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -52,10 +47,6 @@ public class EditDocsAuditLogHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private AsylumCase asylumCaseBefore;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
 
     @Test
     @Parameters({
@@ -84,39 +75,19 @@ public class EditDocsAuditLogHandlerTest {
         fooLogger.addAppender(listAppender);
 
         mockCallbackAndCaseDetails();
-        mockUserDetailsProvider();
-        mockAuditServiceDependencies();
+        mockServiceDependency();
 
         editDocsAuditLogHandler.handle(callback);
 
         List<ILoggingEvent> logsList = listAppender.list;
-        assertThat(logsList)
-            .extracting(ILoggingEvent::getFormattedMessage, ILoggingEvent::getLevel)
-            .containsExactly(
-                Tuple.tuple("Edit Document audit logs...", Level.INFO),
-                Tuple.tuple("CCD case id: 1234", Level.INFO),
-                Tuple.tuple("Delete/Update document ids: [id1, id2, id3, id4, id5, id6, id7, id8, id9]", Level.INFO),
-                Tuple.tuple("IDAM User id: user-details-124", Level.INFO));
+        assertEquals("INFO", logsList.get(0).getLevel().toString());
+        assertEquals("Edit Document audit logs: AuditDetails(idamUserId=null, user=null, documentIds=null, "
+            + "caseId=0, reason=null, dateTime=null)", logsList.get(0).getFormattedMessage());
     }
 
-    private void mockAuditServiceDependencies() {
-        when(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(AsylumCase.class),
-            any(AsylumCase.class), any(AsylumCaseFieldDefinition.class)))
-            .thenReturn(Collections.singletonList("id1"))
-            .thenReturn(Collections.singletonList("id2"))
-            .thenReturn(Collections.singletonList("id3"))
-            .thenReturn(Collections.singletonList("id4"))
-            .thenReturn(Collections.singletonList("id5"))
-            .thenReturn(Collections.singletonList("id6"))
-            .thenReturn(Collections.singletonList("id7"))
-            .thenReturn(Collections.singletonList("id8"))
-            .thenReturn(Collections.singletonList("id9"))
-            .thenThrow(new RuntimeException("no more calls expected"));
-    }
-
-    private void mockUserDetailsProvider() {
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-        when(userDetails.getId()).thenReturn("user-details-124");
+    private void mockServiceDependency() {
+        BDDMockito.given(editDocsAuditLogService.buildAuditDetails(eq(1234L), any(AsylumCase.class), any()))
+            .willReturn(AuditDetails.builder().build());
     }
 
     private void mockCallbackAndCaseDetails() {

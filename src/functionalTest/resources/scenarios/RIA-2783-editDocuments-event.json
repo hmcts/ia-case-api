@@ -23,7 +23,8 @@
                 "dateUploaded": "2018-12-25"
               }
             }
-          ]
+          ],
+          "editDocumentsReason": "some reasons"
         }
       }
     }
@@ -46,6 +47,17 @@
               "description": "some new added evidence",
               "dateUploaded": "2018-12-25",
               "tag": ""
+            }
+          }
+        ],
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "Edit documents audit note",
+              "caseNoteDescription": "documentIds: []\nreason: some reasons\n",
+              "user": "Case Officer",
+              "dateAdded": "{$TODAY}"
             }
           }
         ]

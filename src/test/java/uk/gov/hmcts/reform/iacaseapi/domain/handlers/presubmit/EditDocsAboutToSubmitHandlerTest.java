@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
@@ -24,6 +28,7 @@ import junitparams.converters.Nullable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -39,6 +44,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsAboutToSubmitHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsCaseNoteService;
 
 @RunWith(JUnitParamsRunner.class)
 public class EditDocsAboutToSubmitHandlerTest {
@@ -52,7 +59,10 @@ public class EditDocsAboutToSubmitHandlerTest {
     private CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
-    private final EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler = new EditDocsAboutToSubmitHandler();
+    @Mock
+    private EditDocsCaseNoteService editDocsCaseNoteService;
+    @InjectMocks
+    private EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler;
 
     @Test
     @Parameters({
@@ -116,6 +126,8 @@ public class EditDocsAboutToSubmitHandlerTest {
         } else {
             fail();
         }
+        then(editDocsCaseNoteService).should(times(1))
+            .writeAuditCaseNoteForGivenCaseId(anyLong(), any(AsylumCase.class), any());
     }
 
     private boolean isDeletedFileScenario(String expectedSuppliedBy) {

@@ -2,8 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
+@EqualsAndHashCode
+@ToString
 public class CaseNote {
 
     private String caseNoteSubject;

@@ -179,7 +179,7 @@ public class CcdScenarioRunnerTest {
         StreamSupport
             .stream(propertySources.spliterator(), false)
             .filter(propertySource -> propertySource instanceof EnumerablePropertySource)
-            .map(ropertySource -> ((EnumerablePropertySource) ropertySource).getPropertyNames())
+            .map(propertySource -> ((EnumerablePropertySource) propertySource).getPropertyNames())
             .flatMap(Arrays::stream)
             .forEach(name -> MapValueExpander.ENVIRONMENT_PROPERTIES.setProperty(name, environment.getProperty(name)));
     }
