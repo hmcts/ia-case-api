@@ -5,22 +5,19 @@ import static java.util.Arrays.stream;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
-public enum AppealType {
+public enum ContactPreference {
 
-    RP("revocationOfProtection"),
-    PA("protection"),
-    EA("refusalOfEu"),
-    HU("refusalOfHumanRights"),
-    DC("deprivation");
+    WANTS_EMAIL("wantsEmail"),
+    WANTS_SMS("wantsSms");
 
     @JsonValue
     private String value;
 
-    AppealType(String value) {
+    ContactPreference(String value) {
         this.value = value;
     }
 
-    public static Optional<AppealType> from(
+    public static Optional<ContactPreference> from(
         String value
     ) {
         return stream(values())

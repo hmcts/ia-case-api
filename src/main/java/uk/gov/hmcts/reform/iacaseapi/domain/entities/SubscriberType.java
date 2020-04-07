@@ -5,22 +5,18 @@ import static java.util.Arrays.stream;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Optional;
 
-public enum AppealType {
-
-    RP("revocationOfProtection"),
-    PA("protection"),
-    EA("refusalOfEu"),
-    HU("refusalOfHumanRights"),
-    DC("deprivation");
+public enum SubscriberType {
+    APPELLANT("appellant"),
+    SUPPORTER("supporter");
 
     @JsonValue
-    private String value;
+    private final String value;
 
-    AppealType(String value) {
+    SubscriberType(String value) {
         this.value = value;
     }
 
-    public static Optional<AppealType> from(
+    public static Optional<uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType> from(
         String value
     ) {
         return stream(values())
@@ -34,6 +30,6 @@ public enum AppealType {
 
     @Override
     public String toString() {
-        return value;
+        return getValue();
     }
 }
