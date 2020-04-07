@@ -64,7 +64,7 @@ public class EditDocsAboutToSubmitHandler implements PreSubmitCallbackHandler<As
 
     private List<AsylumCaseFieldDefinition> getFieldDefinitionsWithTagField() {
         return getListOfDocumentFields().stream()
-            .filter(f -> f.equals(HEARING_RECORDING_DOCUMENTS))
+            .filter(f -> !f.equals(HEARING_RECORDING_DOCUMENTS))
             .collect(Collectors.toList());
     }
 
