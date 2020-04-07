@@ -1,0 +1,30 @@
+{
+  "description": "RIA-2272 Record length of hearing preparer",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordLengthOfHearing",
+      "state": "listing",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "reheardRule32"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaApplicantType": "appellant",
+        "ftpaAppellantRjDecisionOutcomeType": "reheardRule32"
+      }
+    }
+  }
+}

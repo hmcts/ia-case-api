@@ -1,0 +1,22 @@
+{
+  "description": "RIA-2272 Record length of hearing confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordLengthOfHearing",
+      "state": "listing",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've recorded \n# the length of the hearing",
+      "body": "#### What happens next\n\nThe listing team will now list the case. All parties will be notified the Notice of Hearing is available to view."
+    }
+  }
+}

@@ -640,6 +640,9 @@ public enum AsylumCaseFieldDefinition {
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
 
+    REHEARD_ACTION_EXISTS(
+        "reheardActionExists", new TypeReference<YesOrNo>() {}),
+
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 

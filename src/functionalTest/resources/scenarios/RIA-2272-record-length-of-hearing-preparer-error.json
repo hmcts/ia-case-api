@@ -1,0 +1,30 @@
+{
+  "description": "RIA-2272 Record length of hearing preparer - error",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordLengthOfHearing",
+      "state": "listing",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "refused"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["Appeal can only be reheard due to appropriate Judge decision."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaApplicantType": "appellant",
+        "ftpaAppellantRjDecisionOutcomeType": "refused"
+      }
+    }
+  }
+}
