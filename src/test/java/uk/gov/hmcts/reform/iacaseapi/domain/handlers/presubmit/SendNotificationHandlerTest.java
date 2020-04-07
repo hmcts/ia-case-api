@@ -97,7 +97,8 @@ public class SendNotificationHandlerTest {
             Event.LIST_CMA,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.UNLINK_APPEAL,
-            Event.LINK_APPEAL
+            Event.LINK_APPEAL,
+            Event.LEADERSHIP_JUDGE_FTPA_DECISION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -222,7 +223,8 @@ public class SendNotificationHandlerTest {
                         Event.UNLINK_APPEAL,
                         Event.LINK_APPEAL,
                         Event.EDIT_DOCUMENTS,
-                        Event.FORCE_REQUEST_CASE_BUILDING
+                        Event.FORCE_REQUEST_CASE_BUILDING,
+                        Event.LEADERSHIP_JUDGE_FTPA_DECISION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
