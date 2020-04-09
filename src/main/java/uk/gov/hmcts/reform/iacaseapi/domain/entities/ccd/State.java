@@ -26,6 +26,7 @@ public enum State {
     AWAITING_CLARIFYING_ANSWERS("awaitingClarifyingAnswers"),
     CLARIFYING_ANSWERS_SUBMITTED("clarifyingAnswersSubmitted"),
     FTPA_SUBMITTED("ftpaSubmitted"),
+    FTPA_DECIDED("ftpaDecided"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
