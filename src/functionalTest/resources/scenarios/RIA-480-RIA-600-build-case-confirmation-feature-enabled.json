@@ -1,7 +1,6 @@
-## Ignore this test because of the feature flag isSaveAndContinueEnabled = false
-## More details here: https://tools.hmcts.net/jira/browse/RIA-2918
 {
   "description": "RIA-480 & RIA-600 Build case confirmation",
+  "enabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",
