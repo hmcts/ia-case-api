@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
+import com.google.common.collect.Lists;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -17,6 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationSender<AsylumCase> notificationSender;
+    @Value("${featureFlag.isSaveAndContinueEnabled}")
+    private boolean isSaveAndContinueEnabled;
 
     public SendNotificationHandler(
         NotificationSender<AsylumCase> notificationSender
@@ -35,57 +39,64 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               &&
-               Arrays.asList(
-                   Event.SUBMIT_APPEAL,
-                   Event.SEND_DIRECTION,
-                   Event.CHANGE_DIRECTION_DUE_DATE,
-                   Event.REQUEST_RESPONDENT_EVIDENCE,
-                   Event.UPLOAD_RESPONDENT_EVIDENCE,
-                   Event.REQUEST_RESPONDENT_REVIEW,
-                   Event.ADD_APPEAL_RESPONSE,
-                   Event.REQUEST_HEARING_REQUIREMENTS,
-                   Event.DRAFT_HEARING_REQUIREMENTS,
-                   Event.REVIEW_HEARING_REQUIREMENTS,
-                   Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                   Event.LIST_CASE,
-                   Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
-                   Event.EDIT_CASE_LISTING,
-                   Event.END_APPEAL,
-                   Event.UPLOAD_HOME_OFFICE_BUNDLE,
-                   Event.REQUEST_CASE_BUILDING,
-                   Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
-                   Event.REQUEST_RESPONSE_REVIEW,
-                   Event.SUBMIT_CASE,
-                   Event.SEND_DECISION_AND_REASONS,
-                   Event.GENERATE_HEARING_BUNDLE,
-                   Event.UPLOAD_ADDITIONAL_EVIDENCE,
-                   Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
-                   Event.UPLOAD_ADDENDUM_EVIDENCE,
-                   Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
-                   Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
-                   Event.REQUEST_REASONS_FOR_APPEAL,
-                   Event.SUBMIT_REASONS_FOR_APPEAL,
-                   Event.UPDATE_HEARING_ADJUSTMENTS,
-                   Event.REMOVE_APPEAL_FROM_ONLINE,
-                   Event.CHANGE_HEARING_CENTRE,
-                   Event.APPLY_FOR_FTPA_APPELLANT,
-                   Event.APPLY_FOR_FTPA_RESPONDENT,
-                   Event.REVIEW_TIME_EXTENSION,
-                   Event.SUBMIT_TIME_EXTENSION,
-                   Event.SEND_DIRECTION_WITH_QUESTIONS,
-                   Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-                   Event.REQUEST_CASE_EDIT,
-                   Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
-                   Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
-                   Event.SUBMIT_TIME_EXTENSION,
-                   Event.ADJOURN_HEARING_WITHOUT_DATE,
-                   Event.RESTORE_STATE_FROM_ADJOURN,
-                   Event.REQUEST_CMA_REQUIREMENTS,
-                   Event.SUBMIT_CMA_REQUIREMENTS
-               ).contains(callback.getEvent());
+            && getEventsToHandle().contains(callback.getEvent());
+    }
+
+    private List<Event> getEventsToHandle() {
+        List<Event> eventsToHandle = Lists.newArrayList(
+            Event.SUBMIT_APPEAL,
+            Event.SEND_DIRECTION,
+            Event.CHANGE_DIRECTION_DUE_DATE,
+            Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.UPLOAD_RESPONDENT_EVIDENCE,
+            Event.REQUEST_RESPONDENT_REVIEW,
+            Event.ADD_APPEAL_RESPONSE,
+            Event.REQUEST_HEARING_REQUIREMENTS,
+            Event.DRAFT_HEARING_REQUIREMENTS,
+            Event.REVIEW_HEARING_REQUIREMENTS,
+            Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+            Event.LIST_CASE,
+            Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
+            Event.EDIT_CASE_LISTING,
+            Event.END_APPEAL,
+            Event.UPLOAD_HOME_OFFICE_BUNDLE,
+            Event.REQUEST_CASE_BUILDING,
+            Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
+            Event.REQUEST_RESPONSE_REVIEW,
+            Event.SEND_DECISION_AND_REASONS,
+            Event.GENERATE_HEARING_BUNDLE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE,
+            Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+            Event.REQUEST_REASONS_FOR_APPEAL,
+            Event.SUBMIT_REASONS_FOR_APPEAL,
+            Event.UPDATE_HEARING_ADJUSTMENTS,
+            Event.REMOVE_APPEAL_FROM_ONLINE,
+            Event.CHANGE_HEARING_CENTRE,
+            Event.APPLY_FOR_FTPA_APPELLANT,
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.REVIEW_TIME_EXTENSION,
+            Event.SUBMIT_TIME_EXTENSION,
+            Event.SEND_DIRECTION_WITH_QUESTIONS,
+            Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+            Event.REQUEST_CASE_EDIT,
+            Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
+            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+            Event.SUBMIT_TIME_EXTENSION,
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.RESTORE_STATE_FROM_ADJOURN,
+            Event.REQUEST_CMA_REQUIREMENTS,
+            Event.SUBMIT_CMA_REQUIREMENTS
+        );
+        if (isSaveAndContinueEnabled) {
+            eventsToHandle.add(Event.SUBMIT_CASE);
+        } else {
+            eventsToHandle.add(Event.BUILD_CASE);
+        }
+        return eventsToHandle;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

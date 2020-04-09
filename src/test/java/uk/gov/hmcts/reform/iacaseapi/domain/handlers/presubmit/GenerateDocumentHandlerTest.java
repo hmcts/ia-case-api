@@ -21,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -81,6 +82,8 @@ public class GenerateDocumentHandlerTest {
                 documentGenerator,
                 dateProvider
             );
+
+        ReflectionTestUtils.setField(generateDocumentHandler, "isSaveAndContinueEnabled", true);
     }
 
     @Test

@@ -73,6 +73,7 @@ featureFlag:
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
   isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
+  isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42

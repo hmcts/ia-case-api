@@ -2,32 +2,47 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.reset;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import lombok.Value;
+import org.assertj.core.api.Assertions;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("unchecked")
+@RunWith(JUnitParamsRunner.class)
 public class BuildCaseConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private BuildCaseConfirmation buildCaseConfirmation =
-        new BuildCaseConfirmation();
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+
+    private BuildCaseConfirmation buildCaseConfirmation = new BuildCaseConfirmation();
 
     @Test
     public void should_return_confirmation() {
+        ReflectionTestUtils.setField(buildCaseConfirmation, "isSaveAndContinueEnabled", true);
 
         long caseId = 1234;
 
@@ -83,22 +98,37 @@ public class BuildCaseConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    @Parameters(method = "generateDifferentEventScenarios")
+    public void it_can_handle_callback(EventScenarios event) {
+        ReflectionTestUtils.setField(buildCaseConfirmation, "isSaveAndContinueEnabled", event.isFlag());
+        when(callback.getEvent()).thenReturn(event.getEvent());
 
-        for (Event event : Event.values()) {
+        boolean canHandle = buildCaseConfirmation.canHandle(callback);
 
-            when(callback.getEvent()).thenReturn(event);
+        Assertions.assertThat(canHandle).isEqualTo(event.isExpected());
+    }
 
-            boolean canHandle = buildCaseConfirmation.canHandle(callback);
+    private List<EventScenarios> generateDifferentEventScenarios() {
+        return EventScenarios.builder();
+    }
 
-            if (event == Event.BUILD_CASE) {
+    @Value
+    private static class EventScenarios {
+        Event event;
+        boolean flag;
+        boolean expected;
 
-                assertTrue(canHandle);
-            } else {
-                assertFalse(canHandle);
+        private static List<EventScenarios> builder() {
+            List<EventScenarios> testScenarios = new ArrayList<>();
+            for (Event e : Event.values()) {
+                if (e.equals(Event.BUILD_CASE)) {
+                    testScenarios.add(new EventScenarios(e, true, true));
+                } else {
+                    testScenarios.add(new EventScenarios(e, true, false));
+                }
+                testScenarios.add(new EventScenarios(e, false, false));
             }
-
-            reset(callback);
+            return testScenarios;
         }
     }
 
