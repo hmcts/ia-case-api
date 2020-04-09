@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -45,6 +46,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Mock private PreSubmitCallbackHandler<CaseData> handler1;
     @Mock private PreSubmitCallbackHandler<CaseData> handler2;
     @Mock private PreSubmitCallbackHandler<CaseData> handler3;
+    @Mock private PreSubmitCallbackStateHandler<CaseData> stateHandler;
     @Mock private EventValidCheckers<AsylumCase> eventValidChecker;
     @Mock private Callback<CaseData> callback;
     @Mock private CaseDetails<CaseData> caseDetails;
@@ -67,7 +69,8 @@ public class PreSubmitCallbackDispatcherTest {
                 handler2,
                 handler3
             ),
-            eventValidChecker
+            eventValidChecker,
+            Arrays.asList(stateHandler)
         );
 
         when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
@@ -93,6 +96,7 @@ public class PreSubmitCallbackDispatcherTest {
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
             when(caseDetails.getCaseData()).thenReturn(caseData);
+            //when(caseDetails.getState()).thenReturn(State.DECISION);
 
             when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -225,7 +229,7 @@ public class PreSubmitCallbackDispatcherTest {
     public void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
-            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidChecker);
+            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidChecker, Collections.emptyList());
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -256,7 +260,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_ccd_event_authorizor() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidChecker))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidChecker, Collections.emptyList()))
             .hasMessage("ccdEventAuthorizor must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -264,7 +268,7 @@ public class PreSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker, null))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -300,7 +304,8 @@ public class PreSubmitCallbackDispatcherTest {
                 h1,
                 h4
             ),
-                eventValidChecker
+                eventValidChecker,
+            Collections.emptyList()
         );
 
         List<PreSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
