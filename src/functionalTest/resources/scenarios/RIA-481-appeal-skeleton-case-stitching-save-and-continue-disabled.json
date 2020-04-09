@@ -1,27 +1,32 @@
 {
-  "description": "RIA-481 appeal skeleton (stitching enabled)",
-  "enabled": "{$featureFlag.isEmStitchingEnabled}",
+  "description": "RIA-481 appeal skeleton (save and continue disabled)",
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "submitCase",
+      "eventId": "buildCase",
       "state": "caseUnderReview",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "legalRepresentativeDocuments": [
+          "caseArgumentAvailable": null,
+          "caseArgumentDocument": {
+            "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+            "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+          },
+          "caseArgumentDescription": "Case argument",
+          "caseArgumentEvidence": [
             {
-              "id": "3",
+              "id": "1",
               "value": {
                 "document": {
-                  "document_url": "{$FIXTURE_DOC3_PDF_URL}",
-                  "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
                 },
-                "description": "",
-                "dateUploaded": "{$TODAY-3}",
-                "tag": "caseArgument"
+                "description": "Some case argument evidence"
               }
             },
             {
@@ -32,22 +37,7 @@
                   "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
                   "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
                 },
-                "description": "",
-                "dateUploaded": "{$TODAY-3}",
-                "tag": "caseArgument"
-              }
-            },
-            {
-              "id": "1",
-              "value": {
-                "document": {
-                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
-                },
-                "description": "",
-                "dateUploaded": "{$TODAY-3}",
-                "tag": "appealSubmission"
+                "description": "Some more case argument evidence"
               }
             }
           ]
@@ -84,8 +74,8 @@
                 "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
                 "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
               },
-              "description": "",
-              "dateUploaded": "{$TODAY-3}",
+              "description": "Case argument",
+              "dateUploaded": "{$TODAY}",
               "tag": "caseArgument"
             }
           },
@@ -93,12 +83,12 @@
             "id": "2",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
-              "description": "",
-              "dateUploaded": "{$TODAY-3}",
+              "description": "Some case argument evidence",
+              "dateUploaded": "{$TODAY}",
               "tag": "caseArgument"
             }
           },
@@ -106,13 +96,13 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
-              "description": "",
-              "dateUploaded": "{$TODAY-3}",
-              "tag": "appealSubmission"
+              "description": "Some more case argument evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseArgument"
             }
           }
         ]
