@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -106,11 +108,34 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
                 )
         );
 
-        List<IdValue<DocumentWithMetadata>> allAppellantDocuments =
+        final List<IdValue<DocumentWithMetadata>> allAppellantDocuments =
             documentsAppender.append(
                 existingFtpaAppellantDocuments,
                 ftpaAppellantDocuments
             );
+
+
+        if (maybeDocument.isPresent()) {
+            asylumCase.write(IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+        if (maybeFtpaAppellantEvidence.isPresent()) {
+            asylumCase.write(IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+        if (maybeOutOfTimeDocuments.isPresent()) {
+            asylumCase.write(IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+
+        String ftpaAppellantOutOfTimeExplanation = asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class).orElse("");
+        if (!ftpaAppellantOutOfTimeExplanation.isEmpty()) {
+            asylumCase.write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED, YesOrNo.YES);
+            asylumCase.write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, YesOrNo.NO);
+        }
+
+        asylumCase.write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        asylumCase.write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED, NO);
 
         asylumCase.write(FTPA_APPELLANT_DOCUMENTS, allAppellantDocuments);
 

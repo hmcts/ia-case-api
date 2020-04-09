@@ -102,6 +102,72 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS(
         "ftpaAppellantOutOfTimeDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION(
+        "ftpaAppellantOutOfTimeExplanation", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaAppellantDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaAppellantGroundsDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaAppellantEvidenceDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED(
+        "isFtpaAppellantOotExplanationVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaAppellantOotDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaAppellantDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaAppellantGroundsDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaAppellantEvidenceDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED(
+        "isFtpaAppellantOotExplanationVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaAppellantOotDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaRespondentDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaRespondentGroundsDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaRespondentEvidenceDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED(
+        "isFtpaRespondentOotExplanationVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_SUBMITTED(
+        "isFtpaRespondentOotDocsVisibleInSubmitted", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaRespondentDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaRespondentGroundsDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaRespondentEvidenceDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_DECIDED(
+        "isFtpaRespondentOotExplanationVisibleInDecided", new TypeReference<String>(){}),
+
+    IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_DECIDED(
+        "isFtpaRespondentOotDocsVisibleInDecided", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_OUT_OF_TIME_EXPLANATION(
+        "ftpaRespondentOutOfTimeExplanation", new TypeReference<String>(){}),
+
     FTPA_APPELLANT_DOCUMENTS(
         "ftpaAppellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
@@ -135,11 +201,11 @@ public enum AsylumCaseFieldDefinition {
     IS_FTPA_RESPONDENT_DECIDED(
         "isFtpaRespondentDecided", new TypeReference<YesOrNo>(){}),
 
-    IS_APPELLANT_FTPA_DECISION_VISIBLE_TO_RESPONDENT(
-        "isAppellantFtpaDecisionVisibleToRespondent", new TypeReference<String>(){}),
+    IS_APPELLANT_FTPA_DECISION_VISIBLE_TO_ALL(
+        "isAppellantFtpaDecisionVisibleToAll", new TypeReference<String>(){}),
 
-    IS_RESPONDENT_FTPA_DECISION_VISIBLE_TO_APPELLANT(
-        "isRespondentFtpaDecisionVisibleToAppellant", new TypeReference<String>(){}),
+    IS_RESPONDENT_FTPA_DECISION_VISIBLE_TO_ALL(
+        "isRespondentFtpaDecisionVisibleToAll", new TypeReference<String>(){}),
 
     FTPA_APPELLANT_DECISION_DATE(
         "ftpaAppellantDecisionDate", new TypeReference<String>(){}),

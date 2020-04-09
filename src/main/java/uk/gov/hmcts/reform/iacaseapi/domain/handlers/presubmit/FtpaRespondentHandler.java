@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -107,11 +109,33 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
                 )
         );
 
-        List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
+        final List<IdValue<DocumentWithMetadata>> allRespondentDocuments =
             documentsAppender.append(
                 existingFtpaRespondentDocuments,
                 ftpaRespondentDocuments
             );
+
+        if (maybeDocument.isPresent()) {
+            asylumCase.write(IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_RESPONDENT_GROUNDS_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+        if (maybeFtpaRespondentEvidence.isPresent()) {
+            asylumCase.write(IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_RESPONDENT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+        if (maybeOutOfTimeDocuments.isPresent()) {
+            asylumCase.write(IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+            asylumCase.write(IS_FTPA_RESPONDENT_OOT_DOCS_VISIBLE_IN_DECIDED, NO);
+        }
+
+        String ftpaRespondentOutOfTimeExplanation = asylumCase.read(FTPA_RESPONDENT_OUT_OF_TIME_EXPLANATION, String.class).orElse("");
+        if (!ftpaRespondentOutOfTimeExplanation.isEmpty()) {
+            asylumCase.write(IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED, YesOrNo.YES);
+            asylumCase.write(IS_FTPA_RESPONDENT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, YesOrNo.NO);
+        }
+
+        asylumCase.write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_SUBMITTED, YES);
+        asylumCase.write(IS_FTPA_RESPONDENT_DOCS_VISIBLE_IN_DECIDED, NO);
 
         asylumCase.write(FTPA_RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
@@ -120,5 +144,6 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
         asylumCase.write(FTPA_RESPONDENT_SUBMITTED, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+        
     }
 }
