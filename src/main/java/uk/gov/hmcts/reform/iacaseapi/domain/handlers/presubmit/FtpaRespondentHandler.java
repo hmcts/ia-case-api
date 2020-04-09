@@ -144,5 +144,6 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
         asylumCase.write(FTPA_RESPONDENT_SUBMITTED, YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+        
     }
 }
