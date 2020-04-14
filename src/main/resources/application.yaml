@@ -177,6 +177,7 @@ security:
       - "changeHearingCentre"
       - "reviewTimeExtension"
       - "sendDirectionWithQuestions"
+      - "flagCase"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -184,6 +185,7 @@ security:
       - "addCaseNote"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
+      - "flagCase"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

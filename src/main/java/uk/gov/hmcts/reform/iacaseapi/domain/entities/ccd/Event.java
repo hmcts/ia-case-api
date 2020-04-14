@@ -64,6 +64,7 @@ public enum Event {
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
+    FLAG_CASE("flagCase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
