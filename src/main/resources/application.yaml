@@ -176,6 +176,7 @@ security:
       - "sendToPreHearing"
       - "changeHearingCentre"
       - "reviewTimeExtension"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

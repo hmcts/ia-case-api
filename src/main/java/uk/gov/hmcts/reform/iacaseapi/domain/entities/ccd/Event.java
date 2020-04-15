@@ -63,6 +63,7 @@ public enum Event {
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
+    ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
