@@ -49,7 +49,6 @@ public class AdjournWithoutDateConfirmationTest {
 
     private List<TestScenario> generateTestScenarios() {
         return TestScenario.testScenarioBuilder();
-    }
 
     @Value
     private static class TestScenario {
