@@ -179,6 +179,7 @@ security:
       - "sendDirectionWithQuestions"
       - "flagCase"
       - "removeFlag"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
