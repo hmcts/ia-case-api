@@ -75,6 +75,7 @@ public class EventTest {
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
         assertEquals("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
+        assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
     }
 
     @Test
