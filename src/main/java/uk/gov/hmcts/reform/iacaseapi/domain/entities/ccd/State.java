@@ -27,6 +27,7 @@ public enum State {
     CLARIFYING_ANSWERS_SUBMITTED("clarifyingAnswersSubmitted"),
     FTPA_SUBMITTED("ftpaSubmitted"),
     FTPA_DECIDED("ftpaDecided"),
+    ADJOURNED("adjourned"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
