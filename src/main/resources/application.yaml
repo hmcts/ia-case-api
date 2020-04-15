@@ -191,6 +191,7 @@ security:
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
