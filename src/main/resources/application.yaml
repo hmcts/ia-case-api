@@ -176,6 +176,7 @@ security:
       - "sendToPreHearing"
       - "changeHearingCentre"
       - "reviewTimeExtension"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -183,6 +184,7 @@ security:
       - "addCaseNote"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
+      - "adjournHearingWithoutDate"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
