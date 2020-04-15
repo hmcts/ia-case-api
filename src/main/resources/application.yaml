@@ -181,6 +181,7 @@ security:
       - "editCaseListing"
       - "addCaseNote"
       - "sendDecisionAndReasons"
+      - "recordAllocatedJudge"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
