@@ -180,6 +180,7 @@ security:
       - "flagCase"
       - "removeFlag"
       - "requestCmaRequirements"
+      - "adjournHearingWithoutDate"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

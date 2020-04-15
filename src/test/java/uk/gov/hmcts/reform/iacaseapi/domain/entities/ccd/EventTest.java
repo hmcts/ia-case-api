@@ -70,6 +70,7 @@ public class EventTest {
         assertEquals("flagCase", Event.FLAG_CASE.toString());
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
+        assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
     }
 
     @Test
