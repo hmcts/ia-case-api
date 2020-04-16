@@ -127,6 +127,7 @@ public class FtpaAppellantHandlerTest {
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED, NO);
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED, YES);
         verify(asylumCase, times(1)).write(IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED, NO);
+        verify(asylumCase, times(1)).write(APPEAL_DECISION_AVAILABLE, YES);
     }
 
     @Test
@@ -177,6 +178,7 @@ public class FtpaAppellantHandlerTest {
         verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_APPLICATION_DATE, now.toString());
         verify(asylumCase, times(1)).write(FTPA_APPELLANT_SUBMITTED, YES);
+        verify(asylumCase, times(1)).write(APPEAL_DECISION_AVAILABLE, YES);
     }
 
     @Test

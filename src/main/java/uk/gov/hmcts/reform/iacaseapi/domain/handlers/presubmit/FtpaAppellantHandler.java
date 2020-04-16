@@ -143,6 +143,8 @@ public class FtpaAppellantHandler implements PreSubmitCallbackHandler<AsylumCase
 
         asylumCase.write(FTPA_APPELLANT_SUBMITTED, YES);
 
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
