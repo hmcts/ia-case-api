@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE_ADJOURNED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -31,6 +32,7 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         asylumCase.write(LIST_CASE_HEARING_DATE_ADJOURNED, "Adjourned");
+        asylumCase.clear(LIST_CASE_HEARING_DATE);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
