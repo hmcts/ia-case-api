@@ -48,7 +48,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     private List<TestScenario> generateTestScenarios() {
-        return TestScenario.TestScenarioBuilder();
+        return TestScenario.testScenarioBuilder();
     }
 
     @Value
@@ -56,7 +56,7 @@ public class AdjournWithoutDateConfirmationTest {
         Event event;
         boolean canBeHandledExpected;
 
-        public static List<TestScenario> TestScenarioBuilder() {
+        public static List<TestScenario> testScenarioBuilder() {
             List<TestScenario> testScenarioList = new ArrayList<>();
             for (Event e : Event.values()) {
                 TestScenario testScenario;
