@@ -280,6 +280,9 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_DATE(
         "listCaseHearingDate", new TypeReference<String>(){}),
 
+    LIST_CASE_HEARING_DATE_ADJOURNED(
+        "listCaseHearingDateAdjourned", new TypeReference<String>(){}),
+
     CASE_SUMMARY_DOCUMENT(
         "caseSummaryDocument", new TypeReference<Document>(){}),
 
