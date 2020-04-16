@@ -64,10 +64,11 @@ public class EventTest {
         assertEquals("editDocuments", Event.EDIT_DOCUMENTS.toString());
         assertEquals("recordAllocatedJudge", Event.RECORD_ALLOCATED_JUDGE.toString());
         assertEquals("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString());
+        assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(59, Event.values().length);
+        assertEquals(60, Event.values().length);
     }
 }
