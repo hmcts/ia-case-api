@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
+
 @RunWith(JUnitParamsRunner.class)
 public class AdjournWithoutDateHandlerTest {
 
@@ -125,6 +126,7 @@ public class AdjournWithoutDateHandlerTest {
         given(caseDetails.getCaseData()).willReturn(asylumCase);
         given(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)).willReturn(Optional.of(State.PREPARE_FOR_HEARING));
         given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
+
 
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
