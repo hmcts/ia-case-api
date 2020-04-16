@@ -125,7 +125,5 @@ public class AdjournWithoutDateHandlerTest {
 
         then(asylumCase).should(times(1))
             .write(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE_ADJOURNED), eq("Adjourned"));
-        then(asylumCase).should(times(1))
-            .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
     }
 }
