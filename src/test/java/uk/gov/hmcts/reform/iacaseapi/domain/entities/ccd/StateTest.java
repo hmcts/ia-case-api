@@ -26,11 +26,12 @@ public class StateTest {
         assertEquals("appealTakenOffline", State.APPEAL_TAKEN_OFFLINE.toString());
         assertEquals("ftpaSubmitted", State.FTPA_SUBMITTED.toString());
         assertEquals("ftpaDecided", State.FTPA_DECIDED.toString());
+        assertEquals("adjourned", State.ADJOURNED.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(23, State.values().length);
+        assertEquals(24, State.values().length);
     }
 }

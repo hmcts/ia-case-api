@@ -56,7 +56,7 @@ public class AdjournWithoutDateHandlerTest {
     }
 
     private List<TestScenario> generateTestScenarios() {
-        return TestScenario.TestScenarioBuilder();
+        return TestScenario.testScenarioBuilder();
     }
 
     @Value
@@ -65,7 +65,7 @@ public class AdjournWithoutDateHandlerTest {
         PreSubmitCallbackStage callbackStage;
         boolean canBeHandledExpected;
 
-        public static List<TestScenario> TestScenarioBuilder() {
+        public static List<TestScenario> testScenarioBuilder() {
             List<TestScenario> testScenarioList = new ArrayList<>();
             for (Event e : Event.values()) {
                 if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
