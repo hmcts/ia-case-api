@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseFlagAppenderTest {
 
+    @Mock private CaseFlag caseFlag1;
+    @Mock private CaseFlag caseFlag2;
     @Mock private IdValue<CaseFlag> existingCaseFlagById1;
     @Mock private IdValue<CaseFlag> existingCaseFlagById2;
 
@@ -31,15 +33,17 @@ public class CaseFlagAppenderTest {
     @Before
     public void setUp() {
         caseFlagAppender = new CaseFlagAppender();
+        when(caseFlag1.getCaseFlagType()).thenReturn(CaseFlagType.COMPLEX_CASE);
+        when(caseFlag2.getCaseFlagType()).thenReturn(CaseFlagType.UNACCOMPANIED_MINOR);
     }
 
     @Test
     public void should_append_new_case_flag_in_first_position() {
 
-        CaseFlag existingCaseFlag1 = mock(CaseFlag.class);
+        CaseFlag existingCaseFlag1 = caseFlag1;
         when(existingCaseFlagById1.getValue()).thenReturn(existingCaseFlag1);
 
-        CaseFlag existingCaseFlag2 = mock(CaseFlag.class);
+        CaseFlag existingCaseFlag2 = caseFlag2;
         when(existingCaseFlagById2.getValue()).thenReturn(existingCaseFlag2);
 
         List<IdValue<CaseFlag>> existingCaseFlags = Arrays.asList(existingCaseFlagById1, existingCaseFlagById2);
@@ -56,15 +60,16 @@ public class CaseFlagAppenderTest {
         assertNotNull(allCaseFlags);
         assertEquals(3, allCaseFlags.size());
 
-        assertEquals("3", allCaseFlags.get(0).getId());
-        assertEquals(newCaseFlagType, allCaseFlags.get(0).getValue().getCaseFlagType());
-        assertEquals(newCaseFlagAdditionalInformation, allCaseFlags.get(0).getValue().getCaseFlagAdditionalInformation());
+        assertEquals("1", allCaseFlags.get(2).getId());
+
+        assertEquals(newCaseFlagType, allCaseFlags.get(2).getValue().getCaseFlagType());
+        assertEquals(newCaseFlagAdditionalInformation, allCaseFlags.get(2).getValue().getCaseFlagAdditionalInformation());
 
         assertEquals("2", allCaseFlags.get(1).getId());
-        assertEquals(existingCaseFlag1, allCaseFlags.get(1).getValue());
+        assertEquals(existingCaseFlag2, allCaseFlags.get(1).getValue());
 
-        assertEquals("1", allCaseFlags.get(2).getId());
-        assertEquals(existingCaseFlag2, allCaseFlags.get(2).getValue());
+        assertEquals("3", allCaseFlags.get(0).getId());
+        assertEquals(existingCaseFlag1, allCaseFlags.get(0).getValue());
     }
 
     @Test

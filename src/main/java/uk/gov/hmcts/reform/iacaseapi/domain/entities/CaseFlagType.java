@@ -5,26 +5,32 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CaseFlagType {
 
-    ANONYMITY("anonymity"),
-    COMPLEX_CASE("complexCase"),
-    DETAINED_IMMIGRATION_APPEAL("detainedImmigrationAppeal"),
-    FOREIGN_NATIONAL_OFFENDER("foreignNationalOffender"),
-    POTENTIALLY_VIOLENT_PERSON("potentiallyViolentPerson"),
-    UNACCEPTABLE_CUSTOMER_BEHAVIOUR("unacceptableCustomerBehaviour"),
-    UNACCOMPANIED_MINOR("unaccompaniedMinor"),
+    ANONYMITY("anonymity", "Anonymity"),
+    COMPLEX_CASE("complexCase", "Complex case"),
+    DETAINED_IMMIGRATION_APPEAL("detainedImmigrationAppeal", "Detained immigration appeal"),
+    FOREIGN_NATIONAL_OFFENDER("foreignNationalOffender", "Foreign national offender"),
+    POTENTIALLY_VIOLENT_PERSON("potentiallyViolentPerson", "Potentially violent person"),
+    UNACCEPTABLE_CUSTOMER_BEHAVIOUR("unacceptableCustomerBehaviour", "Unacceptable customer behaviour"),
+    UNACCOMPANIED_MINOR("unaccompaniedMinor", "Unaccompanied minor"),
 
     @JsonEnumDefaultValue
-    UNKNOWN("unknown");
+    UNKNOWN("unknown", "Unknown");
 
     @JsonValue
     private final String id;
+    private final String readableText;
 
-    CaseFlagType(String id) {
+    CaseFlagType(String id, String readableText) {
         this.id = id;
+        this.readableText = readableText;
     }
 
     @Override
     public String toString() {
         return id;
+    }
+
+    public String getReadableText() {
+        return readableText;
     }
 }
