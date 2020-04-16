@@ -32,7 +32,9 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         asylumCase.write(LIST_CASE_HEARING_DATE_ADJOURNED, "Adjourned");
+
         asylumCase.clear(LIST_CASE_HEARING_DATE);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
