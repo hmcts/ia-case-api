@@ -138,5 +138,7 @@ public class AdjournWithoutDateHandlerTest {
             .write(eq(AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("05/05/2020"));
         then(asylumCase).should(times(1))
             .write(eq(AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED), eq(YesOrNo.NO));
+            .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
+
     }
 }

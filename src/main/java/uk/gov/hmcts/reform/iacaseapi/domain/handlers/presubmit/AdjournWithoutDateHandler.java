@@ -44,6 +44,8 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
 
         asylumCase.write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.NO);
 
+        asylumCase.clear(LIST_CASE_HEARING_DATE);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
