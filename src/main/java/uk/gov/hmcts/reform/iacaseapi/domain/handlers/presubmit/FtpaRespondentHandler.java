@@ -142,6 +142,7 @@ public class FtpaRespondentHandler implements PreSubmitCallbackHandler<AsylumCas
         asylumCase.write(FTPA_RESPONDENT_APPLICATION_DATE, dateProvider.now().toString());
 
         asylumCase.write(FTPA_RESPONDENT_SUBMITTED, YES);
+        asylumCase.write(APPEAL_DECISION_AVAILABLE, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
         
