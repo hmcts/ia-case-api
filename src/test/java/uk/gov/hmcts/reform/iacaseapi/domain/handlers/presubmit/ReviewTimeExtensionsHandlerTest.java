@@ -63,6 +63,7 @@ public class ReviewTimeExtensionsHandlerTest {
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
         when(asylumCase.read(REVIEW_TIME_EXTENSION_DECISION)).thenReturn(Optional.of(TimeExtensionDecision.REFUSED));
         when(asylumCase.read(REVIEW_TIME_EXTENSION_DECISION_REASON)).thenReturn(Optional.of("Decision reason"));
+        when(asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE)).thenReturn(Optional.of("2020-06-15"));
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -84,6 +85,8 @@ public class ReviewTimeExtensionsHandlerTest {
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
         when(asylumCase.read(REVIEW_TIME_EXTENSION_DECISION)).thenReturn(Optional.of(GRANTED));
         when(asylumCase.read(REVIEW_TIME_EXTENSION_DECISION_REASON)).thenReturn(Optional.of("Decision reason"));
+        when(asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE)).thenReturn(Optional.of("2020-06-15"));
+
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 

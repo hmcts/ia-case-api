@@ -1,12 +1,16 @@
+
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.*;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
@@ -41,9 +45,16 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        //TODO Only return date is extension is granted
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        if (asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE).isPresent()) { //todo make this check the direction due date
+        Optional<String> dueDate = asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE);
+        Date dateFormatted = null;
+        try {
+            dateFormatted = new SimpleDateFormat("yyyy-MM-dd").parse(dueDate.get());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (dateFormatted != null && !dateFormatted.after(new Date())) {
             PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The new direction due date must be after the previous direction due date");
             return asylumCasePreSubmitCallbackResponse;

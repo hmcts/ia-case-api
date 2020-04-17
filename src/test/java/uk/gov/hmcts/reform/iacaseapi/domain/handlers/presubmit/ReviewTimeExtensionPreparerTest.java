@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.IN_PROGRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,9 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -56,11 +55,23 @@ public class ReviewTimeExtensionPreparerTest {
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
+        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12","2020-01-12"));
+        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12","2020-01-12"));
+        List<IdValue<PreviousDates>> previousDates = asList(dateOne, dateTwo);
+
+
+        IdValue<Direction> timeExtensionIdValue1= new IdValue<>("1", new Direction("TestOne",Parties.APPELLANT,"2020-04-10","2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL,previousDates));
+        IdValue<Direction> timeExtensionIdValue2= new IdValue<>("2", new Direction("TestTwo",Parties.APPELLANT,"2020-04-16","2020-04-14",DirectionTag.BUILD_CASE,previousDates));
+        List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
+//        Optional<List<IdValue<Direction>>> directions = asylumCase.read(DIRECTIONS);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
+
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -77,11 +88,22 @@ public class ReviewTimeExtensionPreparerTest {
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
+        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12","2020-01-12"));
+        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12","2020-01-12"));
+        List<IdValue<PreviousDates>> previousDates = asList(dateOne, dateTwo);
+
+
+        IdValue<Direction> timeExtensionIdValue1= new IdValue<>("1", new Direction("TestOne",Parties.APPELLANT,"2020-04-10","2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL,previousDates));
+        IdValue<Direction> timeExtensionIdValue2= new IdValue<>("2", new Direction("TestTwo",Parties.APPELLANT,"2020-04-16","2020-04-14",DirectionTag.BUILD_CASE,previousDates));
+        List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
+
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
