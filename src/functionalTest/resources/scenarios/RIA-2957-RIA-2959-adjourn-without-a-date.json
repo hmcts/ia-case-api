@@ -1,0 +1,49 @@
+{
+  "description": "RIA-2957 RIA-2959 Adjourn without a date",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "adjournHearingWithoutDate",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingDate": "2020-04-07",
+          "listCaseHearingCentre": "taylorHouse"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingDateAdjourned": "Adjourned",
+        "sendDirectionActionAvailable": "No",
+        "listCaseHearingCentre": "taylorHouse",
+        "notificationsSent": [
+          {
+            "id": "1234_LEGAL_REPRESENTATIVE_ADJOURN_HEARING_WITHOUT_DATE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "1234_RESPONDENT_ADJOURN_HEARING_WITHOUT_DATE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "1234_CASE_OFFICER_ADJOURN_HEARING_WITHOUT_DATE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "1234_ADJOURN_HEARING_WITHOUT_DATE_ADMIN_OFFICER",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
