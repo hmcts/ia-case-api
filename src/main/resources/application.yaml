@@ -30,6 +30,9 @@ health:
     serviceAuth:
       uri: ${S2S_URL:http://127.0.0.1:4502}/health
       response: '"status":"UP"'
+    feesRegister:
+      uri: ${FEES_REGISTER_API_URL:http:///fees-register-api.platform.hmcts.net}/health
+      response: '"status":"UP"'
 
 spring:
   application:
@@ -106,6 +109,25 @@ notificationsApi:
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
+
+fees-register:
+  api:
+    url: ${FEES_REGISTER_API_URL:http://fees-register-api.platform.hmcts.net}
+  fees:
+    oralFee:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: ABC
+      service: other
+    paperFee:
+      channel: default
+      event: issue
+      jurisdiction1: tribunal
+      jurisdiction2: immigration and asylum chamber
+      keyword: XYZ
+      service: other
 
 security:
   anonymousPaths:
