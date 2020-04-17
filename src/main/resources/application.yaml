@@ -184,6 +184,7 @@ security:
       - "addCaseNote"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
+      - "adjournHearingWithoutDate"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
