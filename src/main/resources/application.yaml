@@ -199,6 +199,7 @@ security:
       - "recordAllocatedJudge"
       - "flagCase"
       - "removeFlag"
+      - "adjournHearingWithoutDate"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
