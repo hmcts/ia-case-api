@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -68,12 +68,19 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
     }
 
     private Function<IdValue<TimeExtension>, PreSubmitCallbackResponse<AsylumCase>> setReviewTimeExtensionValues(AsylumCase asylumCase) {
+        Optional<List<IdValue<Direction>>> directions = asylumCase.read(DIRECTIONS);
+        Optional<IdValue<Direction>> directionBeingUpdated = directions.orElse(emptyList()).stream().filter(directionIdVale -> {
+            return directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL); //todo this needs to work for a number of states
+        }).findFirst();
+
         return timeExtensionIdValue -> {
             asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestedDate());
             asylumCase.write(REVIEW_TIME_EXTENSION_PARTY, Parties.APPELLANT);
             asylumCase.write(REVIEW_TIME_EXTENSION_REASON, timeExtensionIdValue.getValue().getReason());
             asylumCase.write(REVIEW_TIME_EXTENSION_DECISION, null);
             asylumCase.write(REVIEW_TIME_EXTENSION_DECISION_REASON, "");
+            IdValue<Direction> directionIdValue = directionBeingUpdated.get(); // todo need to handle this
+            asylumCase.write(REVIEW_TIME_EXTENSION_DUE_DATE, directionIdValue.getValue().getDateDue());
 
             return new PreSubmitCallbackResponse<>(asylumCase);
         };

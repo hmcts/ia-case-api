@@ -42,6 +42,13 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE).isPresent()) { //todo make this check the direction due date
+            PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("The new direction due date must be after the previous direction due date");
+            return asylumCasePreSubmitCallbackResponse;
+        }
+
         State currentState = callback.getCaseDetails().getState();
         List<IdValue<TimeExtension>> timeExtensions = getTimeExtensions(asylumCase).map(timeExtension -> {
             TimeExtension timeExtensionValue = timeExtension.getValue();
