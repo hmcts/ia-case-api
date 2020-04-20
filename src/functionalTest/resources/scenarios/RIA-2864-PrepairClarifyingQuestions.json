@@ -1,0 +1,28 @@
+{
+  "description": "RIA-2864: Case officer can ask clarifying questions",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "sendDirectionWithQuestions",
+      "state": "reasonsForAppealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {}
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionQuestions": [],
+        "sendDirectionDateDue": "{$TODAY+28}"
+      }
+    }
+  }
+}
+

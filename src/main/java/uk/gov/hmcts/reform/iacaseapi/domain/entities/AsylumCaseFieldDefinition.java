@@ -91,6 +91,9 @@ public enum AsylumCaseFieldDefinition {
     SEND_DIRECTION_DATE_DUE(
         "sendDirectionDateDue", new TypeReference<String>(){}),
 
+    SEND_DIRECTION_QUESTIONS(
+            "sendDirectionQuestions", new TypeReference<List<IdValue<ClarifyingQuestion>>>(){}),
+
     EDITABLE_DIRECTIONS(
         "editableDirections", new TypeReference<List<IdValue<EditableDirection>>>(){}),
 
