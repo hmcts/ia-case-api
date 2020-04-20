@@ -18,11 +18,12 @@ public class DirectionTagTest {
         assertEquals("requestResponseReview", DirectionTag.REQUEST_RESPONSE_REVIEW.toString());
         assertEquals("requestResponseAmend", DirectionTag.REQUEST_RESPONSE_AMEND.toString());
         assertEquals("requestReasonsForAppeal", DirectionTag.REQUEST_REASONS_FOR_APPEAL.toString());
+        assertEquals("requestClarifyingQuestions", DirectionTag.REQUEST_CLARIFYING_QUESTIONS.toString());
         assertEquals("", DirectionTag.NONE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(11, DirectionTag.values().length);
+        assertEquals(12, DirectionTag.values().length);
     }
 }

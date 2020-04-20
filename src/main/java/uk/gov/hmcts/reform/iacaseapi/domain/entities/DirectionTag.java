@@ -15,6 +15,7 @@ public enum DirectionTag {
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     REQUEST_REASONS_FOR_APPEAL("requestReasonsForAppeal"),
+    REQUEST_CLARIFYING_QUESTIONS("requestClarifyingQuestions"),
 
     @JsonEnumDefaultValue
     NONE("");
