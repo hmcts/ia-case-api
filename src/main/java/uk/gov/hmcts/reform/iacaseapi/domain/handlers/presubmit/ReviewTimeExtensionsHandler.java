@@ -99,33 +99,36 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             return timeExtension;
         }).collect(Collectors.toList());
 
-
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
-        Optional<DynamicList> dynamicList = asylumCase.read(TIME_EXTENSIONS, DynamicList.class);
+        Optional<List<IdValue<TimeExtension>>> maybeTimeExtensions = asylumCase.read(TIME_EXTENSIONS);
 
+        Optional<IdValue<Direction>> directionBeingUpdated = maybeDirections.orElse(emptyList())
+            .stream()
+            .filter(directionIdVale -> {
+                return directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL); //todo this needs to work for a number of states
+            }).findFirst();
 
-            List<IdValue<Direction>> changedDirections =
-                maybeDirections.orElse(emptyList())
-                        .stream()
-                        .map(idValue -> {
-
-                            if (dynamicList.get().getValue().getCode().contains("Time Extension " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1))) {
-                                return new IdValue<>(
-                                        idValue.getId(),
-                                        new Direction(
-                                                idValue.getValue().getExplanation(),
-                                                idValue.getValue().getParties(),
-                                                asylumCase.read(TIME_EXTENSIONS, String.class).orElse(""),
-                                                dateProvider.now().toString(),
-                                                idValue.getValue().getTag(),
-                                                appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
-                                        )
-                                );
-                            } else {
-                                return idValue;
-                            }
-                        })
-                        .collect(toList());
+        List<IdValue<Direction>> changedDirections =
+            maybeDirections.orElse(emptyList())
+                .stream()
+                .map(idValue -> {
+                    if (String.valueOf(maybeDirections.orElse(emptyList()).size()).equals(idValue.getId())) {
+                        return new IdValue<>(
+                            idValue.getId(),
+                            new Direction(
+                                idValue.getValue().getExplanation(),
+                                idValue.getValue().getParties(),
+                                decisionOutcomeDueDate,
+                                dateProvider.now().toString(),
+                                idValue.getValue().getTag(),
+                                appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
+                            )
+                        );
+                    } else {
+                        return idValue;
+                    }
+                })
+                .collect(toList());
 
         asylumCase.write(TIME_EXTENSIONS, timeExtensions);
         asylumCase.write(DIRECTIONS, changedDirections);
@@ -157,16 +160,15 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             return newArrayList(new IdValue<>("1", new PreviousDates(dateDue, dateSent)));
         } else {
 
-            int index = previousDates.size() + 1;
+            int newEntryId = previousDates.size() + 1;
+            List<IdValue<PreviousDates>> newEntry = Collections.singletonList(
+                new IdValue<>(String.valueOf(newEntryId),
+                    new PreviousDates(dateDue, dateSent)));
 
-            final List<IdValue<PreviousDates>> allPreviousDates = new ArrayList<>();
-            allPreviousDates.add(new IdValue<>(String.valueOf(index--), new PreviousDates(dateDue, dateSent)));
+            Stream<IdValue<PreviousDates>> combinedStream = Stream.of(newEntry, previousDates)
+                .flatMap(Collection::stream);
 
-            for (IdValue<PreviousDates> previousDate : previousDates) {
-                allPreviousDates.add(new IdValue<>(String.valueOf(index--), previousDate.getValue()));
-            }
-
-            return allPreviousDates;
+            return combinedStream.collect(Collectors.toList());
         }
     }
 
