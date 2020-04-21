@@ -9,7 +9,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionDecision.GRANTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.IN_PROGRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_REASONS_FOR_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionDecision;
@@ -41,13 +43,14 @@ public class ReviewTimeExtensionsHandlerTest {
     private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
 
     private ReviewTimeExtensionsHandler reviewTimeExtensionHandler;
 
     @Before
     public void setup() {
         reviewTimeExtensionHandler =
-                new ReviewTimeExtensionsHandler();
+            new ReviewTimeExtensionsHandler(dateProvider);
     }
 
     @Test
@@ -67,7 +70,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        IdValue<TimeExtension> refusedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.REFUSED, emptyList(), TimeExtensionDecision.REFUSED, "Decision reason","2020-06-15"));
+        IdValue<TimeExtension> refusedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.REFUSED, emptyList(), TimeExtensionDecision.REFUSED, "Decision reason", "2020-06-15"));
         Mockito.verify(asylumCase).write(TIME_EXTENSIONS, asList(extensionIdValue1, refusedExtension));
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_REQUIRED, YesOrNo.NO);
     }
@@ -90,7 +93,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        IdValue<TimeExtension> grantedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.GRANTED, emptyList(), GRANTED, "Decision reason","2020-06-15"));
+        IdValue<TimeExtension> grantedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.GRANTED, emptyList(), GRANTED, "Decision reason", "2020-06-15"));
         Mockito.verify(asylumCase).write(TIME_EXTENSIONS, asList(extensionIdValue1, grantedExtension));
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_REQUIRED, YesOrNo.NO);
     }
@@ -117,19 +120,19 @@ public class ReviewTimeExtensionsHandlerTest {
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewTimeExtensionHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> reviewTimeExtensionHandler.canHandle(ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> reviewTimeExtensionHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> reviewTimeExtensionHandler.handle(ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }
