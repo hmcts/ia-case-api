@@ -64,6 +64,7 @@ public enum Event {
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
+    RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

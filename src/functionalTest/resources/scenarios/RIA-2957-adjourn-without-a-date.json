@@ -10,7 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "listCaseHearingDate": "2020-04-07"
+          "listCaseHearingDate": "2020-04-07",
+          "currentCaseStateVisibleToCaseOfficer": "decision"
         }
       }
     }
@@ -22,7 +23,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "listCaseHearingDateAdjourned": "Adjourned",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "stateBeforeAdjournWithoutDate": "decision",
+        "dateBeforeAdjournWithoutDate": "2020-04-07"
       }
     }
   }

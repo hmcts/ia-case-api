@@ -611,7 +611,17 @@ public enum AsylumCaseFieldDefinition {
     TIME_EXTENSIONS(
             "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
     REVIEW_TIME_EXTENSION_REQUIRED(
-            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {})
+            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+
+    STATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "stateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "dateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DOES_THE_CASE_NEED_TO_BE_RELISTED(
+        "doesTheCaseNeedToBeRelisted", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;
