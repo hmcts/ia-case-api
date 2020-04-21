@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
@@ -7,11 +6,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.*;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,13 +27,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<AsylumCase> {
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback) {
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.REVIEW_TIME_EXTENSION;
+               && callback.getEvent() == Event.REVIEW_TIME_EXTENSION;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -46,10 +44,10 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
         //TODO Only return date is extension is granted
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<String>decisionOutcomeDueDate = asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE);
+        String decisionOutcomeDueDate = getTimeExtensionDueDate(asylumCase);
         Date dateFormatted = null;
         try {
-            dateFormatted = new SimpleDateFormat("yyyy-MM-dd").parse(decisionOutcomeDueDate.get());
+            dateFormatted = new SimpleDateFormat("yyyy-MM-dd").parse(decisionOutcomeDueDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -70,18 +68,18 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
                 TimeExtensionDecision timeExtensionDecision = getTimeExtensionDecision(asylumCase);
                 TimeExtensionStatus timeExtensionStatus = timeExtensionDecision == TimeExtensionDecision.REFUSED ? REFUSED : GRANTED;
-                if(timeExtensionStatus.equals(GRANTED)){
+                if (timeExtensionStatus.equals(GRANTED)) {
                     isGranted.set(true);
                 }
                 return new IdValue<>(timeExtension.getId(), new TimeExtension(
-                        timeExtensionValue.getRequestDate(),
-                        timeExtensionValue.getReason(),
-                        timeExtensionValue.getState(),
-                        timeExtensionStatus,
-                        timeExtensionValue.getEvidence(),
-                        timeExtensionDecision,
-                        getTimeExtensionDecisionReason(asylumCase),
-                        decisionOutcomeDueDate.get()
+                    timeExtensionValue.getRequestDate(),
+                    timeExtensionValue.getReason(),
+                    timeExtensionValue.getState(),
+                    timeExtensionStatus,
+                    timeExtensionValue.getEvidence(),
+                    timeExtensionDecision,
+                    getTimeExtensionDecisionReason(asylumCase),
+                    decisionOutcomeDueDate
                 ));
             }
             return timeExtension;
@@ -92,10 +90,10 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             return directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL); //todo this needs to work for a number of states
         }).findFirst();
 
-        directionBeingUpdated.get().getValue().setDateDue(decisionOutcomeDueDate.get());
+        directionBeingUpdated.ifPresent(directionIdValue -> directionIdValue.getValue().setDateDue(decisionOutcomeDueDate));
 
         asylumCase.write(TIME_EXTENSIONS, timeExtensions);
-        asylumCase.write(DIRECTIONS,directions);
+        asylumCase.write(DIRECTIONS, directions);
         asylumCase.write(REVIEW_TIME_EXTENSION_REQUIRED, YesOrNo.NO);
 
 
@@ -112,8 +110,13 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         return read.orElseThrow(() -> new IllegalArgumentException("Cannot handle " + Event.REVIEW_TIME_EXTENSION + " without a decision reason"));
     }
 
+    private String getTimeExtensionDueDate(AsylumCase asylumCase) {
+        Optional<String> read = asylumCase.read(REVIEW_TIME_EXTENSION_DUE_DATE);
+        return read.orElseThrow(() -> new IllegalArgumentException("Cannot handle " + Event.REVIEW_TIME_EXTENSION + " without a decision reason"));
+    }
+
     private Stream<IdValue<TimeExtension>> getTimeExtensions(AsylumCase asylumCase) {
         return asylumCase.<List<IdValue<TimeExtension>>>read(TIME_EXTENSIONS)
-                .orElse(emptyList()).stream();
+            .orElse(emptyList()).stream();
     }
 }

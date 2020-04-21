@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -11,10 +10,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.IN_PROGRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,13 +55,12 @@ public class ReviewTimeExtensionPreparerTest {
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
-        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12","2020-01-12"));
-        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12","2020-01-12"));
+        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12", "2020-01-12"));
+        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12", "2020-01-12"));
         List<IdValue<PreviousDates>> previousDates = asList(dateOne, dateTwo);
 
-
-        IdValue<Direction> timeExtensionIdValue1= new IdValue<>("1", new Direction("TestOne",Parties.APPELLANT,"2020-04-10","2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL,previousDates));
-        IdValue<Direction> timeExtensionIdValue2= new IdValue<>("2", new Direction("TestTwo",Parties.APPELLANT,"2020-04-16","2020-04-14",DirectionTag.BUILD_CASE,previousDates));
+        IdValue<Direction> timeExtensionIdValue1 = new IdValue<>("1", new Direction("TestOne", Parties.APPELLANT, "2020-04-10", "2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL, previousDates));
+        IdValue<Direction> timeExtensionIdValue2 = new IdValue<>("2", new Direction("TestTwo", Parties.APPELLANT, "2020-04-16", "2020-04-14", DirectionTag.BUILD_CASE, previousDates));
         List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -69,9 +68,7 @@ public class ReviewTimeExtensionPreparerTest {
         when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
-//        Optional<List<IdValue<Direction>>> directions = asylumCase.read(DIRECTIONS);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
-
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -88,13 +85,12 @@ public class ReviewTimeExtensionPreparerTest {
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
-        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12","2020-01-12"));
-        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12","2020-01-12"));
+        IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12", "2020-01-12"));
+        IdValue<PreviousDates> dateTwo = new IdValue<>("2", new PreviousDates("2020-05-12", "2020-01-12"));
         List<IdValue<PreviousDates>> previousDates = asList(dateOne, dateTwo);
 
-
-        IdValue<Direction> timeExtensionIdValue1= new IdValue<>("1", new Direction("TestOne",Parties.APPELLANT,"2020-04-10","2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL,previousDates));
-        IdValue<Direction> timeExtensionIdValue2= new IdValue<>("2", new Direction("TestTwo",Parties.APPELLANT,"2020-04-16","2020-04-14",DirectionTag.BUILD_CASE,previousDates));
+        IdValue<Direction> timeExtensionIdValue1 = new IdValue<>("1", new Direction("TestOne", Parties.APPELLANT, "2020-04-10", "2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL, previousDates));
+        IdValue<Direction> timeExtensionIdValue2 = new IdValue<>("2", new Direction("TestTwo", Parties.APPELLANT, "2020-04-16", "2020-04-14", DirectionTag.BUILD_CASE, previousDates));
         List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -103,7 +99,6 @@ public class ReviewTimeExtensionPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
-
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -121,20 +116,20 @@ public class ReviewTimeExtensionPreparerTest {
 
         PreSubmitCallbackResponse<AsylumCase> handle = reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
         Set<String> errors = handle.getErrors();
-        assertEquals(errors, asSet("There is no time extension to review"));
+        assertEquals(errors, Stream.of("There is no time extension to review").collect(Collectors.toSet()));
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -149,7 +144,7 @@ public class ReviewTimeExtensionPreparerTest {
                 boolean canHandle = reviewTimeExtensionPreparer.canHandle(callbackStage, callback);
 
                 if (event == Event.REVIEW_TIME_EXTENSION
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
                 } else {

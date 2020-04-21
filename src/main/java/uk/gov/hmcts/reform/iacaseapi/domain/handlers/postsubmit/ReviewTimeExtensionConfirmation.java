@@ -2,23 +2,22 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_TIME_EXTENSION_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_TIME_EXTENSION_DUE_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionDecision.GRANTED;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
-import java.util.Optional;
-
 @Component
 public class ReviewTimeExtensionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
-            Callback<AsylumCase> callback
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -26,26 +25,38 @@ public class ReviewTimeExtensionConfirmation implements PostSubmitCallbackHandle
     }
 
     public PostSubmitCallbackResponse handle(
-            Callback<AsylumCase> callback
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
         PostSubmitCallbackResponse postSubmitResponse =
-                new PostSubmitCallbackResponse();
+            new PostSubmitCallbackResponse();
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        Optional<String> decision = asylumCase.read(REVIEW_TIME_EXTENSION_DECISION);
+        TimeExtensionDecision decision = getTimeExtensionDecision(asylumCase);
 
+        String confirmationHeader = decision == GRANTED
+            ? "# You have granted a time extension"
+            : "# You have refused a time extension";
 
-        if(decision.get().equals(GRANTED)) {
-            postSubmitResponse.setConfirmationHeader("# You have been granted a time extension");
-        } else {
-            postSubmitResponse.setConfirmationHeader("# You have been rejected a time extension");
-        }
+        postSubmitResponse.setConfirmationHeader(confirmationHeader);
 
+        //TODO: Next step Direction name should be dynamic too.
+        postSubmitResponse.setConfirmationBody(
+            "#### What happens next\n\n"
+            + "The appellant has been notified that their request has been "
+            + decision.toString()
+            + " and that they must submit their Appeal Reasons by the new due date.<br>"
+            + "You will be notified when it is ready to review.\n"
+        );
         return postSubmitResponse;
+    }
+
+    private TimeExtensionDecision getTimeExtensionDecision(AsylumCase asylumCase) {
+        Optional<TimeExtensionDecision> read = asylumCase.read(REVIEW_TIME_EXTENSION_DECISION);
+        return read.orElseThrow(() -> new IllegalStateException("Cannot handle " + Event.REVIEW_TIME_EXTENSION + " without a decision"));
     }
 }
 
