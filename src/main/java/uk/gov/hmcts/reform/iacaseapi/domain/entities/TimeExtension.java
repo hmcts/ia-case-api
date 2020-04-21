@@ -10,33 +10,35 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @EqualsAndHashCode
 @ToString
 public class TimeExtension {
-    private String requestedDate;
+    private String requestDate;
     private String reason;
     private State state;
     private TimeExtensionStatus status;
     private List<IdValue<Document>> evidence;
     private TimeExtensionDecision decision;
     private String decisionReason;
+    private String decisionOutcomeDate;
 
     private TimeExtension() {
     }
 
-    public TimeExtension(String requestedDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence) {
-        this(requestedDate, reason, state, status, evidence, null, null);
+    public TimeExtension(String requestDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence) {
+        this(requestDate, reason, state, status, evidence, null, null,null);
     }
 
-    public TimeExtension(String requestedDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence, TimeExtensionDecision decision, String decisionReason) {
-        this.requestedDate = requestedDate;
+    public TimeExtension(String requestDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence, TimeExtensionDecision decision, String decisionReason, String decisionOutcomeDate) {
+        this.requestDate = requestDate;
         this.reason = reason;
         this.state = state;
         this.status = status;
         this.evidence = evidence;
         this.decision = decision;
         this.decisionReason = decisionReason;
+        this.decisionOutcomeDate = decisionOutcomeDate;
     }
 
-    public String getRequestedDate() {
-        return requestedDate;
+    public String getRequestDate() {
+        return requestDate;
     }
 
     public String getReason() {
@@ -61,5 +63,9 @@ public class TimeExtension {
 
     public String getDecisionReason() {
         return decisionReason;
+    }
+
+    public String getDecisionOutcomeDate() {
+        return decisionOutcomeDate;
     }
 }

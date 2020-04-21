@@ -10,11 +10,24 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "requestReasonsForAppeal",
+                "parties": "appellant",
+                "dateDue": "{$TODAY}",
+                "dateSent": "{$TODAY}",
+                "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+                "previousDates": []
+              }
+            }
+          ],
           "timeExtensions": [
             {
               "id": "123",
               "value": {
-                "requestedDate": "2020-01-01",
+                "requestDate": "{$TODAY}",
                 "reason": "time extension reason",
                 "state": "awaitingReasonsForAppeal",
                 "status": "submitted",
@@ -24,7 +37,8 @@
           ],
           "reviewTimeExtensionRequired": "Yes",
           "reviewTimeExtensionDecision": "granted",
-          "reviewTimeExtensionDecisionReason": "decision reason"
+          "reviewTimeExtensionDecisionReason": "decision reason",
+          "reviewTimeExtensionDueDate": "{$TODAY+14}"
         }
       }
     }
@@ -35,17 +49,31 @@
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "requestReasonsForAppeal",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY+14}",
+              "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "previousDates": []
+            }
+          }
+        ],
         "timeExtensions": [
           {
             "id": "123",
             "value": {
-              "requestedDate": "2020-01-01",
+              "requestDate": "{$TODAY}",
               "reason": "time extension reason",
               "state": "awaitingReasonsForAppeal",
               "status": "granted",
               "decision": "granted",
               "decisionReason": "decision reason",
-              "evidence": []
+              "evidence": [],
+              "decisionOutcomeDate": "{$TODAY+14}"
             }
           }
         ],

@@ -86,6 +86,10 @@ public class Direction {
         return tag;
     }
 
+    public void setDateDue(String dueDate){
+        this.dateDue = dueDate;
+    }
+
     public List<IdValue<PreviousDates>> getPreviousDates() {
         return previousDates;
     }

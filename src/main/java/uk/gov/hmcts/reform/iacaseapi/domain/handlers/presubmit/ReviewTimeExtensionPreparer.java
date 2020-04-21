@@ -76,7 +76,7 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
         }).findFirst();
 
         return timeExtensionIdValue -> {
-            asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestedDate());
+            asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestDate());
             asylumCase.write(REVIEW_TIME_EXTENSION_PARTY, Parties.APPELLANT);
             asylumCase.write(REVIEW_TIME_EXTENSION_REASON, timeExtensionIdValue.getValue().getReason());
             asylumCase.write(REVIEW_TIME_EXTENSION_DECISION, null);

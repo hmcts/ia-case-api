@@ -67,7 +67,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        IdValue<TimeExtension> refusedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.REFUSED, emptyList(), TimeExtensionDecision.REFUSED, "Decision reason"));
+        IdValue<TimeExtension> refusedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.REFUSED, emptyList(), TimeExtensionDecision.REFUSED, "Decision reason","2020-06-15"));
         Mockito.verify(asylumCase).write(TIME_EXTENSIONS, asList(extensionIdValue1, refusedExtension));
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_REQUIRED, YesOrNo.NO);
     }
@@ -90,8 +90,8 @@ public class ReviewTimeExtensionsHandlerTest {
 
         reviewTimeExtensionHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        IdValue<TimeExtension> refusedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.GRANTED, emptyList(), GRANTED, "Decision reason"));
-        Mockito.verify(asylumCase).write(TIME_EXTENSIONS, asList(extensionIdValue1, refusedExtension));
+        IdValue<TimeExtension> grantedExtension = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, TimeExtensionStatus.GRANTED, emptyList(), GRANTED, "Decision reason","2020-06-15"));
+        Mockito.verify(asylumCase).write(TIME_EXTENSIONS, asList(extensionIdValue1, grantedExtension));
         Mockito.verify(asylumCase).write(REVIEW_TIME_EXTENSION_REQUIRED, YesOrNo.NO);
     }
 

@@ -10,11 +10,24 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "requestReasonsForAppeal",
+                "parties": "appellant",
+                "dateDue": "{$TODAY}",
+                "dateSent": "{$TODAY}",
+                "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+                "previousDates": []
+              }
+            }
+          ],
           "timeExtensions": [
             {
               "id": "123",
               "value": {
-                "requestedDate": "2020-01-01",
+                "requestDate": "{$TODAY}",
                 "reason": "time extension reason",
                 "state": "awaitingReasonsForAppeal",
                 "status": "submitted",
@@ -37,7 +50,7 @@
           {
             "id": "123",
             "value": {
-              "requestedDate": "2020-01-01",
+              "requestDate": "{$TODAY}",
               "reason": "time extension reason",
               "state": "awaitingReasonsForAppeal",
               "status": "submitted",
@@ -46,7 +59,7 @@
           }
         ],
         "reviewTimeExtensionRequired": "Yes",
-        "reviewTimeExtensionDate":"2020-01-01",
+        "reviewTimeExtensionDate":"{$TODAY}",
         "reviewTimeExtensionParty": "appellant",
         "reviewTimeExtensionReason": "time extension reason",
         "reviewTimeExtensionDecision":  null,
