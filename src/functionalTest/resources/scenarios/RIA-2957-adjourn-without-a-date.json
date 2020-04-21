@@ -14,8 +14,8 @@
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
-          "ariaListingReference": "LP/12345/2019"
-
+          "ariaListingReference": "LP/12345/2019",
+          "currentCaseStateVisibleToCaseOfficer": "decision"
         }
       }
     }
@@ -46,7 +46,9 @@
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2018-12-31T12:34:56",
         "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "ariaListingReference": "LP/12345/2019"
+        "ariaListingReference": "LP/12345/2019",
+        "stateBeforeAdjournWithoutDate": "decision",
+        "dateBeforeAdjournWithoutDate": "2020-04-07"
       }
     }
   }

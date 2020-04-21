@@ -177,6 +177,7 @@ security:
       - "changeHearingCentre"
       - "reviewTimeExtension"
       - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -185,6 +186,7 @@ security:
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
       - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
