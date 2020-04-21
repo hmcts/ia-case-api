@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class DynamicList {
 
@@ -29,5 +33,4 @@ public class DynamicList {
     public Value getValue() {
         return value;
     }
-
 }
