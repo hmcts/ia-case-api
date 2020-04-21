@@ -25,7 +25,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
             Parties directionTo = asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class)
                     .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
 
-            if (journeyType == JourneyType.AIP) {
+            if (journeyType == JourneyType.AIP && directionTo != Parties.RESPONDENT) {
                 log.info("Cannot send a direction for an AIP case");
                 return new EventValid("You cannot use this function to send a direction to an appellant in person.");
             } else if (journeyType == REP && directionTo == Parties.APPELLANT) {

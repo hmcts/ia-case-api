@@ -35,6 +35,14 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
+    public void canSendDirectionForAipCaseToRespondent() {
+        setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.RESPONDENT);
+        EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
+
+        assertThat(eventValid, is(EventValid.VALID_EVENT));
+    }
+
+    @Test
     public void cannotSendDirectionToAppellantForReppedCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
