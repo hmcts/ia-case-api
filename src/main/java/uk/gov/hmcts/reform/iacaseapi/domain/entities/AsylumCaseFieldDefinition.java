@@ -759,7 +759,6 @@ public enum AsylumCaseFieldDefinition {
 
     DOES_THE_CASE_NEED_TO_BE_RELISTED(
         "doesTheCaseNeedToBeRelisted", new TypeReference<YesOrNo>(){}),
-
     ;
 
     private final String value;
