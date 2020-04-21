@@ -190,6 +190,7 @@ security:
       - "forceCaseToCaseUnderReview"
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -200,6 +201,7 @@ security:
       - "flagCase"
       - "removeFlag"
       - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

@@ -751,6 +751,15 @@ public enum AsylumCaseFieldDefinition {
     REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS(
         "reasonToForceCaseToSubmitHearingRequirements", new TypeReference<String>() {}),
 
+    STATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "stateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "dateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DOES_THE_CASE_NEED_TO_BE_RELISTED(
+        "doesTheCaseNeedToBeRelisted", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;

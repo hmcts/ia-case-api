@@ -56,7 +56,9 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         } else {
             asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
         }
+
         asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
+        asylumCase.clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
