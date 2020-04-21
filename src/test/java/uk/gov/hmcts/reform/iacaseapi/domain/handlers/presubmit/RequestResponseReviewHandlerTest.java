@@ -50,7 +50,7 @@ public class RequestResponseReviewHandlerTest {
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "The respondent has replied to your appeal argument and evidence. You must now review their response";
+        final String expectedExplanationContains = "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2019-09-30";
 

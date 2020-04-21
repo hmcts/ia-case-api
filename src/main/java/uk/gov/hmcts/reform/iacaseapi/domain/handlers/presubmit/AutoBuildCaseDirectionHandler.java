@@ -83,16 +83,15 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
             List<IdValue<Direction>> allDirections =
                 directionAppender.append(
                     existingDirections,
-                    "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\n"
-                    + "You must write a full skeleton argument that references:\n\n"
-                    + "- all the evidence you have (or plan) to rely on, including witness statements\n"
-                    + "- the grounds and issues of the case\n"
-                    + "- any new matters\n"
-                    + "- any legal authorities you plan to rely on and why they are applicable to your case\n\n"
-                    + "Your argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n"
+                    "You must now build your case to enable the respondent to conduct a thorough review of their decision.\n\n"
+                    + "You have 28 days after the respondent’s bundle is provided, or 42 days after the Notice of Appeal, whichever is the later, to upload your Appeal Skeleton Argument and evidence.\n\n"
+                    + "Your Appeal Skeleton Argument must be set out in three distinct parts to include:\n\n"
+                    + "- a concise summary of the appellant’s case\n"
+                    + "- a schedule of issues\n"
+                    + "- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n"
                     + "# Next steps\n\n"
-                    + "Once you have uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\n"
-                    + "If your case looks ready, the Tribunal case worker will send it to the respondent to review.",
+                    + "Once you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Tribunal Caseworker will review everything you've added.\n\n"
+                    + "If your case looks ready, the Tribunal will send it to the respondent to review.",
                     Parties.LEGAL_REPRESENTATIVE,
                     getBuildCaseDirectionDueDate(asylumCase, dateProvider, legalRepresentativeBuildCaseDueFromSubmissionDate, buildCaseDueInDays).toString(),
                     DirectionTag.BUILD_CASE

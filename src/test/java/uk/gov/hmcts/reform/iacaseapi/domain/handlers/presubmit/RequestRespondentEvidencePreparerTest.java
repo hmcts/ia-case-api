@@ -51,7 +51,7 @@ public class RequestRespondentEvidencePreparerTest {
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "A notice of appeal has been lodged against this asylum decision.";
+        final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 
