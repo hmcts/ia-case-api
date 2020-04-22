@@ -59,6 +59,14 @@ compileTestJava {
     options.compilerArgs << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
 }
 
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
 sourceSets {
 
     integrationTest {
@@ -269,8 +277,13 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
     compile(group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4')
 
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
+
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
-    compile 'org.projectlombok:lombok:1.18.2'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.23'
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
@@ -394,3 +407,6 @@ bootJar {
 // java flag that configures the deployed appllications
 applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
 
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
