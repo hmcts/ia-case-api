@@ -23,7 +23,7 @@ public class TimeExtension {
     }
 
     public TimeExtension(String requestDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence) {
-        this(requestDate, reason, state, status, evidence, null, null,null);
+        this(requestDate, reason, state, status, evidence, null, null, null);
     }
 
     public TimeExtension(String requestDate, String reason, State state, TimeExtensionStatus status, List<IdValue<Document>> evidence, TimeExtensionDecision decision, String decisionReason, String decisionOutcomeDate) {

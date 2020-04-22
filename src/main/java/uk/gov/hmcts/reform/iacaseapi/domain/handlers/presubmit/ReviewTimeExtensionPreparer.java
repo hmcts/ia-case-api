@@ -81,7 +81,7 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
             asylumCase.write(REVIEW_TIME_EXTENSION_REASON, timeExtensionIdValue.getValue().getReason());
             asylumCase.write(REVIEW_TIME_EXTENSION_DECISION, null);
             asylumCase.write(REVIEW_TIME_EXTENSION_DECISION_REASON, "");
-            IdValue<Direction> directionIdValue = directionBeingUpdated.get(); // todo need to handle this
+            IdValue<Direction> directionIdValue = directionBeingUpdated.get();
             asylumCase.write(REVIEW_TIME_EXTENSION_DUE_DATE, directionIdValue.getValue().getDateDue());
 
             return new PreSubmitCallbackResponse<>(asylumCase);

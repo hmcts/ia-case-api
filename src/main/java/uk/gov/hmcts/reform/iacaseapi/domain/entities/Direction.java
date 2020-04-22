@@ -76,10 +76,6 @@ public class Direction {
         return dateDue;
     }
 
-    public void setDateDue(String dueDate) {
-        this.dateDue = dueDate;
-    }
-
     public String getDateSent() {
         requireNonNull(dateSent);
         return dateSent;

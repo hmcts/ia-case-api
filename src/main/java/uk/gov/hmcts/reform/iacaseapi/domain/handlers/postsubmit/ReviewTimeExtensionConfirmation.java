@@ -41,12 +41,7 @@ public class ReviewTimeExtensionConfirmation implements PostSubmitCallbackHandle
             ? "# You have granted a time extension"
             : "# You have refused a time extension";
 
-        String confirmationHeader = decision.get().equals("granted")
-                ? "# you have granted a time extension"
-                : "# you have rejected a time extension";
-
-
-            postSubmitResponse.setConfirmationHeader(confirmationHeader);
+        postSubmitResponse.setConfirmationHeader(confirmationHeader);
 
 
         //TODO: Next step Direction name should be dynamic too.
