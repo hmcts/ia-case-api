@@ -183,6 +183,7 @@ security:
       - "addCaseNote"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
+      - "addHearing"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -77,6 +78,9 @@ public enum AsylumCaseFieldDefinition {
 
     HEARING_RECORDING_DOCUMENTS(
         "hearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
+
+    ADD_HEARING_RECORDING_DOCUMENTS(
+        "addHearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
 
     TRIBUNAL_DOCUMENTS(
         "tribunalDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>() {}),
@@ -280,6 +284,18 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_DATE(
         "listCaseHearingDate", new TypeReference<String>(){}),
 
+    LIST_CASE_HEARING_LENGTH(
+        "listCaseHearingLength", new TypeReference<HearingLength>(){}),
+
+    ADD_LIST_CASE_HEARING_CENTRE(
+        "addListCaseHearingCentre", new TypeReference<HearingCentre>(){}),
+
+    ADD_LIST_CASE_HEARING_DATE(
+        "addListCaseHearingDate", new TypeReference<String>(){}),
+
+    ADD_LIST_CASE_HEARING_LENGTH(
+        "addListCaseHearingLength", new TypeReference<HearingLength>(){}),
+
     CASE_SUMMARY_DOCUMENT(
         "caseSummaryDocument", new TypeReference<Document>(){}),
 
@@ -472,11 +488,49 @@ public enum AsylumCaseFieldDefinition {
         "allocatedJudgeEdit", new TypeReference<String>(){}),
 
     PREVIOUS_JUDGE_ALLOCATIONS(
-        "previousJudgeAllocations", new TypeReference<List<IdValue<String>>>(){}
-    ),
+        "previousJudgeAllocations", new TypeReference<List<IdValue<String>>>(){}),
+
+    HEARING_TYPE(
+        "hearingType", new TypeReference<HearingType>(){}),
+
+    ATTENDING_JUDGE(
+        "attendingJudge", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANT(
+        "attendingAppellant", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANT_LEGAL_REPRESENTATIVE(
+        "attendingAppellantsLegalRepresentative", new TypeReference<String>(){}),
+
+    ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE(
+        "attendingHomeOfficeLegalRepresentative", new TypeReference<String>(){}),
+
+    ACTUAL_CASE_HEARING_LENGTH(
+        "actualCaseHearingLength", new TypeReference<HoursAndMinutes>(){}),
+
+    ADD_ATTENDING_JUDGE(
+        "addAttendingJudge", new TypeReference<String>(){}),
+
+    ADD_ATTENDING_APPELLANT(
+        "addAttendingAppellant", new TypeReference<String>(){}),
+
+    ADD_ATTENDING_APPELLANT_LEGAL_REPRESENTATIVE(
+        "addAttendingAppellantsLegalRepresentative", new TypeReference<String>(){}),
+
+    ADD_ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE(
+        "addAttendingHomeOfficeLegalRepresentative", new TypeReference<String>(){}),
+
+    ADD_ACTUAL_CASE_HEARING_LENGTH(
+        "addActualCaseHearingLength", new TypeReference<HoursAndMinutes>(){}),
+
+    PREVIOUS_HEARINGS(
+        "previousHearings", new TypeReference<List<IdValue<Hearing>>>(){}),
 
     ARIA_LISTING_REFERENCE(
         "ariaListingReference", new TypeReference<String>(){}),
+
+    ADD_ARIA_LISTING_REFERENCE(
+        "addAriaListingReference", new TypeReference<String>(){}),
 
     END_APPEAL_DATE(
         "endAppealDate", new TypeReference<String>(){}),
