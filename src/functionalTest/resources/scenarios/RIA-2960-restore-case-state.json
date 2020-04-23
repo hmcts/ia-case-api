@@ -2,7 +2,7 @@
   "description": "RIA-2960 Restore state from adjourned",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "AdminOfficer",
     "input": {
       "id": 1234,
       "eventId": "restoreStateFromAdjourn",
@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "dateBeforeAdjournWithoutDate": "2020-04-07",
+          "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
           "stateBeforeAdjournWithoutDate": "decision"
         }
       }
@@ -23,12 +23,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "listCaseHearingDate": "2020-04-07",
+        "listCaseHearingDate": "2018-12-31T12:34:56",
         "doesTheCaseNeedToBeRelisted": "Yes",
         "sendDirectionActionAvailable": "No",
         "notificationsSent": [
           {
-            "id": "1001_APPEAL_EXITED_ONLINE_HOME_OFFICE",
+            "id": "1234_RE_LIST_CASE_ADMIN_OFFICER",
             "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
