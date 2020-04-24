@@ -31,7 +31,7 @@ health:
       uri: ${S2S_URL:http://127.0.0.1:4502}/health
       response: '"status":"UP"'
     feesRegister:
-      uri: ${FEES_REGISTER_API_URL:http:///fees-register-api.platform.hmcts.net}/health
+      uri: ${FEES_REGISTER_API_URL:http://127.0.0.1:8991}/health
       response: '"status":"UP"'
 
 spring:
@@ -112,7 +112,7 @@ ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
 fees-register:
   api:
-    url: ${FEES_REGISTER_API_URL:http://fees-register-api.platform.hmcts.net}
+    url: ${FEES_REGISTER_API_URL:http://127.0.0.1:8991}
   fees:
     oralFee:
       channel: default
@@ -120,13 +120,6 @@ fees-register:
       jurisdiction1: tribunal
       jurisdiction2: immigration and asylum chamber
       keyword: ABC
-      service: other
-    paperFee:
-      channel: default
-      event: issue
-      jurisdiction1: tribunal
-      jurisdiction2: immigration and asylum chamber
-      keyword: XYZ
       service: other
 
 security:

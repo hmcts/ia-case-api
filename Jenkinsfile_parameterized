@@ -74,6 +74,7 @@ withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.E
     env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.FEES_REGISTER_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     
     loadVaultSecrets(secrets)
 

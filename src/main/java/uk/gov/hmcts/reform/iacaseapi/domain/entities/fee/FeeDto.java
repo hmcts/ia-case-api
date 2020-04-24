@@ -4,9 +4,7 @@ import static java.util.Objects.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
-import lombok.Builder;
 
-@Builder
 public class FeeDto {
 
     @JsonProperty("calculated_amount")
@@ -14,6 +12,9 @@ public class FeeDto {
     private String description;
     private Integer version;
     private String code;
+
+    public FeeDto() {
+    }
 
     public FeeDto(BigDecimal calculatedAmount, String description, Integer version, String code) {
         requireNonNull(calculatedAmount);

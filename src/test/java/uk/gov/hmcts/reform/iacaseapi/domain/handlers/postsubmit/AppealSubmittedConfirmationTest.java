@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -43,6 +45,7 @@ public class AppealSubmittedConfirmationTest {
     @Test
     public void should_return_standard_confirmation_when_not_out_of_time() {
 
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -66,8 +69,39 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
+    public void should_return_confirmation_for_appeal_type_EA() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+                appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+                callbackResponse.getConfirmationHeader().get(),
+                containsString("submitted")
+        );
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get(),
+                containsString("What happens next")
+        );
+        assertThat(
+                callbackResponse.getConfirmationBody().get(),
+                containsString("If there is any outstanding fee, you will need to pay this within 14 days.")
+        );
+    }
+
+    @Test
     public void should_return_out_of_time_confirmation_when_out_of_time() {
 
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -98,6 +132,17 @@ public class AppealSubmittedConfirmationTest {
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+
+    public void handling_should_throw_if_appeal_type_is_not_present() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("AppealType is not present");
     }
 
     @Test

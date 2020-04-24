@@ -37,7 +37,7 @@ public class FeeServiceTest {
 
         when(feesConfiguration.getFees()).thenReturn(getFeeTypes());
 
-        LookupReferenceData lookupReferenceData = feesConfiguration.getFees().get(FeeType.ORAL_FEE.name());
+        LookupReferenceData lookupReferenceData = feesConfiguration.getFees().get(FeeType.ORAL_FEE.toString());
 
         when(feesRegisterApi.findFee(
             lookupReferenceData.getChannel(),
@@ -59,6 +59,15 @@ public class FeeServiceTest {
                 lookupReferenceData.getKeyword(), lookupReferenceData.getService());
     }
 
+    @Test
+    public void should_throw_when_fee_register_fails() {
+
+        when(feesConfiguration.getFees()).thenReturn(getFeeTypes());
+
+        assertThatThrownBy(() -> feeService.getFee(FeeType.ORAL_FEE))
+                .isExactlyInstanceOf(NullPointerException.class);
+    }
+
     private Map<String, LookupReferenceData> getFeeTypes() {
 
         final Map<String, LookupReferenceData> feeTypeMap = new HashMap<>();
@@ -70,7 +79,7 @@ public class FeeServiceTest {
         lookupReferenceData.setJurisdiction2("immigration and asylum chamber");
         lookupReferenceData.setKeyword("ABC");
         lookupReferenceData.setService("other");
-        feeTypeMap.put(FeeType.ORAL_FEE.name(), lookupReferenceData);
+        feeTypeMap.put(FeeType.ORAL_FEE.toString(), lookupReferenceData);
 
         return feeTypeMap;
     }

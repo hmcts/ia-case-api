@@ -42,7 +42,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-                && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

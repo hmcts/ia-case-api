@@ -630,7 +630,17 @@ public enum AsylumCaseFieldDefinition {
     TIME_EXTENSIONS(
             "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
     REVIEW_TIME_EXTENSION_REQUIRED(
-            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {})
+            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+
+    FEE_AMOUNT_FOR_DISPLAY(
+        "feeAmountForDisplay", new TypeReference<String>(){}),
+
+    APPEAL_FEE_DESC(
+            "appealFeeDesc", new TypeReference<String>(){}),
+
+    PAYMENT_STATUS(
+            "paymentStatus", new TypeReference<String>(){}),
+
     ;
 
     private final String value;

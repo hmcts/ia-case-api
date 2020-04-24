@@ -22,35 +22,26 @@ public class FeeService {
     public FeeDto getFee(FeeType feeType) throws FeignException {
 
         FeeResponse feeResponse = makeRequest(feeType);
-        return FeeDto.builder()
-            .calculatedAmount(feeResponse.getAmount())
-            .description(feeResponse.getDescription())
-            .version(feeResponse.getVersion())
-            .code(feeResponse.getCode())
-            .build();
+        return new FeeDto(feeResponse.getAmount(),
+                feeResponse.getDescription(),
+                feeResponse.getVersion(),
+                feeResponse.getCode());
     }
 
     private FeeResponse makeRequest(FeeType feeType) throws FeesRegisterException {
 
-        try {
-            LookupReferenceData lookupReferenceData = feesConfiguration.getFees().get(feeType.name());
+        LookupReferenceData lookupReferenceData = feesConfiguration.getFees().get(feeType.toString());
 
-            FeeResponse feeResponse = feesRegisterApi.findFee(
-                lookupReferenceData.getChannel(),
-                lookupReferenceData.getEvent(),
-                lookupReferenceData.getJurisdiction1(),
+        FeeResponse feeResponse = feesRegisterApi.findFee(
+            lookupReferenceData.getChannel(),
+            lookupReferenceData.getEvent(),
+            lookupReferenceData.getJurisdiction1(),
                 lookupReferenceData.getJurisdiction2(),
                 lookupReferenceData.getKeyword(),
                 lookupReferenceData.getService()
-            );
+        );
 
-            log.debug("Fee-register response {}", feeResponse);
-
-            return feeResponse;
-        } catch (FeignException ex) {
-            log.error("Fee-register response error message: {}", ex);
-
-            throw new FeesRegisterException("Error in retrieving fee from fees-register", ex);
-        }
+        log.debug("Fee-register response {}", feeResponse);
+        return feeResponse;
     }
 }

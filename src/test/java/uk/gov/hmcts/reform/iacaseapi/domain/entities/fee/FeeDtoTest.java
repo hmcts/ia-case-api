@@ -35,4 +35,20 @@ public class FeeDtoTest {
         assertThat(feeDto.getVersion()).isEqualTo(version);
         assertThat(feeDto.getCode()).isEqualTo(code);
     }
+
+    @Test
+    public void should_not_allow_null_values() {
+
+        assertThatThrownBy(() -> new FeeDto(null, description, version, code))
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> new FeeDto(calculatedAmount, null, version, code))
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> new FeeDto(calculatedAmount, description, null, code))
+                .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> new FeeDto(calculatedAmount, description, version, null))
+                .isExactlyInstanceOf(NullPointerException.class);
+    }
 }

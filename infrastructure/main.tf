@@ -37,6 +37,11 @@ data "azurerm_key_vault_secret" "case_notifications_api_url" {
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "fees_register_api_url" {
+  name      = "fees-register-api-url"
+  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "docmosis_enabled" {
   name      = "docmosis-enabled"
   vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
@@ -195,6 +200,7 @@ module "ia_case_api" {
     IA_DOCMOSIS_ENABLED           = "${data.azurerm_key_vault_secret.docmosis_enabled.value}"
     IA_EM_STITCHING_ENABLED       = "${data.azurerm_key_vault_secret.em_stitching_enabled.value}"
     IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED = "${data.azurerm_key_vault_secret.submit_hearing_requirements_enabled.value}"
+    IA_FEE_REGISTER_API_URL       = "${data.azurerm_key_vault_secret.fees_register_api_url}"
 
     IA_SYSTEM_USERNAME            = "${data.azurerm_key_vault_secret.system_username.value}"
     IA_SYSTEM_PASSWORD            = "${data.azurerm_key_vault_secret.system_password.value}"

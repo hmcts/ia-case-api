@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.fee;
 
 import static java.util.Objects.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class FeeResponse {
 
     private String code;
@@ -15,6 +13,9 @@ public class FeeResponse {
 
     @JsonProperty(value = "fee_amount")
     private BigDecimal amount;
+
+    public FeeResponse() {
+    }
 
     public FeeResponse(String code, String description, Integer version, BigDecimal amount) {
         requireNonNull(code);
