@@ -65,6 +65,10 @@ public class AppealGroundsForDisplayFormatterTest {
         when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGroundsProtection));
         when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.of(appealGroundsHumanRights));
         when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGroundsRevocation));
+        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -85,6 +89,10 @@ public class AppealGroundsForDisplayFormatterTest {
         when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

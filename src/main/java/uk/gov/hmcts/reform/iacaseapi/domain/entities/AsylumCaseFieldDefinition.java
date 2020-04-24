@@ -33,6 +33,15 @@ public enum AsylumCaseFieldDefinition {
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
 
+    CONTACT_PREFERENCE(
+        "contactPreference", new TypeReference<ContactPreference>(){}),
+
+    EMAIL(
+        "email", new TypeReference<String>(){}),
+
+    MOBILE_NUMBER(
+        "mobileNumber", new TypeReference<String>(){}),
+
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
@@ -44,6 +53,19 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_GROUNDS_REVOCATION(
         "appealGroundsRevocation", new TypeReference<CheckValues<String>>(){}),
+
+    APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL(
+        "appealGroundsHumanRightsRefusal", new TypeReference<CheckValues<String>>(){}),
+
+    APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS(
+        "appealGroundsDeprivationHumanRights", new TypeReference<CheckValues<String>>(){}),
+
+    APPEAL_GROUNDS_DEPRIVATION(
+        "appealGroundsDeprivation", new TypeReference<CheckValues<String>>(){}),
+
+    APPEAL_GROUNDS_EU_REFUSAL(
+        "appealGroundsEuRefusal", new TypeReference<CheckValues<String>>(){}),
+
 
     HAS_OTHER_APPEALS(
         "hasOtherAppeals", new TypeReference<String>(){}),

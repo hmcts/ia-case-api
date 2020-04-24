@@ -22,7 +22,7 @@
     "status": 200,
     "errors": [ "You cannot use this function to send a direction to an appellant in person." ],
     "caseData": {
-      "template": "minimal-appeal-submitted.json"
+      "template": "minimal-aip-appeal-submitted.json"
     }
   }
 }

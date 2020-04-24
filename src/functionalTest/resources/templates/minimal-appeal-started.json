@@ -14,6 +14,9 @@
     }
   ],
   "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "mobileNumber": "07977111111",
   "appealType": "protection",
   "appealGroundsProtection": {
     "values": [
