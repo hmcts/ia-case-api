@@ -48,7 +48,7 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
                 "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
-                       + "Next steps\n"
+                       + "# Next steps\n\n"
                        + "You have 5 days to review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\n"
                        + "If you do not respond within 5 days, the case will automatically go to hearing."
         );

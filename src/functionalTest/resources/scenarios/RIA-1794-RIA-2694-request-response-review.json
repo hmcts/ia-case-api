@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "sendDirectionExplanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\nNext steps\nYou have 5 days to review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
+          "sendDirectionExplanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n# Next steps\n\nYou have 5 days to review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
           "sendDirectionDateDue": "{$TODAY+5}",
           "notificationsSent": [],
           "uploadAdditionalEvidenceActionAvailable": "Yes"
@@ -28,7 +28,7 @@
           {
             "id": "1",
             "value": {
-              "explanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\nNext steps\nYou have 5 days to review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
+              "explanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n# Next steps\n\nYou have 5 days to review the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\nIf you do not respond within 5 days, the case will automatically go to hearing.",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",
