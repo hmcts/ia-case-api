@@ -38,9 +38,6 @@ public enum AsylumCaseFieldDefinition {
     MOBILE_NUMBER(
         "mobileNumber", new TypeReference<String>(){}),
 
-    SUBSCRIPTIONS(
-        "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
-
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
