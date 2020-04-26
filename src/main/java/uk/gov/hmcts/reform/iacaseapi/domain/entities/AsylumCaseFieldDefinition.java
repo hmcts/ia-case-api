@@ -684,6 +684,11 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION(
         "caseFlagUnaccompaniedMinorAdditionalInformation", new TypeReference<String>() {}),
+
+    IS_APPELLANT_MINOR(
+        "isAppellantMinor", new TypeReference<YesOrNo>() {}),
+    APPELLANT_DATE_OF_BIRTH(
+        "appellantDateOfBirth", new TypeReference<String>() {})
     ;
 
     private final String value;
