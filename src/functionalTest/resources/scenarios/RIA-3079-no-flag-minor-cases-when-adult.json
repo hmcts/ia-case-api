@@ -1,0 +1,30 @@
+{
+  "description": "RIA-3079: Flag minor cases when appellant is an adult",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1122,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantDateOfBirth": "1979-02-15"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantDateOfBirth": "1979-02-15",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+

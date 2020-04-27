@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3079: Flag minor cases when edit appeal after submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "editAppealAfterSubmit",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantDateOfBirth": "{$TODAY}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAppellantMinor": "Yes",
+        "appellantDateOfBirth": "{$TODAY}",
+        "sendDirectionActionAvailable": "Yes"
+      }
+    }
+  }
+}
+
