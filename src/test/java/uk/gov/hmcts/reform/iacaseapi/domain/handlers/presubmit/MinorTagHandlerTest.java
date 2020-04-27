@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_MINOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -72,8 +75,9 @@ public class MinorTagHandlerTest {
 
         private static List<CanHandleTestScenario> builder() {
             List<CanHandleTestScenario> scenarios = new ArrayList<>();
+            List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
             for (Event event : Event.values()) {
-                if (event.equals(Event.SUBMIT_APPEAL)) {
+                if (validEvents.contains(event)) {
                     for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                         if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
                             buildScenarios(scenarios, event, ABOUT_TO_SUBMIT, true);
@@ -103,7 +107,7 @@ public class MinorTagHandlerTest {
     @Test
     @Parameters(method = "generateAppellantDobScenarios")
     public void given_appellant_dob_should_tag_case_as_minor_or_not(AppellantDobScenario scenario) {
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
         AsylumCase asylumCase = new AsylumCase();
