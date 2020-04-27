@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_MINOR;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDate;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import junitparams.converters.Nullable;
 import lombok.Value;
 import org.junit.Rule;
 import org.junit.Test;
@@ -92,10 +92,8 @@ public class MinorTagHandlerTest {
 
         private static void buildScenarios(List<CanHandleTestScenario> scenarios, Event event,
                                            PreSubmitCallbackStage callbackStage, boolean canHandleExpected) {
-            String adultDob = LocalDate.of(1979, 2, 1).toString();
-            String minorDob = LocalDate.now().toString();
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, adultDob, canHandleExpected));
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, minorDob, canHandleExpected));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_ADULT, canHandleExpected));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_MINOR, canHandleExpected));
             scenarios.add(new CanHandleTestScenario(callbackStage, event, "", false));
             scenarios.add(new CanHandleTestScenario(callbackStage, event, null, false));
         }
@@ -104,7 +102,7 @@ public class MinorTagHandlerTest {
 
     @Test
     @Parameters(method = "generateAppellantDobScenarios")
-    public void given_appellant_is_minor_should_tag_case_as_minor(AppellantDobScenario scenario) {
+    public void given_appellant_dob_should_tag_case_as_minor_or_not(AppellantDobScenario scenario) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -131,21 +129,12 @@ public class MinorTagHandlerTest {
 
         private static List<AppellantDobScenario> builder() {
             List<AppellantDobScenario> scenarios = new ArrayList<>();
-
-            LocalDate appellantAdult = LocalDate.of(1979, 2, 1);
-            scenarios.add(new AppellantDobScenario(appellantAdult.toString(), YesOrNo.NO));
-
-            LocalDate appellantMinor = LocalDate.now();
-            scenarios.add(new AppellantDobScenario(appellantMinor.toString(), YesOrNo.YES));
-
-            scenarios.add(new AppellantDobScenario(null, YesOrNo.NO));
-            scenarios.add(new AppellantDobScenario("", YesOrNo.NO));
-
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, YesOrNo.NO));
+            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, YesOrNo.YES));
             return scenarios;
         }
 
     }
-
 
     @Test
     public void should_not_allow_null_arguments() {
@@ -167,8 +156,23 @@ public class MinorTagHandlerTest {
     }
 
     @Test
-    public void given_canHandled_is_false_should_throw_exception() {
-        assertThatThrownBy(() -> minorTagHandler.handle(ABOUT_TO_START, callback))
+    @Parameters({
+        "null, ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
+        ",ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
+        "1979-02-15,ABOUT_TO_START, SUBMIT_APPEAL",
+        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL",
+    })
+    public void given_canHandled_is_false_should_throw_exception(@Nullable String appellantDob,
+                                                                 PreSubmitCallbackStage callbackStage,
+                                                                 Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPELLANT_DATE_OF_BIRTH, appellantDob);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> minorTagHandler.handle(callbackStage, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
