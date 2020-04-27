@@ -129,12 +129,15 @@ public class MinorTagHandlerTest {
     @Value
     private static class AppellantDobScenario {
         String appellantDob;
+        Event event;
         YesOrNo isAppellantMinorExpected;
 
         private static List<AppellantDobScenario> builder() {
             List<AppellantDobScenario> scenarios = new ArrayList<>();
-            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, YesOrNo.NO));
-            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, SUBMIT_APPEAL, YesOrNo.NO));
+            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, SUBMIT_APPEAL, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.NO));
             return scenarios;
         }
 
@@ -162,9 +165,12 @@ public class MinorTagHandlerTest {
     @Test
     @Parameters({
         "null, ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
+        "null, ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
         ",ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
+        ",ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
         "1979-02-15,ABOUT_TO_START, SUBMIT_APPEAL",
-        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL",
+        "1979-02-15,ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
+        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL"
     })
     public void given_canHandled_is_false_should_throw_exception(@Nullable String appellantDob,
                                                                  PreSubmitCallbackStage callbackStage,
