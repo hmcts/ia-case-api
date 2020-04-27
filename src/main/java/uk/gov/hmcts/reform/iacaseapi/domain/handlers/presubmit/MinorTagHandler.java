@@ -33,7 +33,7 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
         List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
         return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent())
-            && isAppellantDobValid(callback.getCaseDetails().getCaseData());
+            && isAppellantMinor(callback.getCaseDetails().getCaseData());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, isAppellantMinor(appellantDob));
+        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -68,7 +68,11 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         return true;
     }
 
-    private YesOrNo isAppellantMinor(LocalDate appellantDob) {
-        return Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+    private boolean isAppellantMinor(AsylumCase asylumCase) {
+        YesOrNo result = YesOrNo.NO;
+        if (isAppellantDobValid(asylumCase)) {
+            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+        }
+        return result.equals(YesOrNo.YES);
     }
 }

@@ -95,9 +95,9 @@ public class MinorTagHandlerTest {
         }
 
         private static void buildScenarios(List<CanHandleTestScenario> scenarios, Event event,
-                                           PreSubmitCallbackStage callbackStage, boolean canHandleExpected) {
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_ADULT, canHandleExpected));
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_MINOR, canHandleExpected));
+                                           PreSubmitCallbackStage callbackStage, boolean canHandledExpected) {
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_ADULT, false));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_MINOR, canHandledExpected));
             scenarios.add(new CanHandleTestScenario(callbackStage, event, "", false));
             scenarios.add(new CanHandleTestScenario(callbackStage, event, null, false));
         }
@@ -106,8 +106,8 @@ public class MinorTagHandlerTest {
 
     @Test
     @Parameters(method = "generateAppellantDobScenarios")
-    public void given_appellant_dob_should_tag_case_as_minor_or_not(AppellantDobScenario scenario) {
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+    public void given_minor_appellant_should_tag_case_as_minor(AppellantDobScenario scenario) {
+        when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
         AsylumCase asylumCase = new AsylumCase();
@@ -117,7 +117,7 @@ public class MinorTagHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> actual = minorTagHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         YesOrNo isAppellantMinor = actual.getData().read(IS_APPELLANT_MINOR, YesOrNo.class)
-            .orElse(YesOrNo.NO);
+            .orElse(null);
 
         assertThat(isAppellantMinor).isEqualTo(scenario.isAppellantMinorExpected);
     }
@@ -134,10 +134,8 @@ public class MinorTagHandlerTest {
 
         private static List<AppellantDobScenario> builder() {
             List<AppellantDobScenario> scenarios = new ArrayList<>();
-            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, SUBMIT_APPEAL, YesOrNo.NO));
             scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, SUBMIT_APPEAL, YesOrNo.YES));
             scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.YES));
-            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.NO));
             return scenarios;
         }
 
@@ -170,11 +168,15 @@ public class MinorTagHandlerTest {
         ",ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
         "1979-02-15,ABOUT_TO_START, SUBMIT_APPEAL",
         "1979-02-15,ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
-        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL"
+        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL",
+        "1979-02-15,ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
+        "1979-02-15,ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
     })
-    public void given_canHandled_is_false_should_throw_exception(@Nullable String appellantDob,
-                                                                 PreSubmitCallbackStage callbackStage,
-                                                                 Event event) {
+    public void given_adult_appellant_or_not_valid_dob_or_wrong_event_or_wrong_callback_should_throw_exception(
+        @Nullable String appellantDob,
+        PreSubmitCallbackStage callbackStage,
+        Event event) {
+
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
