@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_MINOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -49,6 +48,11 @@ public class MinorTagHandlerTest {
     @Parameters(method = "generateCanHandleTestScenario")
     public void it_can_handle_callback(CanHandleTestScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPELLANT_DATE_OF_BIRTH, scenario.appellantDob);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         boolean canHandleActual = minorTagHandler.canHandle(scenario.callbackStage, callback);
 
@@ -63,22 +67,37 @@ public class MinorTagHandlerTest {
     private static class CanHandleTestScenario {
         PreSubmitCallbackStage callbackStage;
         Event event;
+        String appellantDob;
         boolean canHandledExpected;
 
         private static List<CanHandleTestScenario> builder() {
             List<CanHandleTestScenario> scenarios = new ArrayList<>();
-            for (Event e : Event.values()) {
-                if (e.equals(Event.SUBMIT_APPEAL)) {
-                    scenarios.add(new CanHandleTestScenario(ABOUT_TO_SUBMIT, e, true));
-                    scenarios.add(new CanHandleTestScenario(ABOUT_TO_START, e, false));
-                    scenarios.add(new CanHandleTestScenario(MID_EVENT, e, false));
+            for (Event event : Event.values()) {
+                if (event.equals(Event.SUBMIT_APPEAL)) {
+                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                        if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
+                            buildScenarios(scenarios, event, ABOUT_TO_SUBMIT, true);
+                        } else {
+                            buildScenarios(scenarios, event, callbackStage, false);
+                        }
+                    }
                 } else {
-                    scenarios.add(new CanHandleTestScenario(ABOUT_TO_SUBMIT, e, false));
-                    scenarios.add(new CanHandleTestScenario(ABOUT_TO_START, e, false));
-                    scenarios.add(new CanHandleTestScenario(MID_EVENT, e, false));
+                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                        buildScenarios(scenarios, event, callbackStage, false);
+                    }
                 }
             }
             return scenarios;
+        }
+
+        private static void buildScenarios(List<CanHandleTestScenario> scenarios, Event event,
+                                           PreSubmitCallbackStage callbackStage, boolean canHandleExpected) {
+            String adultDob = LocalDate.of(1979, 2, 1).toString();
+            String minorDob = LocalDate.now().toString();
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, adultDob, canHandleExpected));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, minorDob, canHandleExpected));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, "", false));
+            scenarios.add(new CanHandleTestScenario(callbackStage, event, null, false));
         }
 
     }

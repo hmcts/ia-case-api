@@ -20,11 +20,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 @Slf4j
 public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private LocalDate appellantDob;
+
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        return ABOUT_TO_SUBMIT.equals(callbackStage) && Event.SUBMIT_APPEAL.equals(callback.getEvent());
+        return ABOUT_TO_SUBMIT.equals(callbackStage) && Event.SUBMIT_APPEAL.equals(callback.getEvent())
+            && isAppellantDobValid(callback.getCaseDetails().getCaseData());
     }
 
     @Override
@@ -35,21 +39,28 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, isAppellantMinor(getAppellantDob(asylumCase)));
+        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, isAppellantMinor(appellantDob));
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private LocalDate getAppellantDob(AsylumCase asylumCase) {
-        String adultAppellantFallback = "1979-02-15";
+    private boolean isAppellantDobValid(AsylumCase asylumCase) {
         String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
-            .orElse(adultAppellantFallback);
+            .orElse(null);
+        if (appellantDobAsString != null) {
+            return isAppellantDobAValidDate(appellantDobAsString);
+        }
+        return false;
+    }
+
+    private boolean isAppellantDobAValidDate(String appellantDobAsString) {
         try {
-            return LocalDate.parse(appellantDobAsString);
+            appellantDob = LocalDate.parse(appellantDobAsString);
         } catch (Exception e) {
             log.warn("Error when parsing Appellant dob: ", e);
-            return LocalDate.parse(adultAppellantFallback);
+            return false;
         }
+        return true;
     }
 
     private YesOrNo isAppellantMinor(LocalDate appellantDob) {
