@@ -27,17 +27,17 @@ public class RemoveFlagPreparerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private CaseFlag expectedCaseFlag;
 
     private List<IdValue<CaseFlag>> expectedList;
     private RemoveFlagPreparer removeFlagPreparer;
+    private final CaseFlag expectedCaseFlag =
+        new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
 
     @Before
     public void setUp() {
         when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(expectedCaseFlag.getCaseFlagType()).thenReturn(CaseFlagType.COMPLEX_CASE);
 
         removeFlagPreparer = spy(RemoveFlagPreparer.class);
         expectedList = Collections.singletonList(new IdValue<>("1", expectedCaseFlag));
