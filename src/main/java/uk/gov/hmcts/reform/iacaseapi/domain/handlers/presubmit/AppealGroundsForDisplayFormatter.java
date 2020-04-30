@@ -10,6 +10,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -25,7 +26,9 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && (callback.getEvent() == Event.START_APPEAL
+                   || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -83,6 +86,14 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
             APPEAL_GROUNDS_FOR_DISPLAY,
             new ArrayList<>(appealGrounds)
         );
+
+        asylumCase.clear(APPEAL_GROUNDS_PROTECTION);
+        asylumCase.clear(APPEAL_GROUNDS_HUMAN_RIGHTS);
+        asylumCase.clear(APPEAL_GROUNDS_REVOCATION);
+        asylumCase.clear(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
+        asylumCase.clear(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
+        asylumCase.clear(APPEAL_GROUNDS_DEPRIVATION);
+        asylumCase.clear(APPEAL_GROUNDS_EU_REFUSAL);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
