@@ -69,10 +69,10 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
 
     private Function<IdValue<TimeExtension>, PreSubmitCallbackResponse<AsylumCase>> setReviewTimeExtensionValues(AsylumCase asylumCase) {
         Optional<List<IdValue<Direction>>> directions = asylumCase.read(DIRECTIONS);
+        //todo this needs to work for a number of states
         Optional<IdValue<Direction>> directionBeingUpdated = directions.orElse(emptyList()).stream()
-            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL)
-                //todo this needs to work for a number of states
-            ).findFirst();
+            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL))
+            .findFirst();
 
         return timeExtensionIdValue -> {
             asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestDate());
