@@ -7,7 +7,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
 
     public ReviewTimeExtensionsHandler() {
+        //No-op constructor
     }
 
 
@@ -41,7 +43,6 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
-        System.out.println("In review time extension handler");
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -53,7 +54,8 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             .stream()
             .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL)).findFirst();
 
-        String currentDueDate = directionBeingUpdated.get().getValue().getDateDue();
+
+        String currentDueDate = getDirectionDueDate(directionBeingUpdated);
         LocalDate dateFormatted = null;
         dateFormatted = LocalDate.parse(decisionOutcomeDueDate);
         LocalDate currentDateFormatted = LocalDate.parse(currentDueDate);
@@ -137,6 +139,13 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
     private String getTimeExtensionDecisionReason(AsylumCase asylumCase) {
         Optional<String> read = asylumCase.read(REVIEW_TIME_EXTENSION_DECISION_REASON);
         return read.orElseThrow(() -> new IllegalArgumentException("Cannot handle " + Event.REVIEW_TIME_EXTENSION + " without a decision reason"));
+    }
+
+    private String getDirectionDueDate(Optional<IdValue<Direction>> direction) {
+        if (!direction.isPresent()) {
+            throw new IllegalArgumentException("Could not find direction due date");
+        }
+        return direction.get().getValue().getDateDue();
     }
 
     private String getTimeExtensionDueDate(AsylumCase asylumCase) {
