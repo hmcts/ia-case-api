@@ -56,7 +56,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
 
         String currentDueDate = getDirectionDueDate(directionBeingUpdated);
-        LocalDate dateFormatted = null;
+        LocalDate dateFormatted;
         dateFormatted = LocalDate.parse(decisionOutcomeDueDate);
         LocalDate currentDateFormatted = LocalDate.parse(currentDueDate);
 
@@ -105,7 +105,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             maybeDirections.orElse(emptyList())
                 .stream()
                 .map(idValue -> {
-                    if (String.valueOf(maybeDirections.orElse(emptyList()).size()).equals(idValue.getId())) {
+                    if (directionBeingUpdated.get().getId().equals(idValue.getId())) {
                         return new IdValue<>(
                             idValue.getId(),
                             new Direction(
