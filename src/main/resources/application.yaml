@@ -213,6 +213,7 @@ security:
       - "editReasonsForAppeal"
       - "submitReasonsForAppeal"
       - "submitClarifyingAnswers"
+      - "submitTimeExtension"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
