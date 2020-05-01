@@ -63,6 +63,7 @@ public enum Event {
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
+    SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

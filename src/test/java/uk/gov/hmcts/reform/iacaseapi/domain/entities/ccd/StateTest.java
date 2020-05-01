@@ -26,6 +26,8 @@ public class StateTest {
         assertEquals("appealTakenOffline", State.APPEAL_TAKEN_OFFLINE.toString());
         assertEquals("ftpaSubmitted", State.FTPA_SUBMITTED.toString());
         assertEquals("ftpaDecided", State.FTPA_DECIDED.toString());
+        assertEquals("awaitingClarifyingQuestionsAnswers", State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS.toString());
+        assertEquals("clarifyingQuestionsAnswersSubmitted", State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
     }
 

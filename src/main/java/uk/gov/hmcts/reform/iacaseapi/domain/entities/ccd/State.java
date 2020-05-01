@@ -23,10 +23,10 @@ public enum State {
     APPEAL_TAKEN_OFFLINE("appealTakenOffline"),
     AWAITING_REASONS_FOR_APPEAL("awaitingReasonsForAppeal"),
     REASONS_FOR_APPEAL_SUBMITTED("reasonsForAppealSubmitted"),
-    AWAITING_CLARIFYING_ANSWERS("awaitingClarifyingAnswers"),
-    CLARIFYING_ANSWERS_SUBMITTED("clarifyingAnswersSubmitted"),
     FTPA_SUBMITTED("ftpaSubmitted"),
     FTPA_DECIDED("ftpaDecided"),
+    AWAITING_CLARIFYING_QUESTIONS_ANSWERS("awaitingClarifyingQuestionsAnswers"),
+    CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED("clarifyingQuestionsAnswersSubmitted"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
