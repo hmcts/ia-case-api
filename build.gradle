@@ -19,7 +19,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '5.1.0'
     id 'org.sonarqube' version '2.6.2'
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'au.com.dius.pact' version '3.5.24'
 }
 
@@ -256,6 +256,11 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
+    constraints {
+        implementation('org.apache.logging.log4j:log4j-to-slf4j:2.13.2') {
+            because 'CVE-2020-9488, CVE-2020-9488'
+        }
+    }
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0.pr3'
