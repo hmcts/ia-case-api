@@ -104,7 +104,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             maybeDirections.orElse(emptyList())
                 .stream()
                 .map(idValue -> {
-                    if (String.valueOf(maybeDirections.orElse(emptyList()).size()).equals(idValue.getId())) {
+                    if (directionBeingUpdated.isPresent() && directionBeingUpdated.get().getId().equals(idValue.getId())) {
                         return new IdValue<>(
                             idValue.getId(),
                             new Direction(
