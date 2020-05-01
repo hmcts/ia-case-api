@@ -71,6 +71,6 @@ public class EventTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(61, Event.values().length);
+        assertEquals(62, Event.values().length);
     }
 }
