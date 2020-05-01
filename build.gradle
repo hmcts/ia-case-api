@@ -256,11 +256,12 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
-    constraints {
-        compile('org.apache.logging.log4j:log4j-to-slf4j:2.13.2') {
-            because 'CVE-2020-9488, CVE-2020-9488'
-        }
+    
+    compile('org.apache.logging.log4j:log4j-to-slf4j:2.13.2') {
+        force = true
+        because 'CVE-2020-9488, CVE-2020-9488'
     }
+
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0.pr3'
