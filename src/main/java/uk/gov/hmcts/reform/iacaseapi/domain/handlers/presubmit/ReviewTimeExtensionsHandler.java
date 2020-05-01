@@ -49,6 +49,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         String decisionOutcomeDueDate = getTimeExtensionDueDate(asylumCase);
+
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
         Optional<IdValue<Direction>> directionBeingUpdated = maybeDirections.orElse(emptyList())
             .stream()
@@ -56,10 +57,15 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
 
         String currentDueDate = getDirectionDueDate(directionBeingUpdated);
-        LocalDate newDueDate = LocalDate.parse(decisionOutcomeDueDate);
-        LocalDate currentDateFormatted = LocalDate.parse(currentDueDate);
 
-        if (newDueDate != null && !newDueDate.isEqual(currentDateFormatted) && !newDueDate.isAfter(currentDateFormatted)) {
+        String updatedDecisionDueDate = decisionOutcomeDueDate == null
+            ? currentDueDate
+            : decisionOutcomeDueDate;
+
+        LocalDate currentDueDateFormatted = LocalDate.parse(currentDueDate);
+        LocalDate updatedDecisionDueDateFormatted = LocalDate.parse(updatedDecisionDueDate);
+
+        if (!updatedDecisionDueDateFormatted.isEqual(currentDueDateFormatted) && !updatedDecisionDueDateFormatted.isAfter(currentDueDateFormatted)) {
             PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The new direction due date must be after the previous direction due date");
             return asylumCasePreSubmitCallbackResponse;
@@ -72,7 +78,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
                 TimeExtensionDecision timeExtensionDecision = getTimeExtensionDecision(asylumCase);
                 TimeExtensionStatus timeExtensionStatus = timeExtensionDecision == TimeExtensionDecision.REFUSED ? REFUSED : GRANTED;
-                if (timeExtensionStatus.equals(GRANTED)) {
+                if (currentState == timeExtensionValue.getState()) {
                     return new IdValue<>(timeExtension.getId(), new TimeExtension(
                         timeExtensionValue.getRequestDate(),
                         timeExtensionValue.getReason(),
@@ -81,19 +87,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
                         timeExtensionValue.getEvidence(),
                         timeExtensionDecision,
                         getTimeExtensionDecisionReason(asylumCase),
-                        decisionOutcomeDueDate
-                    ));
-
-                } else if (currentState == timeExtensionValue.getState()) {
-                    return new IdValue<>(timeExtension.getId(), new TimeExtension(
-                        timeExtensionValue.getRequestDate(),
-                        timeExtensionValue.getReason(),
-                        timeExtensionValue.getState(),
-                        timeExtensionStatus,
-                        timeExtensionValue.getEvidence(),
-                        timeExtensionDecision,
-                        getTimeExtensionDecisionReason(asylumCase),
-                        currentDueDate
+                        updatedDecisionDueDate
                     ));
                 }
             }
@@ -110,7 +104,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
                             new Direction(
                                 idValue.getValue().getExplanation(),
                                 idValue.getValue().getParties(),
-                                decisionOutcomeDueDate,
+                                updatedDecisionDueDate,
                                 idValue.getValue().getDateSent(),
                                 idValue.getValue().getTag(),
                                 DateAppender.appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
