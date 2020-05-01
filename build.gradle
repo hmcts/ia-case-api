@@ -261,8 +261,12 @@ dependencies {
         force = true
         because 'CVE-2020-9488, CVE-2020-9488'
     }
-
-
+    
+    compile('org.apache.logging.log4j:log4j-api:2.13.2') {
+        force = true
+        because 'CVE-2020-9488, CVE-2020-9488'
+    }
+    
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0.pr3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0.pr3'
