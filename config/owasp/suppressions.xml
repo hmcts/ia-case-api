@@ -57,4 +57,10 @@
 	   ]]></notes>
     <cve>CVE-2019-3795</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+         Improper validation of certificate with host mismatch in Apache Log4j SMTP appender. Only affects SMTPS which we do not use in this project.
+         ]]></notes>
+    <cve>CVE-2020-9488</cve>
+  </suppress>
 </suppressions>
