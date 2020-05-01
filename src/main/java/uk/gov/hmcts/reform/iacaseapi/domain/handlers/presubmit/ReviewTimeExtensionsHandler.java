@@ -56,11 +56,10 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
 
         String currentDueDate = getDirectionDueDate(directionBeingUpdated);
-        LocalDate dateFormatted;
-        dateFormatted = LocalDate.parse(decisionOutcomeDueDate);
+        LocalDate newDueDate = LocalDate.parse(decisionOutcomeDueDate);
         LocalDate currentDateFormatted = LocalDate.parse(currentDueDate);
 
-        if (dateFormatted != null && !dateFormatted.isAfter(currentDateFormatted)) {
+        if (newDueDate != null && !newDueDate.isEqual(currentDateFormatted) && !newDueDate.isAfter(currentDateFormatted)) {
             PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The new direction due date must be after the previous direction due date");
             return asylumCasePreSubmitCallbackResponse;
@@ -105,7 +104,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             maybeDirections.orElse(emptyList())
                 .stream()
                 .map(idValue -> {
-                    if (directionBeingUpdated.get().getId().equals(idValue.getId())) {
+                    if (String.valueOf(maybeDirections.orElse(emptyList()).size()).equals(idValue.getId())) {
                         return new IdValue<>(
                             idValue.getId(),
                             new Direction(
