@@ -1,0 +1,39 @@
+{
+  "description": "RIA-1742 Flag case with unacceptable customer behaviour flag",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "flagCaseTypeOfFlag": "unacceptableCustomerBehaviour",
+          "flagCaseAdditionalInformation": "some additional information"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "unacceptableCustomerBehaviour",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "caseFlagUnacceptableCustomerBehaviourExists": "Yes",
+        "caseFlagUnacceptableCustomerBehaviourAdditionalInformation": "some additional information"
+      }
+    }
+  }
+}
