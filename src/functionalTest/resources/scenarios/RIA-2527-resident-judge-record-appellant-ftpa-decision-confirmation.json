@@ -5,13 +5,16 @@
     "credentials": "Judge",
     "input": {
       "eventId": "residentJudgeFtpaDecision",
+      "ftpaAppellantDecisionRemadeRule32": "allowed",
       "state": "ftpaSubmitted",
       "id": 1234,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "ftpaApplicantType": "appellant",
-          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32"
+          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse"
         }
 
       }
