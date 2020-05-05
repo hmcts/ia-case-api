@@ -65,6 +65,7 @@ public enum Event {
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
     FLAG_CASE("flagCase"),
+    REMOVE_FLAG("removeFlag"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

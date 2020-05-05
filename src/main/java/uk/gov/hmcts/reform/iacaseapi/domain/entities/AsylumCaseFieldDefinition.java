@@ -688,7 +688,9 @@ public enum AsylumCaseFieldDefinition {
     IS_APPELLANT_MINOR(
         "isAppellantMinor", new TypeReference<YesOrNo>() {}),
     APPELLANT_DATE_OF_BIRTH(
-        "appellantDateOfBirth", new TypeReference<String>() {})
+        "appellantDateOfBirth", new TypeReference<String>() {}),
+    REMOVE_FLAG_TYPE_OF_FLAG(
+        "removeFlagTypeOfFlag", new TypeReference<DynamicList>() {}),
     ;
 
     private final String value;

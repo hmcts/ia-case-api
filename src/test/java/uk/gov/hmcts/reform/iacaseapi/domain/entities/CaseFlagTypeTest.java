@@ -16,6 +16,15 @@ public class CaseFlagTypeTest {
         assertEquals("unacceptableCustomerBehaviour", CaseFlagType.UNACCEPTABLE_CUSTOMER_BEHAVIOUR.toString());
         assertEquals("unaccompaniedMinor", CaseFlagType.UNACCOMPANIED_MINOR.toString());
         assertEquals("unknown", CaseFlagType.UNKNOWN.toString());
+
+        assertEquals("Anonymity", CaseFlagType.ANONYMITY.getReadableText());
+        assertEquals("Complex case", CaseFlagType.COMPLEX_CASE.getReadableText());
+        assertEquals("Detained immigration appeal", CaseFlagType.DETAINED_IMMIGRATION_APPEAL.getReadableText());
+        assertEquals("Foreign national offender", CaseFlagType.FOREIGN_NATIONAL_OFFENDER.getReadableText());
+        assertEquals("Potentially violent person", CaseFlagType.POTENTIALLY_VIOLENT_PERSON.getReadableText());
+        assertEquals("Unacceptable customer behaviour", CaseFlagType.UNACCEPTABLE_CUSTOMER_BEHAVIOUR.getReadableText());
+        assertEquals("Unaccompanied minor", CaseFlagType.UNACCOMPANIED_MINOR.getReadableText());
+        assertEquals("Unknown", CaseFlagType.UNKNOWN.getReadableText());
     }
 
     @Test

@@ -178,6 +178,7 @@ security:
       - "reviewTimeExtension"
       - "sendDirectionWithQuestions"
       - "flagCase"
+      - "removeFlag"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -186,6 +187,7 @@ security:
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
       - "flagCase"
+      - "removeFlag"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
