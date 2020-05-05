@@ -4,10 +4,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.Builder;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.AsylumCaseForTest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.Builder;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.UserDetailsForTest;
 
 public class GivensBuilder {
 

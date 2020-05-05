@@ -70,6 +70,18 @@ public class MinorTagHandlerTest {
         String appellantDob;
         boolean canHandledExpected;
 
+        public CanHandleTestScenario(
+            PreSubmitCallbackStage callbackStage,
+            Event event,
+            String appellantDob,
+            boolean canHandledExpected
+        ) {
+            this.callbackStage = callbackStage;
+            this.event = event;
+            this.appellantDob = appellantDob;
+            this.canHandledExpected = canHandledExpected;
+        }
+
         private static List<CanHandleTestScenario> builder() {
             List<CanHandleTestScenario> scenarios = new ArrayList<>();
             for (Event event : Event.values()) {
@@ -126,6 +138,14 @@ public class MinorTagHandlerTest {
     private static class AppellantDobScenario {
         String appellantDob;
         YesOrNo isAppellantMinorExpected;
+
+        public AppellantDobScenario(
+            String appellantDob,
+            YesOrNo isAppellantMinorExpected
+        ) {
+            this.appellantDob = appellantDob;
+            this.isAppellantMinorExpected = isAppellantMinorExpected;
+        }
 
         private static List<AppellantDobScenario> builder() {
             List<AppellantDobScenario> scenarios = new ArrayList<>();

@@ -4,13 +4,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
 
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import java.net.URI;
@@ -24,9 +25,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.RefDataIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.PreSubmitCallbackResponseForTest;
+
 
 @Slf4j
 public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
@@ -35,6 +37,8 @@ public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
 
     private static final String CCD_ACCESS_API_PATH =
         "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users";
+
+    private static final org.slf4j.Logger LOG = getLogger(ShareACaseCcdIntegrationTest.class);
 
     private Value value1 = new Value("another-user-id", "email@somewhere.com");
     private Value value2 = new Value(ACTIVE_USER_ID, "email@somewhere.com");
@@ -119,7 +123,7 @@ public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
     public void prepareCcdDataStoreResponse(String path, int expectedStatus) {
 
         String stubPrefix = "/ccd-data-store";
-        log.info("Ccd data store uri being called in test: {}", path);
+        LOG.info("Ccd data store uri being called in test: {}", path);
 
         stubFor(post(urlEqualTo(stubPrefix + path))
             .willReturn(aResponse()
@@ -136,5 +140,4 @@ public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
             .fromPath(CCD_ACCESS_API_PATH)
             .build(idamUserId, "ia", "Asylum", caseId);
     }
-
 }

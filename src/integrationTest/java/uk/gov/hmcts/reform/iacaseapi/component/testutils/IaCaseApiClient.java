@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.CallbackForTest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.PostSubmitCallbackResponseForTest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.PreSubmitCallbackResponseForTest;
 
 @Slf4j
 public class IaCaseApiClient {

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock;
 
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest.PreSubmitCallbackResponseForTestBuilder.someCallbackResponseWith;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.PreSubmitCallbackResponseForTest.PreSubmitCallbackResponseForTestBuilder.someCallbackResponseWith;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,10 +17,10 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.AsylumCaseForTest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.testutils.fixtures.PreSubmitCallbackResponseForTest;
 
 public class DocumentsApiCallbackTransformer extends ResponseDefinitionTransformer {
 
