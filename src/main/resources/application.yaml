@@ -21,6 +21,9 @@ health:
     notificationApi:
       uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
       response: '"status":"UP"'
+    paymentApi:
+      uri: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}/health
+      response: '"status":"UP"'
     professionalApi:
       uri: ${PROF_REF_DATA_URL:http://127.0.0.1:8991}/health
       response: '"status":"UP"'
@@ -72,6 +75,7 @@ featureFlag:
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
+  isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
@@ -103,6 +107,10 @@ documentsApi:
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
+paymentApi:
+  endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
@@ -250,3 +258,8 @@ prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5
+  socketTimeout: 5
