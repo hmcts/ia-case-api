@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+import static com.google.common.base.CaseFormat.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;

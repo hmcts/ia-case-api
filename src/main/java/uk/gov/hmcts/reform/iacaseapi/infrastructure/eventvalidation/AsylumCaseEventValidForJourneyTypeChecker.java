@@ -22,7 +22,8 @@ public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidChec
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.REQUEST_CLARIFYING_ANSWERS,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
-            Event.SEND_DIRECTION_WITH_QUESTIONS
+            Event.SEND_DIRECTION_WITH_QUESTIONS,
+            Event.REQUEST_CMA_REQUIREMENTS
     );
 
     private final List<Event> reppedOnlyEvent = Arrays.asList(

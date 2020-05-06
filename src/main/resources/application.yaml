@@ -179,6 +179,7 @@ security:
       - "sendDirectionWithQuestions"
       - "flagCase"
       - "removeFlag"
+      - "requestCmaRequirements"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"

@@ -68,6 +68,7 @@ public enum Event {
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
     FLAG_CASE("flagCase"),
     REMOVE_FLAG("removeFlag"),
+    REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
