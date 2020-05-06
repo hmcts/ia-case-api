@@ -66,11 +66,9 @@ public class EventTest {
         assertEquals("editTimeExtension", Event.EDIT_TIME_EXTENSION.toString());
         assertEquals("submitTimeExtension", Event.SUBMIT_TIME_EXTENSION.toString());
         assertEquals("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString());
-<<<<<<< HEAD
         assertEquals("sendDirectionWithQuestions", Event.SEND_DIRECTION_WITH_QUESTIONS.toString());
         assertEquals("flagCase", Event.FLAG_CASE.toString());
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
-<<<<<<< HEAD
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString());
         assertEquals("forceCaseToSubmitHearingRequirements", Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
@@ -79,23 +77,10 @@ public class EventTest {
         assertEquals("unknown", Event.UNKNOWN.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
         assertEquals("restoreStateFromAdjourn", Event.RESTORE_STATE_FROM_ADJOURN.toString());
-=======
-=======
-        assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
->>>>>>> add AdjournWithoutDateConfirmation handler
->>>>>>> add AdjournWithoutDateConfirmation handler
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-<<<<<<< HEAD
         assertEquals(72, Event.values().length);
-=======
-<<<<<<< HEAD
-        assertEquals(62, Event.values().length);
-=======
-        assertEquals(60, Event.values().length);
->>>>>>> add AdjournWithoutDateConfirmation handler
->>>>>>> add AdjournWithoutDateConfirmation handler
     }
 }
