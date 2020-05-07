@@ -70,6 +70,7 @@ public enum Event {
     REMOVE_FLAG("removeFlag"),
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
+    DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

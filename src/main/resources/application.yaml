@@ -181,6 +181,7 @@ security:
       - "removeFlag"
       - "requestCmaRequirements"
       - "adjournHearingWithoutDate"
+      - "decisionWithoutHearing"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -191,6 +192,7 @@ security:
       - "flagCase"
       - "removeFlag"
       - "adjournHearingWithoutDate"
+      - "decisionWithoutHearing"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

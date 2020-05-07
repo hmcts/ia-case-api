@@ -71,6 +71,7 @@ public class EventTest {
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
+        assertEquals("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString());
     }
 
     @Test
