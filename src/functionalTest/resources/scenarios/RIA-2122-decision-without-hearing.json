@@ -1,0 +1,29 @@
+{
+  "description": "RIA-2122 Make decision without hearing",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "decisionWithoutHearing",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "listCaseHearingLength": "90"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "listCaseHearingLength": "90"
+      }
+    }
+  }
+}
