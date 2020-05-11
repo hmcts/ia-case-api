@@ -1,7 +1,7 @@
 {
-  "description": "RIA-2829: Prepair for Case officer to review a time extension request",
+  "description": "RIA-2829: Case officer can review a time extension request",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "id": 1122,
@@ -35,7 +35,10 @@
               }
             }
           ],
-          "reviewTimeExtensionRequired": "Yes"
+          "reviewTimeExtensionRequired": "Yes",
+          "reviewTimeExtensionDecision": "granted",
+          "reviewTimeExtensionDecisionReason": "decision reason",
+          "reviewTimeExtensionDueDate": "{$TODAY+14}"
         }
       }
     }
@@ -46,6 +49,19 @@
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "requestReasonsForAppeal",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "previousDates": []
+            }
+          }
+        ],
         "timeExtensions": [
           {
             "id": "123",
@@ -53,17 +69,16 @@
               "requestDate": "{$TODAY}",
               "reason": "time extension reason",
               "state": "awaitingReasonsForAppeal",
-              "status": "submitted",
-              "evidence": []
+              "status": "granted",
+              "decision": "granted",
+              "decisionReason": "decision reason",
+              "evidence": [],
+              "decisionOutcomeDate": "{$TODAY+14}"
             }
           }
         ],
-        "reviewTimeExtensionRequired": "Yes",
-        "reviewTimeExtensionDate":"{$TODAY}",
-        "reviewTimeExtensionParty": "appellant",
-        "reviewTimeExtensionReason": "time extension reason",
-        "reviewTimeExtensionDecision":  null,
-        "reviewTimeExtensionDecisionReason": ""
+        "reviewTimeExtensionRequired": "No",
+        "sendDirectionActionAvailable": "No"
       }
     }
   }
