@@ -619,20 +619,30 @@ public enum AsylumCaseFieldDefinition {
 
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
+
     REVIEW_TIME_EXTENSION_DATE(
-            "reviewTimeExtensionDate", new TypeReference<String>(){}),
+        "reviewTimeExtensionDate", new TypeReference<String>(){}),
+
     REVIEW_TIME_EXTENSION_PARTY(
-            "reviewTimeExtensionParty", new TypeReference<Parties>(){}),
+        "reviewTimeExtensionParty", new TypeReference<Parties>(){}),
+
     REVIEW_TIME_EXTENSION_REASON(
-            "reviewTimeExtensionReason", new TypeReference<String>(){}),
+        "reviewTimeExtensionReason", new TypeReference<String>(){}),
+
     REVIEW_TIME_EXTENSION_DECISION(
-            "reviewTimeExtensionDecision", new TypeReference<TimeExtensionDecision>(){}),
+        "reviewTimeExtensionDecision", new TypeReference<TimeExtensionDecision>(){}),
+
     REVIEW_TIME_EXTENSION_DECISION_REASON(
-            "reviewTimeExtensionDecisionReason", new TypeReference<String>(){}),
+        "reviewTimeExtensionDecisionReason", new TypeReference<String>(){}),
+
     TIME_EXTENSIONS(
-            "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
+        "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
+
     REVIEW_TIME_EXTENSION_REQUIRED(
-            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+        "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+
+    REVIEW_TIME_EXTENSION_DUE_DATE(
+        "reviewTimeExtensionDueDate", new TypeReference<String>(){}),
 
     FLAG_CASE_TYPE_OF_FLAG(
         "flagCaseTypeOfFlag", new TypeReference<CaseFlagType>(){}),

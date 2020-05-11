@@ -62,6 +62,8 @@ public enum Event {
     APPLY_FOR_FTPA_RESPONDENT("applyForFTPARespondent"),
     LEADERSHIP_JUDGE_FTPA_DECISION("leadershipJudgeFtpaDecision"),
     RECORD_ALLOCATED_JUDGE("recordAllocatedJudge"),
+    EDIT_TIME_EXTENSION("editTimeExtension"),
+    SUBMIT_TIME_EXTENSION("submitTimeExtension"),
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
     FLAG_CASE("flagCase"),

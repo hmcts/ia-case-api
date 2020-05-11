@@ -69,7 +69,8 @@ public class SendNotificationHandlerTest {
             Event.REMOVE_APPEAL_FROM_ONLINE,
             Event.CHANGE_HEARING_CENTRE,
             Event.APPLY_FOR_FTPA_APPELLANT,
-            Event.APPLY_FOR_FTPA_RESPONDENT
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.SUBMIT_TIME_EXTENSION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -176,7 +177,8 @@ public class SendNotificationHandlerTest {
                         Event.REMOVE_APPEAL_FROM_ONLINE,
                         Event.CHANGE_HEARING_CENTRE,
                         Event.APPLY_FOR_FTPA_APPELLANT,
-                        Event.APPLY_FOR_FTPA_RESPONDENT
+                        Event.APPLY_FOR_FTPA_RESPONDENT,
+                        Event.SUBMIT_TIME_EXTENSION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
