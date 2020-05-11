@@ -54,17 +54,19 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                 .getCaseData();
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
-            "You have " + requestRespondentReviewDueInDays + " days to review the Appeal Skeleton Argument and evidence. "
-            + "You must explain whether the appellant makes a valid case for overturning the original decision.\n\n"
-            + "You must respond to the Tribunal and tell them:\n"
-            + "- whether you oppose all or parts of the appellant's case\n"
-            + "- what your grounds are for opposing the case\n"
-            + "- which of the issues are agreed or not agreed\n"
-            + "- whether there are any further issues you wish to raise\n"
-            + "- whether you are prepared to withdraw to grant\n"
-            + "- whether the appeal can be resolved without a hearing\n\n"
-            + "# Next steps\n\n"
-            + "If you do not respond in time the Tribunal will decide how the case should proceed."
+                "You have " + requestRespondentReviewDueInDays + " days to review the appellant's argument and evidence. "
+                        + "You must explain whether the appellant makes a valid case for overturning the original decision.\n"
+                        + "\n"
+                        + "You must respond to the Tribunal and tell them:\n"
+                        + "\n"
+                        + "- whether you oppose all or parts of the appellant's case\n"
+                        + "- what your grounds are for opposing the case\n"
+                        + "- which of the issues are agreed or not agreed\n"
+                        + "- whether there are any further issues you wish to raise\n"
+                        + "- whether you are prepared to withdraw to grant\n"
+                        + "- whether the appeal can be resolved without a hearing\n\n"
+                        + "Next steps\n\n"
+                        + "If you do not respond in time the Tribunal will decide how the case should proceed."
         );
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
