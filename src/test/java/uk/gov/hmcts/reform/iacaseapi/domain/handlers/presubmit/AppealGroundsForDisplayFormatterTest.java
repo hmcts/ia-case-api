@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class AppealGroundsForDisplayFormatterTest {
             ));
 
         final CheckValues<String> appealGroundsHumanRights =
-            new CheckValues<>(Arrays.asList(
+            new CheckValues<>(Collections.singletonList(
                 "ground3"
             ));
 
@@ -61,6 +62,7 @@ public class AppealGroundsForDisplayFormatterTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
 
         when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGroundsProtection));
         when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.of(appealGroundsHumanRights));
@@ -76,15 +78,25 @@ public class AppealGroundsForDisplayFormatterTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+
+        verify(asylumCase).clear(APPEAL_GROUNDS_PROTECTION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS);
+        verify(asylumCase).clear(APPEAL_GROUNDS_REVOCATION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
+        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
+        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_EU_REFUSAL);
+
     }
 
     @Test
     public void should_set_empty_grounds_if_ground_values_are_not_present() {
 
-        final List<String> expectedAppealGrounds = Arrays.asList();
+        final List<String> expectedAppealGrounds = Collections.emptyList();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
 
         when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.empty());
@@ -100,6 +112,14 @@ public class AppealGroundsForDisplayFormatterTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+        verify(asylumCase).clear(APPEAL_GROUNDS_PROTECTION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS);
+        verify(asylumCase).clear(APPEAL_GROUNDS_REVOCATION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
+        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
+        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION);
+        verify(asylumCase).clear(APPEAL_GROUNDS_EU_REFUSAL);
+
     }
 
     @Test
@@ -121,8 +141,8 @@ public class AppealGroundsForDisplayFormatterTest {
 
                 boolean canHandle = appealGroundsForDisplayFormatter.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

@@ -1,0 +1,22 @@
+{
+  "description": "RIA-2513 Remove flag from case confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "removeFlag",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've removed the flag from this case",
+      "body": "#### What happens next\r\n\r\nThis flag has been removed from the case. The case will proceed as usual."
+    }
+  }
+}

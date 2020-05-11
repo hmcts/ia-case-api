@@ -1,0 +1,39 @@
+{
+  "description": "RIA-1742 Flag case with unaccompanied minor flag",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "flagCaseTypeOfFlag": "unaccompaniedMinor",
+          "flagCaseAdditionalInformation": "some additional information"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "unaccompaniedMinor",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "caseFlagUnaccompaniedMinorExists": "Yes",
+        "caseFlagUnaccompaniedMinorAdditionalInformation": "some additional information"
+      }
+    }
+  }
+}

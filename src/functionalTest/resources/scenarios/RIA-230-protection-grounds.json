@@ -30,17 +30,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealGroundsProtection": {
-          "values": [
-            "refugeeConvention",
-            "humanitarianProtection"
-          ]
-        },
-        "appealGroundsHumanRights": {
-          "values": [
-            "humanRights"
-          ]
-        },
+        "appealGroundsProtection": null,
         "appealGroundsForDisplay": [
           "refugeeConvention",
           "humanitarianProtection",

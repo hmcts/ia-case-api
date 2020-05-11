@@ -20,6 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
+        "appealGroundsProtection": null,
         "appealReferenceNumber": "DRAFT"
       }
     }

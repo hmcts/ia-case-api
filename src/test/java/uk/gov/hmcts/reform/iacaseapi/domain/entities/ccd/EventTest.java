@@ -67,6 +67,8 @@ public class EventTest {
         assertEquals("submitTimeExtension", Event.SUBMIT_TIME_EXTENSION.toString());
         assertEquals("reviewTimeExtension", Event.REVIEW_TIME_EXTENSION.toString());
         assertEquals("sendDirectionWithQuestions", Event.SEND_DIRECTION_WITH_QUESTIONS.toString());
+        assertEquals("flagCase", Event.FLAG_CASE.toString());
+        assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
     }
 
     @Test

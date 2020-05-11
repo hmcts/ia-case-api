@@ -621,21 +621,86 @@ public enum AsylumCaseFieldDefinition {
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 
     REVIEW_TIME_EXTENSION_DATE(
-            "reviewTimeExtensionDate", new TypeReference<String>(){}),
+        "reviewTimeExtensionDate", new TypeReference<String>(){}),
+
     REVIEW_TIME_EXTENSION_PARTY(
-            "reviewTimeExtensionParty", new TypeReference<Parties>(){}),
+        "reviewTimeExtensionParty", new TypeReference<Parties>(){}),
+
     REVIEW_TIME_EXTENSION_REASON(
-            "reviewTimeExtensionReason", new TypeReference<String>(){}),
+        "reviewTimeExtensionReason", new TypeReference<String>(){}),
+
     REVIEW_TIME_EXTENSION_DECISION(
-            "reviewTimeExtensionDecision", new TypeReference<TimeExtensionDecision>(){}),
+        "reviewTimeExtensionDecision", new TypeReference<TimeExtensionDecision>(){}),
+
     REVIEW_TIME_EXTENSION_DECISION_REASON(
-            "reviewTimeExtensionDecisionReason", new TypeReference<String>(){}),
+        "reviewTimeExtensionDecisionReason", new TypeReference<String>(){}),
+
     TIME_EXTENSIONS(
-            "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
+        "timeExtensions", new TypeReference<List<IdValue<TimeExtension>>>(){}),
+
     REVIEW_TIME_EXTENSION_REQUIRED(
-            "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+        "reviewTimeExtensionRequired", new TypeReference<YesOrNo>() {}),
+
     REVIEW_TIME_EXTENSION_DUE_DATE(
-            "reviewTimeExtensionDueDate", new TypeReference<String>(){}),
+        "reviewTimeExtensionDueDate", new TypeReference<String>(){}),
+
+    FLAG_CASE_TYPE_OF_FLAG(
+        "flagCaseTypeOfFlag", new TypeReference<CaseFlagType>(){}),
+
+    FLAG_CASE_ADDITIONAL_INFORMATION(
+        "flagCaseAdditionalInformation", new TypeReference<String>(){}),
+
+    CASE_FLAGS(
+        "caseFlags", new TypeReference<List<IdValue<CaseFlag>>>(){}),
+
+    CASE_FLAG_ANONYMITY_EXISTS(
+        "caseFlagAnonymityExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION(
+        "caseFlagAnonymityAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_COMPLEX_CASE_EXISTS(
+        "caseFlagComplexCaseExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION(
+        "caseFlagComplexCaseAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS(
+        "caseFlagDetainedImmigrationAppealExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION(
+        "caseFlagDetainedImmigrationAppealAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS(
+        "caseFlagForeignNationalOffenderExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION(
+        "caseFlagForeignNationalOffenderAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS(
+        "caseFlagPotentiallyViolentPersonExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION(
+        "caseFlagPotentiallyViolentPersonAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS(
+        "caseFlagUnacceptableCustomerBehaviourExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION(
+        "caseFlagUnacceptableCustomerBehaviourAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS(
+        "caseFlagUnaccompaniedMinorExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION(
+        "caseFlagUnaccompaniedMinorAdditionalInformation", new TypeReference<String>() {}),
+
+    IS_APPELLANT_MINOR(
+        "isAppellantMinor", new TypeReference<YesOrNo>() {}),
+    APPELLANT_DATE_OF_BIRTH(
+        "appellantDateOfBirth", new TypeReference<String>() {}),
+    REMOVE_FLAG_TYPE_OF_FLAG(
+        "removeFlagTypeOfFlag", new TypeReference<DynamicList>() {}),
     ;
 
     private final String value;

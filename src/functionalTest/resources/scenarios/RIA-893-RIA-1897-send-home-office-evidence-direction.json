@@ -1,17 +1,16 @@
 {
-  "description": "RIA-722 Send respondent review direction",
+  "description": "RIA-893 RIA-1897 Send Home Office evidence direction",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "id": 3333,
-      "eventId": "requestRespondentReview",
-      "state": "caseBuilding",
+      "eventId": "requestRespondentEvidence",
+      "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "sendDirectionExplanation": "Review the built case",
-          "sendDirectionParties": "respondent",
+          "sendDirectionExplanation": "Send your evidence",
           "sendDirectionDateDue": "2022-01-01",
           "notificationsSent": []
         }
@@ -28,17 +27,21 @@
           {
             "id": "1",
             "value": {
-              "explanation": "Review the built case",
+              "explanation": "Send your evidence",
               "parties": "respondent",
               "dateDue": "2022-01-01",
               "dateSent": "{$TODAY}",
-              "tag": "respondentReview"
+              "tag": "respondentEvidence"
             }
           }
         ],
         "notificationsSent": [
           {
-            "id": "3333_RESPONDENT_REVIEW_DIRECTION",
+            "id": "3333_RESPONDENT_EVIDENCE_DIRECTION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "3333_EVIDENCE_DIRECTION_LEGAL_REPRESENTATIVE",
             "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
