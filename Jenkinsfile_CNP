@@ -76,8 +76,6 @@ withPipeline(type, product, component) {
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
-    installCharts()
-
     enableAksStagingDeployment()
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
