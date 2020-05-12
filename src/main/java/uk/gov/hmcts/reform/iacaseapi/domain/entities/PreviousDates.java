@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@ToString
+@EqualsAndHashCode
 public class PreviousDates {
 
     private String dateDue;

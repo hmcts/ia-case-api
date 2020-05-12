@@ -22,15 +22,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DateAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionFinder;
 
 @Component
 public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final DirectionFinder directionFinder;
 
-    public ReviewTimeExtensionsHandler() {
-        //No-op constructor
+    public ReviewTimeExtensionsHandler(DirectionFinder directionFinder) {
+        this.directionFinder = directionFinder;
     }
-
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -48,16 +49,18 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        State currentState = callback.getCaseDetails().getState();
+
+        Optional<IdValue<Direction>> directionBeingUpdated = directionFinder.getUpdatableDirectionForState(currentState, asylumCase);
+        if (!directionBeingUpdated.isPresent()) {
+            PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("No extendable direction for current state");
+            return asylumCasePreSubmitCallbackResponse;
+        }
+
         String decisionOutcomeDueDate = getTimeExtensionDueDate(asylumCase);
-
-        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
-        Optional<IdValue<Direction>> directionBeingUpdated = maybeDirections.orElse(emptyList())
-            .stream()
-            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL)).findFirst();
-
-
         String currentDueDate = getDirectionDueDate(directionBeingUpdated);
-
         String updatedDecisionDueDate = decisionOutcomeDueDate == null
             ? currentDueDate
             : decisionOutcomeDueDate;
@@ -71,29 +74,27 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        State currentState = callback.getCaseDetails().getState();
         List<IdValue<TimeExtension>> timeExtensions = getTimeExtensions(asylumCase).map(timeExtension -> {
             TimeExtension timeExtensionValue = timeExtension.getValue();
             if (currentState == timeExtensionValue.getState() && timeExtensionValue.getStatus() == SUBMITTED) {
 
                 TimeExtensionDecision timeExtensionDecision = getTimeExtensionDecision(asylumCase);
                 TimeExtensionStatus timeExtensionStatus = timeExtensionDecision == TimeExtensionDecision.REFUSED ? REFUSED : GRANTED;
-                if (currentState == timeExtensionValue.getState()) {
-                    return new IdValue<>(timeExtension.getId(), new TimeExtension(
-                        timeExtensionValue.getRequestDate(),
-                        timeExtensionValue.getReason(),
-                        timeExtensionValue.getState(),
-                        timeExtensionStatus,
-                        timeExtensionValue.getEvidence(),
-                        timeExtensionDecision,
-                        getTimeExtensionDecisionReason(asylumCase),
-                        updatedDecisionDueDate
-                    ));
-                }
+                return new IdValue<>(timeExtension.getId(), new TimeExtension(
+                    timeExtensionValue.getRequestDate(),
+                    timeExtensionValue.getReason(),
+                    timeExtensionValue.getState(),
+                    timeExtensionStatus,
+                    timeExtensionValue.getEvidence(),
+                    timeExtensionDecision,
+                    getTimeExtensionDecisionReason(asylumCase),
+                    updatedDecisionDueDate
+                ));
             }
             return timeExtension;
         }).collect(Collectors.toList());
 
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
         List<IdValue<Direction>> changedDirections =
             maybeDirections.orElse(emptyList())
                 .stream()
