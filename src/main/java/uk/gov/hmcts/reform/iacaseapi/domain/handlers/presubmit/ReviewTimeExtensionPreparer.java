@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
@@ -13,7 +12,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -21,9 +23,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionFinder;
 
 @Component
 public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final DirectionFinder directionFinder;
+
+    public ReviewTimeExtensionPreparer(DirectionFinder directionFinder) {
+        this.directionFinder = directionFinder;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -54,7 +63,7 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
         return getTimeExtensions(asylumCase)
             .filter(submittedTimeExtensionForCurrentState(currentState))
             .findFirst()
-            .map(setReviewTimeExtensionValues(asylumCase))
+            .map(setReviewTimeExtensionValues(currentState, asylumCase))
             .orElseGet(errorIfNoTimeExtensionRequested(asylumCase));
     }
 
@@ -67,12 +76,8 @@ public class ReviewTimeExtensionPreparer implements PreSubmitCallbackHandler<Asy
         return timeExtension -> currentState == timeExtension.getValue().getState() && timeExtension.getValue().getStatus() == SUBMITTED;
     }
 
-    private Function<IdValue<TimeExtension>, PreSubmitCallbackResponse<AsylumCase>> setReviewTimeExtensionValues(AsylumCase asylumCase) {
-        Optional<List<IdValue<Direction>>> directions = asylumCase.read(DIRECTIONS);
-        //todo this needs to work for a number of states
-        Optional<IdValue<Direction>> directionBeingUpdated = directions.orElse(emptyList()).stream()
-            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL))
-            .findFirst();
+    private Function<IdValue<TimeExtension>, PreSubmitCallbackResponse<AsylumCase>> setReviewTimeExtensionValues(State currentState, AsylumCase asylumCase) {
+        Optional<IdValue<Direction>> directionBeingUpdated = directionFinder.getUpdatableDirectionForState(currentState, asylumCase);
 
         return timeExtensionIdValue -> {
             asylumCase.write(REVIEW_TIME_EXTENSION_DATE, timeExtensionIdValue.getValue().getRequestDate());

@@ -4,11 +4,11 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.IN_PROGRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus.SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_REASONS_FOR_APPEAL;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionFinder;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -43,16 +44,18 @@ public class ReviewTimeExtensionPreparerTest {
 
 
     private ReviewTimeExtensionPreparer reviewTimeExtensionPreparer;
+    private DirectionFinder directionFinder;
 
     @Before
     public void setup() {
-        reviewTimeExtensionPreparer = new ReviewTimeExtensionPreparer();
+        directionFinder = mock(DirectionFinder.class);
+        reviewTimeExtensionPreparer = new ReviewTimeExtensionPreparer(directionFinder);
     }
 
     @Test
     public void preparer_review_time_extension_fields() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
-        IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
+        IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
         IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12", "2020-01-12"));
@@ -61,14 +64,14 @@ public class ReviewTimeExtensionPreparerTest {
 
         IdValue<Direction> timeExtensionIdValue1 = new IdValue<>("1", new Direction("TestOne", Parties.APPELLANT, "2020-04-10", "2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL, previousDates));
         IdValue<Direction> timeExtensionIdValue2 = new IdValue<>("2", new Direction("TestTwo", Parties.APPELLANT, "2020-04-16", "2020-04-14", DirectionTag.BUILD_CASE, previousDates));
-        List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
-        when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
+        when(caseDetails.getState()).thenReturn(AWAITING_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
+
+        when(directionFinder.getUpdatableDirectionForState(AWAITING_REASONS_FOR_APPEAL, asylumCase)).thenReturn(Optional.of(timeExtensionIdValue1));
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -82,7 +85,7 @@ public class ReviewTimeExtensionPreparerTest {
     @Test
     public void preparer_review_time_extension_fields_for_current_state() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension("date1", "reasons1", State.APPEAL_SUBMITTED, SUBMITTED, emptyList()));
-        IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
+        IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
 
         IdValue<PreviousDates> dateOne = new IdValue<>("1", new PreviousDates("2020-05-12", "2020-01-12"));
@@ -91,14 +94,14 @@ public class ReviewTimeExtensionPreparerTest {
 
         IdValue<Direction> timeExtensionIdValue1 = new IdValue<>("1", new Direction("TestOne", Parties.APPELLANT, "2020-04-10", "2020-04-12", DirectionTag.REQUEST_REASONS_FOR_APPEAL, previousDates));
         IdValue<Direction> timeExtensionIdValue2 = new IdValue<>("2", new Direction("TestTwo", Parties.APPELLANT, "2020-04-16", "2020-04-14", DirectionTag.BUILD_CASE, previousDates));
-        List<IdValue<Direction>> timeExtension = asList(timeExtensionIdValue1, timeExtensionIdValue2);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
-        when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
+        when(caseDetails.getState()).thenReturn(AWAITING_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(timeExtensions));
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(timeExtension));
+
+        when(directionFinder.getUpdatableDirectionForState(AWAITING_REASONS_FOR_APPEAL, asylumCase)).thenReturn(Optional.of(timeExtensionIdValue1));
 
         reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
