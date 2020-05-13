@@ -51,7 +51,7 @@ public class EditDocsAuditLogHandlerTest {
     @Test
     @Parameters({
         "EDIT_DOCUMENTS, true",
-        "SUBMIT_CLARIFYING_ANSWERS, false"
+        "SUBMIT_CLARIFYING_QUESTION_ANSWERS, false"
     })
     public void canHandle(Event event, boolean expectedResult) {
         when(callback.getEvent()).thenReturn(event);

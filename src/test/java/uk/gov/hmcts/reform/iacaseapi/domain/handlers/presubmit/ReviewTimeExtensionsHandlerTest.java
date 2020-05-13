@@ -37,8 +37,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class ReviewTimeExtensionsHandlerTest {
-    @Mock
-    private Callback<AsylumCase> callback;
+
+    @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 

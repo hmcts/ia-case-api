@@ -21,7 +21,7 @@ public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidChec
             Event.EDIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.REQUEST_CLARIFYING_ANSWERS,
-            Event.SUBMIT_CLARIFYING_ANSWERS,
+            Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             Event.SEND_DIRECTION_WITH_QUESTIONS
     );
 

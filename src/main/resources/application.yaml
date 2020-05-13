@@ -216,7 +216,7 @@ security:
       - "uploadAdditionalEvidence"
       - "editReasonsForAppeal"
       - "submitReasonsForAppeal"
-      - "submitClarifyingAnswers"
+      - "submitClarifyingQuestionAnswers"
       - "editTimeExtension"
       - "submitTimeExtension"
     caseworker-ia-iacjudge:

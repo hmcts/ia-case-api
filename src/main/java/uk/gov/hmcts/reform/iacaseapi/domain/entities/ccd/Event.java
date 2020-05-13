@@ -54,7 +54,7 @@ public enum Event {
     EDIT_REASONS_FOR_APPEAL("editReasonsForAppeal"),
     SUBMIT_REASONS_FOR_APPEAL("submitReasonsForAppeal"),
     REQUEST_CLARIFYING_ANSWERS("requestClarifyingAnswers"),
-    SUBMIT_CLARIFYING_ANSWERS("submitClarifyingAnswers"),
+    SUBMIT_CLARIFYING_QUESTION_ANSWERS("submitClarifyingQuestionAnswers"),
     EDIT_DOCUMENTS("editDocuments"),
     SEND_TO_PREHEARING("sendToPreHearing"),
     CHANGE_HEARING_CENTRE("changeHearingCentre"),
