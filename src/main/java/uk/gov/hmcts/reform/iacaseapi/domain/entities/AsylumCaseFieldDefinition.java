@@ -620,6 +620,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
 
+    SUBMIT_TIME_EXTENSION_REASON(
+        "submitTimeExtensionReason", new TypeReference<String>(){}),
+
+    SUBMIT_TIME_EXTENSION_EVIDENCE(
+        "submitTimeExtensionEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
     REVIEW_TIME_EXTENSION_DATE(
         "reviewTimeExtensionDate", new TypeReference<String>(){}),
 
