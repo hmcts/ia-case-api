@@ -61,7 +61,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
-        final String expectedExplanationPart = "The respondent has replied to your appeal argument";
+        final String expectedExplanationPart = "The Home Office has replied to your Appeal Skeleton Argument and evidence";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
@@ -101,7 +101,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
-        final String expectedExplanationPart = "The respondent has replied to your appeal argument";
+        final String expectedExplanationPart = "The Home Office has replied to your Appeal Skeleton Argument and evidence";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;

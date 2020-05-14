@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1278 Upload additional Home Office evidence  confirmation",
+  "description": "RIA-1278 Upload additional Home Office evidence confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "HomeOfficeLart",

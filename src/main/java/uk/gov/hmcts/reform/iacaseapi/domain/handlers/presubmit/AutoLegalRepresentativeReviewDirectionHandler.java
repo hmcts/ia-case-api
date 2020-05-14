@@ -67,10 +67,10 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
                     maybeDirections.orElse(emptyList()),
-                "The respondent has replied to your appeal argument and evidence. You must now review their response.\n\n"
-                + "Next steps\n"
-                + "You have " + reviewDueInDays + " days to review the response. "
-                + "If you want to respond to what the Home Office has said, you should email the case officer.\n\n"
+                "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
+                + "# Next steps\n\n"
+                + "You have " + reviewDueInDays + " days to review the Home Office response. "
+                + "If you want to respond to what they have said, you should email the Tribunal.\n\n"
                 + "If you do not respond within " + reviewDueInDays + " days, "
                 + "the case will automatically go to hearing.",
                 Parties.LEGAL_REPRESENTATIVE,

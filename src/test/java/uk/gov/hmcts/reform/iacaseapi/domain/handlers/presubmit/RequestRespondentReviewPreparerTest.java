@@ -52,7 +52,7 @@ public class RequestRespondentReviewPreparerTest {
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "You must now review this case.";
+        final String expectedExplanationContains = "You must explain whether the appellant makes a valid case for overturning the original decision.";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
 

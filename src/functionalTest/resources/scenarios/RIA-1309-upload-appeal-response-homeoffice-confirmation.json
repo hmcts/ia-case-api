@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1309 Home office user (LART) upload appeal response  confirmation",
+  "description": "RIA-1309 Home office user (LART) upload appeal response confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "HomeOfficeLart",
