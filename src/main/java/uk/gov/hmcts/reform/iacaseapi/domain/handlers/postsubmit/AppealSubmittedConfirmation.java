@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -34,6 +36,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         YesOrNo submissionOutOfTime =
                 requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
@@ -41,11 +44,22 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         if (submissionOutOfTime.equals(NO)) {
 
+            AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
+
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
-            postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "You will receive an email confirming that this appeal has been submitted successfully."
-            );
+
+            StringBuffer confirmationBody =
+                new StringBuffer("#### What happens next\n\n"
+                                 + "You will receive an email confirming that this appeal has been submitted successfully.");
+
+            if (appealType.equals(AppealType.EA)
+                || appealType.equals(AppealType.HU)
+                || appealType.equals(AppealType.PA)) {
+                confirmationBody.append("If there is any outstanding fee, you will need to pay this within 14 days.");
+            }
+
+            postSubmitResponse.setConfirmationBody(confirmationBody.toString());
 
         } else {
 

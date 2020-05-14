@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3006 display appeal submission fee for appeal type EA",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "oralFeeAmountForDisplay": "£140.00",
+        "appealFeeDesc": "The fee for this type of appeal with a hearing is £140.00"
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@
     "status": 200,
     "confirmation": {
       "header": "# Your appeal has been submitted",
-      "body": "#### What happens next\n\nYou will receive an email confirming that this appeal has been submitted successfully."
+      "body": "#### What happens next\n\nYou will receive an email confirming that this appeal has been submitted successfully.If there is any outstanding fee, you will need to pay this within 14 days."
     }
   }
 }
