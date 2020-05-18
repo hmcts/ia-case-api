@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class LeadershipJudgeFtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
+public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -26,7 +26,7 @@ public class LeadershipJudgeFtpaDecisionMidEvent implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION;
+               && (callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -50,13 +50,13 @@ public class LeadershipJudgeFtpaDecisionMidEvent implements PreSubmitCallbackHan
             ftpaApplicantType.equals("appellant") == true ? FTPA_APPELLANT_SUBMITTED : FTPA_RESPONDENT_SUBMITTED, String.class);
 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-        if (callback.getCaseDetails().getState() == State.FTPA_SUBMITTED) {
-            if (callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION
+        if (callback.getCaseDetails().getState() == State.FTPA_SUBMITTED || callback.getCaseDetails().getState() == State.FTPA_DECIDED) {
+            if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
                 && ftpaApplicantType.equals("appellant") && !ftpaSubmitted.isPresent()) {
 
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no appellant FTPA application to record the decision.");
                 return asylumCasePreSubmitCallbackResponse;
-            } else if (callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION
+            } else if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
                        && ftpaApplicantType.equals("respondent") && !ftpaSubmitted.isPresent()) {
 
                 asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. There is no respondent FTPA application to record the decision.");

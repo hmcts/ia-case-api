@@ -211,8 +211,14 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_DOCUMENT(
         "ftpaAppellantDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    FTPA_APPELLANT_NOTICE_DOCUMENT(
+        "ftpaAppellantNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     FTPA_RESPONDENT_DECISION_DOCUMENT(
         "ftpaRespondentDecisionDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    FTPA_RESPONDENT_NOTICE_DOCUMENT(
+        "ftpaRespondentNoticeDocument", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     ALL_FTPA_APPELLANT_DECISION_DOCS(
         "allFtpaAppellantDecisionDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
@@ -241,8 +247,14 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPELLANT_DECISION_OUTCOME_TYPE(
         "ftpaAppellantDecisionOutcomeType", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE(
+        "ftpaAppellantRjDecisionOutcomeType", new TypeReference<String>(){}),
+
     FTPA_RESPONDENT_DECISION_OUTCOME_TYPE(
         "ftpaRespondentDecisionOutcomeType", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE(
+        "ftpaRespondentRjDecisionOutcomeType", new TypeReference<String>(){}),
 
     HOME_OFFICE_BUNDLE(
         "homeOfficeBundle", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -262,6 +274,17 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_APPLICATION_DATE(
         "ftpaRespondentApplicationDate", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL(
+        "ftpaAppellantRjNewDecisionOfAppeal", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_REMADE_RULE_32(
+        "ftpaAppellantDecisionRemadeRule32", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL(
+        "ftpaRespondentRjNewDecisionOfAppeal", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
+        "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
 
     UPLOADED_HOME_OFFICE_BUNDLE_DOCS(
         "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),

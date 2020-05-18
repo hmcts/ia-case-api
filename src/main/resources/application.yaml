@@ -228,6 +228,7 @@ security:
       - "sendDirection"
       - "addCaseNote"
       - "leadershipJudgeFtpaDecision"
+      - "residentJudgeFtpaDecision"
 
 
 ### dependency configuration
