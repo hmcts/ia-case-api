@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCa
     "IA_CASE_DOCUMENTS_API_URL=http://localhost:8990/ia-case-documents-api",
     "PROF_REF_DATA_URL=http://localhost:8990",
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
+    "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
     "IA_DOCMOSIS_ENABLED=true"})
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class SpringBootIntegrationTest {
