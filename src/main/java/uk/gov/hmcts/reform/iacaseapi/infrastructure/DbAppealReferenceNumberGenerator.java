@@ -85,6 +85,27 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
         );
     }
 
+    @Override
+    public String update(long caseId, AppealType appealType) {
+        final int currentYear = dateProvider.now().getYear();
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("caseId", caseId);
+        parameters.addValue("appealType", appealType.name());
+        parameters.addValue("year", currentYear);
+        parameters.addValue("seed", appealReferenceSequenceSeed);
+        tryUpdateReferenceNumber(parameters);
+        return selectAppealReferenceNumberForCase(parameters);
+    }
+
+    @Retryable(include = TransientDataAccessException.class)
+    private void tryUpdateReferenceNumber(MapSqlParameterSource parameters) {
+        jdbcTemplate.update(
+            "UPDATE ia_case_api.appeal_reference_numbers "
+                + "SET type = :appealType "
+                + "WHERE case_id = :caseId;", parameters);
+    }
+
     @Retryable(include = TransientDataAccessException.class)
     private String selectAppealReferenceNumberForCase(
         MapSqlParameterSource parameters
