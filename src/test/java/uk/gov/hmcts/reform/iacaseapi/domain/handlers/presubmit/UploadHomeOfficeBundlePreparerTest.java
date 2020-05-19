@@ -5,11 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOADED_HOME_OFFICE_BUNDLE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE;
@@ -134,10 +130,10 @@ public class UploadHomeOfficeBundlePreparerTest {
         assertThat(callbackResponse.getErrors()).hasSize(0);
         verify(asylumCase).read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE);
         verify(asylumCase, times(1)).read(RESPONDENT_DOCUMENTS);
-        verifyZeroInteractions(respondentEvidence1WithMetadata);
-        verifyZeroInteractions(respondentEvidence2WithMetadata);
-        verifyZeroInteractions(document1);
-        verifyZeroInteractions(document2);
+        verifyNoInteractions(respondentEvidence1WithMetadata);
+        verifyNoInteractions(respondentEvidence2WithMetadata);
+        verifyNoInteractions(document1);
+        verifyNoInteractions(document2);
         verify(asylumCase).write(eq(UPLOADED_HOME_OFFICE_BUNDLE_DOCS), fileNames.capture());
 
         final String value = fileNames.getValue();
