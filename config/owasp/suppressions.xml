@@ -63,4 +63,20 @@
          ]]></notes>
     <cve>CVE-2020-9488</cve>
   </suppress>
+  <suppress until="2030-01-01">
+    <notes><![CDATA[
+     Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5407)
+   ]]></notes>
+    <gav regex="true">org.springframework.security:spring-security-*.*</gav>
+    <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
+    <cve>CVE-2020-5407</cve>
+  </suppress>
+  <suppress until="2030-01-01">
+    <notes><![CDATA[
+     Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5408)
+   ]]></notes>
+    <gav regex="true">org.springframework.security:spring-security-*.*</gav>
+    <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
+    <cve>CVE-2020-5408</cve>
+  </suppress>
 </suppressions>
