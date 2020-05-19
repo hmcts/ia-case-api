@@ -25,7 +25,7 @@
           ],
           "timeExtensions": [
             {
-              "id": "123",
+              "id": "1",
               "value": {
                 "requestDate": "{$TODAY}",
                 "reason": "time extension reason",
@@ -48,7 +48,7 @@
       "replacements": {
         "timeExtensions": [
           {
-            "id": "123",
+            "id": "1",
             "value": {
               "requestDate": "{$TODAY}",
               "reason": "time extension reason",
