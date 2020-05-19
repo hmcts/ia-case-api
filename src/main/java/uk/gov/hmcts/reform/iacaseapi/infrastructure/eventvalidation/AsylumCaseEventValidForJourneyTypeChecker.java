@@ -38,11 +38,11 @@ public class AsylumCaseEventValidForJourneyTypeChecker implements EventValidChec
         final Event event = callback.getEvent();
 
         if (aipOnlyEvent.contains(event) && !AIP.equals(journeyType)) {
-            log.info(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by an appellant to handle this event.", event, callback.getCaseDetails().getId()));
+            log.error(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by an appellant to handle this event.", event, callback.getCaseDetails().getId()));
             return new EventValid("You've made an invalid request. The hearing must be submitted by an appellant to make this request.");
         }
         if (reppedOnlyEvent.contains(event) && !REP.equals(journeyType)) {
-            log.info(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by a representative to handle this event.", event, callback.getCaseDetails().getId()));
+            log.error(String.format("[%s] is invalid for case id [%s] the hearing must be submitted by a representative to handle this event.", event, callback.getCaseDetails().getId()));
             return new EventValid("You've made an invalid request. The hearing must be submitted by a representative to make this request.");
         }
 

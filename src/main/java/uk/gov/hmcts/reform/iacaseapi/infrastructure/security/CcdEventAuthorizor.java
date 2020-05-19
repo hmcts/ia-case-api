@@ -38,6 +38,8 @@ public class CcdEventAuthorizor {
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {
 
+            log.error("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", event.toString());
+
             throw new AccessDeniedException(
                 "Event '" + event.toString() + "' not allowed"
             );
