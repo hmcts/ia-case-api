@@ -8,4 +8,6 @@ public interface AppealReferenceNumberGenerator {
         long caseId,
         AppealType appealType
     );
+
+    String update(long caseId, AppealType appealType);
 }
