@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
@@ -35,58 +36,71 @@ public class AppealGroundsForDisplayFormatterTest {
     @Test
     public void should_format_appeal_grounds_for_display() {
 
-        final CheckValues<String> appealGroundsProtection =
+        final CheckValues<String> appealGrounds1 =
+            new CheckValues<>(Collections.singletonList(
+                "ground1"
+            ));
+
+        final CheckValues<String> appealGrounds2 =
             new CheckValues<>(Arrays.asList(
                 "ground1",
                 "ground2"
             ));
 
-        final CheckValues<String> appealGroundsHumanRights =
-            new CheckValues<>(Collections.singletonList(
-                "ground3"
-            ));
+        final List<String> expectedAppealGrounds1 =
+            Arrays.asList(
+                "ground1"
+            );
 
-        final CheckValues<String> appealGroundsRevocation =
-            new CheckValues<>(Arrays.asList(
-                "ground1",
-                "ground4"
-            ));
-
-        final List<String> expectedAppealGrounds =
+        final List<String> expectedAppealGrounds2 =
             Arrays.asList(
                 "ground1",
-                "ground2",
-                "ground3",
-                "ground4"
+                "ground2"
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
 
-        when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGroundsProtection));
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.of(appealGroundsHumanRights));
-        when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGroundsRevocation));
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.empty());
-
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.of(appealGrounds2));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
 
-        verify(asylumCase).clear(APPEAL_GROUNDS_PROTECTION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS);
-        verify(asylumCase).clear(APPEAL_GROUNDS_REVOCATION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
-        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
-        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_EU_REFUSAL);
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGrounds2));
+        callbackResponse =
+            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
 
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
+        callbackResponse =
+            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
+
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.RP));
+        when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGrounds1));
+        callbackResponse =
+            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
+
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
+        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
+        callbackResponse =
+            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(3)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
     }
 
     @Test
@@ -98,28 +112,12 @@ public class AppealGroundsForDisplayFormatterTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
 
-        when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.empty());
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
-        verify(asylumCase).clear(APPEAL_GROUNDS_PROTECTION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS);
-        verify(asylumCase).clear(APPEAL_GROUNDS_REVOCATION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
-        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
-        verify(asylumCase).clear(APPEAL_GROUNDS_DEPRIVATION);
-        verify(asylumCase).clear(APPEAL_GROUNDS_EU_REFUSAL);
-
     }
 
     @Test
