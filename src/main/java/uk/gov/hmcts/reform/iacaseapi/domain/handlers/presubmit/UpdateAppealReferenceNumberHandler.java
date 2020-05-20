@@ -42,20 +42,18 @@ public class UpdateAppealReferenceNumberHandler implements PreSubmitCallbackHand
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-
         Optional<String> existingAppealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER);
-
         if (existingAppealReferenceNumber.isPresent()) {
-            AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("appealType is not present"));
-
-            String appealReferenceNumber =
-                appealReferenceNumberGenerator.update(callback.getCaseDetails().getId(), appealType);
-
-            asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
+            updateAppealReferenceNumber(asylumCase, callback.getCaseDetails().getId());
         }
         return callbackResponse;
+    }
+
+    private void updateAppealReferenceNumber(AsylumCase asylumCase, long caseId) {
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("appealType is not present"));
+        String appealReferenceNumber = appealReferenceNumberGenerator.update(caseId, appealType);
+        asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
     }
 }
