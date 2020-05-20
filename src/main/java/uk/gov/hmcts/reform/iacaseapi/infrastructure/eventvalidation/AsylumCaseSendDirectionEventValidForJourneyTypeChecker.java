@@ -26,10 +26,10 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
                     .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
 
             if (journeyType == JourneyType.AIP && directionTo != Parties.RESPONDENT) {
-                log.info("Cannot send a direction for an AIP case");
+                log.error("Cannot send a direction for an AIP case");
                 return new EventValid("You cannot use this function to send a direction to an appellant in person.");
             } else if (journeyType == REP && directionTo == Parties.APPELLANT) {
-                log.info("Cannot send an appellant a direction for a repped case");
+                log.error("Cannot send an appellant a direction for a repped case");
                 return new EventValid("This is a legally represented case. You cannot select appellant as the recipient.");
             }
         }
@@ -37,3 +37,4 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeChecker implements E
         return new EventValid();
     }
 }
+

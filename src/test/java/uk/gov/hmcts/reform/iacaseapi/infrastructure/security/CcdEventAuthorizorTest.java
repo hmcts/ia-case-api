@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,15 +22,16 @@ import org.springframework.security.access.AccessDeniedException;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdEventAuthorizorTest {
 
     @Mock private UserDetailsProvider userDetailsProvider;
-
     @Mock private UserDetails userDetails;
 
     private CcdEventAuthorizor ccdEventAuthorizor;
+    private ListAppender<ILoggingEvent> loggingEventListAppender;
 
     @Before
     public void setUp() {
@@ -41,6 +47,8 @@ public class CcdEventAuthorizorTest {
             );
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+
+        loggingEventListAppender = LoggerUtil.getListAppenderForClass(CcdEventAuthorizor.class);
     }
 
     @Test
@@ -59,6 +67,10 @@ public class CcdEventAuthorizorTest {
 
         assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
             .doesNotThrowAnyException();
+
+        assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Request within CcdEventAuthorizor for event: {} processed in {}ms", Level.INFO));
     }
 
     @Test
@@ -72,6 +84,10 @@ public class CcdEventAuthorizorTest {
             .hasMessage("Event 'buildCase' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
 
+        assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
+
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("some-unrelated-role", "legal-role")
         );
@@ -79,6 +95,10 @@ public class CcdEventAuthorizorTest {
         assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
             .hasMessage("Event 'sendDirection' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
+
+        assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
     }
 
     @Test
@@ -91,6 +111,10 @@ public class CcdEventAuthorizorTest {
         assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UPLOAD_RESPONDENT_EVIDENCE))
             .hasMessage("Event 'uploadRespondentEvidence' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
+
+        assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
     }
 
     @Test
@@ -103,5 +127,9 @@ public class CcdEventAuthorizorTest {
         assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
             .hasMessage("Event 'buildCase' not allowed")
             .isExactlyInstanceOf(AccessDeniedException.class);
+
+        assertThat(loggingEventListAppender.list)
+            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
+            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
     }
 }
