@@ -69,6 +69,7 @@ public enum Event {
     FLAG_CASE("flagCase"),
     REMOVE_FLAG("removeFlag"),
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
+    REVIEW_CMA_REQUIREMENTS("reviewCmaRequirements"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
