@@ -30,14 +30,14 @@ public class DbAppealReferenceNumberGeneratorTest {
     @Mock private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Captor private ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
+    @Captor private ArgumentCaptor<MapSqlParameterSource> updateParametersCaptor;
     @Captor private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
 
     private final long caseId = 123;
     private final AppealType appealType = AppealType.PA;
     private final int currentYear = 2017;
 
-    private MapSqlParameterSource expectedParameters;
-    private String expectedAppealReferenceNumber = "PA/12345/2017";
+    private final String expectedAppealReferenceNumber = "PA/12345/2017";
 
     private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
 
@@ -53,7 +53,7 @@ public class DbAppealReferenceNumberGeneratorTest {
 
         when(dateProvider.now()).thenReturn(LocalDate.of(currentYear, 1, 1));
 
-        expectedParameters = new MapSqlParameterSource();
+        MapSqlParameterSource expectedParameters = new MapSqlParameterSource();
         expectedParameters.addValue("caseId", caseId);
         expectedParameters.addValue("appealType", appealType.name());
         expectedParameters.addValue("year", currentYear);
@@ -67,6 +67,44 @@ public class DbAppealReferenceNumberGeneratorTest {
             any(MapSqlParameterSource.class),
             eq(String.class)
         )).thenReturn(expectedAppealReferenceNumber);
+    }
+
+    @Test
+    public void should_call_db_to_update_existing_appeal_reference_number() {
+
+        String appealReferenceNumber = dbAppealReferenceNumberGenerator.update(caseId, appealType);
+
+        assertEquals(expectedAppealReferenceNumber, appealReferenceNumber);
+
+        verify(jdbcTemplate, times(1))
+            .update(
+                and(
+                    contains("UPDATE ia_case_api.appeal_reference_numbers"),
+                    contains("SET")
+                ),
+                updateParametersCaptor.capture()
+            );
+
+        verify(jdbcTemplate, times(1))
+            .queryForObject(
+                and(
+                    contains("SELECT"),
+                    contains("FROM ia_case_api.appeal_reference_numbers")
+                ),
+                selectParametersCaptor.capture(),
+                eq(String.class)
+            );
+
+        MapSqlParameterSource actualUpdateParameters = updateParametersCaptor.getAllValues().get(0);
+        assertEquals(caseId, actualUpdateParameters.getValue("caseId"));
+        assertEquals(appealType.name(), actualUpdateParameters.getValue("appealType"));
+        assertEquals(currentYear, actualUpdateParameters.getValue("year"));
+        assertEquals(SEQUENCE_SEED, actualUpdateParameters.getValue("seed"));
+
+        MapSqlParameterSource actualSelectParameters = selectParametersCaptor.getAllValues().get(0);
+        assertEquals(caseId, actualSelectParameters.getValue("caseId"));
+        assertEquals(appealType.name(), actualSelectParameters.getValue("appealType"));
+        assertEquals(currentYear, actualSelectParameters.getValue("year"));
     }
 
     @Test
@@ -107,7 +145,7 @@ public class DbAppealReferenceNumberGeneratorTest {
         assertEquals(SEQUENCE_SEED, actualInsertParameters.getValue("seed"));
 
         MapSqlParameterSource actualSelectParameters =
-            insertParametersCaptor
+            selectParametersCaptor
                 .getAllValues()
                 .get(0);
 
