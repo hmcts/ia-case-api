@@ -249,9 +249,6 @@ dependencyManagement {
                 version: '5.3.2.RELEASE'
         ) {
             entry 'spring-security-crypto'
-            entry 'spring-security-core'
-            entry 'spring-security-web'
-            entry 'spring-security-config'
         }
     }
 }
