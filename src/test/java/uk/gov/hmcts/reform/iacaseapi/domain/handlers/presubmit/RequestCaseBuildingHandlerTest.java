@@ -199,7 +199,7 @@ public class RequestCaseBuildingHandlerTest {
         "ABOUT_TO_SUBMIT, REQUEST_CASE_BUILDING, true",
         "ABOUT_TO_SUBMIT, FORCE_REQUEST_CASE_BUILDING, true",
         "MID_EVENT, REQUEST_CASE_BUILDING, false",
-        "ABOUT_TO_SUBMIT, SUBMIT_CLARIFYING_ANSWERS, false"
+        "ABOUT_TO_SUBMIT, UPLOAD_HEARING_RECORDING, false"
     })
     public void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
         if (!callbackStage.equals(PreSubmitCallbackStage.MID_EVENT)) {
