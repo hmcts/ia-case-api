@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
           "reasonToForceCaseToSubmitHearingRequirements": "some reason"
         }
       }
@@ -22,11 +23,12 @@
       "template": "minimal-appeal-submitted.json",
       "state": "submitHearingRequirements",
       "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
         "caseNotes": [
           {
             "id": "1",
             "value": {
-              "caseNoteSubject": "Reason for forcing case progression to submit hearing requirements",
+              "caseNoteSubject": "Reason for forcing the case progression to submit hearing requirements",
               "caseNoteDescription": "some reason",
               "user": "Case Officer",
               "dateAdded": "{$TODAY}"
