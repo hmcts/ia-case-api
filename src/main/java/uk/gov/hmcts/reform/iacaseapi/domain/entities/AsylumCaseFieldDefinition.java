@@ -234,6 +234,42 @@ public enum AsylumCaseFieldDefinition {
     IS_FTPA_RESPONDENT_DECIDED(
         "isFtpaRespondentDecided", new TypeReference<YesOrNo>(){}),
 
+    IS_FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE(
+        "isFtpaAppellantNoticeOfDecisionSetAside", new TypeReference<YesOrNo>(){}),
+
+    IS_FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE(
+        "isFtpaRespondentNoticeOfDecisionSetAside", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE(
+        "ftpaAppellantNoticeOfDecisionSetAsideVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_NOTICE_OF_DECISION_SET_ASIDE_VISIBLE(
+        "ftpaRespondentNoticeOfDecisionSetAsideVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_OBJECTIONS_VISIBLE(
+        "ftpaAppellantDecisionObjectionsVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_DECISION_OBJECTIONS_VISIBLE(
+        "ftpaRespondentDecisionObjectionsVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_REASONS_NOTES_VISIBLE(
+        "ftpaAppellantDecisionReasonsNotesVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_DECISION_REASONS_NOTES_VISIBLE(
+        "ftpaRespondentDecisionReasonsNotesVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_LISTING_VISIBLE(
+        "ftpaAppellantDecisionListingVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_DECISION_LISTING_VISIBLE(
+        "ftpaRespondentDecisionListingVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_APPELLANT_DECISION_REASONS_VISIBLE(
+        "ftpaAppellantDecisionReasonsVisible", new TypeReference<YesOrNo>(){}),
+
+    FTPA_RESPONDENT_DECISION_REASONS_VISIBLE(
+        "ftpaRespondentDecisionReasonsVisible", new TypeReference<YesOrNo>(){}),
+
     IS_APPELLANT_FTPA_DECISION_VISIBLE_TO_ALL(
         "isAppellantFtpaDecisionVisibleToAll", new TypeReference<String>(){}),
 
