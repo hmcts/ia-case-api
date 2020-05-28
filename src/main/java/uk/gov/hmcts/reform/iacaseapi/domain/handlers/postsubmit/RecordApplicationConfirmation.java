@@ -47,7 +47,7 @@ public class RecordApplicationConfirmation implements PostSubmitCallbackHandler<
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have recorded an application");
+        postSubmitResponse.setConfirmationHeader("# You've recorded an application");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
             + getMessageAction(applicationDecision, applicationType, callback.getCaseDetails().getId())

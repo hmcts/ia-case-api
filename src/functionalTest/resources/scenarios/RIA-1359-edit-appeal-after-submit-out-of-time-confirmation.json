@@ -10,7 +10,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealType": "refusalOfEu",
           "applicationEditAppealAfterSubmitExists": "Yes",
           "appellantGivenNames": "Jane",
           "appellantFamilyName": "Doe",
@@ -54,8 +53,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealReferenceNumber": "EA/12345/2018",
-        "appealType": "refusalOfEu",
         "applicationEditAppealAfterSubmitExists": null,
         "submissionOutOfTime": "Yes",
         "applicationOutOfTimeExplanation": "some reason",

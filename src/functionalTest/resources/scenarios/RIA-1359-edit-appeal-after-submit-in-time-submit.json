@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealReferenceNumber": "EA/50019/2019",
+          "appealReferenceNumber": "EA/15020/1979",
           "appealType": "refusalOfEu",
           "applicationEditAppealAfterSubmitExists": "Yes",
           "applications": [
@@ -48,7 +48,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealReferenceNumber": "EA/50019/2019",
+        "appealReferenceNumber": "EA/15020/1979",
         "appealType": "refusalOfEu",
         "applications": [
           {
