@@ -1,7 +1,7 @@
 {
-  "description": "RIA-1359 Edit appeal after submit in time",
+  "description": "RIA-1359 Edit appeal after submit in time submit",
   "request": {
-    "uri": "/asylum/ccdSubmitted",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "editAppealAfterSubmit",
@@ -10,10 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "appealReferenceNumber": "EA/50019/2019",
           "appealType": "refusalOfEu",
           "applicationEditAppealAfterSubmitExists": "Yes",
-          "appellantGivenNames": "Jane",
-          "appellantFamilyName": "Doe",
           "applications": [
             {
               "id": "1",
@@ -45,16 +44,12 @@
   },
   "expectation": {
     "status": 200,
-    "confirmation": {
-      "header": "# You've updated the application",
-      "body": "#### What happens next\r\nBoth parties have been notified and the service will be updated.\r\n\r\nThe new details will be used on all future correspondence and documents.\r\n"
-    },
+    "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealReferenceNumber": "EA/12345/2018",
+        "appealReferenceNumber": "EA/50019/2019",
         "appealType": "refusalOfEu",
-        "applicationEditAppealAfterSubmitExists": null,
         "applications": [
           {
             "id": "1",
@@ -79,7 +74,8 @@
               "applicationStatus": "Completed"
             }
           }
-        ]
+        ],
+        "submissionOutOfTime": "No"
       }
     }
   }
