@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1359 Edit appeal after submit out of time",
+  "description": "RIA-1359 Edit appeal after submit in time confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
@@ -14,8 +14,6 @@
           "applicationEditAppealAfterSubmitExists": "Yes",
           "appellantGivenNames": "Jane",
           "appellantFamilyName": "Doe",
-          "homeOfficeDecisionDate": "2019-01-01",
-          "applicationOutOfTimeExplanation": "some reason",
           "applications": [
             {
               "id": "1",
@@ -57,8 +55,6 @@
         "appealReferenceNumber": "EA/12345/2018",
         "appealType": "refusalOfEu",
         "applicationEditAppealAfterSubmitExists": null,
-        "submissionOutOfTime": "Yes",
-        "applicationOutOfTimeExplanation": "some reason",
         "applications": [
           {
             "id": "1",
