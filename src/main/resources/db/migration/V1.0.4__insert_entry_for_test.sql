@@ -10,7 +10,7 @@ INSERT INTO ia_case_api.appeal_reference_numbers (
 ) VALUES (
   1234,
   'PA',
-  2019,
-  50019
+  1979,
+  15020
 );
 --
