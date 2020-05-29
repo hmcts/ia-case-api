@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 public class RecordApplicationConfirmationTest {
 
+    public static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
     @Mock
     private Callback<AsylumCase> callback;
 
@@ -70,7 +71,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -100,7 +101,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -131,7 +132,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -162,7 +163,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -193,7 +194,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -224,7 +225,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
@@ -255,7 +256,7 @@ public class RecordApplicationConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded an application")
+            containsString(YOU_VE_RECORDED_AN_APPLICATION)
         );
 
         assertThat(
