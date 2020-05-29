@@ -180,7 +180,9 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                 if (!asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class).isPresent()) {
                     asylumCase.write(APPLICATION_TIME_EXTENSION_EXISTS, "Yes");
                 }
-            } else if (ADJOURN.toString().equalsIgnoreCase(applicationType) || EXPEDITE.toString().equalsIgnoreCase(applicationType) || TRANSFER.toString().equalsIgnoreCase(applicationType)) {
+            } else if (ADJOURN.toString().equalsIgnoreCase(applicationType)
+                || EXPEDITE.toString().equalsIgnoreCase(applicationType)
+                || TRANSFER.toString().equalsIgnoreCase(applicationType)) {
 
                 if (!asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class).isPresent()) {
                     asylumCase.write(APPLICATION_EDIT_LISTING_EXISTS, "Yes");
@@ -189,9 +191,11 @@ public class RecordApplicationHandler implements PreSubmitCallbackHandler<Asylum
                 if (!asylumCase.read(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, String.class).isPresent()) {
                     asylumCase.write(APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS, "Yes");
                 }
-            } else if (CHANGE_HEARING_CENTRE.toString().equalsIgnoreCase(applicationType) && !asylumCase.read(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS, String.class).isPresent()) {
+            } else if (CHANGE_HEARING_CENTRE.toString().equalsIgnoreCase(applicationType)
+                && !asylumCase.read(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS, String.class).isPresent()) {
                 asylumCase.write(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS, "Yes");
-            } else if (EDIT_APPEAL_AFTER_SUBMIT.toString().equalsIgnoreCase(applicationType) && !asylumCase.read(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS, String.class).isPresent()) {
+            } else if (EDIT_APPEAL_AFTER_SUBMIT.toString().equalsIgnoreCase(applicationType)
+                && !asylumCase.read(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS, String.class).isPresent()) {
                 asylumCase.write(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS, "Yes");
             }
 
