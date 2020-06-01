@@ -110,7 +110,8 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
                                 updatedDecisionDueDate,
                                 idValue.getValue().getDateSent(),
                                 idValue.getValue().getTag(),
-                                DateAppender.appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
+                                DateAppender.appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent()),
+                                idValue.getValue().getClarifyingQuestions()
                             )
                         );
                     } else {
