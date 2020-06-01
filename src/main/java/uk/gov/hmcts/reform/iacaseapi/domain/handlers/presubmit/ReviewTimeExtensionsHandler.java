@@ -53,8 +53,8 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         State currentCaseState = callback.getCaseDetails().getState();
 
         DirectionTag directionTagToLookFor = stateToDirectionTag(currentCaseState);
-        List<IdValue<Direction>> maybeDirections = getDirections(asylumCase);
-        Optional<IdValue<Direction>> directionBeingUpdated = maybeDirections
+        List<IdValue<Direction>> directions = getDirections(asylumCase);
+        Optional<IdValue<Direction>> directionBeingUpdated = directions
             .stream()
             .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(directionTagToLookFor))
             .findFirst();
@@ -98,7 +98,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         }).collect(Collectors.toList());
 
         List<IdValue<Direction>> changedDirections =
-            maybeDirections
+            directions
                 .stream()
                 .map(idValue -> {
                     if (directionBeingUpdated.isPresent() && directionBeingUpdated.get().getId().equals(idValue.getId())) {
