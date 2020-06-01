@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseFlagAppenderTest {
 
-    @Mock private CaseFlag caseFlag1;
-    @Mock private CaseFlag caseFlag2;
+    private CaseFlag caseFlag1;
+    private CaseFlag caseFlag2;
     @Mock private IdValue<CaseFlag> existingCaseFlagById1;
     @Mock private IdValue<CaseFlag> existingCaseFlagById2;
 
@@ -33,18 +33,15 @@ public class CaseFlagAppenderTest {
     @Before
     public void setUp() {
         caseFlagAppender = new CaseFlagAppender();
-        when(caseFlag1.getCaseFlagType()).thenReturn(CaseFlagType.COMPLEX_CASE);
-        when(caseFlag2.getCaseFlagType()).thenReturn(CaseFlagType.UNACCOMPANIED_MINOR);
+        caseFlag1 = new CaseFlag(CaseFlagType.COMPLEX_CASE, "some info");
+        caseFlag2 = new CaseFlag(CaseFlagType.UNACCOMPANIED_MINOR, "some info");
     }
 
     @Test
     public void should_append_new_case_flag_in_first_position() {
 
-        CaseFlag existingCaseFlag1 = caseFlag1;
-        when(existingCaseFlagById1.getValue()).thenReturn(existingCaseFlag1);
-
-        CaseFlag existingCaseFlag2 = caseFlag2;
-        when(existingCaseFlagById2.getValue()).thenReturn(existingCaseFlag2);
+        when(existingCaseFlagById1.getValue()).thenReturn(caseFlag1);
+        when(existingCaseFlagById2.getValue()).thenReturn(caseFlag2);
 
         List<IdValue<CaseFlag>> existingCaseFlags = Arrays.asList(existingCaseFlagById1, existingCaseFlagById2);
 
@@ -66,10 +63,10 @@ public class CaseFlagAppenderTest {
         assertEquals(newCaseFlagAdditionalInformation, allCaseFlags.get(2).getValue().getCaseFlagAdditionalInformation());
 
         assertEquals("2", allCaseFlags.get(1).getId());
-        assertEquals(existingCaseFlag2, allCaseFlags.get(1).getValue());
+        assertEquals(caseFlag2, allCaseFlags.get(1).getValue());
 
         assertEquals("3", allCaseFlags.get(0).getId());
-        assertEquals(existingCaseFlag1, allCaseFlags.get(0).getValue());
+        assertEquals(caseFlag1, allCaseFlags.get(0).getValue());
     }
 
     @Test

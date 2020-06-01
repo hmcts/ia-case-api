@@ -674,6 +674,12 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION(
         "caseFlagComplexCaseAdditionalInformation", new TypeReference<String>() {}),
 
+    CASE_FLAG_DEPORT_EXISTS(
+        "caseFlagDeportExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION(
+        "caseFlagDeportAdditionalInformation", new TypeReference<String>() {}),
+
     CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS(
         "caseFlagDetainedImmigrationAppealExists", new TypeReference<YesOrNo>() {}),
 

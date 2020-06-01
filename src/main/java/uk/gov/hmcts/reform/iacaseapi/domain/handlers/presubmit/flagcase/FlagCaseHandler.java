@@ -79,6 +79,10 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase.write(CASE_FLAG_COMPLEX_CASE_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION, additionalInformation);
                 break;
+            case DEPORT:
+                asylumCase.write(CASE_FLAG_DEPORT_EXISTS, YesOrNo.YES);
+                asylumCase.write(CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION, additionalInformation);
+                break;
             case DETAINED_IMMIGRATION_APPEAL:
                 asylumCase.write(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION, additionalInformation);
