@@ -6,15 +6,14 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.FLAG_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,7 +106,7 @@ public class FlagCaseMidEventHandlerTest {
         PreSubmitCallbackResponse<AsylumCase> actualAsylumCase = handler.handle(MID_EVENT, callback);
 
         String actualAdditionalInfo = actualAsylumCase.getData()
-            .read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class).orElse(null);
+            .read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class).orElse(StringUtils.EMPTY);
 
         assertThat(actualAdditionalInfo).isEqualTo(existingAdditionalInfo);
     }
