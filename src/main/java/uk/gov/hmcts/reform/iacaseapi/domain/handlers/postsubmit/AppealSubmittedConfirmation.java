@@ -49,8 +49,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
 
-            StringBuffer confirmationBody =
-                new StringBuffer("#### What happens next\n\n"
+            StringBuilder confirmationBody =
+                new StringBuilder("#### What happens next\n\n"
                                  + "You will receive an email confirming that this appeal has been submitted successfully.");
 
             if (appealType.equals(AppealType.EA)

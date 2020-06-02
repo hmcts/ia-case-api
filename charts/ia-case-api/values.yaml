@@ -43,4 +43,3 @@ java:
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS
         - AppInsightsInstrumentationKey
-        - launch-darkly-sdk-key

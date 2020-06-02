@@ -21,9 +21,6 @@ health:
     notificationApi:
       uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
       response: '"status":"UP"'
-    paymentApi:
-      uri: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}/health
-      response: '"status":"UP"'
     professionalApi:
       uri: ${PROF_REF_DATA_URL:http://127.0.0.1:8991}/health
       response: '"status":"UP"'
@@ -264,7 +261,3 @@ launchDarkly:
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
 
-launchDarkly:
-  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
-  connectionTimeout: 5
-  socketTimeout: 5

@@ -717,7 +717,9 @@ public enum AsylumCaseFieldDefinition {
     REMOVE_FLAG_TYPE_OF_FLAG(
         "removeFlagTypeOfFlag", new TypeReference<DynamicList>() {}),
     REQUEST_CMA_REQUIREMENTS_REASONS(
-            "requestCmaRequirementsReasons", new TypeReference<String>() {})
+            "requestCmaRequirementsReasons", new TypeReference<String>() {}),
+    IS_FEE_PAYMENT_ENABLED(
+            "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
     ;
 
     private final String value;
