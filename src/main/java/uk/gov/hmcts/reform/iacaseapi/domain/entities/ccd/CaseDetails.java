@@ -47,10 +47,6 @@ public class CaseDetails<T extends CaseData> {
 
     public State getState() {
 
-        if (state == null) {
-            throw new RequiredFieldMissingException("state field is required");
-        }
-
         return state;
     }
 
@@ -64,10 +60,6 @@ public class CaseDetails<T extends CaseData> {
     }
 
     public LocalDateTime getCreatedDate() {
-
-        if (createdDate == null) {
-            throw new RequiredFieldMissingException("createdDate field is required");
-        }
 
         return createdDate;
     }
