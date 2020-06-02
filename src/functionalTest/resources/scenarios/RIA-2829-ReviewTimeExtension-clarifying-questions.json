@@ -1,0 +1,102 @@
+{
+  "description": "RIA-2829: [Clarifying questions] - Case officer can review a time extension request",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "reviewTimeExtension",
+      "state": "awaitingClarifyingQuestionsAnswers",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "You need to answer some questions about your appeal.",
+                "parties": "appellant",
+                "dateDue": "{$TODAY+14}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestClarifyingQuestions",
+                "previousDates": [],
+                "clarifyingQuestions": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "question": "Question 1"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "timeExtensions": [
+            {
+              "id": "1",
+              "value": {
+                "requestDate": "{$TODAY}",
+                "reason": "time extension reason",
+                "state": "awaitingClarifyingQuestionsAnswers",
+                "status": "submitted",
+                "evidence": []
+              }
+            }
+          ],
+          "reviewTimeExtensionRequired": "Yes",
+          "reviewTimeExtensionDecision": "granted",
+          "reviewTimeExtensionDecisionReason": "decision reason",
+          "reviewTimeExtensionDueDate": "{$TODAY+14}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You need to answer some questions about your appeal.",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestClarifyingQuestions",
+              "previousDates": [],
+              "clarifyingQuestions": [
+                {
+                  "id": "1",
+                  "value": {
+                    "question": "Question 1"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "timeExtensions": [
+          {
+            "id": "1",
+            "value": {
+              "requestDate": "{$TODAY}",
+              "reason": "time extension reason",
+              "state": "awaitingClarifyingQuestionsAnswers",
+              "status": "granted",
+              "decision": "granted",
+              "decisionReason": "decision reason",
+              "evidence": [],
+              "decisionOutcomeDate": "{$TODAY+14}"
+            }
+          }
+        ],
+        "reviewTimeExtensionRequired": "No",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+
