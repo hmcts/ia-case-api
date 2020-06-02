@@ -49,16 +49,9 @@ public class CaseDetailsTest {
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("jurisdiction");
 
-        assertThatThrownBy(caseDetails::getState)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("state");
-
         assertThatThrownBy(caseDetails::getCaseData)
             .isExactlyInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("caseData");
 
-        assertThatThrownBy(caseDetails::getCreatedDate)
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessageContaining("createdDate");
     }
 }

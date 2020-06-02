@@ -74,6 +74,7 @@ public enum Event {
     FORCE_CASE_TO_CASE_UNDER_REVIEW("forceCaseToCaseUnderReview"),
     FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),
+    PAYMENT_APPEAL("paymentAppeal"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

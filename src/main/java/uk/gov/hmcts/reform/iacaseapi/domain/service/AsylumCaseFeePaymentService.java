@@ -14,25 +14,40 @@ public class AsylumCaseFeePaymentService implements FeePayment<AsylumCase> {
     private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
     private final String feePaymentApiEndpoint;
     private final String aboutToSubmitPath;
+    private final String aboutToStartPath;
 
     public AsylumCaseFeePaymentService(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
         @Value("${paymentApi.endpoint}") String feePaymentApiEndpoint,
-        @Value("${paymentApi.aboutToSubmitPath}") String aboutToSubmitPath
+        @Value("${paymentApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${paymentApi.aboutToStartPath}") String aboutToStartPath
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.feePaymentApiEndpoint = feePaymentApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
+        this.aboutToStartPath = aboutToStartPath;
     }
 
-    public AsylumCase send(
-        Callback<AsylumCase> callback
+    public AsylumCase aboutToStart(
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
         return asylumCaseCallbackApiDelegator.delegate(
-            callback,
+                callback,
+                feePaymentApiEndpoint + aboutToStartPath
+        );
+    }
+
+    public AsylumCase aboutToSubmit(
+            Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callback, "callback must not be null");
+
+        return asylumCaseCallbackApiDelegator.delegate(
+                callback,
                 feePaymentApiEndpoint + aboutToSubmitPath
         );
     }
+
 }
