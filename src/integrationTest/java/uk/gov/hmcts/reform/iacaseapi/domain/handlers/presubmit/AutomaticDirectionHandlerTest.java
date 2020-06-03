@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -37,6 +39,12 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest {
     public void setupTimedEventServiceStub() {
 
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
+
+        given.someLoggedIn(userWith()
+            .roles(newHashSet("caseworker-ia", "caseworker-ia-caseofficer"))
+            .forename("Case")
+            .surname("Officer")
+        );
 
         stubFor(post(urlEqualTo("/timed-event-service/timed-event"))
             .willReturn(aResponse()

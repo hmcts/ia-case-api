@@ -39,5 +39,6 @@ java:
         - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
+        - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS
         - AppInsightsInstrumentationKey
