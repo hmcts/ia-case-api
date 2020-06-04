@@ -33,6 +33,7 @@ java:
         - prof-ref-data-url
         - docmosis-enabled
         - em-stitching-enabled
+        - launch-darkly-sdk-key
   postgresql:
     #Whether to deploy the Postgres Chart or not
     enabled: true

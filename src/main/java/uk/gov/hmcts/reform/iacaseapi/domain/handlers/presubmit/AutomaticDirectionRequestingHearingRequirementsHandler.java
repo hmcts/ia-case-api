@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
@@ -26,17 +27,20 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
     private final int reviewDueInDays;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
+    private final FeatureToggler featureToggler;
 
     public AutomaticDirectionRequestingHearingRequirementsHandler(
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
         @Value("${legalRepresentativeReview.dueInDays}") int reviewDueInDays,
         DateProvider dateProvider,
-        Scheduler scheduler
+        Scheduler scheduler,
+        FeatureToggler featureToggler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
         this.reviewDueInDays = reviewDueInDays;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -69,12 +73,20 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
                 .getCaseDetails()
                 .getCaseData();
 
+
+        ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault());
+
+        if (featureToggler.getValue("timed-event-short-delay", false)) {
+            int scheduleDelayInMinutes = 10;
+            scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
+        }
+
         TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(
                 "",
                 Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
                 // + 1 because you want to have full day on due date day for any changes and trigger event at night
-                ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault()),
+                scheduledDate,
                 "IA",
                 "Asylum",
                 callback.getCaseDetails().getId()

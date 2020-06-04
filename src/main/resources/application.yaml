@@ -248,5 +248,10 @@ idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
 
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5
+  socketTimeout: 5
+
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
