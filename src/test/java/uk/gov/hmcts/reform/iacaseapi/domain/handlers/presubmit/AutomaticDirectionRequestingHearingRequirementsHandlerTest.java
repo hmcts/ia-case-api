@@ -120,7 +120,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         TimedEvent timedEvent = new TimedEvent(
             id,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-            ZonedDateTime.of(nowWithTime, ZoneId.systemDefault()).plusMinutes(10),
+            ZonedDateTime.of(nowWithTime, ZoneId.systemDefault()).plusMinutes(5),
             jurisdiction,
             caseType,
             caseId
