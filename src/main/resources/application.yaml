@@ -191,7 +191,7 @@ security:
       - "flagCase"
       - "removeFlag"
     caseworker-ia-homeofficeapc:
-      - "uploadHomeOfficeBundle"
+      - "uploadRespondentBundle"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
     caseworker-ia-homeofficelart:
@@ -204,7 +204,7 @@ security:
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
     caseworker-ia-respondentofficer:
-      - "uploadHomeOfficeBundle"
+      - "uploadRespondentBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"

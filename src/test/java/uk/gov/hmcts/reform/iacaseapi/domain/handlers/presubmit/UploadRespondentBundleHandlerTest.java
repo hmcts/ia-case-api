@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundleHandlerTest {
+public class UploadRespondentBundleHandlerTest {
 
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
@@ -59,12 +59,12 @@ public class UploadHomeOfficeBundleHandlerTest {
 
     @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
 
-    private UploadHomeOfficeBundleHandler uploadHomeOfficeBundleHandler;
+    private UploadRespondentBundleHandler uploadRespondentBundleHandler;
 
     @Before
     public void setUp() {
-        uploadHomeOfficeBundleHandler =
-            new UploadHomeOfficeBundleHandler(
+        uploadRespondentBundleHandler =
+            new UploadRespondentBundleHandler(
                 documentReceiver,
                 documentsAppender
             );
@@ -86,7 +86,7 @@ public class UploadHomeOfficeBundleHandlerTest {
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_BUNDLE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(existingRespondentDocuments));
         when(asylumCase.read(HOME_OFFICE_BUNDLE)).thenReturn(Optional.of(respondentEvidence));
@@ -101,7 +101,7 @@ public class UploadHomeOfficeBundleHandlerTest {
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -124,7 +124,7 @@ public class UploadHomeOfficeBundleHandlerTest {
         List<DocumentWithMetadata> respondentEvidenceWithMetadata = singletonList(respondentEvidence1WithMetadata);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_BUNDLE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_BUNDLE)).thenReturn(Optional.of(respondentEvidence));
@@ -136,7 +136,7 @@ public class UploadHomeOfficeBundleHandlerTest {
             .thenReturn(allRespondentDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -162,12 +162,12 @@ public class UploadHomeOfficeBundleHandlerTest {
     public void should_throw_when_new_evidence_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_BUNDLE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(HOME_OFFICE_BUNDLE)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("respondentEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
@@ -176,12 +176,12 @@ public class UploadHomeOfficeBundleHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
@@ -196,9 +196,9 @@ public class UploadHomeOfficeBundleHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = uploadHomeOfficeBundleHandler.canHandle(callbackStage, callback);
+                boolean canHandle = uploadRespondentBundleHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.UPLOAD_HOME_OFFICE_BUNDLE
+                if (event == Event.UPLOAD_RESPONDENT_BUNDLE
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -214,19 +214,19 @@ public class UploadHomeOfficeBundleHandlerTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(null, callback))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> uploadRespondentBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

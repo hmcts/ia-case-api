@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class UploadHomeOfficeBundleConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class UploadRespondentBundleConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE;
+        return callback.getEvent() == Event.UPLOAD_RESPONDENT_BUNDLE;
     }
 
     public PostSubmitCallbackResponse handle(

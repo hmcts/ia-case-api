@@ -26,12 +26,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class UploadHomeOfficeBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadRespondentBundleHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UploadHomeOfficeBundleHandler(
+    public UploadRespondentBundleHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -47,7 +47,7 @@ public class UploadHomeOfficeBundleHandler implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE;
+               && callback.getEvent() == Event.UPLOAD_RESPONDENT_BUNDLE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

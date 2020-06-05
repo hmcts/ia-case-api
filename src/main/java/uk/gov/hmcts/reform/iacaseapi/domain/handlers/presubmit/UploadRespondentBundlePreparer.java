@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class UploadHomeOfficeBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadRespondentBundlePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
 
     public boolean canHandle(
@@ -33,7 +33,7 @@ public class UploadHomeOfficeBundlePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && (callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE || callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE);
+               && (callback.getEvent() == Event.UPLOAD_RESPONDENT_BUNDLE || callback.getEvent() == Event.UPLOAD_RESPONDENT_EVIDENCE);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,7 +51,7 @@ public class UploadHomeOfficeBundlePreparer implements PreSubmitCallbackHandler<
 
         final Optional<YesOrNo> uploadHomeOfficeBundleAvailable = asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE);
 
-        if (callback.getEvent() == Event.UPLOAD_HOME_OFFICE_BUNDLE && uploadHomeOfficeBundleAvailable.isPresent() && uploadHomeOfficeBundleAvailable.get() == YesOrNo.NO) {
+        if (callback.getEvent() == Event.UPLOAD_RESPONDENT_BUNDLE && uploadHomeOfficeBundleAvailable.isPresent() && uploadHomeOfficeBundleAvailable.get() == YesOrNo.NO) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You cannot upload more documents until the evidence bundle has been reviewed");
             return asylumCasePreSubmitCallbackResponse;

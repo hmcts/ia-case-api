@@ -14,7 +14,7 @@ public class EventTest {
         assertEquals("sendDirection", Event.SEND_DIRECTION.toString());
         assertEquals("requestRespondentEvidence", Event.REQUEST_RESPONDENT_EVIDENCE.toString());
         assertEquals("uploadRespondentEvidence", Event.UPLOAD_RESPONDENT_EVIDENCE.toString());
-        assertEquals("uploadHomeOfficeBundle", Event.UPLOAD_HOME_OFFICE_BUNDLE.toString());
+        assertEquals("uploadRespondentBundle", Event.UPLOAD_RESPONDENT_BUNDLE.toString());
         assertEquals("buildCase", Event.BUILD_CASE.toString());
         assertEquals("submitCase", Event.SUBMIT_CASE.toString());
         assertEquals("requestCaseEdit", Event.REQUEST_CASE_EDIT.toString());

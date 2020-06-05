@@ -11,7 +11,7 @@ public enum Event {
     SEND_DIRECTION("sendDirection"),
     REQUEST_RESPONDENT_EVIDENCE("requestRespondentEvidence"),
     UPLOAD_RESPONDENT_EVIDENCE("uploadRespondentEvidence"),
-    UPLOAD_HOME_OFFICE_BUNDLE("uploadHomeOfficeBundle"),
+    UPLOAD_RESPONDENT_BUNDLE("uploadRespondentBundle"),
     BUILD_CASE("buildCase"),
     SUBMIT_CASE("submitCase"),
     REQUEST_CASE_EDIT("requestCaseEdit"),

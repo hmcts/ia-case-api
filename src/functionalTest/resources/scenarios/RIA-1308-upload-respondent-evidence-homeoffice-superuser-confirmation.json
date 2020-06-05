@@ -4,7 +4,7 @@
     "uri": "/asylum/ccdSubmitted",
     "credentials": "HomeOfficeGeneric",
     "input": {
-      "eventId": "uploadHomeOfficeBundle",
+      "eventId": "uploadRespondentBundle",
       "state": "awaitingRespondentEvidence",
       "id": 1234,
       "caseData": {

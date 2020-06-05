@@ -20,17 +20,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundleConfirmationTest {
+public class UploadRespondentBundleConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
 
-    private UploadHomeOfficeBundleConfirmation hoUploadRespondentEvidenceConfirmation =
-        new UploadHomeOfficeBundleConfirmation();
+    private UploadRespondentBundleConfirmation hoUploadRespondentEvidenceConfirmation =
+        new UploadRespondentBundleConfirmation();
 
     @Test
     public void should_return_confirmation() {
 
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_BUNDLE);
 
         PostSubmitCallbackResponse callbackResponse =
             hoUploadRespondentEvidenceConfirmation.handle(callback);
@@ -67,7 +67,7 @@ public class UploadHomeOfficeBundleConfirmationTest {
 
             boolean canHandle = hoUploadRespondentEvidenceConfirmation.canHandle(callback);
 
-            if (event == Event.UPLOAD_HOME_OFFICE_BUNDLE) {
+            if (event == Event.UPLOAD_RESPONDENT_BUNDLE) {
 
                 assertTrue(canHandle);
             } else {
