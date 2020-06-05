@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -57,7 +58,10 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
 
         return timedEventServiceEnabled
                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Event.REQUEST_RESPONSE_REVIEW == callback.getEvent();
+               && Arrays.asList(
+                    Event.REQUEST_RESPONSE_REVIEW,
+                    Event.ADD_APPEAL_RESPONSE)
+                   .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
