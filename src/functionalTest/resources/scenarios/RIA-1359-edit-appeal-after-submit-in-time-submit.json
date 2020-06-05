@@ -10,6 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "hasNewMatters": "No",
+          "newMatters": "Birth of a child",
           "appellantHasFixedAddress": "Yes",
           "appellantAddress": {
             "PostCode": "M1 2AB"
@@ -53,6 +55,8 @@
       "replacements": {
         "appellantHasFixedAddress": "Yes",
         "hearingCentre": "manchester",
+        "hasNewMatters": "No",
+        "newMatters": null,
         "applications": [
           {
             "id": "1",
