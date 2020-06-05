@@ -10,6 +10,11 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "PostCode": "M1 2AB"
+          },
+          "hearingCentre": "glasgow",
           "applicationEditAppealAfterSubmitExists": "Yes",
           "applications": [
             {
@@ -46,6 +51,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "appellantHasFixedAddress": "Yes",
+        "hearingCentre": "manchester",
         "applications": [
           {
             "id": "1",
