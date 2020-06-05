@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
@@ -117,8 +118,12 @@ public class AddAppealResponseHandler implements PreSubmitCallbackHandler<Asylum
         asylumCase.write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
 
         asylumCase.write(APPEAL_RESPONSE_AVAILABLE, YES);
-        asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YES);
+        asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, NO);
         asylumCase.write(AMEND_RESPONSE_ACTION_AVAILABLE, YES);
+
+        asylumCase.write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YES);
+
+        asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, NO);
 
         asylumCase.clear(APPEAL_RESPONSE_DOCUMENT);
         asylumCase.clear(APPEAL_RESPONSE_DESCRIPTION);
