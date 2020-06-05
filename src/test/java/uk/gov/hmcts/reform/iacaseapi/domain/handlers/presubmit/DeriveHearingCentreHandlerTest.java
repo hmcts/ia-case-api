@@ -6,11 +6,16 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -22,9 +27,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
-@RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
+@RunWith(JUnitParamsRunner.class)
 public class DeriveHearingCentreHandlerTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -42,10 +50,14 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_derive_hearing_centre_from_appellant_postcode() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    public void should_derive_hearing_centre_from_appellant_postcode(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -64,10 +76,14 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
@@ -124,7 +140,7 @@ public class DeriveHearingCentreHandlerTest {
 
                 boolean canHandle = deriveHearingCentreHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.SUBMIT_APPEAL)
+                if ((event == Event.SUBMIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

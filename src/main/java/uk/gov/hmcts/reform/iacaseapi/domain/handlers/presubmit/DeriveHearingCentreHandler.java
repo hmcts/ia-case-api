@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -36,8 +38,9 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        List<Event> validEvents = Arrays.asList(Event.SUBMIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT);
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && validEvents.contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -53,7 +56,8 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!asylumCase.read(HEARING_CENTRE).isPresent()) {
+        if (!asylumCase.read(HEARING_CENTRE).isPresent()
+            || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
             trySetHearingCentreFromPostcode(asylumCase);
         }
