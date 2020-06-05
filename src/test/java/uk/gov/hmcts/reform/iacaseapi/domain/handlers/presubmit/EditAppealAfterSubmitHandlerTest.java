@@ -37,6 +37,7 @@ public class EditAppealAfterSubmitHandlerTest {
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
     @Mock private Callback<AsylumCase> callback;
+
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
@@ -72,7 +73,8 @@ public class EditAppealAfterSubmitHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
-        when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class)).thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
+        when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class))
+            .thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
     }
 
     @Test
@@ -96,6 +98,8 @@ public class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
         verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
 
+        verify(asylumCase).clear(NEW_MATTERS);
+
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }
 
@@ -117,6 +121,8 @@ public class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
         verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
+
+        verify(asylumCase).clear(NEW_MATTERS);
 
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -84,9 +85,17 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
             State maybePreviousState = asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
+            clearNewMatters(asylumCase);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void clearNewMatters(AsylumCase asylumCase) {
+        YesOrNo hasNewMatters = asylumCase.read(HAS_NEW_MATTERS, YesOrNo.class).orElse(NO);
+        if (NO.equals(hasNewMatters)) {
+            asylumCase.clear(NEW_MATTERS);
+        }
     }
 
     private void changeEditAppealApplicationsToCompleted(AsylumCase asylumCase) {

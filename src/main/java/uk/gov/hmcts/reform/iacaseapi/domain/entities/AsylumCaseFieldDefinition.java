@@ -66,6 +66,12 @@ public enum AsylumCaseFieldDefinition {
     HAS_OTHER_APPEALS(
         "hasOtherAppeals", new TypeReference<String>(){}),
 
+    NEW_MATTERS(
+        "newMatters", new TypeReference<String>(){}),
+
+    HAS_NEW_MATTERS(
+        "hasNewMatters", new TypeReference<YesOrNo>(){}),
+
     APPEAL_REFERENCE_NUMBER(
         "appealReferenceNumber", new TypeReference<String>(){}),
 
