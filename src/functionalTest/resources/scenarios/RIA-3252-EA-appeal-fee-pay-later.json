@@ -1,0 +1,44 @@
+{
+  "description": "RIA-3252 Pay later for appeal type EA",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "payForTheAppeal": "payLater",
+          "appealType": "refusalOfEu",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "accountNumber": "PBA0072626",
+          "paymentDescription": "An IA pba test payment",
+          "customerReference": "543232",
+          "feeCode": "FEE0238",
+          "feeDescription": "Appeal determined with a hearing",
+          "feeVersion": 2,
+          "feeAmount": 140.0
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfEu",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeCode": "FEE0238",
+        "feeDescription": "Appeal determined with a hearing",
+        "feeVersion": 2,
+        "feeAmount": 140.0,
+        "paymentStatus":"Payment due",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

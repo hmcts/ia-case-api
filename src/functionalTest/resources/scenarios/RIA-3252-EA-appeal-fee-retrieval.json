@@ -1,0 +1,34 @@
+{
+  "description": "RIA-3252 Retrieve appeal submission fee for appeal type EA",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "oralFeeAmountForDisplay": "£140.00",
+        "appealFeeDesc": "The fee for this type of appeal with a hearing is £140.00",
+        "feeCode": "FEE0238",
+        "feeDescription": "Appeal determined with a hearing",
+        "feeVersion": 2,
+        "feeAmount": 140.0
+      }
+    }
+  }
+}
