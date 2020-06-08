@@ -170,4 +170,3 @@ resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   key_vault_id = "${data.azurerm_key_vault.ia_key_vault.id}"
 }
 
-}
