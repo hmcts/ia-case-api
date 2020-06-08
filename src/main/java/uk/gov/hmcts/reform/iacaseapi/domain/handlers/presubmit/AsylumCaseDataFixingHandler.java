@@ -51,8 +51,9 @@ public class AsylumCaseDataFixingHandler implements PreSubmitCallbackHandler<Asy
         final CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
         final AsylumCase asylumCase = caseDetails.getCaseData();
 
+        // it is commented out for future usages if needed
         // feature toggler temporary placed for keeping footprint for all users in LD register
-        featureToggler.getValue("timed-event-short-delay", false);
+        // featureToggler.getValue("timed-event-short-delay", false);
 
         dataFixers.forEach(df -> df.fix(asylumCase));
 
