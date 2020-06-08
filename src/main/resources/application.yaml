@@ -221,6 +221,8 @@ security:
       - "submitClarifyingQuestionAnswers"
       - "editTimeExtension"
       - "submitTimeExtension"
+      - "editCmaRequirements"
+      - "submitCmaRequirements"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
