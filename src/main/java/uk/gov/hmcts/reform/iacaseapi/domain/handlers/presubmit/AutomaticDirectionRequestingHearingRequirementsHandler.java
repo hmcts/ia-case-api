@@ -77,7 +77,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault());
 
         if (featureToggler.getValue("timed-event-short-delay", false)) {
-            int scheduleDelayInMinutes = 10;
+            int scheduleDelayInMinutes = 5;
             scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
         }
 
