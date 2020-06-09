@@ -1,0 +1,69 @@
+{
+  "description": "RIA-3298 Remove deport flag from case",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "removeFlag",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseFlags": [
+            {
+              "id": "1",
+              "value": {
+                "caseFlagType": "deport",
+                "caseFlagAdditionalInformation": "some additional information"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "caseFlagType": "anonymity",
+                "caseFlagAdditionalInformation": "some additional information"
+              }
+            }
+          ],
+          "removeFlagTypeOfFlag": {
+            "value": {
+              "code": "1",
+              "label": "Deport"
+            },
+            "list_items": [
+              {
+                "code": "1",
+                "label": "Deport"
+              },
+              {
+                "code": "2",
+                "label": "Anonymity"
+              }
+            ]
+          },
+          "caseFlagDeportExists": "Yes",
+          "flagCaseAdditionalInformation": "some additional information"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseFlags": [
+          {
+            "id": "2",
+            "value": {
+              "caseFlagType": "anonymity",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
