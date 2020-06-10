@@ -16,6 +16,12 @@ public class ContactPreferenceTest {
     }
 
     @Test
+    public void has_correct_asylum_contact_preference_description() {
+        assertEquals("Email", ContactPreference.WANTS_EMAIL.getDescription());
+        assertEquals("Text message", ContactPreference.WANTS_SMS.getDescription());
+    }
+
+    @Test
     public void returns_optional_for_unknown_contact_preference() {
         assertThat(ContactPreference.from("some_unknown_type"), is(Optional.empty()));
     }
