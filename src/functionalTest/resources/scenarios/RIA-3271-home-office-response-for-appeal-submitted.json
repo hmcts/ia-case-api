@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
+  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0061-7075"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0061-7075",
+        "contactPreferenceDescription": "Text message",
+        "appealTypeDescription": "Refusal of protection claim",
+        "homeOfficeSearchStatus": "SUCCESS"
+      }
+    }
+  }
+}

@@ -21,6 +21,9 @@ health:
     notificationApi:
       uri: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}/health
       response: '"status":"UP"'
+    homeOfficeApi:
+      uri: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}/health
+      response: '"status":"UP"'
     professionalApi:
       uri: ${PROF_REF_DATA_URL:http://127.0.0.1:8991}/health
       response: '"status":"UP"'
@@ -74,6 +77,7 @@ featureFlag:
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
   isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:true}
+  isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
@@ -110,6 +114,10 @@ notificationsApi:
 paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToStartPath: "/asylum/ccdAboutToStart"
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
+homeOfficeApi:
+  endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 emBundler.url: ${EM_BUNDLER_URL:http://localhost:4623}

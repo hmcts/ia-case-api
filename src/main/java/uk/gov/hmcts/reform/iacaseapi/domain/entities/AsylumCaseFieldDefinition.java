@@ -4,12 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
 public enum AsylumCaseFieldDefinition {
 
-    
+
     BUNDLE_CONFIGURATION(
         "bundleConfiguration", new TypeReference<String>(){}),
 
@@ -46,6 +53,9 @@ public enum AsylumCaseFieldDefinition {
     CONTACT_PREFERENCE(
         "contactPreference", new TypeReference<ContactPreference>(){}),
 
+    CONTACT_PREFERENCE_DESCRIPTION(
+        "contactPreferenceDescription", new TypeReference<String>(){}),
+
     EMAIL(
         "email", new TypeReference<String>(){}),
 
@@ -54,6 +64,9 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
+
+    APPEAL_TYPE_DESCRIPTION(
+        "appealTypeDescription", new TypeReference<String>(){}),
 
     APPEAL_GROUNDS_PROTECTION(
         "appealGroundsProtection", new TypeReference<CheckValues<String>>(){}),
@@ -927,6 +940,15 @@ public enum AsylumCaseFieldDefinition {
 
     CUSTOM_HEARING_DOCUMENTS(
             "customHearingDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    HOME_OFFICE_CASE_STATUS_DATA(
+        "homeOfficeCaseStatusData", new TypeReference<HomeOfficeCaseStatus>() {}),
+
+    HOME_OFFICE_SEARCH_STATUS(
+        "homeOfficeSearchStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_INSTRUCT_STATUS(
+        "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
