@@ -190,6 +190,7 @@ security:
       - "requestCmaRequirements"
       - "reviewCmaRequirements"
       - "forceCaseToCaseUnderReview"
+      - "updateDetailsAfterCma"
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
