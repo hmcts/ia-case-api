@@ -718,7 +718,12 @@ public enum AsylumCaseFieldDefinition {
         "removeFlagTypeOfFlag", new TypeReference<DynamicList>() {}),
     REQUEST_CMA_REQUIREMENTS_REASONS(
             "requestCmaRequirementsReasons", new TypeReference<String>() {}),
-
+    APPELLANT_DOCUMENTS(
+            "appellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    REASONS_FOR_APPEAL_DOCUMENTS(
+            "reasonsForAppealDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    CLARIFYING_QUESTIONS_ANSWERS("clarifyingQuestionsAnswers",
+            new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
         "reasonToForceCaseToCaseUnderReview", new TypeReference<String>(){}),
 

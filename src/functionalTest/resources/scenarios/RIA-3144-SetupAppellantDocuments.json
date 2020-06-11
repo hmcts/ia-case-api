@@ -1,0 +1,130 @@
+{
+  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 1122,
+      "eventId": "submitClarifyingQuestionAnswers",
+      "state": "awaitingClarifyingQuestionsAnswers",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "reasonsForAppealDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-case-argument-evidence.pdf"
+                },
+                "dateUploaded": "2020-01-01",
+                "tag": "additionalEvidence",
+                "description": "Some case argument evidence"
+              }
+            }
+          ],
+          "clarifyingQuestionsAnswers": [
+            {
+              "id": "608e6eba-a8d6-4c3a-b95f-53e1cd7e7407",
+              "value": {
+                "answer": "answer1",
+                "dueDate": "2020-06-25",
+                "dateSent": "2020-05-28",
+                "question": "A question",
+                "dateResponded": "2020-05-28",
+                "supportingEvidence": [
+                  {
+                    "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
+                    "value": {
+                      "document_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae",
+                      "document_filename": "Screenshot 2020-05-20 at 14.42.55.png",
+                      "document_binary_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae/binary"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "reasonsForAppealDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-case-argument-evidence.pdf"
+              },
+              "dateUploaded": "2020-01-01",
+              "tag": "additionalEvidence",
+              "description": "Some case argument evidence"
+            }
+          }
+        ],
+        "clarifyingQuestionsAnswers": [
+          {
+            "id": "608e6eba-a8d6-4c3a-b95f-53e1cd7e7407",
+            "value": {
+              "answer": "answer1",
+              "dueDate": "2020-06-25",
+              "dateSent": "2020-05-28",
+              "question": "A question",
+              "dateResponded": "2020-05-28",
+              "supportingEvidence": [
+                {
+                  "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
+                  "value": {
+                    "document_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae",
+                    "document_filename": "Screenshot 2020-05-20 at 14.42.55.png",
+                    "document_binary_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae/binary"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "appellantDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-case-argument-evidence.pdf"
+              },
+              "dateUploaded": "2020-01-01",
+              "tag": "additionalEvidence",
+              "description": "Some case argument evidence"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae",
+                "document_filename": "Screenshot 2020-05-20 at 14.42.55.png",
+                "document_binary_url": "http://dm-store:4506/documents/0f8f7f89-311c-43f9-b7f2-c8c861a448ae/binary"
+              },
+              "dateUploaded": "2020-05-28",
+              "tag": "additionalEvidence",
+              "description": "Clarifying question evidence"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+
