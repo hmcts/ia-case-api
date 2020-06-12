@@ -21,6 +21,7 @@ plugins {
     id 'org.sonarqube' version '2.6.2'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'au.com.dius.pact' version '3.5.24'
+    id "io.freefair.lombok" version "5.1.0"
 }
 
 apply plugin: 'java'
