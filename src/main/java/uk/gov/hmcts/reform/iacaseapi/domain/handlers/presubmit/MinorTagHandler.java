@@ -32,8 +32,7 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
-        return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent())
-            && isAppellantMinor(callback.getCaseDetails().getCaseData());
+        return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent());
     }
 
     @Override
@@ -44,14 +43,21 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.YES);
+        setAppellantMinorFlag(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private void setAppellantMinorFlag(AsylumCase asylumCase) {
+        if (isAppellantMinor(asylumCase)) {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.YES);
+        } else {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.NO);
+        }
+    }
+
     private boolean isAppellantDobValid(AsylumCase asylumCase) {
-        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
-            .orElse(null);
+        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
         if (appellantDobAsString != null) {
             return isAppellantDobAValidDate(appellantDobAsString);
         }

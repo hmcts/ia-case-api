@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import junitparams.converters.Nullable;
 import lombok.Value;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,10 +52,6 @@ public class MinorTagHandlerTest {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(APPELLANT_DATE_OF_BIRTH, scenario.appellantDob);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
         boolean canHandleActual = minorTagHandler.canHandle(scenario.callbackStage, callback);
 
         assertThat(canHandleActual).isEqualTo(scenario.canHandledExpected);
@@ -70,7 +65,6 @@ public class MinorTagHandlerTest {
     private static class CanHandleTestScenario {
         PreSubmitCallbackStage callbackStage;
         Event event;
-        String appellantDob;
         boolean canHandledExpected;
 
         private static List<CanHandleTestScenario> builder() {
@@ -80,33 +74,25 @@ public class MinorTagHandlerTest {
                 if (validEvents.contains(event)) {
                     for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                         if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
-                            buildScenarios(scenarios, event, ABOUT_TO_SUBMIT, true);
+                            scenarios.add(new CanHandleTestScenario(ABOUT_TO_SUBMIT, event, true));
                         } else {
-                            buildScenarios(scenarios, event, callbackStage, false);
+                            scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
                         }
                     }
                 } else {
                     for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                        buildScenarios(scenarios, event, callbackStage, false);
+                        scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
                     }
                 }
             }
             return scenarios;
         }
 
-        private static void buildScenarios(List<CanHandleTestScenario> scenarios, Event event,
-                                           PreSubmitCallbackStage callbackStage, boolean canHandledExpected) {
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_ADULT, false));
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, APPELLANT_MINOR, canHandledExpected));
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, "", false));
-            scenarios.add(new CanHandleTestScenario(callbackStage, event, null, false));
-        }
-
     }
 
     @Test
     @Parameters(method = "generateAppellantDobScenarios")
-    public void given_minor_appellant_should_tag_case_as_minor(AppellantDobScenario scenario) {
+    public void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -118,7 +104,6 @@ public class MinorTagHandlerTest {
 
         YesOrNo isAppellantMinor = actual.getData().read(IS_APPELLANT_MINOR, YesOrNo.class)
             .orElse(null);
-
         assertThat(isAppellantMinor).isEqualTo(scenario.isAppellantMinorExpected);
     }
 
@@ -135,7 +120,9 @@ public class MinorTagHandlerTest {
         private static List<AppellantDobScenario> builder() {
             List<AppellantDobScenario> scenarios = new ArrayList<>();
             scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, SUBMIT_APPEAL, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, SUBMIT_APPEAL, YesOrNo.NO));
             scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.NO));
             return scenarios;
         }
 
@@ -162,18 +149,11 @@ public class MinorTagHandlerTest {
 
     @Test
     @Parameters({
-        "null, ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
-        "null, ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
-        ",ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
-        ",ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
-        "1979-02-15,ABOUT_TO_START, SUBMIT_APPEAL",
-        "1979-02-15,ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
-        "1979-02-15,ABOUT_TO_SUBMIT, START_APPEAL",
-        "1979-02-15,ABOUT_TO_SUBMIT, EDIT_APPEAL_AFTER_SUBMIT",
-        "1979-02-15,ABOUT_TO_SUBMIT, SUBMIT_APPEAL",
+        "ABOUT_TO_START, SUBMIT_APPEAL",
+        "ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
+        "ABOUT_TO_SUBMIT, START_APPEAL"
     })
-    public void given_adult_appellant_or_not_valid_dob_or_wrong_event_or_wrong_callback_should_throw_exception(
-        @Nullable String appellantDob,
+    public void given_wrong_event_or_wrong_callback_should_throw_exception(
         PreSubmitCallbackStage callbackStage,
         Event event) {
 
@@ -181,7 +161,7 @@ public class MinorTagHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(APPELLANT_DATE_OF_BIRTH, appellantDob);
+        asylumCase.write(APPELLANT_DATE_OF_BIRTH, APPELLANT_ADULT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> minorTagHandler.handle(callbackStage, callback))
