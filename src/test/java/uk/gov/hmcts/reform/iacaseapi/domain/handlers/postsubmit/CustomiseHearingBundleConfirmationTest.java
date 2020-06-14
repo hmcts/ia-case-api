@@ -16,23 +16,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
+
+
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class GenerateHearingBundleConfirmationTest {
+public class CustomiseHearingBundleConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
 
-    private GenerateHearingBundleConfirmation generateHearingBundleConfirmation =
-        new GenerateHearingBundleConfirmation();
+    private CustomiseHearingBundleConfirmation customiseHearingBundleConfirmation =
+        new CustomiseHearingBundleConfirmation();
 
     @Test
     public void should_return_confirmation() {
 
-        when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
+        when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
 
         PostSubmitCallbackResponse callbackResponse =
-            generateHearingBundleConfirmation.handle(callback);
+            customiseHearingBundleConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -61,7 +63,7 @@ public class GenerateHearingBundleConfirmationTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> generateHearingBundleConfirmation.handle(callback))
+        assertThatThrownBy(() -> customiseHearingBundleConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -73,9 +75,9 @@ public class GenerateHearingBundleConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = generateHearingBundleConfirmation.canHandle(callback);
+            boolean canHandle = customiseHearingBundleConfirmation.canHandle(callback);
 
-            if (event == Event.GENERATE_HEARING_BUNDLE) {
+            if (event == Event.CUSTOMISE_HEARING_BUNDLE) {
 
                 assertTrue(canHandle);
             } else {
@@ -89,11 +91,11 @@ public class GenerateHearingBundleConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> generateHearingBundleConfirmation.canHandle(null))
+        assertThatThrownBy(() -> customiseHearingBundleConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> generateHearingBundleConfirmation.handle(null))
+        assertThatThrownBy(() -> customiseHearingBundleConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

@@ -5,8 +5,21 @@ import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 
 public enum AsylumCaseFieldDefinition {
+
+    BUNDLE_CONFIGURATION(
+        "bundleConfiguration", new TypeReference<String>(){}),
+
+    CASE_BUNDLES(
+        "caseBundles", new TypeReference<List<IdValue<Bundle>>>(){}),
+
+    STITCHING_STATUS(
+        "stitchingStatus", new TypeReference<String>(){}),
+
+    BUNDLE_FILE_NAME_PREFIX(
+        "bundleFileNamePrefix", new TypeReference<String>(){}),
 
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>(){}),
@@ -902,7 +915,20 @@ public enum AsylumCaseFieldDefinition {
 
     DATES_TO_AVOID_READONLY(
         "datesToAvoidReadonly", new TypeReference<List<IdValue<DatesToAvoid>>>() {}),
+    HMCTS(
+            "hmcts", new TypeReference<String>(){}),
 
+    CUSTOM_HEARING_DOCUMENTS(
+            "customHearingDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_LEGAL_REP_DOCUMENTS(
+            "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_ADDITIONAL_EVIDENCE_DOCUMENTS(
+            "customAdditionalEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_RESPONDENT_DOCUMENTS(
+            "customRespondentDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){})
     ;
 
     private final String value;
