@@ -40,7 +40,7 @@ public class GenerateHearingBundleConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("You have generated the hearing bundle")
+            containsString("The hearing bundle is being generated")
         );
 
         assertThat(
@@ -51,8 +51,9 @@ public class GenerateHearingBundleConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString(
-                "You can view the hearing bundle in the documents tab. "
-                + "All parties have been notified that the hearing bundle is now available."
+                "You will soon be able to view the hearing bundle in the documents tab.</br>"
+                + "You and the other parties will be notified when the hearing bundle is available.</br>"
+                + "If the bundle fails to generate, you will be notified and will need to generate the bundle again."
             )
         );
     }
