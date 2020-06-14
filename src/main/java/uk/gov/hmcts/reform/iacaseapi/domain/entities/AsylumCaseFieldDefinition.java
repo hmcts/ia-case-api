@@ -5,8 +5,21 @@ import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 
 public enum AsylumCaseFieldDefinition {
+
+    BUNDLE_CONFIGURATION(
+        "bundleConfiguration", new TypeReference<String>(){}),
+
+    CASE_BUNDLES(
+        "caseBundles", new TypeReference<List<IdValue<Bundle>>>(){}),
+
+    STITCHING_STATUS(
+        "stitchingStatus", new TypeReference<String>(){}),
+
+    BUNDLE_FILE_NAME_PREFIX(
+        "bundleFileNamePrefix", new TypeReference<String>(){}),
 
     HOME_OFFICE_REFERENCE_NUMBER(
         "homeOfficeReferenceNumber", new TypeReference<String>(){}),

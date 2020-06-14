@@ -112,6 +112,9 @@ paymentApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
+emBundler.url: ${EM_BUNDLER_URL:http://localhost:4623}
+emBundler.stitch.uri: ${EM_BUNDLER_STITCH_URI:/api/new-bundle}
+
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
@@ -162,6 +165,7 @@ security:
       - "addAppealResponse"
       - "createCaseSummary"
       - "generateHearingBundle"
+      - "asyncStitchingComplete"
       - "revertStateToAwaitingRespondentEvidence"
       - "decisionAndReasonsStarted"
       - "generateDecisionAndReasons"
