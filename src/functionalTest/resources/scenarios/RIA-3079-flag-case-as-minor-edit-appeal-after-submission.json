@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3079: Flag minor cases when edit appeal after submission",
+  "description": "RIA-3079 flag case as minor when editAppealAfter submission",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isAppellantMinor": "No",
           "appellantDateOfBirth": "{$TODAY}"
         }
       }

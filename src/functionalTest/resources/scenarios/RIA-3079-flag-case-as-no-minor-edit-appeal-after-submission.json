@@ -1,15 +1,16 @@
 {
-  "description": "RIA-3079: Flag minor cases when appellant is an adult",
+  "description": "RIA-3079 flag case as no minor when editAppealAfterSubmission",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "CaseOfficer",
     "input": {
       "id": 1122,
-      "eventId": "submitAppeal",
-      "state": "appealStarted",
+      "eventId": "editAppealAfterSubmit",
+      "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isAppellantMinor": "Yes",
           "appellantDateOfBirth": "1979-02-15"
         }
       }
@@ -21,8 +22,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "isAppellantMinor": "No",
         "appellantDateOfBirth": "1979-02-15",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }

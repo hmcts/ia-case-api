@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3079: Flag minor cases",
+  "description": "RIA-3079 flag case as minor when submitAppeal",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
