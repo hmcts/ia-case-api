@@ -40,11 +40,38 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
+    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+
+        FeePaymentPreparer feePaymentPreparerWithDisabledPayment =
+            new FeePaymentPreparer(
+                false,
+                feePayment
+            );
+
+        assertThatThrownBy(() -> feePaymentPreparerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void handling_should_throw_if_cannot_actually_handle() {
+
+        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
+        assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+
+        assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
-            when(callback.getEvent()).thenReturn(event);    
+            when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -99,14 +126,6 @@ public class FeePaymentPreparerTest {
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.NO);
         verify(feePayment, times(0)).aboutToSubmit(callback);
 
-    }
-
-    @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
-
-        assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
