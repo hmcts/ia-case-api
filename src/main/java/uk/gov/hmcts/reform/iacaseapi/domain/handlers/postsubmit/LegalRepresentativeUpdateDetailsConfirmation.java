@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
+
 @Component
 public class LegalRepresentativeUpdateDetailsConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
