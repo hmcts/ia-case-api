@@ -4,6 +4,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 /node_modules
 /infrastructure/.terraform/
+package-lock.json
 
 ### STS ###
 .apt_generated

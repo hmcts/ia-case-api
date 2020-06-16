@@ -50,7 +50,7 @@ public class JacksonConfiguration {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         objectMapper.registerModule(new Jdk8Module());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+
         return objectMapper;
     }
 
