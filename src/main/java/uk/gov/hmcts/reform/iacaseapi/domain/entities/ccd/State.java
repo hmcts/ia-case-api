@@ -28,6 +28,7 @@ public enum State {
     AWAITING_CLARIFYING_QUESTIONS_ANSWERS("awaitingClarifyingQuestionsAnswers"),
     CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED("clarifyingQuestionsAnswersSubmitted"),
     AWAITING_CMA_REQUIREMENTS("awaitingCmaRequirements"),
+    ADJOURNED("adjourned"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
