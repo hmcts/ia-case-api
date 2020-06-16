@@ -730,6 +730,20 @@ public enum AsylumCaseFieldDefinition {
             new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
         "reasonToForceCaseToCaseUnderReview", new TypeReference<String>(){}),
+    LEGAL_REP_REFERENCE_NUMBER(
+        "legalRepReferenceNumber", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_COMPANY(
+        "updateLegalRepCompany", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_NAME(
+        "updateLegalRepName", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_EMAIL_ADDRESS(
+        "updateLegalRepEmailAddress", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_REFERENCE_NUMBER(
+        "updateLegalRepReferenceNumber", new TypeReference<String>() {}),
 
     REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS(
         "reasonToForceCaseToSubmitHearingRequirements", new TypeReference<String>() {}),
