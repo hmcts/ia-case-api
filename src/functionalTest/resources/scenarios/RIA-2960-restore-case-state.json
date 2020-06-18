@@ -1,0 +1,32 @@
+{
+  "description": "RIA-2960 Restore state from adjourned",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "restoreStateFromAdjourn",
+      "state": "adjourned",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "dateBeforeAdjournWithoutDate": "2020-04-07",
+          "stateBeforeAdjournWithoutDate": "decision"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "decision",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingDate": "2020-04-07",
+        "doesTheCaseNeedToBeRelisted": "Yes",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
