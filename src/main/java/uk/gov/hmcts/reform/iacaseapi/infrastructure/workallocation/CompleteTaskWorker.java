@@ -81,4 +81,30 @@ public class CompleteTaskWorker {
         LOGGER.info("Registering for Camunda events - done");
     }
 
+    //clear out tasks
+    public static void main(String[] args) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("processDefinitionKey", "workAllocation");
+        ResponseEntity<List<Task>> exchange = restTemplate.exchange(
+                CAMUNDA_URL + "/task?processDefinitionKey=workAllocation",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
+        );
+        List<Task> tasks = exchange.getBody();
+
+        tasks.parallelStream().forEach(task -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> request = new HttpEntity<>("{}", headers);
+            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
+
+            if (res.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Completed task [" + task.getId() + "]");
+            } else {
+                System.out.println("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+            }
+        });
+    }
+
 }
