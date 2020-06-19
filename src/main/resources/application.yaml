@@ -110,6 +110,9 @@ paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
+workAllocationApi:
+  endpoint: ${IA_WORK_ALLOCATION_API_URL:http://127.0.0.1:8080}
+
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
@@ -124,6 +127,7 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
+    - "/camunda/*"
   authorisedServices:
     - "ccd"
     - "ccd_data"

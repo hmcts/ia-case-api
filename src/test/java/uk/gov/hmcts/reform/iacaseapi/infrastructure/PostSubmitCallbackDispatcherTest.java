@@ -40,8 +40,8 @@ public class PostSubmitCallbackDispatcherTest {
                 handler1,
                 handler2,
                 handler3
-            )
-        );
+            ),
+                sendToWorkAllocation);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class PostSubmitCallbackDispatcherTest {
     public void should_not_error_if_no_handlers_are_provided() {
 
         PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher =
-            new PostSubmitCallbackDispatcher<>(Collections.emptyList());
+            new PostSubmitCallbackDispatcher<>(Collections.emptyList(), sendToWorkAllocation);
 
         try {
 
@@ -98,7 +98,7 @@ public class PostSubmitCallbackDispatcherTest {
     @Test
     public void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null))
+        assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null, sendToWorkAllocation))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -128,8 +128,8 @@ public class PostSubmitCallbackDispatcherTest {
                 h1,
                 h6,
                 h5
-            )
-        );
+            ),
+                sendToWorkAllocation);
 
         List<PostSubmitCallbackHandler<AsylumCase>> sortedDispatcher =
             (List<PostSubmitCallbackHandler<AsylumCase>>) ReflectionTestUtils.getField(dispatcher, "sortedCallbackHandlers");
