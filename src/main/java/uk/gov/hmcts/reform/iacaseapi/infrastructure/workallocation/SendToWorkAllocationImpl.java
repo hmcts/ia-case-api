@@ -54,7 +54,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         createTask(ccdId, event, currentState, previousStateString, hearingCentreString, appellantName);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+//    @EventListener(ApplicationReadyEvent.class)
     public void setUpTestTasks() {
         System.out.println("setting up data");
         for (int i = 0; i < 100; i++) {

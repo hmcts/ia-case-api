@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1bzo9u5" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="completeTask" name="Complete task">
+    <decisionTable id="DecisionTable_1tfs0q6" hitPolicy="FIRST">
+      <input id="Input_1" label="Previous state" camunda:inputVariable="previousState">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0topl6j" label="Event" camunda:inputVariable="event">
+        <inputExpression id="LiteralExpression_1t55r3e" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Mapped" name="mapped" typeRef="boolean" />
+      <output id="OutputClause_02q2eht" label="Task to complete" name="taskToComplete" typeRef="string" />
+      <rule id="DecisionRule_13fa5e0">
+        <inputEntry id="UnaryTests_0c5v9is">
+          <text>"appealSubmitted"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1banljx">
+          <text>"requestRespondentEvidence"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1m2htvf">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0epkzzj">
+          <text>"Review the appeal"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1hw0wuf">
+        <inputEntry id="UnaryTests_0bbushf">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0mflh03">
+          <text>"requestCaseBuilding"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1xfr936">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0m5yyj1">
+          <text>"Review respondent evidence"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1kgwoi2">
+        <inputEntry id="UnaryTests_165c4pw">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_05b5tf5">
+          <text>"sendDirection"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0s7ct4p">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1no2ifm">
+          <text>"Review respondent evidence"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0et3g35">
+        <inputEntry id="UnaryTests_1m11q93">
+          <text>"caseUnderReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0n23txw">
+          <text>"requestRespondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1vpvyob">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0zsarxa">
+          <text>"Review appellant case"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1k2lcuw">
+        <inputEntry id="UnaryTests_0gyukhq">
+          <text>"caseUnderReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_17rzmel">
+          <text>"requestCaseEdit"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lzsbi4">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_01xmlem">
+          <text>"Review appellant case"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10wjz3d">
+        <inputEntry id="UnaryTests_0vfgzbr">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_18avcuw">
+          <text>"requestRespondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_08wvas3">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1j9fbd7">
+          <text>"Review respondent response"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_14m27do">
+        <inputEntry id="UnaryTests_1d5b2kt">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0fo0egt">
+          <text>"requestResponseAmend"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_06ig5hg">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1awvq6b">
+          <text>"Review respondent response"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0s715xk">
+        <inputEntry id="UnaryTests_0os7h3b">
+          <text>"listing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0ngf980">
+          <text>"reviewHearingRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uuh6s8">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yht7hf">
+          <text>"Review hearing requirements"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ek8gnb">
+        <inputEntry id="UnaryTests_0ghhjm9">
+          <text>"finalBundling"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1p26wic">
+          <text>"createCaseSummary"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0on7ghm">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0wuqsem">
+          <text>"Create case summary"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_00eeipl">
+        <inputEntry id="UnaryTests_1lt4jn2">
+          <text>"preHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0mdu0y3">
+          <text>"generateHearingBundle"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1xueq1t">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1hikxcs">
+          <text>"Create hearing bundle"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1vzutnp">
+        <inputEntry id="UnaryTests_12kkwk6">
+          <text>"preHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0wfhmjc">
+          <text>"sendToPreHearing"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_13n6wkq">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0678hdc">
+          <text>"Create hearing bundle"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1fyh0ni">
+        <inputEntry id="UnaryTests_12tzywj">
+          <text>"decision"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0dgydca">
+          <text>"decisionAndReasonsStarted"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_13zf1ry">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16mqbjl">
+          <text>"Start decisions and reasons document"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1jye5f8">
+        <inputEntry id="UnaryTests_1uiy9tv">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_053d2c8">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0hh5j3e">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1dnr91z">
+          <text>"unmapped"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

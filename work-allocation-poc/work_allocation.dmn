@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1qiiedp" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="decideOnTask" name="Decide on task">
+    <decisionTable id="DecisionTable_01ivosd" hitPolicy="FIRST">
+      <input id="Input_1" label="currentState" camunda:inputVariable="currentState">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_19me8qn" label="event" camunda:inputVariable="event">
+        <inputExpression id="LiteralExpression_1mt0oat" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="role" name="role" typeRef="string" />
+      <output id="OutputClause_1my7gq7" label="task" name="task" typeRef="string" />
+      <output id="OutputClause_1hh1kq6" label="days" name="days" typeRef="integer" />
+      <output id="OutputClause_0mi1aji" label="description" name="description" typeRef="string" />
+      <rule id="DecisionRule_1nip8bo">
+        <inputEntry id="UnaryTests_0nphuvf">
+          <text>"appealSubmitted"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1k16ic2">
+          <text>"submitAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0zl08xe">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_172r6mh">
+          <text>"Review the appeal"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vh7roa">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1f01fa7">
+          <text>"You must review the appeal in the documents tab. If the appeal looks valid, you must tell the respondent to supply their evidence."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0uiojle">
+        <inputEntry id="UnaryTests_1osymgq">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_12fclhx">
+          <text>"uploadHomeOfficeBundle"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11uvxmy">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1jziblg">
+          <text>"Review respondent evidence"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0cps7z8">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_07tvpj8">
+          <text>"The respondent has submitted their evidence. If it complies with the procedure rules and practice directions, direct the legal representative to build their case. If it does not comply, direct the respondent to make the appropriate changes"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_066iyct">
+        <inputEntry id="UnaryTests_1mt2js2">
+          <text>"caseUnderReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0jltet7">
+          <text>"submitCase"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0murz9d">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ubone7">
+          <text>"Review appellant case"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ftxupp">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1e6yz59">
+          <text>"The appellant has submitted their built case. You must now check the case. If it complies with the procedure rules and practice directions, send it to the respondent for their review. If the appellant needs to make any changes, you can direct them to edit the case."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0oo5v7c">
+        <inputEntry id="UnaryTests_1b7jok4">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1fuarvu">
+          <text>"uploadHomeOfficeAppealResponse"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1j7khlz">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ry1wfp">
+          <text>"Review respondent response"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0sje77m">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1fkor9h">
+          <text>"Check the response uploaded by the respondent. If it complies with the Procedure Rules and Practice Directions, direct the appellant to review the Home Office response If it does not comply, direct the respondent to make the appropriate changes"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1fp0q6d">
+        <inputEntry id="UnaryTests_1qk5gyh">
+          <text>"listing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vve7ny">
+          <text>"submitHearingRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0wuhvyl">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19vnv88">
+          <text>"Review hearing requirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0eg1cg8">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ws9zwa">
+          <text>"You can view the hearing requirements and any requests for additional adjustments in the Hearing tab You should contact the appellant if you need more information. You should then review and submit the hearing requirements and any additional adjustment"s.</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1tms69o">
+        <inputEntry id="UnaryTests_0gp19ye">
+          <text>"prepareForHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_09yajk9">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0yx1laf">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0s7gog4">
+          <text>"Create case summary"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_055ftsn">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_048tq8g">
+          <text>"You must create a case summary for the judge to use at the hearing."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10qsey6">
+        <inputEntry id="UnaryTests_15fu0f1">
+          <text>"finalBundling"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1m4ko9h">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ff6rxl">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vr0u43">
+          <text>"Create hearing bundle"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1qpp6l4">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1yo75ey">
+          <text>"You must create a hearing bundle for all parties to use in the hearing."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_11vhmw9">
+        <inputEntry id="UnaryTests_01wcrzr">
+          <text>"preHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1uz9qay">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_05tu7w1">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0kkrmbr">
+          <text>"Start decisions and reasons document"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0a3p6ko">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1w70jp5">
+          <text>"You can start to create the decision and reasons document."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gz483d">
+        <inputEntry id="UnaryTests_0d1ttwg">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_04giu7k">
+          <text>"submitTimeExtension"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0wablj0">
+          <text>"TCW"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ie4wm9">
+          <text>"Decide on time extension"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11m3yd9">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_039zo4l">
+          <text>"You must now change the direction due date. You can also view the application decision in the Applications tab."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0sbbcfm">
+        <inputEntry id="UnaryTests_1hx7y7q">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0es7ft4">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1gkq4ia">
+          <text>"unmapped"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lit3tq">
+          <text>"unmapped"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0rer18r">
+          <text>14</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ceyqgn">
+          <text>"Unmapped"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1xhy67b">
+      <dmndi:DMNShape id="DMNShape_1ij9wuw" dmnElementRef="decideOnTask">
+        <dc:Bounds height="80" width="180" x="150" y="150" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
