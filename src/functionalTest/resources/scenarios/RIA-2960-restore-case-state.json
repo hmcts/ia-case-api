@@ -11,7 +11,8 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "dateBeforeAdjournWithoutDate": "2018-12-31T12:34:56",
-          "stateBeforeAdjournWithoutDate": "decision"
+          "stateBeforeAdjournWithoutDate": "decision",
+          "adjournHearingWithoutDateReasons": "Court closed"
         }
       }
     }

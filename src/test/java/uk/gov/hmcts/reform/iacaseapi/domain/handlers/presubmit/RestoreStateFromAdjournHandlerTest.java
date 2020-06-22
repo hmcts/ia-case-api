@@ -58,6 +58,7 @@ public class RestoreStateFromAdjournHandlerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_DATE, listCaseHearingDate);
         verify(asylumCase, times(1)).clear(DATE_BEFORE_ADJOURN_WITHOUT_DATE);
         verify(asylumCase, times(1)).clear(STATE_BEFORE_ADJOURN_WITHOUT_DATE);
+        verify(asylumCase, times(1)).clear(ADJOURN_HEARING_WITHOUT_DATE_REASONS);
     }
 
     @Test

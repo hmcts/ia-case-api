@@ -759,6 +759,10 @@ public enum AsylumCaseFieldDefinition {
 
     DOES_THE_CASE_NEED_TO_BE_RELISTED(
         "doesTheCaseNeedToBeRelisted", new TypeReference<YesOrNo>(){}),
+
+    ADJOURN_HEARING_WITHOUT_DATE_REASONS(
+            "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
