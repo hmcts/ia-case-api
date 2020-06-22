@@ -1,0 +1,22 @@
+{
+  "description": "RIA-3291 Link appeal confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "linkAppeal",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have linked this appeal",
+      "body": "#### What happens next\r\n\r\nThis appeal will now be considered as part of a set of linked appeals. You must update the linked appeal spreadsheet to reflect this change."
+    }
+  }
+}
