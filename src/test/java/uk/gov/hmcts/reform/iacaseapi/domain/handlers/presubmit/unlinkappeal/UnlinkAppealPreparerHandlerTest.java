@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.unlinkappeal;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @RunWith(JUnitParamsRunner.class)
@@ -74,6 +77,19 @@ public class UnlinkAppealPreparerHandlerTest {
 
     @Test
     public void handle() {
+        when(callback.getEvent()).thenReturn(Event.UNLINK_APPEAL);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(new AsylumCase());
+
+        PreSubmitCallbackResponse<AsylumCase> actualResponse =
+            unlinkAppealPreparerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(callback, times(1)).getCaseDetails();
+        verify(caseDetails, times(1)).getCaseData();
+
+        assertEquals(1, actualResponse.getErrors().size());
+        assertTrue(actualResponse.getErrors().contains("This appeal is not linked and so cannot be unlinked"));
     }
 
     @Test
