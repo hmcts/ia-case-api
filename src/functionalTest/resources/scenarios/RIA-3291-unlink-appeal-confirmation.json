@@ -1,0 +1,21 @@
+{
+  "description": "RIA-3291 Link appeal confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "unlinkAppeal",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# This is no longer a linked appeal"
+    }
+  }
+}
