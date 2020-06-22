@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.linkappeal;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class LinkCaseConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class LinkAppealConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(Callback<AsylumCase> callback) {
         requireNonNull(callback, "callback must not be null");

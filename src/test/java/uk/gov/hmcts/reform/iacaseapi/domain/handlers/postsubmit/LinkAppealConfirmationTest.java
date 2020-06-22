@@ -23,9 +23,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.linkappeal.LinkAppealConfirmation;
 
 @RunWith(JUnitParamsRunner.class)
-public class LinkCaseConfirmationTest {
+public class LinkAppealConfirmationTest {
 
     @Rule
     public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -33,14 +34,14 @@ public class LinkCaseConfirmationTest {
     @Mock
     Callback<AsylumCase> callback;
 
-    LinkCaseConfirmation linkCaseConfirmation = new LinkCaseConfirmation();
+    LinkAppealConfirmation linkAppealConfirmation = new LinkAppealConfirmation();
 
     @Test
     @Parameters(method = "generateCanHandleScenarios")
     public void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
-        boolean result = linkCaseConfirmation.canHandle(callback);
+        boolean result = linkAppealConfirmation.canHandle(callback);
 
         Assertions.assertThat(result).isEqualTo(scenario.canHandleExpectedResult);
     }
@@ -71,7 +72,7 @@ public class LinkCaseConfirmationTest {
     public void handle() {
         when(callback.getEvent()).thenReturn(Event.LINK_APPEAL);
 
-        PostSubmitCallbackResponse actualResponse = linkCaseConfirmation.handle(callback);
+        PostSubmitCallbackResponse actualResponse = linkAppealConfirmation.handle(callback);
 
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
@@ -98,12 +99,12 @@ public class LinkCaseConfirmationTest {
 
     @Test
     public void should_throw_exception() {
-        assertThatThrownBy(() -> linkCaseConfirmation.canHandle(null))
+        assertThatThrownBy(() -> linkAppealConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         when(callback.getEvent()).thenReturn(Event.ADD_CASE_NOTE);
-        assertThatThrownBy(() -> linkCaseConfirmation.handle(callback))
+        assertThatThrownBy(() -> linkAppealConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
