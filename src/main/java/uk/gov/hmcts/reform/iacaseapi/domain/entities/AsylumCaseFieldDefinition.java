@@ -727,6 +727,8 @@ public enum AsylumCaseFieldDefinition {
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
         "reasonToForceCaseToCaseUnderReview", new TypeReference<String>(){}),
 
+    ASSIGNED_TO(
+            "assignedTo", new TypeReference<String>(){})
     ;
 
     private final String value;

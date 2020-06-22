@@ -2,9 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -49,16 +48,18 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
 
         String appellantName = caseData.<String>read(AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY).orElse("");
 
-        LOGGER.info("Creating task for [" + ccdId + "] [" + event + "]");
+        String assignedTo = caseData.<String>read(AsylumCaseFieldDefinition.ASSIGNED_TO).orElse(null);
 
-        createTask(ccdId, event, currentState, previousStateString, hearingCentreString, appellantName);
+        LOGGER.info("Creating task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
+
+        createTask(ccdId, event, currentState, previousStateString, hearingCentreString, appellantName, assignedTo);
     }
 
 //    @EventListener(ApplicationReadyEvent.class)
     public void setUpTestTasks() {
         System.out.println("setting up data");
         for (int i = 0; i < 100; i++) {
-            createTask(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name");
+            createTask(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", null);
             System.out.println("created task " + i);
         }
 
@@ -70,14 +71,14 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
             }
             int ccdId = i;
 //            createTask(ccdId, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name");
-            createTask(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name");
+            createTask(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name", null);
             System.out.println("completed task " + i);
 
         }
         System.out.println("setting up data - done");
     }
 
-    private void createTask(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName) {
+    private void createTask(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -88,6 +89,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         variables.put("previousState", new WorkAllocationVariable(previousStateString, "String"));
         variables.put("hearingCentre", new WorkAllocationVariable(hearingCentreString, "String"));
         variables.put("appellantName", new WorkAllocationVariable(appellantName, "String"));
+        variables.put("assignedTo", new WorkAllocationVariable(assignedTo, "String"));
 
         WorkAllocationRequest workAllocationRequest = new WorkAllocationRequest(variables);
 
