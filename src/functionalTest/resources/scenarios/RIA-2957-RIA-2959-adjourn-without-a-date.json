@@ -15,6 +15,7 @@
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "doesTheCaseNeedToBeRelisted": "No",
           "ariaListingReference": "LP/12345/2019",
           "currentCaseStateVisibleToCaseOfficer": "listing",
           "notificationsSent": []

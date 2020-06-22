@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
@@ -40,6 +41,9 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
         asylumCase.write(LIST_CASE_HEARING_DATE_ADJOURNED, "Adjourned");
         asylumCase.write(STATE_BEFORE_ADJOURN_WITHOUT_DATE, currentState.toString());
         asylumCase.write(DATE_BEFORE_ADJOURN_WITHOUT_DATE, currentHearingDate);
+
+        asylumCase.write(DOES_THE_CASE_NEED_TO_BE_RELISTED, YesOrNo.NO);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

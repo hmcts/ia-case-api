@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(JUnitParamsRunner.class)
 public class AdjournWithoutDateHandlerTest {
@@ -133,5 +134,7 @@ public class AdjournWithoutDateHandlerTest {
             .write(eq(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("prepareForHearing"));
         then(asylumCase).should(times(1))
             .write(eq(AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("05/05/2020"));
+        then(asylumCase).should(times(1))
+            .write(eq(AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED), eq(YesOrNo.NO));
     }
 }
