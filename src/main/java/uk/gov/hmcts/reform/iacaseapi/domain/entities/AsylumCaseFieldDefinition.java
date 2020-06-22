@@ -776,6 +776,7 @@ public enum AsylumCaseFieldDefinition {
 
     APPLICATION_OUT_OF_TIME_DOCUMENT(
         "applicationOutOfTimeDocument", new TypeReference<Document>() {}),
+
     REASON_FOR_LINK_APPEAL(
         "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
 

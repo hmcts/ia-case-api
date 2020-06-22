@@ -88,7 +88,6 @@ public class SendNotificationHandlerTest {
             Event.REQUEST_CMA_REQUIREMENTS,
             Event.SUBMIT_CMA_REQUIREMENTS,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.SUBMIT_CMA_REQUIREMENTS,
             Event.UNLINK_APPEAL,
             Event.LINK_APPEAL
         ).forEach(event -> {
