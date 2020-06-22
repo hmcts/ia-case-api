@@ -17,16 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
 @Component
 public class UnlinkAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final CaseFlagAppender caseFlagAppender;
-
-    public UnlinkAppealHandler(CaseFlagAppender caseFlagAppender) {
-        this.caseFlagAppender = caseFlagAppender;
-    }
-
-    public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -34,10 +25,8 @@ public class UnlinkAppealHandler implements PreSubmitCallbackHandler<AsylumCase>
             && callback.getEvent() == Event.UNLINK_APPEAL;
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
+    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
+                                                        Callback<AsylumCase> callback) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
