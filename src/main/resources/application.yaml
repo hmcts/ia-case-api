@@ -197,6 +197,7 @@ security:
       - "decisionWithoutHearing"
       - "editAppealAfterSubmit"
       - "linkAppeal"
+      - "unlinkAppeal"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -212,6 +213,7 @@ security:
       - "decisionWithoutHearing"
       - "updateDetailsAfterCma"
       - "linkAppeal"
+      - "unlinkAppeal"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
