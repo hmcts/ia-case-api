@@ -101,7 +101,7 @@
           <text>"listing"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0vve7ny">
-          <text>"submitHearingRequirements"</text>
+          <text>"draftHearingRequirements"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0wuhvyl">
           <text>"TCW"</text>
@@ -113,7 +113,7 @@
           <text>14</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0ws9zwa">
-          <text>"You can view the hearing requirements and any requests for additional adjustments in the Hearing tab You should contact the appellant if you need more information. You should then review and submit the hearing requirements and any additional adjustment"s.</text>
+          <text>"You can view the hearing requirements and any requests for additional adjustments in the Hearing tab You should contact the appellant if you need more information. You should then review and submit the hearing requirements and any additional adjustments."</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1tms69o">

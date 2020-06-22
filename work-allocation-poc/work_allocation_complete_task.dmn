@@ -89,7 +89,7 @@
           <text>"respondentReview"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_18avcuw">
-          <text>"requestRespondentReview"</text>
+          <text>"requestResponseReview"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_08wvas3">
           <text>true</text>
@@ -128,7 +128,7 @@
       </rule>
       <rule id="DecisionRule_1ek8gnb">
         <inputEntry id="UnaryTests_0ghhjm9">
-          <text>"finalBundling"</text>
+          <text>"prepareForHearing"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1p26wic">
           <text>"createCaseSummary"</text>
@@ -142,7 +142,7 @@
       </rule>
       <rule id="DecisionRule_00eeipl">
         <inputEntry id="UnaryTests_1lt4jn2">
-          <text>"preHearing"</text>
+          <text>"finalBundling"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0mdu0y3">
           <text>"generateHearingBundle"</text>
@@ -156,7 +156,7 @@
       </rule>
       <rule id="DecisionRule_1vzutnp">
         <inputEntry id="UnaryTests_12kkwk6">
-          <text>"preHearing"</text>
+          <text>"finalBundling"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0wfhmjc">
           <text>"sendToPreHearing"</text>
@@ -170,7 +170,7 @@
       </rule>
       <rule id="DecisionRule_1fyh0ni">
         <inputEntry id="UnaryTests_12tzywj">
-          <text>"decision"</text>
+          <text>"preHearing"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0dgydca">
           <text>"decisionAndReasonsStarted"</text>
