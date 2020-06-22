@@ -81,6 +81,7 @@ public enum Event {
     DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
     LIST_CMA("listCma"),
     EDIT_APPEAL_AFTER_SUBMIT("editAppealAfterSubmit"),
+    LINK_APPEAL("linkAppeal"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

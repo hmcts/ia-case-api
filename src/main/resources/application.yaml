@@ -196,6 +196,7 @@ security:
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
       - "editAppealAfterSubmit"
+      - "linkAppeal"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -210,6 +211,7 @@ security:
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
       - "updateDetailsAfterCma"
+      - "linkAppeal"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
