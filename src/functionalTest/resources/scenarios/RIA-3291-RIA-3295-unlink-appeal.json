@@ -1,0 +1,37 @@
+{
+  "description": "RIA-3291 RIA-3295: Unlink appeal and notification",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "unlinkAppeal",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "reasonForLinkAppeal": "Home Office request",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "reasonForLinkAppeal": null,
+        "notificationsSent": [
+          {
+            "id": "1122_LEGAL_REPRESENTATIVE_UNLINK_APPEAL",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+
+      }
+    }
+  }
+}
+

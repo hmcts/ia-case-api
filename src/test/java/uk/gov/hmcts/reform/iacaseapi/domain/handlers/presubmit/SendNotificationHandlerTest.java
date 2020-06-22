@@ -87,7 +87,10 @@ public class SendNotificationHandlerTest {
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
             Event.SUBMIT_CMA_REQUIREMENTS,
-            Event.EDIT_APPEAL_AFTER_SUBMIT
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.SUBMIT_CMA_REQUIREMENTS,
+            Event.UNLINK_APPEAL,
+            Event.LINK_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -207,7 +210,9 @@ public class SendNotificationHandlerTest {
                         Event.RESTORE_STATE_FROM_ADJOURN,
                         Event.REQUEST_CMA_REQUIREMENTS,
                         Event.SUBMIT_CMA_REQUIREMENTS,
-                        Event.EDIT_APPEAL_AFTER_SUBMIT
+                        Event.EDIT_APPEAL_AFTER_SUBMIT,
+                        Event.UNLINK_APPEAL,
+                        Event.LINK_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
