@@ -28,15 +28,18 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
     public ResidentJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+        DocumentsAppender documentsAppender,
+        FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.ftpaFinalDecisionDisplayProvider = ftpaFinalDecisionDisplayProvider;
     }
 
     public boolean canHandle(
@@ -141,6 +144,8 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
 
                 asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
             }
+
+            asylumCase.write(FTPA_FINAL_DECISION_REMADE_RULE_32, ftpaNewDecisionOfAppeal);
         }
         asylumCase.write(
             valueOf(String.format("ALL_FTPA_%s_DECISION_DOCS", ftpaApplicantType.toUpperCase())),
@@ -150,6 +155,21 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
             dateProvider.now().toString());
         asylumCase.write(valueOf(String.format("IS_FTPA_%s_DECIDED", ftpaApplicantType.toUpperCase())),
             YES);
+
+        String currentDecision =
+            asylumCase.read(
+                valueOf(String.format("FTPA_%s_RJ_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+                .orElse("");
+
+        String ftpaFirstDecision =
+            asylumCase.read(FTPA_FIRST_DECISION)
+                .orElse("").toString();
+
+        ftpaFinalDecisionDisplayProvider.handleFtpaDecisions(
+            asylumCase,
+            currentDecision,
+            ftpaFirstDecision
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

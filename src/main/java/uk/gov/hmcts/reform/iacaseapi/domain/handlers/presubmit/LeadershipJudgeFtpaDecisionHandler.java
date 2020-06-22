@@ -28,15 +28,18 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
+    private final FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
     public LeadershipJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
-        DocumentsAppender documentsAppender
+        DocumentsAppender documentsAppender,
+        FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
+        this.ftpaFinalDecisionDisplayProvider = ftpaFinalDecisionDisplayProvider;
     }
 
     @Override
@@ -122,6 +125,21 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
             valueOf(String.format("FTPA_%s_DECISION_DATE", ftpaApplicantType.toUpperCase())), dateProvider.now().toString());
         asylumCase.write(
             valueOf(String.format("IS_FTPA_%s_DECIDED", ftpaApplicantType.toUpperCase())), YES);
+
+        String currentDecision =
+            asylumCase.read(
+                valueOf(String.format("FTPA_%s_DECISION_OUTCOME_TYPE", ftpaApplicantType.toUpperCase())), String.class)
+                .orElse("");
+
+        String ftpaFirstDecision =
+            asylumCase.read(FTPA_FIRST_DECISION)
+                .orElse("").toString();
+
+        ftpaFinalDecisionDisplayProvider.handleFtpaDecisions(
+            asylumCase,
+            currentDecision,
+            ftpaFirstDecision
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

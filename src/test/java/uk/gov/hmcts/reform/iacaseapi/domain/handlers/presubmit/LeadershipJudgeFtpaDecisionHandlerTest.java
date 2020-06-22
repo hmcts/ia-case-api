@@ -38,6 +38,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
     @Mock private DateProvider dateProvider;
+    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -53,7 +54,12 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     @Before
     public void setUp() {
 
-        leadershipJudgeFtpaDecisionHandler = new LeadershipJudgeFtpaDecisionHandler(dateProvider, documentReceiver, documentsAppender);
+        leadershipJudgeFtpaDecisionHandler = new LeadershipJudgeFtpaDecisionHandler(
+            dateProvider,
+            documentReceiver,
+            documentsAppender,
+            ftpaFinalDecisionDisplayProvider
+        );
     }
 
     @Test
