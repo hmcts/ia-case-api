@@ -28,7 +28,7 @@ public class LinkAppealConfirmation implements PostSubmitCallbackHandler<AsylumC
         postSubmitResponse.setConfirmationHeader("# You have linked this appeal");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\r\n\r\n"
-                + "This appeal will now be considered as part of a set of linked appeals. You must update the linked "
+                + "The appeal will now be considered as part of a set of linked appeals. You must update the linked "
                 + "appeal spreadsheet to reflect this change."
         );
 

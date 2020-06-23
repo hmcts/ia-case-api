@@ -16,7 +16,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have linked this appeal",
-      "body": "#### What happens next\r\n\r\nThis appeal will now be considered as part of a set of linked appeals. You must update the linked appeal spreadsheet to reflect this change."
+      "body": "#### What happens next\r\n\r\nThe appeal will now be considered as part of a set of linked appeals. You must update the linked appeal spreadsheet to reflect this change."
     }
   }
 }

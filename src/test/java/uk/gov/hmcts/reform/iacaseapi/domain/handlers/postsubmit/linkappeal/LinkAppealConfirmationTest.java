@@ -90,7 +90,7 @@ public class LinkAppealConfirmationTest {
         Assert.assertThat(
             actualResponse.getConfirmationBody().get(),
             containsString(
-                "This appeal will now be considered as part of a set of linked appeals. "
+                "The appeal will now be considered as part of a set of linked appeals. "
                     + "You must update the linked appeal spreadsheet to reflect this change."
             )
         );
