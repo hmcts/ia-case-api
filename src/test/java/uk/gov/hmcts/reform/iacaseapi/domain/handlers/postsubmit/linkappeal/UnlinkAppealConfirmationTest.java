@@ -83,7 +83,7 @@ public class UnlinkAppealConfirmationTest {
 
         Assert.assertThat(
             actualResponse.getConfirmationBody().get(),
-            containsString("This appeal is now unlined and will proceed as usual. "
+            containsString("This appeal is now unlinked and will proceed as usual. "
                 + "You must update the linked appeal spreadsheet to reflect this change.")
         );
 
