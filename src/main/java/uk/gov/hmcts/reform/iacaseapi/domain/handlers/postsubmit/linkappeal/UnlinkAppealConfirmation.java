@@ -26,6 +26,11 @@ public class UnlinkAppealConfirmation implements PostSubmitCallbackHandler<Asylu
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationHeader("# This is no longer a linked appeal");
+        postSubmitResponse.setConfirmationBody(
+            "#### What happens next\r\n\r\n"
+                + "This appeal is now unlined and will proceed as usual. "
+                + "You must update the linked appeal spreadsheet to reflect this change."
+        );
 
         return postSubmitResponse;
     }

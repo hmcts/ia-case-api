@@ -74,10 +74,17 @@ public class UnlinkAppealConfirmationTest {
         PostSubmitCallbackResponse actualResponse = unlinkAppealConfirmation.handle(callback);
 
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
+        assertTrue(actualResponse.getConfirmationBody().isPresent());
 
         Assert.assertThat(
             actualResponse.getConfirmationHeader().get(),
             containsString("# This is no longer a linked appeal")
+        );
+
+        Assert.assertThat(
+            actualResponse.getConfirmationBody().get(),
+            containsString("This appeal is now unlined and will proceed as usual. "
+                + "You must update the linked appeal spreadsheet to reflect this change.")
         );
 
     }
