@@ -74,6 +74,8 @@ public enum Event {
     FORCE_CASE_TO_CASE_UNDER_REVIEW("forceCaseToCaseUnderReview"),
     FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),
+    ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
+    RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

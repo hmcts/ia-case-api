@@ -189,6 +189,8 @@ security:
       - "requestCmaRequirements"
       - "forceCaseToCaseUnderReview"
       - "forceCaseToSubmitHearingRequirements"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -198,6 +200,8 @@ security:
       - "recordAllocatedJudge"
       - "flagCase"
       - "removeFlag"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
