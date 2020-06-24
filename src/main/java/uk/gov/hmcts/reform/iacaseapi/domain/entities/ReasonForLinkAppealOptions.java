@@ -3,13 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ReasonForLinkAppealOptions {
-    FAMILIAL("familial"),
-    SHARED_EVIDENCE("sharedEvidence"),
-    GUARDIAN("guardian"),
-    BAIL("bail"),
-    HOME_OFFICE_REQUEST("homeOfficeRequest"),
-    OTHER_APPEAL_PENDING("otherAppealPending"),
-    OTHER_APPEAL_DECIDED("otherAppealDecided");
+    FAMILIAL("Familial"),
+    SHARED_EVIDENCE("Shared evidence"),
+    GUARDIAN("Guardian"),
+    BAIL("Bail"),
+    HOME_OFFICE_REQUEST("Home Office request"),
+    OTHER_APPEAL_PENDING("Other appeal pending"),
+    OTHER_APPEAL_DECIDED("Other appeal decided");
 
     @JsonValue
     private final String id;

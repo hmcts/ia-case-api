@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "reasonForLinkAppeal": "homeOfficeRequest"
+          "reasonForLinkAppeal": "Home Office request"
         }
       }
     }
