@@ -25,7 +25,7 @@ public class UnlinkAppealConfirmation implements PostSubmitCallbackHandler<Asylu
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# This is no longer a linked appeal");
+        postSubmitResponse.setConfirmationHeader("# You have unlinked this appeal");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\r\n\r\n"
                 + "This appeal is now unlinked and will proceed as usual. "

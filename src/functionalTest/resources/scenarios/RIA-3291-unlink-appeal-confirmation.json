@@ -15,7 +15,7 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# This is no longer a linked appeal",
+      "header": "# You have unlinked this appeal",
       "body": "#### What happens next\r\n\r\nThis appeal is now unlinked and will proceed as usual. You must update the linked appeal spreadsheet to reflect this change."
     }
   }

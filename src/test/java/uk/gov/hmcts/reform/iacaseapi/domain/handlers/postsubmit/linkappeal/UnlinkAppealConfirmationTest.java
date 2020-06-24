@@ -78,7 +78,7 @@ public class UnlinkAppealConfirmationTest {
 
         Assert.assertThat(
             actualResponse.getConfirmationHeader().get(),
-            containsString("# This is no longer a linked appeal")
+            containsString("# You have unlinked this appeal")
         );
 
         Assert.assertThat(
