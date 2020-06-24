@@ -305,6 +305,9 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_DATE(
         "listCaseHearingDate", new TypeReference<String>(){}),
 
+    LIST_CASE_HEARING_DATE_ADJOURNED(
+        "listCaseHearingDateAdjourned", new TypeReference<String>(){}),
+
     CASE_SUMMARY_DOCUMENT(
         "caseSummaryDocument", new TypeReference<Document>(){}),
 
@@ -406,6 +409,10 @@ public enum AsylumCaseFieldDefinition {
 
     ADD_CASE_NOTE_DOCUMENT(
         "addCaseNoteDocument", new TypeReference<Document>(){}),
+
+    FINAL_DECISION_AND_REASONS_PDF(
+        "finalDecisionAndReasonsPdf", new TypeReference<Document>(){}),
+
 
     // VALUES IN TRANSITION, ONLY USED IN DATA FIXING SERVICE
     APPELLANTS_AGREED_SCHEDULE_OF_ISSUES_DESCRIPTION(
@@ -717,7 +724,45 @@ public enum AsylumCaseFieldDefinition {
     REMOVE_FLAG_TYPE_OF_FLAG(
         "removeFlagTypeOfFlag", new TypeReference<DynamicList>() {}),
     REQUEST_CMA_REQUIREMENTS_REASONS(
-            "requestCmaRequirementsReasons", new TypeReference<String>() {})
+            "requestCmaRequirementsReasons", new TypeReference<String>() {}),
+    APPELLANT_DOCUMENTS(
+            "appellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    REASONS_FOR_APPEAL_DOCUMENTS(
+            "reasonsForAppealDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    CLARIFYING_QUESTIONS_ANSWERS("clarifyingQuestionsAnswers",
+            new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
+    REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
+        "reasonToForceCaseToCaseUnderReview", new TypeReference<String>(){}),
+    LEGAL_REP_REFERENCE_NUMBER(
+        "legalRepReferenceNumber", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_COMPANY(
+        "updateLegalRepCompany", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_NAME(
+        "updateLegalRepName", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_EMAIL_ADDRESS(
+        "updateLegalRepEmailAddress", new TypeReference<String>() {}),
+
+    UPDATE_LEGAL_REP_REFERENCE_NUMBER(
+        "updateLegalRepReferenceNumber", new TypeReference<String>() {}),
+
+    REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS(
+        "reasonToForceCaseToSubmitHearingRequirements", new TypeReference<String>() {}),
+
+    STATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "stateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DATE_BEFORE_ADJOURN_WITHOUT_DATE(
+        "dateBeforeAdjournWithoutDate", new TypeReference<String>(){}),
+
+    DOES_THE_CASE_NEED_TO_BE_RELISTED(
+        "doesTheCaseNeedToBeRelisted", new TypeReference<YesOrNo>(){}),
+
+    ADJOURN_HEARING_WITHOUT_DATE_REASONS(
+            "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
+
     ;
 
     private final String value;

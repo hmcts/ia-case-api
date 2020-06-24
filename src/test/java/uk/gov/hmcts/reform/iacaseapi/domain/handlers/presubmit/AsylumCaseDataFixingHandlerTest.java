@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -33,6 +34,9 @@ public class AsylumCaseDataFixingHandlerTest {
     @Mock
     private DataFixer dataFixer2;
 
+    @Mock
+    private FeatureToggler featureToggler;
+
     private List<DataFixer> dataFixers;
 
     private AsylumCaseDataFixingHandler asylumCaseDataFixingHandler;
@@ -42,7 +46,7 @@ public class AsylumCaseDataFixingHandlerTest {
 
         dataFixers = asList(dataFixer1, dataFixer2);
 
-        asylumCaseDataFixingHandler = new AsylumCaseDataFixingHandler(dataFixers);
+        asylumCaseDataFixingHandler = new AsylumCaseDataFixingHandler(dataFixers, featureToggler);
     }
 
     @Test

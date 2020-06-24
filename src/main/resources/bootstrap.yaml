@@ -6,6 +6,7 @@ spring:
       aliases:
         case-documents-api-url: IA_CASE_DOCUMENTS_API_URL
         case-notifications-api-url: IA_CASE_NOTIFICATIONS_API_URL
+        case-payments-api-url: IA_CASE_PAYMENTS_API_URL
         docmosis-enabled: IA_DOCMOSIS_ENABLED
         em-stitching-enabled: IA_EM_STITCHING_ENABLED
         submit-hearing-requirements-enabled: IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED

@@ -72,6 +72,7 @@ featureFlag:
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
+  isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
@@ -103,6 +104,10 @@ documentsApi:
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
+paymentApi:
+  endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
@@ -142,6 +147,7 @@ security:
       - "requestHearingRequirementsFeature"
       - "uploadAddendumEvidenceLegalRep"
       - "applyForFTPAAppellant"
+      - "updateLegalRepresentativesDetails"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -181,6 +187,10 @@ security:
       - "flagCase"
       - "removeFlag"
       - "requestCmaRequirements"
+      - "forceCaseToCaseUnderReview"
+      - "forceCaseToSubmitHearingRequirements"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -190,6 +200,8 @@ security:
       - "recordAllocatedJudge"
       - "flagCase"
       - "removeFlag"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -221,6 +233,8 @@ security:
       - "submitClarifyingQuestionAnswers"
       - "editTimeExtension"
       - "submitTimeExtension"
+      - "editCmaRequirements"
+      - "submitCmaRequirements"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
