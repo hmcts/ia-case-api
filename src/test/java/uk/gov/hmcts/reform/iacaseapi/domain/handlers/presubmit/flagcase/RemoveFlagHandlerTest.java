@@ -27,8 +27,10 @@ public class RemoveFlagHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private CaseFlag expectedCaseFlag;
-    @Mock private CaseFlag expectedCaseFlag2;
+    private final CaseFlag expectedCaseFlag =
+        new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
+    private final CaseFlag expectedCaseFlag2 =
+        new CaseFlag(CaseFlagType.ANONYMITY, "some anonymity flag additional info");
 
     private List<IdValue<CaseFlag>> expectedList;
     private IdValue<CaseFlag> expectedIdValue;
@@ -39,8 +41,6 @@ public class RemoveFlagHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(expectedCaseFlag.getCaseFlagType()).thenReturn(CaseFlagType.COMPLEX_CASE);
-        when(expectedCaseFlag2.getCaseFlagType()).thenReturn(CaseFlagType.ANONYMITY);
 
         removeFlagHandler = new RemoveFlagHandler();
         expectedIdValue = new IdValue<>("2", expectedCaseFlag2);

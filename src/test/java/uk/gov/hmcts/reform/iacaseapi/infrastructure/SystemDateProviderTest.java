@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.Test;
 
 public class SystemDateProviderTest {
@@ -15,5 +16,12 @@ public class SystemDateProviderTest {
         LocalDate actualDate = systemDateProvider.now();
         assertNotNull(actualDate);
         assertFalse(actualDate.isAfter(LocalDate.now()));
+    }
+
+    @Test
+    public void returns_now_datetime() {
+        LocalDateTime actualDateTime = systemDateProvider.nowWithTime();
+        assertNotNull(actualDateTime);
+        assertFalse(actualDateTime.isAfter(LocalDateTime.now()));
     }
 }

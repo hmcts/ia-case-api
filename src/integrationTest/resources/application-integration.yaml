@@ -10,6 +10,9 @@ spring:
 
 appealReferenceSequenceSeed: 50000
 
+featureFlag:
+  timedEventServiceEnabled: true
+
 security:
 
   authorisedServices:

@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGeneratorFactory;
 @Lazy
 public class ServiceTokenGeneratorConfiguration {
 
+    public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+
     @Bean
     public AuthTokenGenerator authTokenGenerator(
         @Value("${idam.s2s-auth.totp_secret}") String secret,

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,8 +44,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsAboutToSubmitHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsCaseNoteService;
 
 @RunWith(JUnitParamsRunner.class)
 public class EditDocsAboutToSubmitHandlerTest {
@@ -61,6 +59,8 @@ public class EditDocsAboutToSubmitHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private EditDocsCaseNoteService editDocsCaseNoteService;
+    @Mock
+    private EditDocsService editDocService;
     @InjectMocks
     private EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler;
 
@@ -128,6 +128,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         }
         then(editDocsCaseNoteService).should(times(1))
             .writeAuditCaseNoteForGivenCaseId(anyLong(), any(AsylumCase.class), any());
+        then(editDocService).should(times(1)).cleanUpOverviewTabDocs(any(), any());
     }
 
     private boolean isDeletedFileScenario(String expectedSuppliedBy) {

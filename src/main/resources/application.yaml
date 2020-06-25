@@ -71,6 +71,8 @@ featureFlag:
   docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
+  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
+  isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
@@ -102,6 +104,10 @@ documentsApi:
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
+paymentApi:
+  endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
@@ -141,6 +147,7 @@ security:
       - "requestHearingRequirementsFeature"
       - "uploadAddendumEvidenceLegalRep"
       - "applyForFTPAAppellant"
+      - "updateLegalRepresentativesDetails"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -181,6 +188,10 @@ security:
       - "removeFlag"
       - "requestCmaRequirements"
       - "reviewCmaRequirements"
+      - "forceCaseToCaseUnderReview"
+      - "forceCaseToSubmitHearingRequirements"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -190,6 +201,8 @@ security:
       - "recordAllocatedJudge"
       - "flagCase"
       - "removeFlag"
+      - "adjournHearingWithoutDate"
+      - "restoreStateFromAdjourn"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -221,6 +234,8 @@ security:
       - "submitClarifyingQuestionAnswers"
       - "editTimeExtension"
       - "submitTimeExtension"
+      - "editCmaRequirements"
+      - "submitCmaRequirements"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -229,7 +244,8 @@ security:
       - "sendDirection"
       - "addCaseNote"
       - "leadershipJudgeFtpaDecision"
-
+    caseworker-ia-system:
+      - "requestHearingRequirementsFeature"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -246,3 +262,11 @@ idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
+
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5
+  socketTimeout: 5
+
+timed-event-service:
+  url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}

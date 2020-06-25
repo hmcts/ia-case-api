@@ -9,10 +9,11 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
+          "appealType": "revocationOfProtection",
           "appealGroundsRevocation": {
             "values": [
-              "refugeeConvention",
-              "humanitarianProtection"
+              "revocationHumanitarianProtection",
+              "revocationRefugeeConvention"
             ]
           }
         }
@@ -25,11 +26,10 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealGroundsRevocation": null,
-        "appealGroundsProtection": null,
+        "appealType": "revocationOfProtection",
         "appealGroundsForDisplay": [
-          "refugeeConvention",
-          "humanitarianProtection"
+          "revocationHumanitarianProtection",
+          "revocationRefugeeConvention"
         ]
       }
     }

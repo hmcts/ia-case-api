@@ -94,6 +94,7 @@ public class GenerateDocumentHandlerTest {
             GENERATE_HEARING_BUNDLE,
             GENERATE_DECISION_AND_REASONS,
             SEND_DECISION_AND_REASONS,
+            ADJOURN_HEARING_WITHOUT_DATE,
             END_APPEAL
         ).forEach(event -> {
 
@@ -228,6 +229,7 @@ public class GenerateDocumentHandlerTest {
                         GENERATE_HEARING_BUNDLE,
                         GENERATE_DECISION_AND_REASONS,
                         SEND_DECISION_AND_REASONS,
+                        ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL
                     ).contains(event)) {
 
@@ -295,6 +297,7 @@ public class GenerateDocumentHandlerTest {
                         GENERATE_DECISION_AND_REASONS,
                         EDIT_CASE_LISTING,
                         SEND_DECISION_AND_REASONS,
+                        ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL
                     );
 

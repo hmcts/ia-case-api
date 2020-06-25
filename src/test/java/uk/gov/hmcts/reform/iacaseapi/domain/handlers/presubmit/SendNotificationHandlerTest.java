@@ -65,13 +65,24 @@ public class SendNotificationHandlerTest {
             Event.UPLOAD_ADDENDUM_EVIDENCE,
             Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
             Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+            Event.REQUEST_REASONS_FOR_APPEAL,
+            Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.UPDATE_HEARING_ADJUSTMENTS,
             Event.REMOVE_APPEAL_FROM_ONLINE,
             Event.CHANGE_HEARING_CENTRE,
             Event.APPLY_FOR_FTPA_APPELLANT,
             Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.REVIEW_TIME_EXTENSION,
             Event.SUBMIT_TIME_EXTENSION,
-            Event.REVIEW_TIME_EXTENSION
+            Event.SEND_DIRECTION_WITH_QUESTIONS,
+            Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+            Event.REQUEST_CASE_EDIT,
+            Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
+            Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+            Event.SUBMIT_TIME_EXTENSION,
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.RESTORE_STATE_FROM_ADJOURN,
+            Event.REQUEST_CMA_REQUIREMENTS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -179,8 +190,17 @@ public class SendNotificationHandlerTest {
                         Event.CHANGE_HEARING_CENTRE,
                         Event.APPLY_FOR_FTPA_APPELLANT,
                         Event.APPLY_FOR_FTPA_RESPONDENT,
+                        Event.REVIEW_TIME_EXTENSION,
                         Event.SUBMIT_TIME_EXTENSION,
-                        Event.REVIEW_TIME_EXTENSION
+                        Event.SEND_DIRECTION_WITH_QUESTIONS,
+                        Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                        Event.REQUEST_CASE_EDIT,
+                        Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
+                        Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                        Event.SUBMIT_TIME_EXTENSION,
+                        Event.ADJOURN_HEARING_WITHOUT_DATE,
+                        Event.RESTORE_STATE_FROM_ADJOURN,
+                        Event.REQUEST_CMA_REQUIREMENTS
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -197,19 +217,19 @@ public class SendNotificationHandlerTest {
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> sendNotificationHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> sendNotificationHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> sendNotificationHandler.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 }

@@ -50,11 +50,14 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         String decisionOutcomeDueDate = getTimeExtensionDueDate(asylumCase);
 
-        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
-        Optional<IdValue<Direction>> directionBeingUpdated = maybeDirections.orElse(emptyList())
-            .stream()
-            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(DirectionTag.REQUEST_REASONS_FOR_APPEAL)).findFirst();
+        State currentCaseState = callback.getCaseDetails().getState();
 
+        DirectionTag directionTagToLookFor = stateToDirectionTag(currentCaseState);
+        List<IdValue<Direction>> directions = getDirections(asylumCase);
+        Optional<IdValue<Direction>> directionBeingUpdated = directions
+            .stream()
+            .filter(directionIdVale -> directionIdVale.getValue().getTag().equals(directionTagToLookFor))
+            .findFirst();
 
         String currentDueDate = getDirectionDueDate(directionBeingUpdated);
 
@@ -95,7 +98,7 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         }).collect(Collectors.toList());
 
         List<IdValue<Direction>> changedDirections =
-            maybeDirections.orElse(emptyList())
+            directions
                 .stream()
                 .map(idValue -> {
                     if (directionBeingUpdated.isPresent() && directionBeingUpdated.get().getId().equals(idValue.getId())) {
@@ -107,7 +110,8 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
                                 updatedDecisionDueDate,
                                 idValue.getValue().getDateSent(),
                                 idValue.getValue().getTag(),
-                                DateAppender.appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
+                                DateAppender.appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent()),
+                                idValue.getValue().getClarifyingQuestions()
                             )
                         );
                     } else {
@@ -122,6 +126,20 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private DirectionTag stateToDirectionTag(State currentCaseState) {
+
+        switch (currentCaseState) {
+            case AWAITING_REASONS_FOR_APPEAL:
+                return DirectionTag.REQUEST_REASONS_FOR_APPEAL;
+            case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
+                return DirectionTag.REQUEST_CLARIFYING_QUESTIONS;
+            case AWAITING_CMA_REQUIREMENTS:
+                return DirectionTag.REQUEST_CMA_REQUIREMENTS;
+            default:
+                throw new IllegalArgumentException("Cannot map " + currentCaseState + " to a direction tag");
+        }
     }
 
     private TimeExtensionDecision getTimeExtensionDecision(AsylumCase asylumCase) {
@@ -146,9 +164,13 @@ public class ReviewTimeExtensionsHandler implements PreSubmitCallbackHandler<Asy
         return read.orElse(null);
     }
 
-
     private Stream<IdValue<TimeExtension>> getTimeExtensions(AsylumCase asylumCase) {
         return asylumCase.<List<IdValue<TimeExtension>>>read(TIME_EXTENSIONS)
             .orElse(emptyList()).stream();
+    }
+
+    private List<IdValue<Direction>> getDirections(AsylumCase asylumCase) {
+        return asylumCase.<List<IdValue<Direction>>>read(DIRECTIONS)
+            .orElse(emptyList());
     }
 }

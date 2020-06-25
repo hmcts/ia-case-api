@@ -7,6 +7,7 @@ public enum CaseFlagType {
 
     ANONYMITY("anonymity", "Anonymity"),
     COMPLEX_CASE("complexCase", "Complex case"),
+    DEPORT("deport", "Deport"),
     DETAINED_IMMIGRATION_APPEAL("detainedImmigrationAppeal", "Detained immigration appeal"),
     FOREIGN_NATIONAL_OFFENDER("foreignNationalOffender", "Foreign national offender"),
     POTENTIALLY_VIOLENT_PERSON("potentiallyViolentPerson", "Potentially violent person"),
@@ -25,12 +26,12 @@ public enum CaseFlagType {
         this.readableText = readableText;
     }
 
+    public String getReadableText() {
+        return readableText;
+    }
+
     @Override
     public String toString() {
         return id;
-    }
-
-    public String getReadableText() {
-        return readableText;
     }
 }

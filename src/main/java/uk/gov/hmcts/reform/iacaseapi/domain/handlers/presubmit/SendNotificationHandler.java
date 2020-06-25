@@ -73,8 +73,17 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
                    Event.CHANGE_HEARING_CENTRE,
                    Event.APPLY_FOR_FTPA_APPELLANT,
                    Event.APPLY_FOR_FTPA_RESPONDENT,
+                   Event.REVIEW_TIME_EXTENSION,
                    Event.SUBMIT_TIME_EXTENSION,
-                   Event.REVIEW_TIME_EXTENSION
+                   Event.SEND_DIRECTION_WITH_QUESTIONS,
+                   Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+                   Event.REQUEST_CASE_EDIT,
+                   Event.FORCE_CASE_TO_CASE_UNDER_REVIEW,
+                   Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS,
+                   Event.SUBMIT_TIME_EXTENSION,
+                   Event.ADJOURN_HEARING_WITHOUT_DATE,
+                   Event.RESTORE_STATE_FROM_ADJOURN,
+                   Event.REQUEST_CMA_REQUIREMENTS
                ).contains(callback.getEvent());
     }
 

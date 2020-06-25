@@ -33,6 +33,8 @@ def secrets = [
         secret('test-judge-x-password', 'TEST_JUDGE_X_PASSWORD'),
         secret('test-law-firm-share-case-a-username', 'TEST_LAW_FIRM_SHARE_CASE_A_USERNAME'),
         secret('test-law-firm-share-case-a-password', 'TEST_LAW_FIRM_SHARE_CASE_A_PASSWORD'),
+        secret('test-citizen-username', 'TEST_CITIZEN_USERNAME'),
+        secret('test-citizen-password', 'TEST_CITIZEN_PASSWORD'),
 
         secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
         secret('idam-secret', 'IA_IDAM_SECRET'),
@@ -42,7 +44,7 @@ def secrets = [
         secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
         secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
-
+        secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
 
         secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
         secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
@@ -69,14 +71,14 @@ withPipeline(type, product, component) {
 
     env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
+    env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+    env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
     env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.CCD_URL = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.DM_URL = "http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
     env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-
-    installCharts()
 
     enableAksStagingDeployment()
     disableLegacyDeployment()

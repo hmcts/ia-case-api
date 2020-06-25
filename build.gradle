@@ -232,7 +232,7 @@ repositories {
 dependencyManagement {
     dependencies {
         // CVE-2019-0232, CVE-2019-0199 - command line injections on windows
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.31') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.35') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
@@ -256,17 +256,17 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
-    
+
     compile('org.apache.logging.log4j:log4j-to-slf4j:2.13.2') {
         force = true
         because 'CVE-2020-9488, CVE-2020-9488'
     }
-    
+
     compile('org.apache.logging.log4j:log4j-api:2.13.2') {
         force = true
         because 'CVE-2020-9488, CVE-2020-9488'
     }
-    
+
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0.pr3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0.pr3'
@@ -276,7 +276,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformLogging
@@ -294,6 +294,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.23'
+
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1'
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"

@@ -347,6 +347,11 @@ public class CcdScenarioRunnerTest {
                 .getJudgeAuthorization();
         }
 
+        if ("Citizen".equalsIgnoreCase(credentials)) {
+            return authorizationHeadersProvider
+                    .getCitizenAuthorization();
+        }
+
         return new Headers();
     }
 }
