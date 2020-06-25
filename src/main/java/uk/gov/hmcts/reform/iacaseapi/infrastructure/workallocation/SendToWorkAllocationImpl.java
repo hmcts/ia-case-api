@@ -116,5 +116,32 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
                     "Couldn't delegate callback to API: http://localhost:8080/engine-rest/process-definition/workAllocation/start", e
             );
         }
+
+        LOGGER.info("Created internal task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
+
+        try {
+            ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> exchange = restTemplate
+                    .exchange(
+                            "http://localhost:8080/engine-rest/process-definition/key/workAllocationExternal/start",
+                            HttpMethod.POST,
+                            requestEntity,
+                            new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                            }
+                    );
+
+            if (!exchange.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException(
+                        "Got [" + exchange.getStatusCode() + "] when calling http://localhost:8080/engine-rest/process-definition/workAllocationExternal/start"
+                );
+            }
+
+            LOGGER.info("Created external task for respomnse [" + exchange.getStatusCodeValue() + "]");
+        } catch (RestClientException e) {
+            throw new AsylumCaseServiceResponseException(
+                    "Couldn't delegate callback to API: http://localhost:8080/engine-rest/process-definition/workAllocationExternal/start", e
+            );
+        }
+
+        LOGGER.info("Created external task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
     }
 }

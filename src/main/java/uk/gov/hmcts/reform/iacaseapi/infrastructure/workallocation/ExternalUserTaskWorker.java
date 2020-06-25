@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -14,21 +13,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class CompleteTaskWorker {
+public class ExternalUserTaskWorker {
     private final static Logger LOGGER = Logger.getLogger(CompleteTaskWorker.class.getName());
     private final static String CAMUNDA_URL = "http://localhost:8080/engine-rest";
 
     private final RestTemplate restTemplate;
     private final TaskLog taskLog;
 
-    public CompleteTaskWorker(RestTemplate restTemplate, TaskLog taskLog) {
+    public ExternalUserTaskWorker(RestTemplate restTemplate, TaskLog taskLog) {
         this.restTemplate = restTemplate;
         this.taskLog = taskLog;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void register() {
-        LOGGER.info("Registering for Camunda events");
+        LOGGER.info("Registering for Camunda events external task");
 
         ExternalTaskClient client = ExternalTaskClient.create()
                 .baseUrl("http://localhost:8080/engine-rest")
@@ -38,22 +37,42 @@ public class CompleteTaskWorker {
                 .backoffStrategy(new ExponentialBackoffStrategy(0, 0, 0)) // prevents long waits after Camunda hasn't been used for a while
                 .build();
 
-        client.subscribe("complete-task")
+        client.subscribe("send_reminder")
+                .lockDuration(1000)
+                .handler((externalTask, externalTaskService) -> {
+                    String ccdReference = (String) externalTask.getVariable("id");
+                    LOGGER.info("Send reminder for [" + ccdReference + "]");
+
+                    externalTaskService.complete(externalTask);
+                })
+                .open();
+
+        client.subscribe("out_of_time")
+                .lockDuration(1000)
+                .handler((externalTask, externalTaskService) -> {
+                    String ccdReference = (String) externalTask.getVariable("id");
+                    LOGGER.info("Out of time for [" + ccdReference + "]");
+
+                    externalTaskService.complete(externalTask);
+                })
+                .open();
+
+        client.subscribe("complete-task-external")
                 .lockDuration(1000) // the default lock duration is 20 seconds, but you can override this
                 .handler((externalTask, externalTaskService) -> {
                     String ccdReference = (String) externalTask.getVariable("id");
-                    String taskToComplete = (String)((Map)externalTask.getVariable("task")).get("taskToComplete");
+                    String directionToComplete = (String)((Map)externalTask.getVariable("task")).get("directionToComplete");
 
-                    LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
+                    LOGGER.info("Completing task for direction [" + directionToComplete + "] for [" + ccdReference + "]");
 
                     ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + "id_eq_" + ccdReference + ",nextTask_eq_" + taskToComplete,
+                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocationExternal&processVariables=" + "id_eq_" + ccdReference + ",direction_eq_" + directionToComplete,
                             HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
-                            );
+                    );
                     List<Task> tasks = exchange.getBody();
 
                     for (Task task : tasks) {
-                        LOGGER.info("Completing task [" + task.getId() + "]");
+                        LOGGER.info("Completing external task [" + task.getId() + "]");
 
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -66,41 +85,11 @@ public class CompleteTaskWorker {
                             LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
                         }
                     }
-
-//                    taskLog.end(ccdReference + externalTask.getVariable("event"));
-
                     // Complete the task
                     externalTaskService.complete(externalTask);
                 })
                 .open();
 
-        LOGGER.info("Registering for Camunda events - done");
+        LOGGER.info("Registering for external user Camunda events - done");
     }
-
-    //clear out tasks
-    public static void main(String[] args) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        HashMap<String, String> params = new HashMap<>();
-        params.put("processDefinitionKey", "workAllocation");
-        ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                CAMUNDA_URL + "/task?processDefinitionKey=workAllocation",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
-        );
-        List<Task> tasks = exchange.getBody();
-
-        tasks.parallelStream().forEach(task -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> request = new HttpEntity<>("{}", headers);
-            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
-
-            if (res.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Completed task [" + task.getId() + "]");
-            } else {
-                System.out.println("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
-            }
-        });
-    }
-
 }

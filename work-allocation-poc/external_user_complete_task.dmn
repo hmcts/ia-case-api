@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_0jxpc2s" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="externalUsersCompleteTask" name="External Users Complete Task">
+    <decisionTable id="DecisionTable_0wq7s41" hitPolicy="FIRST">
+      <input id="Input_1" label="Previous State" camunda:inputVariable="previousState">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1n3ljvi" label="Event" camunda:inputVariable="event">
+        <inputExpression id="LiteralExpression_0fbtnz2" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Mapped" name="mapped" typeRef="boolean" />
+      <output id="OutputClause_0bilfk4" label="Direction to Complete" name="directionToComplete" typeRef="string" />
+      <rule id="DecisionRule_1uc48nr">
+        <inputEntry id="UnaryTests_0bcttns">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1sa4jl4">
+          <text>"uploadHomeOfficeBundle"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0c454ja">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_15gg1t6">
+          <text>"Respondent evidence"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0jv4p3t">
+        <inputEntry id="UnaryTests_1bwpq5q">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vhkuwk">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1iot29f">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1opq58r">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

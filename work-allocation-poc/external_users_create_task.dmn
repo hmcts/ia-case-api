@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1yu65yh" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="externalUsersCreateTask" name="External Users Create Task">
+    <decisionTable id="DecisionTable_0xw9lip" hitPolicy="FIRST">
+      <input id="Input_1" label="Current state" camunda:inputVariable="currentState">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1tvn76o" label="Event" camunda:inputVariable="event">
+        <inputExpression id="LiteralExpression_1qi4po3" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Mapped" name="mapped" typeRef="boolean" />
+      <output id="OutputClause_0ze2628" label="Direction" name="direction" typeRef="string" />
+      <output id="OutputClause_0kavvw3" label="Party" name="party" typeRef="string" />
+      <output id="OutputClause_0mf28dm" label="1st Due Date" name="firstDueDate" typeRef="integer" />
+      <output id="OutputClause_1uxdslb" label="2nd Due Date" name="secondDueDate" typeRef="integer" />
+      <output id="OutputClause_1n0feju" label="3rd Due Date" name="thirdDueDate" typeRef="integer" />
+      <output id="OutputClause_1luow5g" typeRef="string" />
+      <rule id="DecisionRule_10jh2xw">
+        <inputEntry id="UnaryTests_0vnp8dz">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1prrp1p">
+          <text>"requestRespondentEvidence"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11yd22i">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ne086x">
+          <text>"Respondent evidence"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1nqdrb1">
+          <text>"Respondent"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03xanss">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1tjd3s7">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0miv0dz">
+          <text>3</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0sshczb">
+          <text></text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ww2zrg">
+        <inputEntry id="UnaryTests_15zm39x">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_17502f6">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_12qifvs">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1u8u2hh">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0t4b3ml">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0kbwnbo">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1mpyoef">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yqdyiz">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_02956fp">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
