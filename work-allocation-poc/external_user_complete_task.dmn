@@ -30,15 +30,57 @@
       </rule>
       <rule id="DecisionRule_0jv4p3t">
         <inputEntry id="UnaryTests_1bwpq5q">
-          <text></text>
+          <text>"caseBuilding"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0vhkuwk">
-          <text></text>
+          <text>"submitCase"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1iot29f">
-          <text>false</text>
+          <text>true</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1opq58r">
+          <text>"Case building"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1176ys0">
+        <inputEntry id="UnaryTests_1wycfsb">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0o1nnxp">
+          <text>"uploadHomeOfficeAppealResponse"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1v8tldz">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_02vkqx9">
+          <text>"Respondent review"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0hop3rn">
+        <inputEntry id="UnaryTests_0nluejj">
+          <text>"submitHearingRequirements"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0brm5ao">
+          <text>"draftHearingRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1acg4g0">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lu90o2">
+          <text>"Hearing requirements"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0h1yimh">
+        <inputEntry id="UnaryTests_0uvcgbr">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_02jy0m3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pujfyt">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1lczcit">
           <text></text>
         </outputEntry>
       </rule>

@@ -18,7 +18,6 @@
       <output id="OutputClause_0mf28dm" label="1st Due Date" name="firstDueDate" typeRef="integer" />
       <output id="OutputClause_1uxdslb" label="2nd Due Date" name="secondDueDate" typeRef="integer" />
       <output id="OutputClause_1n0feju" label="3rd Due Date" name="thirdDueDate" typeRef="integer" />
-      <output id="OutputClause_1luow5g" typeRef="string" />
       <rule id="DecisionRule_10jh2xw">
         <inputEntry id="UnaryTests_0vnp8dz">
           <text>"awaitingRespondentEvidence"</text>
@@ -44,8 +43,83 @@
         <outputEntry id="LiteralExpression_0miv0dz">
           <text>3</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_0sshczb">
-          <text></text>
+      </rule>
+      <rule id="DecisionRule_0zkmaue">
+        <inputEntry id="UnaryTests_0ytj21p">
+          <text>"caseBuilding"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0b9h27v">
+          <text>"requestCaseBuilding"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0i8cnzk">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1y7hle1">
+          <text>"Case building"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0v7gm1m">
+          <text>"Appellant"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ze8n3j">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k4ho5f">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fdcnxy">
+          <text>3</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_08fl17d">
+        <inputEntry id="UnaryTests_1kjceh9">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0xe6pzr">
+          <text>"requestRespondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qr47sp">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_14i881b">
+          <text>"Respondent review"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1jsvswe">
+          <text>"Respondent"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_105f8yg">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vfmmrl">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1azoyt0">
+          <text>3</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1bg6vjd">
+        <inputEntry id="UnaryTests_19yxbne">
+          <text>"submitHearingRequirements"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1leha1t">
+          <text>"requestHearingRequirementsFeature"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0470wk0">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0sky3gt">
+          <text>"Hearing requirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1dlyn8v">
+          <text>"Appellant"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1wdtmgp">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19wfeup">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ciiewx">
+          <text>3</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0ww2zrg">
@@ -71,9 +145,6 @@
           <text></text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yqdyiz">
-          <text></text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_02956fp">
           <text></text>
         </outputEntry>
       </rule>
