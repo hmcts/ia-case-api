@@ -825,7 +825,7 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
             "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
     PAYMENT_STATUS(
-            "paymentStatus", new TypeReference<String>(){}),
+            "paymentStatus", new TypeReference<PaymentStatus>(){}),
     FEE_PAYMENT_APPEAL_TYPE(
             "feePaymentAppealType", new TypeReference<String>(){}),
     PAYMENT_REFERENCE(
@@ -853,6 +853,8 @@ public enum AsylumCaseFieldDefinition {
     DATES_TO_AVOID_READONLY(
         "datesToAvoidReadonly", new TypeReference<List<IdValue<DatesToAvoid>>>() {}),
 
+    PAYMENT_FAILED_FOR_DISPLAY(
+        "paymentFailedForDisplay", new TypeReference<String>(){})
     ;
 
     private final String value;
