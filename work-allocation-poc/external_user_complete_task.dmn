@@ -70,6 +70,34 @@
           <text>"Hearing requirements"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0qgv650">
+        <inputEntry id="UnaryTests_1h8amyu">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0xfuxkn">
+          <text>"endAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_19tal43">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_01xqu3t">
+          <text>"All"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_07jgc8p">
+        <inputEntry id="UnaryTests_181l5og">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_12on3tl">
+          <text>"removeAppealFromOnline"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1rzbzws">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1nqyy94">
+          <text>"All"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0h1yimh">
         <inputEntry id="UnaryTests_0uvcgbr">
           <text></text>

@@ -46,8 +46,12 @@ public class CompleteTaskWorker {
 
                     LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
 
+                    String processVariablesForTaskToComplete = "id_eq_" + ccdReference;
+                    if (!taskToComplete.equalsIgnoreCase("All")) {
+                        processVariablesForTaskToComplete += ",nextTask_eq_" + taskToComplete;
+                    }
                     ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + "id_eq_" + ccdReference + ",nextTask_eq_" + taskToComplete,
+                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + processVariablesForTaskToComplete,
                             HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
                             );
                     List<Task> tasks = exchange.getBody();

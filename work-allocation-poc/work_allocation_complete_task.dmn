@@ -182,6 +182,34 @@
           <text>"Start decisions and reasons document"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0lfi1o0">
+        <inputEntry id="UnaryTests_110iopu">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0zmfjkm">
+          <text>"endAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ute5ye">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1wjsicy">
+          <text>"All"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1udwzdy">
+        <inputEntry id="UnaryTests_0h7wvao">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1dod4xf">
+          <text>"removeAppealFromOnline"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ch7gn5">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08osr59">
+          <text>"All"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1jye5f8">
         <inputEntry id="UnaryTests_1uiy9tv">
           <text></text>

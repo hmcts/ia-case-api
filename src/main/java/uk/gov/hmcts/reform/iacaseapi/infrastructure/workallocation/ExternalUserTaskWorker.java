@@ -65,8 +65,12 @@ public class ExternalUserTaskWorker {
 
                     LOGGER.info("Completing task for direction [" + directionToComplete + "] for [" + ccdReference + "]");
 
+                    String processVariablesForDirectionToComplete = "id_eq_" + ccdReference;
+                    if (!directionToComplete.equalsIgnoreCase("All")) {
+                        processVariablesForDirectionToComplete += ",direction_eq_" + directionToComplete;
+                    }
                     ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocationExternal&processVariables=" + "id_eq_" + ccdReference + ",direction_eq_" + directionToComplete,
+                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocationExternal&processVariables=" + processVariablesForDirectionToComplete,
                             HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
                     );
                     List<Task> tasks = exchange.getBody();
