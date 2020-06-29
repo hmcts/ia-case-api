@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 @Component
@@ -63,10 +65,10 @@ public class FeePaymentStateHandler implements PreSubmitCallbackStateHandler<Asy
             .read(APPEAL_TYPE, AppealType.class)
             .map(type -> type == HU || type == EA).orElse(false);
 
-        final String paymentStatus = asylumCase
-            .read(PAYMENT_STATUS, String.class).orElse("");
+        final Optional<PaymentStatus> paymentStatus = asylumCase
+            .read(PAYMENT_STATUS, PaymentStatus.class);
 
-        return (isPaymentPendingAppealType && paymentStatus.equals("Payment due"))
+        return (isPaymentPendingAppealType && paymentStatus.get().equals(PaymentStatus.PAYMENT_DUE))
             ? new PreSubmitCallbackResponse<>(asylumCase, State.PAYMENT_PENDING)
             : new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_DUE;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -57,8 +59,8 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
                 isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
-        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, String.class).isPresent()) {
-            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, "Payment due");
+        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
+            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, PAYMENT_DUE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);

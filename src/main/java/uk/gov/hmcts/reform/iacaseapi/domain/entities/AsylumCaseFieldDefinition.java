@@ -776,7 +776,7 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
             "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
     PAYMENT_STATUS(
-            "paymentStatus", new TypeReference<String>(){}),
+            "paymentStatus", new TypeReference<PaymentStatus>(){}),
     FEE_PAYMENT_APPEAL_TYPE(
             "feePaymentAppealType", new TypeReference<String>(){}),
     PAYMENT_REFERENCE(
@@ -796,7 +796,9 @@ public enum AsylumCaseFieldDefinition {
     PAYMENT_ERROR_CODE(
             "paymentErrorCode", new TypeReference<String>(){}),
     PAYMENT_ERROR_MESSAGE(
-            "paymentErrorMessage", new TypeReference<String>(){})
+            "paymentErrorMessage", new TypeReference<String>(){}),
+    PAYMENT_FAILED_FOR_DISPLAY(
+        "paymentFailedForDisplay", new TypeReference<String>(){})
     ;
 
     private final String value;
