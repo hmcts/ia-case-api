@@ -29,6 +29,7 @@ public class StateTest {
         assertEquals("awaitingClarifyingQuestionsAnswers", State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS.toString());
         assertEquals("clarifyingQuestionsAnswersSubmitted", State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED.toString());
         assertEquals("awaitingCmaRequirements", State.AWAITING_CMA_REQUIREMENTS.toString());
+        assertEquals("cmaRequirementsSubmitted", State.CMA_REQUIREMENTS_SUBMITTED.toString());
         assertEquals("adjourned", State.ADJOURNED.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
     }
