@@ -67,7 +67,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SEND_DECISION_AND_REASONS,
             Event.EDIT_CASE_LISTING,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
-            Event.END_APPEAL);
+            Event.END_APPEAL,
+            Event.SUBMIT_CMA_REQUIREMENTS);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
             allowedEvents.add(Event.SUBMIT_CASE);
