@@ -3,11 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -24,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class AppealPayAndSubmittedConfirmationTest {
+public class AppealPaymentConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -33,24 +34,26 @@ public class AppealPayAndSubmittedConfirmationTest {
     private AppealPaymentConfirmationProvider appealPaymentConfirmationProvider =
         new AppealPaymentConfirmationProvider();
 
-    private AppealPayAndSubmittedConfirmation appealPayAndSubmittedConfirmation =
-        new AppealPayAndSubmittedConfirmation(appealPaymentConfirmationProvider);
+    private AppealPaymentConfirmation appealPaymentConfirmation =
+        new AppealPaymentConfirmation(appealPaymentConfirmationProvider);
 
     @Before
     public void setUp() {
 
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
-    public void should_return_confirmation() {
+    public void should_return_payment_success_confirmation_when_payment_paid() {
 
-        long caseId = 1234;
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =
-            appealPayAndSubmittedConfirmation.handle(callback);
+            appealPaymentConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -58,17 +61,12 @@ public class AppealPayAndSubmittedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("# Your appeal has been paid for and submitted")
+            containsString("You have paid for the appeal")
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("### What happens next")
-        );
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You will receive an email confirming that this appeal has been submitted successfully.")
+            containsString("Payment successful")
         );
     }
 
@@ -78,8 +76,10 @@ public class AppealPayAndSubmittedConfirmationTest {
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(FAILED));
         when(asylumCase.read(PAYMENT_ERROR_MESSAGE, String.class)).thenReturn(Optional.of("Your account is deleted"));
 
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
         PostSubmitCallbackResponse callbackResponse =
-            appealPayAndSubmittedConfirmation.handle(callback);
+            appealPaymentConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -94,11 +94,6 @@ public class AppealPayAndSubmittedConfirmationTest {
             callbackResponse.getConfirmationBody().get(),
             containsString("![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n")
         );
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.")
-        );
     }
 
     @Test
@@ -106,7 +101,7 @@ public class AppealPayAndSubmittedConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
-        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.handle(callback))
+        assertThatThrownBy(() -> appealPaymentConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -118,9 +113,9 @@ public class AppealPayAndSubmittedConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = appealPayAndSubmittedConfirmation.canHandle(callback);
+            boolean canHandle = appealPaymentConfirmation.canHandle(callback);
 
-            if (event == Event.PAY_AND_SUBMIT_APPEAL) {
+            if (event == Event.PAYMENT_APPEAL) {
 
                 assertTrue(canHandle);
             } else {
@@ -134,11 +129,11 @@ public class AppealPayAndSubmittedConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.canHandle(null))
+        assertThatThrownBy(() -> appealPaymentConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.handle(null))
+        assertThatThrownBy(() -> appealPaymentConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

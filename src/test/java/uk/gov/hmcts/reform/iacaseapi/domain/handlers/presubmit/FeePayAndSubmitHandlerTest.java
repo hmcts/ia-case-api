@@ -31,14 +31,14 @@ public class FeePayAndSubmitHandlerTest {
     public void setUp() {
 
         feePayAndSubmitHandler =
-                new FeePayAndSubmitHandler(true, feePayment);
+            new FeePayAndSubmitHandler(true, feePayment);
     }
 
     @Test
     public void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
-                Event.PAY_AND_SUBMIT_APPEAL
+            Event.PAY_AND_SUBMIT_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -60,17 +60,17 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+    public void it_cannot_handle_callback_if_fee_payment_not_enabled() {
 
         FeePayAndSubmitHandler feePayAndSubmitHandlerWithDisabledPayment =
-                new FeePayAndSubmitHandler(
-                        false,
-                        feePayment
-                );
+            new FeePayAndSubmitHandler(
+                false,
+                feePayment
+            );
 
         assertThatThrownBy(() -> feePayAndSubmitHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -78,8 +78,8 @@ public class FeePayAndSubmitHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> feePayAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class FeePayAndSubmitHandlerTest {
                 boolean canHandle = feePayAndSubmitHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
+                    && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 
                     assertTrue(canHandle);
                 } else {
@@ -110,7 +110,7 @@ public class FeePayAndSubmitHandlerTest {
     public void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePayAndSubmitHandler =
-                new FeePayAndSubmitHandler(false, feePayment);
+            new FeePayAndSubmitHandler(false, feePayment);
 
         for (Event event : Event.values()) {
 
@@ -130,19 +130,19 @@ public class FeePayAndSubmitHandlerTest {
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePayAndSubmitHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePayAndSubmitHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePayAndSubmitHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePayAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

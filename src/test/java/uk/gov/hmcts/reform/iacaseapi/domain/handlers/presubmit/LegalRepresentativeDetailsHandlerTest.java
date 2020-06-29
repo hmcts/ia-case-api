@@ -7,13 +7,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -23,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(JUnitParamsRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class LegalRepresentativeDetailsHandlerTest {
 
@@ -37,18 +35,13 @@ public class LegalRepresentativeDetailsHandlerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         legalRepresentativeDetailsHandler =
             new LegalRepresentativeDetailsHandler(userDetailsProvider);
     }
 
     @Test
-    @Parameters({
-        "SUBMIT_APPEAL",
-        "PAY_AND_SUBMIT_APPEAL"
-    })
-    public void should_set_legal_representative_details_into_the_case(Event event) {
+    public void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -61,7 +54,7 @@ public class LegalRepresentativeDetailsHandlerTest {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
@@ -81,16 +74,66 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    @Parameters({
-        "SUBMIT_APPEAL",
-        "PAY_AND_SUBMIT_APPEAL"
-    })
-    public void should_not_overwrite_existing_legal_representative_details(Event event) {
+    public void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
+
+        final String expectedLegalRepresentativeName = "John Doe";
+        final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
+        final String expectedLegalRepCompany = "";
+        final String expectedLegalRepName = "";
+
+        when(userDetails.getForename()).thenReturn("John");
+        when(userDetails.getSurname()).thenReturn("Doe");
+        when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.empty());
+        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_NAME, expectedLegalRepresentativeName);
+        verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, expectedLegalRepresentativeEmailAddress);
+        verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY, expectedLegalRepCompany);
+        verify(asylumCase, times(1)).write(LEGAL_REP_NAME, expectedLegalRepName);
+    }
+
+    @Test
+    public void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.of("existing"));
+        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.of("existing"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    public void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
+
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
@@ -130,8 +173,8 @@ public class LegalRepresentativeDetailsHandlerTest {
                 boolean canHandle = legalRepresentativeDetailsHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                        Event.SUBMIT_APPEAL,
-                        Event.PAY_AND_SUBMIT_APPEAL)
+                    Event.SUBMIT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
                         .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
