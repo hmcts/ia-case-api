@@ -24,6 +24,7 @@ public enum DocumentTag {
     FTPA_RESPONDENT("ftpaRespondent"),
     FTPA_DECISION_AND_REASONS("ftpaDecisionAndReasons"),
     HO_DECISION_LETTER("homeOfficeDecisionLetter"),
+    SENSITIVE_DOCUMENT("sensitiveDocument"),
 
     @JsonEnumDefaultValue
     NONE("");
