@@ -60,7 +60,7 @@ public class ShareACaseUserListPreparerTest {
         List<ProfessionalUser> professionalUsers = Lists.newArrayList(professionalUser);
 
         when(professionalUsersRetriever.retrieve()).thenReturn(professionalUsersResponse);
-        when(professionalUsersResponse.getProfessionalUsers()).thenReturn(professionalUsers);
+        when(professionalUsersResponse.getUsers()).thenReturn(professionalUsers);
         when(professionalUser.getUserIdentifier()).thenReturn(userId);
         when(professionalUser.getEmail()).thenReturn(userEmail);
         when(professionalUser.getIdamStatus()).thenReturn("ACTIVE");
@@ -92,7 +92,7 @@ public class ShareACaseUserListPreparerTest {
         List<ProfessionalUser> professionalUsers = Lists.newArrayList();
 
         when(professionalUsersRetriever.retrieve()).thenReturn(professionalUsersResponse);
-        when(professionalUsersResponse.getProfessionalUsers()).thenReturn(professionalUsers);
+        when(professionalUsersResponse.getUsers()).thenReturn(professionalUsers);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             shareACaseUserListPreparer.handle(

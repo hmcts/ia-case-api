@@ -13,23 +13,29 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.assertj.core.util.Lists;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.RefDataIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
 @Slf4j
-public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
+public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
 
     private static final String ACTIVE_USER_ID = "6c4fd62d-9d3c-4d11-962c-57080df16871";
 
@@ -42,6 +48,32 @@ public class ShareACaseCcdIntegrationTest extends RefDataIntegrationTest {
     private List<Value> values = Lists.newArrayList(value1, value2);
 
     private DynamicList dynamicList;
+
+    @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
+    private Resource resourceFile;
+
+    @org.springframework.beans.factory.annotation.Value("${prof.ref.data.path.org.users}")
+    private String refDataPath;
+
+    protected ProfessionalUsersResponse prdSuccessResponse;
+
+    @Before
+    public void setupReferenceDataStub() throws IOException {
+
+        String prdResponseJson =
+            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+
+        assertThat(prdResponseJson).isNotBlank();
+
+        prdSuccessResponse = objectMapper.readValue(prdResponseJson,
+            ProfessionalUsersResponse.class);
+
+        stubFor(get(urlEqualTo(refDataPath))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(prdResponseJson)));
+    }
 
     @Test
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {

@@ -54,7 +54,7 @@ public class ShareACaseUserListPreparer implements PreSubmitCallbackHandler<Asyl
         DynamicList dynamicList;
 
         final List<Value> values =
-            usersResponse.getProfessionalUsers()
+            usersResponse.getUsers()
                 .stream()
                 .filter(professionalUser ->
                     professionalUser.getIdamStatus().equalsIgnoreCase("ACTIVE"))

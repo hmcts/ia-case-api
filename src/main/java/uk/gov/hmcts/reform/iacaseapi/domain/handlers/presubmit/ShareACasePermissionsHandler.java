@@ -76,7 +76,7 @@ public class ShareACasePermissionsHandler implements PreSubmitCallbackHandler<As
 
         return professionalUsersRetriever
             .retrieve()
-            .getProfessionalUsers()
+            .getUsers()
             .stream()
             .anyMatch(user -> userId.equalsIgnoreCase(user.getUserIdentifier()) && user.getIdamStatus().equalsIgnoreCase("ACTIVE"));
     }
