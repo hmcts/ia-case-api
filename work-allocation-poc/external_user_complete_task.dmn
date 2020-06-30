@@ -14,6 +14,7 @@
       </input>
       <output id="Output_1" label="Mapped" name="mapped" typeRef="boolean" />
       <output id="OutputClause_0bilfk4" label="Direction to Complete" name="directionToComplete" typeRef="string" />
+      <output id="OutputClause_0y3tdgz" label="Operation" name="operation" typeRef="string" />
       <rule id="DecisionRule_1uc48nr">
         <inputEntry id="UnaryTests_0bcttns">
           <text>"awaitingRespondentEvidence"</text>
@@ -26,6 +27,9 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_15gg1t6">
           <text>"Respondent evidence"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0oh50qq">
+          <text>"completed"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0jv4p3t">
@@ -41,6 +45,9 @@
         <outputEntry id="LiteralExpression_1opq58r">
           <text>"Case building"</text>
         </outputEntry>
+        <outputEntry id="LiteralExpression_1vntrp7">
+          <text>"completed"</text>
+        </outputEntry>
       </rule>
       <rule id="DecisionRule_1176ys0">
         <inputEntry id="UnaryTests_1wycfsb">
@@ -54,6 +61,9 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_02vkqx9">
           <text>"Respondent review"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_188vk1h">
+          <text>"completed"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0hop3rn">
@@ -69,6 +79,9 @@
         <outputEntry id="LiteralExpression_0lu90o2">
           <text>"Hearing requirements"</text>
         </outputEntry>
+        <outputEntry id="LiteralExpression_0zzt2fy">
+          <text>"completed"</text>
+        </outputEntry>
       </rule>
       <rule id="DecisionRule_0qgv650">
         <inputEntry id="UnaryTests_1h8amyu">
@@ -82,6 +95,9 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_01xqu3t">
           <text>"All"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0epxx15">
+          <text>"canceled"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_07jgc8p">
@@ -97,6 +113,9 @@
         <outputEntry id="LiteralExpression_1nqyy94">
           <text>"All"</text>
         </outputEntry>
+        <outputEntry id="LiteralExpression_081hfcr">
+          <text>"canceled"</text>
+        </outputEntry>
       </rule>
       <rule id="DecisionRule_0h1yimh">
         <inputEntry id="UnaryTests_0uvcgbr">
@@ -109,6 +128,9 @@
           <text>false</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1lczcit">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1hqofbm">
           <text></text>
         </outputEntry>
       </rule>

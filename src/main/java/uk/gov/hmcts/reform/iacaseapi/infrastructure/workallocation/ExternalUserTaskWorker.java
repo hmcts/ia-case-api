@@ -62,6 +62,7 @@ public class ExternalUserTaskWorker {
                 .handler((externalTask, externalTaskService) -> {
                     String ccdReference = (String) externalTask.getVariable("id");
                     String directionToComplete = (String)((Map)externalTask.getVariable("task")).get("directionToComplete");
+                    String operation = (String)((Map)externalTask.getVariable("task")).get("operation");
 
                     LOGGER.info("Completing task for direction [" + directionToComplete + "] for [" + ccdReference + "]");
 
@@ -80,7 +81,7 @@ public class ExternalUserTaskWorker {
 
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
-                        HttpEntity<String> request = new HttpEntity<>("{}", headers);
+                        HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
                         ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
 
                         if (res.getStatusCode().is2xxSuccessful()) {
