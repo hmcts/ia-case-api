@@ -4,11 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -551,6 +547,9 @@ public enum AsylumCaseFieldDefinition {
 
     JOURNEY_TYPE(
         "journeyType", new TypeReference<JourneyType>(){}),
+
+    HEARING_TYPE(
+        "hearingType", new TypeReference<HearingType>(){}),
 
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
