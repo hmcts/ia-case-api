@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -86,6 +88,9 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
 
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
+
+            asylumCase.write(PAYMENT_DUE_DATE,
+                LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
         }
 
         return callbackResponse;

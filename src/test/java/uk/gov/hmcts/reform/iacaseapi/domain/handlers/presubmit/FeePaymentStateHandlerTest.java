@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.Before;
@@ -33,7 +32,6 @@ public class FeePaymentStateHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-
     @Mock private FeePayment<AsylumCase> feePayment;
 
     private FeePaymentStateHandler feePaymentStateHandler;
@@ -52,7 +50,6 @@ public class FeePaymentStateHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =

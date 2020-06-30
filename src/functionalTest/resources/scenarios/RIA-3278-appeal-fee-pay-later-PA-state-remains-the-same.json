@@ -36,6 +36,7 @@
         "feeDescription": "Appeal determined with a hearing",
         "feeVersion": 2,
         "feeAmount": 140.0,
+        "paymentDueDate": "{$TODAY+14}",
         "paymentStatus": "Payment due",
         "sendDirectionActionAvailable": "No",
         "currentCaseStateVisibleToLegalRepresentative": "appealStarted"
