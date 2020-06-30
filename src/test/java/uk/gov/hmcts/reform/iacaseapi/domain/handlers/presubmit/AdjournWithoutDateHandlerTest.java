@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-
 @RunWith(JUnitParamsRunner.class)
 public class AdjournWithoutDateHandlerTest {
 
@@ -127,12 +126,12 @@ public class AdjournWithoutDateHandlerTest {
         given(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)).willReturn(Optional.of(State.PREPARE_FOR_HEARING));
         given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
 
-
         handler.handle(ABOUT_TO_SUBMIT, callback);
 
         then(asylumCase).should(times(1))
             .write(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE_ADJOURNED), eq("Adjourned"));
         then(asylumCase).should(times(1))
+
             .write(eq(AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("prepareForHearing"));
         then(asylumCase).should(times(1))
             .write(eq(AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE), eq("05/05/2020"));
@@ -141,5 +140,7 @@ public class AdjournWithoutDateHandlerTest {
         then(asylumCase).should(times(1))
             .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
 
+        then(asylumCase).should(times(1))
+            .clear(eq(AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE));
     }
 }
