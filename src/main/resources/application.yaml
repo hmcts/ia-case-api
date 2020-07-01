@@ -193,6 +193,7 @@ security:
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
     caseworker-ia-admofficer:
+      - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
       - "editCaseListing"
