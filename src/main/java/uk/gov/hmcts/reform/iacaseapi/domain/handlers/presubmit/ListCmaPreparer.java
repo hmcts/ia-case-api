@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -46,6 +47,14 @@ public class ListCmaPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
         Optional<HearingCentre> maybeHearingCentre =
             asylumCase.read(HEARING_CENTRE);
+
+        if (asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+            && asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
+
+            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. You cannot list the case management appointment until the hearing requirements have been reviewed.");
+            return asylumCasePreSubmitCallbackResponse;
+        }
 
         maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
 

@@ -1,0 +1,21 @@
+{
+  "description": "RIA-3022 List cma confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCma",
+      "state": "cmaAdjustmentsAgreed",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have listed the case management appointment",
+      "body": "#### What happens next\n\nThe Notice of Case Management Appointment will be sent to all parties."
+    }
+  }
+}

@@ -30,7 +30,7 @@ public class ListCmaConfirmation implements PostSubmitCallbackHandler<AsylumCase
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        postSubmitResponse.setConfirmationHeader("# You have listed the case management appointment\n");
+        postSubmitResponse.setConfirmationHeader("# You have listed the case management appointment");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
             + "The Notice of Case Management Appointment will be sent to all parties."
