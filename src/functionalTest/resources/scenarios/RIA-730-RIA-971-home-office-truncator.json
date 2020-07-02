@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "Z12345678/001"
+          "homeOfficeReferenceNumber": "Z1234567/001"
         }
       }
     }
