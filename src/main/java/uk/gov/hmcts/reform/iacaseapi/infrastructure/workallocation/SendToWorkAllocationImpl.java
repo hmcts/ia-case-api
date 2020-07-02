@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -19,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceRes
 @Component
 public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase> {
     private final static Logger LOGGER = Logger.getLogger(SendToWorkAllocationImpl.class.getName());
+    private final static String CAMUNDA_URL = "http://localhost:8080/engine-rest";
 
     private final RestTemplate restTemplate;
     private final String endpoint;
@@ -90,30 +90,35 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         variables.put("hearingCentre", new WorkAllocationVariable(hearingCentreString, "String"));
         variables.put("appellantName", new WorkAllocationVariable(appellantName, "String"));
         variables.put("assignedTo", new WorkAllocationVariable(assignedTo, "String"));
+        String correlationId = UUID.randomUUID().toString();
+        LOGGER.info("Creating workflow with correlation ID [" + correlationId + "]");
+        variables.put("correlationId", new WorkAllocationVariable(correlationId, "String"));
 
         WorkAllocationRequest workAllocationRequest = new WorkAllocationRequest(variables);
 
         HttpEntity<WorkAllocationRequest> requestEntity = new HttpEntity<>(workAllocationRequest, headers);
 
         try {
-            ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> exchange = restTemplate
+            ResponseEntity<String> exchange = restTemplate
                     .exchange(
-                            "http://localhost:8080/engine-rest/process-definition/key/workAllocation/start",
+                            CAMUNDA_URL + "/process-definition/key/workAllocation/start",
                             HttpMethod.POST,
                             requestEntity,
-                            new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
+                            new ParameterizedTypeReference<String>() {
                             }
                     );
             taskLog.record(ccdId + event);
 
+            LOGGER.info("Started instance id\n" + exchange.getBody());
+
             if (!exchange.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException(
-                        "Got [" + exchange.getStatusCode() + "] when calling http://localhost:8080/engine-rest/process-definition/workAllocation/start"
+                        "Got [" + exchange.getStatusCode() + "] when calling " + CAMUNDA_URL + "/process-definition/workAllocation/start"
                 );
             }
         } catch (RestClientException e) {
             throw new AsylumCaseServiceResponseException(
-                    "Couldn't delegate callback to API: http://localhost:8080/engine-rest/process-definition/workAllocation/start", e
+                    "Couldn't delegate callback to API: " + CAMUNDA_URL + "/process-definition/workAllocation/start", e
             );
         }
 
@@ -122,7 +127,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         try {
             ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> exchange = restTemplate
                     .exchange(
-                            "http://localhost:8080/engine-rest/process-definition/key/workAllocationExternal/start",
+                            CAMUNDA_URL + "/process-definition/key/workAllocationExternal/start",
                             HttpMethod.POST,
                             requestEntity,
                             new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
@@ -131,17 +136,63 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
 
             if (!exchange.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException(
-                        "Got [" + exchange.getStatusCode() + "] when calling http://localhost:8080/engine-rest/process-definition/workAllocationExternal/start"
+                        "Got [" + exchange.getStatusCode() + "] when calling " + CAMUNDA_URL + "/process-definition/workAllocationExternal/start"
                 );
             }
 
             LOGGER.info("Created external task for respomnse [" + exchange.getStatusCodeValue() + "]");
         } catch (RestClientException e) {
             throw new AsylumCaseServiceResponseException(
-                    "Couldn't delegate callback to API: http://localhost:8080/engine-rest/process-definition/workAllocationExternal/start", e
+                    "Couldn't delegate callback to API: " + CAMUNDA_URL + "/process-definition/workAllocationExternal/start", e
             );
         }
 
+
+        checkTaskCreated(correlationId);
+
+
         LOGGER.info("Created external task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
+    }
+
+    private void checkTaskCreated(String correlationId) {
+        String processVariables = "correlationId_eq_" + correlationId;
+        ResponseEntity<List<ProcessInstance>> exchange = restTemplate.exchange(
+                CAMUNDA_URL + "/history/process-instance?variables=" + processVariables,
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<ProcessInstance>>() {}
+        );
+
+        List<ProcessInstance> processInstances = exchange.getBody();
+        List<Boolean> processInstancesCompleted = new ArrayList<>();
+        processInstances.forEach(processInstance -> processInstancesCompleted.add(false));
+
+        while (processInstancesCompleted.contains(false)) {
+            for (int processInstanceIndex = 0; processInstanceIndex < processInstances.size(); processInstanceIndex++) {
+                String instanceId = exchange.getBody().get(processInstanceIndex).getId();
+                ResponseEntity<String> completedTasks = restTemplate.exchange(
+                        CAMUNDA_URL + "/history/activity-instance?processInstanceId=" + instanceId + "&activityId=recordTaskAsComplete",
+                        HttpMethod.GET, null, String.class
+                );
+                LOGGER.info(completedTasks.getBody());
+
+                ResponseEntity<List<ActivityInstance>> possibleCompletedTasks = restTemplate.exchange(
+                        CAMUNDA_URL + "/history/activity-instance?processInstanceId=" + instanceId + "&activityId=recordTaskAsComplete",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<ActivityInstance>>() {}
+                );
+
+
+                List<ActivityInstance> activeInstances = possibleCompletedTasks.getBody();
+
+                boolean foundTask = activeInstances.size() > 0 && activeInstances.get(0).getDurationInMillis() != null;
+                processInstancesCompleted.set(processInstanceIndex, foundTask);
+
+                LOGGER.info(processInstancesCompleted.toString());
+            }
+
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Error waiting for task ", e);
+            }
+        }
     }
 }

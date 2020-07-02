@@ -219,6 +219,74 @@
           <text>"completed"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_01269qd">
+        <inputEntry id="UnaryTests_1iv4k8a">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1fy5fq9">
+          <text>"reviewTimeExtension"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1d2tzsu">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_01i6b9m">
+          <text>"Decide on time extension"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1b9tq8z">
+          <text>"completed"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1jbzyk7">
+        <inputEntry id="UnaryTests_1rw0edw">
+          <text>"awaitingReasonsForAppeal"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0bbia66">
+          <text>"submitReasonsForAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1yiw4zw">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_02jh6uu">
+          <text>"Decide on time extension"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lgk7kp">
+          <text>"canceled"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0um5vk6">
+        <inputEntry id="UnaryTests_0a14205">
+          <text>"clarifyingQuestionsAnswersSubmitted"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_15oyqdb">
+          <text>"submitClarifyingQuestionAnswers"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01m0go9">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0cjdw02">
+          <text>"Decide on time extension"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1klijid">
+          <text>"canceled"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_11b8u1x">
+        <inputEntry id="UnaryTests_0rw9mgb">
+          <text>"cmaRequirementsSubmitted"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_16oc5uh">
+          <text>"submitCmaRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1wpindo">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0tfy6kh">
+          <text>"Decide on time extension"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_018ykzn">
+          <text>"canceled"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0lfi1o0">
         <inputEntry id="UnaryTests_110iopu">
           <text></text>

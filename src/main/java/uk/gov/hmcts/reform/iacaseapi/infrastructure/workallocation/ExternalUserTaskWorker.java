@@ -61,33 +61,37 @@ public class ExternalUserTaskWorker {
                 .lockDuration(1000) // the default lock duration is 20 seconds, but you can override this
                 .handler((externalTask, externalTaskService) -> {
                     String ccdReference = (String) externalTask.getVariable("id");
-                    String directionToComplete = (String)((Map)externalTask.getVariable("task")).get("directionToComplete");
-                    String operation = (String)((Map)externalTask.getVariable("task")).get("operation");
+                    String directionToComplete = (String)((Map)externalTask.getVariable("completeTask")).get("directionToComplete");
+                    String operation = (String)((Map)externalTask.getVariable("completeTask")).get("operation");
+                    boolean mapped = (boolean)((Map)externalTask.getVariable("completeTask")).get("mapped");
 
                     LOGGER.info("Completing task for direction [" + directionToComplete + "] for [" + ccdReference + "]");
 
-                    String processVariablesForDirectionToComplete = "id_eq_" + ccdReference;
-                    if (!directionToComplete.equalsIgnoreCase("All")) {
-                        processVariablesForDirectionToComplete += ",direction_eq_" + directionToComplete;
-                    }
-                    ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                            CAMUNDA_URL + "/task?processDefinitionKey=workAllocationExternal&processVariables=" + processVariablesForDirectionToComplete,
-                            HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {}
-                    );
-                    List<Task> tasks = exchange.getBody();
+                    if (mapped) {
+                        String processVariablesForDirectionToComplete = "id_eq_" + ccdReference;
+                        if (!directionToComplete.equalsIgnoreCase("All")) {
+                            processVariablesForDirectionToComplete += ",direction_eq_" + directionToComplete;
+                        }
+                        ResponseEntity<List<Task>> exchange = restTemplate.exchange(
+                                CAMUNDA_URL + "/task?processDefinitionKey=workAllocationExternal&processVariables=" + processVariablesForDirectionToComplete,
+                                HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {
+                                }
+                        );
+                        List<Task> tasks = exchange.getBody();
 
-                    for (Task task : tasks) {
-                        LOGGER.info("Completing external task [" + task.getId() + "]");
+                        for (Task task : tasks) {
+                            LOGGER.info("Completing external task [" + task.getId() + "]");
 
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.setContentType(MediaType.APPLICATION_JSON);
-                        HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
-                        ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.setContentType(MediaType.APPLICATION_JSON);
+                            HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
+                            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
 
-                        if (res.getStatusCode().is2xxSuccessful()) {
-                            LOGGER.info("Completed task [" + task.getId() + "]");
-                        } else {
-                            LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+                            if (res.getStatusCode().is2xxSuccessful()) {
+                                LOGGER.info("Completed task [" + task.getId() + "]");
+                            } else {
+                                LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+                            }
                         }
                     }
                     // Complete the task
