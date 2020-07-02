@@ -76,6 +76,7 @@ public enum Event {
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
+    DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
