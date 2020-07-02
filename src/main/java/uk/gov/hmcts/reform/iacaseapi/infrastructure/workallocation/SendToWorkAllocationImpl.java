@@ -83,7 +83,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         System.out.println("setting up data - done");
     }
 
-    private void createTask(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo) {
+    public void createTask(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

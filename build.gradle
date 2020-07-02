@@ -301,6 +301,8 @@ dependencies {
 
     compile 'org.camunda.bpm.dmn:camunda-engine-dmn:7.13.0'
 
+    compile 'org.apache.activemq:activemq-broker:5.16.0'
+
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
         exclude group: "org.hamcrest", module: "hamcrest-library"

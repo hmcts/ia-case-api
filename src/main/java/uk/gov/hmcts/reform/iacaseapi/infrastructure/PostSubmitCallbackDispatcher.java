@@ -10,19 +10,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation.MessageBroker;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation.SendToWorkAllocation;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation.SendToWorkAllocationImpl;
 
 @Component
 public class PostSubmitCallbackDispatcher<T extends CaseData> {
 
     private final List<PostSubmitCallbackHandler<T>> sortedCallbackHandlers;
     private final SendToWorkAllocation<T> sendToWorkAllocation;
+    private final MessageBroker<T> messageBroker;
 
     public PostSubmitCallbackDispatcher(
             List<PostSubmitCallbackHandler<T>> callbackHandlers,
-            SendToWorkAllocation<T> sendToWorkAllocation) {
+            SendToWorkAllocation<T> sendToWorkAllocation,
+            MessageBroker<T> messageBroker) {
         this.sendToWorkAllocation = sendToWorkAllocation;
+        this.messageBroker = messageBroker;
         requireNonNull(callbackHandlers, "callbackHandlers must not be null");
         this.sortedCallbackHandlers = callbackHandlers.stream()
             // sorting handlers by handler class name
@@ -57,7 +60,8 @@ public class PostSubmitCallbackDispatcher<T extends CaseData> {
             }
         }
 
-        sendToWorkAllocation.handle(callback);
+//        sendToWorkAllocation.handle(callback);
+        messageBroker.sendToCamunda(callback);
 
         return callbackResponse;
     }
