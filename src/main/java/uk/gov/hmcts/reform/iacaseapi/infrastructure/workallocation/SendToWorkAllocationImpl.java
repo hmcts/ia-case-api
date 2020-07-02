@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
+import org.camunda.bpm.dmn.engine.*;
+import org.camunda.bpm.engine.variable.VariableMap;
+import org.camunda.bpm.engine.variable.impl.VariableMapImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -15,7 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Component
@@ -154,10 +156,69 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         }
 
 
-        checkTaskCreated(correlationId, startedProcessIds);
+//        checkTaskCreated(correlationId, startedProcessIds);
+        completeInternalTasks(event, previousStateString, ccdId + "");
 
 
         LOGGER.info("Created external task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
+    }
+
+    private void completeInternalTasks(String eventValue, String previousState, String ccdReference) {
+        // create a default DMN engine
+        DmnEngine dmnEngine = DmnEngineConfiguration
+                .createDefaultDmnEngineConfiguration()
+                .buildEngine();
+
+        File initialFile = new File("/Users/chris/hmcts/ia-case-api/work-allocation-poc/work_allocation_complete_task.dmn");
+        try (InputStream inputStream = new FileInputStream(initialFile)) {
+            DmnDecision decision = dmnEngine.parseDecision("completeTask", inputStream);
+
+            VariableMap variables = new VariableMapImpl();
+            variables.putValue("event", eventValue);
+            variables.putValue("previousState", previousState);
+
+            DmnDecisionTableResult dmnDecisionRuleResults = dmnEngine.evaluateDecisionTable(decision, variables);
+
+            DmnDecisionRuleResult singleResult = dmnDecisionRuleResults.getSingleResult();
+            LOGGER.info(singleResult.getEntryMap().toString());
+            Boolean mapped = singleResult.getEntry("mapped");
+
+            if (mapped) {
+                String taskToComplete = singleResult.getEntry("taskToComplete");
+                String operation = singleResult.getEntry("operation");
+                LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
+
+                String processVariablesForTaskToComplete = "id_eq_" + ccdReference;
+                if (!taskToComplete.equalsIgnoreCase("All")) {
+                    processVariablesForTaskToComplete += ",nextTask_eq_" + taskToComplete;
+                }
+                ResponseEntity<List<Task>> exchange = restTemplate.exchange(
+                        CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + processVariablesForTaskToComplete,
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {
+                        }
+                );
+                List<Task> tasks = exchange.getBody();
+
+                for (Task task : tasks) {
+                    LOGGER.info("Completing task [" + task.getId() + "]");
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                    HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
+                    ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
+
+                    if (res.getStatusCode().is2xxSuccessful()) {
+                        LOGGER.info("Completed task [" + task.getId() + "]");
+                    } else {
+                        LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkTaskCreated(String correlationId, ArrayList<String> startedProcessIds) {

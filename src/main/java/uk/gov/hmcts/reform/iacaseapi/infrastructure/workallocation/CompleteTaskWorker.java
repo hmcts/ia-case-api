@@ -41,50 +41,50 @@ public class CompleteTaskWorker {
         client.subscribe("complete-task")
 //                .lockDuration(1000) // the default lock duration is 20 seconds, but you can override this
                 .handler((externalTask, externalTaskService) -> {
-//                    try {
-//                        Thread.sleep(10000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
+////                    try {
+////                        Thread.sleep(10000);
+////                    } catch (InterruptedException e) {
+////                        e.printStackTrace();
+////                    }
+//
+//                    String ccdReference = (String) externalTask.getVariable("id");
+//                    String taskToComplete = (String)((Map)externalTask.getVariable("completeTask")).get("taskToComplete");
+//                    String operation = (String)((Map)externalTask.getVariable("completeTask")).get("operation");
+//
+//                    LOGGER.info(((Map)externalTask.getVariable("completeTask")).toString());
+//                    boolean mapped = (boolean)((Map)externalTask.getVariable("completeTask")).get("mapped");
+//
+//                    if (mapped) {
+//                        LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
+//
+//                        String processVariablesForTaskToComplete = "id_eq_" + ccdReference;
+//                        if (!taskToComplete.equalsIgnoreCase("All")) {
+//                            processVariablesForTaskToComplete += ",nextTask_eq_" + taskToComplete;
+//                        }
+//                        ResponseEntity<List<Task>> exchange = restTemplate.exchange(
+//                                CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + processVariablesForTaskToComplete,
+//                                HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {
+//                                }
+//                        );
+//                        List<Task> tasks = exchange.getBody();
+//
+//                        for (Task task : tasks) {
+//                            LOGGER.info("Completing task [" + task.getId() + "]");
+//
+//                            HttpHeaders headers = new HttpHeaders();
+//                            headers.setContentType(MediaType.APPLICATION_JSON);
+//                            HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
+//                            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
+//
+//                            if (res.getStatusCode().is2xxSuccessful()) {
+//                                LOGGER.info("Completed task [" + task.getId() + "]");
+//                            } else {
+//                                LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+//                            }
+//                        }
+//
+////                    taskLog.end(ccdReference + externalTask.getVariable("event"));
 //                    }
-
-                    String ccdReference = (String) externalTask.getVariable("id");
-                    String taskToComplete = (String)((Map)externalTask.getVariable("completeTask")).get("taskToComplete");
-                    String operation = (String)((Map)externalTask.getVariable("completeTask")).get("operation");
-
-                    LOGGER.info(((Map)externalTask.getVariable("completeTask")).toString());
-                    boolean mapped = (boolean)((Map)externalTask.getVariable("completeTask")).get("mapped");
-
-                    if (mapped) {
-                        LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
-
-                        String processVariablesForTaskToComplete = "id_eq_" + ccdReference;
-                        if (!taskToComplete.equalsIgnoreCase("All")) {
-                            processVariablesForTaskToComplete += ",nextTask_eq_" + taskToComplete;
-                        }
-                        ResponseEntity<List<Task>> exchange = restTemplate.exchange(
-                                CAMUNDA_URL + "/task?processDefinitionKey=workAllocation&processVariables=" + processVariablesForTaskToComplete,
-                                HttpMethod.GET, null, new ParameterizedTypeReference<List<Task>>() {
-                                }
-                        );
-                        List<Task> tasks = exchange.getBody();
-
-                        for (Task task : tasks) {
-                            LOGGER.info("Completing task [" + task.getId() + "]");
-
-                            HttpHeaders headers = new HttpHeaders();
-                            headers.setContentType(MediaType.APPLICATION_JSON);
-                            HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
-                            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
-
-                            if (res.getStatusCode().is2xxSuccessful()) {
-                                LOGGER.info("Completed task [" + task.getId() + "]");
-                            } else {
-                                LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
-                            }
-                        }
-
-//                    taskLog.end(ccdReference + externalTask.getVariable("event"));
-                    }
                     // Complete the task
                     externalTaskService.complete(externalTask);
                 })
