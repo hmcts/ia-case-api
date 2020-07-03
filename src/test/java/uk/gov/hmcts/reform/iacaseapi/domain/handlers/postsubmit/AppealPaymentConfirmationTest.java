@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
@@ -47,6 +48,38 @@ public class AppealPaymentConfirmationTest {
         when(asylumCase.read(FEE_AMOUNT, BigDecimal.class)).thenReturn(Optional.of(BigDecimal.valueOf(140.00)));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
 
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_STARTED);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealPaymentConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("You have paid for the appeal")
+        );
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("You still need to submit it")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("Payment successful")
+        );
+    }
+
+    @Test
+    public void should_return_payment_success_confirmation_after_appeal_submitted() {
+
+        when(asylumCase.read(FEE_AMOUNT, BigDecimal.class)).thenReturn(Optional.of(BigDecimal.valueOf(140.00)));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
+
+        when(callback.getCaseDetails().getState()).thenReturn(State.PAYMENT_PENDING);
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
 
         PostSubmitCallbackResponse callbackResponse =

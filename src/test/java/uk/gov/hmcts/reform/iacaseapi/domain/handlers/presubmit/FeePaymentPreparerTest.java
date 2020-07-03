@@ -77,7 +77,7 @@ public class FeePaymentPreparerTest {
 
                 boolean canHandle = feePaymentPreparer.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.PAYMENT_APPEAL)
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                         && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);

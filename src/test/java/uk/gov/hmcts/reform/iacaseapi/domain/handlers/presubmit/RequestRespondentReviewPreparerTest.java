@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -82,11 +80,6 @@ public class RequestRespondentReviewPreparerTest {
         assertThat(
                 asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
             containsString(expectedExplanationContains)
-        );
-
-        assertThat(
-                asylumCaseValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)),
-            is(YesOrNo.YES)
         );
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);

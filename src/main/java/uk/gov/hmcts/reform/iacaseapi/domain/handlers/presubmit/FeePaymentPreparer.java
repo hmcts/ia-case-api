@@ -38,8 +38,7 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
                 && (callback.getEvent() == Event.START_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.PAYMENT_APPEAL);
+                    || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

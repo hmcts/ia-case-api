@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,108 +32,63 @@ public class FeePaymentStateHandlerTest {
     @Mock private AsylumCase asylumCase;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
+    @Mock private FeePayment<AsylumCase> feePayment;
+
     private FeePaymentStateHandler feePaymentStateHandler;
 
     @Before
     public void setUp() {
 
         feePaymentStateHandler =
-            new FeePaymentStateHandler(true);
+            new FeePaymentStateHandler(true, feePayment);
     }
 
     @Test
-    public void should_return_payment_pending_state_for_hu_appeal_type_and_payment_due_status() {
+    public void should_return_error_for_hu_or_ea_appeal_type() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_DUE));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PAYMENT_PENDING);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-    }
-
-    @Test
-    public void should_return_same_state_for_hu_appeal_type_and_when_paid() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-    }
-
-    @Test
-    public void should_return_same_state_for_ea_appeal_type_and_when_paid() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-    }
-
-    @Test
-    public void should_return_payment_pending_state_for_ea_appeal_type_and_payment_due_status() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
-
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_DUE));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PAYMENT_PENDING);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertThat(returnedCallbackResponse.getErrors()).contains("Payment for the appeal has been already made.");
     }
 
     @Test
     public void should_return_appeal_started_state_for_pa_appeal_type_and_payment_due_status() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_DUE));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.CASE_BUILDING);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_throw_if_appeal_type_is_not_present() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .hasMessage("AppealType is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -162,7 +116,7 @@ public class FeePaymentStateHandlerTest {
                 boolean canHandle = feePaymentStateHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && callback.getEvent() == Event.SUBMIT_APPEAL) {
+                    && callback.getEvent() == Event.PAYMENT_APPEAL) {
 
                     assertTrue(canHandle);
                 } else {
@@ -178,7 +132,7 @@ public class FeePaymentStateHandlerTest {
     public void it_cannot_handle_callback_if_fee_payment_not_enabled() {
 
         feePaymentStateHandler =
-            new FeePaymentStateHandler(false);
+            new FeePaymentStateHandler(false, feePayment);
 
         for (Event event : Event.values()) {
 
@@ -202,20 +156,12 @@ public class FeePaymentStateHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentStateHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
         assertThatThrownBy(() -> feePaymentStateHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentStateHandler.handle(null, callback, callbackResponse))
             .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null, callbackResponse))
-            .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
