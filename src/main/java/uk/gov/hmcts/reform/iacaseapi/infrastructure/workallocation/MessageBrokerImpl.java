@@ -24,7 +24,6 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
         this.sendToWorkAllocation = sendToWorkAllocation;
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
 
-
         Connection connection = connectionFactory.createConnection();
 
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -40,22 +39,16 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
             MessageProducer producer = session.createProducer(queue);
             Message message = session.createMessage();
 
-            message.setLongProperty("ccdId", callback.getCaseDetails().getId());
-            message.setStringProperty("event", callback.getEvent().toString());
-            message.setStringProperty("currentState", callback.getCaseDetails().getState().toString());
+            SendToWorkAllocationImpl.CamundaMappedObject camundaMappedObject = SendToWorkAllocationImpl.map(callback);
 
-            String previousStateString = callback.getCaseDetailsBefore().map(previousState -> {
-                return previousState.getState().toString();
-            }).orElse("");
-            message.setStringProperty("previousState", previousStateString);
-
-            AsylumCase caseData = callback.getCaseDetails().getCaseData();
-            String hearingCentreString = caseData.<HearingCentre>read(AsylumCaseFieldDefinition.HEARING_CENTRE).map(hearingCentre -> {
-                return hearingCentre.getValue();
-            }).orElse("");
-            message.setStringProperty("hearingCenter", hearingCentreString);
-            message.setStringProperty("appellantName", caseData.<String>read(AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY).orElse(""));
-            message.setStringProperty("assignTo", caseData.<String>read(AsylumCaseFieldDefinition.ASSIGNED_TO).orElse(null));
+            message.setLongProperty("ccdId", camundaMappedObject.getCcdId());
+            message.setStringProperty("event", camundaMappedObject.getEvent());
+            message.setStringProperty("currentState", camundaMappedObject.getCurrentState());
+            message.setStringProperty("previousState", camundaMappedObject.getPreviousStateString());
+            message.setStringProperty("hearingCenter", camundaMappedObject.getHearingCentreString());
+            message.setStringProperty("appellantName", camundaMappedObject.getAppellantName());
+            message.setStringProperty("assignTo", camundaMappedObject.getAssignedTo());
+            message.setStringProperty("dueDate", camundaMappedObject.getDueDate());
 
             LOGGER.info("Sending event to internal queue");
             producer.send(message);
@@ -71,13 +64,17 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
             LOGGER.info("Received event to send to Camunda");
 
             sendToWorkAllocation.createTask(
+                    new SendToWorkAllocationImpl.CamundaMappedObject(
                     message.getLongProperty("ccdId"),
-                    message.getStringProperty("event"),
-                    message.getStringProperty("currentState"),
-                    message.getStringProperty("previousState"),
-                    message.getStringProperty("hearingCenter"),
-                    message.getStringProperty("appellantName"),
-                    message.getStringProperty("assignTo"));
+                        message.getStringProperty("event"),
+                        message.getStringProperty("currentState"),
+                        message.getStringProperty("previousState"),
+                        message.getStringProperty("hearingCenter"),
+                        message.getStringProperty("appellantName"),
+                        message.getStringProperty("assignTo"),
+                        message.getStringProperty("dueDate")
+                    )
+            );
             LOGGER.info("Sent event to send to Camunda");
         }
     }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.io.*;
 import java.util.*;
@@ -16,8 +17,11 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Component
@@ -37,8 +41,9 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         this.taskLog = taskLog;
     }
 
-    public void handle(Callback<AsylumCase> callback) {
+    private static final List<Event> DIRECTION_EVENTS_WITH_DUE_DATE = Arrays.asList(Event.SEND_DIRECTION, Event.REQUEST_RESPONDENT_EVIDENCE, Event.REQUEST_CASE_BUILDING, Event.REQUEST_REASONS_FOR_APPEAL, Event.REQUEST_CASE_EDIT, Event.REQUEST_RESPONDENT_REVIEW, Event.SEND_DIRECTION_WITH_QUESTIONS, Event.REQUEST_CMA_REQUIREMENTS);
 
+    public static CamundaMappedObject map(Callback<AsylumCase> callback) {
         long ccdId = callback.getCaseDetails().getId();
         String event = callback.getEvent().toString();
         String currentState = callback.getCaseDetails().getState().toString();
@@ -55,16 +60,28 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
 
         String assignedTo = caseData.<String>read(AsylumCaseFieldDefinition.ASSIGNED_TO).orElse(null);
 
-        LOGGER.info("Creating task for [" + ccdId + "] [" + event + "] assigned to [" + assignedTo + "]");
 
-        createTask(ccdId, event, currentState, previousStateString, hearingCentreString, appellantName, assignedTo);
+        String dueDate = DIRECTION_EVENTS_WITH_DUE_DATE.contains(callback.getEvent()) ?
+                caseData.<List<IdValue<Direction>>>read(DIRECTIONS)
+                        .map(existingDirections -> existingDirections.get(existingDirections.size() - 1).getValue().getDateDue())
+                        .orElse(null) :
+                null;
+
+        return new CamundaMappedObject(ccdId, event , currentState, previousStateString, hearingCentreString, appellantName, assignedTo, dueDate);
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
+    public void handle(Callback<AsylumCase> callback) {
+        CamundaMappedObject camundaMappedObject = map(callback);
+        LOGGER.info("Creating task for [" + camundaMappedObject.getCcdId() + "] [" + camundaMappedObject.getEvent() + "] assigned to [" + camundaMappedObject.getAssignedTo() + "]");
+        createTask(camundaMappedObject);
+    }
+
+    //    @EventListener(ApplicationReadyEvent.class)
     public void setUpTestTasks() {
         System.out.println("setting up data");
         for (int i = 0; i < 100; i++) {
-            createTask(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", null);
+            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null));
+            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null));
             System.out.println("created task " + i);
         }
 
@@ -76,25 +93,30 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
             }
             int ccdId = i;
 //            createTask(ccdId, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name");
-            createTask(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name", null);
+            createTask(new CamundaMappedObject(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name", "", null));
             System.out.println("completed task " + i);
 
         }
         System.out.println("setting up data - done");
     }
 
-    public void createTask(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo) {
+    public void createTask(CamundaMappedObject camundaMappedObject) {
+        long ccdId = camundaMappedObject.getCcdId();
+        String event = camundaMappedObject.getEvent();
+        String previousStateString = camundaMappedObject.getPreviousStateString();
+        String assignedTo = camundaMappedObject.getAssignedTo();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HashMap<String, WorkAllocationVariable> variables = new HashMap<>();
         variables.put("id", new WorkAllocationVariable(ccdId + "", "String"));
         variables.put("event", new WorkAllocationVariable(event, "String"));
-        variables.put("currentState", new WorkAllocationVariable(currentState, "String"));
+        variables.put("currentState", new WorkAllocationVariable(camundaMappedObject.getCurrentState(), "String"));
         variables.put("previousState", new WorkAllocationVariable(previousStateString, "String"));
-        variables.put("hearingCentre", new WorkAllocationVariable(hearingCentreString, "String"));
-        variables.put("appellantName", new WorkAllocationVariable(appellantName, "String"));
+        variables.put("hearingCentre", new WorkAllocationVariable(camundaMappedObject.getHearingCentreString(), "String"));
+        variables.put("appellantName", new WorkAllocationVariable(camundaMappedObject.getAppellantName(), "String"));
         variables.put("assignedTo", new WorkAllocationVariable(assignedTo, "String"));
+        variables.put("dueDate", new WorkAllocationVariable(camundaMappedObject.getDueDate(), "String"));
         String correlationId = UUID.randomUUID().toString();
         LOGGER.info("Creating workflow with correlation ID [" + correlationId + "]");
         variables.put("correlationId", new WorkAllocationVariable(correlationId, "String"));
@@ -268,5 +290,59 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
 
         List<ProcessInstance> processInstances = exchange.getBody();
         return processInstances.stream().map(processInstance -> processInstance.getId()).collect(toList());
+    }
+
+    public static class CamundaMappedObject {
+        private final long ccdId;
+        private final String event;
+        private final String currentState;
+        private final String previousStateString;
+        private final String hearingCentreString;
+        private final String appellantName;
+        private final String assignedTo;
+        private final String dueDate;
+
+        public CamundaMappedObject(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo, String dueDate) {
+            this.ccdId = ccdId;
+            this.event = event;
+            this.currentState = currentState;
+            this.previousStateString = previousStateString;
+            this.hearingCentreString = hearingCentreString;
+            this.appellantName = appellantName;
+            this.assignedTo = assignedTo;
+            this.dueDate = dueDate;
+        }
+
+        public long getCcdId() {
+            return ccdId;
+        }
+
+        public String getEvent() {
+            return event;
+        }
+
+        public String getCurrentState() {
+            return currentState;
+        }
+
+        public String getPreviousStateString() {
+            return previousStateString;
+        }
+
+        public String getHearingCentreString() {
+            return hearingCentreString;
+        }
+
+        public String getAppellantName() {
+            return appellantName;
+        }
+
+        public String getAssignedTo() {
+            return assignedTo;
+        }
+
+        public String getDueDate() {
+            return dueDate;
+        }
     }
 }

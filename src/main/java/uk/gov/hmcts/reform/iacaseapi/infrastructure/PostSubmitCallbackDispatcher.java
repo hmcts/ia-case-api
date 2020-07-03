@@ -60,8 +60,8 @@ public class PostSubmitCallbackDispatcher<T extends CaseData> {
             }
         }
 
-//        sendToWorkAllocation.handle(callback);
-        messageBroker.sendToCamunda(callback);
+        sendToWorkAllocation.handle(callback);
+//        messageBroker.sendToCamunda(callback);
 
         return callbackResponse;
     }
