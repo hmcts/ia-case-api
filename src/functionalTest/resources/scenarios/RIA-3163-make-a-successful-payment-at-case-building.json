@@ -1,0 +1,45 @@
+{
+  "description": "RIA-3163 Make a successful payment at case building",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "paymentAppeal",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "payForTheAppeal": "payLater",
+          "appealType": "protection",
+          "decisionHearingFeeOption": "decisionWithoutHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "pbaNumber": "PBA0081334",
+          "feeDescription": "Appeal determined without a hearing",
+          "feeAmount": 80.0,
+          "paymentStatus": "Payment due",
+          "payForTheAppealOption": "payLater",
+          "sendDirectionActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "Yes",
+        "appealType": "protection",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "paymentStatus": "Paid",
+        "pbaNumber": "PBA0081334",
+        "feeAmount": "80.00",
+        "feeDescription": "Appeal determined without a hearing",
+        "paymentDescription": "The fee for this type of appeal without a hearing is £80.00",
+        "currentCaseStateVisibleToLegalRepresentative": "caseBuilding"
+      }
+    }
+  }
+}

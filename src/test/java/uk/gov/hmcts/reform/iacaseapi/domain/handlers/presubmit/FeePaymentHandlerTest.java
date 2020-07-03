@@ -38,7 +38,7 @@ public class FeePaymentHandlerTest {
     public void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
-                Event.PAYMENT_APPEAL
+                Event.START_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -99,8 +99,7 @@ public class FeePaymentHandlerTest {
 
                 if ((callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                         && (callback.getEvent() == Event.START_APPEAL
-                        || callback.getEvent() == Event.EDIT_APPEAL
-                        || callback.getEvent() == Event.PAYMENT_APPEAL)) {
+                        || callback.getEvent() == Event.EDIT_APPEAL)) {
 
                     assertTrue(canHandle);
                 } else {

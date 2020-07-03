@@ -68,16 +68,19 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
         if (check.isValid()) {
 
-            State state = dispatchToStateHandlers(callbackStage, callback, callbackStateHandlers, callbackResponse);
+            PreSubmitCallbackResponse<T> finalCallbackResponse
+                = dispatchToStateHandlers(callbackStage, callback, callbackStateHandlers, callbackResponse);
 
-            if (state != null) {
-                callbackResponse = new PreSubmitCallbackResponse<>(caseData, state);
+            if (finalCallbackResponse != null && finalCallbackResponse.getState() != null) {
+                State state = finalCallbackResponse.getState();
+
+                callbackResponse = new PreSubmitCallbackResponse<>(finalCallbackResponse.getData(), state);
                 callback = new Callback<>(
                     new CaseDetails<>(
                         callback.getCaseDetails().getId(),
                         callback.getCaseDetails().getJurisdiction(),
                         state,
-                        callbackResponse.getData(),
+                        finalCallbackResponse.getData(),
                         callback.getCaseDetails().getCreatedDate()
                     ),
                     callback.getCaseDetailsBefore(),
@@ -97,13 +100,13 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
         return callbackResponse;
     }
 
-    private State dispatchToStateHandlers(
+    private PreSubmitCallbackResponse<T> dispatchToStateHandlers(
         PreSubmitCallbackStage callbackStage,
         Callback<T> callback,
         List<PreSubmitCallbackStateHandler<T>> callbackStateHandlers,
         PreSubmitCallbackResponse<T> callbackResponse) {
 
-        State finalState = null;
+        PreSubmitCallbackResponse<T> finalCallbackResponse = null;
         for (PreSubmitCallbackStateHandler<T> callbackStateHandler : callbackStateHandlers) {
 
             Callback<T> callbackForHandler = new Callback<>(
@@ -123,7 +126,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 PreSubmitCallbackResponse<T> callbackResponseFromHandler =
                     callbackStateHandler.handle(callbackStage, callbackForHandler, callbackResponse);
 
-                finalState = callbackResponseFromHandler.getState();
+                finalCallbackResponse = callbackResponseFromHandler;
 
                 if (!callbackResponseFromHandler.getErrors().isEmpty()) {
                     callbackResponse.addErrors(callbackResponseFromHandler.getErrors());
@@ -131,7 +134,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
             }
         }
 
-        return finalState;
+        return finalCallbackResponse;
 
     }
 

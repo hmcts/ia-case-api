@@ -1,0 +1,45 @@
+{
+  "description": "RIA-3163 Make a successful payment for appeal type EA (with a hearing) after submitting the appeal",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "paymentAppeal",
+      "state": "paymentPending",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "payForTheAppeal": "payLater",
+          "appealType": "refusalOfHumanRights",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "pbaNumber": "PBA0066906",
+          "feeDescription": "Appeal determined with a hearing",
+          "feeAmount": 140.0,
+          "paymentStatus": "Payment due",
+          "payForTheAppealOption": "payLater",
+          "sendDirectionActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "Yes",
+        "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "paymentStatus": "Paid",
+        "pbaNumber": "PBA0066906",
+        "feeAmount": "140.00",
+        "feeDescription": "Appeal determined with a hearing",
+        "paymentDescription": "The fee for this type of appeal with a hearing is £140.00",
+        "currentCaseStateVisibleToLegalRepresentative": "appealSubmitted"
+      }
+    }
+  }
+}

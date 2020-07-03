@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
@@ -53,7 +54,37 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
         final Optional<PaymentStatus> paymentStatus = asylumCase
             .read(PAYMENT_STATUS, PaymentStatus.class);
 
-        if (paymentStatus.equals(Optional.of(FAILED))) {
+        final State currentState =
+            callback
+                .getCaseDetails()
+                .getState();
+
+        if (paymentStatus.equals(Optional.of(PAID))) {
+
+            String header = "# You have paid for the appeal";
+            String paymentDetails = "\n\n\n#### Payment successful"
+                                    + "\n\n#### Payment reference number\n"
+                                    + paymentReferenceNumber
+                                    + "\n\n#### Payment by account number\n"
+                                    + paymentAccountNumber
+                                    + "\n\n#### Fee\n"
+                                    + "£" + fee;
+
+            switch (currentState) {
+                case APPEAL_STARTED:
+                    postSubmitResponse.setConfirmationHeader(header + "\n# You still need to submit it");
+                    postSubmitResponse.setConfirmationBody("#### Do this next\n\n"
+                                                           + "You still need to [submit your appeal](/case/IA/Asylum/"
+                                                           + callback.getCaseDetails().getId() + "/trigger/submitAppeal)"
+                                                           + paymentDetails);
+                    return postSubmitResponse;
+
+                default:
+                    postSubmitResponse.setConfirmationHeader(header);
+                    postSubmitResponse.setConfirmationBody(paymentDetails);
+                    return postSubmitResponse;
+            }
+        } else {
 
             String paymentErrorMessage =
                 requireNonNull(callback.getCaseDetails().getCaseData().read(PAYMENT_ERROR_MESSAGE, String.class)
@@ -74,20 +105,6 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                 + "£" + fee
                 + "\n\n#### Reason for failed payment\n"
                 + paymentErrorMessage
-            );
-        } else {
-            postSubmitResponse.setConfirmationHeader("# You have paid for the appeal \n# You still need to submit it");
-            postSubmitResponse.setConfirmationBody(
-                "#### Do this next\n\n"
-                + "You still need to [submit your appeal](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/submitAppeal)"
-                + "\n\n\n#### Payment successful"
-                + "\n\n#### Payment reference number\n"
-                + paymentReferenceNumber
-                + "\n\n#### Payment by account number\n"
-                + paymentAccountNumber
-                + "\n\n#### Fee\n"
-                + "£" + fee
             );
         }
 

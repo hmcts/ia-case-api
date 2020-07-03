@@ -1,0 +1,47 @@
+{
+  "description": "RIA-3163 testing a failed payment after appeal submitted",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "paymentAppeal",
+      "state": "paymentPending",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "payForTheAppeal": "payLater",
+          "appealType": "refusalOfEu",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "pbaNumber": "PBA0085322",
+          "feeDescription": "Appeal determined with a hearing",
+          "feeAmount": 140.0,
+          "paymentStatus": "Payment due",
+          "payForTheAppealOption": "payLater",
+          "sendDirectionActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "appealType": "refusalOfEu",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "paymentStatus": "Failed",
+        "pbaNumber": "PBA0085322",
+        "feeAmount": "140.00",
+        "paymentErrorCode": "CA-E0004",
+        "paymentErrorMessage": "Your account is deleted",
+        "feeDescription": "Appeal determined with a hearing",
+        "paymentDescription": "The fee for this type of appeal with a hearing is £140.00",
+        "currentCaseStateVisibleToLegalRepresentative": "paymentPending"
+      }
+    }
+  }
+}
