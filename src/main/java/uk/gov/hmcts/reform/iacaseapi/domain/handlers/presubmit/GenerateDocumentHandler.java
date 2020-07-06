@@ -33,19 +33,19 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private final boolean isEmStitchingEnabled;
     private final DocumentGenerator<AsylumCase> documentGenerator;
     private final DateProvider dateProvider;
-    @Value("${featureFlag.isSaveAndContinueEnabled}")
-    private boolean isSaveAndContinueEnabled;
+    private final boolean isSaveAndContinueEnabled;
 
     public GenerateDocumentHandler(
-        @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
-        @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
-        DocumentGenerator<AsylumCase> documentGenerator,
-        DateProvider dateProvider
-    ) {
+            @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
+            @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
+            DocumentGenerator<AsylumCase> documentGenerator,
+            DateProvider dateProvider,
+            @Value("${featureFlag.isSaveAndContinueEnabled}") boolean isSaveAndContinueEnabled) {
         this.isDocmosisEnabled = isDocmosisEnabled;
         this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
         this.dateProvider = dateProvider;
+        this.isSaveAndContinueEnabled = isSaveAndContinueEnabled;
     }
 
     @Override
