@@ -32,7 +32,7 @@
       <bpmn:incoming>Flow_0ojvf2z</bpmn:incoming>
       <bpmn:outgoing>Flow_04eihcz</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:boundaryEvent id="sendReminder1" cancelActivity="false" attachedToRef="assign_task_external">
+    <bpmn:boundaryEvent id="reminderTimer" cancelActivity="false" attachedToRef="assign_task_external">
       <bpmn:outgoing>Flow_0q1v559</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0wbpqqy">
         <bpmn:timeDate xsi:type="bpmn:tFormalExpression">#{reminderDateISO}</bpmn:timeDate>
@@ -41,27 +41,27 @@
     <bpmn:serviceTask id="Activity_0a8z6i0" name="Send Reminder" camunda:type="external" camunda:topic="send_reminder">
       <bpmn:incoming>Flow_0q1v559</bpmn:incoming>
     </bpmn:serviceTask>
-    <bpmn:boundaryEvent id="sendRerminder2" cancelActivity="false" attachedToRef="assign_task_external">
+    <bpmn:boundaryEvent id="dueDateTimer" cancelActivity="false" attachedToRef="assign_task_external">
       <bpmn:outgoing>Flow_1ulxzju</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_091rgkd">
         <bpmn:timeDate xsi:type="bpmn:tFormalExpression">#{dueDateISO}</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_1ulxzju" sourceRef="sendRerminder2" targetRef="Activity_0mapgce" />
+    <bpmn:sequenceFlow id="Flow_1ulxzju" sourceRef="dueDateTimer" targetRef="Activity_0mapgce" />
     <bpmn:serviceTask id="Activity_0mapgce" name="Send Out of Time Direction/Order" camunda:type="external" camunda:topic="out_of_time">
       <bpmn:incoming>Flow_1ulxzju</bpmn:incoming>
     </bpmn:serviceTask>
-    <bpmn:boundaryEvent id="Event_0ya50l6" cancelActivity="false" attachedToRef="assign_task_external">
+    <bpmn:boundaryEvent id="escalationTimer" cancelActivity="false" attachedToRef="assign_task_external">
       <bpmn:outgoing>Flow_0au9mq6</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_05t00lw">
         <bpmn:timeDate xsi:type="bpmn:tFormalExpression">#{escalationDateISO}</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_0au9mq6" sourceRef="Event_0ya50l6" targetRef="Activity_1l3ryn0" />
+    <bpmn:sequenceFlow id="Flow_0au9mq6" sourceRef="escalationTimer" targetRef="Activity_1l3ryn0" />
     <bpmn:userTask id="Activity_1l3ryn0" name="Assign task to internal user to escalate to JOH" camunda:assignee="${assignedTo}" camunda:candidateGroups="TCW">
       <bpmn:incoming>Flow_0au9mq6</bpmn:incoming>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0q1v559" sourceRef="sendReminder1" targetRef="Activity_0a8z6i0" />
+    <bpmn:sequenceFlow id="Flow_0q1v559" sourceRef="reminderTimer" targetRef="Activity_0a8z6i0" />
     <bpmn:sequenceFlow id="Flow_08f59e7" sourceRef="StartEvent_1" targetRef="Gateway_0tjbvtl" />
     <bpmn:sequenceFlow id="Flow_0onvqiz" sourceRef="Gateway_0tjbvtl" targetRef="Activity_12verdj" />
     <bpmn:parallelGateway id="Gateway_0tjbvtl">
@@ -91,6 +91,10 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="workAllocationExternal">
+      <bpmndi:BPMNEdge id="Flow_0ojvf2z_di" bpmnElement="Flow_0ojvf2z">
+        <di:waypoint x="650" y="377" />
+        <di:waypoint x="790" y="377" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_169vmwo_di" bpmnElement="Flow_169vmwo">
         <di:waypoint x="400" y="530" />
         <di:waypoint x="790" y="530" />
@@ -153,10 +157,6 @@
         <di:waypoint x="460" y="250" />
         <di:waypoint x="485" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ojvf2z_di" bpmnElement="Flow_0ojvf2z">
-        <di:waypoint x="650" y="377" />
-        <di:waypoint x="790" y="377" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="122" y="359" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -171,6 +171,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1diue06_di" bpmnElement="Activity_12verdj">
         <dc:Bounds x="360" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t4yvft_di" bpmnElement="assign_task_external">
+        <dc:Bounds x="790" y="337" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0kp64yx_di" bpmnElement="Activity_0a8z6i0">
         <dc:Bounds x="640" y="190" width="100" height="80" />
@@ -190,19 +193,16 @@
       <bpmndi:BPMNShape id="Activity_05k0i7x_di" bpmnElement="recordTaskAsComplete">
         <dc:Bounds x="790" y="490" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1t4yvft_di" bpmnElement="assign_task_external">
-        <dc:Bounds x="790" y="337" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1wa3m4y_di" bpmnElement="CalculcateDates">
         <dc:Bounds x="550" y="337" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0xiuqhc_di" bpmnElement="Event_0ya50l6">
+      <bpmndi:BPMNShape id="Event_0xiuqhc_di" bpmnElement="escalationTimer">
         <dc:Bounds x="872" y="319" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0gu91uj_di" bpmnElement="sendRerminder2">
+      <bpmndi:BPMNShape id="Event_0gu91uj_di" bpmnElement="dueDateTimer">
         <dc:Bounds x="822" y="319" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0adid3g_di" bpmnElement="sendReminder1">
+      <bpmndi:BPMNShape id="Event_0adid3g_di" bpmnElement="reminderTimer">
         <dc:Bounds x="772" y="319" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="798" y="242" width="24" height="14" />

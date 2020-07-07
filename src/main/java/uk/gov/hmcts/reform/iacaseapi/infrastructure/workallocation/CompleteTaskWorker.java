@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy;
+import org.camunda.bpm.client.task.ExternalTask;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.ParameterizedTypeReference;
@@ -32,7 +33,6 @@ public class CompleteTaskWorker {
 
         ExternalTaskClient client = ExternalTaskClient.create()
                 .baseUrl("http://localhost:8080/engine-rest")
-//                .asyncResponseTimeout(10000) // long polling timeout
                 .maxTasks(1)
                 .asyncResponseTimeout(30000)
                 .backoffStrategy(new ExponentialBackoffStrategy(0, 0, 0)) // prevents long waits after Camunda hasn't been used for a while
@@ -55,7 +55,7 @@ public class CompleteTaskWorker {
                     boolean mapped = (boolean)((Map)externalTask.getVariable("completeTask")).get("mapped");
 
                     if (mapped) {
-                        LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "]");
+                            LOGGER.info("Completing task [" + taskToComplete + "] for [" + ccdReference + "] operation [" + operation + "]");
 
                         String processVariablesForTaskToComplete = "id_eq_" + ccdReference;
                         if (!taskToComplete.equalsIgnoreCase("All")) {
@@ -69,18 +69,7 @@ public class CompleteTaskWorker {
                         List<Task> tasks = exchange.getBody();
 
                         for (Task task : tasks) {
-                            LOGGER.info("Completing task [" + task.getId() + "]");
-
-                            HttpHeaders headers = new HttpHeaders();
-                            headers.setContentType(MediaType.APPLICATION_JSON);
-                            HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
-                            ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
-
-                            if (res.getStatusCode().is2xxSuccessful()) {
-                                LOGGER.info("Completed task [" + task.getId() + "]");
-                            } else {
-                                LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
-                            }
+                            completeTask(operation, task);
                         }
 
 //                    taskLog.end(ccdReference + externalTask.getVariable("event"));
@@ -91,6 +80,21 @@ public class CompleteTaskWorker {
                 .open();
 
         LOGGER.info("Registering for Camunda events - done");
+    }
+
+    private void completeTask(String operation, Task task) {
+        LOGGER.info("Completing task [" + task.getId() + "]");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>("{\"variables\":{\"completionReason\": {\"value\": \"" + operation + "\"}}}", headers);
+        ResponseEntity<String> res = restTemplate.postForEntity(CAMUNDA_URL + "/task/" + task.getId() + "/complete", request, String.class);
+
+        if (res.getStatusCode().is2xxSuccessful()) {
+            LOGGER.info("Completed task [" + task.getId() + "]");
+        } else {
+            LOGGER.info("Failed to complete task [" + task.getId() + "] " + res.getStatusCode() + "\n" + res.getBody());
+        }
     }
 
     //clear out tasks

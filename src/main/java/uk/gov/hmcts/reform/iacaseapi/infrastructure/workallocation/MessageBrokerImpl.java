@@ -49,6 +49,7 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
             message.setStringProperty("appellantName", camundaMappedObject.getAppellantName());
             message.setStringProperty("assignTo", camundaMappedObject.getAssignedTo());
             message.setStringProperty("dueDate", camundaMappedObject.getDueDate());
+            message.setStringProperty("directionId", camundaMappedObject.getDirectionId());
 
             LOGGER.info("Sending event to internal queue");
             producer.send(message);
@@ -72,7 +73,8 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
                         message.getStringProperty("hearingCenter"),
                         message.getStringProperty("appellantName"),
                         message.getStringProperty("assignTo"),
-                        message.getStringProperty("dueDate")
+                        message.getStringProperty("dueDate"),
+                        message.getStringProperty("directionId")
                     )
             );
             LOGGER.info("Sent event to send to Camunda");

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.workallocation;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
@@ -15,10 +16,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -61,13 +59,34 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         String assignedTo = caseData.<String>read(AsylumCaseFieldDefinition.ASSIGNED_TO).orElse(null);
 
 
-        String dueDate = DIRECTION_EVENTS_WITH_DUE_DATE.contains(callback.getEvent()) ?
-                caseData.<List<IdValue<Direction>>>read(DIRECTIONS)
-                        .map(existingDirections -> existingDirections.get(existingDirections.size() - 1).getValue().getDateDue())
-                        .orElse(null) :
-                null;
+        String dueDate = null;
+        String directionId = null;
+        if (DIRECTION_EVENTS_WITH_DUE_DATE.contains(callback.getEvent())) {
+            IdValue<Direction> direction = caseData.<List<IdValue<Direction>>>read(DIRECTIONS)
+                    .map(existingDirections -> existingDirections.get(existingDirections.size() - 1))
+                    .orElse(null);
 
-        return new CamundaMappedObject(ccdId, event , currentState, previousStateString, hearingCentreString, appellantName, assignedTo, dueDate);
+            dueDate = direction.getValue().getDateDue();
+            directionId = direction.getId();
+        }
+        if (callback.getEvent().equals(Event.CHANGE_DIRECTION_DUE_DATE)) {
+            dueDate = caseData.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse("");
+
+
+            Optional<DynamicList> dynamicList = caseData.read(AsylumCaseFieldDefinition.DIRECTION_LIST, DynamicList.class);
+            Optional<List<IdValue<Direction>>> maybeDirections = caseData.read(DIRECTIONS);
+            int numberOfDirections = maybeDirections.orElse(emptyList()).size();
+
+            directionId = maybeDirections.orElse(emptyList()).stream()
+                    .filter(idValue ->
+                            dynamicList.get().getValue().getCode().contains("Direction " + (numberOfDirections - (Integer.parseInt(idValue.getId())) + 1))
+                    )
+                    .findFirst()
+                    .map(IdValue::getId)
+                    .orElse(null);
+        }
+
+        return new CamundaMappedObject(ccdId, event, currentState, previousStateString, hearingCentreString, appellantName, assignedTo, dueDate, directionId);
     }
 
     public void handle(Callback<AsylumCase> callback) {
@@ -80,8 +99,8 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
     public void setUpTestTasks() {
         System.out.println("setting up data");
         for (int i = 0; i < 100; i++) {
-            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null));
-            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null));
+            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null, null));
+            createTask(new CamundaMappedObject(i, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name", "", null, null));
             System.out.println("created task " + i);
         }
 
@@ -93,7 +112,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
             }
             int ccdId = i;
 //            createTask(ccdId, "submitAppeal", "appealSubmitted", "", "hearing centre", "Appellant name");
-            createTask(new CamundaMappedObject(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name", "", null));
+            createTask(new CamundaMappedObject(ccdId, "requestRespondentEvidence", "awaitingRespondentEvidence", "appealSubmitted", "hearing centre", "Appellant name", "", null, null));
             System.out.println("completed task " + i);
 
         }
@@ -117,6 +136,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         variables.put("appellantName", new WorkAllocationVariable(camundaMappedObject.getAppellantName(), "String"));
         variables.put("assignedTo", new WorkAllocationVariable(assignedTo, "String"));
         variables.put("dueDate", new WorkAllocationVariable(camundaMappedObject.getDueDate(), "String"));
+        variables.put("directionId", new WorkAllocationVariable(camundaMappedObject.getDirectionId(), "String"));
         String correlationId = UUID.randomUUID().toString();
         LOGGER.info("Creating workflow with correlation ID [" + correlationId + "]");
         variables.put("correlationId", new WorkAllocationVariable(correlationId, "String"));
@@ -301,8 +321,9 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
         private final String appellantName;
         private final String assignedTo;
         private final String dueDate;
+        private final String directionId;
 
-        public CamundaMappedObject(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo, String dueDate) {
+        public CamundaMappedObject(long ccdId, String event, String currentState, String previousStateString, String hearingCentreString, String appellantName, String assignedTo, String dueDate, String directionId) {
             this.ccdId = ccdId;
             this.event = event;
             this.currentState = currentState;
@@ -311,6 +332,7 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
             this.appellantName = appellantName;
             this.assignedTo = assignedTo;
             this.dueDate = dueDate;
+            this.directionId = directionId;
         }
 
         public long getCcdId() {
@@ -343,6 +365,10 @@ public class SendToWorkAllocationImpl implements SendToWorkAllocation<AsylumCase
 
         public String getDueDate() {
             return dueDate;
+        }
+
+        public String getDirectionId() {
+            return directionId;
         }
     }
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy;
+import org.camunda.bpm.client.task.ExternalTask;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -24,28 +25,33 @@ public class CalculateDatesTaskWorker {
 
         client.subscribe("calculate-dates")
                 .handler((externalTask, externalTaskService) -> {
-                    String dueDateString = (String) externalTask.getVariable("dueDate");
-
-                    Map<String, Object> timedDates = new HashMap<>();
-                    if (dueDateString != null) {
-                        LocalDate dueDate = LocalDate.parse(dueDateString);
-
-                        java.time.LocalDateTime localDateTime = dueDate.minusDays(1).atStartOfDay();
-                        timedDates.put("reminderDateISO", localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
-                        timedDates.put("dueDateISO", dueDate.atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
-                        timedDates.put("escalationDateISO", dueDate.plusDays(1).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
-                    } else {
-                        int firstDueDate = (int) ((Map)externalTask.getVariable("task")).get("firstDueDate");
-                        int secondDueDate = (int) ((Map)externalTask.getVariable("task")).get("secondDueDate");
-                        int thirdDueDate = (int) ((Map)externalTask.getVariable("task")).get("thirdDueDate");
-
-                        timedDates.put("reminderDateISO", LocalDate.now().plusDays(firstDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
-                        timedDates.put("dueDateISO", LocalDate.now().plusDays(secondDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
-                        timedDates.put("escalationDateISO", LocalDate.now().plusDays(thirdDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
-                    }
+                    Map<String, Object> timedDates = calculateDates(externalTask);
 
                     externalTaskService.complete(externalTask, timedDates);
                 })
                 .open();
+    }
+
+    public static Map<String, Object> calculateDates(ExternalTask externalTask) {
+        String dueDateString = externalTask.getVariable("dueDate");
+
+        Map<String, Object> timedDates = new HashMap<>();
+        if (dueDateString != null) {
+            LocalDate dueDate = LocalDate.parse(dueDateString);
+
+            LocalDateTime localDateTime = dueDate.minusDays(1).atStartOfDay();
+            timedDates.put("reminderDateISO", localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
+            timedDates.put("dueDateISO", dueDate.atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
+            timedDates.put("escalationDateISO", dueDate.plusDays(1).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
+        } else {
+            int firstDueDate = (int) ((Map)externalTask.getVariable("task")).get("firstDueDate");
+            int secondDueDate = (int) ((Map)externalTask.getVariable("task")).get("secondDueDate");
+            int thirdDueDate = (int) ((Map)externalTask.getVariable("task")).get("thirdDueDate");
+
+            timedDates.put("reminderDateISO", LocalDate.now().plusDays(firstDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
+            timedDates.put("dueDateISO", LocalDate.now().plusDays(secondDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
+            timedDates.put("escalationDateISO", LocalDate.now().plusDays(thirdDueDate).atStartOfDay().format(DateTimeFormatter.ISO_DATE_TIME));
+        }
+        return timedDates;
     }
 }

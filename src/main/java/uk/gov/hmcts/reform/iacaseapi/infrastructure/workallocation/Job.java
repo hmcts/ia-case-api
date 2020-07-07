@@ -5,23 +5,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Task {
+public class Job {
     private String id;
-    private String executionId;
+    private String jobDefinitionId;
+
+    private Job() {
+    }
 
     public String getId() {
         return id;
     }
 
-    public String getExecutionId() {
-        return executionId;
+    public String getJobDefinitionId() {
+        return jobDefinitionId;
     }
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "Job{" +
                 "id='" + id + '\'' +
-                ", executionId='" + executionId + '\'' +
+                ", jobDefinitionId='" + jobDefinitionId + '\'' +
                 '}';
     }
 }
