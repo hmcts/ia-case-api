@@ -78,11 +78,11 @@ public class EventTest {
         assertEquals("unknown", Event.UNKNOWN.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
         assertEquals("restoreStateFromAdjourn", Event.RESTORE_STATE_FROM_ADJOURN.toString());
-
+        assertEquals("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(73, Event.values().length);
+        assertEquals(74, Event.values().length);
     }
 }
