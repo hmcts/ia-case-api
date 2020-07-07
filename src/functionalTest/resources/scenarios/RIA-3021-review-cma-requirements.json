@@ -14,7 +14,7 @@
           "singleSexCourtTribunalResponse": "Tribunal response to single sex court",
           "inCameraCourtTribunalResponse": "Tribunal response to private appointment",
           "vulnerabilitiesTribunalResponse": "Tribunal response to physical or mental health conditions",
-          "pastExperiencesResponse": "Tribunal response to past experiences",
+          "pastExperiencesTribunalResponse": "Tribunal response to past experiences",
           "additionalTribunalResponse": "Tribunal response to additional response",
           "datesToAvoidTribunalResponse": "Tribunal response to dates to avoid"
         }
@@ -31,7 +31,7 @@
         "singleSexCourtTribunalResponse": "Tribunal response to single sex court",
         "inCameraCourtTribunalResponse": "Tribunal response to private appointment",
         "vulnerabilitiesTribunalResponse": "Tribunal response to physical or mental health conditions",
-        "pastExperiencesResponse": "Tribunal response to past experiences",
+        "pastExperiencesTribunalResponse": "Tribunal response to past experiences",
         "additionalTribunalResponse": "Tribunal response to additional response",
         "datesToAvoidTribunalResponse": "Tribunal response to dates to avoid",
         "reviewedHearingRequirements": "Yes",
