@@ -29,6 +29,7 @@ public enum State {
     CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED("clarifyingQuestionsAnswersSubmitted"),
     AWAITING_CMA_REQUIREMENTS("awaitingCmaRequirements"),
     CMA_REQUIREMENTS_SUBMITTED("cmaRequirementsSubmitted"),
+    CMA_ADJUSTMENTS_AGREED("cmaAdjustmentsAgreed"),
     ADJOURNED("adjourned"),
 
     @JsonEnumDefaultValue
