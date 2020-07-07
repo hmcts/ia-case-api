@@ -15,9 +15,9 @@
               "id": "1",
               "value": {
                 "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-new-evidence.pdf"
+                  "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
                 },
                 "description": "Some new evidence"
               }

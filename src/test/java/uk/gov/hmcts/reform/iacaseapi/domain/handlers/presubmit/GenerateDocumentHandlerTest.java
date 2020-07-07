@@ -75,12 +75,12 @@ public class GenerateDocumentHandlerTest {
     public void setUp() {
 
         generateDocumentHandler =
-            new GenerateDocumentHandler(
-                true,
-                true,
-                documentGenerator,
-                dateProvider
-            );
+                new GenerateDocumentHandler(
+                        true,
+                        true,
+                        documentGenerator,
+                        dateProvider,
+                        true);
     }
 
     @Test
@@ -251,8 +251,8 @@ public class GenerateDocumentHandlerTest {
                 false,
                 true,
                 documentGenerator,
-                dateProvider
-            );
+                dateProvider,
+                    true);
 
         for (Event event : Event.values()) {
 
@@ -277,8 +277,8 @@ public class GenerateDocumentHandlerTest {
                 true,
                 false,
                 documentGenerator,
-                dateProvider
-            );
+                dateProvider,
+                    true);
 
         for (Event event : Event.values()) {
 

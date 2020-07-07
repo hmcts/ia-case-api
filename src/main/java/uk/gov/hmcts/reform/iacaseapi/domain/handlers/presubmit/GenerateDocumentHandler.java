@@ -33,17 +33,19 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
     private final boolean isEmStitchingEnabled;
     private final DocumentGenerator<AsylumCase> documentGenerator;
     private final DateProvider dateProvider;
+    private final boolean isSaveAndContinueEnabled;
 
     public GenerateDocumentHandler(
-        @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
-        @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
-        DocumentGenerator<AsylumCase> documentGenerator,
-        DateProvider dateProvider
-    ) {
+            @Value("${featureFlag.docmosisEnabled}") boolean isDocmosisEnabled,
+            @Value("${featureFlag.isEmStitchingEnabled}") boolean isEmStitchingEnabled,
+            DocumentGenerator<AsylumCase> documentGenerator,
+            DateProvider dateProvider,
+            @Value("${featureFlag.isSaveAndContinueEnabled}") boolean isSaveAndContinueEnabled) {
         this.isDocmosisEnabled = isDocmosisEnabled;
         this.isEmStitchingEnabled = isEmStitchingEnabled;
         this.documentGenerator = documentGenerator;
         this.dateProvider = dateProvider;
+        this.isSaveAndContinueEnabled = isSaveAndContinueEnabled;
     }
 
     @Override
@@ -70,7 +72,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.END_APPEAL);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
-            allowedEvents.add(Event.SUBMIT_CASE);
+            Event validEvent = isSaveAndContinueEnabled ? Event.SUBMIT_CASE : Event.BUILD_CASE;
+            allowedEvents.add(validEvent);
         }
 
         return isDocmosisEnabled

@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -32,6 +33,8 @@ public class SendNotificationHandlerTest {
 
         sendNotificationHandler =
             new SendNotificationHandler(notificationSender);
+
+        ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", true);
     }
 
     @Test
