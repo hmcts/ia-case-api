@@ -797,7 +797,10 @@ public enum AsylumCaseFieldDefinition {
     PAYMENT_ERROR_CODE(
             "paymentErrorCode", new TypeReference<String>(){}),
     PAYMENT_ERROR_MESSAGE(
-            "paymentErrorMessage", new TypeReference<String>(){})
+            "paymentErrorMessage", new TypeReference<String>(){}),
+
+    AUTOMATIC_END_APPEAL(
+        "automaticEndAppeal", new TypeReference<String>(){}),
     ;
 
     private final String value;

@@ -71,8 +71,8 @@ featureFlag:
   docmosisEnabled: ${IA_DOCMOSIS_ENABLED:false}
   isEmStitchingEnabled: ${IA_EM_STITCHING_ENABLED:false}
   isSubmitHearingRequirementsEnabled: ${IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED:true}
-  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
-  isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
+  timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:true}
+  isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:true}
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: 28
@@ -82,6 +82,7 @@ legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
 appellantReasonsForAppeal.dueInDays: 28
+pendingPayment.dueInDays: 14
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"

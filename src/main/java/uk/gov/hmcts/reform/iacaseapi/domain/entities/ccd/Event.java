@@ -78,6 +78,7 @@ public enum Event {
     RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
     PAYMENT_APPEAL("paymentAppeal"),
+    PENDING_PAYMENT_FEATURE("pendingPaymentFeature"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
