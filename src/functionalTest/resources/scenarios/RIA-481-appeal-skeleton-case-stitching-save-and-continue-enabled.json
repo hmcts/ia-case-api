@@ -1,6 +1,5 @@
 {
-  "description": "RIA-481 appeal skeleton (save and continue enabled)",
-  "enabled": "{$featureFlag.isSaveAndContinueEnabled}",
+  "description": "RIA-481 appeal skeleton",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
