@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -32,6 +33,8 @@ public class SendNotificationHandlerTest {
 
         sendNotificationHandler =
             new SendNotificationHandler(notificationSender);
+
+        ReflectionTestUtils.setField(sendNotificationHandler, "isSaveAndContinueEnabled", true);
     }
 
     @Test
@@ -82,7 +85,8 @@ public class SendNotificationHandlerTest {
             Event.SUBMIT_TIME_EXTENSION,
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.RESTORE_STATE_FROM_ADJOURN,
-            Event.REQUEST_CMA_REQUIREMENTS
+            Event.REQUEST_CMA_REQUIREMENTS,
+            Event.SUBMIT_CMA_REQUIREMENTS
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -200,7 +204,8 @@ public class SendNotificationHandlerTest {
                         Event.SUBMIT_TIME_EXTENSION,
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
                         Event.RESTORE_STATE_FROM_ADJOURN,
-                        Event.REQUEST_CMA_REQUIREMENTS
+                        Event.REQUEST_CMA_REQUIREMENTS,
+                        Event.SUBMIT_CMA_REQUIREMENTS
                     ).contains(event)) {
 
                     assertTrue(canHandle);

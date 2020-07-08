@@ -21,18 +21,18 @@ public class ProfessionalUsersRetriever {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    private final RestTemplate refDataRestTemplate;
+    private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
     private final String refDataApiUrl;
     private final String refDataApiPath;
 
-    public ProfessionalUsersRetriever(RestTemplate refDataRestTemplate,
+    public ProfessionalUsersRetriever(RestTemplate restTemplate,
                                       AuthTokenGenerator serviceAuthTokenGenerator,
                                       UserDetailsProvider userDetailsProvider,
                                       @Value("${prof.ref.data.url}") String refDataApiUrl,
                                       @Value("${prof.ref.data.path.org.users}") String refDataApiPath) {
-        this.refDataRestTemplate = refDataRestTemplate;
+        this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
         this.refDataApiUrl = refDataApiUrl;
@@ -63,7 +63,7 @@ public class ProfessionalUsersRetriever {
 
         try {
             response =
-                refDataRestTemplate
+                restTemplate
                     .exchange(
                         refDataApiUrl + refDataApiPath,
                         HttpMethod.GET,

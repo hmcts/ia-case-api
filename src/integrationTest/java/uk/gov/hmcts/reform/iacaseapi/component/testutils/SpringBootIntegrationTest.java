@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,6 +44,9 @@ public abstract class SpringBootIntegrationTest {
         wireMockConfig()
             .port(8990)
             .extensions(documentsApiCallbackTransformer));
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Before
     public void setUpGivens() {
