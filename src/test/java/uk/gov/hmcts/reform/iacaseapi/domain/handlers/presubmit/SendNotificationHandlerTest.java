@@ -83,7 +83,8 @@ public class SendNotificationHandlerTest {
             Event.ADJOURN_HEARING_WITHOUT_DATE,
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
-            Event.SUBMIT_CMA_REQUIREMENTS
+            Event.SUBMIT_CMA_REQUIREMENTS,
+            Event.LIST_CMA
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -202,7 +203,8 @@ public class SendNotificationHandlerTest {
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
                         Event.RESTORE_STATE_FROM_ADJOURN,
                         Event.REQUEST_CMA_REQUIREMENTS,
-                        Event.SUBMIT_CMA_REQUIREMENTS
+                        Event.SUBMIT_CMA_REQUIREMENTS,
+                        Event.LIST_CMA
                     ).contains(event)) {
 
                     assertTrue(canHandle);
