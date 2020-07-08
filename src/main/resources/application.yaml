@@ -188,6 +188,7 @@ security:
       - "flagCase"
       - "removeFlag"
       - "requestCmaRequirements"
+      - "reviewCmaRequirements"
       - "forceCaseToCaseUnderReview"
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"

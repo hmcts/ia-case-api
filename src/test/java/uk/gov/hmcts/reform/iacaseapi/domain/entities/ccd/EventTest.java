@@ -70,6 +70,7 @@ public class EventTest {
         assertEquals("flagCase", Event.FLAG_CASE.toString());
         assertEquals("removeFlag", Event.REMOVE_FLAG.toString());
         assertEquals("requestCmaRequirements", Event.REQUEST_CMA_REQUIREMENTS.toString());
+        assertEquals("reviewCmaRequirements", Event.REVIEW_CMA_REQUIREMENTS.toString());
         assertEquals("forceCaseToCaseUnderReview", Event.FORCE_CASE_TO_CASE_UNDER_REVIEW.toString());
         assertEquals("forceCaseToSubmitHearingRequirements", Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS.toString());
         assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
@@ -82,6 +83,6 @@ public class EventTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(73, Event.values().length);
+        assertEquals(74, Event.values().length);
     }
 }

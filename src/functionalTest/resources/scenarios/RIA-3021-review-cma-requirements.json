@@ -1,0 +1,42 @@
+{
+  "description": "RIA-3021 - TCW Reviews cma requirements",
+  "enabled": "{$featureFlag.docmosisEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reviewCmaRequirements",
+      "state": "cmaRequirementsSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "multimediaTribunalResponse": "Tribunal response to multimedia",
+          "singleSexCourtTribunalResponse": "Tribunal response to single sex court",
+          "inCameraCourtTribunalResponse": "Tribunal response to private appointment",
+          "vulnerabilitiesTribunalResponse": "Tribunal response to physical or mental health conditions",
+          "pastExperiencesTribunalResponse": "Tribunal response to past experiences",
+          "additionalTribunalResponse": "Tribunal response to additional response",
+          "datesToAvoidTribunalResponse": "Tribunal response to dates to avoid"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "multimediaTribunalResponse": "Tribunal response to multimedia",
+        "singleSexCourtTribunalResponse": "Tribunal response to single sex court",
+        "inCameraCourtTribunalResponse": "Tribunal response to private appointment",
+        "vulnerabilitiesTribunalResponse": "Tribunal response to physical or mental health conditions",
+        "pastExperiencesTribunalResponse": "Tribunal response to past experiences",
+        "additionalTribunalResponse": "Tribunal response to additional response",
+        "datesToAvoidTribunalResponse": "Tribunal response to dates to avoid",
+        "reviewedHearingRequirements": "Yes",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
