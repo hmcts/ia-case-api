@@ -1,5 +1,6 @@
 {
-  "description": "RIA-480 & RIA-600 Build case -- case argument initial upload",
+  "description": "RIA-480 & RIA-600 Build case -- case argument initial upload (save and continue enabled)",
+  "enabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -11,9 +12,9 @@
         "replacements": {
           "caseArgumentAvailable": null,
           "caseArgumentDocument": {
-            "document_url": "http://document-store/AAA",
-            "document_binary_url": "http://document-store/AAA/binary",
-            "document_filename": "case-argument.pdf"
+            "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+            "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
           },
           "caseArgumentDescription": "Case argument",
           "caseArgumentEvidence": [
@@ -21,9 +22,9 @@
               "id": "1",
               "value": {
                 "document": {
-                  "document_url": "http://document-store/BBB",
-                  "document_binary_url": "http://document-store/BBB/binary",
-                  "document_filename": "some-case-argument-evidence.pdf"
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
                 },
                 "description": "Some case argument evidence"
               }
@@ -32,9 +33,9 @@
               "id": "2",
               "value": {
                 "document": {
-                  "document_url": "http://document-store/CCC",
-                  "document_binary_url": "http://document-store/CCC/binary",
-                  "document_filename": "some-more-case-argument-evidence.pdf"
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
                 },
                 "description": "Some more case argument evidence"
               }
@@ -52,9 +53,9 @@
       "replacements": {
         "caseArgumentAvailable": "Yes",
         "caseArgumentDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "case-argument.pdf"
+          "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+          "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+          "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
         },
         "caseArgumentDescription": "Case argument",
         "caseArgumentEvidence": [
@@ -62,9 +63,9 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-case-argument-evidence.pdf"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
               "description": "Some case argument evidence"
             }
@@ -73,9 +74,9 @@
             "id": "2",
             "value": {
               "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-more-case-argument-evidence.pdf"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
               "description": "Some more case argument evidence"
             }
@@ -86,9 +87,9 @@
             "id": "3",
             "value": {
               "document": {
-                "document_url": "http://document-store/AAA",
-                "document_binary_url": "http://document-store/AAA/binary",
-                "document_filename": "case-argument.pdf"
+                "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
               },
               "description": "Case argument",
               "dateUploaded": "{$TODAY}",
@@ -99,9 +100,9 @@
             "id": "2",
             "value": {
               "document": {
-                "document_url": "http://document-store/BBB",
-                "document_binary_url": "http://document-store/BBB/binary",
-                "document_filename": "some-case-argument-evidence.pdf"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
               "description": "Some case argument evidence",
               "dateUploaded": "{$TODAY}",
@@ -112,9 +113,9 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "http://document-store/CCC",
-                "document_binary_url": "http://document-store/CCC/binary",
-                "document_filename": "some-more-case-argument-evidence.pdf"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
               "description": "Some more case argument evidence",
               "dateUploaded": "{$TODAY}",

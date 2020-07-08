@@ -105,7 +105,7 @@ public class CcdScenarioRunnerTest {
                 scenarioDisabled = Boolean.valueOf((String) scenarioDisabled);
             }
 
-            if (((Boolean) scenarioEnabled) == false || ((Boolean) scenarioDisabled) == true) {
+            if (!((Boolean) scenarioEnabled) || ((Boolean) scenarioDisabled)) {
                 System.out.println((char) 27 + "[31m" + "SCENARIO: " + description + " **disabled**");
                 continue;
             }

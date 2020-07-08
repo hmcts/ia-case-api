@@ -10,9 +10,9 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "caseArgumentDocument": {
-            "document_url": "http://document-store/AAA",
-            "document_binary_url": "http://document-store/AAA/binary",
-            "document_filename": "case-argument.pdf"
+            "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+            "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
           },
           "caseBuildingReadyForSubmission": "No"
         }
@@ -26,9 +26,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "caseArgumentDocument": {
-          "document_url": "http://document-store/AAA",
-          "document_binary_url": "http://document-store/AAA/binary",
-          "document_filename": "case-argument.pdf"
+          "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+          "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+          "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
         },
         "caseBuildingReadyForSubmission": "Yes"
       }

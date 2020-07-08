@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -12,12 +13,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 @Component
 public class CaseSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
+    @Value("${featureFlag.isSaveAndContinueEnabled}")
+    private boolean isSaveAndContinueEnabled;
+
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.SUBMIT_CASE;
+        Event validEvent = isSaveAndContinueEnabled ? Event.SUBMIT_CASE : Event.BUILD_CASE;
+        return callback.getEvent() == validEvent;
     }
 
     public PostSubmitCallbackResponse handle(

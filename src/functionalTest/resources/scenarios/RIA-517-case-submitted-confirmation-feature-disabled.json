@@ -1,10 +1,11 @@
 {
-  "description": "RIA-517 Submit case confirmation",
+  "description": "RIA-517 Submit case confirmation (feature disabled)",
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "submitCase",
+      "eventId": "buildCase",
       "state": "caseUnderReview",
       "id": 1234,
       "caseData": {
