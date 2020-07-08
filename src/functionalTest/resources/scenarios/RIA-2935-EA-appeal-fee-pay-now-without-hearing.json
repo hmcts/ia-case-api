@@ -1,0 +1,44 @@
+{
+  "description": "RIA-2935-EA-appeal-fee-pay-now-without-hearing.json",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "paymentAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "refusalOfEu",
+          "decisionHearingFeeOption": "decisionWithoutHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "pbaNumber": "PBA0072626",
+          "homeOfficeReferenceNumber": "A123456",
+          "paymentDescription": "An IA pba test payment",
+          "payForTheAppealOption": "payNow",
+          "customerReference": "543232"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "appealType": "refusalOfEu",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "paymentStatus":"Paid",
+        "pbaNumber":"PBA0072626",
+        "feeCode":"FEE0456",
+        "feeVersion":"2",
+        "feeAmount":"80.00",
+        "feeDescription":"Appeal determined without a hearing",
+        "paymentDescription":"The fee for this type of appeal without a hearing is £80.00"
+      }
+    }
+  }
+}

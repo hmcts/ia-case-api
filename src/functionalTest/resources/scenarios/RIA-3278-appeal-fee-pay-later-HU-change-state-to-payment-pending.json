@@ -1,0 +1,45 @@
+{
+  "description": "RIA-3278 Change state to paymentPending for appeal type HU for pay later (with a hearing)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "payForTheAppeal": "payLater",
+          "appealType": "refusalOfHumanRights",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "feeCode": "FEE0238",
+          "feeDescription": "Appeal determined with a hearing",
+          "feeVersion": 2,
+          "feeAmount": 140.0,
+          "paymentStatus": "Payment due",
+          "sendDirectionActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfHumanRights",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "feeCode": "FEE0238",
+        "feeDescription": "Appeal determined with a hearing",
+        "feeVersion": 2,
+        "feeAmount": 140.0,
+        "paymentStatus": "Payment due",
+        "sendDirectionActionAvailable": "No",
+        "currentCaseStateVisibleToLegalRepresentative": "paymentPending"
+      }
+    }
+  }
+}

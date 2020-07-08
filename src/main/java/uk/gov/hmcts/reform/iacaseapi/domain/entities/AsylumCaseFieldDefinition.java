@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.math.BigDecimal;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -763,6 +764,40 @@ public enum AsylumCaseFieldDefinition {
     ADJOURN_HEARING_WITHOUT_DATE_REASONS(
             "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
 
+    IS_FEE_PAYMENT_ENABLED(
+            "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
+    PAY_FOR_THE_APPEAL_OPTION(
+            "payForTheAppealOption", new TypeReference<String>() {}),
+    APPEAL_FEE_HEARING_DESC(
+            "appealFeeHearingDesc", new TypeReference<String>(){}),
+    APPEAL_FEE_WITHOUT_HEARING_DESC(
+            "appealFeeWithoutHearingDesc", new TypeReference<String>(){}),
+    FEE_HEARING_AMOUNT_FOR_DISPLAY(
+            "feeHearingAmountForDisplay", new TypeReference<String>(){}),
+    FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
+            "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
+    PAYMENT_STATUS(
+            "paymentStatus", new TypeReference<String>(){}),
+    FEE_PAYMENT_APPEAL_TYPE(
+            "feePaymentAppealType", new TypeReference<String>(){}),
+    PAYMENT_REFERENCE(
+            "paymentReference", new TypeReference<String>() {}),
+    FEE_CODE(
+            "feeCode", new TypeReference<String>(){}),
+    FEE_DESCRIPTION(
+            "feeDescription", new TypeReference<String>(){}),
+    FEE_VERSION(
+            "feeVersion", new TypeReference<String>(){}),
+    FEE_AMOUNT(
+            "feeAmount", new TypeReference<BigDecimal>(){}),
+    PBA_NUMBER(
+            "pbaNumber", new TypeReference<String>(){}),
+    PAYMENT_DESCRIPTION(
+            "paymentDescription", new TypeReference<String>(){}),
+    PAYMENT_ERROR_CODE(
+            "paymentErrorCode", new TypeReference<String>(){}),
+    PAYMENT_ERROR_MESSAGE(
+            "paymentErrorMessage", new TypeReference<String>(){})
     ;
 
     private final String value;
