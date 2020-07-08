@@ -73,8 +73,10 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SUBMIT_CMA_REQUIREMENTS);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.GENERATE_HEARING_BUNDLE);
-            Event validEvent = isSaveAndContinueEnabled ? Event.SUBMIT_CASE : Event.BUILD_CASE;
-            allowedEvents.add(validEvent);
+            allowedEvents.add(Event.SUBMIT_CASE);
+            if (!isSaveAndContinueEnabled) {
+                allowedEvents.add(Event.BUILD_CASE);
+            }
         }
 
         return isDocmosisEnabled

@@ -1,4 +1,3 @@
-## Ignore it until this PR is merged: https://github.com/hmcts/ia-case-documents-api/pull/212
 {
   "description": "RIA-481 appeal skeleton (save and continue disabled)",
   "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
