@@ -44,16 +44,22 @@ public class ListCmaPreparer implements PreSubmitCallbackHandler<AsylumCase> {
         Optional<HearingCentre> maybeHearingCentre =
             asylumCase.read(HEARING_CENTRE);
 
-        if (asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
-            && asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
 
+        boolean isHearingRequirementsAvailable = asylumCase
+            .read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)
+            .map(flag -> flag.equals(YesOrNo.YES))
+            .orElse(false);
+        boolean isHearingRequirementsReviewed = asylumCase
+            .read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)
+            .map(flag -> flag.equals(YesOrNo.NO))
+            .orElse(true);
+
+        if (isHearingRequirementsAvailable && isHearingRequirementsReviewed) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. You cannot list the case management appointment until the hearing requirements have been reviewed.");
             return asylumCasePreSubmitCallbackResponse;
         }
-
         maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
