@@ -40,7 +40,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && getEventsToHandle().contains(callback.getEvent());
+               && getEventsToHandle().contains(callback.getEvent());
     }
 
     private List<Event> getEventsToHandle() {
@@ -93,9 +93,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
             Event.LIST_CMA
         );
-        if (isSaveAndContinueEnabled) {
-            eventsToHandle.add(Event.SUBMIT_CASE);
-        } else {
+        if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
         }
         return eventsToHandle;
