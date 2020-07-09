@@ -44,7 +44,6 @@ public class ListCmaPreparer implements PreSubmitCallbackHandler<AsylumCase> {
         Optional<HearingCentre> maybeHearingCentre =
             asylumCase.read(HEARING_CENTRE);
 
-
         boolean isHearingRequirementsAvailable = asylumCase
             .read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)
             .map(flag -> flag.equals(YesOrNo.YES))
