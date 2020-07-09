@@ -30,6 +30,7 @@ public enum State {
     AWAITING_CMA_REQUIREMENTS("awaitingCmaRequirements"),
     CMA_REQUIREMENTS_SUBMITTED("cmaRequirementsSubmitted"),
     CMA_ADJUSTMENTS_AGREED("cmaAdjustmentsAgreed"),
+    CMA_LISTED("cmaListed"),
     ADJOURNED("adjourned"),
 
     @JsonEnumDefaultValue

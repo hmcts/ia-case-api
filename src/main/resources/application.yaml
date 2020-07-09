@@ -195,6 +195,7 @@ security:
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
     caseworker-ia-admofficer:
+      - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
       - "editCaseListing"
