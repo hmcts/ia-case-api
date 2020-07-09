@@ -91,6 +91,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_CMA_REQUIREMENTS,
             Event.SUBMIT_CMA_REQUIREMENTS,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
+            Event.SUBMIT_CASE,
             Event.LIST_CMA
         );
         if (!isSaveAndContinueEnabled) {
