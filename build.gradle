@@ -20,7 +20,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '5.1.0'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'au.com.dius.pact' version '3.5.24'
+    id 'au.com.dius.pact' version '4.0.4'
     id "io.freefair.lombok" version "5.1.0"
 }
 
@@ -166,12 +166,12 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
     classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
-task contract(type: Test, description: 'Runs the pact contract tests.', group: 'Verification') {
+task contract(type: Test) {
     description = "Runs the consumer Pact tests"
+    group = 'Verification'
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
-
 }
 
 project.ext {
@@ -362,7 +362,14 @@ dependencies {
 
 }
 
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
 
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 pact {
     publish {
