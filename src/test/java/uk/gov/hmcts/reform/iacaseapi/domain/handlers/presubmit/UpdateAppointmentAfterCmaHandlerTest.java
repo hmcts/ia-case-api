@@ -56,6 +56,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+        verify(asylumCase).write(eq(AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED), eq(YesOrNo.YES));
 
 
     }

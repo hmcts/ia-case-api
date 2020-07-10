@@ -32,7 +32,8 @@
         "attendingAppellantsLegalRepresentative": "Legal Rep",
         "attendingHomeOfficeLegalRepresentative": "Home Office",
         "submitHearingRequirementsAvailable": "Yes",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "No",
+        "haveHearingAttendeesAndDurationBeenRecorded": "Yes"
       }
     }
   }

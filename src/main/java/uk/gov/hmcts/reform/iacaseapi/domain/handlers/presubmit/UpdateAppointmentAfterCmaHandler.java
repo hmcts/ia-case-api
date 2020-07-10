@@ -40,6 +40,7 @@ public class UpdateAppointmentAfterCmaHandler implements PreSubmitCallbackHandle
                 .getCaseData();
 
         asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
+        asylumCase.write(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED, YesOrNo.YES);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
