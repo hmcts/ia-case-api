@@ -5,7 +5,7 @@
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "updateDetailsAfterCma",
-      "state": "awaitingCmaRequirements",
+      "state": "cmaListed",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
