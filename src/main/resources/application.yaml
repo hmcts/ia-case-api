@@ -208,6 +208,7 @@ security:
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
+      - "updateDetailsAfterCma"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
