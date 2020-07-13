@@ -38,6 +38,7 @@ public class RequestRespondentReviewPreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
+    @Captor private ArgumentCaptor<YesOrNo> asylumYesNoCaptor;
     @Captor private ArgumentCaptor<String> asylumValueCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
@@ -71,8 +72,13 @@ public class RequestRespondentReviewPreparerTest {
                 asylumExtractorCaptor.capture(),
                 asylumValueCaptor.capture());
 
+        verify(asylumCase, times(4)).write(
+                asylumExtractorCaptor.capture(),
+                asylumYesNoCaptor.capture());
+
         List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
         List<String> asylumCaseValues = asylumValueCaptor.getAllValues();
+        List<YesOrNo> asylumYesNoValues = asylumYesNoCaptor.getAllValues();
 
         assertThat(
                 asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
@@ -85,7 +91,7 @@ public class RequestRespondentReviewPreparerTest {
         );
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)),
+                asylumYesNoValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)),
             is(YesOrNo.YES)
         );
 
