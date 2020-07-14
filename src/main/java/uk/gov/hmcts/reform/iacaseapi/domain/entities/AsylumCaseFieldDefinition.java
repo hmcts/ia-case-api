@@ -774,6 +774,8 @@ public enum AsylumCaseFieldDefinition {
 
     ADJOURN_HEARING_WITHOUT_DATE_REASONS(
             "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
+    COVER_SHEET_PAGE_LOGO(
+            "hmcts", new TypeReference<String>(){}),
 
     ;
 
