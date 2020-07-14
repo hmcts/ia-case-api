@@ -96,7 +96,9 @@ public class GenerateDocumentHandlerTest {
             SEND_DECISION_AND_REASONS,
             ADJOURN_HEARING_WITHOUT_DATE,
             END_APPEAL,
-            SUBMIT_CMA_REQUIREMENTS
+            SUBMIT_CMA_REQUIREMENTS,
+            END_APPEAL,
+            EDIT_APPEAL_AFTER_SUBMIT
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -232,7 +234,9 @@ public class GenerateDocumentHandlerTest {
                         SEND_DECISION_AND_REASONS,
                         ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL,
-                        SUBMIT_CMA_REQUIREMENTS
+                        SUBMIT_CMA_REQUIREMENTS,
+                        END_APPEAL,
+                        EDIT_APPEAL_AFTER_SUBMIT
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -301,7 +305,9 @@ public class GenerateDocumentHandlerTest {
                         SEND_DECISION_AND_REASONS,
                         ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL,
-                        SUBMIT_CMA_REQUIREMENTS
+                        SUBMIT_CMA_REQUIREMENTS,
+                        END_APPEAL,
+                        EDIT_APPEAL_AFTER_SUBMIT
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && (eventsThatDontRequireStitching.contains(event))) {

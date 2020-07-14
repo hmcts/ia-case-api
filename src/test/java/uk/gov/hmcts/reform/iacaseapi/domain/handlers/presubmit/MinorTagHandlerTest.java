@@ -40,7 +40,7 @@ public class MinorTagHandlerTest {
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    private MinorTagHandler minorTagHandler = new MinorTagHandler();
+    private final MinorTagHandler minorTagHandler = new MinorTagHandler();
     public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
     public static final String APPELLANT_MINOR = LocalDate.now().toString();
 

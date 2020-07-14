@@ -80,10 +80,11 @@ public class EventTest {
         assertEquals("restoreStateFromAdjourn", Event.RESTORE_STATE_FROM_ADJOURN.toString());
         assertEquals("decisionWithoutHearing", Event.DECISION_WITHOUT_HEARING.toString());
         assertEquals("listCma", Event.LIST_CMA.toString());
+        assertEquals("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(76, Event.values().length);
+        assertEquals(77, Event.values().length);
     }
 }

@@ -195,6 +195,7 @@ security:
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
+      - "editAppealAfterSubmit"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

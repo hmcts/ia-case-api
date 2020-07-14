@@ -80,6 +80,7 @@ public enum Event {
     RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
     LIST_CMA("listCma"),
+    EDIT_APPEAL_AFTER_SUBMIT("editAppealAfterSubmit"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
