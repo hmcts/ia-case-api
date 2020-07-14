@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -540,6 +538,30 @@ public class HearingCentreFinderTest {
                 assertEquals(expectedHearingCentreIsActive, actualHearingCentreIsActive);
             });
     }
+
+
+    @Test
+    public void should_return_true_or_false_when_checking_for_listing_only_hearing_centres() {
+
+        Set<HearingCentre> allHearingCentres = EnumSet.allOf(HearingCentre.class);
+
+        List<HearingCentre> listingOnlyHearingCentres = Arrays.asList(
+            HearingCentre.COVENTRY,
+            HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
+            HearingCentre.NEWCASTLE,
+            HearingCentre.NOTTINGHAM);
+
+        allHearingCentres.forEach(
+            hearingCentre -> {
+                if (listingOnlyHearingCentres.contains(hearingCentre)) {
+                    assertTrue(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
+                } else {
+                    assertFalse(hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre));
+                }
+            }
+        );
+    }
+
 
     @Test
     public void should_return_false_for_hearing_centres_with_future_activation_dates() {
