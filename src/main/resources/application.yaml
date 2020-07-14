@@ -190,6 +190,7 @@ security:
       - "requestCmaRequirements"
       - "reviewCmaRequirements"
       - "forceCaseToCaseUnderReview"
+      - "updateDetailsAfterCma"
       - "forceCaseToSubmitHearingRequirements"
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
@@ -207,6 +208,7 @@ security:
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
+      - "updateDetailsAfterCma"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
