@@ -67,6 +67,7 @@ public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, getBundlePrefix(asylumCase));
 
+
         final PreSubmitCallbackResponse<AsylumCase> response = bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri);
 
         final AsylumCase responseData = response.getData();
