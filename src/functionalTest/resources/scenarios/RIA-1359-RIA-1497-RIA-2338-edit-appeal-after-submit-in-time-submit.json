@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1359 Edit appeal after submit in time submit",
+  "description": "RIA-1359 RIA-1497 RIA-2338 Edit appeal after submit in time submit and notifications",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -82,7 +82,17 @@
             }
           }
         ],
-        "submissionOutOfTime": "No"
+        "submissionOutOfTime": "No",
+        "notificationsSent": [
+          {
+            "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_RESPONDENT",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
       }
     }
   }
