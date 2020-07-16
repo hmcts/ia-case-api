@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.ToString;
 
+@ToString
 public enum ReasonForLinkAppealOptions {
     FAMILIAL("Familial"),
     SHARED_EVIDENCE("Shared evidence"),
