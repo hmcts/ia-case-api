@@ -77,6 +77,7 @@ public class EventTest {
         assertEquals("updateLegalRepDetails", Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS.toString());
         assertEquals("linkAppeal", Event.LINK_APPEAL.toString());
         assertEquals("unlinkAppeal", Event.UNLINK_APPEAL.toString());
+        assertEquals("paymentAppeal", Event.PAYMENT_APPEAL.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
         assertEquals("adjournHearingWithoutDate", Event.ADJOURN_HEARING_WITHOUT_DATE.toString());
         assertEquals("restoreStateFromAdjourn", Event.RESTORE_STATE_FROM_ADJOURN.toString());
@@ -87,6 +88,6 @@ public class EventTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(79, Event.values().length);
+        assertEquals(80, Event.values().length);
     }
 }

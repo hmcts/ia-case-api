@@ -109,6 +109,7 @@ notificationsApi:
 
 paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
+  aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
@@ -139,6 +140,7 @@ security:
       - "startAppeal"
       - "editAppeal"
       - "submitAppeal"
+      - "paymentAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
