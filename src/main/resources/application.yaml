@@ -200,6 +200,7 @@ security:
       - "editAppealAfterSubmit"
       - "linkAppeal"
       - "unlinkAppeal"
+      - "editAppealAfterSubmit"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

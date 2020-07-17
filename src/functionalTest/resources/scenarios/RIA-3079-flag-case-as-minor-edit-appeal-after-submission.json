@@ -1,15 +1,16 @@
 {
-  "description": "RIA-3079: Flag minor cases",
+  "description": "RIA-3079 flag case as minor when editAppealAfter submission",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "CaseOfficer",
     "input": {
       "id": 1122,
-      "eventId": "submitAppeal",
-      "state": "appealStarted",
+      "eventId": "editAppealAfterSubmit",
+      "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "isAppellantMinor": "No",
           "appellantDateOfBirth": "{$TODAY}"
         }
       }
@@ -23,7 +24,7 @@
       "replacements": {
         "isAppellantMinor": "Yes",
         "appellantDateOfBirth": "{$TODAY}",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }

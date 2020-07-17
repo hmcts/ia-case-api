@@ -37,7 +37,6 @@ public class EditAppealAfterSubmitHandlerTest {
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
     @Mock private Callback<AsylumCase> callback;
-
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
