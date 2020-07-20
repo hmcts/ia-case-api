@@ -17,7 +17,7 @@ public class AuditDetails {
     long caseId;
     String reason;
     LocalDateTime dateTime;
-
+    List<String> name;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class AuditDetailsBuilder {
