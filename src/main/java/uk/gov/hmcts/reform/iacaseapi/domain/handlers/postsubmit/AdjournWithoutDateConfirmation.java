@@ -33,7 +33,7 @@ public class AdjournWithoutDateConfirmation implements PostSubmitCallbackHandler
         postSubmitResponse.setConfirmationHeader("# The hearing has been adjourned");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "Both parties will be notified and a Notice of Adjournment will be generated."
+            + "A new Notice of Hearing has been generated."
         );
 
         return postSubmitResponse;
