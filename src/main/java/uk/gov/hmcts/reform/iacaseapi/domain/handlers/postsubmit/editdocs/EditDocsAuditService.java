@@ -24,6 +24,16 @@ public class EditDocsAuditService {
         return docIds;
     }
 
+    public List<String> getUpdatedAndDeletedDocNamesForGivenField(AsylumCase asylumCase, AsylumCase asylumCaseBefore,
+                                                                AsylumCaseFieldDefinition field) {
+        List<IdValue<HasDocument>> doc = getDocField(asylumCase, field);
+        List<IdValue<HasDocument>> docBefore = getDocField(asylumCaseBefore, field);
+        docBefore.removeAll(doc);
+        List<String> docIds = new ArrayList<>();
+        docBefore.forEach(d -> docIds.add(getIdFromDocUrl(d.getValue().getDocument().getDocumentFilename())));
+        return docIds;
+    }
+
     public static String getIdFromDocUrl(String documentUrl) {
         String regexToGetStringFromTheLastForwardSlash = "([^/]+$)";
         Pattern pattern = Pattern.compile(regexToGetStringFromTheLastForwardSlash);

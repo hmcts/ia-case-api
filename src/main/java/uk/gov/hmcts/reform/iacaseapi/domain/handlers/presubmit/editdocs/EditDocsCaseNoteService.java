@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -34,15 +37,16 @@ public class EditDocsCaseNoteService {
     }
 
     private CaseNote buildNewCaseNote(AuditDetails auditDetails) {
-        return new CaseNote("Edit documents audit note",
+        return new CaseNote(
+            "A document was edited or deleted",
             getAuditDetailsFormatted(auditDetails),
             auditDetails.getUser(),
             LocalDate.now().toString());
     }
 
-    private String getAuditDetailsFormatted(AuditDetails auditDetails) {
-        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s",
-            auditDetails.getDocumentIds(),
+    private String getAuditDetailsFormatted(AuditDetails auditDetails)  {
+        return String.format("document: %s" + System.lineSeparator() + "reason: %s" + System.lineSeparator(),
+            auditDetails.getName(),
             auditDetails.getReason()
         );
     }

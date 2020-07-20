@@ -37,6 +37,7 @@ public class EditDocsAuditLogService {
         return AuditDetails.builder()
             .caseId(caseId)
             .documentIds(getDeletedDocIds(asylumCase, asylumCaseBefore))
+            .name(getDeletedDocNames(asylumCase,asylumCaseBefore))
             .idamUserId(userDetails.getId())
             .user(getIdamUserName(userDetails))
             .reason(asylumCase.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null))
@@ -55,6 +56,16 @@ public class EditDocsAuditLogService {
         List<String> docIds = new ArrayList<>();
         getListOfDocumentFields().forEach(field -> docIds.addAll(
             editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(asylumCase, asylumCaseBefore, field)));
+        return docIds;
+    }
+
+    private List<String> getDeletedDocNames(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        if (asylumCaseBefore == null) {
+            return Collections.emptyList();
+        }
+        List<String> docIds = new ArrayList<>();
+        getListOfDocumentFields().forEach(field -> docIds.addAll(
+                editDocsAuditService.getUpdatedAndDeletedDocNamesForGivenField(asylumCase, asylumCaseBefore, field)));
         return docIds;
     }
 

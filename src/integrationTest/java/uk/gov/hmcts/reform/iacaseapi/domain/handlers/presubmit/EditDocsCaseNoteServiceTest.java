@@ -62,7 +62,7 @@ public class EditDocsCaseNoteServiceTest {
     }
 
     private void assertCaseNote(CaseNote caseNote) {
-        assertEquals("Edit documents audit note", caseNote.getCaseNoteSubject());
+        assertEquals("A document was edited or deleted", caseNote.getCaseNoteSubject());
         assertCaseNoteDescription(caseNote);
         assertEquals("some forename some surname", caseNote.getUser());
         assertNull(caseNote.getCaseNoteDocument());
@@ -79,9 +79,10 @@ public class EditDocsCaseNoteServiceTest {
         AuditDetails expectedAudit = AuditDetails.builder()
             .documentIds(Collections.emptyList())
             .reason("some reasons")
+            .name(Collections.emptyList())
             .build();
-        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s",
-            expectedAudit.getDocumentIds(),
+        return String.format("document: %s" + System.lineSeparator() + "reason: %s" + System.lineSeparator(),
+            expectedAudit.getName(),
             expectedAudit.getReason());
     }
 
