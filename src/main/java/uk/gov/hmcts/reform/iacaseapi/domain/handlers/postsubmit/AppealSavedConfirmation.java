@@ -57,7 +57,7 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         String payOrSubmitLabel = "";
 
         if (payForAppealNowLaterOption.equals("payNow") && foundPaymentAppealType) {
-            submitPaymentAppealUrl = "/trigger/paymentAppeal";
+            submitPaymentAppealUrl = "/trigger/payAndSubmitAppeal";
             payOrSubmitLabel = "pay for and submit your appeal";
         } else {
             submitPaymentAppealUrl = "/trigger/submitAppeal";
