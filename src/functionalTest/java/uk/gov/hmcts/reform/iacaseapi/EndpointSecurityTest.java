@@ -74,7 +74,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
+    public void should_not_allow_unauthenticated_requests_and_return_401_response_code() {
 
         callbackEndpoints.forEach(callbackEndpoint ->
 
@@ -83,12 +83,12 @@ public class EndpointSecurityTest {
                 .when()
                 .get(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
 
         String invalidServiceToken = "invalid";
 
@@ -106,12 +106,12 @@ public class EndpointSecurityTest {
                 .when()
                 .get(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() {
+    public void should_not_allow_requests_without_valid_user_authorisation_and_return_401_response_code() {
 
         String serviceToken =
             authorizationHeadersProvider
@@ -129,7 +129,7 @@ public class EndpointSecurityTest {
                 .when()
                 .get(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.springframework.core.io.Resource;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -37,6 +38,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
     private ProfessionalUsersResponse prdSuccessResponse;
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_get_users_from_professional_ref_data() throws IOException {
 
         String prdResponseJson =
@@ -83,6 +85,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
     }
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_get_users_from_professional_ref_data_no_org_id() throws IOException {
 
         String prdResponseJsonNoOrgId =

@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUB
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 public class AddCaseNoteTest extends SpringBootIntegrationTest {
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void adds_a_case_note() {
 
         given.someLoggedIn(userWith()

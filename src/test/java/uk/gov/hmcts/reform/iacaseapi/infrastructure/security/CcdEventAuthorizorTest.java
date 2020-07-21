@@ -1,135 +1,85 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import org.assertj.core.groups.Tuple;
-import org.junit.Before;
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.access.AccessDeniedException;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdEventAuthorizorTest {
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private UserDetails userDetails;
+    @Mock
+    private AuthorizedRolesProvider authorizedRolesProvider;
+
+    private String role = "caseworker-ia";
+    private Map<String, List<Event>> roleEventAccess = new ImmutableMap.Builder<String, List<Event>>()
+        .put(role, newArrayList(Event.UNKNOWN))
+        .build();
 
     private CcdEventAuthorizor ccdEventAuthorizor;
-    private ListAppender<ILoggingEvent> loggingEventListAppender;
 
-    @Before
-    public void setUp() {
+    @Test
+    public void should_not_throw_exception_when_event_is_allowed() {
 
-        ccdEventAuthorizor =
-            new CcdEventAuthorizor(
-                ImmutableMap
-                    .<String, List<Event>>builder()
-                    .put("caseworker-role", Arrays.asList(Event.REQUEST_RESPONDENT_REVIEW, Event.SEND_DIRECTION))
-                    .put("legal-role", Arrays.asList(Event.SUBMIT_APPEAL, Event.BUILD_CASE))
-                    .build(),
-                userDetailsProvider
-            );
+        ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
 
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(authorizedRolesProvider.getRoles()).thenReturn(newHashSet(role));
 
-        loggingEventListAppender = LoggerUtil.getListAppenderForClass(CcdEventAuthorizor.class);
+        ccdEventAuthorizor.throwIfNotAuthorized(Event.UNKNOWN);
     }
 
     @Test
-    public void does_not_throw_access_denied_exception_if_role_is_allowed_access_to_event() {
+    public void should_throw_exception_when_provider_returns_empty_list() {
 
-        when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("some-unrelated-role", "legal-role")
+        ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
+
+        when(authorizedRolesProvider.getRoles()).thenReturn(newHashSet());
+
+        AccessDeniedException thrown = assertThrows(
+            AccessDeniedException.class,
+            () -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UNKNOWN)
         );
-
-        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
-            .doesNotThrowAnyException();
-
-        when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("caseworker-role", "some-unrelated-role")
-        );
-
-        assertThatCode(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
-            .doesNotThrowAnyException();
-
-        assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Request within CcdEventAuthorizor for event: {} processed in {}ms", Level.INFO));
+        assertEquals("Event 'unknown' not allowed", thrown.getMessage());
     }
 
     @Test
-    public void throw_access_denied_exception_if_role_not_allowed_access_to_event() {
+    public void should_throw_exception_when_access_map_is_empty() {
 
-        when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("caseworker-role", "some-unrelated-role")
+        Map<String, List<Event>> roleEventAccess = new ImmutableMap.Builder<String, List<Event>>().build();
+
+        ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
+
+        AccessDeniedException thrown = assertThrows(
+            AccessDeniedException.class,
+            () -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UNKNOWN)
         );
-
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
-            .hasMessage("Event 'buildCase' not allowed")
-            .isExactlyInstanceOf(AccessDeniedException.class);
-
-        assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
-
-        when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("some-unrelated-role", "legal-role")
-        );
-
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.SEND_DIRECTION))
-            .hasMessage("Event 'sendDirection' not allowed")
-            .isExactlyInstanceOf(AccessDeniedException.class);
-
-        assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
+        assertEquals("Event 'unknown' not allowed", thrown.getMessage());
     }
 
     @Test
-    public void throw_access_denied_exception_if_event_not_configured() {
+    public void should_throw_exception_when_access_map_for_role_is_empty() {
 
-        when(userDetails.getRoles()).thenReturn(
-            Arrays.asList("caseworker-role", "some-unrelated-role")
+        Map<String, List<Event>> roleEventAccess = new ImmutableMap.Builder<String, List<Event>>()
+            .put(role, newArrayList())
+            .build();
+
+        ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
+
+        AccessDeniedException thrown = assertThrows(
+            AccessDeniedException.class,
+            () -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UNKNOWN)
         );
-
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.UPLOAD_RESPONDENT_EVIDENCE))
-            .hasMessage("Event 'uploadRespondentEvidence' not allowed")
-            .isExactlyInstanceOf(AccessDeniedException.class);
-
-        assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
-    }
-
-    @Test
-    public void throw_access_denied_exception_if_user_has_no_roles() {
-
-        when(userDetails.getRoles()).thenReturn(
-            Collections.emptyList()
-        );
-
-        assertThatThrownBy(() -> ccdEventAuthorizor.throwIfNotAuthorized(Event.BUILD_CASE))
-            .hasMessage("Event 'buildCase' not allowed")
-            .isExactlyInstanceOf(AccessDeniedException.class);
-
-        assertThat(loggingEventListAppender.list)
-            .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
-            .contains(Tuple.tuple("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", Level.ERROR));
+        assertEquals("Event 'unknown' not allowed", thrown.getMessage());
     }
 }
