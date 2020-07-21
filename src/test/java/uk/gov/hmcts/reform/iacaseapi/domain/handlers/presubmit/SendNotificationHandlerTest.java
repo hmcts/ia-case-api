@@ -1,8 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import org.junit.Before;
@@ -211,7 +218,8 @@ public class SendNotificationHandlerTest {
                         Event.SUBMIT_CMA_REQUIREMENTS,
                         Event.EDIT_APPEAL_AFTER_SUBMIT,
                         Event.UNLINK_APPEAL,
-                        Event.LINK_APPEAL
+                        Event.LINK_APPEAL,
+                        Event.EDIT_DOCUMENTS
                     ).contains(event)) {
 
                     assertTrue(canHandle);

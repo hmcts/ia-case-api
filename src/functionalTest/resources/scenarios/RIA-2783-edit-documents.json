@@ -20,7 +20,7 @@
                   "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
                   "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
                 },
-                "description": "",
+                "description": "some updated description",
                 "dateUploaded": "2020-03-31"
               }
             }
@@ -64,7 +64,7 @@
                   "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
                   "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
                 },
-                "description": "",
+                "description": "some updated description",
                 "dateUploaded": "2020-03-31"
               }
             }
@@ -100,7 +100,7 @@
                 "document_filename": "PA 50023 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
                 "document_binary_url": "http://dm-store:4506/documents/aa1be97e-ca47-4785-b7c0-09d69754d010/binary"
               },
-              "description": "",
+              "description": "some updated description",
               "dateUploaded": "2020-03-31"
             }
           }
@@ -116,10 +116,16 @@
             "id": "1",
             "value": {
               "caseNoteSubject": "Edit documents audit note",
-              "caseNoteDescription": "documentIds: [20d98d58-f1c2-4003-a657-6bcccce27f6d]\nreason: some reasons\n",
+              "caseNoteDescription": "documentIds: [20d98d58-f1c2-4003-a657-6bcccce27f6d]\nreason: some reasons",
               "user": "Case Officer",
               "dateAdded": "{$TODAY}"
             }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "1234_APPEAL_DOCUMENT_DELETED",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]
       }
