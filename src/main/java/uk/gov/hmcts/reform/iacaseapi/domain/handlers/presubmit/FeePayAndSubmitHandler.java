@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,53 +16,49 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
-public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
     private final boolean isfeePaymentEnabled;
 
-    public FeePaymentPreparer(
-        @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment
+    public FeePayAndSubmitHandler(
+            @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
+            FeePayment<AsylumCase> feePayment
     ) {
         this.feePayment = feePayment;
         this.isfeePaymentEnabled = isfeePaymentEnabled;
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
 
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
-               && (callback.getEvent() == Event.START_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.PAYMENT_APPEAL
-                    || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL)
-               && isfeePaymentEnabled;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+                && isfeePaymentEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+        AsylumCase asylumCaseWithPaymentStatus = feePayment.aboutToSubmit(callback);
 
-        asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+        asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
+                isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
-        asylumCase = feePayment.aboutToStart(callback);
+        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, String.class).isPresent()) {
+            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, "Payment due");
+        }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
     }
-
 }
