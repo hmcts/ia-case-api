@@ -109,7 +109,7 @@ public class AppealSavedConfirmationTest {
                 callbackResponse.getConfirmationBody().get(),
                 containsString(
                         "[pay for and submit your appeal]"
-                                + "(/case/IA/Asylum/" + caseId + "/trigger/paymentAppeal)"
+                                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
                 )
         );
 
