@@ -8,11 +8,16 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.*;
 import java.util.stream.Collectors;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,8 +26,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 public class RemoveFlagHandlerTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -79,34 +87,23 @@ public class RemoveFlagHandlerTest {
     }
 
     @Test
-    public void clear_display_flags_test() {
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.ANONYMITY, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_ANONYMITY_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION);
+    @Parameters({
+        "ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION",
+        "COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION",
+        "DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION",
+        "DETAINED_IMMIGRATION_APPEAL, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION",
+        "FOREIGN_NATIONAL_OFFENDER, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION",
+        "POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION",
+        "UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION",
+        "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION",
+    })
+    public void clear_display_flags_test(CaseFlagType flagType,
+                                         AsylumCaseFieldDefinition caseFlagExists,
+                                         AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
+        removeFlagHandler.clearDisplayFlags(flagType, asylumCase);
+        verify(asylumCase, times(1)).clear(caseFlagExists);
+        verify(asylumCase, times(1)).clear(caseFlagAdditionalInformation);
 
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.COMPLEX_CASE, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_COMPLEX_CASE_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION);
-
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.DETAINED_IMMIGRATION_APPEAL, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION);
-
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.FOREIGN_NATIONAL_OFFENDER, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION);
-
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.POTENTIALLY_VIOLENT_PERSON, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION);
-
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.UNACCEPTABLE_CUSTOMER_BEHAVIOUR, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION);
-
-        removeFlagHandler.clearDisplayFlags(CaseFlagType.UNACCOMPANIED_MINOR, asylumCase);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS);
-        verify(asylumCase, times(1)).clear(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION);
     }
 
     @Test

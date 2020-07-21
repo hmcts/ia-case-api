@@ -10,7 +10,9 @@ public enum ApplicationType {
     TRANSFER("Transfer"),
     WITHDRAW("Withdraw"),
     UPDATE_HEARING_REQUIREMENTS("Update hearing requirements"),
-    CHANGE_HEARING_CENTRE("Change hearing centre");
+    UPDATE_CMA_APPOINTMENT_DETAILS("Update Cma appointment details"),
+    CHANGE_HEARING_CENTRE("Change hearing centre"),
+    EDIT_APPEAL_AFTER_SUBMIT("Update appeal details");
 
     @JsonValue
     private final String value;

@@ -73,12 +73,17 @@ public enum Event {
     SUBMIT_CMA_REQUIREMENTS("submitCmaRequirements"),
     REVIEW_CMA_REQUIREMENTS("reviewCmaRequirements"),
     FORCE_CASE_TO_CASE_UNDER_REVIEW("forceCaseToCaseUnderReview"),
+    UPDATE_DETAILS_AFTER_CMA("updateDetailsAfterCma"),
     FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS("forceCaseToSubmitHearingRequirements"),
     UPDATE_LEGAL_REPRESENTATIVES_DETAILS("updateLegalRepDetails"),
     ADJOURN_HEARING_WITHOUT_DATE("adjournHearingWithoutDate"),
     RESTORE_STATE_FROM_ADJOURN("restoreStateFromAdjourn"),
     DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
     LIST_CMA("listCma"),
+    EDIT_APPEAL_AFTER_SUBMIT("editAppealAfterSubmit"),
+    LINK_APPEAL("linkAppeal"),
+    UNLINK_APPEAL("unlinkAppeal"),
+    PAYMENT_APPEAL("paymentAppeal"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

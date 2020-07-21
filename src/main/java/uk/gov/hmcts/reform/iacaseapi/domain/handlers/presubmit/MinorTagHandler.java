@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -27,8 +31,8 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        return ABOUT_TO_SUBMIT.equals(callbackStage) && Event.SUBMIT_APPEAL.equals(callback.getEvent())
-            && isAppellantDobValid(callback.getCaseDetails().getCaseData());
+        List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
+        return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent());
     }
 
     @Override
@@ -39,14 +43,21 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, isAppellantMinor(appellantDob));
+        setAppellantMinorFlag(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
+    private void setAppellantMinorFlag(AsylumCase asylumCase) {
+        if (isAppellantMinor(asylumCase)) {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.YES);
+        } else {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.NO);
+        }
+    }
+
     private boolean isAppellantDobValid(AsylumCase asylumCase) {
-        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class)
-            .orElse(null);
+        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
         if (appellantDobAsString != null) {
             return isAppellantDobAValidDate(appellantDobAsString);
         }
@@ -63,7 +74,11 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         return true;
     }
 
-    private YesOrNo isAppellantMinor(LocalDate appellantDob) {
-        return Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+    private boolean isAppellantMinor(AsylumCase asylumCase) {
+        YesOrNo result = YesOrNo.NO;
+        if (isAppellantDobValid(asylumCase)) {
+            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+        }
+        return result.equals(YesOrNo.YES);
     }
 }

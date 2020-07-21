@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_FLAG_TYPE_OF_FLAG;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -66,37 +68,16 @@ public class RemoveFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
     }
 
     public void clearDisplayFlags(CaseFlagType caseFlagType, AsylumCase asylumCase) {
-        switch (caseFlagType) {
-            case ANONYMITY:
-                asylumCase.clear(CASE_FLAG_ANONYMITY_EXISTS);
-                asylumCase.clear(CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION);
-                break;
-            case COMPLEX_CASE:
-                asylumCase.clear(CASE_FLAG_COMPLEX_CASE_EXISTS);
-                asylumCase.clear(CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION);
-                break;
-            case DETAINED_IMMIGRATION_APPEAL:
-                asylumCase.clear(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS);
-                asylumCase.clear(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION);
-                break;
-            case FOREIGN_NATIONAL_OFFENDER:
-                asylumCase.clear(CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS);
-                asylumCase.clear(CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION);
-                break;
-            case POTENTIALLY_VIOLENT_PERSON:
-                asylumCase.clear(CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS);
-                asylumCase.clear(CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION);
-                break;
-            case UNACCEPTABLE_CUSTOMER_BEHAVIOUR:
-                asylumCase.clear(CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS);
-                asylumCase.clear(CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION);
-                break;
-            case UNACCOMPANIED_MINOR:
-                asylumCase.clear(CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS);
-                asylumCase.clear(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION);
-                break;
-            default:
-                break;
-        }
+        CaseFlagType flag = Stream.of(CaseFlagType.values())
+            .filter(f -> f.equals(caseFlagType))
+            .findFirst().orElse(CaseFlagType.UNKNOWN);
+
+        AsylumCaseFieldDefinition flagExistsField = AsylumCaseFieldDefinition
+            .valueOf("CASE_FLAG_" + flag.name() + "_EXISTS");
+        asylumCase.clear(flagExistsField);
+        AsylumCaseFieldDefinition flagAdditionalInformationField = AsylumCaseFieldDefinition
+            .valueOf("CASE_FLAG_" + flag.name() + "_ADDITIONAL_INFORMATION");
+        asylumCase.clear(flagAdditionalInformationField);
+
     }
 }
