@@ -44,11 +44,6 @@ public class HearingAttendeesAndDurationRecordedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("The judge will record the decision and reasons.<br>")
-        );
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get(),
             containsString("You don't need to do anything more with this case.")
         );
     }

@@ -57,7 +57,6 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest {
                 .caseData(anAsylumCase())));
 
         assertThat(response.getConfirmationHeader().get()).isEqualTo("# You have recorded the attendees and duration of the hearing");
-        assertThat(response.getConfirmationBody().get()).contains("The judge will record the decision and reasons.");
         assertThat(response.getConfirmationBody().get()).contains("You don't need to do anything more with this case.");
     }
 }
