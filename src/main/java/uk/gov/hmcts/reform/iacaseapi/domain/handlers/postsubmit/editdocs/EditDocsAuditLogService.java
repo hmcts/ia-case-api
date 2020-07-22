@@ -58,9 +58,16 @@ public class EditDocsAuditLogService {
         return docIds;
     }
 
-    private List<AsylumCaseFieldDefinition> getListOfDocumentFields() {
-        return Arrays.asList(ADDITIONAL_EVIDENCE_DOCUMENTS, TRIBUNAL_DOCUMENTS, HEARING_DOCUMENTS,
-            LEGAL_REPRESENTATIVE_DOCUMENTS, ADDENDUM_EVIDENCE_DOCUMENTS, RESPONDENT_DOCUMENTS,
-            DRAFT_DECISION_AND_REASONS_DOCUMENTS, FINAL_DECISION_AND_REASONS_DOCUMENTS, HEARING_RECORDING_DOCUMENTS);
+    public static List<AsylumCaseFieldDefinition> getListOfDocumentFields() {
+        return Arrays.asList(
+            ADDITIONAL_EVIDENCE_DOCUMENTS,
+            TRIBUNAL_DOCUMENTS,
+            HEARING_DOCUMENTS,
+            LEGAL_REPRESENTATIVE_DOCUMENTS,
+            ADDENDUM_EVIDENCE_DOCUMENTS,
+            RESPONDENT_DOCUMENTS,
+            DRAFT_DECISION_AND_REASONS_DOCUMENTS,
+            FINAL_DECISION_AND_REASONS_DOCUMENTS,
+            HEARING_RECORDING_DOCUMENTS);
     }
 }
