@@ -100,7 +100,7 @@ public class AdjournWithoutDateConfirmationTest {
         Assert.assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString("#### What happens next\n\n"
-                + "Both parties will be notified and a Notice of Adjournment will be generated."
+                + "A new Notice of Hearing has been generated."
             )
         );
     }
