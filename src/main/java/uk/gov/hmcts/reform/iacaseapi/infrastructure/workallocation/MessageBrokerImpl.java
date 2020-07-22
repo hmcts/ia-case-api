@@ -50,6 +50,8 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
             message.setStringProperty("assignTo", camundaMappedObject.getAssignedTo());
             message.setStringProperty("dueDate", camundaMappedObject.getDueDate());
             message.setStringProperty("directionId", camundaMappedObject.getDirectionId());
+            message.setStringProperty("taskId", camundaMappedObject.getTaskId());
+            message.setStringProperty("assignTaskTo", camundaMappedObject.getAssignTaskTo());
 
             LOGGER.info("Sending event to internal queue");
             producer.send(message);
@@ -74,7 +76,9 @@ public class MessageBrokerImpl implements MessageBroker<AsylumCase> {
                         message.getStringProperty("appellantName"),
                         message.getStringProperty("assignTo"),
                         message.getStringProperty("dueDate"),
-                        message.getStringProperty("directionId")
+                        message.getStringProperty("directionId"),
+                        message.getStringProperty("taskId"),
+                        message.getStringProperty("assignTaskTo")
                     )
             );
             LOGGER.info("Sent event to send to Camunda");

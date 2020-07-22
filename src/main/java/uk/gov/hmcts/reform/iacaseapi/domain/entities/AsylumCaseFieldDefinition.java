@@ -728,7 +728,11 @@ public enum AsylumCaseFieldDefinition {
         "reasonToForceCaseToCaseUnderReview", new TypeReference<String>(){}),
 
     ASSIGNED_TO(
-            "assignedTo", new TypeReference<String>(){})
+            "assignedTo", new TypeReference<String>(){}),
+    TASK_ID(
+            "taskId", new TypeReference<String>(){}),
+    ASSIGNED_TASK_TO(
+            "assignedTaskTo", new TypeReference<String>(){})
     ;
 
     private final String value;

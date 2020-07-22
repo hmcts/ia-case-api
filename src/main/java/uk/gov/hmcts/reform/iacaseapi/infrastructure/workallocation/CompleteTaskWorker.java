@@ -32,7 +32,7 @@ public class CompleteTaskWorker {
         LOGGER.info("Registering for Camunda events");
 
         ExternalTaskClient client = ExternalTaskClient.create()
-                .baseUrl("http://localhost:8080/engine-rest")
+                .baseUrl(CAMUNDA_URL)
                 .maxTasks(1)
                 .asyncResponseTimeout(30000)
                 .backoffStrategy(new ExponentialBackoffStrategy(0, 0, 0)) // prevents long waits after Camunda hasn't been used for a while
