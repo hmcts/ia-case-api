@@ -214,6 +214,7 @@ security:
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"
       - "decisionWithoutHearing"
+      - "listCma"
       - "updateDetailsAfterCma"
       - "linkAppeal"
       - "unlinkAppeal"

@@ -94,6 +94,7 @@ public class SendNotificationHandlerTest {
             Event.RESTORE_STATE_FROM_ADJOURN,
             Event.REQUEST_CMA_REQUIREMENTS,
             Event.SUBMIT_CMA_REQUIREMENTS,
+            Event.LIST_CMA,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.UNLINK_APPEAL,
             Event.LINK_APPEAL
@@ -216,6 +217,7 @@ public class SendNotificationHandlerTest {
                         Event.RESTORE_STATE_FROM_ADJOURN,
                         Event.REQUEST_CMA_REQUIREMENTS,
                         Event.SUBMIT_CMA_REQUIREMENTS,
+                        Event.LIST_CMA,
                         Event.EDIT_APPEAL_AFTER_SUBMIT,
                         Event.UNLINK_APPEAL,
                         Event.LINK_APPEAL,

@@ -97,6 +97,7 @@ public class GenerateDocumentHandlerTest {
             ADJOURN_HEARING_WITHOUT_DATE,
             END_APPEAL,
             SUBMIT_CMA_REQUIREMENTS,
+            LIST_CMA,
             END_APPEAL,
             EDIT_APPEAL_AFTER_SUBMIT
         ).forEach(event -> {
@@ -235,6 +236,7 @@ public class GenerateDocumentHandlerTest {
                         ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL,
                         SUBMIT_CMA_REQUIREMENTS,
+                        LIST_CMA,
                         END_APPEAL,
                         EDIT_APPEAL_AFTER_SUBMIT
                     ).contains(event)) {
@@ -306,6 +308,7 @@ public class GenerateDocumentHandlerTest {
                         ADJOURN_HEARING_WITHOUT_DATE,
                         END_APPEAL,
                         SUBMIT_CMA_REQUIREMENTS,
+                        LIST_CMA,
                         END_APPEAL,
                         EDIT_APPEAL_AFTER_SUBMIT
                     );
