@@ -18,7 +18,7 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# You have recorded an application",
+      "header": "# You've recorded an application",
       "body": "#### What happens next\n\nThe application decision has been recorded and is now available in the applications tab. A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual."
     }
   }

@@ -1,0 +1,40 @@
+{
+  "description": "RIA-3019 Update cma appointment",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "updateDetailsAfterCma",
+      "state": "cmaListed",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+           "attendingTCW": "TCW",
+           "appointmentSummary": "Test",
+           "attendingJudge": "Judge",
+           "attendingAppellant": "Appellant",
+           "attendingAppellantsLegalRepresentative": "Legal Rep",
+           "attendingHomeOfficeLegalRepresentative": "Home Office"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "attendingTCW": "TCW",
+        "appointmentSummary": "Test",
+        "attendingJudge": "Judge",
+        "attendingAppellant": "Appellant",
+        "attendingAppellantsLegalRepresentative": "Legal Rep",
+        "attendingHomeOfficeLegalRepresentative": "Home Office",
+        "submitHearingRequirementsAvailable": "Yes",
+        "sendDirectionActionAvailable": "No",
+        "haveHearingAttendeesAndDurationBeenRecorded": "Yes"
+      }
+    }
+  }
+}

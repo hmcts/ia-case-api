@@ -19,7 +19,7 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# You have recorded an application",
+      "header": "# You've recorded an application",
       "body": "#### What happens next\n\nYou must now [change the direction due date](/case/IA/Asylum/1234/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab."
     }
   }

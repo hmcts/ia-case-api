@@ -19,7 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 public class AsylumCaseFeePaymentServiceTest {
 
     private static final String ENDPOINT = "http://endpoint";
-    private static final String ABOUT_TO_SUBMIT_PATH = "/path";
+    private static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
+    private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
     @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
     @Mock private Callback<AsylumCase> callback;
@@ -33,7 +34,8 @@ public class AsylumCaseFeePaymentServiceTest {
             new AsylumCaseFeePaymentService(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
-                ABOUT_TO_SUBMIT_PATH
+                ABOUT_TO_SUBMIT_PATH,
+                ABOUT_TO_START_PATH
             );
     }
 
@@ -45,7 +47,7 @@ public class AsylumCaseFeePaymentServiceTest {
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenReturn(feePaymentAsylumCase);
 
-        final AsylumCase actualAsylumCase = asylumCaseFeeApiPayment.send(callback);
+        final AsylumCase actualAsylumCase = asylumCaseFeeApiPayment.aboutToSubmit(callback);
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
@@ -56,7 +58,7 @@ public class AsylumCaseFeePaymentServiceTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> asylumCaseFeeApiPayment.send(null))
+        assertThatThrownBy(() -> asylumCaseFeeApiPayment.aboutToSubmit(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

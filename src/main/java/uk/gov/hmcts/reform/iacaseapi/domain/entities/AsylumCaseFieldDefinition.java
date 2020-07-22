@@ -66,6 +66,12 @@ public enum AsylumCaseFieldDefinition {
     HAS_OTHER_APPEALS(
         "hasOtherAppeals", new TypeReference<String>(){}),
 
+    NEW_MATTERS(
+        "newMatters", new TypeReference<String>(){}),
+
+    HAS_NEW_MATTERS(
+        "hasNewMatters", new TypeReference<YesOrNo>(){}),
+
     APPEAL_REFERENCE_NUMBER(
         "appealReferenceNumber", new TypeReference<String>(){}),
 
@@ -762,6 +768,54 @@ public enum AsylumCaseFieldDefinition {
     ADJOURN_HEARING_WITHOUT_DATE_REASONS(
             "adjournHearingWithoutDateReasons", new TypeReference<String>(){}),
 
+    APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS(
+        "applicationEditAppealAfterSubmitExists", new TypeReference<String>() {}),
+
+    APPLICATION_OUT_OF_TIME_EXPLANATION(
+        "applicationOutOfTimeExplanation", new TypeReference<String>() {}),
+
+    APPLICATION_OUT_OF_TIME_DOCUMENT(
+        "applicationOutOfTimeDocument", new TypeReference<Document>() {}),
+
+    REASON_FOR_LINK_APPEAL(
+        "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
+
+    HEARING_DECISION_SELECTED(
+        "hearingDecisionSelected", new TypeReference<String>(){}),
+    IS_FEE_PAYMENT_ENABLED(
+            "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
+    PAY_FOR_THE_APPEAL_OPTION(
+            "payForTheAppealOption", new TypeReference<String>() {}),
+    APPEAL_FEE_HEARING_DESC(
+            "appealFeeHearingDesc", new TypeReference<String>(){}),
+    APPEAL_FEE_WITHOUT_HEARING_DESC(
+            "appealFeeWithoutHearingDesc", new TypeReference<String>(){}),
+    FEE_HEARING_AMOUNT_FOR_DISPLAY(
+            "feeHearingAmountForDisplay", new TypeReference<String>(){}),
+    FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
+            "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
+    PAYMENT_STATUS(
+            "paymentStatus", new TypeReference<String>(){}),
+    FEE_PAYMENT_APPEAL_TYPE(
+            "feePaymentAppealType", new TypeReference<String>(){}),
+    PAYMENT_REFERENCE(
+            "paymentReference", new TypeReference<String>() {}),
+    FEE_CODE(
+            "feeCode", new TypeReference<String>(){}),
+    FEE_DESCRIPTION(
+            "feeDescription", new TypeReference<String>(){}),
+    FEE_VERSION(
+            "feeVersion", new TypeReference<String>(){}),
+    FEE_AMOUNT_FOR_DISPLAY(
+        "feeAmountForDisplay", new TypeReference<String>(){}),
+    PBA_NUMBER(
+            "pbaNumber", new TypeReference<String>(){}),
+    PAYMENT_DESCRIPTION(
+            "paymentDescription", new TypeReference<String>(){}),
+    PAYMENT_ERROR_CODE(
+            "paymentErrorCode", new TypeReference<String>(){}),
+    PAYMENT_ERROR_MESSAGE(
+            "paymentErrorMessage", new TypeReference<String>(){})
     ;
 
     private final String value;

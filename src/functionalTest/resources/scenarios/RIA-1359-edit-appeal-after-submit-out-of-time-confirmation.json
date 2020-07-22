@@ -1,0 +1,87 @@
+{
+  "description": "RIA-1359 Edit appeal after submit out of time confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "awaitingRespondentEvidence",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "applicationEditAppealAfterSubmitExists": "Yes",
+          "appellantGivenNames": "Jane",
+          "appellantFamilyName": "Doe",
+          "homeOfficeDecisionDate": "2019-01-01",
+          "applicationOutOfTimeExplanation": "some reason",
+          "applications": [
+            {
+              "id": "1",
+              "value": {
+                "applicationDocuments": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                      "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                    }
+                  }
+                ],
+                "applicationSupplier": "The legal representative",
+                "applicationType": "Update appeal details",
+                "applicationReason": "some reason",
+                "applicationDate": "2020-01-01",
+                "applicationDecision": "Granted",
+                "applicationDecisionReason": "some decision reason",
+                "applicationDateOfDecision": "{$TODAY}",
+                "applicationStatus": "In progress"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've updated the application",
+      "body": "#### What happens next\r\nBoth parties have been notified and the service will be updated.\r\n\r\nThe new details will be used on all future correspondence and documents.\r\n"
+    },
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "applicationEditAppealAfterSubmitExists": null,
+        "submissionOutOfTime": "Yes",
+        "applicationOutOfTimeExplanation": "some reason",
+        "applications": [
+          {
+            "id": "1",
+            "value": {
+              "applicationDocuments": [
+                {
+                  "id": "1",
+                  "value": {
+                    "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                    "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  }
+                }
+              ],
+              "applicationSupplier": "The legal representative",
+              "applicationType": "Update appeal details",
+              "applicationReason": "some reason",
+              "applicationDate": "2020-01-01",
+              "applicationDecision": "Granted",
+              "applicationDecisionReason": "some decision reason",
+              "applicationDateOfDecision": "{$TODAY}",
+              "applicationStatus": "Completed"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

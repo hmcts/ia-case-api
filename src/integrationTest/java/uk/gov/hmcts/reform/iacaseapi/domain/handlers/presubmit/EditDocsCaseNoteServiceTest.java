@@ -80,7 +80,7 @@ public class EditDocsCaseNoteServiceTest {
             .documentIds(Collections.emptyList())
             .reason("some reasons")
             .build();
-        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s" + System.lineSeparator(),
+        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s",
             expectedAudit.getDocumentIds(),
             expectedAudit.getReason());
     }

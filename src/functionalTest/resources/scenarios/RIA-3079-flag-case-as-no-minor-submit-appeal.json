@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3079 flag case as no minor when submitAppeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1122,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantDateOfBirth": "1979-02-15"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAppellantMinor": "No",
+        "appellantDateOfBirth": "1979-02-15",
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+
