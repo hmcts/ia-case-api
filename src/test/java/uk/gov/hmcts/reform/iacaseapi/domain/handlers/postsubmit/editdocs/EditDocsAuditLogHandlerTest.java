@@ -82,7 +82,7 @@ public class EditDocsAuditLogHandlerTest {
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals("INFO", logsList.get(0).getLevel().toString());
         assertEquals("Edit Document audit logs: AuditDetails(idamUserId=null, user=null, documentIds=null, "
-            + "caseId=0, reason=null, dateTime=null)", logsList.get(0).getFormattedMessage());
+            + "caseId=0, reason=null, dateTime=null name=null)", logsList.get(0).getFormattedMessage());
     }
 
     private void mockServiceDependency() {
