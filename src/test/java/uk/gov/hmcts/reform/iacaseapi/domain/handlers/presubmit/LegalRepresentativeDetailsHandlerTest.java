@@ -5,12 +5,15 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Arrays;
 import java.util.Optional;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -20,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class LegalRepresentativeDetailsHandlerTest {
 
@@ -34,13 +37,18 @@ public class LegalRepresentativeDetailsHandlerTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
 
         legalRepresentativeDetailsHandler =
             new LegalRepresentativeDetailsHandler(userDetailsProvider);
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "PAY_AND_SUBMIT_APPEAL"
+    })
+    public void should_set_legal_representative_details_into_the_case(Event event) {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -53,7 +61,7 @@ public class LegalRepresentativeDetailsHandlerTest {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
@@ -73,12 +81,16 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "PAY_AND_SUBMIT_APPEAL"
+    })
+    public void should_not_overwrite_existing_legal_representative_details(Event event) {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
@@ -117,7 +129,10 @@ public class LegalRepresentativeDetailsHandlerTest {
 
                 boolean canHandle = legalRepresentativeDetailsHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.SUBMIT_APPEAL
+                if (Arrays.asList(
+                        Event.SUBMIT_APPEAL,
+                        Event.PAY_AND_SUBMIT_APPEAL)
+                        .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

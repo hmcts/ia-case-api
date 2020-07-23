@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -37,10 +38,12 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
-               && (callback.getEvent() == Event.START_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.PAYMENT_APPEAL
-                    || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL)
+               && Arrays.asList(
+                    Event.START_APPEAL,
+                    Event.EDIT_APPEAL,
+                    Event.PAYMENT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
+                   .contains(callback.getEvent())
                && isfeePaymentEnabled;
     }
 

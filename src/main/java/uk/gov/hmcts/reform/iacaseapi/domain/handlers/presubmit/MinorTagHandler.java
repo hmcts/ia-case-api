@@ -31,7 +31,7 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-        List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
+        List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT, Event.PAY_AND_SUBMIT_APPEAL);
         return ABOUT_TO_SUBMIT.equals(callbackStage) && validEvents.contains(callback.getEvent());
     }
 
