@@ -5,11 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -30,25 +25,38 @@ public class AppealPayAndSubmittedConfirmationTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private AppealSubmittedConfirmation appealSubmittedConfirmation =
-        new AppealSubmittedConfirmation();
+    private AppealPayAndSubmittedConfirmation appealPayAndSubmittedConfirmation =
+        new AppealPayAndSubmittedConfirmation();
 
     @Before
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
+
     @Test
-    public void should_return_standard_confirmation_when_not_out_of_time() {
+    public void handling_should_throw_if_cannot_actually_handle() {
 
-        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.handle(callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void should_return_confirmation() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PostSubmitCallbackResponse callbackResponse =
-            appealSubmittedConfirmation.handle(callback);
+            appealPayAndSubmittedConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -56,48 +64,19 @@ public class AppealPayAndSubmittedConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationHeader().get(),
-            containsString("submitted")
+            containsString("# Your appeal has been paid for and submitted")
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
-    }
-
-    @Test
-    public void should_return_out_of_time_confirmation_when_out_of_time() {
-
-        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        PostSubmitCallbackResponse callbackResponse =
-                appealSubmittedConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("")
+            containsString("### What happens next")
         );
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n")
+            callbackResponse.getConfirmationBody().get(),
+            containsString("You will receive an email confirming that this appeal has been submitted successfully.")
         );
-    }
 
-    @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
-
-        when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
-
-        assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -107,9 +86,9 @@ public class AppealPayAndSubmittedConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = appealSubmittedConfirmation.canHandle(callback);
+            boolean canHandle = appealPayAndSubmittedConfirmation.canHandle(callback);
 
-            if (event == Event.SUBMIT_APPEAL) {
+            if (event == Event.PAY_AND_SUBMIT_APPEAL) {
 
                 assertTrue(canHandle);
             } else {
@@ -123,11 +102,11 @@ public class AppealPayAndSubmittedConfirmationTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> appealSubmittedConfirmation.canHandle(null))
+        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> appealSubmittedConfirmation.handle(null))
+        assertThatThrownBy(() -> appealPayAndSubmittedConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

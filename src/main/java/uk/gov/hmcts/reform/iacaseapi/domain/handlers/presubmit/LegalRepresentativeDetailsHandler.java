@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -32,7 +33,10 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && Arrays.asList(
+                    Event.SUBMIT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
+                   .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

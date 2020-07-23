@@ -88,6 +88,7 @@ public class GenerateDocumentHandlerTest {
 
         Arrays.asList(
             SUBMIT_APPEAL,
+            PAY_AND_SUBMIT_APPEAL,
             SUBMIT_CASE,
             LIST_CASE,
             EDIT_CASE_LISTING,
@@ -225,6 +226,7 @@ public class GenerateDocumentHandlerTest {
                     &&
                     Arrays.asList(
                         SUBMIT_APPEAL,
+                        PAY_AND_SUBMIT_APPEAL,
                         SUBMIT_CASE,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
@@ -299,6 +301,7 @@ public class GenerateDocumentHandlerTest {
                 ImmutableSet<Event> eventsThatDontRequireStitching =
                     immutableEnumSet(
                         SUBMIT_APPEAL,
+                        PAY_AND_SUBMIT_APPEAL,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
                         LIST_CASE,

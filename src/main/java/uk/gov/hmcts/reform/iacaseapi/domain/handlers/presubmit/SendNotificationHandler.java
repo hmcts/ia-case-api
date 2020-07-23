@@ -40,12 +40,13 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && getEventsToHandle().contains(callback.getEvent());
+            && getEventsToHandle().contains(callback.getEvent());
     }
 
     private List<Event> getEventsToHandle() {
         List<Event> eventsToHandle = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
+            Event.PAY_AND_SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
