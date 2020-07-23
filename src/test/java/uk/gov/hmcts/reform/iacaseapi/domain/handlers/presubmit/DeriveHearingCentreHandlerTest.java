@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Arrays;
 import java.util.Optional;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -52,7 +53,8 @@ public class DeriveHearingCentreHandlerTest {
     @Test
     @Parameters({
         "SUBMIT_APPEAL",
-        "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL_AFTER_SUBMIT",
+        "PAY_AND_SUBMIT_APPEAL"
     })
     public void should_derive_hearing_centre_from_appellant_postcode(Event event) {
 
@@ -78,7 +80,8 @@ public class DeriveHearingCentreHandlerTest {
     @Test
     @Parameters({
         "SUBMIT_APPEAL",
-        "EDIT_APPEAL_AFTER_SUBMIT"
+        "EDIT_APPEAL_AFTER_SUBMIT",
+        "PAY_AND_SUBMIT_APPEAL"
     })
     public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(Event event) {
 
@@ -140,7 +143,11 @@ public class DeriveHearingCentreHandlerTest {
 
                 boolean canHandle = deriveHearingCentreHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.SUBMIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                if (Arrays.asList(
+                        Event.SUBMIT_APPEAL,
+                        Event.EDIT_APPEAL_AFTER_SUBMIT,
+                        Event.PAY_AND_SUBMIT_APPEAL)
+                        .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

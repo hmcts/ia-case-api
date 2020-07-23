@@ -6,12 +6,16 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -20,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class HomeOfficeReferenceNumberTruncatorTest {
 
@@ -31,8 +35,17 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     private HomeOfficeReferenceNumberTruncator homeOfficeReferenceNumberTruncator =
         new HomeOfficeReferenceNumberTruncator();
 
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test
-    public void should_truncate_home_office_reference_numbers() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "PAY_AND_SUBMIT_APPEAL"
+    })
+    public void should_truncate_home_office_reference_numbers(Event event) {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
@@ -53,7 +66,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
                 final String output = inputOutput.getValue();
 
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+                when(callback.getEvent()).thenReturn(event);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of(input));
 
@@ -69,7 +82,11 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_touch_home_office_reference_numbers_that_are_not_too_long() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "PAY_AND_SUBMIT_APPEAL"
+    })
+    public void should_not_touch_home_office_reference_numbers_that_are_not_too_long(Event event) {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap
@@ -83,7 +100,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
                 final String output = inputOutput.getValue();
 
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+                when(callback.getEvent()).thenReturn(event);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);
                 when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.of(input));
 
@@ -99,10 +116,14 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_throw_when_home_office_reference_is_not_present() {
+    @Parameters({
+        "SUBMIT_APPEAL",
+        "PAY_AND_SUBMIT_APPEAL"
+    })
+    public void should_throw_when_home_office_reference_is_not_present(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER)).thenReturn(Optional.empty());
 
@@ -136,7 +157,10 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
                 boolean canHandle = homeOfficeReferenceNumberTruncator.canHandle(callbackStage, callback);
 
-                if ((event == Event.SUBMIT_APPEAL)
+                if (Arrays.asList(
+                        Event.SUBMIT_APPEAL,
+                        Event.PAY_AND_SUBMIT_APPEAL)
+                        .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
