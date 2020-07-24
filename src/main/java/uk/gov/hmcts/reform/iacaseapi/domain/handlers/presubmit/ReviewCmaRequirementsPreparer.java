@@ -56,7 +56,7 @@ public class ReviewCmaRequirementsPreparer implements PreSubmitCallbackHandler<A
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
             .stream()
             .map(i ->
-                "Language\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
+                "Language\t\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
             .collect(Collectors.joining("\n"))));
     }
 

@@ -4,20 +4,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.assertj.core.internal.Dates;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DatesToAvoid;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -32,8 +34,8 @@ public class ReviewCmaRequirementsPreparerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private List<IdValue<WitnessDetails>> witnessDetails;
     @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock private List<IdValue<DatesToAvoid>> datesToAvoid;
 
     private ReviewCmaRequirementsPreparer reviewCmaRequirementsPreparer;
 
@@ -53,7 +55,11 @@ public class ReviewCmaRequirementsPreparerTest {
             new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
         );
 
+        datesToAvoid = Arrays.asList(
+            new IdValue<>("1", new DatesToAvoid(LocalDate.parse("2020-01-01"), "Reason to avoid this date"))
+        );
         when(asylumCase.read(INTERPRETER_LANGUAGE)).thenReturn(Optional.of(interpreterLanguage));
+        when(asylumCase.read(DATES_TO_AVOID)).thenReturn(Optional.of(datesToAvoid));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewCmaRequirementsPreparer.handle(ABOUT_TO_START, callback);
@@ -65,7 +71,13 @@ public class ReviewCmaRequirementsPreparerTest {
 
         verify(asylumCase, times(1)).write(
             INTERPRETER_LANGUAGE_READONLY,
-            "Language\t\tIrish\nDialect\t\t\tN/A\n");
+            "Language\t\t\tIrish\nDialect\t\t\tN/A\n");
+
+        verify(asylumCase, times(1)).read(DATES_TO_AVOID);
+
+        verify(asylumCase, times(1)).write(
+            DATES_TO_AVOID_READONLY,
+            "Date\t\t\t2020-01-01\nReason\t\t\tReason to avoid this date\n");
     }
 
     @Test
