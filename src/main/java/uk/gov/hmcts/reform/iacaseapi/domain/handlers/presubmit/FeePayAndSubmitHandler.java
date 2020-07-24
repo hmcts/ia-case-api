@@ -56,7 +56,7 @@ public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCa
                 isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
         if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, String.class).isPresent()) {
-            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, "Payment due");
+            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, "Payment pending");
         }
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
