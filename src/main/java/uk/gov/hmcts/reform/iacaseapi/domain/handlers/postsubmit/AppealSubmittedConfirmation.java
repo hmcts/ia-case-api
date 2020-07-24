@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -34,6 +37,18 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        String payForAppealNowLaterOption = null;
+
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
+
+        if (appealType == AppealType.PA) {
+            payForAppealNowLaterOption = asylumCase
+                .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                .orElse("");
+        }
 
         YesOrNo submissionOutOfTime =
                 requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
@@ -42,11 +57,22 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         if (submissionOutOfTime.equals(NO)) {
 
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
-            postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                            + "You will receive an email confirming that this appeal has been submitted successfully."
-            );
 
+            if (payForAppealNowLaterOption != null && payForAppealNowLaterOption.equals("payLater")) {
+                String overview = "overview";
+                String overviewTab = "overview tab";
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "You still have to pay for this appeal. You can do this by selecting Make a payment from the "
+                    + "Next step dropdown on the  [" + overviewTab + "](/case/IA/Asylum/"
+                    + callback.getCaseDetails().getId() +  "#" + overview + ") and following the instructions."
+                );
+            } else {
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "You will receive an email confirming that this appeal has been submitted successfully."
+                );
+            }
         } else {
 
             postSubmitResponse.setConfirmationHeader("");
