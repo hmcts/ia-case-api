@@ -48,8 +48,8 @@ def jarName = 'ia-case-api.jar'
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
@@ -278,6 +278,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformLogging

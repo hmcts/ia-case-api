@@ -76,9 +76,9 @@ public class AsylumCaseTest {
         String caseData = "{\"appealType\": \"revocationOfProtection\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<YesOrNo> maybeYesNo = asylumCase.read(APPEAL_TYPE);
+        Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE);
 
-        assertThat(maybeYesNo.get()).isEqualTo(AppealType.RP);
+        assertThat(appealType.get()).isEqualTo(AppealType.RP);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class AsylumCaseTest {
         String caseData = "{\"hearingCentre\": \"manchester\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<YesOrNo> maybeHearingCentre = asylumCase.read(HEARING_CENTRE);
+        Optional<HearingCentre> maybeHearingCentre = asylumCase.read(HEARING_CENTRE);
 
         assertThat(maybeHearingCentre.get()).isEqualTo(MANCHESTER);
     }
@@ -148,7 +148,7 @@ public class AsylumCaseTest {
         String caseData = "{\"sendDirectionParties\": \"both\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<YesOrNo> maybeParties = asylumCase.read(SEND_DIRECTION_PARTIES);
+        Optional<Parties> maybeParties = asylumCase.read(SEND_DIRECTION_PARTIES);
 
         assertThat(maybeParties.get()).isEqualTo(Parties.BOTH);
     }

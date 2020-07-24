@@ -37,7 +37,7 @@ public class RequestRespondentReviewHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
+    @Captor private ArgumentCaptor<YesOrNo> asylumCaseValuesArgumentCaptor;
     @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestRespondentReviewHandler requestRespondentReviewHandler;
@@ -63,7 +63,7 @@ public class RequestRespondentReviewHandlerTest {
         verify(asylumCase, times(1)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
 
         List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
+        List<YesOrNo> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)),
