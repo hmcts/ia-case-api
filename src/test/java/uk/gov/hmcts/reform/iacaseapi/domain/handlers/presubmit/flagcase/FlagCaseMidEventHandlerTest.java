@@ -62,15 +62,6 @@ public class FlagCaseMidEventHandlerTest {
         PreSubmitCallbackStage callbackStage;
         boolean expectedResult;
 
-        public CanHandleScenario(
-            Event event,
-            PreSubmitCallbackStage callbackStage,
-            boolean expectedResult) {
-            this.event = event;
-            this.callbackStage = callbackStage;
-            this.expectedResult = expectedResult;
-        }
-
         private static List<CanHandleScenario> builder() {
             List<CanHandleScenario> scenarios = new ArrayList<>();
             for (Event e : Event.values()) {

@@ -3,12 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Set;
-import lombok.Getter;
 import lombok.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 @Value
-@Getter
 public class PreSubmitCallbackResponseForTest {
 
     @JsonProperty
