@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DatesToAvoid;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -45,6 +45,7 @@ public class ReviewCmaRequirementsPreparer implements PreSubmitCallbackHandler<A
                 .getCaseData();
 
         decorateInterpreterDetails(asylumCase);
+        decorateDatesToAvoid(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -55,7 +56,17 @@ public class ReviewCmaRequirementsPreparer implements PreSubmitCallbackHandler<A
         interpreterLanguage.ifPresent(idValues -> asylumCase.write(INTERPRETER_LANGUAGE_READONLY, idValues
             .stream()
             .map(i ->
-                "Language\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
+                "Language\t\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
+            .collect(Collectors.joining("\n"))));
+    }
+
+    private static void decorateDatesToAvoid(AsylumCase asylumCase) {
+        final Optional<List<IdValue<DatesToAvoid>>> datesToAvoid = asylumCase.read(DATES_TO_AVOID);
+
+        datesToAvoid.ifPresent(idValues -> asylumCase.write(DATES_TO_AVOID_READONLY, idValues
+            .stream()
+            .map(i ->
+                "Date\t\t\t" + i.getValue().getDateToAvoid() + "\nReason\t\t\t" + i.getValue().getDateToAvoidReason() + "\n")
             .collect(Collectors.joining("\n"))));
     }
 }
