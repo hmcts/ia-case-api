@@ -11,7 +11,7 @@ public enum HearingCentre {
     BRADFORD("bradford"),
     COVENTRY("coventry"),
     GLASGOW("glasgow"),
-    GLASGOW_TRIBUNAL_CENTRE("glasgowTribunalsCentre"),
+    GLASGOW_TRIBUNALS_CENTRE("glasgowTribunalsCentre"),
     HATTON_CROSS("hattonCross"),
     MANCHESTER("manchester"),
     NEWCASTLE("newcastle"),
