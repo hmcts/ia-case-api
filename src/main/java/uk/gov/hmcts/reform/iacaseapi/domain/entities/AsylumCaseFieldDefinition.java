@@ -815,7 +815,14 @@ public enum AsylumCaseFieldDefinition {
     PAYMENT_ERROR_CODE(
             "paymentErrorCode", new TypeReference<String>(){}),
     PAYMENT_ERROR_MESSAGE(
-            "paymentErrorMessage", new TypeReference<String>(){})
+            "paymentErrorMessage", new TypeReference<String>(){}),
+
+    DATES_TO_AVOID(
+        "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
+
+    DATES_TO_AVOID_READONLY(
+        "datesToAvoidReadonly", new TypeReference<List<IdValue<DatesToAvoid>>>() {}),
+
     ;
 
     private final String value;
