@@ -60,6 +60,8 @@ public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.clear(AsylumCaseFieldDefinition.HMCTS);
+        asylumCase.write(AsylumCaseFieldDefinition.HMCTS,"[userImage:hmcts.png]");
         asylumCase.clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, getBundlePrefix(asylumCase));

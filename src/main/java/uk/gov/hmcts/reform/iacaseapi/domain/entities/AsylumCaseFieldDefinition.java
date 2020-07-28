@@ -861,6 +861,8 @@ public enum AsylumCaseFieldDefinition {
 
     DATES_TO_AVOID_READONLY(
         "datesToAvoidReadonly", new TypeReference<List<IdValue<DatesToAvoid>>>() {}),
+    HMCTS(
+            "hmcts", new TypeReference<String>(){}),
 
     ;
 
