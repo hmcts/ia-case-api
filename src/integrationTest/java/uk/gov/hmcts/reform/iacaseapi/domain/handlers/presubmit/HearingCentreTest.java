@@ -34,7 +34,6 @@ public class HearingCentreTest {
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("BN1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("CB1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("CM1 1AA"));
-        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("HP1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("IP1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("ME1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("N1 1AA"));
@@ -43,6 +42,8 @@ public class HearingCentreTest {
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("SE1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("TN1 1AA"));
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("W1 1AA"));
+
+        assertEquals(HearingCentre.BIRMINGHAM, hearingCentreFinder.find("HP1 1AA"));
 
         assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("XX"));
     }
