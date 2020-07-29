@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,10 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-                && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && Arrays.asList(
+                    Event.SUBMIT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
+                   .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

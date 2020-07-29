@@ -141,6 +141,7 @@ security:
       - "editAppeal"
       - "submitAppeal"
       - "paymentAppeal"
+      - "payAndSubmitAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
