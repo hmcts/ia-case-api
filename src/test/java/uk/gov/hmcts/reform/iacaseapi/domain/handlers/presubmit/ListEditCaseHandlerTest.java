@@ -111,7 +111,7 @@ public class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
     }
-    
+
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 

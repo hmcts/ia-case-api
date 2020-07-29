@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2323 Edit hearing notice PDF (Docmosis disabled)",
+  "description": "RIA-2323 Edit hearing notice PDF (Docmosis disabled) - Listing Only Hearing centre",
   "disabled": "{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
