@@ -54,7 +54,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
             asylumCase.write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         } else {
-            if (!hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre)){
+            if (!hearingCentreFinder.isListingOnlyHearingCentre(hearingCentre)) {
                 //Should also update the designated hearing centre
                 asylumCase.write(HEARING_CENTRE, hearingCentre);
             }
