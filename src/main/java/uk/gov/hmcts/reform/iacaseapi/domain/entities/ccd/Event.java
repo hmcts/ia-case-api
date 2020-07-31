@@ -42,6 +42,7 @@ public enum Event {
     UPLOAD_HEARING_RECORDING("uploadHearingRecording"),
     END_APPEAL("endAppeal"),
     REQUEST_CASE_BUILDING("requestCaseBuilding"),
+    FORCE_REQUEST_CASE_BUILDING("forceRequestCaseBuilding"),
     UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE("uploadAdditionalEvidenceHomeOffice"),
     REQUEST_RESPONSE_REVIEW("requestResponseReview"),
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),

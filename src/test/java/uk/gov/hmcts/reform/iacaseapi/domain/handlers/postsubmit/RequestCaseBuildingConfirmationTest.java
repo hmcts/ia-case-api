@@ -63,7 +63,7 @@ public class RequestCaseBuildingConfirmationTest {
 
             boolean canHandle = requestCaseBuildingConfirmation.canHandle(callback);
 
-            if (event == Event.REQUEST_CASE_BUILDING) {
+            if (event == Event.REQUEST_CASE_BUILDING || event == Event.FORCE_REQUEST_CASE_BUILDING)  {
 
                 assertTrue(canHandle);
             } else {

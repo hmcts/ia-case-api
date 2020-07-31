@@ -221,7 +221,8 @@ public class SendNotificationHandlerTest {
                         Event.EDIT_APPEAL_AFTER_SUBMIT,
                         Event.UNLINK_APPEAL,
                         Event.LINK_APPEAL,
-                        Event.EDIT_DOCUMENTS
+                        Event.EDIT_DOCUMENTS,
+                        Event.FORCE_REQUEST_CASE_BUILDING
                     ).contains(event)) {
 
                     assertTrue(canHandle);

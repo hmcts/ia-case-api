@@ -626,6 +626,9 @@ public enum AsylumCaseFieldDefinition {
     ADDITIONAL_TRIBUNAL_RESPONSE(
         "additionalTribunalResponse", new TypeReference<String>() {}),
 
+    REASON_TO_FORCE_REQUEST_CASE_BUILDING(
+        "reasonToForceRequestCaseBuilding", new TypeReference<String>(){}),
+
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
 

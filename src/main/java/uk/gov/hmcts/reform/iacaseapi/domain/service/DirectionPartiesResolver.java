@@ -21,6 +21,7 @@ public class DirectionPartiesResolver {
 
             case REQUEST_CASE_EDIT:
             case REQUEST_CASE_BUILDING:
+            case FORCE_REQUEST_CASE_BUILDING:
             case REQUEST_RESPONSE_REVIEW:
                 return Parties.LEGAL_REPRESENTATIVE;
 
