@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -64,6 +65,8 @@ public class RequestCaseBuildingHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private Appender<CaseNote> appender;
+    @Mock
+    private DateProvider dateProvider;
 
     @InjectMocks
     private RequestCaseBuildingHandler requestCaseBuildingHandler;
@@ -90,6 +93,9 @@ public class RequestCaseBuildingHandlerTest {
                                                               List<IdValue<CaseNote>> expectedAppendedCaseNotes) {
         mockCallback(customAsylumCase);
         mockUserDetailsProvider();
+
+        given(dateProvider.now()).willReturn(LocalDate.now());
+
         given(appender.append(any(CaseNote.class), anyList())).willReturn(expectedAppendedCaseNotes);
         given(callback.getEvent()).willReturn(Event.FORCE_REQUEST_CASE_BUILDING);
 

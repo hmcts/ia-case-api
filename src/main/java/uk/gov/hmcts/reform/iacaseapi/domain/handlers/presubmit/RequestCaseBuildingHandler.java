@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_TO_FORCE_REQUEST_CASE_BUILDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
@@ -28,6 +26,8 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
 
     @Autowired
     private UserDetailsProvider userDetailsProvider;
+    @Autowired
+    private DateProvider dateProvider;
 
     @Autowired
     private Appender<CaseNote> appender;
@@ -68,6 +68,6 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
 
     private CaseNote buildNewCaseNote(String reason) {
         return new CaseNote("Force case from Awaiting Respondent Evidence to Case Building",
-            reason, userDetailsProvider.getUserDetails().getForenameAndSurname(), LocalDate.now().toString());
+            reason, userDetailsProvider.getUserDetails().getForenameAndSurname(), dateProvider.now().toString());
     }
 }
