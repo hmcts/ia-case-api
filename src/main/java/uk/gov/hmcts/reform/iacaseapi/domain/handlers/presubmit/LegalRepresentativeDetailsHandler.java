@@ -50,28 +50,28 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
                         .getCaseDetails()
                         .getCaseData();
 
-        if (!asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isPresent()) {
+        if (asylumCase.read(LEGAL_REPRESENTATIVE_NAME).isEmpty()) {
             asylumCase.write(
                     LEGAL_REPRESENTATIVE_NAME,
                     userDetails.getForename() + " " + userDetails.getSurname()
             );
         }
 
-        if (!asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isPresent()) {
+        if (asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS).isEmpty()) {
             asylumCase.write(
                     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS,
                     userDetails.getEmailAddress()
             );
         }
 
-        if (!asylumCase.read(LEGAL_REP_COMPANY).isPresent()) {
+        if (asylumCase.read(LEGAL_REP_COMPANY).isEmpty()) {
             asylumCase.write(
                 LEGAL_REP_COMPANY,
                 asylumCase.read(LEGAL_REP_COMPANY, String.class).orElse("")
             );
         }
 
-        if (!asylumCase.read(LEGAL_REP_NAME).isPresent()) {
+        if (asylumCase.read(LEGAL_REP_NAME).isEmpty()) {
             asylumCase.write(
                 LEGAL_REP_NAME,
                 asylumCase.read(LEGAL_REP_NAME, String.class).orElse("")

@@ -1,0 +1,63 @@
+{
+  "description": "RIA-1925 upload decision letter at appeal submission",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1122,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadTheNoticeOfDecisionDocument": {
+            "document_url": "http://dm-store:4506/documents/844af09f-e54f-45a0-9d3f-78680d30dda9",
+            "document_filename": "some document.pdf",
+            "document_binary_url": "http://dm-store:4506/documents/844af09f-e54f-45a0-9d3f-78680d30dda9/binary"
+          },
+          "uploadTheNoticeOfDecisionExplanation": "some reasons"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "legalRepresentativeDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-appeal-form.PDF"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "appealSubmission",
+              "suppliedBy": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "tag": "homeOfficeDecisionLetter",
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "some document.pdf"
+              },
+              "description": "some reasons",
+              "dateUploaded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
