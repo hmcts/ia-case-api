@@ -1,0 +1,33 @@
+{
+  "description": "RIA-3498 Error on submit when option is payNow for HU AppealType.json",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 3468,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealReferenceNumber": "PA/12345/2018",
+          "appealType": "refusalOfHumanRights",
+          "payForTheAppealOption": "payNow"
+          }
+        }
+      }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "The Submit your appeal option is not available. Select Pay and submit to submit the appeal"
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfHumanRights"
+      }
+    }
+  }
+}
