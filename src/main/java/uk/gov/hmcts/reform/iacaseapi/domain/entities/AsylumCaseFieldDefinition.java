@@ -546,6 +546,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE(
         "uploadAddendumEvidenceHomeOfficeActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE(
+        "uploadAddendumEvidenceAdminOfficerActionAvailable", new TypeReference<YesOrNo>(){}),
+
     ADDENDUM_EVIDENCE(
         "addendumEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
