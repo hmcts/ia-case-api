@@ -116,8 +116,8 @@
           {
             "id": "1",
             "value": {
-              "caseNoteSubject": "Edit documents audit note",
-              "caseNoteDescription": "documentIds: [20d98d58-f1c2-4003-a657-6bcccce27f6d]\nreason: some reasons",
+              "caseNoteSubject": "A document was edited or deleted",
+              "caseNoteDescription": "Document names: [PA 50023 2020-Gonzlez-Decision-and-reasons-FINAL.pdf]\nreason: some reasons",
               "user": "Case Officer",
               "dateAdded": "{$TODAY}"
             }

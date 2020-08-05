@@ -28,11 +28,22 @@ public class EditDocsAuditLogService {
         return AuditDetails.builder()
             .caseId(caseId)
             .documentIds(getDeletedDocIds(asylumCase, asylumCaseBefore))
+            .documentNames(getDeletedDocumentNames(asylumCase, asylumCaseBefore))
             .idamUserId(userDetails.getId())
             .user(getIdamUserName(userDetails))
             .reason(asylumCase.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null))
             .dateTime(LocalDateTime.now())
             .build();
+    }
+
+    private List<String> getDeletedDocumentNames(AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
+        if (asylumCaseBefore == null) {
+            return Collections.emptyList();
+        }
+        List<String> docNames = new ArrayList<>();
+        getListOfDocumentFields().forEach(field -> docNames.addAll(
+            editDocsAuditService.getUpdatedAndDeletedDocNamesForGivenField(asylumCase, asylumCaseBefore, field)));
+        return docNames;
     }
 
     private String getIdamUserName(UserDetails userDetails) {

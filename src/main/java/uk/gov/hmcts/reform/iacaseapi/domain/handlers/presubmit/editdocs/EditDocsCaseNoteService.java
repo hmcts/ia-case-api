@@ -34,15 +34,17 @@ public class EditDocsCaseNoteService {
     }
 
     private CaseNote buildNewCaseNote(AuditDetails auditDetails) {
-        return new CaseNote("Edit documents audit note",
+        return new CaseNote(
+            "A document was edited or deleted",
             getAuditDetailsFormatted(auditDetails),
             auditDetails.getUser(),
-            LocalDate.now().toString());
+            LocalDate.now().toString()
+        );
     }
 
     private String getAuditDetailsFormatted(AuditDetails auditDetails) {
-        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s",
-            auditDetails.getDocumentIds(),
+        return String.format("Document names: %s" + System.lineSeparator() + "reason: %s",
+            auditDetails.getDocumentNames(),
             auditDetails.getReason()
         );
     }
