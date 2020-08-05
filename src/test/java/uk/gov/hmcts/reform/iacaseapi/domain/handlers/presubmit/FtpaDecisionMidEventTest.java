@@ -28,19 +28,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class LeadershipJudgeFtpaDecisionMidEventTest {
+public class FtpaDecisionMidEventTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private LeadershipJudgeFtpaDecisionMidEvent leadershipJudgeFtpaDecisionMidEvent;
+    private FtpaDecisionMidEvent ftpaDecisionMidEvent;
 
     @Before
     public void setUp() {
-        leadershipJudgeFtpaDecisionMidEvent = new LeadershipJudgeFtpaDecisionMidEvent();
+        ftpaDecisionMidEvent = new FtpaDecisionMidEvent();
 
-        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(State.FTPA_SUBMITTED);
@@ -55,9 +54,9 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = leadershipJudgeFtpaDecisionMidEvent.canHandle(callbackStage, callback);
+                boolean canHandle = ftpaDecisionMidEvent.canHandle(callbackStage, callback);
 
-                if (event == Event.LEADERSHIP_JUDGE_FTPA_DECISION
+                if ((event == Event.LEADERSHIP_JUDGE_FTPA_DECISION || event == Event.RESIDENT_JUDGE_FTPA_DECISION)
                     && callbackStage == MID_EVENT) {
 
                     assertTrue(canHandle);
@@ -73,11 +72,11 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> leadershipJudgeFtpaDecisionMidEvent.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> ftpaDecisionMidEvent.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> leadershipJudgeFtpaDecisionMidEvent.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> ftpaDecisionMidEvent.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -85,11 +84,11 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> leadershipJudgeFtpaDecisionMidEvent.canHandle(null, callback))
+        assertThatThrownBy(() -> ftpaDecisionMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> leadershipJudgeFtpaDecisionMidEvent.canHandle(MID_EVENT, null))
+        assertThatThrownBy(() -> ftpaDecisionMidEvent.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -100,7 +99,7 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        assertThatThrownBy(() -> leadershipJudgeFtpaDecisionMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+        assertThatThrownBy(() -> ftpaDecisionMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .hasMessage("FtpaApplicantType is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -108,11 +107,12 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void should_error_when_there_is_no_ftpa_appellant_application_to_record_decision() {
 
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            leadershipJudgeFtpaDecisionMidEvent.handle(MID_EVENT, callback);
+            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -124,11 +124,12 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void should_error_when_there_is_no_ftpa_respondent_application_to_record_decision() {
 
+        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            leadershipJudgeFtpaDecisionMidEvent.handle(MID_EVENT, callback);
+            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -140,11 +141,12 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void should_successfully_record_ftpa_appellant_decision() {
 
+        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_SUBMITTED, String.class)).thenReturn(Optional.of("YES"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            leadershipJudgeFtpaDecisionMidEvent.handle(MID_EVENT, callback);
+            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -155,11 +157,12 @@ public class LeadershipJudgeFtpaDecisionMidEventTest {
     @Test
     public void should_successfully_record_ftpa_respondent_decision() {
 
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED, String.class)).thenReturn(Optional.of("YES"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            leadershipJudgeFtpaDecisionMidEvent.handle(MID_EVENT, callback);
+            ftpaDecisionMidEvent.handle(MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());

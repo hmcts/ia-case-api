@@ -1,0 +1,27 @@
+{
+  "description": "RIA-2527 Resident judge record FTPA appellant decision confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "residentJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantRjDecisionOutcomeType": "remadeRule32"
+        }
+
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You've recorded the First-tier permission to appeal decision",
+      "body": "#### What happens next\n\nBoth parties have been notified of the decision.<br>"
+    }
+  }
+}
