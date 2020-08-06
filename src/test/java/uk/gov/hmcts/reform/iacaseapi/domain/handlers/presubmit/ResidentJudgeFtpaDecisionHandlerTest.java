@@ -181,6 +181,43 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
+    public void should_setup_appeal_field_on_remedy_rule_32() {
+
+        List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
+            Arrays.asList(
+                ftpaRespondentDecisionDocument,
+                ftpaRespondentDecisionNoticeDocument
+            );
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(FTPA_RESPONDENT_DECISION_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionAndReasonsDocument));
+        when(asylumCase.read(FTPA_RESPONDENT_NOTICE_DOCUMENT)).thenReturn(Optional.of(maybeFtpaDecisionNoticeDocument));
+        when(asylumCase.read(ALL_FTPA_RESPONDENT_DECISION_DOCS)).thenReturn(Optional.of(existingFtpaDecisionAndReasonsDocuments));
+        when(asylumCase.read(FTPA_RESPONDENT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("remadeRule32"));
+        when(asylumCase.read(FTPA_RESPONDENT_DECISION_REMADE_RULE_32, String.class)).thenReturn(Optional.of("Allowed"));
+
+        when(documentReceiver.tryReceiveAll(maybeFtpaDecisionAndReasonsDocument, DocumentTag.FTPA_DECISION_AND_REASONS))
+            .thenReturn(singletonList(ftpaRespondentDecisionDocument));
+        when(documentReceiver.tryReceiveAll(maybeFtpaDecisionNoticeDocument, DocumentTag.FTPA_DECISION_AND_REASONS))
+            .thenReturn(singletonList(ftpaRespondentDecisionNoticeDocument));
+        when(documentsAppender.append(existingFtpaDecisionAndReasonsDocuments, ftpaRespondentDecisionAndReasonsDocument))
+            .thenReturn(allFtpaDecisionDocuments);
+
+        final LocalDate now = LocalDate.now();
+        when(dateProvider.now()).thenReturn(now);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL, "Allowed");
+    }
+
+    @Test
     public void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

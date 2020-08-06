@@ -276,6 +276,17 @@ public enum AsylumCaseFieldDefinition {
     FTPA_RESPONDENT_APPLICATION_DATE(
         "ftpaRespondentApplicationDate", new TypeReference<String>(){}),
 
+    FTPA_APPELLANT_RJ_NEW_DECISION_OF_APPEAL(
+        "ftpaAppellantRjNewDecisionOfAppeal", new TypeReference<String>(){}),
+
+    FTPA_APPELLANT_DECISION_REMADE_RULE_32(
+        "ftpaAppellantDecisionRemadeRule32", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_RJ_NEW_DECISION_OF_APPEAL(
+        "ftpaRespondentRjNewDecisionOfAppeal", new TypeReference<String>(){}),
+
+    FTPA_RESPONDENT_DECISION_REMADE_RULE_32(
+        "ftpaRespondentDecisionRemadeRule32", new TypeReference<String>(){}),
 
     UPLOADED_HOME_OFFICE_BUNDLE_DOCS(
         "uploadedHomeOfficeBundleDocs", new TypeReference<String>(){}),
