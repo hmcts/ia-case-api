@@ -1,0 +1,32 @@
+{
+  "description": "RIA-3317 Derive hearing centre from postcode, Should assign to newcastle and no longer north shields",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "PostCode": "NE 2AB"
+          },
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantHasFixedAddress": "Yes",
+        "hearingCentre": "newcastle"
+      }
+    }
+  }
+}
