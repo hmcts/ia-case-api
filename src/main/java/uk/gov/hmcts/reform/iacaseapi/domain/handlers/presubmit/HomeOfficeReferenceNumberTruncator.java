@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,11 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && callback.getEvent() == Event.SUBMIT_APPEAL;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && Arrays.asList(
+                    Event.SUBMIT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
+                   .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

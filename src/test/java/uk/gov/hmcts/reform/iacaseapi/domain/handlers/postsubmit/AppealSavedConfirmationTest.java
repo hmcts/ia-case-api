@@ -5,8 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAY_FOR_THE_APPEAL_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -35,8 +34,7 @@ public class AppealSavedConfirmationTest {
     public void should_return_confirmation() {
 
         long caseId = 1234;
-        when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of(""));
-
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -71,22 +69,62 @@ public class AppealSavedConfirmationTest {
                 callbackResponse.getConfirmationBody().get(),
                 containsString("Not ready to submit yet?")
         );
-
     }
 
     @Test
-    public void should_return_confirmation_for_pay_for() {
+    public void should_return_confirmation_for_pay_offline_by_card() {
 
         long caseId = 1234;
-        AppealType appealType = AppealType.HU;
 
-        when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of("payNow"));
-
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(appealType));
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("# Your appeal details have been saved")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("### Do this next")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString(
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+            )
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("Not ready to submit yet?")
+        );
+    }
+
+    @Test
+    public void should_return_confirmation_for_pay_now() {
+
+        long caseId = 1234;
+
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
         PostSubmitCallbackResponse callbackResponse =
                 appealSavedConfirmation.handle(callback);
@@ -109,7 +147,7 @@ public class AppealSavedConfirmationTest {
                 callbackResponse.getConfirmationBody().get(),
                 containsString(
                         "[pay for and submit your appeal]"
-                                + "(/case/IA/Asylum/" + caseId + "/trigger/paymentAppeal)"
+                                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
                 )
         );
 
@@ -117,9 +155,7 @@ public class AppealSavedConfirmationTest {
                 callbackResponse.getConfirmationBody().get(),
                 containsString("Not ready to submit yet?")
         );
-
     }
-
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {

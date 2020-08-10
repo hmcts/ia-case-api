@@ -137,7 +137,7 @@ public class AsylumCaseTest {
         String caseData = "{\"hearingCentre\": \"manchester\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<HearingCentre> maybeHearingCentre = asylumCase.read(HEARING_CENTRE);
+        Optional<HearingCentre> maybeHearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class);
 
         assertThat(maybeHearingCentre.get()).isEqualTo(MANCHESTER);
     }
@@ -148,7 +148,7 @@ public class AsylumCaseTest {
         String caseData = "{\"sendDirectionParties\": \"both\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
 
-        Optional<Parties> maybeParties = asylumCase.read(SEND_DIRECTION_PARTIES);
+        Optional<Parties> maybeParties = asylumCase.read(SEND_DIRECTION_PARTIES, Parties.class);
 
         assertThat(maybeParties.get()).isEqualTo(Parties.BOTH);
     }

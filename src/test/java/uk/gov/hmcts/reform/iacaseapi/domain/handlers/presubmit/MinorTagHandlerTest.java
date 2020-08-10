@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_MINOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -69,7 +70,8 @@ public class MinorTagHandlerTest {
 
         private static List<CanHandleTestScenario> builder() {
             List<CanHandleTestScenario> scenarios = new ArrayList<>();
-            List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT);
+            List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL,
+                            EDIT_APPEAL_AFTER_SUBMIT, PAY_AND_SUBMIT_APPEAL);
             for (Event event : Event.values()) {
                 if (validEvents.contains(event)) {
                     for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
