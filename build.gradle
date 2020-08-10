@@ -326,18 +326,18 @@ dependencies {
     testCompile 'pl.pragmatists:JUnitParams:1.1.1'
 
 //    testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.3.2'
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.2"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
 
 
     //pact contract testing
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
 
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
 
     testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
