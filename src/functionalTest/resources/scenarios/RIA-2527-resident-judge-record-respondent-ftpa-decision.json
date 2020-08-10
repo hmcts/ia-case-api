@@ -13,6 +13,8 @@
           "ftpaApplicantType": "respondent",
           "ftpaRespondentSubmitted": "Yes",
           "ftpaRespondentRjDecisionOutcomeType": "reheardRule35",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse",
           "ftpaRespondentDecisionDocument": [
             {
               "id": "1",
