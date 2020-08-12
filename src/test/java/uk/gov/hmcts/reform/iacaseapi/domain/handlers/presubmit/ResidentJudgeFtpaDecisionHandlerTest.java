@@ -41,6 +41,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
     @Mock private DateProvider dateProvider;
+    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -61,7 +62,12 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     @Before
     public void setUp() {
 
-        residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(dateProvider, documentReceiver, documentsAppender);
+        residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(
+            dateProvider,
+            documentReceiver,
+            documentsAppender,
+            ftpaFinalDecisionDisplayProvider
+        );
     }
 
     @Test
