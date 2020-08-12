@@ -74,7 +74,9 @@ public class FtpaFinalDecisionDisplayProvider {
     public String getFinalDisplayDecision(AsylumCase asylumCase, String firstDecision, String secondDecision) {
 
         if (ftpaDisplayMap.get(Pair.of(firstDecision, secondDecision)).equals("appealDecision")) {
-            return asylumCase.read(APPEAL_DECISION).get().equals("Allowed") ? "allowed" : "dismissed";
+            return asylumCase.read(APPEAL_DECISION)
+                .orElseThrow(() -> new IllegalStateException("appealDecision is mandatory"))
+                .equals("Allowed") ? "allowed" : "dismissed";
         }
 
         return ftpaDisplayMap.get(Pair.of(firstDecision, secondDecision));
