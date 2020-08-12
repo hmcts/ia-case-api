@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 @Component
 public class FtpaFinalDecisionDisplayProvider {
 
-    private final Map<Pair, String> ftpaDisplayMap = new ImmutableMap.Builder<Pair, String>()
+    private final Map<Pair<String, String>, String> ftpaDisplayMap = new ImmutableMap.Builder<Pair<String, String>, String>()
         .put(new ImmutablePair<>("granted", "granted"), "granted")
         .put(new ImmutablePair<>("granted", "partiallyGranted"), "granted")
         .put(new ImmutablePair<>("granted", "refused"), "granted")
