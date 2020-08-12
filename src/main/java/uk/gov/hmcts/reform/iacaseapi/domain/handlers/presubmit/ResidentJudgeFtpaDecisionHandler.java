@@ -138,6 +138,8 @@ public class ResidentJudgeFtpaDecisionHandler implements PreSubmitCallbackHandle
                 asylumCase.write(
                     valueOf(String.format("FTPA_%s_RJ_NEW_DECISION_OF_APPEAL", ftpaApplicantType.toUpperCase())),
                     StringUtils.capitalize(ftpaNewDecisionOfAppeal));
+
+                asylumCase.write(valueOf(String.format("IS_%s_FTPA_DECISION_VISIBLE_TO_ALL", ftpaApplicantType.toUpperCase())), YES);
             }
         }
         asylumCase.write(
