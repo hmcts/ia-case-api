@@ -23,6 +23,7 @@ public enum DocumentTag {
     FTPA_APPELLANT("ftpaAppellant"),
     FTPA_RESPONDENT("ftpaRespondent"),
     FTPA_DECISION_AND_REASONS("ftpaDecisionAndReasons"),
+    HO_DECISION_LETTER("homeOfficeDecisionLetter"),
 
     @JsonEnumDefaultValue
     NONE("");
