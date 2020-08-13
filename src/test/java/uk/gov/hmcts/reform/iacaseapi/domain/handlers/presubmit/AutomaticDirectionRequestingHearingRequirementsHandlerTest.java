@@ -8,8 +8,11 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.*;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -60,12 +63,6 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     @Before
     public void setUp() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(dateProvider.now()).thenReturn(now);
 
         automaticDirectionHandler =
             new AutomaticDirectionRequestingHearingRequirementsHandler(
@@ -77,8 +74,10 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             );
     }
 
-    @Test
-    public void should_schedule_automatic_direction_5_days_from_now() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
+    public void should_schedule_automatic_direction_5_days_from_now(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -108,8 +107,10 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         assertEquals("", result.getId());
     }
 
-    @Test
-    public void should_schedule_automatic_direction_in_10_minutes_for_test_user() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
+    public void should_schedule_automatic_direction_in_10_minutes_for_test_user(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
         LocalDateTime nowWithTime = LocalDateTime.now();
 
@@ -145,8 +146,10 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         assertEquals("", result.getId());
     }
 
-    @Test
-    public void should_rethrow_exception_when_scheduler_failed() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
+    public void should_rethrow_exception_when_scheduler_failed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
 
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
@@ -178,7 +181,11 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
                 boolean canHandle = automaticDirectionHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event.equals(Event.REQUEST_RESPONSE_REVIEW)) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && Arrays.asList(
+                            Event.REQUEST_RESPONSE_REVIEW,
+                            Event.ADD_APPEAL_RESPONSE)
+                        .contains(event)) {
 
                     assertThat(canHandle).isEqualTo(true);
                 } else {
