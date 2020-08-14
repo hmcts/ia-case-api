@@ -868,6 +868,8 @@ public enum AsylumCaseFieldDefinition {
             "payForTheAppealOption", new TypeReference<String>() {}),
     PA_APPEAL_TYPE_PAYMENT_OPTION(
         "paAppealTypePaymentOption", new TypeReference<String>() {}),
+    EA_HU_APPEAL_TYPE_PAYMENT_OPTION(
+        "eaHuAppealTypePaymentOption", new TypeReference<String>() {}),
     APPEAL_FEE_HEARING_DESC(
             "appealFeeHearingDesc", new TypeReference<String>(){}),
     APPEAL_FEE_WITHOUT_HEARING_DESC(
