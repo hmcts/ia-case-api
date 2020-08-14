@@ -35,8 +35,7 @@ public class AppealSavedConfirmationTest {
     public void should_return_confirmation() {
 
         long caseId = 1234;
-        when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of(""));
-
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -78,15 +77,13 @@ public class AppealSavedConfirmationTest {
     public void should_return_confirmation_for_pay_for() {
 
         long caseId = 1234;
-        AppealType appealType = AppealType.HU;
 
         when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of("payNow"));
-
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
         PostSubmitCallbackResponse callbackResponse =
                 appealSavedConfirmation.handle(callback);
