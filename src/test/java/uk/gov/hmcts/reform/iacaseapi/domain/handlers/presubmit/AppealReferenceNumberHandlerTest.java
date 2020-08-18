@@ -62,7 +62,7 @@ public class AppealReferenceNumberHandlerTest {
 
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
 
-        verifyZeroInteractions(appealReferenceNumberGenerator);
+        verifyNoInteractions(appealReferenceNumberGenerator);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class AppealReferenceNumberHandlerTest {
 
         appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        verifyZeroInteractions(appealReferenceNumberGenerator);
+        verifyNoInteractions(appealReferenceNumberGenerator);
         verify(asylumCase, never()).write(any(), any());
     }
 
