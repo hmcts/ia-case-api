@@ -73,7 +73,7 @@ public class IaCaseApiClient {
     private HttpHeaders getHeaders() {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("ServiceAuthorization", SERVICE_JWT_TOKEN);
         headers.add("Authorization", USER_JWT_TOKEN);
 
