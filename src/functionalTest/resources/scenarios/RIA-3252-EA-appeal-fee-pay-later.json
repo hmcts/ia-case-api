@@ -1,6 +1,6 @@
 {
   "description": "RIA-3252 Pay later for appeal type EA",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
@@ -27,10 +27,10 @@
         "appealType": "refusalOfEu",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "paymentStatus":"Payment due",
-        "feeHearingAmountForDisplay":"£140.00",
-        "feeWithoutHearingAmountForDisplay":"£80.00",
-        "appealFeeHearingDesc":"The fee for this type of appeal with a hearing is £140.00",
-        "appealFeeWithoutHearingDesc":"The fee for this type of appeal without a hearing is £80.00"
+        "feeHearingAmountForDisplay":"£140",
+        "feeWithoutHearingAmountForDisplay":"£80",
+        "appealFeeHearingDesc":"The fee for an appeal with a hearing is £140",
+        "appealFeeWithoutHearingDesc":"The fee for an appeal without a hearing is £80"
       }
     }
   }

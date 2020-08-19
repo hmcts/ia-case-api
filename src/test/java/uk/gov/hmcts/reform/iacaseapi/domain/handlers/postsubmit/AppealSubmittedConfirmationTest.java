@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -62,6 +63,43 @@ public class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString("What happens next")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("You will receive an email confirming that this appeal has been submitted successfully.")
+        );
+    }
+
+    @Test
+    public void should_return_pay_offline_confirmation_when_not_out_of_time() {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get(),
+            containsString("submitted")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("What happens next")
+        );
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get(),
+            containsString("You still need to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.")
         );
     }
 

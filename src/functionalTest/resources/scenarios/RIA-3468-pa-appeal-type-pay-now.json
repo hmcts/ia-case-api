@@ -16,8 +16,8 @@
           "payForTheAppealOption": "payNow",
           "paymentAccountList":{
             "value":{
-              "code":"PBA0066906",
-              "label":"PBA0066906"
+              "code":"PBA0087535",
+              "label":"PBA0087535"
             }
           },
           "appealFeeWithoutHearingDesc": "The fee for an appeal without a hearing is £80",
@@ -36,7 +36,7 @@
       "replacements": {
         "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
-        "pbaNumber": "PBA0066906",
+        "pbaNumber": "PBA0087535",
         "feeAmount": "80.00",
         "paymentStatus": "Paid",
         "paymentReference": "$/RC-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/",

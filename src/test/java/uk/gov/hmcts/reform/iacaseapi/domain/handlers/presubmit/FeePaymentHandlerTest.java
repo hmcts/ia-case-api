@@ -24,6 +24,7 @@ public class FeePaymentHandlerTest {
 
     @Mock private FeePayment<AsylumCase> feePayment;
     @Mock private Callback<AsylumCase> callback;
+    @Mock private FeePaymentDisplayProvider feePaymentDisplayProvider;
 
     private FeePaymentHandler feePaymentHandler;
 
@@ -31,14 +32,14 @@ public class FeePaymentHandlerTest {
     public void setUp() {
 
         feePaymentHandler =
-                new FeePaymentHandler(true, feePayment);
+            new FeePaymentHandler(true, feePayment, feePaymentDisplayProvider);
     }
 
     @Test
     public void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
-                Event.PAYMENT_APPEAL
+            Event.PAYMENT_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -47,7 +48,7 @@ public class FeePaymentHandlerTest {
             when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                    feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
             assertEquals(expectedUpdatedCase, callbackResponse.getData());
@@ -63,27 +64,28 @@ public class FeePaymentHandlerTest {
     public void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeePaymentHandler feePaymentHandlerWithDisabledPayment =
-                new FeePaymentHandler(
-                        false,
-                        feePayment
-                );
+            new FeePaymentHandler(
+                false,
+                feePayment,
+                feePaymentDisplayProvider
+            );
 
         assertThatThrownBy(() -> feePaymentHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class FeePaymentHandlerTest {
                 boolean canHandle = feePaymentHandler.canHandle(callbackStage, callback);
 
                 if ((callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-                        && (callback.getEvent() == Event.START_APPEAL
+                    && (callback.getEvent() == Event.START_APPEAL
                         || callback.getEvent() == Event.EDIT_APPEAL
                         || callback.getEvent() == Event.PAYMENT_APPEAL)) {
 
@@ -116,7 +118,7 @@ public class FeePaymentHandlerTest {
     public void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePaymentHandler =
-                new FeePaymentHandler(false, feePayment);
+            new FeePaymentHandler(false, feePayment, feePaymentDisplayProvider);
 
         for (Event event : Event.values()) {
 
@@ -136,27 +138,27 @@ public class FeePaymentHandlerTest {
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }
