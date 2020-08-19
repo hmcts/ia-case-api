@@ -67,7 +67,7 @@ public class DataFixingTest {
                 SerenityRest
                     .given()
                     .headers(getAuthorizationHeaders())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(callbackBody)
                     .when()
                     .post(endpoint)

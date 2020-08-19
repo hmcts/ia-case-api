@@ -124,7 +124,7 @@ public class IdamConsumerTest {
             SerenityRest
                 .given()
                 .headers(headers)
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(mockServer.getUrl() + IDAM_DETAILS_URL)
                 .then()
