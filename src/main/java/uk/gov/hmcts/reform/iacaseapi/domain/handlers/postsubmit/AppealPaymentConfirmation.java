@@ -43,6 +43,8 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
             new PostSubmitCallbackResponse();
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        final String feeLabel = "\n\n#### Fee\n";
+        final String paymentReferenceNumberLabel = "\n\n#### Payment reference number\n";
 
         if (appealPaymentConfirmationProvider.getPaymentStatus(asylumCase).equals(Optional.of(FAILED))) {
 
@@ -56,11 +58,11 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                 + "#### Do this next\n\n"
                 + "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.\n\n"
                 + "\n\n\n#### Payment failed"
-                + "\n\n#### Payment reference number\n"
+                + paymentReferenceNumberLabel
                 + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
                 + "\n\n#### Payment by account number\n"
                 + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
-                + "\n\n#### Fee\n"
+                + feeLabel
                 + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
                 + "\n\n#### Reason for failed payment\n"
                 + paymentErrorMessage
@@ -80,11 +82,11 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                     + "You still need to [submit your appeal](/case/IA/Asylum/"
                     + callback.getCaseDetails().getId() + "/trigger/submitAppeal)"
                     + "\n\n\n#### Payment successful"
-                    + "\n\n#### Payment reference number\n"
+                    + paymentReferenceNumberLabel
                     + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
                     + "\n\n#### Payment by account number\n"
                     + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
-                    + "\n\n#### Fee\n"
+                    + feeLabel
                     + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
                 );
             } else {
@@ -93,11 +95,11 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                     "#### What happens next\n\n"
                     + "You will receive a notification to confirm the payment has been made."
                     + "\n\n\n#### Payment successful"
-                    + "\n\n#### Payment reference number\n"
+                    + paymentReferenceNumberLabel
                     + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
                     + "\n\n#### Payment by Account number\n"
                     + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
-                    + "\n\n#### Fee\n"
+                    + feeLabel
                     + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
                 );
             }
