@@ -89,6 +89,7 @@ public enum Event {
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
+    MARK_APPEAL_PAID("markAppealPaid"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -230,6 +230,7 @@ security:
       - "updateDetailsAfterCma"
       - "linkAppeal"
       - "unlinkAppeal"
+      - "markAppealPaid"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
