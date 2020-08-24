@@ -40,6 +40,20 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
+    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+
+        FeePaymentPreparer feePaymentPreparerWithDisabledPayment =
+            new FeePaymentPreparer(
+                false,
+                feePayment
+            );
+
+        assertThatThrownBy(() -> feePaymentPreparerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {

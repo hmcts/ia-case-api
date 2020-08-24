@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
@@ -41,19 +42,24 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 .<RequiredFieldMissingException>orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
         String paAppealTypePaymentOption = callback.getCaseDetails().getCaseData().read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        String eaHuAppealTypePaymentOption = callback.getCaseDetails().getCaseData().read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
 
         if (submissionOutOfTime.equals(NO)) {
+            postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
 
             if (paAppealTypePaymentOption.equals("payOffline")) {
 
-                postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "You still need to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online."
                 );
-            } else {
+            } else if (eaHuAppealTypePaymentOption.equals("payOffline")) {
 
-                postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "You still need to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal."
+                );
+            } else {
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "You will receive an email confirming that this appeal has been submitted successfully."

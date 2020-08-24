@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentStateHandlerTest {
@@ -38,14 +37,14 @@ public class FeePaymentStateHandlerTest {
     @Before
     public void setUp() {
         feePaymentStateHandler = new FeePaymentStateHandler(true);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
     }
 
     @Test
-    public void should_return_updated_state_for_successful_pa_payment_as_appeal_submitted_state() {
+    public void should_return_updated_state_for_pa_successful_payAndSubmit_as_appeal_submitted_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAID));
@@ -62,11 +61,9 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_successful_hu_payment_as_appeal_submitted_state() {
+    public void should_return_updated_state_for_hu_successful_payAndSubmit_as_appeal_submitted_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAID));
@@ -83,11 +80,9 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_successful_ea_payment_as_appeal_submitted_state() {
+    public void should_return_updated_state_for_ea_successful_payAndSubmit_as_appeal_submitted_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAID));
@@ -104,11 +99,66 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_failed_pa_payment_as_appeal_started_state() {
+    public void should_return_updated_state_for_pa_failed_payAndSubmit_as_appeal_started_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.FAILED));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_current_state_for_hu_failed_payAndSubmit_as_appeal_started_state() {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.FAILED));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_ea_failed_payAndSubmit_as_appeal_started_state() {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.FAILED));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_current_state_for_pa_payment_due_payAndSubmit_as_appeal_started_state() {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
@@ -125,11 +175,9 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_failed_hu_payment_as_appeal_started_state() {
+    public void should_return_current_state_for_hu_payment_due_payAndSubmit_as_appeal_started_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
@@ -146,16 +194,124 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_failed_ea_payment_as_appeal_started_state() {
+    public void should_return_current_state_for_ea_payment_due_payAndSubmit_as_appeal_started_state() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
 
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_pa_payment_due_submit_as_submitted_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_hu_payment_due_submit_as_pending_payment_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_ea_payment_due_submit_as_pending_payment_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_dc_submit_as_submitted_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.DC));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_updated_state_for_non_payment_rp_submit_as_submitted_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.RP));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @Test
+    public void should_return_current_state_for_empty_appeal_type() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
@@ -194,7 +350,8 @@ public class FeePaymentStateHandlerTest {
                 boolean canHandle = feePaymentStateHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                    Event.PAY_AND_SUBMIT_APPEAL
+                    Event.PAY_AND_SUBMIT_APPEAL,
+                    Event.SUBMIT_APPEAL
                 ).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
