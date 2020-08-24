@@ -233,6 +233,7 @@ security:
       - "unlinkAppeal"
       - "uploadAddendumEvidenceAdminOfficer"
       - "uploadSensitiveDocuments"
+      - "markAppealPaid"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

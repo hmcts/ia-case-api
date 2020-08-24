@@ -90,6 +90,7 @@ public class EventTest {
         assertEquals("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString());
         assertEquals("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString());
         assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
+        assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
     }
 
     @Test
