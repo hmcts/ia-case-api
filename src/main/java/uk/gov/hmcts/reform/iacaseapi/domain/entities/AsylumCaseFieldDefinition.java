@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 
 public enum AsylumCaseFieldDefinition {
 
+    
     BUNDLE_CONFIGURATION(
         "bundleConfiguration", new TypeReference<String>(){}),
 
