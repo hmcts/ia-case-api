@@ -221,6 +221,7 @@ security:
       - "unlinkAppeal"
       - "editAppealAfterSubmit"
       - "uploadSensitiveDocuments"
+      - "requestHomeOfficeData"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

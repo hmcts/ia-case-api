@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.ApplicationStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
@@ -76,7 +78,7 @@ public class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(java.util.Optional.of(homeOfficeCaseStatus));
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(Optional.of(homeOfficeCaseStatus));
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.EA));
@@ -96,7 +98,7 @@ public class HomeOfficeCaseValidateHandlerTest {
 
         verify(homeOfficeApi, times(1)).call(callback);
         verify(asylumCase, times(1)).write(
-            IS_HOME_OFFICE_INTEGRATION_ENABLED, "Yes");
+            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).read(CONTACT_PREFERENCE);
         verify(asylumCase, times(1)).write(
             CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
@@ -123,7 +125,8 @@ public class HomeOfficeCaseValidateHandlerTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
                     || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
-                    || callback.getEvent() == MARK_APPEAL_PAID)
+                    || callback.getEvent() == MARK_APPEAL_PAID
+                    || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
                     assertTrue(canHandle);
                 } else {

@@ -9,6 +9,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,13 +22,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Nationality;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.ApplicationStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -52,9 +56,10 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
 
         return isHomeOfficeIntegrationEnabled
             && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.SUBMIT_APPEAL
-            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-            || callback.getEvent() == Event.MARK_APPEAL_PAID);
+            && (callback.getEvent() == SUBMIT_APPEAL
+            || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
+            || callback.getEvent() == MARK_APPEAL_PAID
+            || callback.getEvent() == REQUEST_HOME_OFFICE_DATA);
     }
 
 
@@ -68,11 +73,22 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
 
         AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
 
-        asylumCaseWithHomeOfficeData.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, "Yes");
+        asylumCaseWithHomeOfficeData.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+
+        Optional<ContactPreference> contactPreference = asylumCaseWithHomeOfficeData.read(CONTACT_PREFERENCE);
+        if (contactPreference.isPresent()) {
+            asylumCaseWithHomeOfficeData.write(
+                CONTACT_PREFERENCE_DESCRIPTION, contactPreference.get().getDescription());
+        }
+
+        Optional<AppealType> appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE);
+        if (appealType.isPresent()) {
+            asylumCaseWithHomeOfficeData.write(
+                APPEAL_TYPE_DESCRIPTION, appealType.get().getDescription());
+        }
 
         Optional<HomeOfficeCaseStatus> existingCaseStatusData =
             asylumCaseWithHomeOfficeData.read(HOME_OFFICE_CASE_STATUS_DATA);
-
         if (existingCaseStatusData.isPresent()
             && existingCaseStatusData.get().getApplicationStatus() != null
         ) {
@@ -94,19 +110,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             );
 
             asylumCaseWithHomeOfficeData.write(HOME_OFFICE_CASE_STATUS_DATA, modifiedHomeOfficeCaseStatus);
-
-        }
-
-        Optional<ContactPreference> contactPreference = asylumCaseWithHomeOfficeData.read(CONTACT_PREFERENCE);
-        if (contactPreference.isPresent()) {
-            asylumCaseWithHomeOfficeData.write(
-                CONTACT_PREFERENCE_DESCRIPTION, contactPreference.get().getDescription());
-        }
-
-        Optional<AppealType> appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE);
-        if (appealType.isPresent()) {
-            asylumCaseWithHomeOfficeData.write(
-                APPEAL_TYPE_DESCRIPTION, appealType.get().getDescription());
         }
 
         Optional<List<IdValue<NationalityFieldValue>>> nationalities = asylumCaseWithHomeOfficeData.read(

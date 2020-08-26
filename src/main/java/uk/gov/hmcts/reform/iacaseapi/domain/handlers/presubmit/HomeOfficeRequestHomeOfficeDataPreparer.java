@@ -1,27 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
+@Slf4j
 @Component
-public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class HomeOfficeRequestHomeOfficeDataPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String HOME_OFFICE_DATA_PRESENT_MESSAGE = "The Home Office data "
+        + "has already been retrieved successfully "
+        + "and is available in the validation tab.";
     private final boolean isHomeOfficeIntegrationEnabled;
 
-    public HomeOfficeCaseValidatePreparer(
+    public HomeOfficeRequestHomeOfficeDataPreparer(
         @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled) {
         this.isHomeOfficeIntegrationEnabled = isHomeOfficeIntegrationEnabled;
     }
@@ -33,12 +36,11 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && (callback.getEvent() == SUBMIT_APPEAL
-            || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
-            || callback.getEvent() == MARK_APPEAL_PAID
-            || callback.getEvent() == REQUEST_HOME_OFFICE_DATA);
+        return isHomeOfficeIntegrationEnabled
+            && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+            && callback.getEvent() == REQUEST_HOME_OFFICE_DATA;
     }
+
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
@@ -48,15 +50,17 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        //Check if home office is enabled and set field for CCD definition
+        //Check if home office call is made when data is already fetched
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (isHomeOfficeIntegrationEnabled) {
-            asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
-        } else {
-            asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
+        final String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class).orElse("");
+        if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
+            && asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent()) {
+            log.info("Multiple call error:" + HOME_OFFICE_DATA_PRESENT_MESSAGE);
+            response.addError(HOME_OFFICE_DATA_PRESENT_MESSAGE);
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 }
