@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 
 class EditableDirectionTest {
 
-    final String explanation = "Do the thing";
-    final Parties parties = Parties.RESPONDENT;
-    final String dateDue = "2018-12-31T12:34:56";
+    private final String explanation = "Do the thing";
+    private final Parties parties = Parties.RESPONDENT;
+    private final String dateDue = "2018-12-31T12:34:56";
 
     EditableDirection editableDirection = new EditableDirection(
         explanation,

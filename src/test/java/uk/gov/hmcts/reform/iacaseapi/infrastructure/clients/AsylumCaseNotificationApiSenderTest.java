@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @SuppressWarnings("unchecked")
 class AsylumCaseNotificationApiSenderTest {
 
-    static final String ENDPOINT = "http://endpoint";
-    static final String ABOUT_TO_SUBMIT_PATH = "/path";
+    private static final String ENDPOINT = "http://endpoint";
+    private static final String ABOUT_TO_SUBMIT_PATH = "/path";
 
-    @Mock AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock Callback<AsylumCase> callback;
+    @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    @Mock private Callback<AsylumCase> callback;
 
     AsylumCaseDocumentApiGenerator asylumCaseDocumentApiGenerator;
 

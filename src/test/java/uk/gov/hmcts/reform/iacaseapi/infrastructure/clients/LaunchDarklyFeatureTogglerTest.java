@@ -20,10 +20,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManage
 @ExtendWith(MockitoExtension.class)
 class LaunchDarklyFeatureTogglerTest {
 
-    @Mock
+    @Mock private
     LDClientInterface ldClient;
 
-    @Mock
+    @Mock private
     UserDetailsProvider userDetailsProvider;
 
     @InjectMocks

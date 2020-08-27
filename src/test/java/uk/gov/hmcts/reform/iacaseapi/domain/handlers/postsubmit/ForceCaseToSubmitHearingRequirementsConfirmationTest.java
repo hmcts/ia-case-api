@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @ExtendWith(MockitoExtension.class)
 class ForceCaseToSubmitHearingRequirementsConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     ForceCaseToSubmitHearingRequirementsConfirmation forceCaseToSubmitHearingRequirementsConfirmation = new ForceCaseToSubmitHearingRequirementsConfirmation();

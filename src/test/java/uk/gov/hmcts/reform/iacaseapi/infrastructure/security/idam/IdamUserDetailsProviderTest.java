@@ -26,11 +26,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider
 @SuppressWarnings("unchecked")
 class IdamUserDetailsProviderTest {
 
-    static final String BASE_URL = "http://base.url";
-    static final String DETAILS_URI = "/details";
+    private static final String BASE_URL = "http://base.url";
+    private static final String DETAILS_URI = "/details";
 
-    @Mock AccessTokenProvider accessTokenProvider;
-    @Mock RestTemplate restTemplate;
+    @Mock private AccessTokenProvider accessTokenProvider;
+    @Mock private RestTemplate restTemplate;
 
     IdamUserDetailsProvider idamUserDetailsProvider;
 

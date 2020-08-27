@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class StdSerializerTest {
 
-    @Mock ObjectMapper mapper;
+    @Mock private ObjectMapper mapper;
 
     StdSerializer<Integer> stdSerializer;
 

@@ -26,8 +26,8 @@ class DbAppealReferenceNumberGeneratorTest {
 
     static final int SEQUENCE_SEED = 50000;
 
-    @Mock DateProvider dateProvider;
-    @Mock NamedParameterJdbcTemplate jdbcTemplate;
+    @Mock private DateProvider dateProvider;
+    @Mock private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Captor ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
     @Captor ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;

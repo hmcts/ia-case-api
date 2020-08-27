@@ -32,18 +32,18 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
 
-    @Mock
+    @Mock private
     DateProvider dateProvider;
-    @Mock
+    @Mock private
     Scheduler scheduler;
-    @Mock
+    @Mock private
     FeatureToggler featureToggler;
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;

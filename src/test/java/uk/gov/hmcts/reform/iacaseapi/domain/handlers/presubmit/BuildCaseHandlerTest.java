@@ -34,20 +34,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class BuildCaseHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock Document caseArgumentDocument;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Document caseArgumentDocument;
     String caseArgumentDescription = "Case argument description";
-    @Mock DocumentWithMetadata caseArgumentWithMetadata;
-    @Mock DocumentWithDescription caseArgumentEvidence1;
-    @Mock DocumentWithDescription caseArgumentEvidence2;
-    @Mock DocumentWithMetadata caseArgumentEvidence1WithMetadata;
-    @Mock DocumentWithMetadata caseArgumentEvidence2WithMetadata;
-    @Mock List<IdValue<DocumentWithMetadata>> existingLegalRepresentativeDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments;
+    @Mock private DocumentWithMetadata caseArgumentWithMetadata;
+    @Mock private DocumentWithDescription caseArgumentEvidence1;
+    @Mock private DocumentWithDescription caseArgumentEvidence2;
+    @Mock private DocumentWithMetadata caseArgumentEvidence1WithMetadata;
+    @Mock private DocumentWithMetadata caseArgumentEvidence2WithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingLegalRepresentativeDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments;
 
     @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> legalRepresentativeDocumentsCaptor;
 

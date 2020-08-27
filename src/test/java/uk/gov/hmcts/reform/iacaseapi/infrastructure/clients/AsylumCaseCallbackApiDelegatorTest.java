@@ -30,11 +30,11 @@ class AsylumCaseCallbackApiDelegatorTest {
     static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     static final String ENDPOINT = "http://endpoint";
 
-    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock AccessTokenProvider accessTokenProvider;
-    @Mock RestTemplate restTemplate;
-    @Mock Callback<AsylumCase> callback;
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private AccessTokenProvider accessTokenProvider;
+    @Mock private RestTemplate restTemplate;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
 

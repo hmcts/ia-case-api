@@ -43,13 +43,13 @@ class FlagCaseHandlerTest {
     @Rule
     MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     CaseFlagAppender caseFlagAppender;
 
     final String additionalInformation = "some additional information";

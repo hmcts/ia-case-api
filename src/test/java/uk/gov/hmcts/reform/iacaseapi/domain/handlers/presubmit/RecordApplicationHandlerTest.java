@@ -43,14 +43,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 @SuppressWarnings("unchecked")
 class RecordApplicationHandlerTest {
 
-    final List<State> editListingStates = newArrayList(
+    private final List<State> editListingStates = newArrayList(
         State.PREPARE_FOR_HEARING,
         State.FINAL_BUNDLING,
         State.PRE_HEARING,
         State.DECISION
     );
 
-    final List<State> timeExtensionSates = newArrayList(
+    private final List<State> timeExtensionSates = newArrayList(
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
@@ -58,14 +58,14 @@ class RecordApplicationHandlerTest {
         State.SUBMIT_HEARING_REQUIREMENTS
     );
 
-    final List<State> updateHearingRequirementsStates = newArrayList(
+    private final List<State> updateHearingRequirementsStates = newArrayList(
         State.PRE_HEARING,
         State.FINAL_BUNDLING,
         State.PREPARE_FOR_HEARING,
         State.DECISION
     );
 
-    final List<State> changeHearingCentreStates = newArrayList(
+    private final List<State> changeHearingCentreStates = newArrayList(
         State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
@@ -75,7 +75,7 @@ class RecordApplicationHandlerTest {
         State.LISTING
     );
 
-    final List<State> editAppealApplicationStates = newArrayList(
+    private final List<State> editAppealApplicationStates = newArrayList(
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
@@ -87,18 +87,18 @@ class RecordApplicationHandlerTest {
         State.PRE_HEARING
     );
 
-    @Mock NotificationSender<AsylumCase> notificationSender;
-    @Mock Appender<Application> appender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock AsylumCase asylumCaseWithNotifications;
-    @Mock DateProvider dateProvider;
-    @Mock UserDetailsProvider userProvider;
-    @Mock Application existingApplication;
-    @Mock List allAppendedApplications;
-    @Mock UserDetails userDetails;
-    @Mock List<IdValue<Document>> newApplicationDocuments;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Appender<Application> appender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCaseWithNotifications;
+    @Mock private DateProvider dateProvider;
+    @Mock private UserDetailsProvider userProvider;
+    @Mock private Application existingApplication;
+    @Mock private List allAppendedApplications;
+    @Mock private UserDetails userDetails;
+    @Mock private List<IdValue<Document>> newApplicationDocuments;
 
     @Captor ArgumentCaptor<List<IdValue<Application>>> existingApplicationsCaptor;
     @Captor ArgumentCaptor<Application> newApplicationCaptor;

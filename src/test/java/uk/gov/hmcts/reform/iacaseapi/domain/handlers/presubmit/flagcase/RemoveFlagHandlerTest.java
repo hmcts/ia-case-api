@@ -29,9 +29,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ExtendWith(MockitoExtension.class)
 class RemoveFlagHandlerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
     final CaseFlag expectedCaseFlag =
         new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
     final CaseFlag expectedCaseFlag2 =

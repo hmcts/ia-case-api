@@ -38,17 +38,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 @SuppressWarnings("unchecked")
 class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock NotificationSender<AsylumCase> notificationSender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock Document stitchedDocument;
-    @Mock List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allHearingDocuments;
-    @Mock DocumentWithMetadata stitchedDocumentWithMetadata;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private Document stitchedDocument;
+    @Mock private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock private DocumentWithMetadata stitchedDocumentWithMetadata;
 
     List<IdValue<Bundle>> caseBundles = new ArrayList<>();
     AdvancedFinalBundlingStitchingCallbackHandler advancedFinalBundlingStitchingCallbackHandler;

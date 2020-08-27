@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @ExtendWith(MockitoExtension.class)
 class AdjournWithoutDateConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     AdjournWithoutDateConfirmation handler = new AdjournWithoutDateConfirmation();

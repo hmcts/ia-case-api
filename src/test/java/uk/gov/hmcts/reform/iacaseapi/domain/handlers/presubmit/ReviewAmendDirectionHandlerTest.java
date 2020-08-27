@@ -35,12 +35,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 @SuppressWarnings("unchecked")
 class ReviewAmendDirectionHandlerTest {
 
-    @Mock DirectionAppender directionAppender;
-    @Mock DirectionPartiesResolver directionPartiesResolver;
-    @Mock DirectionTagResolver directionTagResolver;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private DirectionAppender directionAppender;
+    @Mock private DirectionPartiesResolver directionPartiesResolver;
+    @Mock private DirectionTagResolver directionTagResolver;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 

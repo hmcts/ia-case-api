@@ -20,14 +20,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class DocumentsAppenderTest {
 
-    @Mock IdValue<DocumentWithMetadata> existingDocumentById1;
-    @Mock IdValue<DocumentWithMetadata> existingDocumentById2;
-    @Mock IdValue<DocumentWithMetadata> existingDocumentById3;
-    @Mock DocumentWithMetadata existingDocument1 = mock(DocumentWithMetadata.class);
-    @Mock DocumentWithMetadata existingDocument2 = mock(DocumentWithMetadata.class);
-    @Mock DocumentWithMetadata existingDocument3 = mock(DocumentWithMetadata.class);
-    @Mock DocumentWithMetadata newDocument1 = mock(DocumentWithMetadata.class);
-    @Mock DocumentWithMetadata newDocument2 = mock(DocumentWithMetadata.class);
+    @Mock private IdValue<DocumentWithMetadata> existingDocumentById1;
+    @Mock private IdValue<DocumentWithMetadata> existingDocumentById2;
+    @Mock private IdValue<DocumentWithMetadata> existingDocumentById3;
+    @Mock private DocumentWithMetadata existingDocument1 = mock(DocumentWithMetadata.class);
+    @Mock private DocumentWithMetadata existingDocument2 = mock(DocumentWithMetadata.class);
+    @Mock private DocumentWithMetadata existingDocument3 = mock(DocumentWithMetadata.class);
+    @Mock private DocumentWithMetadata newDocument1 = mock(DocumentWithMetadata.class);
+    @Mock private DocumentWithMetadata newDocument2 = mock(DocumentWithMetadata.class);
 
     DocumentsAppender documentsAppender = new DocumentsAppender();
 

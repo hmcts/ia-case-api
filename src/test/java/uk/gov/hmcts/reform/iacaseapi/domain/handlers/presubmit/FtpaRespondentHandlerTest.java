@@ -39,21 +39,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class FtpaRespondentHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock DateProvider dateProvider;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private DateProvider dateProvider;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock List<IdValue<DocumentWithDescription>> groundsOfApplicationDocuments;
-    @Mock List<IdValue<DocumentWithDescription>> evidenceDocuments;
-    @Mock List<IdValue<DocumentWithDescription>> outOfTimeDocuments;
-    @Mock DocumentWithMetadata groundsOfApplicationWithMetadata;
-    @Mock DocumentWithMetadata evidenceWithMetadata;
-    @Mock DocumentWithMetadata outOfTimeWithMetadata;
-    @Mock List<IdValue<DocumentWithMetadata>> existingAppellantDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allAppellantDocuments;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private List<IdValue<DocumentWithDescription>> groundsOfApplicationDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> evidenceDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> outOfTimeDocuments;
+    @Mock private DocumentWithMetadata groundsOfApplicationWithMetadata;
+    @Mock private DocumentWithMetadata evidenceWithMetadata;
+    @Mock private DocumentWithMetadata outOfTimeWithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingAppellantDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allAppellantDocuments;
 
     FtpaRespondentHandler ftpaRespondentHandler;
 

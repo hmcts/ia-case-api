@@ -24,10 +24,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 @SuppressWarnings("unchecked")
 class ListEditCaseHandlerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock HearingCentreFinder hearingCentreFinder;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private HearingCentreFinder hearingCentreFinder;
 
     ListEditCaseHandler listEditCaseHandler;
 

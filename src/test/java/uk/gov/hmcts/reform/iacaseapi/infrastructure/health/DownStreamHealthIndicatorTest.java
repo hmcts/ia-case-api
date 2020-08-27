@@ -19,8 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfigurat
 @SuppressWarnings("unchecked")
 class DownStreamHealthIndicatorTest {
 
-    @Mock RestTemplate restTemplate;
-    @Mock HealthCheckConfiguration healthCheckConfiguration;
+    @Mock private RestTemplate restTemplate;
+    @Mock private HealthCheckConfiguration healthCheckConfiguration;
 
     DownStreamHealthIndicator downStreamHealthIndicator;
 

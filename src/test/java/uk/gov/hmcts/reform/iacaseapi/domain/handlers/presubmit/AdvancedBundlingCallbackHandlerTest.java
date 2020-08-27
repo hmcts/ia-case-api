@@ -33,11 +33,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecuto
 @SuppressWarnings("unchecked")
 class AdvancedBundlingCallbackHandlerTest {
 
-    @Mock BundleRequestExecutor bundleRequestExecutor;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private BundleRequestExecutor bundleRequestExecutor;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     String emBundlerUrl = "bundleurl";
     String emBundlerStitchUri = "stitchingUri";

@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDoc
 @ExtendWith(MockitoExtension.class)
 class EditDocsServiceTest {
 
-    @Mock
+    @Mock private
     EditDocsAuditService editDocsAuditService;
     @InjectMocks
     EditDocsService editDocsService;

@@ -42,28 +42,28 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecuto
 @SuppressWarnings("unchecked")
 class CustomiseHearingBundleHandlerTest {
 
-    @Mock BundleRequestExecutor bundleRequestExecutor;
-    @Mock Appender<DocumentWithMetadata> appender;
-    @Mock DateProvider dateProvider;
-    @Mock ObjectMapper objectMapper;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock AsylumCase asylumCaseCopy;
+    @Mock private BundleRequestExecutor bundleRequestExecutor;
+    @Mock private Appender<DocumentWithMetadata> appender;
+    @Mock private DateProvider dateProvider;
+    @Mock private ObjectMapper objectMapper;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCaseCopy;
 
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    @Mock List<IdValue<DocumentWithDescription>> customHearingDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> hearingDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> customHearingDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> hearingDocuments;
 
-    @Mock List<IdValue<DocumentWithDescription>> customLegalRepresentativeDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> customLegalRepresentativeDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments;
 
-    @Mock List<IdValue<DocumentWithDescription>> customAdditionalEvidenceDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> customAdditionalEvidenceDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments;
 
-    @Mock List<IdValue<DocumentWithDescription>> customRespondentDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> respondentDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> customRespondentDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> respondentDocuments;
 
 
     String emBundlerUrl = "bundleurl";

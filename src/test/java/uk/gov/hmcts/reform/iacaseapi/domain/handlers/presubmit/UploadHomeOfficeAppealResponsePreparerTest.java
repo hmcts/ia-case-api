@@ -34,14 +34,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class UploadHomeOfficeAppealResponsePreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock DocumentWithMetadata respondentEvidence1WithMetadata;
-    @Mock DocumentWithMetadata respondentEvidence2WithMetadata;
-    @Mock Document document1;
-    @Mock Document document2;
+    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock private Document document1;
+    @Mock private Document document2;
     final String appealResponse01FileName = "Evidence01";
     final String appealResponse02FileName = "Evidence02";
     @Captor ArgumentCaptor<String> fileNames;

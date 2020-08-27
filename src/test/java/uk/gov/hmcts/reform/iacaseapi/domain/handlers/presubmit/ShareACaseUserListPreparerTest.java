@@ -29,13 +29,13 @@ class ShareACaseUserListPreparerTest {
 
     ShareACaseUserListPreparer shareACaseUserListPreparer;
 
-    @Mock ProfessionalUsersRetriever professionalUsersRetriever;
-    @Mock ProfessionalUsersResponse professionalUsersResponse;
-    @Mock ProfessionalUser professionalUser;
+    @Mock private ProfessionalUsersRetriever professionalUsersRetriever;
+    @Mock private ProfessionalUsersResponse professionalUsersResponse;
+    @Mock private ProfessionalUser professionalUser;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
 
     @BeforeEach

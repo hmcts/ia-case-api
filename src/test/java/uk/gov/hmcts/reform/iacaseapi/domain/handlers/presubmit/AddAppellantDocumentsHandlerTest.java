@@ -29,13 +29,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class AddAppellantDocumentsHandlerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     DocumentsAppender documentsAppender;
 
     AddAppellantDocumentsHandler addAppellantDocumentsHandler;

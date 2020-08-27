@@ -38,11 +38,11 @@ class AutoBuildCaseDirectionHandlerTest {
     static final int BUILD_CASE_DUE_IN_DAYS = 28;
     static final int BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
 
-    @Mock DateProvider dateProvider;
-    @Mock DirectionAppender directionAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private DirectionAppender directionAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 

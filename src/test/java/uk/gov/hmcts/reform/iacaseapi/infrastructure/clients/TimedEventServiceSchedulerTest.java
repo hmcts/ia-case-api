@@ -19,9 +19,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider
 @ExtendWith(MockitoExtension.class)
 class TimedEventServiceSchedulerTest {
 
-    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock AccessTokenProvider accessTokenProvider;
-    @Mock TimedEventServiceApi timedEventServiceApi;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private AccessTokenProvider accessTokenProvider;
+    @Mock private TimedEventServiceApi timedEventServiceApi;
 
     TimedEventServiceScheduler timedEventServiceScheduler;
 

@@ -26,9 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ExtendWith(MockitoExtension.class)
 class RemoveFlagPreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     List<IdValue<CaseFlag>> expectedList;
     RemoveFlagPreparer removeFlagPreparer;

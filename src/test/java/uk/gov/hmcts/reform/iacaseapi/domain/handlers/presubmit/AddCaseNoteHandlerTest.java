@@ -34,27 +34,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @SuppressWarnings("unchecked")
 class AddCaseNoteHandlerTest {
 
-    @Mock
+    @Mock private
     Appender<CaseNote> caseNoteAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock DateProvider dateProvider;
-    @Mock UserDetailsProvider userProvider;
-    @Mock CaseNote existingCaseNote;
-    @Mock List allAppendedCaseNotes;
-    @Mock UserDetails userDetails;
-    @Mock Document newCaseNoteDocument;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private UserDetailsProvider userProvider;
+    @Mock private CaseNote existingCaseNote;
+    @Mock private List allAppendedCaseNotes;
+    @Mock private UserDetails userDetails;
+    @Mock private Document newCaseNoteDocument;
 
     @Captor ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
     @Captor ArgumentCaptor<CaseNote> newCaseNoteCaptor;
 
-    final LocalDate now = LocalDate.now();
-    final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
-    final String newCaseNoteSubject = "some-subject";
-    final String newCaseNoteDescription = "some-description";
-    final String forename = "Frank";
-    final String surname = "Butcher";
+    private final LocalDate now = LocalDate.now();
+    private final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
+    private final String newCaseNoteSubject = "some-subject";
+    private final String newCaseNoteDescription = "some-description";
+    private final String forename = "Frank";
+    private final String surname = "Butcher";
 
     AddCaseNoteHandler addCaseNoteHandler;
 

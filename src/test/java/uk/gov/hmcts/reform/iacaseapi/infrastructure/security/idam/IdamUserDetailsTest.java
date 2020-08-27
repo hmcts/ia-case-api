@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 
 class IdamUserDetailsTest {
 
-    final String accessToken = "access-token";
-    final String id = "1234";
-    final List<String> roles = Arrays.asList("role-1", "role-2");
-    final String emailAddress = "email@example.com";
-    final String forename = "forename";
-    final String surname = "surname";
+    private final String accessToken = "access-token";
+    private final String id = "1234";
+    private final List<String> roles = Arrays.asList("role-1", "role-2");
+    private final String emailAddress = "email@example.com";
+    private final String forename = "forename";
+    private final String surname = "surname";
 
     IdamUserDetails userDetails =
         new IdamUserDetails(

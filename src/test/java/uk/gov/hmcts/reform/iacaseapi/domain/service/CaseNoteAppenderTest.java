@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ExtendWith(MockitoExtension.class)
 class CaseNoteAppenderTest {
 
-    @Mock
+    @Mock private
     CaseNote newCaseNote;
-    @Mock CaseNote oldCaseNote;
-    @Mock CaseNote oldestCaseNote;
+    @Mock private CaseNote oldCaseNote;
+    @Mock private CaseNote oldestCaseNote;
 
     Appender<CaseNote> caseNoteAppender;
     List<IdValue<CaseNote>> oldCaseNotes = new ArrayList<>();

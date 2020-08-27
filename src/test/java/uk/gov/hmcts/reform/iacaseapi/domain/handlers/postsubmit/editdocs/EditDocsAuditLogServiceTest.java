@@ -23,13 +23,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 @ExtendWith(MockitoExtension.class)
 class EditDocsAuditLogServiceTest {
 
-    @Mock
+    @Mock private
     EditDocsAuditService editDocsAuditService;
-    @Mock
+    @Mock private
     UserDetails userDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     UserDetailsProvider userDetailsProvider;
     @InjectMocks
     EditDocsAuditLogService editDocsAuditLogService;

@@ -20,10 +20,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 @ExtendWith(MockitoExtension.class)
 class PreSubmitCallbackControllerTest {
 
-    @Mock PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
 
     PreSubmitCallbackController preSubmitCallbackController;
 

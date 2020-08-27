@@ -26,9 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @ExtendWith(MockitoExtension.class)
 class BuildCaseConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
 
     BuildCaseConfirmation buildCaseConfirmation = new BuildCaseConfirmation();

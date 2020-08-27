@@ -35,12 +35,12 @@ class DeriveHearingCentreHandlerTest {
     @Rule
     MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock AddressUk addressUk;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private AddressUk addressUk;
 
-    @Mock HearingCentreFinder hearingCentreFinder;
+    @Mock private HearingCentreFinder hearingCentreFinder;
 
     DeriveHearingCentreHandler deriveHearingCentreHandler;
 

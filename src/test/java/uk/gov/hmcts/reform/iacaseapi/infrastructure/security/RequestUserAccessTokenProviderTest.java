@@ -17,7 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @ExtendWith(MockitoExtension.class)
 class RequestUserAccessTokenProviderTest {
 
-    @Mock HttpServletRequest httpServletRequest;
+    @Mock private HttpServletRequest httpServletRequest;
 
     RequestUserAccessTokenProvider requestUserAccessTokenProvider =
         new RequestUserAccessTokenProvider();

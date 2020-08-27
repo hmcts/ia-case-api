@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @ExtendWith(MockitoExtension.class)
 class LinkAppealConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     LinkAppealConfirmation linkAppealConfirmation = new LinkAppealConfirmation();

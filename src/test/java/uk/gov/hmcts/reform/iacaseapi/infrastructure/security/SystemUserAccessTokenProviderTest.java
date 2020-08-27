@@ -18,7 +18,7 @@ class SystemUserAccessTokenProviderTest {
     static final String SYSTEM_USERNAME = "system";
     static final String SYSTEM_PASSWORD = "secret";
 
-    @Mock IdamAuthorizor idamAuthorizor;
+    @Mock private IdamAuthorizor idamAuthorizor;
 
     SystemUserAccessTokenProvider systemUserAccessTokenProvider;
 

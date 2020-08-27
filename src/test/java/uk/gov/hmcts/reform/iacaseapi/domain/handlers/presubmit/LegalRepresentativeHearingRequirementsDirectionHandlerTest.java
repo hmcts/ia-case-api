@@ -33,13 +33,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @SuppressWarnings("unchecked")
 class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
-    static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
+    private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
 
-    @Mock DateProvider dateProvider;
-    @Mock DirectionAppender directionAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private DirectionAppender directionAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 

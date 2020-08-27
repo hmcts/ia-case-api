@@ -22,8 +22,8 @@ class CaseFlagAppenderTest {
 
     CaseFlag caseFlag1;
     CaseFlag caseFlag2;
-    @Mock IdValue<CaseFlag> existingCaseFlagById1;
-    @Mock IdValue<CaseFlag> existingCaseFlagById2;
+    @Mock private IdValue<CaseFlag> existingCaseFlagById1;
+    @Mock private IdValue<CaseFlag> existingCaseFlagById2;
 
     final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
     final String newCaseFlagAdditionalInformation = "some additional information";

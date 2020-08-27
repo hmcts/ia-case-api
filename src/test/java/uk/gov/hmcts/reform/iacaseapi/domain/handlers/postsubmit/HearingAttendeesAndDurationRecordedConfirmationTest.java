@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class HearingAttendeesAndDurationRecordedConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     HearingAttendeesAndDurationRecordedConfirmation hearingAttendeesAndDurationRecordedConfirmation =

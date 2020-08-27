@@ -30,9 +30,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @ExtendWith(MockitoExtension.class)
 class UnlinkAppealPreparerHandlerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
 
     final UnlinkAppealPreparerHandler unlinkAppealPreparerHandler = new UnlinkAppealPreparerHandler();

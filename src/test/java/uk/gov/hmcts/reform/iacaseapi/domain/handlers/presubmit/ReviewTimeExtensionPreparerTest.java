@@ -34,11 +34,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class ReviewTimeExtensionPreparerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
 
 

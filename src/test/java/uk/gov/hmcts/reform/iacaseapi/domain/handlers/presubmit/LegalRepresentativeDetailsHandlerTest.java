@@ -24,11 +24,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class LegalRepresentativeDetailsHandlerTest {
 
-    @Mock UserDetailsProvider userDetailsProvider;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock UserDetails userDetails;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private UserDetails userDetails;
 
     LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
 

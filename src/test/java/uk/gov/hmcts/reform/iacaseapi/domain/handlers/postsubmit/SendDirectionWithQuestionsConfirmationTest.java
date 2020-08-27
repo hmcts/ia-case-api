@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class SendDirectionWithQuestionsConfirmationTest {
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     SendDirectionWithQuestionsConfirmation sendDirectionWithQuestionsConfirmation =

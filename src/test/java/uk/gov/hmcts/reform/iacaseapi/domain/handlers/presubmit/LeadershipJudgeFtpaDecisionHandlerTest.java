@@ -36,19 +36,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class LeadershipJudgeFtpaDecisionHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock DateProvider dateProvider;
-    @Mock FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private DateProvider dateProvider;
+    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
-    @Mock List<IdValue<DocumentWithMetadata>> existingFtpaDecisionAndReasonsDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments;
-    @Mock DocumentWithMetadata ftpaAppellantDecisionDocument;
+    @Mock private List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingFtpaDecisionAndReasonsDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments;
+    @Mock private DocumentWithMetadata ftpaAppellantDecisionDocument;
 
     LeadershipJudgeFtpaDecisionHandler leadershipJudgeFtpaDecisionHandler;
 

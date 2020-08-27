@@ -25,11 +25,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.*;
 @SuppressWarnings("unchecked")
 class PostSubmitCallbackDispatcherTest {
 
-    @Mock PostSubmitCallbackHandler<CaseData> handler1;
-    @Mock PostSubmitCallbackHandler<CaseData> handler2;
-    @Mock PostSubmitCallbackHandler<CaseData> handler3;
-    @Mock Callback<CaseData> callback;
-    @Mock PostSubmitCallbackResponse response;
+    @Mock private PostSubmitCallbackHandler<CaseData> handler1;
+    @Mock private PostSubmitCallbackHandler<CaseData> handler2;
+    @Mock private PostSubmitCallbackHandler<CaseData> handler3;
+    @Mock private Callback<CaseData> callback;
+    @Mock private PostSubmitCallbackResponse response;
 
     PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher;
 

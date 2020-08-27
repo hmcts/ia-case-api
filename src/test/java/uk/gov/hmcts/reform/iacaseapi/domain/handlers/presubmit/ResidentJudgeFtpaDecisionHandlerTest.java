@@ -36,24 +36,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class ResidentJudgeFtpaDecisionHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock DateProvider dateProvider;
-    @Mock FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private DateProvider dateProvider;
+    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
-    @Mock List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
-    @Mock List<IdValue<DocumentWithMetadata>> existingFtpaDecisionAndReasonsDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments;
+    @Mock private List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
+    @Mock private List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingFtpaDecisionAndReasonsDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allFtpaDecisionDocuments;
 
-    @Mock DocumentWithMetadata ftpaAppellantDecisionDocument;
-    @Mock DocumentWithMetadata ftpaAppellantDecisionNoticeDocument;
-    @Mock DocumentWithMetadata ftpaRespondentDecisionDocument;
-    @Mock DocumentWithMetadata ftpaRespondentDecisionNoticeDocument;
+    @Mock private DocumentWithMetadata ftpaAppellantDecisionDocument;
+    @Mock private DocumentWithMetadata ftpaAppellantDecisionNoticeDocument;
+    @Mock private DocumentWithMetadata ftpaRespondentDecisionDocument;
+    @Mock private DocumentWithMetadata ftpaRespondentDecisionNoticeDocument;
 
     ResidentJudgeFtpaDecisionHandler residentJudgeFtpaDecisionHandler;
 

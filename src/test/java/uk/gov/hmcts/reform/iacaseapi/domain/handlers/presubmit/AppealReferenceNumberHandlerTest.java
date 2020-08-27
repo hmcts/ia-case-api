@@ -29,12 +29,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerat
 @SuppressWarnings("unchecked")
 class AppealReferenceNumberHandlerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock DateProvider dateProvider;
-    @Mock AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    @Mock private DateProvider dateProvider;
+    @Mock private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     AppealReferenceNumberHandler appealReferenceNumberHandler;
 

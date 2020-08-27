@@ -33,10 +33,10 @@ class HomeOfficeDecisionDateCheckerTest {
 
     static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock DateProvider dateProvider;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
 
     HomeOfficeDecisionDateChecker homeOfficeDecisionDateChecker;
 

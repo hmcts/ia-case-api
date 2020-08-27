@@ -32,15 +32,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @SuppressWarnings("unchecked")
 class RequestCmaRequirementsHandlerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     DateProvider dateProvider;
-    @Mock
+    @Mock private
     DirectionAppender directionAppender;
 
     RequestCmaRequirementsHandler requestCmaRequirementsHandler;

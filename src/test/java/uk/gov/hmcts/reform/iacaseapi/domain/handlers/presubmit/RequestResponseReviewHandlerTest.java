@@ -31,10 +31,10 @@ class RequestResponseReviewHandlerTest {
 
     static final int DUE_IN_DAYS = 5;
 
-    @Mock DateProvider dateProvider;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
     @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;

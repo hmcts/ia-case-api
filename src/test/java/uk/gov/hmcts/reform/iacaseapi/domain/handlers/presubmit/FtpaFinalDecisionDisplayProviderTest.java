@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 @SuppressWarnings("unchecked")
 class FtpaFinalDecisionDisplayProviderTest {
 
-    @Mock AsylumCase asylumCase;
+    @Mock private AsylumCase asylumCase;
 
     FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 

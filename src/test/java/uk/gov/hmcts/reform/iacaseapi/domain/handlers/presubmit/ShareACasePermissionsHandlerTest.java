@@ -26,12 +26,12 @@ class ShareACasePermissionsHandlerTest {
 
     ShareACasePermissionsHandler shareACasePermissionsHandler;
 
-    @Mock CcdUpdater ccdUpdater;
-    @Mock ProfessionalUsersRetriever professionalUsersRetriever;
+    @Mock private CcdUpdater ccdUpdater;
+    @Mock private ProfessionalUsersRetriever professionalUsersRetriever;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     String someUserId1 = "someUserId1";
     String someUserEmail1 = "someUser1@example.com";

@@ -30,7 +30,7 @@ class IdamAuthorizorTest {
     static final String CLIENT_SECRET = "badgers";
     static final String CLIENT_REDIRECT_URI = "http://redirect.url";
 
-    @Mock RestTemplate restTemplate;
+    @Mock private RestTemplate restTemplate;
 
     IdamAuthorizor idamAuthorizor;
 

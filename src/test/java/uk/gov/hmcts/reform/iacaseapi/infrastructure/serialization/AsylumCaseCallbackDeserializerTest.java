@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @ExtendWith(MockitoExtension.class)
 class AsylumCaseCallbackDeserializerTest {
 
-    @Mock ObjectMapper mapper;
-    @Mock Callback<AsylumCase> expectedAsylumCaseCallback;
+    @Mock private ObjectMapper mapper;
+    @Mock private Callback<AsylumCase> expectedAsylumCaseCallback;
 
     AsylumCaseCallbackDeserializer asylumCaseCallbackDeserializer;
 

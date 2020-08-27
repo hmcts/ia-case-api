@@ -37,20 +37,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class AddAppealResponseHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock Document appealResponseDocument;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Document appealResponseDocument;
     String appealResponseDescription = "Appeal response description";
-    @Mock DocumentWithMetadata appealResponseWithMetadata;
-    @Mock DocumentWithDescription appealResponseEvidence1;
-    @Mock DocumentWithDescription appealResponseEvidence2;
-    @Mock DocumentWithMetadata appealResponseEvidence1WithMetadata;
-    @Mock DocumentWithMetadata appealResponseEvidence2WithMetadata;
-    @Mock List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock private DocumentWithMetadata appealResponseWithMetadata;
+    @Mock private DocumentWithDescription appealResponseEvidence1;
+    @Mock private DocumentWithDescription appealResponseEvidence2;
+    @Mock private DocumentWithMetadata appealResponseEvidence1WithMetadata;
+    @Mock private DocumentWithMetadata appealResponseEvidence2WithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
     @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
 

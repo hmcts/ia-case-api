@@ -25,10 +25,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class RemoveAppealFromOnlineHandlerTest {
 
-    @Mock DateProvider dateProvider;
-    @Mock AsylumCase asylumCase;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock private DateProvider dateProvider;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
     LocalDate date = LocalDate.now();
 
     RemoveAppealFromOnlineHandler removeAppealFromOnlineHandler;

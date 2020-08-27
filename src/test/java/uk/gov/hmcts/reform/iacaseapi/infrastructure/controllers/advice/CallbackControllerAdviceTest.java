@@ -19,8 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 @SuppressWarnings("unchecked")
 class CallbackControllerAdviceTest {
 
-    @Mock ErrorResponseLogger errorResponseLogger;
-    @Mock HttpServletRequest request;
+    @Mock private ErrorResponseLogger errorResponseLogger;
+    @Mock private HttpServletRequest request;
 
     CallbackControllerAdvice callbackControllerAdvice;
 

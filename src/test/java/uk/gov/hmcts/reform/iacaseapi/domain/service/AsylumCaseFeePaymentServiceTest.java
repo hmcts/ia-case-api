@@ -21,8 +21,8 @@ class AsylumCaseFeePaymentServiceTest {
     static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
     static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
-    @Mock AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock Callback<AsylumCase> callback;
+    @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    @Mock private Callback<AsylumCase> callback;
 
     AsylumCaseFeePaymentService asylumCaseFeeApiPayment;
 

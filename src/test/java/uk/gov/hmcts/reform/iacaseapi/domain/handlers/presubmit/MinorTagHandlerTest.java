@@ -41,9 +41,9 @@ class MinorTagHandlerTest {
     @Rule
     MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
 
     final MinorTagHandler minorTagHandler = new MinorTagHandler();

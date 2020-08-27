@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class UploadHomeOfficeAppealResponseConfirmationTest {
 
-    @Mock Callback<AsylumCase> callback;
+    @Mock private Callback<AsylumCase> callback;
 
     UploadHomeOfficeAppealResponseConfirmation uploadHomeOfficeAppealResponseConfirmation =
         new UploadHomeOfficeAppealResponseConfirmation();

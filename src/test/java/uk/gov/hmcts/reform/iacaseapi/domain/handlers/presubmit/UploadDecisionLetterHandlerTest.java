@@ -37,17 +37,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @ExtendWith(MockitoExtension.class)
 class UploadDecisionLetterHandlerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     DocumentReceiver documentReceiver;
-    @Mock
+    @Mock private
     DocumentsAppender documentsAppender;
-    @Mock
+    @Mock private
     DocumentWithMetadata newLegalRepDoc;
 
     @InjectMocks

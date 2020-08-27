@@ -34,16 +34,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @SuppressWarnings("unchecked")
 class ForceCaseToSubmitHearingRequirementsHandlerTest {
 
-    @Mock
+    @Mock private
     Appender<CaseNote> caseNoteAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock DateProvider dateProvider;
-    @Mock UserDetailsProvider userProvider;
-    @Mock CaseNote existingCaseNote;
-    @Mock List allAppendedCaseNotes;
-    @Mock UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private UserDetailsProvider userProvider;
+    @Mock private CaseNote existingCaseNote;
+    @Mock private List allAppendedCaseNotes;
+    @Mock private UserDetails userDetails;
 
     @Captor
     ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;

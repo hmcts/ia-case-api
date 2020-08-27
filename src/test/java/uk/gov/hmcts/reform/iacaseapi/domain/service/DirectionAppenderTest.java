@@ -25,9 +25,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class DirectionAppenderTest {
 
-    @Mock DateProvider dateProvider;
-    @Mock IdValue<Direction> existingDirectionById1;
-    @Mock IdValue<Direction> existingDirectionById2;
+    @Mock private DateProvider dateProvider;
+    @Mock private IdValue<Direction> existingDirectionById1;
+    @Mock private IdValue<Direction> existingDirectionById2;
     String newDirectionExplanation = "New direction";
     Parties newDirectionParties = Parties.BOTH;
     String newDirectionDateDue = "2018-12-25";

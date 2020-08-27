@@ -27,7 +27,7 @@ class UnlinkAppealConfirmationTest {
 
     UnlinkAppealConfirmation unlinkAppealConfirmation = new UnlinkAppealConfirmation();
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     @ParameterizedTest

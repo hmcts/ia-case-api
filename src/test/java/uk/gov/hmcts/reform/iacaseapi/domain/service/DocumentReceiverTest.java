@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class DocumentReceiverTest {
 
-    @Mock DateProvider dateProvider;
+    @Mock private DateProvider dateProvider;
 
     DocumentReceiver documentReceiver;
 

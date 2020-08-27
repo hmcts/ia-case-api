@@ -33,15 +33,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class UploadAdditionalEvidenceHomeOfficeHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock DocumentWithDescription additionalEvidenceDoc;
-    @Mock DocumentWithMetadata additionalEvidenceDocWithMetadata;
-    @Mock List<IdValue<DocumentWithMetadata>> respondentDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DocumentWithDescription additionalEvidenceDoc;
+    @Mock private DocumentWithMetadata additionalEvidenceDocWithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> respondentDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
     @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
 

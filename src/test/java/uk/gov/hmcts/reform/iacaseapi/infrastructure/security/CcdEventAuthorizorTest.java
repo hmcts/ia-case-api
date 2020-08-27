@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 @ExtendWith(MockitoExtension.class)
 class CcdEventAuthorizorTest {
 
-    @Mock UserDetailsProvider userDetailsProvider;
-    @Mock UserDetails userDetails;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private UserDetails userDetails;
 
     CcdEventAuthorizor ccdEventAuthorizor;
     ListAppender<ILoggingEvent> loggingEventListAppender;

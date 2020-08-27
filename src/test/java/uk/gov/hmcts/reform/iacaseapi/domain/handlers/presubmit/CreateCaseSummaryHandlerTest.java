@@ -34,16 +34,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @SuppressWarnings("unchecked")
 class CreateCaseSummaryHandlerTest {
 
-    @Mock DocumentReceiver documentReceiver;
-    @Mock DocumentsAppender documentsAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock Document caseSummaryDocument;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Document caseSummaryDocument;
     String caseSummaryDescription = "Case summary description";
-    @Mock DocumentWithMetadata caseSummaryWithMetadata;
-    @Mock List<IdValue<DocumentWithMetadata>> existingHearingDocuments;
-    @Mock List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock private DocumentWithMetadata caseSummaryWithMetadata;
+    @Mock private List<IdValue<DocumentWithMetadata>> existingHearingDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
 
     @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> hearingDocumentsCaptor;
 

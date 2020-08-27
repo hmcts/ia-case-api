@@ -25,9 +25,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class TimeExtensionAppenderTest {
 
-    @Mock DateProvider dateProvider;
-    @Mock IdValue<TimeExtension> existingTimeExtensionById1;
-    @Mock IdValue<TimeExtension> existingTimeExtensionById2;
+    @Mock private DateProvider dateProvider;
+    @Mock private IdValue<TimeExtension> existingTimeExtensionById1;
+    @Mock private IdValue<TimeExtension> existingTimeExtensionById2;
     String newTimeExtensionReason = "New direction";
     State caseState = State.AWAITING_REASONS_FOR_APPEAL;
     List<IdValue<Document>> newTimeExtensionEvidence = Collections.emptyList();

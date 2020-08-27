@@ -35,17 +35,17 @@ class EditDocsAuditLogHandlerTest {
 
     @InjectMocks
     EditDocsAuditLogHandler editDocsAuditLogHandler;
-    @Mock
+    @Mock private
     EditDocsAuditLogService editDocsAuditLogService;
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetailsBefore;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     AsylumCase asylumCaseBefore;
 
     @ParameterizedTest

@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class DecisionAndReasonsStartedConfirmationTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
     DecisionAndReasonsStartedConfirmation decisionAndReasonsStartedConfirmation = new DecisionAndReasonsStartedConfirmation();

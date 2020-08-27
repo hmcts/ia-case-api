@@ -26,11 +26,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @ExtendWith(MockitoExtension.class)
 class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
 
     ListAppender<ILoggingEvent> loggingEventListAppender;

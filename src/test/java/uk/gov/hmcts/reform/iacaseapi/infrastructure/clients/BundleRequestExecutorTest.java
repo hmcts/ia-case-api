@@ -36,14 +36,14 @@ class BundleRequestExecutorTest {
     static final String SERVICE_TOKEN = randomAlphabetic(32);
     static final String ACCESS_TOKEN = randomAlphabetic(32);
 
-    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock RestTemplate restTemplate;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private RestTemplate restTemplate;
 
-    @Mock UserDetailsProvider userDetailsProvider;
-    @Mock UserDetails userDetails;
-    @Mock Callback<AsylumCase> callback;
-    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
 
 
     BundleRequestExecutor bundleRequestExecutor;

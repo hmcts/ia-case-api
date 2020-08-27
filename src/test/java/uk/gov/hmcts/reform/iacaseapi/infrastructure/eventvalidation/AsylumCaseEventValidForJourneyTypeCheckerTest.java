@@ -27,11 +27,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @ExtendWith(MockitoExtension.class)
 class AsylumCaseEventValidForJourneyTypeCheckerTest {
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
     AsylumCaseEventValidForJourneyTypeChecker asylumCaseEventValidForJourneyTypeChecker = new AsylumCaseEventValidForJourneyTypeChecker();
 

@@ -29,11 +29,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ExtendWith(MockitoExtension.class)
 class ReviewCmaRequirementsPreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock List<IdValue<InterpreterLanguage>> interpreterLanguage;
-    @Mock List<IdValue<DatesToAvoid>> datesToAvoid;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock private List<IdValue<DatesToAvoid>> datesToAvoid;
 
     ReviewCmaRequirementsPreparer reviewCmaRequirementsPreparer;
 

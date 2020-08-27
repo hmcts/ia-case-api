@@ -29,11 +29,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @ExtendWith(MockitoExtension.class)
 class ReviewDraftHearingRequirementsPreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock List<IdValue<WitnessDetails>> witnessDetails;
-    @Mock List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private List<IdValue<WitnessDetails>> witnessDetails;
+    @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
 
     ReviewDraftHearingRequirementsPreparer reviewDraftHearingRequirementsPreparer;
 

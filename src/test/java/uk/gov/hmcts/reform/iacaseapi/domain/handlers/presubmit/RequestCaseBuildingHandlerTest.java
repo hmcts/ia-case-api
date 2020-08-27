@@ -45,17 +45,17 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetail
 @ExtendWith(MockitoExtension.class)
 class RequestCaseBuildingHandlerTest {
 
-    @Mock
+    @Mock private
     static Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     UserDetailsProvider userDetailsProvider;
-    @Mock
+    @Mock private
     static AsylumCase asylumCase;
-    @Mock
+    @Mock private
     Appender<CaseNote> appender;
-    @Mock
+    @Mock private
     DateProvider dateProvider;
 
     @InjectMocks

@@ -28,11 +28,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @SuppressWarnings("unchecked")
 class RecordAllocatedJudgeHandlerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock Appender<String> appender;
+    @Mock private Appender<String> appender;
 
     RecordAllocatedJudgeHandler recordAllocatedJudgeHandler;
 

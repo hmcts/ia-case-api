@@ -42,21 +42,21 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 @SuppressWarnings("unchecked")
 class PreSubmitCallbackDispatcherTest {
 
-    @Mock CcdEventAuthorizor ccdEventAuthorizor;
-    @Mock PreSubmitCallbackHandler<CaseData> handler1;
-    @Mock PreSubmitCallbackHandler<CaseData> handler2;
-    @Mock PreSubmitCallbackHandler<CaseData> handler3;
-    @Mock PreSubmitCallbackStateHandler<CaseData> stateHandler;
-    @Mock EventValidCheckers<AsylumCase> eventValidChecker;
-    @Mock Callback<CaseData> callback;
-    @Mock CaseDetails<CaseData> caseDetails;
-    @Mock CaseData caseData;
-    @Mock CaseData caseDataMutation1;
-    @Mock CaseData caseDataMutation2;
-    @Mock CaseData caseDataMutation3;
-    @Mock PreSubmitCallbackResponse<CaseData> response1;
-    @Mock PreSubmitCallbackResponse<CaseData> response2;
-    @Mock PreSubmitCallbackResponse<CaseData> response3;
+    @Mock private CcdEventAuthorizor ccdEventAuthorizor;
+    @Mock private PreSubmitCallbackHandler<CaseData> handler1;
+    @Mock private PreSubmitCallbackHandler<CaseData> handler2;
+    @Mock private PreSubmitCallbackHandler<CaseData> handler3;
+    @Mock private PreSubmitCallbackStateHandler<CaseData> stateHandler;
+    @Mock private EventValidCheckers<AsylumCase> eventValidChecker;
+    @Mock private Callback<CaseData> callback;
+    @Mock private CaseDetails<CaseData> caseDetails;
+    @Mock private CaseData caseData;
+    @Mock private CaseData caseDataMutation1;
+    @Mock private CaseData caseDataMutation2;
+    @Mock private CaseData caseDataMutation3;
+    @Mock private PreSubmitCallbackResponse<CaseData> response1;
+    @Mock private PreSubmitCallbackResponse<CaseData> response2;
+    @Mock private PreSubmitCallbackResponse<CaseData> response3;
 
     PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher;
 

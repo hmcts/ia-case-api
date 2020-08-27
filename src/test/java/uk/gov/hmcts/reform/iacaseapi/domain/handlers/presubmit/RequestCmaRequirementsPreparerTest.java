@@ -26,13 +26,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class RequestCmaRequirementsPreparerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     DateProvider dateProvider;
 
     RequestCmaRequirementsPreparer requestCmaRequirementsPreparer;

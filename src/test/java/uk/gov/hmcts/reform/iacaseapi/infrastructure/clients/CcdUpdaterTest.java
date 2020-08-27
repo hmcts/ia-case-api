@@ -38,15 +38,15 @@ class CcdUpdaterTest {
     String ccdUrl = "some-host";
     String ccdPermissionsApiPath = "some-path";
 
-    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock UserDetailsProvider userDetailsProvider;
-    @Mock RestTemplate restTemplate;
-    @Mock ResponseEntity<Object> responseEntity;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity<Object> responseEntity;
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private UserDetails userDetails;
 
     @BeforeEach
     void setUp() {

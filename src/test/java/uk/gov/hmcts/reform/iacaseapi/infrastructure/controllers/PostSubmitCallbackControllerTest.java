@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher
 @ExtendWith(MockitoExtension.class)
 class PostSubmitCallbackControllerTest {
 
-    @Mock PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    @Mock PostSubmitCallbackResponse callbackResponse;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock private PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock private PostSubmitCallbackResponse callbackResponse;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
 
     PostSubmitCallbackController postSubmitCallbackController;
 

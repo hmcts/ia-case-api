@@ -18,11 +18,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @ExtendWith(MockitoExtension.class)
 class EventValidCheckersTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     EventValidChecker<AsylumCase> eventValidChecker1;
-    @Mock
+    @Mock private
     EventValidChecker<AsylumCase> eventValidChecker2;
     EventValidCheckers<AsylumCase> asylumCaseEventValidChecker;
 

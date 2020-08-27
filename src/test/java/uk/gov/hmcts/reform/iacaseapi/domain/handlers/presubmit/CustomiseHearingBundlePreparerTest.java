@@ -35,10 +35,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @SuppressWarnings("unchecked")
 class CustomiseHearingBundlePreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
-    @Mock Appender<DocumentWithDescription> appender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Appender<DocumentWithDescription> appender;
 
     @Captor
     ArgumentCaptor<DocumentWithDescription> legalRepresentativeDocumentsCaptor;

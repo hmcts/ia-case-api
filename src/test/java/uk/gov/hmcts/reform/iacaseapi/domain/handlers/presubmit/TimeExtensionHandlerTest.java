@@ -29,10 +29,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.TimeExtensionAppender;
 @SuppressWarnings("unchecked")
 class TimeExtensionHandlerTest {
 
-    @Mock TimeExtensionAppender timeExtensionAppender;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private TimeExtensionAppender timeExtensionAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<List<IdValue<TimeExtension>>> existingTimeExtensionsCaptor;
 

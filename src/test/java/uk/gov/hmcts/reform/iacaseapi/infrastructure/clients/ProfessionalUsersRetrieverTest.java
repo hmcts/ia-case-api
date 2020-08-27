@@ -31,10 +31,10 @@ class ProfessionalUsersRetrieverTest {
     String refdataUrl = "http:/some-url";
     String refdataPath = "/some-path";
 
-    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock UserDetailsProvider userDetailsProvider;
-    @Mock RestTemplate restTemplate;
-    @Mock ResponseEntity responseEntity;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private UserDetailsProvider userDetailsProvider;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity responseEntity;
 
     @BeforeEach
     void setUp() {

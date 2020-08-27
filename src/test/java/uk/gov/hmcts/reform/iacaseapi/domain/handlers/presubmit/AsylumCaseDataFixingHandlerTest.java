@@ -23,18 +23,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @SuppressWarnings("unchecked")
 class AsylumCaseDataFixingHandlerTest {
 
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
-    @Mock
+    @Mock private
     DataFixer dataFixer1;
-    @Mock
+    @Mock private
     DataFixer dataFixer2;
 
-    @Mock
+    @Mock private
     FeatureToggler featureToggler;
 
     List<DataFixer> dataFixers;

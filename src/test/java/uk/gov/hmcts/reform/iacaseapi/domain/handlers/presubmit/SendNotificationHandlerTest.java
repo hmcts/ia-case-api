@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 @SuppressWarnings("unchecked")
 class SendNotificationHandlerTest {
 
-    @Mock NotificationSender<AsylumCase> notificationSender;
-    @Mock Callback<AsylumCase> callback;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Callback<AsylumCase> callback;
 
     SendNotificationHandler sendNotificationHandler;
 

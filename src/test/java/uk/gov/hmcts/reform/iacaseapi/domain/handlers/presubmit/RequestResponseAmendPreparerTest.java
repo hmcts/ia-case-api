@@ -28,9 +28,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class RequestResponseAmendPreparerTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     @Captor ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
     @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;

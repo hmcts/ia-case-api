@@ -18,8 +18,8 @@ import org.springframework.web.client.RestTemplate;
 @SuppressWarnings("unchecked")
 class ServiceHealthIndicatorTest {
 
-    @Mock RestTemplate restTemplate;
-    @Mock ResponseEntity responseEntity;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity responseEntity;
 
     String uri = "http://docmosis/health";
     String matcher = "\"status\":\"UP\"";

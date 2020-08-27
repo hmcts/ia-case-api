@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.util.ArrayList;
@@ -16,9 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import junitparams.Parameters;
 import junitparams.converters.Nullable;
-import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,31 +41,36 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 class EditDocsAboutToSubmitHandlerTest {
 
     static final String ID_VALUE = "0a165fa5-086b-49d6-8b7e-f00ed34d941a";
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetailsBefore;
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
-    @Mock
+    @Mock private
     EditDocsCaseNoteService editDocsCaseNoteService;
-    @Mock
+    @Mock private
     EditDocsService editDocService;
     @InjectMocks
     EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler;
 
-    @Test
-    @Parameters({
-        "EDIT_DOCUMENTS, ABOUT_TO_SUBMIT, true",
-        "START_APPEAL, ABOUT_TO_SUBMIT, false",
-        "EDIT_DOCUMENTS, ABOUT_TO_START, false"
-    })
+    @ParameterizedTest
+    @MethodSource("canHandleHappyPathTestData")
     void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
         given(callback.getEvent()).willReturn(event);
 
         boolean actualResult = editDocsAboutToSubmitHandler.canHandle(callbackStage, callback);
 
         assertEquals(expectedResult, actualResult);
+    }
+    
+    private static Stream<Arguments> canHandleHappyPathTestData() {
+        
+        return Stream.of(
+            Arguments.of(EDIT_DOCUMENTS, ABOUT_TO_SUBMIT, true),
+            Arguments.of(START_APPEAL, ABOUT_TO_SUBMIT, false),
+            Arguments.of(EDIT_DOCUMENTS, ABOUT_TO_START, false)
+        );
     }
 
     @ParameterizedTest

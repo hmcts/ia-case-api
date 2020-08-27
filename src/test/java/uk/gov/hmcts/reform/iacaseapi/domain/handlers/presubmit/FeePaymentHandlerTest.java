@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @SuppressWarnings("unchecked")
 class FeePaymentHandlerTest {
 
-    @Mock FeePayment<AsylumCase> feePayment;
-    @Mock Callback<AsylumCase> callback;
+    @Mock private FeePayment<AsylumCase> feePayment;
+    @Mock private Callback<AsylumCase> callback;
 
     FeePaymentHandler feePaymentHandler;
 

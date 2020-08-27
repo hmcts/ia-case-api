@@ -43,10 +43,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 @SuppressWarnings("unchecked")
 class GenerateDocumentHandlerTest {
 
-    @Mock DocumentGenerator<AsylumCase> documentGenerator;
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseDetails;
-    @Mock DateProvider dateProvider;
+    @Mock private DocumentGenerator<AsylumCase> documentGenerator;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private DateProvider dateProvider;
     @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
     State state = State.UNKNOWN;

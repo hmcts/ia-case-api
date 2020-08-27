@@ -30,13 +30,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 class RecordApplicationConfirmationTest {
 
     static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
-    @Mock
+    @Mock private
     Callback<AsylumCase> callback;
 
-    @Mock
+    @Mock private
     CaseDetails<AsylumCase> caseDetails;
 
-    @Mock
+    @Mock private
     AsylumCase asylumCase;
 
     RecordApplicationConfirmation recordApplicationConfirmation = new RecordApplicationConfirmation();
