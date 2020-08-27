@@ -14,16 +14,19 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -36,18 +39,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordApplicationHandlerTest {
+class RecordApplicationHandlerTest {
 
-    private final List<State> editListingStates = newArrayList(
+    final List<State> editListingStates = newArrayList(
         State.PREPARE_FOR_HEARING,
         State.FINAL_BUNDLING,
         State.PRE_HEARING,
         State.DECISION
     );
 
-    private final List<State> timeExtensionSates = newArrayList(
+    final List<State> timeExtensionSates = newArrayList(
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
@@ -55,14 +58,14 @@ public class RecordApplicationHandlerTest {
         State.SUBMIT_HEARING_REQUIREMENTS
     );
 
-    private final List<State> updateHearingRequirementsStates = newArrayList(
+    final List<State> updateHearingRequirementsStates = newArrayList(
         State.PRE_HEARING,
         State.FINAL_BUNDLING,
         State.PREPARE_FOR_HEARING,
         State.DECISION
     );
 
-    private final List<State> changeHearingCentreStates = newArrayList(
+    final List<State> changeHearingCentreStates = newArrayList(
         State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
@@ -72,7 +75,7 @@ public class RecordApplicationHandlerTest {
         State.LISTING
     );
 
-    private final List<State> editAppealApplicationStates = newArrayList(
+    final List<State> editAppealApplicationStates = newArrayList(
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
@@ -84,37 +87,44 @@ public class RecordApplicationHandlerTest {
         State.PRE_HEARING
     );
 
-    @Mock private NotificationSender<AsylumCase> notificationSender;
-    @Mock private Appender<Application> appender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private AsylumCase asylumCaseWithNotifications;
-    @Mock private DateProvider dateProvider;
-    @Mock private UserDetailsProvider userProvider;
-    @Mock private Application existingApplication;
-    @Mock private List allAppendedApplications;
-    @Mock private UserDetails userDetails;
-    @Mock private List<IdValue<Document>> newApplicationDocuments;
+    @Mock NotificationSender<AsylumCase> notificationSender;
+    @Mock Appender<Application> appender;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock AsylumCase asylumCaseWithNotifications;
+    @Mock DateProvider dateProvider;
+    @Mock UserDetailsProvider userProvider;
+    @Mock Application existingApplication;
+    @Mock List allAppendedApplications;
+    @Mock UserDetails userDetails;
+    @Mock List<IdValue<Document>> newApplicationDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> existingApplicationsCaptor;
-    @Captor private ArgumentCaptor<Application> newApplicationCaptor;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> existingApplicationsCaptor;
+    @Captor ArgumentCaptor<Application> newApplicationCaptor;
 
-    private final LocalDate now = LocalDate.now();
-    private final List<Application> existingApplications = singletonList(existingApplication);
+    final LocalDate now = LocalDate.now();
+    final List<Application> existingApplications = singletonList(existingApplication);
 
-    private String applicationSupplier = "The respondent";
-    private String applicationType = TIME_EXTENSION.toString();
-    private String applicationReason = "some-reason";
-    private String applicationDate = "31/01/2019";
-    private String applicationDecision = REFUSED.toString();
-    private String applicationDecisionReason = "some-decision-reason";
-    private String applicationStatus = "Completed";
+    String applicationSupplier = "The respondent";
+    String applicationType = TIME_EXTENSION.toString();
+    String applicationReason = "some-reason";
+    String applicationDate = "31/01/2019";
+    String applicationDecision = REFUSED.toString();
+    String applicationDecisionReason = "some-decision-reason";
+    String applicationStatus = "Completed";
 
-    private RecordApplicationHandler recordApplicationHandler;
+    RecordApplicationHandler recordApplicationHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
+        recordApplicationHandler = new RecordApplicationHandler(appender, dateProvider, notificationSender);
+    }
+
+    @Test
+    void should_append_new_application_to_existing_applications() {
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -136,12 +146,6 @@ public class RecordApplicationHandlerTest {
             .thenReturn(allAppendedApplications);
 
         when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
-
-        recordApplicationHandler = new RecordApplicationHandler(appender, dateProvider, notificationSender);
-    }
-
-    @Test
-    public void should_append_new_application_to_existing_applications() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -179,7 +183,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_time_extension() {
+    void should_add_new_flag_for_time_extension() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TIME_EXTENSION.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
         when(asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.empty());
@@ -192,7 +218,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_add_new_flag_for_time_extension_when_withdraw_exists() {
+    void should_not_add_new_flag_for_time_extension_when_withdraw_exists() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TIME_EXTENSION.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
         when(asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
@@ -205,7 +253,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_edit_listing() {
+    void should_add_new_flag_for_edit_listing() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TRANSFER.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -219,7 +289,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_add_new_flag_for_edit_listing_when_withdraw_exists() {
+    void should_not_add_new_flag_for_edit_listing_when_withdraw_exists() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TRANSFER.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -233,8 +325,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_withdraw_and_remove_other_flags() {
+    void should_add_new_flag_for_withdraw_and_remove_other_flags() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(WITHDRAW.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
 
@@ -248,7 +361,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_adjour_or_expedite() {
+    void should_add_new_flag_for_adjour_or_expedite() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(ADJOURN.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -261,8 +396,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_update_hearing_requirements_and_remove_other_flags() {
+    void should_add_new_flag_for_update_hearing_requirements_and_remove_other_flags() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(callback.getCaseDetails().getState()).thenReturn(State.FINAL_BUNDLING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(UPDATE_HEARING_REQUIREMENTS.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -275,7 +431,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_change_hearing_centre() {
+    void should_add_new_flag_for_change_hearing_centre() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(CHANGE_HEARING_CENTRE.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -288,7 +466,30 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_edit_appeal_after_submit() {
+    void should_add_new_flag_for_edit_appeal_after_submit() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
+
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(EDIT_APPEAL_AFTER_SUBMIT.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -301,7 +502,29 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_return_client_error_when_application_type_does_not_suit_to_case_state() {
+    void should_return_client_error_when_application_type_does_not_suit_to_case_state() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
+
+        when(appender.append(any(Application.class), anyList()))
+            .thenReturn(allAppendedApplications);
+
+        when(notificationSender.send(any(Callback.class))).thenReturn(asylumCaseWithNotifications);
 
         for (ApplicationType type : ApplicationType.values()) {
 
@@ -332,8 +555,13 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_supplier_is_not_present() {
+    void should_throw_when_application_supplier_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
         when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -342,8 +570,14 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_type_is_not_present() {
+    void should_throw_when_application_type_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -352,8 +586,15 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_reason_is_not_present() {
+    void should_throw_when_application_reason_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
         when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -362,8 +603,16 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_date_is_not_present() {
+    void should_throw_when_application_date_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
         when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -372,8 +621,16 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_decision_is_not_present() {
+    void should_throw_when_application_decision_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -382,8 +639,18 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_decision_reason_is_not_present() {
+    void should_throw_when_application_decision_reason_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
         when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -392,7 +659,21 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_documents_is_not_present() {
+    void should_throw_when_application_documents_is_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(existingApplications));
+
+        when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.of(applicationSupplier));
+        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(applicationType));
+        when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
+        when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
+        when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
 
         when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.empty());
 
@@ -402,7 +683,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -415,7 +696,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -438,7 +719,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordApplicationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

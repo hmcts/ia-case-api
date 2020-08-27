@@ -5,25 +5,25 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamAuthorizor;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SystemUserAccessTokenProviderTest {
+@ExtendWith(MockitoExtension.class)
+class SystemUserAccessTokenProviderTest {
 
-    private static final String SYSTEM_USERNAME = "system";
-    private static final String SYSTEM_PASSWORD = "secret";
+    static final String SYSTEM_USERNAME = "system";
+    static final String SYSTEM_PASSWORD = "secret";
 
-    @Mock private IdamAuthorizor idamAuthorizor;
+    @Mock IdamAuthorizor idamAuthorizor;
 
-    private SystemUserAccessTokenProvider systemUserAccessTokenProvider;
+    SystemUserAccessTokenProvider systemUserAccessTokenProvider;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         systemUserAccessTokenProvider =
             new SystemUserAccessTokenProvider(
@@ -34,7 +34,7 @@ public class SystemUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_access_token_from_idam() {
+    void get_access_token_from_idam() {
 
         String expectedAccessToken = "access-token";
 
@@ -46,7 +46,7 @@ public class SystemUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_missing_access_token_from_idam_throws_if_not_a_try_attempt() {
+    void get_missing_access_token_from_idam_throws_if_not_a_try_attempt() {
 
         when(idamAuthorizor.exchangeForAccessToken(SYSTEM_USERNAME, SYSTEM_PASSWORD)).thenReturn(null);
 
@@ -56,7 +56,7 @@ public class SystemUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_access_token_from_idam() {
+    void try_get_access_token_from_idam() {
 
         String expectedAccessToken = "access-token";
 
@@ -69,7 +69,7 @@ public class SystemUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_access_token_from_idam_when_it_returns_null() {
+    void try_get_access_token_from_idam_when_it_returns_null() {
 
         when(idamAuthorizor.exchangeForAccessToken(SYSTEM_USERNAME, SYSTEM_PASSWORD)).thenReturn(null);
 

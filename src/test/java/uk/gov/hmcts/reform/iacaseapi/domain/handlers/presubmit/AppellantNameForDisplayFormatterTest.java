@@ -10,10 +10,10 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,19 +22,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppellantNameForDisplayFormatterTest {
+class AppellantNameForDisplayFormatterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private AppellantNameForDisplayFormatter appellantNameForDisplayFormatter =
+    AppellantNameForDisplayFormatter appellantNameForDisplayFormatter =
         new AppellantNameForDisplayFormatter();
 
     @Test
-    public void should_format_appellant_name_for_display() {
+    void should_format_appellant_name_for_display() {
 
         Map<Pair<String, String>, String> exampleInputOutputs =
             ImmutableMap
@@ -52,6 +52,7 @@ public class AppellantNameForDisplayFormatterTest {
                 final Pair<String, String> input = inputOutput.getKey();
                 final String output = inputOutput.getValue();
 
+                when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
                 when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of(input.getKey()));
                 when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(input.getValue()));
 
@@ -67,10 +68,11 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void should_throw_when_appellant_given_names_is_not_present() {
+    void should_throw_when_appellant_given_names_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -79,10 +81,11 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void should_throw_when_appellant_family_name_is_not_present() {
+    void should_throw_when_appellant_family_name_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_GIVEN_NAMES, String.class)).thenReturn(Optional.of("John"));
         when(asylumCase.read(APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
 
@@ -92,7 +95,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
@@ -103,7 +106,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
@@ -127,7 +130,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void cannot_handle_Aip_start_event() {
+    void cannot_handle_Aip_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
@@ -139,7 +142,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void cannot_handle_Aip_edit_event() {
+    void cannot_handle_Aip_edit_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
@@ -151,7 +154,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void can_handle_Aip_other_event() {
+    void can_handle_Aip_other_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
@@ -163,7 +166,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void can_handle_Rep_start_event() {
+    void can_handle_Rep_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.REP));
@@ -175,7 +178,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void can_handle_JourneyType_not_set_start_event() {
+    void can_handle_JourneyType_not_set_start_event() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.empty());
@@ -187,7 +190,7 @@ public class AppellantNameForDisplayFormatterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appellantNameForDisplayFormatter.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

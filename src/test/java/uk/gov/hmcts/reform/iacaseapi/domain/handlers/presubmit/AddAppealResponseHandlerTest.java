@@ -10,13 +10,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -33,31 +33,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AddAppealResponseHandlerTest {
+class AddAppealResponseHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private Document appealResponseDocument;
-    private String appealResponseDescription = "Appeal response description";
-    @Mock private DocumentWithMetadata appealResponseWithMetadata;
-    @Mock private DocumentWithDescription appealResponseEvidence1;
-    @Mock private DocumentWithDescription appealResponseEvidence2;
-    @Mock private DocumentWithMetadata appealResponseEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata appealResponseEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock DocumentReceiver documentReceiver;
+    @Mock DocumentsAppender documentsAppender;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock Document appealResponseDocument;
+    String appealResponseDescription = "Appeal response description";
+    @Mock DocumentWithMetadata appealResponseWithMetadata;
+    @Mock DocumentWithDescription appealResponseEvidence1;
+    @Mock DocumentWithDescription appealResponseEvidence2;
+    @Mock DocumentWithMetadata appealResponseEvidence1WithMetadata;
+    @Mock DocumentWithMetadata appealResponseEvidence2WithMetadata;
+    @Mock List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
+    @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
 
-    private AddAppealResponseHandler addAppealResponseHandler;
+    AddAppealResponseHandler addAppealResponseHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         addAppealResponseHandler =
             new AddAppealResponseHandler(
                 documentReceiver,
@@ -66,12 +67,12 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_be_handled_early() {
+    void should_be_handled_early() {
         assertEquals(DispatchPriority.EARLY, addAppealResponseHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_append_appeal_response_to_respondent_documents_for_the_case() {
+    void should_append_appeal_response_to_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -133,7 +134,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -202,7 +203,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_response_document_is_not_present() {
+    void should_throw_when_appeal_response_document_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
@@ -216,7 +217,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -229,7 +230,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -253,7 +254,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> addAppealResponseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

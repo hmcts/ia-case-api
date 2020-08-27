@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.Level;
@@ -13,28 +11,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.groups.Tuple;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CcdEventAuthorizorTest {
+@ExtendWith(MockitoExtension.class)
+class CcdEventAuthorizorTest {
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private UserDetails userDetails;
+    @Mock UserDetailsProvider userDetailsProvider;
+    @Mock UserDetails userDetails;
 
-    private CcdEventAuthorizor ccdEventAuthorizor;
-    private ListAppender<ILoggingEvent> loggingEventListAppender;
+    CcdEventAuthorizor ccdEventAuthorizor;
+    ListAppender<ILoggingEvent> loggingEventListAppender;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         ccdEventAuthorizor =
             new CcdEventAuthorizor(
@@ -52,7 +50,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void does_not_throw_access_denied_exception_if_role_is_allowed_access_to_event() {
+    void does_not_throw_access_denied_exception_if_role_is_allowed_access_to_event() {
 
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("some-unrelated-role", "legal-role")
@@ -74,7 +72,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void throw_access_denied_exception_if_role_not_allowed_access_to_event() {
+    void throw_access_denied_exception_if_role_not_allowed_access_to_event() {
 
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
@@ -102,7 +100,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void throw_access_denied_exception_if_event_not_configured() {
+    void throw_access_denied_exception_if_event_not_configured() {
 
         when(userDetails.getRoles()).thenReturn(
             Arrays.asList("caseworker-role", "some-unrelated-role")
@@ -118,7 +116,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void throw_access_denied_exception_if_user_has_no_roles() {
+    void throw_access_denied_exception_if_user_has_no_roles() {
 
         when(userDetails.getRoles()).thenReturn(
             Collections.emptyList()

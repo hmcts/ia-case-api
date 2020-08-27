@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
@@ -21,20 +21,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PostSubmitCallbackDispatcherTest {
+class PostSubmitCallbackDispatcherTest {
 
-    @Mock private PostSubmitCallbackHandler<CaseData> handler1;
-    @Mock private PostSubmitCallbackHandler<CaseData> handler2;
-    @Mock private PostSubmitCallbackHandler<CaseData> handler3;
-    @Mock private Callback<CaseData> callback;
-    @Mock private PostSubmitCallbackResponse response;
+    @Mock PostSubmitCallbackHandler<CaseData> handler1;
+    @Mock PostSubmitCallbackHandler<CaseData> handler2;
+    @Mock PostSubmitCallbackHandler<CaseData> handler3;
+    @Mock Callback<CaseData> callback;
+    @Mock PostSubmitCallbackResponse response;
 
-    private PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher;
+    PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         postSubmitCallbackDispatcher = new PostSubmitCallbackDispatcher<>(
             Arrays.asList(
                 handler1,
@@ -45,7 +46,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_dispatch_callback_to_first_eligible_handler_collecting_confirmation() {
+    void should_dispatch_callback_to_first_eligible_handler_collecting_confirmation() {
 
         Optional<String> expectedConfirmationHeader = Optional.of("header");
         Optional<String> expectedConfirmationBody = Optional.of("body");
@@ -76,7 +77,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_error_if_no_handlers_are_provided() {
+    void should_not_error_if_no_handlers_are_provided() {
 
         PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher =
             new PostSubmitCallbackDispatcher<>(Collections.emptyList());
@@ -96,7 +97,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_handlers() {
+    void should_not_allow_null_handlers() {
 
         assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null))
             .hasMessage("callbackHandlers must not be null")
@@ -104,7 +105,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> postSubmitCallbackDispatcher.handle(null))
             .hasMessage("callback must not be null")
@@ -112,7 +113,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_sort_handlers_by_name() {
+    void should_sort_handlers_by_name() {
         PostSubmitCallbackHandler<AsylumCase> h1 = new AppealResponseAddedConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h3 = new GenerateHearingBundleConfirmation();

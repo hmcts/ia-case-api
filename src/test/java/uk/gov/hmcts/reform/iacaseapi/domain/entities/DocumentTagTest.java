@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static junit.framework.TestCase.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DocumentTagTest {
+class DocumentTagTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("caseArgument", DocumentTag.CASE_ARGUMENT.toString());
         assertEquals("respondentEvidence", DocumentTag.RESPONDENT_EVIDENCE.toString());
         assertEquals("appealResponse", DocumentTag.APPEAL_RESPONSE.toString());
@@ -31,7 +31,7 @@ public class DocumentTagTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(20, DocumentTag.values().length);
     }
 }

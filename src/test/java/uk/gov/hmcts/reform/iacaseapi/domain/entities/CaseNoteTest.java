@@ -4,22 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-public class CaseNoteTest {
+class CaseNoteTest {
 
-    private final String caseNoteSubject = "some-subject";
-    private final String caseNoteDescription = "some-description";
-    private final String user = "some-user";
-    private final String dateAdded = "some-date";
-    private final Document caseNoteDocument = mock(Document.class);
+    final String caseNoteSubject = "some-subject";
+    final String caseNoteDescription = "some-description";
+    final String user = "some-user";
+    final String dateAdded = "some-date";
+    final Document caseNoteDocument = mock(Document.class);
 
-    private CaseNote caseNote;
+    CaseNote caseNote;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         caseNote = new CaseNote(
             caseNoteSubject,
             caseNoteDescription,
@@ -30,7 +31,7 @@ public class CaseNoteTest {
     }
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertThat(caseNote.getCaseNoteSubject()).isEqualTo(caseNoteSubject);
         assertThat(caseNote.getCaseNoteDescription()).isEqualTo(caseNoteDescription);
@@ -40,7 +41,7 @@ public class CaseNoteTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new CaseNote(null, "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);

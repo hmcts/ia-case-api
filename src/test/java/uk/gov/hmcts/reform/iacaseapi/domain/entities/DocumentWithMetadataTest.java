@@ -3,17 +3,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-public class DocumentWithMetadataTest {
+class DocumentWithMetadataTest {
 
-    private final Document document = mock(Document.class);
-    private final String description = "Some evidence";
-    private final String dateUploaded = "2018-12-25";
-    private final DocumentTag tag = DocumentTag.CASE_ARGUMENT;
+    final Document document = mock(Document.class);
+    final String description = "Some evidence";
+    final String dateUploaded = "2018-12-25";
+    final DocumentTag tag = DocumentTag.CASE_ARGUMENT;
 
-    private DocumentWithMetadata documentWithMetadata =
+    DocumentWithMetadata documentWithMetadata =
         new DocumentWithMetadata(
             document,
             description,
@@ -22,7 +22,7 @@ public class DocumentWithMetadataTest {
         );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(document, documentWithMetadata.getDocument());
         assertEquals(description, documentWithMetadata.getDescription());

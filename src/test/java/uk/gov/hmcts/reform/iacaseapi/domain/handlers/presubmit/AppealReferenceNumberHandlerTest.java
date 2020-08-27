@@ -10,11 +10,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -25,33 +25,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealReferenceNumberHandlerTest {
+class AppealReferenceNumberHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    @Mock DateProvider dateProvider;
+    @Mock AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
-    private AppealReferenceNumberHandler appealReferenceNumberHandler;
+    AppealReferenceNumberHandler appealReferenceNumberHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         appealReferenceNumberHandler =
             new AppealReferenceNumberHandler(dateProvider, appealReferenceNumberGenerator);
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(123L);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
     @Test
-    public void should_set_draft_appeal_reference_when_appeal_started() {
+    void should_set_draft_appeal_reference_when_appeal_started() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -66,8 +64,11 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_to_replace_draft_when_appeal_submitted() {
+    void should_set_next_appeal_reference_number_to_replace_draft_when_appeal_submitted() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(123L);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
@@ -88,8 +89,11 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_if_not_present() {
+    void should_set_next_appeal_reference_number_if_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(123L);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
@@ -110,7 +114,10 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_do_nothing_if_non_draft_number_already_present() {
+    void should_do_nothing_if_non_draft_number_already_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
@@ -124,7 +131,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -149,7 +156,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> appealReferenceNumberHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -157,7 +164,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealReferenceNumberHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

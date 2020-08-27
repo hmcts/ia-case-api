@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -34,29 +34,34 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
+class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private NotificationSender<AsylumCase> notificationSender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock private Document stitchedDocument;
-    @Mock private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
-    @Mock private DocumentWithMetadata stitchedDocumentWithMetadata;
+    @Mock DocumentReceiver documentReceiver;
+    @Mock DocumentsAppender documentsAppender;
+    @Mock NotificationSender<AsylumCase> notificationSender;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock Document stitchedDocument;
+    @Mock List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock DocumentWithMetadata stitchedDocumentWithMetadata;
 
-    private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
-    private AdvancedFinalBundlingStitchingCallbackHandler advancedFinalBundlingStitchingCallbackHandler;
+    List<IdValue<Bundle>> caseBundles = new ArrayList<>();
+    AdvancedFinalBundlingStitchingCallbackHandler advancedFinalBundlingStitchingCallbackHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         advancedFinalBundlingStitchingCallbackHandler =
             new AdvancedFinalBundlingStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender);
+    }
+
+    @Test
+    void should_successfully_handle_the_callback() {
 
         when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -67,12 +72,6 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
         Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.of(stitchedDocument), YesOrNo.YES, YesOrNo.YES, "fileName");
         caseBundles.add(new IdValue<>("1", bundle));
-    }
-
-    @Test
-    public void should_successfully_handle_the_callback() {
-
-
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
         when(documentReceiver
             .receive(
@@ -102,7 +101,16 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    void should_throw_when_case_bundle_is_not_present() {
+
+        when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.of(stitchedDocument), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -112,7 +120,16 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_empty() {
+    void should_throw_when_case_bundle_is_empty() {
+
+        when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.of(stitchedDocument), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         caseBundles.clear();
 
@@ -122,7 +139,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -135,7 +152,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -159,7 +176,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStitchingCallbackHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

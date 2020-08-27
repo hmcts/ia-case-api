@@ -10,12 +10,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -23,28 +23,29 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionWithQuestionsPreparerTest {
+class SendDirectionWithQuestionsPreparerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
     @Mock
-    private DateProvider dateProvider;
+    DateProvider dateProvider;
 
-    private SendDirectionWithQuestionsPreparer sendDirectionWithQuestionsPreparer;
+    SendDirectionWithQuestionsPreparer sendDirectionWithQuestionsPreparer;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
+
         sendDirectionWithQuestionsPreparer = new SendDirectionWithQuestionsPreparer(dateProvider);
     }
 
     @Test
-    public void preparer_review_time_extension_fields() {
+    void preparer_review_time_extension_fields() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION_WITH_QUESTIONS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -57,7 +58,7 @@ public class SendDirectionWithQuestionsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> sendDirectionWithQuestionsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
@@ -70,7 +71,7 @@ public class SendDirectionWithQuestionsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

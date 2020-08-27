@@ -9,13 +9,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -23,30 +23,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ChangeDirectionDueMidEventTest {
+class ChangeDirectionDueMidEventTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<Object> editableDirectionsCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor ArgumentCaptor<Object> editableDirectionsCaptor;
+    @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    private String direction1 = "Direction 1";
-    private String direction2 = "Direction 2";
+    String direction1 = "Direction 1";
+    String direction2 = "Direction 2";
 
-    private ChangeDirectionDueMidEvent changeDirectionDueMidEvent;
+    ChangeDirectionDueMidEvent changeDirectionDueMidEvent;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         changeDirectionDueMidEvent =
             new ChangeDirectionDueMidEvent();
     }
 
     @Test
-    public void should_perform_mid_event_for_editable_direction_fields() {
+    void should_perform_mid_event_for_editable_direction_fields() {
 
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -100,7 +101,7 @@ public class ChangeDirectionDueMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeDirectionDueMidEvent.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -112,7 +113,7 @@ public class ChangeDirectionDueMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -136,7 +137,7 @@ public class ChangeDirectionDueMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeDirectionDueMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

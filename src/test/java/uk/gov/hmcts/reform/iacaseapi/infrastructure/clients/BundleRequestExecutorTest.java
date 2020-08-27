@@ -7,12 +7,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -27,42 +27,42 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.DocumentServiceResponseException;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class BundleRequestExecutorTest {
+class BundleRequestExecutorTest {
 
-    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-    private static final String ENDPOINT = "http://endpoint";
-    private static final String SERVICE_TOKEN = randomAlphabetic(32);
-    private static final String ACCESS_TOKEN = randomAlphabetic(32);
+    static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    static final String ENDPOINT = "http://endpoint";
+    static final String SERVICE_TOKEN = randomAlphabetic(32);
+    static final String ACCESS_TOKEN = randomAlphabetic(32);
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private RestTemplate restTemplate;
+    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock RestTemplate restTemplate;
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private UserDetails userDetails;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
+    @Mock UserDetailsProvider userDetailsProvider;
+    @Mock UserDetails userDetails;
+    @Mock Callback<AsylumCase> callback;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
 
 
-    private BundleRequestExecutor bundleRequestExecutor;
+    BundleRequestExecutor bundleRequestExecutor;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         bundleRequestExecutor = new BundleRequestExecutor(
             restTemplate,
             serviceAuthTokenGenerator,
             userDetailsProvider
         );
+    }
+
+    @Test
+    void should_invoke_endpoint_with_given_payload_and_return_200_with_no_errors() {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
-    }
-
-    @Test
-    public void should_invoke_endpoint_with_given_payload_and_return_200_with_no_errors() {
 
         when(restTemplate
             .exchange(
@@ -110,7 +110,7 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> bundleRequestExecutor.post(null, ENDPOINT))
             .hasMessage("payload must not be null")
@@ -122,7 +122,11 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_handle_http_server_exception_when_calling_api() {
+    void should_handle_http_server_exception_when_calling_api() {
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 
@@ -142,8 +146,13 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_handle_http_client_exception_when_calling_api() {
+    void should_handle_http_client_exception_when_calling_api() {
+
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
+
+        when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
 
         when(restTemplate
             .exchange(

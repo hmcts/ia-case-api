@@ -4,31 +4,30 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCaseFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseFeePaymentServiceTest {
+class AsylumCaseFeePaymentServiceTest {
 
-    private static final String ENDPOINT = "http://endpoint";
-    private static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
-    private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
+    static final String ENDPOINT = "http://endpoint";
+    static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
+    static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
-    @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock private Callback<AsylumCase> callback;
+    @Mock AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    @Mock Callback<AsylumCase> callback;
 
-    private AsylumCaseFeePaymentService asylumCaseFeeApiPayment;
+    AsylumCaseFeePaymentService asylumCaseFeeApiPayment;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         asylumCaseFeeApiPayment =
             new AsylumCaseFeePaymentService(
@@ -40,7 +39,7 @@ public class AsylumCaseFeePaymentServiceTest {
     }
 
     @Test
-    public void should_delegate_callback_to_downstream_api() {
+    void should_delegate_callback_to_downstream_api() {
 
         final AsylumCase feePaymentAsylumCase = mock(AsylumCase.class);
 
@@ -56,7 +55,7 @@ public class AsylumCaseFeePaymentServiceTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseFeeApiPayment.aboutToSubmit(null))
             .hasMessage("callback must not be null")

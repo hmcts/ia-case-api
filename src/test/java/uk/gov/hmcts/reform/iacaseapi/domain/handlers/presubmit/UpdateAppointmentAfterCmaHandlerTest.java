@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -19,28 +19,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UpdateAppointmentAfterCmaHandlerTest {
+class UpdateAppointmentAfterCmaHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private UpdateAppointmentAfterCmaHandler updateAppointmentAfterCmaHandler;
+    UpdateAppointmentAfterCmaHandler updateAppointmentAfterCmaHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         updateAppointmentAfterCmaHandler = new UpdateAppointmentAfterCmaHandler();
-        when(callback.getEvent()).thenReturn(Event.UPDATE_DETAILS_AFTER_CMA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> updateAppointmentAfterCmaHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -48,7 +46,12 @@ public class UpdateAppointmentAfterCmaHandlerTest {
     }
 
     @Test
-    public void should_set_update_hearing_requirements_exists() {
+    void should_set_update_hearing_requirements_exists() {
+
+        when(callback.getEvent()).thenReturn(Event.UPDATE_DETAILS_AFTER_CMA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             updateAppointmentAfterCmaHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -63,7 +66,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
 
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -86,7 +89,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> updateAppointmentAfterCmaHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

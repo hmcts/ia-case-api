@@ -8,11 +8,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
@@ -23,30 +23,29 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ListCasePreparerTest {
+class ListCasePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private ListCasePreparer listCasePreparer;
+    ListCasePreparer listCasePreparer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         listCasePreparer =
             new ListCasePreparer();
+    }
+
+    @Test
+    void should_set_default_list_case_hearing_centre_field() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @Test
-    public void should_set_default_list_case_hearing_centre_field() {
-
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -59,8 +58,11 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
+    void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -73,7 +75,11 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_set_error_when_requirements_not_reviewed() {
+    void should_set_error_when_requirements_not_reviewed() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -93,7 +99,11 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_set_error_when_reviewed_requirements_flag_not_set() {
+    void should_set_error_when_reviewed_requirements_flag_not_set() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -113,7 +123,11 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_not_set_error_when_requirements_have_been_reviewed() {
+    void should_not_set_error_when_requirements_have_been_reviewed() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -132,8 +146,11 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_work_for_old_flow_when_requirements_not_captured() {
+    void should_work_for_old_flow_when_requirements_not_captured() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.empty());
 
@@ -150,7 +167,7 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -163,7 +180,7 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -187,7 +204,7 @@ public class ListCasePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> listCasePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

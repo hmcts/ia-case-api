@@ -8,37 +8,38 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CaseFlagAppenderTest {
+@ExtendWith(MockitoExtension.class)
+class CaseFlagAppenderTest {
 
-    private CaseFlag caseFlag1;
-    private CaseFlag caseFlag2;
-    @Mock private IdValue<CaseFlag> existingCaseFlagById1;
-    @Mock private IdValue<CaseFlag> existingCaseFlagById2;
+    CaseFlag caseFlag1;
+    CaseFlag caseFlag2;
+    @Mock IdValue<CaseFlag> existingCaseFlagById1;
+    @Mock IdValue<CaseFlag> existingCaseFlagById2;
 
-    private final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
-    private final String newCaseFlagAdditionalInformation = "some additional information";
+    final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
+    final String newCaseFlagAdditionalInformation = "some additional information";
 
-    private CaseFlagAppender caseFlagAppender;
+    CaseFlagAppender caseFlagAppender;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         caseFlagAppender = new CaseFlagAppender();
         caseFlag1 = new CaseFlag(CaseFlagType.COMPLEX_CASE, "some info");
         caseFlag2 = new CaseFlag(CaseFlagType.UNACCOMPANIED_MINOR, "some info");
     }
 
     @Test
-    public void should_append_new_case_flag_in_first_position() {
+    void should_append_new_case_flag_in_first_position() {
 
         when(existingCaseFlagById1.getValue()).thenReturn(caseFlag1);
         when(existingCaseFlagById2.getValue()).thenReturn(caseFlag2);
@@ -70,7 +71,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_return_new_case_flags_if_no_existing_case_flags_present() {
+    void should_return_new_case_flags_if_no_existing_case_flags_present() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.emptyList();
 
         List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
@@ -88,7 +89,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.singletonList(existingCaseFlagById1);
 
         assertThatThrownBy(() ->

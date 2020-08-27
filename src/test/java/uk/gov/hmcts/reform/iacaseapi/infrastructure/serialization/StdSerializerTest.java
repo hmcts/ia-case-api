@@ -6,26 +6,27 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class StdSerializerTest {
+@ExtendWith(MockitoExtension.class)
+class StdSerializerTest {
 
-    @Mock private ObjectMapper mapper;
+    @Mock ObjectMapper mapper;
 
-    private StdSerializer<Integer> stdSerializer;
+    StdSerializer<Integer> stdSerializer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         stdSerializer = new StdSerializer<>(mapper);
     }
 
     @Test
-    public void should_serialize_argument_to_string() throws JsonProcessingException {
+    void should_serialize_argument_to_string() throws JsonProcessingException {
 
         Integer source = 123;
         String expectedSerializedSource = "123";
@@ -40,7 +41,7 @@ public class StdSerializerTest {
     }
 
     @Test
-    public void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
+    void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
 
         Integer source = 123;
 

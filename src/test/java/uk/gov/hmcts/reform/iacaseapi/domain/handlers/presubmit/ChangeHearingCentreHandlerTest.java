@@ -5,20 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -27,24 +31,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-public class ChangeHearingCentreHandlerTest {
+class ChangeHearingCentreHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
-    private String applicationSupplier = "Legal representative";
-    private String applicationReason = "applicationReason";
-    private String applicationDate = "30/01/2019";
-    private String applicationDecision = "Granted";
-    private String applicationDecisionReason = "Granted";
-    private String applicationDateOfDecision = "31/01/2019";
-    private String applicationStatus = "In progress";
+    String applicationSupplier = "Legal representative";
+    String applicationReason = "applicationReason";
+    String applicationDate = "30/01/2019";
+    String applicationDecision = "Granted";
+    String applicationDecisionReason = "Granted";
+    String applicationDateOfDecision = "31/01/2019";
+    String applicationStatus = "In progress";
 
-    private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
+    List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
         applicationSupplier,
         ApplicationType.CHANGE_HEARING_CENTRE.toString(),
@@ -56,20 +61,21 @@ public class ChangeHearingCentreHandlerTest {
         applicationStatus
     )));
 
-    private ChangeHearingCentreHandler changeHearingCentreHandler;
+    ChangeHearingCentreHandler changeHearingCentreHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         changeHearingCentreHandler = new ChangeHearingCentreHandler();
+    }
+
+    @Test
+    void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
 
         when(callback.getEvent()).thenReturn(Event.CHANGE_HEARING_CENTRE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
-    }
-
-    @Test
-    public void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -92,7 +98,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -100,7 +106,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -123,7 +129,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeHearingCentreHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

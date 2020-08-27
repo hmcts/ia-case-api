@@ -10,69 +10,55 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import lombok.Value;
+import java.util.stream.Stream;
 import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(JUnitParamsRunner.class)
-public class AdjournWithoutDateConfirmationTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+@ExtendWith(MockitoExtension.class)
+class AdjournWithoutDateConfirmationTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
 
-    private AdjournWithoutDateConfirmation handler = new AdjournWithoutDateConfirmation();
+    AdjournWithoutDateConfirmation handler = new AdjournWithoutDateConfirmation();
 
-    @Test
-    @Parameters(method = "generateTestScenarios")
-    public void given_callback_can_handle(TestScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.event);
+    @ParameterizedTest
+    @MethodSource("generateTestScenarios")
+    void given_callback_can_handle(Event event, boolean canBeHandledExpected) {
+        given(callback.getEvent()).willReturn(event);
 
         boolean actualResult = handler.canHandle(callback);
 
-        assertThat(actualResult).isEqualTo(scenario.canBeHandledExpected);
+        assertThat(actualResult).isEqualTo(canBeHandledExpected);
     }
 
-    private List<TestScenario> generateTestScenarios() {
-        return TestScenario.testScenarioBuilder();
-    }
+    private static Stream<Arguments> generateTestScenarios() {
 
-    @Value
-    private static class TestScenario {
-        Event event;
-        boolean canBeHandledExpected;
+        List<Arguments> scenarios = new ArrayList<>();
 
-        public static List<TestScenario> testScenarioBuilder() {
-            List<TestScenario> testScenarioList = new ArrayList<>();
-            for (Event e : Event.values()) {
-                TestScenario testScenario;
-                if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
-                    testScenario = new TestScenario(e, true);
-                } else {
-                    testScenario = new TestScenario(e, false);
-                }
-                testScenarioList.add(testScenario);
+        for (Event e : Event.values()) {
+            if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
+                scenarios.add(Arguments.of(e, true));
+            } else {
+                scenarios.add(Arguments.of(e, false));
             }
-            return testScenarioList;
         }
+
+        return scenarios.stream();
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> handler.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -83,7 +69,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
         when(callback.getEvent()).thenReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
 
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
@@ -106,7 +92,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> handler.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);

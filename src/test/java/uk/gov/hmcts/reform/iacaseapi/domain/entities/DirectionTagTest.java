@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static junit.framework.TestCase.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DirectionTagTest {
+class DirectionTagTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("buildCase", DirectionTag.BUILD_CASE.toString());
         assertEquals("caseEdit", DirectionTag.CASE_EDIT.toString());
         assertEquals("legalRepresentativeReview", DirectionTag.LEGAL_REPRESENTATIVE_REVIEW.toString());
@@ -24,7 +24,7 @@ public class DirectionTagTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(13, DirectionTag.values().length);
     }
 }

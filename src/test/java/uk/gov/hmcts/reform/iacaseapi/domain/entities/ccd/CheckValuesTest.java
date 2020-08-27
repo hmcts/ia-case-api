@@ -4,16 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CheckValuesTest {
+class CheckValuesTest {
 
-    private final List<String> values = new ArrayList<>();
+    final List<String> values = new ArrayList<>();
 
-    private CheckValues<String> checkValues = new CheckValues<>(values);
+    CheckValues<String> checkValues = new CheckValues<>(values);
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(values, checkValues.getValues());
     }

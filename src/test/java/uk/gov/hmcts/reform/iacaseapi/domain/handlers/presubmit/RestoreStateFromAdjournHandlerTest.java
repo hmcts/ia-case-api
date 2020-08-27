@@ -7,11 +7,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,25 +21,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RestoreStateFromAdjournHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class RestoreStateFromAdjournHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    private final String listCaseHearingDate = "05/05/2020";
+    final String listCaseHearingDate = "05/05/2020";
 
-    private RestoreStateFromAdjournHandler restoreStateFromAdjournHandler;
+    RestoreStateFromAdjournHandler restoreStateFromAdjournHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         restoreStateFromAdjournHandler = new RestoreStateFromAdjournHandler();
     }
 
     @Test
-    public void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
+    void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESTORE_STATE_FROM_ADJOURN);
@@ -62,7 +63,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
@@ -71,7 +72,7 @@ public class RestoreStateFromAdjournHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -95,7 +96,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> restoreStateFromAdjournHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

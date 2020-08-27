@@ -2,33 +2,30 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeAppealResponseConfirmationTest {
+class UploadHomeOfficeAppealResponseConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock Callback<AsylumCase> callback;
 
-    private UploadHomeOfficeAppealResponseConfirmation uploadHomeOfficeAppealResponseConfirmation =
+    UploadHomeOfficeAppealResponseConfirmation uploadHomeOfficeAppealResponseConfirmation =
         new UploadHomeOfficeAppealResponseConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
 
@@ -55,7 +52,7 @@ public class UploadHomeOfficeAppealResponseConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -63,7 +60,7 @@ public class UploadHomeOfficeAppealResponseConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -83,7 +80,7 @@ public class UploadHomeOfficeAppealResponseConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

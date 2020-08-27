@@ -4,12 +4,12 @@ import static com.google.common.base.CaseFormat.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AsylumCaseFieldDefinitionTest {
+class AsylumCaseFieldDefinitionTest {
 
     @Test
-    public void mapped_to_equivalent_field_name() {
+    void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseFieldDefinition.values())
             .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name()))
                 .isEqualTo(v.value()));

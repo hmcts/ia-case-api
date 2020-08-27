@@ -10,17 +10,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
+import java.util.stream.Stream;
 import junitparams.converters.Nullable;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -29,25 +27,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDocsAuditService;
 
-@RunWith(JUnitParamsRunner.class)
-public class EditDocsServiceTest {
+@ExtendWith(MockitoExtension.class)
+class EditDocsServiceTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock
-    private EditDocsAuditService editDocsAuditService;
+    EditDocsAuditService editDocsAuditService;
     @InjectMocks
-    private EditDocsService editDocsService;
-    public static final String DOC_ID = "5c39421f-e518-49da-987b-c4c48dffab43";
-    public static final String ANOTHER_DOC_ID = "ad22bb0f-5b5a-4a39-bd6d-b966e8602072";
+    EditDocsService editDocsService;
+    static final String DOC_ID = "5c39421f-e518-49da-987b-c4c48dffab43";
+    static final String ANOTHER_DOC_ID = "ad22bb0f-5b5a-4a39-bd6d-b966e8602072";
 
-    @Test
-    @Parameters(method = ""
-        + "documentIsDeletedScenario, "
-        + "anotherDocumentIsDeletedScenario, "
-        + "theOverviewTabFieldIsNullScenario, "
-        + "documentIsUpdatedScenario")
-    public void cleanUpOverviewTabDocs(AsylumCase asylum,
+    @ParameterizedTest
+    @MethodSource({
+        "documentIsDeletedScenario",
+        "anotherDocumentIsDeletedScenario",
+        "theOverviewTabFieldIsNullScenario",
+        "documentIsUpdatedScenario"
+    })
+    void cleanUpOverviewTabDocs(AsylumCase asylum,
                                        AsylumCase asylumBefore,
                                        List<String> updatedDeletedDocIdsList,
                                        @Nullable Document expectedDocument) {
@@ -62,73 +59,68 @@ public class EditDocsServiceTest {
         assertThat(actualFinalDecisionAndReasonPdf).isEqualTo(expectedDocument);
     }
 
-    private Object[] documentIsDeletedScenario() {
+    private static Stream<Arguments> documentIsDeletedScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(buildDocumentGivenDocId());
 
-        return new Object[]{
-            new Object[]{
+        return Stream.of(
+            Arguments.of(
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
-                null}
-        };
+                null));
     }
 
-    private Object[] anotherDocumentIsDeletedScenario() {
+    private static Stream<Arguments> anotherDocumentIsDeletedScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(buildDocumentGivenDocId());
         asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, Collections.singletonList(buildIdValue()));
         Document expectedFinalDecisionAndReasonPdf = buildDocumentGivenDocId();
 
-        return new Object[]{
-            new Object[]{
+        return Stream.of(Arguments.of(
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(ANOTHER_DOC_ID)),
-                expectedFinalDecisionAndReasonPdf}
-        };
+                expectedFinalDecisionAndReasonPdf));
     }
 
-    private Object[] theOverviewTabFieldIsNullScenario() {
+    private static Stream<Arguments> theOverviewTabFieldIsNullScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(null);
 
-        return new Object[]{
-            new Object[]{
+        return Stream.of(
+            Arguments.of(
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
-                null}
-        };
+                null));
     }
 
-    private Object[] documentIsUpdatedScenario() {
+    private static Stream<Arguments> documentIsUpdatedScenario() {
         AsylumCase asylumCase = buildCaseWithPopulatedFieldForGivenDoc(buildDocumentGivenDocId());
         asylumCase.write(FINAL_DECISION_AND_REASONS_DOCUMENTS, Collections.singletonList(buildIdValue()));
         Document expectedFinalDecisionAndReasonPdf = buildDocumentGivenDocId();
 
-        return new Object[]{
-            new Object[]{
+        return Stream.of(
+            Arguments.of(
                 asylumCase,
                 new AsylumCase(),
                 new ArrayList<>(Collections.singletonList(DOC_ID)),
-                expectedFinalDecisionAndReasonPdf}
-        };
+                expectedFinalDecisionAndReasonPdf));
     }
 
-    private AsylumCase buildCaseWithPopulatedFieldForGivenDoc(Document document) {
+    private static AsylumCase buildCaseWithPopulatedFieldForGivenDoc(Document document) {
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_PDF, document);
         return asylumCase;
     }
 
-    private Document buildDocumentGivenDocId() {
+    private static Document buildDocumentGivenDocId() {
         return new Document("http://dm-store/" + DOC_ID, "", "");
     }
 
-    private DocumentWithMetadata buildDocWithMeta() {
+    private static DocumentWithMetadata buildDocWithMeta() {
         return new DocumentWithMetadata(buildDocumentGivenDocId(), "", "", DocumentTag.NONE);
     }
 
-    private IdValue<DocumentWithMetadata> buildIdValue() {
+    private static IdValue<DocumentWithMetadata> buildIdValue() {
         return new IdValue<>("1", buildDocWithMeta());
     }
 }

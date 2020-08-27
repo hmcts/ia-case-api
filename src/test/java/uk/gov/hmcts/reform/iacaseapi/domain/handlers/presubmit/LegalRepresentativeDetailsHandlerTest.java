@@ -6,11 +6,11 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -20,27 +20,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeDetailsHandlerTest {
+class LegalRepresentativeDetailsHandlerTest {
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private UserDetails userDetails;
+    @Mock UserDetailsProvider userDetailsProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock UserDetails userDetails;
 
-    private LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
+    LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         legalRepresentativeDetailsHandler =
             new LegalRepresentativeDetailsHandler(userDetailsProvider);
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case() {
+    void should_set_legal_representative_details_into_the_case() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -58,8 +58,6 @@ public class LegalRepresentativeDetailsHandlerTest {
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
-        when(asylumCase.read(LEGAL_REP_COMPANY)).thenReturn(Optional.empty());
-        when(asylumCase.read(LEGAL_REP_NAME)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -73,7 +71,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details() {
+    void should_not_overwrite_existing_legal_representative_details() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
@@ -94,7 +92,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -107,7 +105,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -131,7 +129,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> legalRepresentativeDetailsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

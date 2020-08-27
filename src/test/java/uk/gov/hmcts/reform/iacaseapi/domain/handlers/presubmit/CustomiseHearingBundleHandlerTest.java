@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -35,48 +37,46 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecutor;
 
 
-
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-public class CustomiseHearingBundleHandlerTest {
+class CustomiseHearingBundleHandlerTest {
 
-    @Mock
-    private BundleRequestExecutor bundleRequestExecutor;
-    @Mock private Appender<DocumentWithMetadata> appender;
-    @Mock private DateProvider dateProvider;
-    @Mock private ObjectMapper objectMapper;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private AsylumCase asylumCaseCopy;
+    @Mock BundleRequestExecutor bundleRequestExecutor;
+    @Mock Appender<DocumentWithMetadata> appender;
+    @Mock DateProvider dateProvider;
+    @Mock ObjectMapper objectMapper;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock AsylumCase asylumCaseCopy;
 
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    @Mock private List<IdValue<DocumentWithDescription>> customHearingDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> hearingDocuments;
+    @Mock List<IdValue<DocumentWithDescription>> customHearingDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> hearingDocuments;
 
-    @Mock private List<IdValue<DocumentWithDescription>> customLegalRepresentativeDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments;
+    @Mock List<IdValue<DocumentWithDescription>> customLegalRepresentativeDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments;
 
-    @Mock private List<IdValue<DocumentWithDescription>> customAdditionalEvidenceDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments;
+    @Mock List<IdValue<DocumentWithDescription>> customAdditionalEvidenceDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> additionalEvidenceDocuments;
 
-    @Mock private List<IdValue<DocumentWithDescription>> customRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> respondentDocuments;
+    @Mock List<IdValue<DocumentWithDescription>> customRespondentDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> respondentDocuments;
 
 
-    private String emBundlerUrl = "bundleurl";
-    private String emBundlerStitchUri = "stitchingUri";
-    private String appealReference = "PA/50002/2020";
-    private String appellantFamilyName = "bond";
-    private String coverPageLogo = "[userImage:hmcts.png]";
-    private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
+    String emBundlerUrl = "bundleurl";
+    String emBundlerStitchUri = "stitchingUri";
+    String appealReference = "PA/50002/2020";
+    String appellantFamilyName = "bond";
+    String coverPageLogo = "[userImage:hmcts.png]";
+    List<IdValue<Bundle>> caseBundles = new ArrayList<>();
 
-    private CustomiseHearingBundleHandler customiseHearingBundleHandler;
+    CustomiseHearingBundleHandler customiseHearingBundleHandler;
 
-    @Before
-    public void setUp() throws JsonProcessingException {
+    @BeforeEach
+    void setUp() throws JsonProcessingException {
         customiseHearingBundleHandler =
                 new CustomiseHearingBundleHandler(
                         emBundlerUrl,
@@ -107,8 +107,8 @@ public class CustomiseHearingBundleHandlerTest {
         caseBundles.add(new IdValue<>("1", bundle));
     }
 
-    @org.junit.Test
-    public void should_successfully_handle_the_callback() throws JsonProcessingException {
+    @Test
+    void should_successfully_handle_the_callback() throws JsonProcessingException {
         when(asylumCase.read(HEARING_DOCUMENTS))
                 .thenReturn(Optional.of(hearingDocuments));
 
@@ -159,8 +159,8 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
 
-    @org.junit.Test
-    public void should_throw_when_appeal_reference_is_not_present() {
+    @Test
+    void should_throw_when_appeal_reference_is_not_present() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
 
@@ -169,8 +169,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void should_throw_when_asylumcase_can_not_copied() throws JsonProcessingException {
+    @Test
+    void should_throw_when_asylumcase_can_not_copied() throws JsonProcessingException {
 
         when(objectMapper.readValue("Test", AsylumCase.class)).thenThrow(new IllegalStateException("Cannot make a deep copy of the case"));
 
@@ -179,8 +179,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void should_throw_when_appellant_family_name_is_not_present() {
+    @Test
+    void should_throw_when_appellant_family_name_is_not_present() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
 
@@ -189,8 +189,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    @Test
+    void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -199,8 +199,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void should_throw_when_case_bundle_is_empty() {
+    @Test
+    void should_throw_when_case_bundle_is_empty() {
 
         caseBundles.clear();
 
@@ -209,8 +209,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    @Test
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> customiseHearingBundleHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
@@ -222,8 +222,8 @@ public class CustomiseHearingBundleHandlerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
-    public void it_can_handle_callback() {
+    @Test
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -247,7 +247,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> customiseHearingBundleHandler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")

@@ -9,11 +9,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -24,32 +23,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RespondentReviewAppealResponseAddedUpdaterTest {
+class RespondentReviewAppealResponseAddedUpdaterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private RespondentReviewAppealResponseAddedUpdater respondentReviewAppealResponseAddedUpdater =
+    RespondentReviewAppealResponseAddedUpdater respondentReviewAppealResponseAddedUpdater =
         new RespondentReviewAppealResponseAddedUpdater();
 
-    @Before
-    public void setUp() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
-    }
-
     @Test
-    public void should_be_handled_late() {
+    void should_be_handled_late() {
         assertEquals(DispatchPriority.LATE, respondentReviewAppealResponseAddedUpdater.getDispatchPriority());
     }
 
     @Test
-    public void should_set_action_available_flag_to_yes_when_state_applies_and_appeal_response_available() {
+    void should_set_action_available_flag_to_yes_when_state_applies_and_appeal_response_available() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
 
         for (State state : State.values()) {
 
@@ -78,7 +72,11 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void should_set_action_available_flag_to_no_when_state_applies_and_appeal_response_not_available() {
+    void should_set_action_available_flag_to_no_when_state_applies_and_appeal_response_not_available() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.RESPONDENT_REVIEW);
 
         List<Optional<YesOrNo>> appealResponseNotAvailableIndications =
             Arrays.asList(
@@ -106,7 +104,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -114,7 +112,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -137,7 +135,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

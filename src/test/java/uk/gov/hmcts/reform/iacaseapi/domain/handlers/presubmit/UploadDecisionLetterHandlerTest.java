@@ -14,18 +14,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import lombok.Value;
-import org.junit.Before;
-import org.junit.Rule;
+import java.util.stream.Stream;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -37,93 +34,75 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(JUnitParamsRunner.class)
-public class UploadDecisionLetterHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@ExtendWith(MockitoExtension.class)
+class UploadDecisionLetterHandlerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
     @Mock
-    private DocumentReceiver documentReceiver;
+    DocumentReceiver documentReceiver;
     @Mock
-    private DocumentsAppender documentsAppender;
+    DocumentsAppender documentsAppender;
     @Mock
-    private DocumentWithMetadata newLegalRepDoc;
+    DocumentWithMetadata newLegalRepDoc;
 
     @InjectMocks
-    private UploadDecisionLetterHandler handler;
+    UploadDecisionLetterHandler handler;
 
-    private final Document someDoc = new Document(
+    final Document someDoc = new Document(
         "some url",
         "some binary url",
         "some filename");
 
 
-    @Before
-    public void setUp() {
-        given(callback.getEvent()).willReturn(Event.SUBMIT_APPEAL);
+    @ParameterizedTest
+    @MethodSource("generateTestScenarios")
+    void canHandle(Event event, PreSubmitCallbackStage callbackStage, Document document, boolean canBeHandledExpected) {
+
+        if (canBeHandledExpected) {
+            given(callback.getEvent()).willReturn(event);
+        }
         given(callback.getCaseDetails()).willReturn(caseDetails);
         given(caseDetails.getCaseData()).willReturn(asylumCase);
+
         given(asylumCase.read(
             eq(AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT), eq(Document.class)))
-            .willReturn(Optional.of(someDoc)
-            );
+            .willReturn(Optional.ofNullable(document));
+
+        boolean actualResult = handler.canHandle(callbackStage, callback);
+
+        assertThat(actualResult).isEqualTo(canBeHandledExpected);
     }
 
-    @Test
-    @Parameters(method = "generateTestScenarios")
-    public void canHandle(TestScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.getEvent());
-        given(asylumCase.read(
-            eq(AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT), eq(Document.class)))
-            .willReturn(Optional.ofNullable(scenario.document));
+    private static Stream<Arguments> generateTestScenarios() {
 
-        boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
+        List<Arguments> scenarios = new ArrayList<>();
 
-        assertThat(actualResult).isEqualTo(scenario.canBeHandledExpected);
-    }
-
-    @SuppressWarnings("unused")
-    private List<TestScenario> generateTestScenarios() {
-        return TestScenario.testScenarioBuilder();
-    }
-
-    @Value
-    private static class TestScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        Document document;
-        boolean canBeHandledExpected;
-
-        public static List<TestScenario> testScenarioBuilder() {
-            List<TestScenario> testScenarioList = new ArrayList<>();
-            for (Event e : Event.values()) {
-                for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
-                    Document someDoc = new Document(
-                        "some url",
-                        "some binary url",
-                        "some filename");
-                    if (e.equals(Event.SUBMIT_APPEAL) && cb.equals(ABOUT_TO_SUBMIT)) {
-                        testScenarioList.add(new TestScenario(e, cb, someDoc, true));
-                    } else {
-                        testScenarioList.add(new TestScenario(e, cb, someDoc, false));
-                    }
-                    testScenarioList.add(new TestScenario(e, cb, null, false));
+        for (Event e : Event.values()) {
+            for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
+                Document someDoc = new Document(
+                    "some url",
+                    "some binary url",
+                    "some filename");
+                if (e.equals(Event.SUBMIT_APPEAL) && cb.equals(ABOUT_TO_SUBMIT)) {
+                    scenarios.add(Arguments.of(e, cb, someDoc, true));
+                } else {
+                    scenarios.add(Arguments.of(e, cb, someDoc, false));
                 }
+                scenarios.add(Arguments.of(e, cb, null, false));
             }
-            return testScenarioList;
         }
+
+        return scenarios.stream();
     }
 
 
     @Test
-    public void handle() {
+    void handle() {
         given(documentReceiver.receive(any(Document.class), anyString(), eq(HO_DECISION_LETTER)))
             .willReturn(newLegalRepDoc);
 
@@ -142,7 +121,7 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -162,7 +141,7 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

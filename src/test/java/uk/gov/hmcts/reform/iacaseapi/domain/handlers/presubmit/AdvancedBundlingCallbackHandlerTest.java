@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -29,31 +29,35 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecutor;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AdvancedBundlingCallbackHandlerTest {
+class AdvancedBundlingCallbackHandlerTest {
 
-    @Mock private BundleRequestExecutor bundleRequestExecutor;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock BundleRequestExecutor bundleRequestExecutor;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    private String emBundlerUrl = "bundleurl";
-    private String emBundlerStitchUri = "stitchingUri";
-    private String appealReference = "PA/50002/2020";
-    private String appellantFamilyName = "bond";
-    private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
-    private AdvancedBundlingCallbackHandler advancedBundlingCallbackHandler;
+    String emBundlerUrl = "bundleurl";
+    String emBundlerStitchUri = "stitchingUri";
+    String appealReference = "PA/50002/2020";
+    String appellantFamilyName = "bond";
+    List<IdValue<Bundle>> caseBundles = new ArrayList<>();
+    AdvancedBundlingCallbackHandler advancedBundlingCallbackHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         advancedBundlingCallbackHandler =
             new AdvancedBundlingCallbackHandler(
                 emBundlerUrl,
                 emBundlerStitchUri,
                 bundleRequestExecutor
             );
+    }
+
+    @Test
+    void should_successfully_handle_the_callback() {
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -70,10 +74,6 @@ public class AdvancedBundlingCallbackHandlerTest {
 
         Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
         caseBundles.add(new IdValue<>("1", bundle));
-    }
-
-    @Test
-    public void should_successfully_handle_the_callback() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             advancedBundlingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -92,7 +92,14 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_reference_is_not_present() {
+    void should_throw_when_appeal_reference_is_not_present() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
 
@@ -102,7 +109,17 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appellant_family_name_is_not_present() {
+    void should_throw_when_appellant_family_name_is_not_present() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(appealReference));
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(appellantFamilyName));
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
 
@@ -112,7 +129,23 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    void should_throw_when_case_bundle_is_not_present() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri)).thenReturn(callbackResponse);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(appealReference));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(appellantFamilyName));
+
+        when(callbackResponse.getData()).thenReturn(asylumCase);
+        when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -122,7 +155,23 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_empty() {
+    void should_throw_when_case_bundle_is_empty() {
+
+        when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri)).thenReturn(callbackResponse);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(appealReference));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(appellantFamilyName));
+
+        when(callbackResponse.getData()).thenReturn(asylumCase);
+        when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
+
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
+        caseBundles.add(new IdValue<>("1", bundle));
 
         caseBundles.clear();
 
@@ -132,7 +181,7 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> advancedBundlingCallbackHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -145,7 +194,7 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -169,7 +218,7 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> advancedBundlingCallbackHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

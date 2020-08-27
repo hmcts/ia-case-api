@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -29,21 +31,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-public class AdvancedFinalBundlingStateHandlerTest {
+class AdvancedFinalBundlingStateHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
-    private AdvancedFinalBundlingStateHandler advancedFinalBundlingStateHandler;
+    List<IdValue<Bundle>> caseBundles = new ArrayList<>();
+    AdvancedFinalBundlingStateHandler advancedFinalBundlingStateHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         advancedFinalBundlingStateHandler = new AdvancedFinalBundlingStateHandler();
 
         when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
@@ -58,7 +60,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_successfully_retain_the_current_state() {
+    void should_successfully_retain_the_current_state() {
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -73,7 +75,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_successfully_change_the_current_state_to_pre_hearing() {
+    void should_successfully_change_the_current_state_to_pre_hearing() {
 
         Bundle finishedBundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("DONE"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
         caseBundles.clear();
@@ -92,7 +94,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -102,7 +104,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_empty() {
+    void should_throw_when_case_bundle_is_empty() {
 
         caseBundles.clear();
 
@@ -113,7 +115,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
@@ -126,7 +128,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -150,7 +152,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

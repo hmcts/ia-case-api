@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -17,18 +17,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PreSubmitCallbackControllerTest {
+@ExtendWith(MockitoExtension.class)
+class PreSubmitCallbackControllerTest {
 
-    @Mock private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
 
-    private PreSubmitCallbackController preSubmitCallbackController;
+    PreSubmitCallbackController preSubmitCallbackController;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         preSubmitCallbackController =
             new PreSubmitCallbackController(
                 callbackDispatcher
@@ -36,7 +37,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_about_to_start_callback_then_return_response() {
+    void should_dispatch_about_to_start_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -56,7 +57,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_about_to_submit_callback_then_return_response() {
+    void should_dispatch_about_to_submit_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -76,7 +77,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_mid_event_callback_then_return_response() {
+    void should_dispatch_mid_event_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -96,7 +97,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_not_allow_null_constructor_arguments() {
+    void should_not_allow_null_constructor_arguments() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackController(null))
             .hasMessage("callbackDispatcher must not be null")

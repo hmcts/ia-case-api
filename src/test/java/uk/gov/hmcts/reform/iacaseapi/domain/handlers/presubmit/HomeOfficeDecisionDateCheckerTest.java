@@ -13,12 +13,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -28,37 +28,37 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
-public class HomeOfficeDecisionDateCheckerTest {
+@ExtendWith(MockitoExtension.class)
+class HomeOfficeDecisionDateCheckerTest {
 
-    private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
+    static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
 
-    private HomeOfficeDecisionDateChecker homeOfficeDecisionDateChecker;
+    HomeOfficeDecisionDateChecker homeOfficeDecisionDateChecker;
 
-    private ArgumentCaptor<YesOrNo> outOfTime = ArgumentCaptor.forClass(YesOrNo.class);
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
+    ArgumentCaptor<YesOrNo> outOfTime = ArgumentCaptor.forClass(YesOrNo.class);
+    ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor = ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         homeOfficeDecisionDateChecker =
             new HomeOfficeDecisionDateChecker(
                 dateProvider,
                 APPEAL_OUT_OF_TIME_DAYS
             );
+    }
+
+    @Test
+    void handles_edge_case_when_in_time() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @Test
-    public void handles_edge_case_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2019-01-01"));
@@ -72,7 +72,11 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handles_edge_case_when_easily_out_of_time() {
+    void handles_edge_case_when_easily_out_of_time() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2015-01-01"));
@@ -86,7 +90,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -95,7 +99,11 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handles_edge_case_when_out_of_time() {
+    void handles_edge_case_when_out_of_time() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-16"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2019-01-01"));
@@ -109,7 +117,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -131,7 +139,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -14,13 +14,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -36,26 +38,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-public class GenerateDocumentHandlerTest {
+class GenerateDocumentHandlerTest {
 
-    @Mock private DocumentGenerator<AsylumCase> documentGenerator;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private DateProvider dateProvider;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock DocumentGenerator<AsylumCase> documentGenerator;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock DateProvider dateProvider;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
-    private State state = State.UNKNOWN;
-    private String applicationSupplier = "Legal representative";
-    private String applicationReason = "applicationReason";
-    private String applicationDate = "30/01/2019";
-    private String applicationDecision = "Granted";
-    private String applicationDecisionReason = "Granted";
-    private String applicationDateOfDecision = "31/01/2019";
-    private String applicationStatus = "In progress";
+    State state = State.UNKNOWN;
+    String applicationSupplier = "Legal representative";
+    String applicationReason = "applicationReason";
+    String applicationDate = "30/01/2019";
+    String applicationDecision = "Granted";
+    String applicationDecisionReason = "Granted";
+    String applicationDateOfDecision = "31/01/2019";
+    String applicationStatus = "In progress";
 
-    private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
+    List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
         applicationSupplier,
         ApplicationType.EXPEDITE.toString(),
@@ -67,12 +70,12 @@ public class GenerateDocumentHandlerTest {
         applicationStatus
     )));
 
-    private LocalDate now = LocalDate.now();
+    LocalDate now = LocalDate.now();
 
-    private GenerateDocumentHandler generateDocumentHandler;
+    GenerateDocumentHandler generateDocumentHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         generateDocumentHandler =
                 new GenerateDocumentHandler(
@@ -84,7 +87,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_generate_document_and_update_the_case() {
+    void should_generate_document_and_update_the_case() {
 
         Arrays.asList(
             SUBMIT_APPEAL,
@@ -145,7 +148,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_handle_edit_listing_with_withdrawn() {
+    void should_handle_edit_listing_with_withdrawn() {
 
         Arrays.asList(
             ApplicationType.ADJOURN,
@@ -192,12 +195,12 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_be_handled_at_latest_point() {
+    void should_be_handled_at_latest_point() {
         assertEquals(DispatchPriority.LATEST, generateDocumentHandler.getDispatchPriority());
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -210,7 +213,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -250,7 +253,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_docmosis_not_enabled() {
+    void it_cannot_handle_callback_if_docmosis_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -276,7 +279,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_generate_if_em_stitching_not_enabled() {
+    void it_cannot_handle_generate_if_em_stitching_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -328,7 +331,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> generateDocumentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

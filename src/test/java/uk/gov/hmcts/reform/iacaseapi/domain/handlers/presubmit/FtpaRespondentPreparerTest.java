@@ -2,17 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -23,27 +22,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaRespondentPreparerTest {
+class FtpaRespondentPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
 
-    private FtpaRespondentPreparer ftpaRespondentPreparer;
+    FtpaRespondentPreparer ftpaRespondentPreparer;
 
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         ftpaRespondentPreparer =
             new FtpaRespondentPreparer(dateProvider, 14);
-        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }
 
     @Test
-    public void should_set_out_of_date_submission_state_no() {
+    void should_set_out_of_date_submission_state_no() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -52,6 +51,8 @@ public class FtpaRespondentPreparerTest {
         final String appealDate = dateProvider.now().minusDays(1).toString();
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
 
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
+
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
@@ -59,13 +60,15 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void should_set_out_of_date_submission_state_no_when_no_appeal_date() {
+    void should_set_out_of_date_submission_state_no_when_no_appeal_date() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.empty());
 
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
+
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
@@ -73,7 +76,7 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void should_set_out_of_date_submission_state_to_yes() {
+    void should_set_out_of_date_submission_state_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -82,6 +85,8 @@ public class FtpaRespondentPreparerTest {
         final String appealDate = dateProvider.now().minusDays(15).toString();
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
 
+        when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
+
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
@@ -89,7 +94,7 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void should_throw_error_of_appeal_is_already_submitted() {
+    void should_throw_error_of_appeal_is_already_submitted() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -110,7 +115,7 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -122,7 +127,7 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -146,7 +151,7 @@ public class FtpaRespondentPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaRespondentPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

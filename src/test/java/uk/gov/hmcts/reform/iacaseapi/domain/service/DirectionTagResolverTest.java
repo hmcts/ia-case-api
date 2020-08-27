@@ -6,31 +6,32 @@ import static org.mockito.Mockito.reset;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionTagResolverTest {
+class DirectionTagResolverTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock Callback<AsylumCase> callback;
 
-    private DirectionTagResolver directionTagResolver;
+    DirectionTagResolver directionTagResolver;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         directionTagResolver = new DirectionTagResolver();
     }
 
     @Test
-    public void should_return_parties_for_send_direction_events() {
+    void should_return_parties_for_send_direction_events() {
 
         Map<Event, DirectionTag> exampleInputOutputs =
             ImmutableMap
@@ -60,7 +61,7 @@ public class DirectionTagResolverTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> directionTagResolver.resolve(null))
             .hasMessage("event must not be null")

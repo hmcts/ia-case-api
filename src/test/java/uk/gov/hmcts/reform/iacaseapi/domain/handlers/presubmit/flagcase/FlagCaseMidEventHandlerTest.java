@@ -3,24 +3,20 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.FLAG_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import lombok.Value;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
@@ -30,69 +26,35 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(JUnitParamsRunner.class)
-public class FlagCaseMidEventHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@ExtendWith(MockitoExtension.class)
+class FlagCaseMidEventHandlerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
-    private final FlagCaseMidEventHandler handler = new FlagCaseMidEventHandler();
+    Callback<AsylumCase> callback;
+    final FlagCaseMidEventHandler handler = new FlagCaseMidEventHandler();
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
 
-    @Test
-    @Parameters(method = "generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.event);
+    @ParameterizedTest
+    @MethodSource("canHandleScenarioTestData")
+    void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
+        given(callback.getEvent()).willReturn(event);
 
-        boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
+        boolean actualResult = handler.canHandle(callbackStage, callback);
 
-        assertThat(actualResult).isEqualTo(scenario.expectedResult);
+        assertThat(actualResult).isEqualTo(expectedResult);
     }
 
-    private List<CanHandleScenario> generateCanHandleScenarios() {
-        return CanHandleScenario.builder();
+    private static Stream<Arguments> canHandleScenarioTestData() {
+
+        return Stream.of(
+            Arguments.of(MID_EVENT, FLAG_CASE, true)
+        );
     }
 
-    @Value
-    private static class CanHandleScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        boolean expectedResult;
-
-        private static List<CanHandleScenario> builder() {
-            List<CanHandleScenario> scenarios = new ArrayList<>();
-            for (Event e : Event.values()) {
-                if (FLAG_CASE.equals(e)) {
-                    addScenario(scenarios, e, true);
-                } else {
-                    addScenario(scenarios, e, false);
-                }
-            }
-            return scenarios;
-        }
-
-        private static void addScenario(List<CanHandleScenario> scenarios, Event event, boolean expected) {
-            scenarios.add(new CanHandleScenario(event, ABOUT_TO_START, false));
-            scenarios.add(new CanHandleScenario(event, ABOUT_TO_SUBMIT, false));
-            scenarios.add(new CanHandleScenario(event, MID_EVENT, expected));
-        }
-    }
-
-    @Test
-    @Parameters({
-        "CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION, some anonymity additional info, ANONYMITY",
-        "CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION, some complex case additional info, COMPLEX_CASE",
-        "CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION, some deport additional info, DEPORT",
-        "CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION, some detained immigration appeal additional info, DETAINED_IMMIGRATION_APPEAL",
-        "CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION, some foreign National Offender additional info, FOREIGN_NATIONAL_OFFENDER",
-        "CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION, some potentiallyViolentPerson info, POTENTIALLY_VIOLENT_PERSON",
-        "CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION, some unacceptable Customer Behaviour additional info, UNACCEPTABLE_CUSTOMER_BEHAVIOUR",
-        "CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, some unaccompaniedMinor additional info, UNACCOMPANIED_MINOR"
-    })
-    public void given_existing_flag_should_populate_additional_information_field(
+    @ParameterizedTest
+    @MethodSource("flagFieldsArgumentsTestData")
+    void given_existing_flag_should_populate_additional_information_field(
         AsylumCaseFieldDefinition caseFlagFieldDefinition, String existingAdditionalInfo, CaseFlagType caseFlagType) {
 
         given(callback.getEvent()).willReturn(FLAG_CASE);
@@ -111,8 +73,22 @@ public class FlagCaseMidEventHandlerTest {
         assertThat(actualAdditionalInfo).isEqualTo(existingAdditionalInfo);
     }
 
+    private static Stream<Arguments> flagFieldsArgumentsTestData() {
+
+        return Stream.of(
+            Arguments.of(CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION, "some anonymity additional info", "ANONYMITY"),
+            Arguments.of(CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION, "some complex case additional info", "COMPLEX_CASE"),
+            Arguments.of(CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION, "some deport additional info", "DEPORT"),
+            Arguments.of(CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION, "some detained immigration appeal additional info", "DETAINED_IMMIGRATION_APPEAL"),
+            Arguments.of(CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION, "some foreign National Offender additional info", "FOREIGN_NATIONAL_OFFENDER"),
+            Arguments.of(CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION, "some potentiallyViolentPerson info", "POTENTIALLY_VIOLENT_PERSON"),
+            Arguments.of(CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION, "some unacceptable Customer Behaviour additional info", "UNACCEPTABLE_CUSTOMER_BEHAVIOUR"),
+            Arguments.of(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, "some unaccompaniedMinor additional info", "UNACCOMPANIED_MINOR")
+        );
+    }
+
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -130,17 +106,21 @@ public class FlagCaseMidEventHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    @Parameters({
-        "FLAG_CASE, ABOUT_TO_SUBMIT",
-        "FLAG_CASE, ABOUT_TO_START",
-        "START_APPEAL, MID_EVENT",
-    })
-    public void should_throw_illegal_state_exception(Event event, PreSubmitCallbackStage callbackStage) {
-        given(callback.getEvent()).willReturn(event);
+    @ParameterizedTest
+    @MethodSource("illegalStateExceptionTestData")
+    void should_throw_illegal_state_exception(Event event, PreSubmitCallbackStage callbackStage) {
 
         assertThatThrownBy(() -> handler.handle(callbackStage, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    private static Stream<Arguments> illegalStateExceptionTestData() {
+
+        return Stream.of(
+            Arguments.of(FLAG_CASE, ABOUT_TO_SUBMIT),
+            Arguments.of(FLAG_CASE, ABOUT_TO_START),
+            Arguments.of(START_APPEAL, MID_EVENT)
+        );
     }
 }

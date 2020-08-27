@@ -3,12 +3,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class HoursAndMinutesTest {
+class HoursAndMinutesTest {
 
     @Test
-    public void should_create_hours_and_minutes() {
+    void should_create_hours_and_minutes() {
 
         HoursAndMinutes hoursAndMinutes = new HoursAndMinutes();
 

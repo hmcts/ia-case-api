@@ -1,31 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.advice;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CallbackControllerAdviceTest {
+class CallbackControllerAdviceTest {
 
-    @Mock private ErrorResponseLogger errorResponseLogger;
+    @Mock ErrorResponseLogger errorResponseLogger;
     @Mock HttpServletRequest request;
 
-    private CallbackControllerAdvice callbackControllerAdvice;
+    CallbackControllerAdvice callbackControllerAdvice;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         callbackControllerAdvice = new CallbackControllerAdvice(errorResponseLogger);
 
         when(request.getAttribute("CCDCaseId")).thenReturn("Case12345");
@@ -34,7 +35,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_required_missing_field_exception() {
+    void should_handle_required_missing_field_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new RequiredFieldMissingException("submission out of time is a required field"));
@@ -44,7 +45,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_illegal_state_exception() {
+    void should_handle_illegal_state_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new IllegalStateException("addCaseNoteSubject is not present"));
@@ -54,7 +55,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_illegal_argument_exception() {
+    void should_handle_illegal_argument_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new IllegalArgumentException("Hearing centre not found"));

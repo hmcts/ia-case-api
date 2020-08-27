@@ -8,12 +8,12 @@ import static org.mockito.Mockito.*;
 import com.google.common.collect.ImmutableMap;
 import java.util.Base64;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
@@ -21,21 +21,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class IdamAuthorizorTest {
+class IdamAuthorizorTest {
 
-    private static final String BASE_URL = "http://base.url";
-    private static final String CLIENT_ID = "1234";
-    private static final String CLIENT_SECRET = "badgers";
-    private static final String CLIENT_REDIRECT_URI = "http://redirect.url";
+    static final String BASE_URL = "http://base.url";
+    static final String CLIENT_ID = "1234";
+    static final String CLIENT_SECRET = "badgers";
+    static final String CLIENT_REDIRECT_URI = "http://redirect.url";
 
-    @Mock private RestTemplate restTemplate;
+    @Mock RestTemplate restTemplate;
 
-    private IdamAuthorizor idamAuthorizor;
+    IdamAuthorizor idamAuthorizor;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         idamAuthorizor =
             new IdamAuthorizor(
@@ -48,7 +48,7 @@ public class IdamAuthorizorTest {
     }
 
     @Test
-    public void should_call_idam_api_to_authorize() {
+    void should_call_idam_api_to_authorize() {
 
         String username = "username";
         String password = "password";
@@ -120,7 +120,7 @@ public class IdamAuthorizorTest {
     }
 
     @Test
-    public void wrap_client_exception_when_calling_oauth_authorize() {
+    void wrap_client_exception_when_calling_oauth_authorize() {
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
 
@@ -143,7 +143,7 @@ public class IdamAuthorizorTest {
     }
 
     @Test
-    public void wrap_server_exception_when_calling_oauth_authorize() {
+    void wrap_server_exception_when_calling_oauth_authorize() {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 
@@ -166,7 +166,7 @@ public class IdamAuthorizorTest {
     }
 
     @Test
-    public void wrap_client_exception_when_calling_oauth_token() {
+    void wrap_client_exception_when_calling_oauth_token() {
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
 
@@ -197,7 +197,7 @@ public class IdamAuthorizorTest {
     }
 
     @Test
-    public void wrap_server_exception_when_calling_oauth_token() {
+    void wrap_server_exception_when_calling_oauth_token() {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 

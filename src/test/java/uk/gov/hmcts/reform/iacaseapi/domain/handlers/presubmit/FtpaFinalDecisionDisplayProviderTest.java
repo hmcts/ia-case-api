@@ -1,33 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaFinalDecisionDisplayProviderTest {
+class FtpaFinalDecisionDisplayProviderTest {
 
-    @Mock private AsylumCase asylumCase;
+    @Mock AsylumCase asylumCase;
 
-    private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         ftpaFinalDecisionDisplayProvider = new FtpaFinalDecisionDisplayProvider();
     }
 
     @Test
-    public void should_return_the_correct_final_display_decisions() {
+    void should_return_the_correct_final_display_decisions() {
 
         assertThat(ftpaFinalDecisionDisplayProvider.getFinalDisplayDecision(asylumCase, "granted", "granted")).isEqualTo("granted");
         assertThat(ftpaFinalDecisionDisplayProvider.getFinalDisplayDecision(asylumCase, "granted", "partiallyGranted")).isEqualTo("granted");
@@ -85,7 +86,7 @@ public class FtpaFinalDecisionDisplayProviderTest {
     }
 
     @Test
-    public void should_return_correct_final_display_decision_as_allowed_for_refused_and_not_admitted() {
+    void should_return_correct_final_display_decision_as_allowed_for_refused_and_not_admitted() {
 
         AsylumCase asylumCase = new AsylumCase();
 
@@ -97,7 +98,7 @@ public class FtpaFinalDecisionDisplayProviderTest {
     }
 
     @Test
-    public void should_return_correct_final_display_decision_as_dismissed_for_refused_and_not_admitted() {
+    void should_return_correct_final_display_decision_as_dismissed_for_refused_and_not_admitted() {
 
         AsylumCase asylumCase = new AsylumCase();
 
@@ -109,7 +110,7 @@ public class FtpaFinalDecisionDisplayProviderTest {
     }
 
     @Test
-    public void should_write_correct_first_decision_to_asylum_case_when_not_present() {
+    void should_write_correct_first_decision_to_asylum_case_when_not_present() {
 
         ftpaFinalDecisionDisplayProvider.handleFtpaDecisions(asylumCase, "granted", "");
 
@@ -117,7 +118,7 @@ public class FtpaFinalDecisionDisplayProviderTest {
     }
 
     @Test
-    public void should_write_correct_second_decision_to_asylum_case_when_not_present() {
+    void should_write_correct_second_decision_to_asylum_case_when_not_present() {
 
         ftpaFinalDecisionDisplayProvider.handleFtpaDecisions(asylumCase, "refused", "granted");
 
@@ -127,7 +128,7 @@ public class FtpaFinalDecisionDisplayProviderTest {
     }
 
     @Test
-    public void should_write_correct_final_display_decision_to_asylum_case() {
+    void should_write_correct_final_display_decision_to_asylum_case() {
 
         ftpaFinalDecisionDisplayProvider.setFinalDisplayDecision(asylumCase, "refused", "granted");
 

@@ -9,21 +9,23 @@ import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.NONE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
+import java.util.stream.Stream;
 import junitparams.Parameters;
 import junitparams.converters.Nullable;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -36,24 +38,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(JUnitParamsRunner.class)
-public class EditDocsAboutToSubmitHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class EditDocsAboutToSubmitHandlerTest {
 
-    public static final String ID_VALUE = "0a165fa5-086b-49d6-8b7e-f00ed34d941a";
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    static final String ID_VALUE = "0a165fa5-086b-49d6-8b7e-f00ed34d941a";
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetailsBefore;
+    CaseDetails<AsylumCase> caseDetailsBefore;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private EditDocsCaseNoteService editDocsCaseNoteService;
+    EditDocsCaseNoteService editDocsCaseNoteService;
     @Mock
-    private EditDocsService editDocService;
+    EditDocsService editDocService;
     @InjectMocks
-    private EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler;
+    EditDocsAboutToSubmitHandler editDocsAboutToSubmitHandler;
 
     @Test
     @Parameters({
@@ -61,7 +61,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         "START_APPEAL, ABOUT_TO_SUBMIT, false",
         "EDIT_DOCUMENTS, ABOUT_TO_START, false"
     })
-    public void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
+    void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
         given(callback.getEvent()).willReturn(event);
 
         boolean actualResult = editDocsAboutToSubmitHandler.canHandle(callbackStage, callback);
@@ -69,12 +69,9 @@ public class EditDocsAboutToSubmitHandlerTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    @Parameters({
-        "null, null, callbackStage must not be null",
-        "ABOUT_TO_SUBMIT, null, callback must not be null"
-    })
-    public void canHandleCornerCaseScenarios(@Nullable PreSubmitCallbackStage callbackStage,
+    @ParameterizedTest
+    @MethodSource("canHandleTestData")
+    void canHandleCornerCaseScenarios(@Nullable PreSubmitCallbackStage callbackStage,
                                              @Nullable Callback<AsylumCase> callback,
                                              String expectedExceptionMessage) {
         try {
@@ -84,9 +81,20 @@ public class EditDocsAboutToSubmitHandlerTest {
         }
     }
 
-    @Test
-    @Parameters(method = "generateNewFileAddedScenario, generateFileUpdatedScenario, generateDeletedFileScenario")
-    public void handle(AsylumCase asylumCase,
+    static Stream<Arguments> canHandleTestData() {
+
+        return Stream.of(
+            Arguments.of(null, null, "callbackStage must not be null"),
+            Arguments.of(ABOUT_TO_SUBMIT, null, "callback must not be null")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource({
+        "generateNewFileAddedScenario",
+        "generateFileUpdatedScenario",
+        "generateDeletedFileScenario" })
+    void handle(AsylumCase asylumCase,
                        AsylumCase asylumCaseBefore,
                        AsylumCaseFieldDefinition caseFieldDefinition,
                        String expectedSuppliedBy,
@@ -100,7 +108,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         }
 
         PreSubmitCallbackResponse<AsylumCase> currentResult = editDocsAboutToSubmitHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            .handle(ABOUT_TO_SUBMIT, callback);
 
         Optional<List<IdValue<DocumentWithMetadata>>> currentIdValueOptional = currentResult.getData()
             .read(caseFieldDefinition);
@@ -122,7 +130,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         then(editDocService).should(times(1)).cleanUpOverviewTabDocs(any(), any());
     }
 
-    private boolean isDeletedFileScenario(String expectedSuppliedBy) {
+    boolean isDeletedFileScenario(String expectedSuppliedBy) {
         return expectedSuppliedBy == null;
     }
 
@@ -131,7 +139,7 @@ public class EditDocsAboutToSubmitHandlerTest {
      *
      * @return parameters for the handle method to recreate different file addition scenarios
      */
-    private Object[] generateNewFileAddedScenario() {
+    static Stream<Arguments> generateNewFileAddedScenario() {
         String expectedSuppliedBy = "some supplier";
         AsylumCase asylumCaseWithAdditionalEvidenceDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
             DocumentTag.NONE, ADDITIONAL_EVIDENCE_DOCUMENTS);
@@ -159,27 +167,30 @@ public class EditDocsAboutToSubmitHandlerTest {
 
         AsylumCase asylumCaseBefore = new AsylumCase();
 
-        return new Object[]{
-            new Object[]{asylumCaseWithAdditionalEvidenceDoc, asylumCaseBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
-                expectedSuppliedBy, NONE},
-            new Object[]{asylumCaseWithTribunalDoc, asylumCaseBefore, TRIBUNAL_DOCUMENTS, expectedSuppliedBy,
-                DocumentTag.NONE},
-            new Object[]{asylumCaseWithHearingDoc, asylumCaseBefore, HEARING_DOCUMENTS, expectedSuppliedBy,
-                DocumentTag.NONE},
-            new Object[]{asylumCaseWithLegalRepsDoc, asylumCaseBefore, LEGAL_REPRESENTATIVE_DOCUMENTS,
-                expectedSuppliedBy, DocumentTag.NONE},
-            new Object[]{asylumCaseWithAddEndUmDoc, asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS,
-                expectedSuppliedBy, DocumentTag.NONE},
-            new Object[]{asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
-                expectedSuppliedBy, DocumentTag.NONE},
-            new Object[]{asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
-                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE},
-            new Object[]{asylumCaseWithFinalDecisionAndReasonsDoc, asylumCaseBefore,
-                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE}
-        };
+        List<Arguments> scenarios = new ArrayList<>();
+
+
+        scenarios.add(Arguments.of(asylumCaseWithAdditionalEvidenceDoc, asylumCaseBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
+                expectedSuppliedBy, NONE));
+        scenarios.add(Arguments.of(asylumCaseWithTribunalDoc, asylumCaseBefore, TRIBUNAL_DOCUMENTS, expectedSuppliedBy,
+                DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithHearingDoc, asylumCaseBefore, HEARING_DOCUMENTS, expectedSuppliedBy,
+                DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithLegalRepsDoc, asylumCaseBefore, LEGAL_REPRESENTATIVE_DOCUMENTS,
+                expectedSuppliedBy, DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithAddEndUmDoc, asylumCaseBefore, ADDENDUM_EVIDENCE_DOCUMENTS,
+                expectedSuppliedBy, DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithRespondentDoc, asylumCaseBefore, RESPONDENT_DOCUMENTS,
+                expectedSuppliedBy, DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithDraftDecisionAndReasonsDoc, asylumCaseBefore,
+                DRAFT_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE));
+        scenarios.add(Arguments.of(asylumCaseWithFinalDecisionAndReasonsDoc, asylumCaseBefore,
+                FINAL_DECISION_AND_REASONS_DOCUMENTS, expectedSuppliedBy, DocumentTag.NONE));
+
+        return scenarios.stream();
     }
 
-    private AsylumCase buildAsylumCaseGivenParams(String expectedSuppliedBy, DocumentTag documentTag,
+    static AsylumCase buildAsylumCaseGivenParams(String expectedSuppliedBy, DocumentTag documentTag,
                                                   AsylumCaseFieldDefinition fieldDefinition) {
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(fieldDefinition, buildIdValuesGivenParams(documentTag, expectedSuppliedBy));
@@ -191,15 +202,15 @@ public class EditDocsAboutToSubmitHandlerTest {
      *
      * @return parameters for the handle method to recreate different delete file scenarios
      */
-    private Object[] generateDeletedFileScenario() {
+    static Stream<Arguments> generateDeletedFileScenario() {
         AsylumCase asylumCase = new AsylumCase();
 
         AsylumCase asylumCaseBefore = buildAsylumCaseGivenParams("some suppliedBy",
             ADDITIONAL_EVIDENCE, ADDITIONAL_EVIDENCE_DOCUMENTS);
 
-        return new Object[]{
-            new Object[]{asylumCase, asylumCaseBefore, ADDITIONAL_EVIDENCE_DOCUMENTS, null, ADDITIONAL_EVIDENCE}
-        };
+        return Stream.of(
+            Arguments.of(asylumCase, asylumCaseBefore, ADDITIONAL_EVIDENCE_DOCUMENTS, null, ADDITIONAL_EVIDENCE)
+        );
     }
 
     /**
@@ -207,7 +218,7 @@ public class EditDocsAboutToSubmitHandlerTest {
      *
      * @return parameters for the handle method to recreate different file updated scenarios
      */
-    private Object[] generateFileUpdatedScenario() {
+    static Stream<Arguments> generateFileUpdatedScenario() {
         String expectedSuppliedBy = "updated supplier";
         AsylumCase asylumCaseWithAdditionalEvidenceDoc = buildAsylumCaseGivenParams(expectedSuppliedBy,
             ADDITIONAL_EVIDENCE, ADDITIONAL_EVIDENCE_DOCUMENTS);
@@ -218,22 +229,24 @@ public class EditDocsAboutToSubmitHandlerTest {
         AsylumCase asylumCaseWithTribunalDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, NONE, TRIBUNAL_DOCUMENTS);
         AsylumCase asylumCaseWithTribunalDocBefore = buildAsylumCaseGivenParams(beforeSupplier, NONE, TRIBUNAL_DOCUMENTS);
 
-        return new Object[]{
-            new Object[]{asylumCaseWithAdditionalEvidenceDoc, asylumCaseWithAdditionalEvidenceDocBefore,
-                ADDITIONAL_EVIDENCE_DOCUMENTS, expectedSuppliedBy, ADDITIONAL_EVIDENCE},
-            new Object[]{asylumCaseWithTribunalDoc, asylumCaseWithTribunalDocBefore, TRIBUNAL_DOCUMENTS,
-                expectedSuppliedBy, NONE}
-        };
+        List<Arguments> scenarios = new ArrayList<>();
+
+        scenarios.add(Arguments.of(asylumCaseWithAdditionalEvidenceDoc, asylumCaseWithAdditionalEvidenceDocBefore,
+                ADDITIONAL_EVIDENCE_DOCUMENTS, expectedSuppliedBy, ADDITIONAL_EVIDENCE));
+        scenarios.add(Arguments.of(asylumCaseWithTribunalDoc, asylumCaseWithTribunalDocBefore, TRIBUNAL_DOCUMENTS,
+                expectedSuppliedBy, NONE));
+
+        return scenarios.stream();
     }
 
-    private List<IdValue<DocumentWithMetadata>> buildIdValuesGivenParams(DocumentTag documentTag,
+    static List<IdValue<DocumentWithMetadata>> buildIdValuesGivenParams(DocumentTag documentTag,
                                                                          String suppliedBy) {
         IdValue<DocumentWithMetadata> idValueWithNoTag = new IdValue<>(ID_VALUE, buildValueWithNoTag(documentTag,
             suppliedBy));
         return Collections.singletonList(idValueWithNoTag);
     }
 
-    private DocumentWithMetadata buildValueWithNoTag(DocumentTag documentTag, String suppliedBy) {
+    static DocumentWithMetadata buildValueWithNoTag(DocumentTag documentTag, String suppliedBy) {
         Document doc = new Document("http://dm-store:4506/documents/80e2af54-7a93-498f-af55-fe190f3224d2",
             "http://dm-store:4506/documents/80e2af54-7a93-498f-af55-fe190f3224d2/binary",
             "Screenshot 2020-03-06 at 10.07.01.jpg");

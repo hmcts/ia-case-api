@@ -1,35 +1,36 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import feign.FeignException;
 import java.time.ZonedDateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TimedEventServiceSchedulerTest {
+@ExtendWith(MockitoExtension.class)
+class TimedEventServiceSchedulerTest {
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private AccessTokenProvider accessTokenProvider;
-    @Mock private TimedEventServiceApi timedEventServiceApi;
+    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock AccessTokenProvider accessTokenProvider;
+    @Mock TimedEventServiceApi timedEventServiceApi;
 
     TimedEventServiceScheduler timedEventServiceScheduler;
 
-    private String s2sToken = "someS2sToken";
-    private String authToken = "authToken";
+    String s2sToken = "someS2sToken";
+    String authToken = "authToken";
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
+
         when(serviceAuthTokenGenerator.generate()).thenReturn(s2sToken);
         when(accessTokenProvider.getAccessToken()).thenReturn(authToken);
 
@@ -38,7 +39,7 @@ public class TimedEventServiceSchedulerTest {
 
 
     @Test
-    public void should_invoke_timed_event_api() {
+    void should_invoke_timed_event_api() {
 
         TimedEvent timedEvent = new TimedEvent(
             "someId",
@@ -55,7 +56,7 @@ public class TimedEventServiceSchedulerTest {
     }
 
     @Test
-    public void should_rethrow_exception_from_api() {
+    void should_rethrow_exception_from_api() {
 
         TimedEvent timedEvent = new TimedEvent(
             "someId",

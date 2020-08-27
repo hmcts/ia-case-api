@@ -5,19 +5,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class DirectionTest {
+class DirectionTest {
 
-    private final String explanation = "Do the thing";
-    private final Parties parties = Parties.RESPONDENT;
-    private final String dateDue = "2018-12-31T12:34:56";
-    private final String dateSent = "2018-12-25";
-    private DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
-    private List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
+    final String explanation = "Do the thing";
+    final Parties parties = Parties.RESPONDENT;
+    final String dateDue = "2018-12-31T12:34:56";
+    final String dateSent = "2018-12-25";
+    DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
+    List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
 
-    private Direction direction = new Direction(
+    Direction direction = new Direction(
         explanation,
         parties,
         dateDue,
@@ -27,7 +27,7 @@ public class DirectionTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(explanation, direction.getExplanation());
         assertEquals(parties, direction.getParties());
@@ -38,7 +38,7 @@ public class DirectionTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new Direction(null, parties, dateDue, dateSent, tag, previousDates))
             .isExactlyInstanceOf(NullPointerException.class);

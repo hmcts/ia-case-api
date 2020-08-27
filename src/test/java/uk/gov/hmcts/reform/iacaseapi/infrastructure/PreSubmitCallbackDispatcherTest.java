@@ -11,12 +11,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
@@ -38,30 +38,31 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValid;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation.EventValidCheckers;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PreSubmitCallbackDispatcherTest {
+class PreSubmitCallbackDispatcherTest {
 
-    @Mock private CcdEventAuthorizor ccdEventAuthorizor;
-    @Mock private PreSubmitCallbackHandler<CaseData> handler1;
-    @Mock private PreSubmitCallbackHandler<CaseData> handler2;
-    @Mock private PreSubmitCallbackHandler<CaseData> handler3;
-    @Mock private PreSubmitCallbackStateHandler<CaseData> stateHandler;
-    @Mock private EventValidCheckers<AsylumCase> eventValidChecker;
-    @Mock private Callback<CaseData> callback;
-    @Mock private CaseDetails<CaseData> caseDetails;
-    @Mock private CaseData caseData;
-    @Mock private CaseData caseDataMutation1;
-    @Mock private CaseData caseDataMutation2;
-    @Mock private CaseData caseDataMutation3;
-    @Mock private PreSubmitCallbackResponse<CaseData> response1;
-    @Mock private PreSubmitCallbackResponse<CaseData> response2;
-    @Mock private PreSubmitCallbackResponse<CaseData> response3;
+    @Mock CcdEventAuthorizor ccdEventAuthorizor;
+    @Mock PreSubmitCallbackHandler<CaseData> handler1;
+    @Mock PreSubmitCallbackHandler<CaseData> handler2;
+    @Mock PreSubmitCallbackHandler<CaseData> handler3;
+    @Mock PreSubmitCallbackStateHandler<CaseData> stateHandler;
+    @Mock EventValidCheckers<AsylumCase> eventValidChecker;
+    @Mock Callback<CaseData> callback;
+    @Mock CaseDetails<CaseData> caseDetails;
+    @Mock CaseData caseData;
+    @Mock CaseData caseDataMutation1;
+    @Mock CaseData caseDataMutation2;
+    @Mock CaseData caseDataMutation3;
+    @Mock PreSubmitCallbackResponse<CaseData> response1;
+    @Mock PreSubmitCallbackResponse<CaseData> response2;
+    @Mock PreSubmitCallbackResponse<CaseData> response3;
 
-    private PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher;
+    PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher(
             ccdEventAuthorizor,
             Arrays.asList(
@@ -72,12 +73,10 @@ public class PreSubmitCallbackDispatcherTest {
             eventValidChecker,
             Arrays.asList(stateHandler)
         );
-
-        when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
     }
 
     @Test
-    public void should_add_errors_if_events_invalid_for_journey_type() {
+    void should_add_errors_if_events_invalid_for_journey_type() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(caseData);
         when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid("Invalid reason"));
@@ -88,7 +87,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_dispatch_callback_to_handlers_according_to_priority_collecting_any_error_messages() {
+    void should_dispatch_callback_to_handlers_according_to_priority_collecting_any_error_messages() {
 
         Set<String> expectedErrors =
             ImmutableSet.of("error1", "error2", "error3", "error4");
@@ -122,6 +121,8 @@ public class PreSubmitCallbackDispatcherTest {
             when(handler3.canHandle(eq(callbackStage), any(Callback.class))).thenReturn(true);
             when(handler3.handle(eq(callbackStage), any(Callback.class))).thenReturn(response3);
 
+            when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
+
             PreSubmitCallbackResponse<CaseData> callbackResponse =
                 preSubmitCallbackDispatcher.handle(callbackStage, callback);
 
@@ -147,19 +148,13 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_only_dispatch_callback_to_handlers_that_can_handle_it() {
+    void should_only_dispatch_callback_to_handlers_that_can_handle_it() {
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
             when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(caseData);
-
-            when(response1.getData()).thenReturn(caseData);
-            when(response1.getErrors()).thenReturn(Collections.emptySet());
-
-            when(response2.getData()).thenReturn(caseData);
-            when(response2.getErrors()).thenReturn(Collections.emptySet());
 
             when(response3.getData()).thenReturn(caseData);
             when(response3.getErrors()).thenReturn(Collections.emptySet());
@@ -175,6 +170,8 @@ public class PreSubmitCallbackDispatcherTest {
             when(handler3.getDispatchPriority()).thenReturn(DispatchPriority.EARLY);
             when(handler3.canHandle(eq(callbackStage), any(Callback.class))).thenReturn(true);
             when(handler3.handle(eq(callbackStage), any(Callback.class))).thenReturn(response3);
+
+            when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
 
             PreSubmitCallbackResponse<CaseData> callbackResponse =
                 preSubmitCallbackDispatcher.handle(callbackStage, callback);
@@ -199,7 +196,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_dispatch_to_handlers_if_user_not_authorized_for_event() {
+    void should_not_dispatch_to_handlers_if_user_not_authorized_for_event() {
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -226,10 +223,11 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_error_if_no_handlers_are_provided() {
+    void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
             new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidChecker, Collections.emptyList());
+        when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid());
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -258,7 +256,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_ccd_event_authorizor() {
+    void should_not_allow_null_ccd_event_authorizor() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidChecker, Collections.emptyList()))
             .hasMessage("ccdEventAuthorizor must not be null")
@@ -266,7 +264,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_handlers() {
+    void should_not_allow_null_handlers() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker, null))
             .hasMessage("callbackHandlers must not be null")
@@ -274,7 +272,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -286,7 +284,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_sort_handlers_by_name() {
+    void should_sort_handlers_by_name() {
         PreSubmitCallbackHandler<AsylumCase> h1 = new AppealGroundsForDisplayFormatter();
         PreSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));
         PreSubmitCallbackHandler<AsylumCase> h3 = new LegalRepresentativeDetailsHandler(mock(UserDetailsProvider.class));

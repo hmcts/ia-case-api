@@ -9,11 +9,11 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
@@ -21,28 +21,29 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionAppenderTest {
+class DirectionAppenderTest {
 
-    @Mock private DateProvider dateProvider;
-    @Mock private IdValue<Direction> existingDirectionById1;
-    @Mock private IdValue<Direction> existingDirectionById2;
-    private String newDirectionExplanation = "New direction";
-    private Parties newDirectionParties = Parties.BOTH;
-    private String newDirectionDateDue = "2018-12-25";
-    private String expectedDateSent = LocalDate.MAX.toString();
-    private DirectionTag expectedTag = DirectionTag.RESPONDENT_REVIEW;
+    @Mock DateProvider dateProvider;
+    @Mock IdValue<Direction> existingDirectionById1;
+    @Mock IdValue<Direction> existingDirectionById2;
+    String newDirectionExplanation = "New direction";
+    Parties newDirectionParties = Parties.BOTH;
+    String newDirectionDateDue = "2018-12-25";
+    String expectedDateSent = LocalDate.MAX.toString();
+    DirectionTag expectedTag = DirectionTag.RESPONDENT_REVIEW;
 
-    private DirectionAppender directionAppender;
+    DirectionAppender directionAppender;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         directionAppender = new DirectionAppender(dateProvider);
     }
 
     @Test
-    public void should_append_new_direction_in_first_position() {
+    void should_append_new_direction_in_first_position() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -86,7 +87,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_return_new_documents_if_no_existing_documents_present() {
+    void should_return_new_documents_if_no_existing_documents_present() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -114,7 +115,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         List<IdValue<Direction>> existingDirections =
             asList(existingDirectionById1);
@@ -176,7 +177,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_addpend_direction_with_questions() {
+    void should_addpend_direction_with_questions() {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         Direction existingDirection1 = mock(Direction.class);

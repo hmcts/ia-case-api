@@ -6,11 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -22,22 +22,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ProfessionalUsersRetrieverTest {
+class ProfessionalUsersRetrieverTest {
 
-    private ProfessionalUsersRetriever professionalUsersRetriever;
+    ProfessionalUsersRetriever professionalUsersRetriever;
 
-    private String refdataUrl = "http:/some-url";
-    private String refdataPath = "/some-path";
+    String refdataUrl = "http:/some-url";
+    String refdataPath = "/some-path";
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private RestTemplate restTemplate;
-    @Mock private ResponseEntity responseEntity;
+    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock UserDetailsProvider userDetailsProvider;
+    @Mock RestTemplate restTemplate;
+    @Mock ResponseEntity responseEntity;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
 
         professionalUsersRetriever = new ProfessionalUsersRetriever(restTemplate,
             serviceAuthTokenGenerator,
@@ -48,7 +48,7 @@ public class ProfessionalUsersRetrieverTest {
     }
 
     @Test
-    public void should_successfully_get_prof_users_response() {
+    void should_successfully_get_prof_users_response() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
@@ -85,7 +85,7 @@ public class ProfessionalUsersRetrieverTest {
 
     }
 
-    public void wraps_http_exception_correctly_when_calling_prof_ref_data() {
+    void wraps_http_exception_correctly_when_calling_prof_ref_data() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";

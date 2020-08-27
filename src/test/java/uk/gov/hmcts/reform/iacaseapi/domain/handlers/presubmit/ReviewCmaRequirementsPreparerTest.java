@@ -12,11 +12,11 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DatesToAvoid;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
@@ -26,29 +26,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ReviewCmaRequirementsPreparerTest {
+@ExtendWith(MockitoExtension.class)
+class ReviewCmaRequirementsPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
-    @Mock private List<IdValue<DatesToAvoid>> datesToAvoid;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock List<IdValue<DatesToAvoid>> datesToAvoid;
 
-    private ReviewCmaRequirementsPreparer reviewCmaRequirementsPreparer;
+    ReviewCmaRequirementsPreparer reviewCmaRequirementsPreparer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         reviewCmaRequirementsPreparer =
             new ReviewCmaRequirementsPreparer();
+    }
+
+    @Test
+    void should_review_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_CMA_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
 
-    @Test
-    public void should_review_hearing_requirements() {
         interpreterLanguage = Arrays.asList(
             new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
         );
@@ -79,7 +81,7 @@ public class ReviewCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewCmaRequirementsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -92,7 +94,7 @@ public class ReviewCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewCmaRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

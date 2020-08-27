@@ -10,36 +10,32 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
-public class EditDocsAuditLogServiceTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+@ExtendWith(MockitoExtension.class)
+class EditDocsAuditLogServiceTest {
 
     @Mock
-    private EditDocsAuditService editDocsAuditService;
+    EditDocsAuditService editDocsAuditService;
     @Mock
-    private UserDetails userDetails;
+    UserDetails userDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
     @Mock
-    private UserDetailsProvider userDetailsProvider;
+    UserDetailsProvider userDetailsProvider;
     @InjectMocks
-    private EditDocsAuditLogService editDocsAuditLogService;
+    EditDocsAuditLogService editDocsAuditLogService;
 
     @Test
-    public void shouldBuildAuditDetails() {
+    void shouldBuildAuditDetails() {
         mockUserDetailsProvider();
         mockAuditServiceDependencies();
         given(asylumCase.read(eq(AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON), eq(String.class)))
@@ -56,14 +52,14 @@ public class EditDocsAuditLogServiceTest {
         assertNotNull(actualAuditDetails.getDateTime());
     }
 
-    private void mockUserDetailsProvider() {
+    void mockUserDetailsProvider() {
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn("user-id-124");
         when(userDetails.getForename()).thenReturn("some forename");
         when(userDetails.getSurname()).thenReturn("some surname");
     }
 
-    private void mockAuditServiceDependencies() {
+    void mockAuditServiceDependencies() {
         when(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(AsylumCase.class),
             any(AsylumCase.class), any(AsylumCaseFieldDefinition.class)))
             .thenReturn(Collections.singletonList("id1"))

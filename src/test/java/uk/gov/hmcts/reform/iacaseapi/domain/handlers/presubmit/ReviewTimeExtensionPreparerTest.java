@@ -15,12 +15,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -30,27 +30,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewTimeExtensionPreparerTest {
+class ReviewTimeExtensionPreparerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
 
 
-    private ReviewTimeExtensionPreparer reviewTimeExtensionPreparer;
+    ReviewTimeExtensionPreparer reviewTimeExtensionPreparer;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
+
         reviewTimeExtensionPreparer = new ReviewTimeExtensionPreparer();
     }
 
     @Test
-    public void preparer_review_time_extension_fields() {
+    void preparer_review_time_extension_fields() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
@@ -80,7 +81,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void preparer_review_time_extension_fields_for_current_state() {
+    void preparer_review_time_extension_fields_for_current_state() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension("date1", "reasons1", State.APPEAL_SUBMITTED, SUBMITTED, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", State.AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
@@ -108,7 +109,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void gets_error_if_no_time_extension_request() {
+    void gets_error_if_no_time_extension_request() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -120,7 +121,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -133,7 +134,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

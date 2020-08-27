@@ -6,13 +6,13 @@ import static org.mockito.AdditionalMatchers.and;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,29 +20,29 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DbAppealReferenceNumberGeneratorTest {
+class DbAppealReferenceNumberGeneratorTest {
 
-    private static final int SEQUENCE_SEED = 50000;
+    static final int SEQUENCE_SEED = 50000;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private NamedParameterJdbcTemplate jdbcTemplate;
+    @Mock DateProvider dateProvider;
+    @Mock NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Captor private ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
-    @Captor private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
+    @Captor ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
+    @Captor ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
 
-    private final long caseId = 123;
-    private final AppealType appealType = AppealType.PA;
-    private final int currentYear = 2017;
+    final long caseId = 123;
+    final AppealType appealType = AppealType.PA;
+    final int currentYear = 2017;
 
-    private MapSqlParameterSource expectedParameters;
-    private String expectedAppealReferenceNumber = "PA/12345/2017";
+    MapSqlParameterSource expectedParameters;
+    String expectedAppealReferenceNumber = "PA/12345/2017";
 
-    private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
+    DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         dbAppealReferenceNumberGenerator =
             new DbAppealReferenceNumberGenerator(
@@ -58,6 +58,10 @@ public class DbAppealReferenceNumberGeneratorTest {
         expectedParameters.addValue("appealType", appealType.name());
         expectedParameters.addValue("year", currentYear);
         expectedParameters.addValue("seed", SEQUENCE_SEED);
+    }
+
+    @Test
+    void should_call_db_to_generate_new_appeal_reference_number() {
 
         when(jdbcTemplate.queryForObject(
             and(
@@ -67,10 +71,6 @@ public class DbAppealReferenceNumberGeneratorTest {
             any(MapSqlParameterSource.class),
             eq(String.class)
         )).thenReturn(expectedAppealReferenceNumber);
-    }
-
-    @Test
-    public void should_call_db_to_generate_new_appeal_reference_number() {
 
         String appealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(caseId, appealType);
@@ -117,7 +117,16 @@ public class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void should_return_existing_appeal_reference_number_already_when_exists() {
+    void should_return_existing_appeal_reference_number_already_when_exists() {
+
+        when(jdbcTemplate.queryForObject(
+            and(
+                contains("SELECT"),
+                contains("FROM ia_case_api.appeal_reference_numbers")
+            ),
+            any(MapSqlParameterSource.class),
+            eq(String.class)
+        )).thenReturn(expectedAppealReferenceNumber);
 
         when(jdbcTemplate.update(
             and(
@@ -134,7 +143,7 @@ public class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void should_throw_when_appeal_reference_number_for_case_not_found() {
+    void should_throw_when_appeal_reference_number_for_case_not_found() {
 
         when(jdbcTemplate.queryForObject(
             and(

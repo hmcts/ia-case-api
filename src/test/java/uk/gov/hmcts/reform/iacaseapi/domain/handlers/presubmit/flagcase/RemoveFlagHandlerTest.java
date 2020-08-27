@@ -5,19 +5,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -26,29 +26,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(JUnitParamsRunner.class)
-public class RemoveFlagHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class RemoveFlagHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    private final CaseFlag expectedCaseFlag =
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    final CaseFlag expectedCaseFlag =
         new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
-    private final CaseFlag expectedCaseFlag2 =
+    final CaseFlag expectedCaseFlag2 =
         new CaseFlag(CaseFlagType.ANONYMITY, "some anonymity flag additional info");
 
-    private List<IdValue<CaseFlag>> expectedList;
-    private IdValue<CaseFlag> expectedIdValue;
-    private RemoveFlagHandler removeFlagHandler;
+    List<IdValue<CaseFlag>> expectedList;
+    IdValue<CaseFlag> expectedIdValue;
+    RemoveFlagHandler removeFlagHandler;
 
-    @Before
-    public void setUp() {
-        when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+    @BeforeEach
+    void setUp() {
 
         removeFlagHandler = new RemoveFlagHandler();
         expectedIdValue = new IdValue<>("2", expectedCaseFlag2);
@@ -59,7 +53,7 @@ public class RemoveFlagHandlerTest {
     }
 
     @Test
-    public void removes_a_specified_flag() {
+    void removes_a_specified_flag() {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
@@ -70,6 +64,9 @@ public class RemoveFlagHandlerTest {
         final List<IdValue<CaseFlag>> expectedCaseFlagList = new ArrayList<>();
         expectedCaseFlagList.add(expectedIdValue);
 
+        when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(REMOVE_FLAG_TYPE_OF_FLAG, DynamicList.class)).thenReturn(Optional.of(dynamicList));
         when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
 
@@ -86,18 +83,9 @@ public class RemoveFlagHandlerTest {
         verify(asylumCase, times(1)).clear(REMOVE_FLAG_TYPE_OF_FLAG);
     }
 
-    @Test
-    @Parameters({
-        "ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION",
-        "COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION",
-        "DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION",
-        "DETAINED_IMMIGRATION_APPEAL, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION",
-        "FOREIGN_NATIONAL_OFFENDER, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION",
-        "POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION",
-        "UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION",
-        "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION",
-    })
-    public void clear_display_flags_test(CaseFlagType flagType,
+    @ParameterizedTest
+    @MethodSource("clearDisplayFlagsTestData")
+    void clear_display_flags_test(CaseFlagType flagType,
                                          AsylumCaseFieldDefinition caseFlagExists,
                                          AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
         removeFlagHandler.clearDisplayFlags(flagType, asylumCase);
@@ -106,8 +94,22 @@ public class RemoveFlagHandlerTest {
 
     }
 
+    private static Stream<Arguments> clearDisplayFlagsTestData() {
+
+        return Stream.of(
+            Arguments.of(ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION),
+            Arguments.of(COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION),
+            Arguments.of(DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION),
+            Arguments.of(DETAINED_IMMIGRATION_APPEAL, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION),
+            Arguments.of(FOREIGN_NATIONAL_OFFENDER, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION),
+            Arguments.of(POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION),
+            Arguments.of(UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION),
+            Arguments.of(UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION)
+        );
+    }
+
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeFlagHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -2,20 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_TO_FORCE_REQUEST_CASE_BUILDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,17 +17,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
+import java.util.stream.Stream;
 import junitparams.converters.Nullable;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -49,30 +42,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 
-@RunWith(JUnitParamsRunner.class)
-public class RequestCaseBuildingHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@ExtendWith(MockitoExtension.class)
+class RequestCaseBuildingHandlerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    static Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private UserDetailsProvider userDetailsProvider;
+    UserDetailsProvider userDetailsProvider;
     @Mock
-    private AsylumCase asylumCase;
+    static AsylumCase asylumCase;
     @Mock
-    private Appender<CaseNote> appender;
+    Appender<CaseNote> appender;
     @Mock
-    private DateProvider dateProvider;
+    DateProvider dateProvider;
 
     @InjectMocks
-    private RequestCaseBuildingHandler requestCaseBuildingHandler;
+    RequestCaseBuildingHandler requestCaseBuildingHandler;
 
     @Test
-    public void should_set_the_flag_on_valid_case_data() {
+    void should_set_the_flag_on_valid_case_data() {
         mockCallback(asylumCase);
 
         requestCaseBuildingHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -80,15 +70,15 @@ public class RequestCaseBuildingHandlerTest {
         verify(asylumCase).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
     }
 
-    private void mockCallback(AsylumCase asylumCase) {
-        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
+    void mockCallback(AsylumCase asylumCase) {
+        when(callback.getEvent()).thenReturn(REQUEST_CASE_BUILDING);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    @Parameters(method = "generateAsylumCaseWithDifferentCaseNotesScenarios")
-    public void givenValidCallback_shouldCopyReasonToCaseNote(AsylumCase customAsylumCase,
+    @ParameterizedTest
+    @MethodSource("generateAsylumCaseWithDifferentCaseNotesScenarios")
+    void givenValidCallback_shouldCopyReasonToCaseNote(AsylumCase customAsylumCase,
                                                               IdValue<CaseNote> expectedIdCaseNote,
                                                               List<IdValue<CaseNote>> expectedAppendedCaseNotes) {
         mockCallback(customAsylumCase);
@@ -97,7 +87,7 @@ public class RequestCaseBuildingHandlerTest {
         given(dateProvider.now()).willReturn(LocalDate.now());
 
         given(appender.append(any(CaseNote.class), anyList())).willReturn(expectedAppendedCaseNotes);
-        given(callback.getEvent()).willReturn(Event.FORCE_REQUEST_CASE_BUILDING);
+        given(callback.getEvent()).willReturn(FORCE_REQUEST_CASE_BUILDING);
 
         PreSubmitCallbackResponse<AsylumCase> currentResult =
             requestCaseBuildingHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -119,7 +109,7 @@ public class RequestCaseBuildingHandlerTest {
         assertThat(reason.isPresent()).isFalse();
     }
 
-    private Object[] generateAsylumCaseWithDifferentCaseNotesScenarios() {
+    private static Stream<Arguments> generateAsylumCaseWithDifferentCaseNotesScenarios() {
         String reasonToForceCase = "some reason";
         String otherReasonToForceCase = "some other reason";
         AsylumCase customAsylumCase = buildAsylumCaseWithNoCaseNotesAndReason(reasonToForceCase);
@@ -131,54 +121,38 @@ public class RequestCaseBuildingHandlerTest {
         List<IdValue<CaseNote>> caseNotes = Arrays.asList(idCaseNote1, idCaseNote2);
         customAsylumCaseWithExistingCaseNotes.write(CASE_NOTES, caseNotes);
 
-        return new Object[]{
-            new Object[]{
-                new AsylumCase(),
-                null,
-                null
-            },
-            new Object[]{
-                customAsylumCase,
-                buildIdCaseNote(reasonToForceCase, "1"),
-                Collections.singletonList(buildIdCaseNote(reasonToForceCase, "1"))
-            },
-            new Object[]{
-                customAsylumCaseWithSomeOtherReason,
-                buildIdCaseNote(otherReasonToForceCase, "1"),
-                Collections.singletonList(buildIdCaseNote(otherReasonToForceCase, "1"))
-            },
-            new Object[]{
-                customAsylumCaseWithExistingCaseNotes,
-                buildIdCaseNote(reasonToForceCase, "3"),
-                Arrays.asList(idCaseNote1, idCaseNote2, buildIdCaseNote(reasonToForceCase, "3"))
-            }
-        };
+        return Stream.of(
+            Arguments.of(new AsylumCase(), null, null),
+            Arguments.of(customAsylumCase, buildIdCaseNote(reasonToForceCase, "1"), Collections.singletonList(buildIdCaseNote(reasonToForceCase, "1"))),
+            Arguments.of(customAsylumCaseWithSomeOtherReason, buildIdCaseNote(otherReasonToForceCase, "1"), Collections.singletonList(buildIdCaseNote(otherReasonToForceCase, "1"))),
+            Arguments.of(customAsylumCaseWithExistingCaseNotes, buildIdCaseNote(reasonToForceCase, "3"), Arrays.asList(idCaseNote1, idCaseNote2, buildIdCaseNote(reasonToForceCase, "3")))
+        );
     }
 
-    private CaseNote buildCaseNote(String reason) {
+    private static CaseNote buildCaseNote(String reason) {
         return new CaseNote("Force case from Awaiting Respondent Evidence to Case Building",
             reason, "some forename some surname", LocalDate.now().toString());
     }
 
-    private AsylumCase buildAsylumCaseWithNoCaseNotesAndReason(String reasonToForceCase) {
+    private static AsylumCase buildAsylumCaseWithNoCaseNotesAndReason(String reasonToForceCase) {
         AsylumCase customAsylumCase = new AsylumCase();
         customAsylumCase.write(REASON_TO_FORCE_REQUEST_CASE_BUILDING, reasonToForceCase);
         return customAsylumCase;
     }
 
-    private void mockUserDetailsProvider() {
+    void mockUserDetailsProvider() {
         given(userDetailsProvider.getUserDetails())
             .willReturn(new IdamUserDetails("some token", "some id", Collections.emptyList(),
                 "some email", "some forename", "some surname"));
     }
 
-    private IdValue<CaseNote> buildIdCaseNote(String noteDescription, String id) {
+    private  static  IdValue<CaseNote> buildIdCaseNote(String noteDescription, String id) {
         return new IdValue<>(id, buildCaseNote(noteDescription));
     }
 
-    @Test
-    @Parameters(method = "generateExceptionScenarios")
-    public void handling_should_throw_if_cannot_actually_handle(PreSubmitCallbackStage callbackStage,
+    @ParameterizedTest
+    @MethodSource("generateExceptionScenarios")
+    void handling_should_throw_if_cannot_actually_handle(PreSubmitCallbackStage callbackStage,
                                                                 Callback<AsylumCase> callback,
                                                                 String expectedMsg) {
 
@@ -189,25 +163,20 @@ public class RequestCaseBuildingHandlerTest {
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE, YesOrNo.NO);
     }
 
-    private Object[] generateExceptionScenarios() {
+    private static Stream<Arguments> generateExceptionScenarios() {
         CaseDetails<AsylumCase> dummyCaseDetails = new CaseDetails<>(1L, "", State.APPEAL_STARTED,
             asylumCase, LocalDateTime.now());
-        Callback<AsylumCase> dummyCallback = new Callback<>(dummyCaseDetails, Optional.empty(), Event.SEND_DIRECTION);
+        Callback<AsylumCase> dummyCallback = new Callback<>(dummyCaseDetails, Optional.empty(), SEND_DIRECTION);
 
-        return new Object[]{
-            new Object[]{ABOUT_TO_START, dummyCallback, "Cannot handle callback"},
-            new Object[]{ABOUT_TO_SUBMIT, dummyCallback, "Cannot handle callback"}
-        };
+        return Stream.of(
+            Arguments.of(ABOUT_TO_START, dummyCallback, "Cannot handle callback"),
+            Arguments.of(ABOUT_TO_SUBMIT, dummyCallback, "Cannot handle callback")
+        );
     }
 
-    @Test
-    @Parameters({
-        "ABOUT_TO_SUBMIT, REQUEST_CASE_BUILDING, true",
-        "ABOUT_TO_SUBMIT, FORCE_REQUEST_CASE_BUILDING, true",
-        "MID_EVENT, REQUEST_CASE_BUILDING, false",
-        "ABOUT_TO_SUBMIT, UPLOAD_HEARING_RECORDING, false"
-    })
-    public void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
+    @ParameterizedTest
+    @MethodSource("canHandleTestData")
+    void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
         if (!callbackStage.equals(PreSubmitCallbackStage.MID_EVENT)) {
             given(callback.getEvent()).willReturn(event);
         }
@@ -217,9 +186,18 @@ public class RequestCaseBuildingHandlerTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    @Parameters(method = "generateNullArgsScenarios")
-    public void given_null_callback_should_throw_exception(@Nullable PreSubmitCallbackStage callbackStage,
+    private static Stream<Arguments> canHandleTestData() {
+        return Stream.of(
+            Arguments.of(ABOUT_TO_SUBMIT, REQUEST_CASE_BUILDING, true),
+            Arguments.of(ABOUT_TO_SUBMIT, FORCE_REQUEST_CASE_BUILDING, true),
+            Arguments.of(MID_EVENT, REQUEST_CASE_BUILDING, false),
+            Arguments.of(ABOUT_TO_SUBMIT, UPLOAD_HEARING_RECORDING, false)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateNullArgsScenarios")
+    void given_null_callback_should_throw_exception(@Nullable PreSubmitCallbackStage callbackStage,
                                                            @Nullable Callback<AsylumCase> callback,
                                                            String expectedMessage) {
 
@@ -228,11 +206,12 @@ public class RequestCaseBuildingHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    private Object[] generateNullArgsScenarios() {
-        return new Object[]{
-            new Object[]{null, callback, "callbackStage must not be null"},
-            new Object[]{ABOUT_TO_SUBMIT, null, "callback must not be null"}
-        };
+    private static Stream<Arguments> generateNullArgsScenarios() {
+
+        return Stream.of(
+            Arguments.of(null, callback, "callbackStage must not be null"),
+            Arguments.of(ABOUT_TO_SUBMIT, null, "callback must not be null")
+        );
     }
 
 }

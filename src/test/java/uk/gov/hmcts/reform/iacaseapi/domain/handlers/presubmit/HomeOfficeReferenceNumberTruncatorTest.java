@@ -8,10 +8,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -20,19 +20,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeReferenceNumberTruncatorTest {
+class HomeOfficeReferenceNumberTruncatorTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private HomeOfficeReferenceNumberTruncator homeOfficeReferenceNumberTruncator =
+    HomeOfficeReferenceNumberTruncator homeOfficeReferenceNumberTruncator =
         new HomeOfficeReferenceNumberTruncator();
 
     @Test
-    public void should_truncate_home_office_reference_numbers() {
+    void should_truncate_home_office_reference_numbers() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
@@ -69,7 +69,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_touch_home_office_reference_numbers_that_are_not_too_long() {
+    void should_not_touch_home_office_reference_numbers_that_are_not_too_long() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap
@@ -99,7 +99,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_throw_when_home_office_reference_is_not_present() {
+    void should_throw_when_home_office_reference_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -112,7 +112,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -124,7 +124,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -132,7 +132,6 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
                 boolean canHandle = homeOfficeReferenceNumberTruncator.canHandle(callbackStage, callback);
 
@@ -150,7 +149,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeReferenceNumberTruncator.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

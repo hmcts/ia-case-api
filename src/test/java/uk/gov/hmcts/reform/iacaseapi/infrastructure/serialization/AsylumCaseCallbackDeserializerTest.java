@@ -10,31 +10,32 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 // suppress warning because of changes in jackson-core library API version: 2.10.0.pr3
 @SuppressWarnings("unchecked")
-@RunWith(MockitoJUnitRunner.class)
-public class AsylumCaseCallbackDeserializerTest {
+@ExtendWith(MockitoExtension.class)
+class AsylumCaseCallbackDeserializerTest {
 
-    @Mock private ObjectMapper mapper;
-    @Mock private Callback<AsylumCase> expectedAsylumCaseCallback;
+    @Mock ObjectMapper mapper;
+    @Mock Callback<AsylumCase> expectedAsylumCaseCallback;
 
-    private AsylumCaseCallbackDeserializer asylumCaseCallbackDeserializer;
+    AsylumCaseCallbackDeserializer asylumCaseCallbackDeserializer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         asylumCaseCallbackDeserializer = new AsylumCaseCallbackDeserializer(mapper);
     }
 
     @Test
-    public void should_deserialize_callback_source_to_asylum_case_callback() throws IOException {
+    void should_deserialize_callback_source_to_asylum_case_callback() throws IOException {
 
         String source = "callback";
 
@@ -48,7 +49,7 @@ public class AsylumCaseCallbackDeserializerTest {
     }
 
     @Test
-    public void should_convert_checked_exception_to_runtime_on_error() throws IOException {
+    void should_convert_checked_exception_to_runtime_on_error() throws IOException {
 
         String source = "callback";
 

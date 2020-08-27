@@ -9,13 +9,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -27,31 +27,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentReviewPreparerTest {
+class RequestRespondentReviewPreparerTest {
 
-    private static final int DUE_IN_DAYS = 14;
+    static final int DUE_IN_DAYS = 14;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<YesOrNo> asylumYesNoCaptor;
-    @Captor private ArgumentCaptor<String> asylumValueCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor ArgumentCaptor<YesOrNo> asylumYesNoCaptor;
+    @Captor ArgumentCaptor<String> asylumValueCaptor;
+    @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    private RequestRespondentReviewPreparer requestRespondentReviewPreparer;
+    RequestRespondentReviewPreparer requestRespondentReviewPreparer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         requestRespondentReviewPreparer =
             new RequestRespondentReviewPreparer(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains = "You must respond to the Tribunal and tell them:";
         final Parties expectedParties = Parties.RESPONDENT;
@@ -100,7 +101,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -113,7 +114,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -137,7 +138,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestRespondentReviewPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

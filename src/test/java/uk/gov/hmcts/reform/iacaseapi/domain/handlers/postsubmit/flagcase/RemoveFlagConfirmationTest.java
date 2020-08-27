@@ -6,25 +6,25 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RemoveFlagConfirmationTest {
+@ExtendWith(MockitoExtension.class)
+class RemoveFlagConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock Callback<AsylumCase> callback;
 
-    private RemoveFlagConfirmation removeFlagConfirmation =
+    RemoveFlagConfirmation removeFlagConfirmation =
         new RemoveFlagConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
 
@@ -54,7 +54,7 @@ public class RemoveFlagConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> removeFlagConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -63,7 +63,7 @@ public class RemoveFlagConfirmationTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -83,7 +83,7 @@ public class RemoveFlagConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeFlagConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

@@ -6,12 +6,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -23,23 +23,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseCallbackApiDelegatorTest {
+class AsylumCaseCallbackApiDelegatorTest {
 
-    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-    private static final String ENDPOINT = "http://endpoint";
+    static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    static final String ENDPOINT = "http://endpoint";
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private AccessTokenProvider accessTokenProvider;
-    @Mock private RestTemplate restTemplate;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock AccessTokenProvider accessTokenProvider;
+    @Mock RestTemplate restTemplate;
+    @Mock Callback<AsylumCase> callback;
+    @Mock PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
-    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         asylumCaseCallbackApiDelegator =
             new AsylumCaseCallbackApiDelegator(
@@ -50,7 +50,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void should_call_document_api_to_generate_document() {
+    void should_call_document_api_to_generate_document() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
@@ -98,7 +98,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(null, ENDPOINT))
             .hasMessage("callback must not be null")
@@ -110,7 +110,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void wraps_http_server_exception_when_calling_documents_api() {
+    void wraps_http_server_exception_when_calling_documents_api() {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
@@ -134,7 +134,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void wraps_http_client_exception_when_calling_documents_api() {
+    void wraps_http_client_exception_when_calling_documents_api() {
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
         final String expectedServiceToken = "ABCDEFG";

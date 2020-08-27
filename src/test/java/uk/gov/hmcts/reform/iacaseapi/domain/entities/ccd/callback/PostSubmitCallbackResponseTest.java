@@ -4,18 +4,18 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PostSubmitCallbackResponseTest {
+@ExtendWith(MockitoExtension.class)
+class PostSubmitCallbackResponseTest {
 
-    private PostSubmitCallbackResponse postSubmitCallbackResponse =
+    PostSubmitCallbackResponse postSubmitCallbackResponse =
         new PostSubmitCallbackResponse();
 
     @Test
-    public void should_store_confirmation() {
+    void should_store_confirmation() {
 
         assertFalse(postSubmitCallbackResponse.getConfirmationHeader().isPresent());
         assertFalse(postSubmitCallbackResponse.getConfirmationBody().isPresent());
@@ -31,7 +31,7 @@ public class PostSubmitCallbackResponseTest {
     }
 
     @Test
-    public void should_convert_null_values_to_empty_optional() {
+    void should_convert_null_values_to_empty_optional() {
 
         assertFalse(postSubmitCallbackResponse.getConfirmationHeader().isPresent());
         assertFalse(postSubmitCallbackResponse.getConfirmationBody().isPresent());

@@ -9,12 +9,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,20 +27,39 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealGroundsForDisplayFormatterTest {
+class AppealGroundsForDisplayFormatterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
+    AppealGroundsForDisplayFormatter appealGroundsForDisplayFormatter =
         new AppealGroundsForDisplayFormatter();
 
-    @Test
-    public void should_format_appeal_grounds_for_display() {
+    @ParameterizedTest
+    @MethodSource("appealTypesArguments")
+    void should_format_appeal_grounds_for_display(AppealType appealType,
+                                                  AsylumCaseFieldDefinition asylumCaseFieldDefinition,
+                                                  CheckValues<String> appealGrounds,
+                                                  List<String> expectedAppealGrounds) {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+
+        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(asylumCaseFieldDefinition)).thenReturn(Optional.of(appealGrounds));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds);
+    }
+
+
+    private static Stream<Arguments> appealTypesArguments() {
         final CheckValues<String> appealGrounds1 =
             new CheckValues<>(Collections.singletonList(
                 "ground1"
@@ -58,53 +82,17 @@ public class AppealGroundsForDisplayFormatterTest {
                 "ground2"
             );
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.DC));
-        when(asylumCase.read(APPEAL_GROUNDS_DEPRIVATION)).thenReturn(Optional.of(appealGrounds2));
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
-
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(APPEAL_GROUNDS_PROTECTION)).thenReturn(Optional.of(appealGrounds2));
-        callbackResponse =
-            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds2);
-
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.EA));
-        when(asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
-        callbackResponse =
-            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
-
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.RP));
-        when(asylumCase.read(APPEAL_GROUNDS_REVOCATION)).thenReturn(Optional.of(appealGrounds1));
-        callbackResponse =
-            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(2)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
-
-        when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
-        callbackResponse =
-            appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(3)).write(APPEAL_GROUNDS_FOR_DISPLAY, expectedAppealGrounds1);
+        return Stream.of(
+            Arguments.of(AppealType.DC, APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS, appealGrounds2, expectedAppealGrounds2),
+            Arguments.of(AppealType.EA, APPEAL_GROUNDS_EU_REFUSAL, appealGrounds1, expectedAppealGrounds1),
+            Arguments.of(AppealType.HU, APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL, appealGrounds1, expectedAppealGrounds1),
+            Arguments.of(AppealType.PA, APPEAL_GROUNDS_PROTECTION, appealGrounds2, expectedAppealGrounds2),
+            Arguments.of(AppealType.RP, APPEAL_GROUNDS_REVOCATION, appealGrounds1, expectedAppealGrounds1)
+        );
     }
 
     @Test
-    public void should_set_empty_grounds_if_ground_values_are_not_present() {
+    void should_set_empty_grounds_if_ground_values_are_not_present() {
 
         final List<String> expectedAppealGrounds = Collections.emptyList();
 
@@ -121,7 +109,7 @@ public class AppealGroundsForDisplayFormatterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -129,7 +117,7 @@ public class AppealGroundsForDisplayFormatterTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -152,7 +140,7 @@ public class AppealGroundsForDisplayFormatterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealGroundsForDisplayFormatter.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

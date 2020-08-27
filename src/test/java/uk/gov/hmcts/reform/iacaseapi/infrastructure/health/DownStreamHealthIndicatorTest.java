@@ -1,30 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 
-import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfiguration;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DownStreamHealthIndicatorTest {
+class DownStreamHealthIndicatorTest {
 
     @Mock RestTemplate restTemplate;
     @Mock HealthCheckConfiguration healthCheckConfiguration;
 
-    private DownStreamHealthIndicator downStreamHealthIndicator;
+    DownStreamHealthIndicator downStreamHealthIndicator;
 
     @Test
-    public void testGetContributor() {
+    void testGetContributor() {
         when(healthCheckConfiguration.getServices()).thenReturn(getHealthCheckConfiguration());
 
         downStreamHealthIndicator = new DownStreamHealthIndicator(restTemplate, healthCheckConfiguration);
@@ -34,7 +35,7 @@ public class DownStreamHealthIndicatorTest {
     }
 
     @Test
-    public void should_throw_exception_when_services_list_is_null_or_empty() {
+    void should_throw_exception_when_services_list_is_null_or_empty() {
         when(healthCheckConfiguration.getServices()).thenReturn(null);
 
         Assertions.assertThatThrownBy(() -> new DownStreamHealthIndicator(restTemplate, healthCheckConfiguration))
@@ -42,7 +43,7 @@ public class DownStreamHealthIndicatorTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    private Map<String, Map<String, String>> getHealthCheckConfiguration() {
+    Map<String, Map<String, String>> getHealthCheckConfiguration() {
 
         Map<String, Map<String, String>> services = new HashMap<String, Map<String, String>>();
         services.put("service1", ImmutableMap.of("uri", "http://service1uri", "response", "\"status\":\"UP\""));

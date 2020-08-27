@@ -2,15 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -19,25 +20,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdUpdater;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRetriever;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ShareACasePermissionsHandlerTest {
+class ShareACasePermissionsHandlerTest {
 
-    private ShareACasePermissionsHandler shareACasePermissionsHandler;
+    ShareACasePermissionsHandler shareACasePermissionsHandler;
 
     @Mock CcdUpdater ccdUpdater;
     @Mock ProfessionalUsersRetriever professionalUsersRetriever;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private String someUserId1 = "someUserId1";
-    private String someUserEmail1 = "someUser1@example.com";
-    private String someUserId2 = "someUserId2";
-    private String someUserEmail2 = "someUser2@example.com";
+    String someUserId1 = "someUserId1";
+    String someUserEmail1 = "someUser1@example.com";
+    String someUserId2 = "someUserId2";
+    String someUserEmail2 = "someUser2@example.com";
 
-    private ProfessionalUser professionalUserActive = new ProfessionalUser(
+    ProfessionalUser professionalUserActive = new ProfessionalUser(
         someUserId1,
         "someFirstName",
         "someLastName",
@@ -48,7 +49,7 @@ public class ShareACasePermissionsHandlerTest {
         "someMessage"
     );
 
-    private ProfessionalUser professionalUserNonActive = new ProfessionalUser(
+    ProfessionalUser professionalUserNonActive = new ProfessionalUser(
         someUserId2,
         "someFirstName",
         "someLastName",
@@ -59,10 +60,58 @@ public class ShareACasePermissionsHandlerTest {
         "someMessage"
     );
 
-    private ProfessionalUsersResponse response = new ProfessionalUsersResponse(newArrayList(professionalUserActive, professionalUserNonActive));
+    ProfessionalUsersResponse response = new ProfessionalUsersResponse(newArrayList(professionalUserActive, professionalUserNonActive));
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
+
+        shareACasePermissionsHandler = new ShareACasePermissionsHandler(ccdUpdater, professionalUsersRetriever);
+
+        reset(ccdUpdater);
+    }
+
+    @Test
+    void should_not_invoke_ccd_updater_when_user_is_not_valid() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.SHARE_A_CASE);
+
+        DynamicList dynamicList = new DynamicList(
+            new Value("injectedUserId", "injectedUserEmail@example.com"),
+            newArrayList()
+        );
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, DynamicList.class)).thenReturn(Optional.of(dynamicList));
+        when(professionalUsersRetriever.retrieve()).thenReturn(response);
+
+        shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(ccdUpdater, times(0)).updatePermissions(callback);
+    }
+
+    @Test
+    void should_not_invoke_ccd_updater_when_user_is_non_active() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.SHARE_A_CASE);
+
+        DynamicList dynamicList = new DynamicList(
+            new Value(someUserId2, someUserEmail2),
+            newArrayList()
+        );
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, DynamicList.class)).thenReturn(Optional.of(dynamicList));
+        when(professionalUsersRetriever.retrieve()).thenReturn(response);
+
+        shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(ccdUpdater, times(0)).updatePermissions(callback);
+    }
+
+    @Test
+    void should_invoke_ccd_updater_when_user_is_valid() {
+
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SHARE_A_CASE);
@@ -73,45 +122,7 @@ public class ShareACasePermissionsHandlerTest {
         );
 
         when(asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, DynamicList.class)).thenReturn(Optional.of(dynamicList));
-
         when(professionalUsersRetriever.retrieve()).thenReturn(response);
-
-        shareACasePermissionsHandler = new ShareACasePermissionsHandler(ccdUpdater, professionalUsersRetriever);
-
-        reset(ccdUpdater);
-    }
-
-    @Test
-    public void should_not_invoke_ccd_updater_when_user_is_not_valid() {
-
-        DynamicList dynamicList = new DynamicList(
-            new Value("injectedUserId", "injectedUserEmail@example.com"),
-            newArrayList()
-        );
-
-        when(asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, DynamicList.class)).thenReturn(Optional.of(dynamicList));
-
-        shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(ccdUpdater, times(0)).updatePermissions(callback);
-    }
-
-    @Test
-    public void should_not_invoke_ccd_updater_when_user_is_non_active() {
-
-        DynamicList dynamicList = new DynamicList(
-            new Value(someUserId2, someUserEmail2),
-            newArrayList()
-        );
-        when(asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS, DynamicList.class)).thenReturn(Optional.of(dynamicList));
-
-        shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        verify(ccdUpdater, times(0)).updatePermissions(callback);
-    }
-
-    @Test
-    public void should_invoke_ccd_updater_when_user_is_valid() {
 
         shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -119,7 +130,7 @@ public class ShareACasePermissionsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -143,7 +154,7 @@ public class ShareACasePermissionsHandlerTest {
 
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> shareACasePermissionsHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")

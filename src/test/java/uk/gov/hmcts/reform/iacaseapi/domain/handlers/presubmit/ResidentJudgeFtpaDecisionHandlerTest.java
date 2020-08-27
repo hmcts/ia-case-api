@@ -4,9 +4,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -14,11 +12,11 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -34,18 +32,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ResidentJudgeFtpaDecisionHandlerTest {
+class ResidentJudgeFtpaDecisionHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private DateProvider dateProvider;
-    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    @Mock DocumentReceiver documentReceiver;
+    @Mock DocumentsAppender documentsAppender;
+    @Mock DateProvider dateProvider;
+    @Mock FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
     @Mock List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
     @Mock List<IdValue<DocumentWithDescription>> maybeFtpaDecisionNoticeDocument;
@@ -57,10 +55,10 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     @Mock DocumentWithMetadata ftpaRespondentDecisionDocument;
     @Mock DocumentWithMetadata ftpaRespondentDecisionNoticeDocument;
 
-    private ResidentJudgeFtpaDecisionHandler residentJudgeFtpaDecisionHandler;
+    ResidentJudgeFtpaDecisionHandler residentJudgeFtpaDecisionHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         residentJudgeFtpaDecisionHandler = new ResidentJudgeFtpaDecisionHandler(
             dateProvider,
@@ -71,7 +69,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_appellant_decision_documents() {
+    void should_append_all_ftpa_appellant_decision_documents() {
 
         List<DocumentWithMetadata> ftpaAppellantDecisionAndReasonsDocument =
             Arrays.asList(
@@ -129,7 +127,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_respondent_decision_documents() {
+    void should_append_all_ftpa_respondent_decision_documents() {
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -187,7 +185,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_setup_appeal_field_on_remedy_rule_32() {
+    void should_setup_appeal_field_on_remedy_rule_32() {
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -224,7 +222,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_applicant_type_missing() {
+    void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -235,7 +233,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_decision_outcome_type_missing() {
+    void should_throw_if_ftpa_decision_outcome_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -247,7 +245,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -261,7 +259,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -285,7 +283,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -2,19 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS;
 
 import java.time.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -27,45 +27,39 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
+class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
 
     @Mock
-    private DateProvider dateProvider;
+    DateProvider dateProvider;
     @Mock
-    private Scheduler scheduler;
+    Scheduler scheduler;
     @Mock
-    private FeatureToggler featureToggler;
+    FeatureToggler featureToggler;
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
+    @Captor ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
 
-    private boolean timedEventServiceEnabled = true;
-    private int reviewInDays = 5;
-    private LocalDate now = LocalDate.now();
-    private String id = "someId";
-    private long caseId = 12345;
-    private String jurisdiction = "IA";
-    private String caseType = "Asylum";
+    boolean timedEventServiceEnabled = true;
+    int reviewInDays = 5;
+    LocalDate now = LocalDate.now();
+    String id = "someId";
+    long caseId = 12345;
+    String jurisdiction = "IA";
+    String caseType = "Asylum";
 
-    private AutomaticDirectionRequestingHearingRequirementsHandler automaticDirectionHandler;
+    AutomaticDirectionRequestingHearingRequirementsHandler automaticDirectionHandler;
 
-    @Before
-    public void setUp() {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(dateProvider.now()).thenReturn(now);
+    @BeforeEach
+    void setUp() {
 
         automaticDirectionHandler =
             new AutomaticDirectionRequestingHearingRequirementsHandler(
@@ -78,7 +72,14 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_schedule_automatic_direction_5_days_from_now() {
+    void should_schedule_automatic_direction_5_days_from_now() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.now()).thenReturn(now);
 
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -109,10 +110,16 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_schedule_automatic_direction_in_10_minutes_for_test_user() {
+    void should_schedule_automatic_direction_in_10_minutes_for_test_user() {
 
         LocalDateTime nowWithTime = LocalDateTime.now();
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.now()).thenReturn(now);
         when(dateProvider.nowWithTime()).thenReturn(nowWithTime);
 
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(true);
@@ -146,7 +153,14 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_rethrow_exception_when_scheduler_failed() {
+    void should_rethrow_exception_when_scheduler_failed() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.now()).thenReturn(now);
 
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
@@ -155,7 +169,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -168,7 +182,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -18,24 +18,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePaymentHandlerTest {
+class FeePaymentHandlerTest {
 
-    @Mock private FeePayment<AsylumCase> feePayment;
-    @Mock private Callback<AsylumCase> callback;
+    @Mock FeePayment<AsylumCase> feePayment;
+    @Mock Callback<AsylumCase> callback;
 
-    private FeePaymentHandler feePaymentHandler;
+    FeePaymentHandler feePaymentHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         feePaymentHandler =
                 new FeePaymentHandler(true, feePayment);
     }
 
     @Test
-    public void should_make_feePayment_and_update_the_case() {
+    void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
                 Event.PAYMENT_APPEAL
@@ -60,7 +60,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+    void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeePaymentHandler feePaymentHandlerWithDisabledPayment =
                 new FeePaymentHandler(
@@ -74,7 +74,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
@@ -87,7 +87,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -113,7 +113,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feePayment_not_enabled() {
+    void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePaymentHandler =
                 new FeePaymentHandler(false, feePayment);
@@ -133,7 +133,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentHandler.canHandle(null, callback))
                 .hasMessage("callbackStage must not be null")

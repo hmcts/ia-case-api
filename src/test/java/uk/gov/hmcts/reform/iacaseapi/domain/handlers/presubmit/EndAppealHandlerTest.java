@@ -11,13 +11,13 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
@@ -31,48 +31,49 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class EndAppealHandlerTest {
+class EndAppealHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
 
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
-    private String applicationSupplier = "Legal representative";
-    private String applicationReason = "applicationReason";
-    private String applicationDate = "30/01/2019";
-    private String applicationDecision = "Granted";
-    private String applicationDecisionReason = "Granted";
-    private String applicationDateOfDecision = "31/01/2019";
-    private String applicationStatus = "In progress";
+    String applicationSupplier = "Legal representative";
+    String applicationReason = "applicationReason";
+    String applicationDate = "30/01/2019";
+    String applicationDecision = "Granted";
+    String applicationDecisionReason = "Granted";
+    String applicationDateOfDecision = "31/01/2019";
+    String applicationStatus = "In progress";
 
-    private EndAppealHandler endAppealHandler;
+    EndAppealHandler endAppealHandler;
 
-    private LocalDate date = LocalDate.now();
+    LocalDate date = LocalDate.now();
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
 
-        when(dateProvider.now()).thenReturn(date);
         endAppealHandler = new EndAppealHandler(dateProvider);
     }
 
     @Test
-    public void should_be_set_on_early() {
+    void should_be_set_on_early() {
 
         assertEquals(DispatchPriority.EARLY, endAppealHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_set_end_appeal_date_as_now_and_visibility_flags() {
+    void should_set_end_appeal_date_as_now_and_visibility_flags() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        when(dateProvider.now()).thenReturn(date);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -84,7 +85,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -92,7 +93,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -115,7 +116,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> endAppealHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -135,7 +136,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_handle_withdraw_and_set_application_status_to_completed() {
+    void should_handle_withdraw_and_set_application_status_to_completed() {
 
         List<IdValue<Application>> expectedApplications = newArrayList(new IdValue<>("1", new Application(
             Collections.emptyList(),
@@ -149,6 +150,7 @@ public class EndAppealHandlerTest {
             applicationStatus
         )));
 
+        when(dateProvider.now()).thenReturn(date);
         when(callback.getEvent()).thenReturn(END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

@@ -1,35 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -46,31 +33,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeAppealResponseHandlerTest {
+class UploadHomeOfficeAppealResponseHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private Document appealResponseDocument;
-    private String appealResponseDescription = "Appeal response description";
-    @Mock private DocumentWithMetadata appealResponseWithMetadata;
-    @Mock private DocumentWithDescription appealResponseEvidence1;
-    @Mock private DocumentWithDescription appealResponseEvidence2;
-    @Mock private DocumentWithMetadata appealResponseEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata appealResponseEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock DocumentReceiver documentReceiver;
+    @Mock DocumentsAppender documentsAppender;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock Document appealResponseDocument;
+    String appealResponseDescription = "Appeal response description";
+    @Mock DocumentWithMetadata appealResponseWithMetadata;
+    @Mock DocumentWithDescription appealResponseEvidence1;
+    @Mock DocumentWithDescription appealResponseEvidence2;
+    @Mock DocumentWithMetadata appealResponseEvidence1WithMetadata;
+    @Mock DocumentWithMetadata appealResponseEvidence2WithMetadata;
+    @Mock List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
+    @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
 
-    private UploadHomeOfficeAppealResponseHandler uploadHomeOfficeAppealResponseHandler;
+    UploadHomeOfficeAppealResponseHandler uploadHomeOfficeAppealResponseHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         uploadHomeOfficeAppealResponseHandler =
             new UploadHomeOfficeAppealResponseHandler(
                 documentReceiver,
@@ -79,12 +67,12 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_be_handled_early() {
+    void should_be_handled_early() {
         assertEquals(DispatchPriority.EARLY, uploadHomeOfficeAppealResponseHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_append_appeal_response_to_respondent_documents_for_the_case() {
+    void should_append_appeal_response_to_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -147,7 +135,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -217,7 +205,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_response_document_is_not_present() {
+    void should_throw_when_appeal_response_document_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
@@ -231,7 +219,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -244,7 +232,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -268,7 +256,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -6,20 +6,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOADED_HOME_OFFICE_BUNDLE_DOCS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -32,32 +30,60 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundlePreparerTest {
+class UploadHomeOfficeBundlePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
-    @Mock private Document document1;
-    @Mock private Document document2;
-    private final String evidence01FileName = "Evidence01";
-    private final String evidence02FileName = "Evidence02";
-    @Captor private ArgumentCaptor<String> fileNames;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock Document document1;
+    @Mock Document document2;
+    final String evidence01FileName = "Evidence01";
+    final String evidence02FileName = "Evidence02";
+    @Captor ArgumentCaptor<String> fileNames;
 
 
-    private UploadHomeOfficeBundlePreparer uploadHomeOfficeBundlePreparer;
+    UploadHomeOfficeBundlePreparer uploadHomeOfficeBundlePreparer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         uploadHomeOfficeBundlePreparer =
             new UploadHomeOfficeBundlePreparer();
+    }
+
+
+    @Test
+    void should_set_errors_if_upload_action_is_not_available_for_home_office_event() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        List<IdValue<DocumentWithMetadata>> respondentDocuments =
+
+            Arrays.asList(
+                new IdValue<>("1", respondentEvidence1WithMetadata),
+                new IdValue<>("2", respondentEvidence2WithMetadata)
+            );
+
+        when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            uploadHomeOfficeBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertThat(callbackResponse.getErrors()).hasSize(1);
+        assertTrue(callbackResponse.getErrors().contains("You cannot upload more documents until the evidence bundle has been reviewed"));
+        verify(asylumCase).read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE);
+    }
+
+    @Test
+    void should_not_set_errors_if_upload_action_is_not_available_for_case_officer_event() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         List<IdValue<DocumentWithMetadata>> respondentDocuments =
@@ -76,25 +102,6 @@ public class UploadHomeOfficeBundlePreparerTest {
 
         when(document1.getDocumentFilename()).thenReturn(evidence01FileName);
         when(document2.getDocumentFilename()).thenReturn(evidence02FileName);
-
-    }
-
-
-    @Test
-    public void should_set_errors_if_upload_action_is_not_available_for_home_office_event() {
-
-        when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.NO));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            uploadHomeOfficeBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertThat(callbackResponse.getErrors()).hasSize(1);
-        assertTrue(callbackResponse.getErrors().contains("You cannot upload more documents until the evidence bundle has been reviewed"));
-        verify(asylumCase).read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE);
-    }
-
-    @Test
-    public void should_not_set_errors_if_upload_action_is_not_available_for_case_officer_event() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.NO));
@@ -118,7 +125,18 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_not_set_errors_if_upload_action_is_available_for_case_officer_event() {
+    void should_not_set_errors_if_upload_action_is_available_for_case_officer_event() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        List<IdValue<DocumentWithMetadata>> respondentDocuments =
+
+            Arrays.asList(
+                new IdValue<>("1", respondentEvidence1WithMetadata),
+                new IdValue<>("2", respondentEvidence2WithMetadata)
+            );
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(respondentDocuments));
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.YES));
@@ -142,7 +160,28 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_set_uploaded_documents() {
+    void should_set_uploaded_documents() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        List<IdValue<DocumentWithMetadata>> respondentDocuments =
+
+            Arrays.asList(
+                new IdValue<>("1", respondentEvidence1WithMetadata),
+                new IdValue<>("2", respondentEvidence2WithMetadata)
+            );
+        when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(respondentDocuments));
+
+        when(respondentEvidence1WithMetadata.getTag()).thenReturn(DocumentTag.RESPONDENT_EVIDENCE);
+        when(respondentEvidence2WithMetadata.getTag()).thenReturn(DocumentTag.RESPONDENT_EVIDENCE);
+
+        when(respondentEvidence1WithMetadata.getDocument()).thenReturn(document1);
+        when(respondentEvidence2WithMetadata.getDocument()).thenReturn(document2);
+
+        when(document1.getDocumentFilename()).thenReturn(evidence01FileName);
+        when(document2.getDocumentFilename()).thenReturn(evidence02FileName);
 
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -166,7 +205,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -179,7 +218,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -203,7 +242,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundlePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

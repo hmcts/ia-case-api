@@ -6,9 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.GRANTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.REFUSED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.*;
@@ -16,10 +14,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TYPE;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -27,34 +25,34 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordApplicationConfirmationTest {
+class RecordApplicationConfirmationTest {
 
-    public static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
+    static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
     @Mock
-    private Callback<AsylumCase> callback;
-
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    Callback<AsylumCase> callback;
 
     @Mock
-    private AsylumCase asylumCase;
+    CaseDetails<AsylumCase> caseDetails;
 
-    private RecordApplicationConfirmation recordApplicationConfirmation = new RecordApplicationConfirmation();
+    @Mock
+    AsylumCase asylumCase;
 
-    private String granted = GRANTED.toString();
-    private String refused = REFUSED.toString();
-    private String editListing = TRANSFER.toString();
-    private String changeDate = TIME_EXTENSION.toString();
-    private String withdraw = WITHDRAW.toString();
-    private String updateHearingRequirements = UPDATE_HEARING_REQUIREMENTS.toString();
-    private String changeHearingCentre = CHANGE_HEARING_CENTRE.toString();
-    private String editAppealAfterSubmit = EDIT_APPEAL_AFTER_SUBMIT.toString();
-    private long caseId = 1234;
+    RecordApplicationConfirmation recordApplicationConfirmation = new RecordApplicationConfirmation();
+
+    String granted = GRANTED.toString();
+    String refused = REFUSED.toString();
+    String editListing = TRANSFER.toString();
+    String changeDate = TIME_EXTENSION.toString();
+    String withdraw = WITHDRAW.toString();
+    String updateHearingRequirements = UPDATE_HEARING_REQUIREMENTS.toString();
+    String changeHearingCentre = CHANGE_HEARING_CENTRE.toString();
+    String editAppealAfterSubmit = EDIT_APPEAL_AFTER_SUBMIT.toString();
+    long caseId = 1234;
 
     @Test
-    public void should_return_confirmation_application_refused() {
+    void should_return_confirmation_application_refused() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -84,7 +82,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_edit_listing() {
+    void should_return_confirmation_application_edit_listing() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -114,7 +112,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_date() {
+    void should_return_confirmation_application_granted_change_date() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -145,7 +143,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_end_appeal() {
+    void should_return_confirmation_application_granted_end_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -176,7 +174,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_update_hearing_requirements() {
+    void should_return_confirmation_application_granted_update_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -207,7 +205,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_hearing_centre() {
+    void should_return_confirmation_application_granted_change_hearing_centre() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -238,7 +236,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_edit_appeal_after_submit() {
+    void should_return_confirmation_application_granted_edit_appeal_after_submit() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -269,7 +267,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -277,7 +275,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -297,7 +295,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

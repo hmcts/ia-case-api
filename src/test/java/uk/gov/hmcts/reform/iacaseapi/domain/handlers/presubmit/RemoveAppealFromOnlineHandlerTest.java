@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_DATE;
 
 import java.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -20,32 +21,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RemoveAppealFromOnlineHandlerTest {
+class RemoveAppealFromOnlineHandlerTest {
 
     @Mock DateProvider dateProvider;
-    @Mock private AsylumCase asylumCase;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    private LocalDate date = LocalDate.now();
+    @Mock AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    LocalDate date = LocalDate.now();
 
-    private RemoveAppealFromOnlineHandler removeAppealFromOnlineHandler;
+    RemoveAppealFromOnlineHandler removeAppealFromOnlineHandler;
 
-    @Before
-    public void setUp() {
-
-        when(dateProvider.now()).thenReturn(date);
+    @BeforeEach
+    void setUp() {
 
         removeAppealFromOnlineHandler = new RemoveAppealFromOnlineHandler(dateProvider);
     }
 
     @Test
-    public void should_set_remove_appeal_date_as_now_and_visibility_flags() {
+    void should_set_remove_appeal_date_as_now_and_visibility_flags() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REMOVE_APPEAL_FROM_ONLINE);
+
+        when(dateProvider.now()).thenReturn(date);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             removeAppealFromOnlineHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -58,7 +59,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -66,7 +67,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -89,7 +90,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

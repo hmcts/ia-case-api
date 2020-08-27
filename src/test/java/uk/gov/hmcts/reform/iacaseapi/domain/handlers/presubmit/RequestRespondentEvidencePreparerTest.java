@@ -8,13 +8,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -26,30 +26,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentEvidencePreparerTest {
+class RequestRespondentEvidencePreparerTest {
 
-    private static final int DUE_IN_DAYS = 14;
+    static final int DUE_IN_DAYS = 14;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> asylumCaseValuesCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor ArgumentCaptor<String> asylumCaseValuesCaptor;
+    @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
+    RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         requestRespondentEvidencePreparer =
             new RequestRespondentEvidencePreparer(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
@@ -87,7 +88,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -100,7 +101,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -124,7 +125,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

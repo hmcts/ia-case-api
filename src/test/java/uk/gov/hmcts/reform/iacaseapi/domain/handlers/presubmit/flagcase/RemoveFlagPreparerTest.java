@@ -2,17 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOVE_FLAG_TYPE_OF_FLAG;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,32 +23,32 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RemoveFlagPreparerTest {
+@ExtendWith(MockitoExtension.class)
+class RemoveFlagPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private List<IdValue<CaseFlag>> expectedList;
-    private RemoveFlagPreparer removeFlagPreparer;
-    private final CaseFlag expectedCaseFlag =
+    List<IdValue<CaseFlag>> expectedList;
+    RemoveFlagPreparer removeFlagPreparer;
+    final CaseFlag expectedCaseFlag =
         new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
 
-    @Before
-    public void setUp() {
-        when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+    @BeforeEach
+    void setUp() {
 
         removeFlagPreparer = spy(RemoveFlagPreparer.class);
         expectedList = Collections.singletonList(new IdValue<>("1", expectedCaseFlag));
-
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
     }
 
     @Test
-    public void should_set_available_flags_to_remove() {
+    void should_set_available_flags_to_remove() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
 
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
@@ -69,7 +71,12 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_throw_error_when_no_case_flags_present() {
+    void should_throw_error_when_no_case_flags_present() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_FLAG);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(expectedList));
 
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
@@ -91,7 +98,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_get_existing_case_flag_elements_as_list() {
+    void should_get_existing_case_flag_elements_as_list() {
 
         final List<Value> actualList = removeFlagPreparer.getExistingCaseFlagListElements(expectedList);
         assertEquals(1, actualList.size());
@@ -99,7 +106,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void creates_dynamic_list_from_element_list() {
+    void creates_dynamic_list_from_element_list() {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
@@ -113,7 +120,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeFlagPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -142,7 +149,7 @@ public class RemoveFlagPreparerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

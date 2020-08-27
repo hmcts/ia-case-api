@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
@@ -18,12 +18,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @SuppressWarnings("OperatorWrap")
-public class AsylumCaseTest {
+class AsylumCaseTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    public void reads_string() throws IOException {
+    void reads_string() throws IOException {
 
         String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -34,7 +34,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_document_with_description() throws IOException {
+    void reads_document_with_description() throws IOException {
 
         String caseData = "{\n" +
                 "  \"respondentEvidence\": [\n" +
@@ -71,7 +71,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_yes_or_no() throws IOException {
+    void reads_yes_or_no() throws IOException {
 
         String caseData = "{\"appealType\": \"revocationOfProtection\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -82,7 +82,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_address_with_target_type_generics() throws IOException {
+    void reads_address_with_target_type_generics() throws IOException {
 
         String caseData = "{\n" +
                 "  \"appellantAddress\": {\n" +
@@ -110,7 +110,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_appeal_type() throws IOException {
+    void reads_appeal_type() throws IOException {
 
         String caseData = "{\"submissionOutOfTime\": \"Yes\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -121,7 +121,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_check_values() throws IOException {
+    void reads_check_values() throws IOException {
 
         String caseData = "{\"appealGroundsProtection\": { \"values\": [\"v1\",\"v2\",\"v3\"] }}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -132,7 +132,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_hearing_centre() throws IOException {
+    void reads_hearing_centre() throws IOException {
 
         String caseData = "{\"hearingCentre\": \"manchester\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -143,7 +143,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_parties() throws IOException {
+    void reads_parties() throws IOException {
 
         String caseData = "{\"sendDirectionParties\": \"both\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -154,7 +154,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_id_value_list() throws IOException {
+    void reads_id_value_list() throws IOException {
 
         String caseData = "{\"respondentDocuments\": [\n" +
                 "    {\n" +
@@ -215,7 +215,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_document() throws IOException {
+    void reads_document() throws IOException {
 
         String caseData = "{\"caseArgumentDocument\": {\n" +
                 "    \"document_url\": \"http://dm-store:8080/documents/81e61012-52cd-44b3-9570-873c538ecc00\",\n" +
@@ -233,7 +233,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void reads_simple_type_with_parameter_type_generics() throws IOException {
+    void reads_simple_type_with_parameter_type_generics() throws IOException {
 
         String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);
@@ -244,7 +244,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void writes_simple_type() {
+    void writes_simple_type() {
 
         AsylumCase asylumCase = new AsylumCase();
 
@@ -255,7 +255,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void writes_complex_type() {
+    void writes_complex_type() {
 
         AsylumCase asylumCase = new AsylumCase();
 
@@ -291,7 +291,7 @@ public class AsylumCaseTest {
     }
 
     @Test
-    public void clears_value() throws IOException {
+    void clears_value() throws IOException {
 
         String caseData = "{\"appealReferenceNumber\": \"PA/50222/2019\"}";
         AsylumCase asylumCase = objectMapper.readValue(caseData, AsylumCase.class);

@@ -12,13 +12,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,28 +30,29 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-public class ChangeDirectionDueDateHandlerTest {
+class ChangeDirectionDueDateHandlerTest {
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock DateProvider dateProvider;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<List<IdValue<Direction>>> asylumValueCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Captor ArgumentCaptor<List<IdValue<Direction>>> asylumValueCaptor;
+    @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
-    private String applicationSupplier = "Legal representative";
-    private String applicationReason = "applicationReason";
-    private String applicationDate = "09/01/2020";
-    private String applicationDecision = "Granted";
-    private String applicationDecisionReason = "Granted";
-    private String applicationDateOfDecision = "10/01/2020";
-    private String applicationStatus = "In progress";
+    String applicationSupplier = "Legal representative";
+    String applicationReason = "applicationReason";
+    String applicationDate = "09/01/2020";
+    String applicationDecision = "Granted";
+    String applicationDecisionReason = "Granted";
+    String applicationDateOfDecision = "10/01/2020";
+    String applicationStatus = "In progress";
 
-    private List<IdValue<Application>> applications = Lists.newArrayList(new IdValue<>("1", new Application(
+    List<IdValue<Application>> applications = Lists.newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
         applicationSupplier,
         ApplicationType.TIME_EXTENSION.toString(),
@@ -61,21 +64,20 @@ public class ChangeDirectionDueDateHandlerTest {
         applicationStatus
     )));
 
-    private String direction1 = "Direction 1";
-    private LocalDate dateSent = LocalDate.now();
+    String direction1 = "Direction 1";
+    LocalDate dateSent = LocalDate.now();
 
-    private ChangeDirectionDueDateHandler changeDirectionDueDateHandler;
+    ChangeDirectionDueDateHandler changeDirectionDueDateHandler;
 
-    @Before
-    public void setUp() {
-        when(dateProvider.now()).thenReturn(dateSent);
+    @BeforeEach
+    void setUp() {
 
         changeDirectionDueDateHandler =
             new ChangeDirectionDueDateHandler(dateProvider);
     }
 
     @Test
-    public void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
+    void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
 
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -97,6 +99,7 @@ public class ChangeDirectionDueDateHandlerTest {
                 ))
             );
 
+        when(dateProvider.now()).thenReturn(dateSent);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -152,7 +155,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeDirectionDueDateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -165,7 +168,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -189,7 +192,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeDirectionDueDateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -210,7 +213,7 @@ public class ChangeDirectionDueDateHandlerTest {
 
     // remove when new CCD definitions are in Prod
     @Test
-    public void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes_deprecated_path() {
+    void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes_deprecated_path() {
 
         final List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -246,6 +249,7 @@ public class ChangeDirectionDueDateHandlerTest {
                 ))
             );
 
+        when(dateProvider.now()).thenReturn(dateSent);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

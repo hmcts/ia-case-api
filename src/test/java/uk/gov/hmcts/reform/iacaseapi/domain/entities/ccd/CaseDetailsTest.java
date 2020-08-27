@@ -5,18 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
-public class CaseDetailsTest {
+class CaseDetailsTest {
 
-    private final long id = 123L;
-    private final String jurisdiction = "IA";
-    private final State state = State.APPEAL_STARTED;
-    private final CaseData caseData = mock(CaseData.class);
-    private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
+    final long id = 123L;
+    final String jurisdiction = "IA";
+    final State state = State.APPEAL_STARTED;
+    final CaseData caseData = mock(CaseData.class);
+    final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
 
-    private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
+    CaseDetails<CaseData> caseDetails = new CaseDetails<>(
         id,
         jurisdiction,
         state,
@@ -25,7 +25,7 @@ public class CaseDetailsTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(id, caseDetails.getId());
         assertEquals(jurisdiction, caseDetails.getJurisdiction());
@@ -35,7 +35,7 @@ public class CaseDetailsTest {
     }
 
     @Test
-    public void should_throw_required_field_missing_exception() {
+    void should_throw_required_field_missing_exception() {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,

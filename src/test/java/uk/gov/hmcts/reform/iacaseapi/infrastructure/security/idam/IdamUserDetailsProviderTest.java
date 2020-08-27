@@ -8,12 +8,12 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,20 +22,20 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class IdamUserDetailsProviderTest {
+class IdamUserDetailsProviderTest {
 
-    private static final String BASE_URL = "http://base.url";
-    private static final String DETAILS_URI = "/details";
+    static final String BASE_URL = "http://base.url";
+    static final String DETAILS_URI = "/details";
 
-    @Mock private AccessTokenProvider accessTokenProvider;
-    @Mock private RestTemplate restTemplate;
+    @Mock AccessTokenProvider accessTokenProvider;
+    @Mock RestTemplate restTemplate;
 
-    private IdamUserDetailsProvider idamUserDetailsProvider;
+    IdamUserDetailsProvider idamUserDetailsProvider;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
@@ -47,7 +47,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_call_idam_api_to_get_user_details() {
+    void should_call_idam_api_to_get_user_details() {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -102,7 +102,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_id_missing() {
+    void should_throw_exception_if_idam_id_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -132,7 +132,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_roles_missing() {
+    void should_throw_exception_if_idam_roles_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -162,7 +162,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_email_missing() {
+    void should_throw_exception_if_idam_email_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -192,7 +192,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_forename_missing() {
+    void should_throw_exception_if_idam_forename_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -222,7 +222,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_surname_missing() {
+    void should_throw_exception_if_idam_surname_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -252,7 +252,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_wrap_server_exception_when_calling_idam() {
+    void should_wrap_server_exception_when_calling_idam() {
 
         HttpServerErrorException restClientException = mock(HttpServerErrorException.class);
 
@@ -273,7 +273,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_wrap_client_exception_when_calling_idam() {
+    void should_wrap_client_exception_when_calling_idam() {
 
         HttpClientErrorException restClientException = mock(HttpClientErrorException.class);
 

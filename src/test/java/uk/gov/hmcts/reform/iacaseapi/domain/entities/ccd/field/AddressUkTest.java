@@ -2,19 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import java.util.Optional;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AddressUkTest {
+class AddressUkTest {
 
-    private final String addressLine1 = "A";
-    private final String addressLine2 = "B";
-    private final String addressLine3 = "C";
-    private final String postTown = "D";
-    private final String county = "E";
-    private final String postCode = "F";
-    private final String country = "G";
+    final String addressLine1 = "A";
+    final String addressLine2 = "B";
+    final String addressLine3 = "C";
+    final String postTown = "D";
+    final String county = "E";
+    final String postCode = "F";
+    final String country = "G";
 
-    private AddressUk addressUk = new AddressUk(
+    AddressUk addressUk = new AddressUk(
         addressLine1,
         addressLine2,
         addressLine3,
@@ -25,7 +25,7 @@ public class AddressUkTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         Assert.assertEquals(Optional.of(addressLine1), addressUk.getAddressLine1());
         Assert.assertEquals(Optional.of(addressLine2), addressUk.getAddressLine2());

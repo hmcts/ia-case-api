@@ -6,32 +6,33 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewHearingRequirementsConfirmationTest {
+class ReviewHearingRequirementsConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock Callback<AsylumCase> callback;
 
-    private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
+    ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         reviewHearingRequirementsConfirmation =
             new ReviewHearingRequirementsConfirmation();
     }
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
 
@@ -54,7 +55,7 @@ public class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_when_list_case_without_requirements() {
+    void should_return_confirmation_when_list_case_without_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
 
@@ -77,7 +78,7 @@ public class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -85,7 +86,7 @@ public class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -105,7 +106,7 @@ public class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewHearingRequirementsConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

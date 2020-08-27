@@ -9,17 +9,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealO
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import lombok.Value;
+import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,57 +26,48 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(JUnitParamsRunner.class)
-public class UnlinkAppealHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@ExtendWith(MockitoExtension.class)
+class UnlinkAppealHandlerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
 
-    private final UnlinkAppealHandler unlinkAppealHandler = new UnlinkAppealHandler();
+    final UnlinkAppealHandler unlinkAppealHandler = new UnlinkAppealHandler();
 
-    @Test
-    @Parameters(method = "generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
-        when(callback.getEvent()).thenReturn(scenario.event);
+    @ParameterizedTest
+    @MethodSource("canHandleScenarioTestData")
+    void canHandle(Event event, PreSubmitCallbackStage callbackStage, boolean canHandleExpectedResult) {
+        if (canHandleExpectedResult) {
+            when(callback.getEvent()).thenReturn(event);
+        }
 
-        boolean result = unlinkAppealHandler.canHandle(scenario.callbackStage, callback);
+        boolean result = unlinkAppealHandler.canHandle(callbackStage, callback);
 
-        Assertions.assertThat(result).isEqualTo(scenario.canHandleExpectedResult);
+        Assertions.assertThat(result).isEqualTo(canHandleExpectedResult);
     }
 
-    private List<CanHandleScenario> generateCanHandleScenarios() {
-        return CanHandleScenario.builder();
-    }
+    private static Stream<Arguments> canHandleScenarioTestData() {
 
-    @Value
-    private static class CanHandleScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        boolean canHandleExpectedResult;
+        List<Arguments> scenarios = new ArrayList<>();
 
-        public static List<CanHandleScenario> builder() {
-            List<CanHandleScenario> scenarios = new ArrayList<>();
-            for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
-                for (Event e : Event.values()) {
-                    if (Event.UNLINK_APPEAL.equals(e)
-                        && PreSubmitCallbackStage.ABOUT_TO_SUBMIT.equals(cb)) {
-                        scenarios.add(new CanHandleScenario(e, cb, true));
-                    } else {
-                        scenarios.add(new CanHandleScenario(e, cb, false));
-                    }
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            for (Event event : Event.values()) {
+                if (Event.UNLINK_APPEAL.equals(event)
+                    && PreSubmitCallbackStage.ABOUT_TO_SUBMIT.equals(callbackStage)) {
+                    scenarios.add(Arguments.of(event, callbackStage, true));
+                } else {
+                    scenarios.add(Arguments.of(event, callbackStage, false));
                 }
             }
-            return scenarios;
         }
+
+        return scenarios.stream();
     }
 
     @Test
-    public void handle() {
+    void handle() {
         when(callback.getEvent()).thenReturn(Event.UNLINK_APPEAL);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -101,7 +90,7 @@ public class UnlinkAppealHandlerTest {
     }
 
     @Test
-    public void should_throw_exception() {
+    void should_throw_exception() {
 
         assertThatThrownBy(() -> unlinkAppealHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

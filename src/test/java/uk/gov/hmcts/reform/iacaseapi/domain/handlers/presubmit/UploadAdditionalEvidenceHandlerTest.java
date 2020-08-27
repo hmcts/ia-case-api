@@ -9,13 +9,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -29,42 +29,42 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAdditionalEvidenceHandlerTest {
+class UploadAdditionalEvidenceHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithDescription additionalEvidence1;
-    @Mock private DocumentWithDescription additionalEvidence2;
-    @Mock private DocumentWithMetadata additionalEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata additionalEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingAdditionalEvidenceDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allAdditionalEvidenceDocuments;
+    @Mock DocumentReceiver documentReceiver;
+    @Mock DocumentsAppender documentsAppender;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Mock DocumentWithDescription additionalEvidence1;
+    @Mock DocumentWithDescription additionalEvidence2;
+    @Mock DocumentWithMetadata additionalEvidence1WithMetadata;
+    @Mock DocumentWithMetadata additionalEvidence2WithMetadata;
+    @Mock List<IdValue<DocumentWithMetadata>> existingAdditionalEvidenceDocuments;
+    @Mock List<IdValue<DocumentWithMetadata>> allAdditionalEvidenceDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
+    @Captor ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
 
-    private UploadAdditionalEvidenceHandler uploadAdditionalEvidenceHandler;
+    UploadAdditionalEvidenceHandler uploadAdditionalEvidenceHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         uploadAdditionalEvidenceHandler =
             new UploadAdditionalEvidenceHandler(
                 documentReceiver,
                 documentsAppender
             );
+    }
+
+    @Test
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> additionalEvidence =
             Arrays.asList(
@@ -108,7 +108,11 @@ public class UploadAdditionalEvidenceHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
         List<DocumentWithMetadata> additionalEvidenceWithMetadata = Arrays.asList(additionalEvidence1WithMetadata);
@@ -146,8 +150,11 @@ public class UploadAdditionalEvidenceHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(ADDITIONAL_EVIDENCE)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -156,7 +163,7 @@ public class UploadAdditionalEvidenceHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -169,7 +176,7 @@ public class UploadAdditionalEvidenceHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -193,7 +200,7 @@ public class UploadAdditionalEvidenceHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

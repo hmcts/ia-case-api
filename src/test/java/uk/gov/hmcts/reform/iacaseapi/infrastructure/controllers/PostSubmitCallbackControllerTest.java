@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -16,18 +16,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PostSubmitCallbackControllerTest {
+@ExtendWith(MockitoExtension.class)
+class PostSubmitCallbackControllerTest {
 
-    @Mock private PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    @Mock private PostSubmitCallbackResponse callbackResponse;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock PostSubmitCallbackResponse callbackResponse;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
 
-    private PostSubmitCallbackController postSubmitCallbackController;
+    PostSubmitCallbackController postSubmitCallbackController;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         postSubmitCallbackController =
             new PostSubmitCallbackController(
                 callbackDispatcher
@@ -35,7 +36,7 @@ public class PostSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_callback_then_return_response() {
+    void should_dispatch_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -52,7 +53,7 @@ public class PostSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_not_allow_null_constructor_arguments() {
+    void should_not_allow_null_constructor_arguments() {
 
         assertThatThrownBy(() -> new PostSubmitCallbackController(null))
             .hasMessage("callbackDispatcher must not be null")

@@ -9,10 +9,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -20,22 +20,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-
-
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaRespondentConfirmationTest {
+class FtpaRespondentConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private FtpaRespondentConfirmation ftpaRespondentConfirmation =
+    FtpaRespondentConfirmation ftpaRespondentConfirmation =
         new FtpaRespondentConfirmation();
 
     @Test
-    public void should_return_success_confirmation() {
+    void should_return_success_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -66,7 +63,7 @@ public class FtpaRespondentConfirmationTest {
     }
 
     @Test
-    public void should_return_success_confirmation_when_flag_is_empty() {
+    void should_return_success_confirmation_when_flag_is_empty() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -97,7 +94,7 @@ public class FtpaRespondentConfirmationTest {
 
 
     @Test
-    public void should_return_out_of_time_confirmation() {
+    void should_return_out_of_time_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
@@ -129,7 +126,7 @@ public class FtpaRespondentConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaRespondentConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -137,7 +134,7 @@ public class FtpaRespondentConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -157,7 +154,7 @@ public class FtpaRespondentConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaRespondentConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

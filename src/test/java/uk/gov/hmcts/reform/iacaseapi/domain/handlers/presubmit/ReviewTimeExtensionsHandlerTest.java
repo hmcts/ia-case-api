@@ -4,7 +4,8 @@ import static com.beust.jcommander.internal.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -18,12 +19,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -33,24 +34,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewTimeExtensionsHandlerTest {
+class ReviewTimeExtensionsHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private ReviewTimeExtensionsHandler reviewTimeExtensionHandler;
+    ReviewTimeExtensionsHandler reviewTimeExtensionHandler;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setUp() {
+
         reviewTimeExtensionHandler =
             new ReviewTimeExtensionsHandler();
     }
 
     @Test
-    public void handles_an_awaiting_reasons_for_appeal_refused_extension() {
+    void handles_an_awaiting_reasons_for_appeal_refused_extension() {
 
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
@@ -95,7 +97,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
 
     @Test
-    public void handles_an_awaiting_reasons_for_appeal_granted_extension() {
+    void handles_an_awaiting_reasons_for_appeal_granted_extension() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_REASONS_FOR_APPEAL, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
@@ -140,7 +142,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
 
     @Test
-    public void handles_an_awaiting_clarifying_questions_refused_extension() {
+    void handles_an_awaiting_clarifying_questions_refused_extension() {
 
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_CLARIFYING_QUESTIONS_ANSWERS, SUBMITTED, emptyList()));
@@ -185,7 +187,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
 
     @Test
-    public void handles_an_awaiting_clarifying_questions_granted_extension() {
+    void handles_an_awaiting_clarifying_questions_granted_extension() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_CLARIFYING_QUESTIONS_ANSWERS, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
@@ -229,7 +231,7 @@ public class ReviewTimeExtensionsHandlerTest {
     }
 
     @Test
-    public void handles_an_awaiting_cma_requirements_refused_extension() {
+    void handles_an_awaiting_cma_requirements_refused_extension() {
 
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_CMA_REQUIREMENTS, SUBMITTED, emptyList()));
@@ -274,7 +276,7 @@ public class ReviewTimeExtensionsHandlerTest {
 
 
     @Test
-    public void handles_an_awaiting_cma_requirements_granted_extension() {
+    void handles_an_awaiting_cma_requirements_granted_extension() {
         IdValue<TimeExtension> extensionIdValue1 = new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2", new TimeExtension("date2", "reasons2", AWAITING_CMA_REQUIREMENTS, SUBMITTED, emptyList()));
         List<IdValue<TimeExtension>> timeExtensions = asList(extensionIdValue1, extensionIdValue2);
@@ -318,7 +320,7 @@ public class ReviewTimeExtensionsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
@@ -336,7 +338,7 @@ public class ReviewTimeExtensionsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewTimeExtensionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

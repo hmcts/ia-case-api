@@ -6,33 +6,34 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PreSubmitCallbackResponseTest {
+@ExtendWith(MockitoExtension.class)
+class PreSubmitCallbackResponseTest {
 
-    @Mock private CaseData caseData;
+    @Mock CaseData caseData;
 
-    private PreSubmitCallbackResponse<CaseData> preSubmitCallbackResponse;
+    PreSubmitCallbackResponse<CaseData> preSubmitCallbackResponse;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         preSubmitCallbackResponse = new PreSubmitCallbackResponse<>(caseData);
     }
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(caseData, preSubmitCallbackResponse.getData());
     }
 
     @Test
-    public void data_is_mutable() {
+    void data_is_mutable() {
 
         CaseData newCaseData = mock(CaseData.class);
 
@@ -42,7 +43,7 @@ public class PreSubmitCallbackResponseTest {
     }
 
     @Test
-    public void should_store_distinct_errors() {
+    void should_store_distinct_errors() {
 
         List<String> someErrors = Arrays.asList("error3", "error4");
         List<String> someMoreErrors = Arrays.asList("error4", "error1");

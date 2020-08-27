@@ -6,26 +6,26 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
+class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock Callback<AsylumCase> callback;
 
-    private UploadAdditionalEvidenceHomeOfficeConfirmation uploadAdditionalEvidenceHomeOfficeConfirmation =
+    UploadAdditionalEvidenceHomeOfficeConfirmation uploadAdditionalEvidenceHomeOfficeConfirmation =
         new UploadAdditionalEvidenceHomeOfficeConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE);
 
@@ -48,7 +48,7 @@ public class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHomeOfficeConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -56,7 +56,7 @@ public class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -76,7 +76,7 @@ public class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHomeOfficeConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

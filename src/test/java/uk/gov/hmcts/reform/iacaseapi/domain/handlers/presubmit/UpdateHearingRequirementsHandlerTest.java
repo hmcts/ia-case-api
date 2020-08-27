@@ -5,20 +5,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.reset;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -29,24 +28,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UpdateHearingRequirementsHandlerTest {
+class UpdateHearingRequirementsHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
+    @Captor ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
-    private String applicationSupplier = "Legal representative";
-    private String applicationReason = "applicationReason";
-    private String applicationDate = "30/01/2019";
-    private String applicationDecision = "Granted";
-    private String applicationDecisionReason = "Granted";
-    private String applicationDateOfDecision = "31/01/2019";
-    private String applicationStatus = "In progress";
+    String applicationSupplier = "Legal representative";
+    String applicationReason = "applicationReason";
+    String applicationDate = "30/01/2019";
+    String applicationDecision = "Granted";
+    String applicationDecisionReason = "Granted";
+    String applicationDateOfDecision = "31/01/2019";
+    String applicationStatus = "In progress";
 
-    private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
+    List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
         applicationSupplier,
         ApplicationType.UPDATE_HEARING_REQUIREMENTS.toString(),
@@ -58,21 +57,21 @@ public class UpdateHearingRequirementsHandlerTest {
         applicationStatus
     )));
 
-    private UpdateHearingRequirementsHandler updateHearingRequirementsHandler;
+    UpdateHearingRequirementsHandler updateHearingRequirementsHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
+
         updateHearingRequirementsHandler = new UpdateHearingRequirementsHandler();
+    }
+
+    @Test
+    void should_set_witness_count_to_zero_and_overview_page_flags() {
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
-    }
-
-    @Test
-    public void should_set_witness_count_to_zero_and_overview_page_flags() {
-
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -101,8 +100,12 @@ public class UpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_witness_count_and_overview_page_flags() {
+    void should_set_witness_count_and_overview_page_flags() {
 
+        when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays.asList(new IdValue("1", new WitnessDetails("cap")), new IdValue("2", new WitnessDetails("Pan")))));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -131,7 +134,7 @@ public class UpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -139,7 +142,7 @@ public class UpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -162,7 +165,7 @@ public class UpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> updateHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

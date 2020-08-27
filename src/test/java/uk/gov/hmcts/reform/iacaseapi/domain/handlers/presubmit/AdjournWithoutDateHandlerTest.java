@@ -9,20 +9,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import lombok.Value;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -33,60 +35,49 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(JUnitParamsRunner.class)
-public class AdjournWithoutDateHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class AdjournWithoutDateHandlerTest {
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
 
-    private AdjournWithoutDateHandler handler = new AdjournWithoutDateHandler();
+    final AdjournWithoutDateHandler handler = new AdjournWithoutDateHandler();
 
-    @Test
-    @Parameters(method = "generateTestScenarios")
-    public void it_can_handle_callback(TestScenario scenario) {
-        given(callback.getEvent()).willReturn(scenario.getEvent());
+    @ParameterizedTest
+    @MethodSource("canHandleTestData")
+    void it_can_handle_callback(Event event, PreSubmitCallbackStage callbackStage, boolean canBeHandledExpected) {
+        when(callback.getEvent()).thenReturn(event);
 
-        boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
+        boolean actualResult = handler.canHandle(callbackStage, callback);
 
-        assertThat(actualResult).isEqualTo(scenario.canBeHandledExpected);
+        assertThat(actualResult).isEqualTo(canBeHandledExpected);
     }
 
-    private List<TestScenario> generateTestScenarios() {
-        return TestScenario.testScenarioBuilder();
-    }
+    private static Stream<Arguments> canHandleTestData() {
 
-    @Value
-    private static class TestScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        boolean canBeHandledExpected;
+        List<Arguments> scenarios = new ArrayList<>();
 
-        public static List<TestScenario> testScenarioBuilder() {
-            List<TestScenario> testScenarioList = new ArrayList<>();
-            for (Event e : Event.values()) {
-                if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
-                    testScenarioList.add(new TestScenario(e, ABOUT_TO_START, false));
-                    testScenarioList.add(new TestScenario(e, MID_EVENT, false));
-                    testScenarioList.add(new TestScenario(e, ABOUT_TO_SUBMIT, true));
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+            for (Event event : Event.values()) {
+                if (Event.ADJOURN_HEARING_WITHOUT_DATE.equals(event)
+                    && PreSubmitCallbackStage.ABOUT_TO_SUBMIT.equals(callbackStage)) {
+                    scenarios.add(Arguments.of(event, callbackStage, true));
                 } else {
-                    testScenarioList.add(new TestScenario(e, ABOUT_TO_START, false));
-                    testScenarioList.add(new TestScenario(e, MID_EVENT, false));
-                    testScenarioList.add(new TestScenario(e, ABOUT_TO_SUBMIT, false));
+                    scenarios.add(Arguments.of(event, callbackStage, false));
                 }
             }
-            return testScenarioList;
         }
+
+        return scenarios.stream();
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -106,21 +97,21 @@ public class AdjournWithoutDateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void sets_hearing_date_to_adjourned() {
-        given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
+    void sets_hearing_date_to_adjourned() {
+        given(callback.getEvent()).willReturn(ADJOURN_HEARING_WITHOUT_DATE);
         given(callback.getCaseDetails()).willReturn(caseDetails);
         given(caseDetails.getCaseData()).willReturn(asylumCase);
         given(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)).willReturn(Optional.of(State.PREPARE_FOR_HEARING));

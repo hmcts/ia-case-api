@@ -6,10 +6,10 @@ import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE;
 
 import java.util.Arrays;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -19,19 +19,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
+class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseDetails;
+    @Mock AsylumCase asylumCase;
 
-    private UploadAdditionalEvidenceHomeOfficeActionAvailableUpdater uploadAdditionalEvidenceHomeOfficeActionAvailableUpdater =
+    UploadAdditionalEvidenceHomeOfficeActionAvailableUpdater uploadAdditionalEvidenceHomeOfficeActionAvailableUpdater =
         new UploadAdditionalEvidenceHomeOfficeActionAvailableUpdater();
 
     @Test
-    public void should_set_action_available_flag_to_yes_when_state_applies() {
+    void should_set_action_available_flag_to_yes_when_state_applies() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -66,7 +66,7 @@ public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHomeOfficeActionAvailableUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -74,7 +74,7 @@ public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
             for (Event event : Event.values()) {
 
@@ -95,7 +95,7 @@ public class UploadAdditionalEvidenceHomeOfficeActionAvailableUpdaterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHomeOfficeActionAvailableUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

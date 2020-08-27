@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
-public class AsylumFieldNameFixerTest {
+class AsylumFieldNameFixerTest {
 
-    private AsylumFieldNameFixer asylumFieldNameFixer;
-    private AsylumCase asylumCase;
+    AsylumFieldNameFixer asylumFieldNameFixer;
+    AsylumCase asylumCase;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         asylumFieldNameFixer = new AsylumFieldNameFixer(
             APPEAL_REFERENCE_NUMBER,
@@ -24,7 +24,7 @@ public class AsylumFieldNameFixerTest {
     }
 
     @Test
-    public void transposes_asylum_case_values() {
+    void transposes_asylum_case_values() {
 
         asylumCase.write(APPEAL_REFERENCE_NUMBER, "valueTobeTransitioned");
 
@@ -38,7 +38,7 @@ public class AsylumFieldNameFixerTest {
     }
 
     @Test
-    public void does_nothing_if_from_field_not_present() {
+    void does_nothing_if_from_field_not_present() {
 
         asylumFieldNameFixer.fix(asylumCase);
 
@@ -50,7 +50,7 @@ public class AsylumFieldNameFixerTest {
     }
 
     @Test
-    public void maintain_correct_field_name_when_data_already_in_correct_state() {
+    void maintain_correct_field_name_when_data_already_in_correct_state() {
 
         asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER, "valueAssignedToCorrectField");
 

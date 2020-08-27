@@ -4,27 +4,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
+import java.util.stream.Stream;
 import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -39,52 +37,58 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
 
-@RunWith(JUnitParamsRunner.class)
-public class FlagCaseHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class FlagCaseHandlerTest {
 
     @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+    MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
-    private Callback<AsylumCase> callback;
+    Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private AsylumCase asylumCase;
+    AsylumCase asylumCase;
     @Mock
-    private CaseFlagAppender caseFlagAppender;
+    CaseFlagAppender caseFlagAppender;
 
-    private final String additionalInformation = "some additional information";
+    final String additionalInformation = "some additional information";
 
-    private FlagCaseHandler flagCaseHandler;
+    FlagCaseHandler flagCaseHandler;
 
-    @Before
-    public void setUp() {
-        when(callback.getEvent()).thenReturn(Event.FLAG_CASE);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class)).thenReturn(Optional.of(additionalInformation));
+    @BeforeEach
+    void setUp() {
 
         flagCaseHandler = new FlagCaseHandler(caseFlagAppender);
     }
 
-    @Test
-    @Parameters({
-        "ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION",
-        "COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION",
-        "DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION",
-        "DETAINED_IMMIGRATION_APPEAL, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION",
-        "FOREIGN_NATIONAL_OFFENDER, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION",
-        "POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION",
-        "UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION",
-        "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION",
-    })
-    public void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
+    private static Stream<Arguments> flagTypesTestData() {
+
+        return Stream.of(
+            Arguments.of(ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION),
+            Arguments.of(COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION),
+            Arguments.of(DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION),
+            Arguments.of(DETAINED_IMMIGRATION_APPEAL, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_EXISTS, CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION),
+            Arguments.of(FOREIGN_NATIONAL_OFFENDER, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_EXISTS, CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION),
+            Arguments.of(POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION),
+            Arguments.of(UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION),
+            Arguments.of(UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("flagTypesTestData")
+    void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
                                                         AsylumCaseFieldDefinition caseFlagExists,
                                                         AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
         final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.FLAG_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class)).thenReturn(Optional.of(additionalInformation));
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -104,12 +108,17 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void does_not_set_any_flags_when_bad_flag_given() {
+    void does_not_set_any_flags_when_bad_flag_given() {
 
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
         final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
-        final CaseFlagType caseFlagType = CaseFlagType.UNKNOWN;
+        final CaseFlagType caseFlagType = UNKNOWN;
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.FLAG_CASE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class)).thenReturn(Optional.of(additionalInformation));
         when(asylumCase.read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class)).thenReturn(Optional.of(caseFlagType));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -131,7 +140,7 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> flagCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -150,7 +159,7 @@ public class FlagCaseHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    public void readAndClearInitialCaseFlagsTest() {
+    void readAndClearInitialCaseFlagsTest() {
         verify(asylumCase, times(1)).read(FLAG_CASE_TYPE_OF_FLAG, CaseFlagType.class);
         verify(asylumCase, times(1)).read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class);
 
