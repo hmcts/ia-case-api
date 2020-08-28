@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -103,6 +103,13 @@ class UploadDecisionLetterHandlerTest {
 
     @Test
     void handle() {
+        given(callback.getEvent()).willReturn(Event.SUBMIT_APPEAL);
+        given(callback.getCaseDetails()).willReturn(caseDetails);
+        given(caseDetails.getCaseData()).willReturn(asylumCase);
+        given(asylumCase.read(
+            eq(AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT), eq(Document.class)))
+            .willReturn(Optional.of(someDoc)
+            );
         given(documentReceiver.receive(any(Document.class), anyString(), eq(HO_DECISION_LETTER)))
             .willReturn(newLegalRepDoc);
 
@@ -142,6 +149,13 @@ class UploadDecisionLetterHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
+        given(callback.getEvent()).willReturn(Event.SUBMIT_APPEAL);
+        given(callback.getCaseDetails()).willReturn(caseDetails);
+        given(caseDetails.getCaseData()).willReturn(asylumCase);
+        given(asylumCase.read(
+            eq(AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT), eq(Document.class)))
+            .willReturn(Optional.of(someDoc)
+            );
 
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

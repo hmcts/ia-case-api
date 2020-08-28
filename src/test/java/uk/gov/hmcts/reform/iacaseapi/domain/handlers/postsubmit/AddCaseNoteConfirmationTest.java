@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -40,14 +38,12 @@ class AddCaseNoteConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have added a case note")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have added a case note");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You can review this note in the case notes tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You can review this note in the case notes tab.");
     }
 
     @Test

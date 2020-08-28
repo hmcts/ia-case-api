@@ -1,16 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +79,7 @@ class PreSubmitCallbackDispatcherTest {
 
         PreSubmitCallbackResponse<CaseData> callbackResponse = preSubmitCallbackDispatcher.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertThat(callbackResponse.getErrors(), is(ImmutableSet.of("Invalid reason")));
+        assertEquals(callbackResponse.getErrors(), ImmutableSet.of("Invalid reason"));
     }
 
     @Test
@@ -128,7 +124,7 @@ class PreSubmitCallbackDispatcherTest {
 
             assertNotNull(callbackResponse);
             assertEquals(caseDataMutation2, callbackResponse.getData());
-            assertThat(callbackResponse.getErrors(), is(expectedErrors));
+            assertEquals(callbackResponse.getErrors(), expectedErrors);
 
             verify(ccdEventAuthorizor, times(1)).throwIfNotAuthorized(Event.BUILD_CASE);
 

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class RequestCaseBuildingConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("You have sent a direction")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You have sent a direction");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("Legal representative will be notified by email.")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("Legal representative will be notified by email.");
     }
 
     @Test

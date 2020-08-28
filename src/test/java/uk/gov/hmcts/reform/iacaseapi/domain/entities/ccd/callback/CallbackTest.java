@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Constructor;
 import java.util.Optional;

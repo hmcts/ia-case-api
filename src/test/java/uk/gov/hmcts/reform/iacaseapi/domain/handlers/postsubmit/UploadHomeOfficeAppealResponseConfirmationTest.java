@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,18 +37,16 @@ class UploadHomeOfficeAppealResponseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've uploaded the appeal response")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've uploaded the appeal response");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The Tribunal will: \n* check that the Home Office response complies with the Procedure Rules and Practice Directions\n* inform you of any issues\n\nProviding there are no issues, the response will be shared with the appellant");
+
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("All parties will be notified when the Hearing Notice is ready.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("All parties will be notified when the Hearing Notice is ready.");
     }
 
     @Test

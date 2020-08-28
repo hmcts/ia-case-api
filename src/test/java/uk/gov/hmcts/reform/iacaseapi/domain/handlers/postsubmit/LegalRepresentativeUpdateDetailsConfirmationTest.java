@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -38,14 +38,12 @@ class LegalRepresentativeUpdateDetailsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've updated the legal representative's details")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've updated the legal representative's details");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\nThe service will be updated. The new details will be used on all future correspondence and documents.<br />")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\nThe service will be updated. The new details will be used on all future correspondence and documents.<br />");
     }
 
     @Test

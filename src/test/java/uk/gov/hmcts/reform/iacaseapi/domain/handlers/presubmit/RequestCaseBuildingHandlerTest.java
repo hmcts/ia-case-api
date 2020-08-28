@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
@@ -101,7 +101,7 @@ class RequestCaseBuildingHandlerTest {
                 .filteredOn(idValue -> idValue.getId().equals(expectedIdCaseNote.getId()))
                 .containsOnlyOnce(expectedIdCaseNote);
         } else if (expectedIdCaseNote == null) {
-            assertTrue("No expected case note here", true);
+            assertTrue(true, "No expected case note here");
         } else {
             fail("no case note present");
         }

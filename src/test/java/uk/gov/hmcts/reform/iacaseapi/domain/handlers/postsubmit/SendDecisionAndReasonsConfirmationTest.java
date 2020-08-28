@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,18 +37,16 @@ class SendDecisionAndReasonsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("# You've uploaded the Decision and Reasons document")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# You've uploaded the Decision and Reasons document");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("What happens next")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("What happens next");
+
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.");
     }
 
     @Test

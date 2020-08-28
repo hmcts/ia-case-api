@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -48,19 +48,16 @@ class FtpaAppellantConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've applied for permission to appeal to the Upper Tribunal")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've applied for permission to appeal to the Upper Tribunal");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will review your application and decide shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test
@@ -78,19 +75,16 @@ class FtpaAppellantConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've applied for permission to appeal to the Upper Tribunal")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've applied for permission to appeal to the Upper Tribunal");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will review your application and decide shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
 
@@ -110,20 +104,17 @@ class FtpaAppellantConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons,"
-                           + " it will consider your application and make a decision shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons,"
+                           + " it will consider your application and make a decision shortly.<br>");
     }
 
     @Test

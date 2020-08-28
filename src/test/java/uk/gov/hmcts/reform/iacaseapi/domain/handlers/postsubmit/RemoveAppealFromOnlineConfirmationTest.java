@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,20 +37,17 @@ class RemoveAppealFromOnlineConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You've removed this appeal from the online service")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You've removed this appeal from the online service");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "## Do this next\n"
                 + "You now need to:</br>"
                 + "1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>"
                 + "2.Save all files associated with the appeal to the shared drive.</br>"
-                + "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
-            )
-        );
+                + "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk");
     }
 
     @Test

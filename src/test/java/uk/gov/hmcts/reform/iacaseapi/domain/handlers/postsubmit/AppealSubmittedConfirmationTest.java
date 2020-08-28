@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
@@ -51,14 +51,12 @@ class AppealSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("submitted")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("submitted");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
     }
 
     @Test
@@ -80,14 +78,12 @@ class AppealSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n");
     }
 
     @Test

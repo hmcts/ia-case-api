@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class GenerateDecisionAndReasonsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("# The Decision and Reasons document is ready to download")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# The Decision and Reasons document is ready to download");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("Go to the documents tab to download the Decision and Reasons document.")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("Go to the documents tab to download the Decision and Reasons document.");
     }
 
     @Test

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;

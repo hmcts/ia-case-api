@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -38,16 +37,14 @@ class SendDirectionWithQuestionsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("Your direction has been sent")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("Your direction has been sent");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                is("#### What happens next\n\n"
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next\n\n"
                         + "The appellant will be directed to answer the questions. "
-                        + "You will be notified when they are ready to review.")
-        );
+                        + "You will be notified when they are ready to review.");
     }
 
     @Test

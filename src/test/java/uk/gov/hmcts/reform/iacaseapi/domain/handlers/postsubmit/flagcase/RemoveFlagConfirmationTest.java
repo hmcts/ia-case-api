@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.flagcase;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -36,21 +36,17 @@ class RemoveFlagConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've removed the flag from this case")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've removed the flag from this case");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
-                "This flag has been removed from the case. The case will proceed as usual."
-            )
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "This flag has been removed from the case. The case will proceed as usual.");
     }
 
     @Test

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -38,19 +38,16 @@ class HearingAttendeesAndDurationRecordedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have recorded the attendees and duration of the hearing")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have recorded the attendees and duration of the hearing");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The judge will record the decision and reasons.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The judge will record the decision and reasons.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You don't need to do anything more with this case.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You don't need to do anything more with this case.");
     }
 
     @Test

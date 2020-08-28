@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -125,7 +125,7 @@ class EditDocsAboutToSubmitHandlerTest {
             assertEquals(expectedDocumentTag, currentValue.getTag());
             assertEquals(expectedSuppliedBy, currentValue.getSuppliedBy());
         } else if (isDeletedFileScenario(expectedSuppliedBy)) {
-            assertTrue("file deleted as expected", true);
+            assertTrue(true, "file deleted as expected");
         } else {
             fail();
         }

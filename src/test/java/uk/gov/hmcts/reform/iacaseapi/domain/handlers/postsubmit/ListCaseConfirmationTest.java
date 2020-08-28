@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,19 +37,16 @@ class ListCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have listed the case")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have listed the case");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The hearing notice will be sent to all parties.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The hearing notice will be sent to all parties.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You don't need to do any more on this case.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You don't need to do any more on this case.");
     }
 
     @Test

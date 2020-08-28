@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
@@ -50,28 +50,20 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("# Your appeal details have been saved")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal details have been saved");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("### Do this next")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("### Do this next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString(
-                        "[submit your appeal]"
-                                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
-                )
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("[submit your appeal](/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("Not ready to submit yet?")
-        );
-
+                callbackResponse.getConfirmationBody().get())
+                .contains("Not ready to submit yet?");
     }
 
     @Test
@@ -96,28 +88,20 @@ class AppealSavedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("# Your appeal details have been saved")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal details have been saved");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("### Do this next")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("### Do this next");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString(
-                        "[pay for and submit your appeal]"
-                                + "(/case/IA/Asylum/" + caseId + "/trigger/paymentAppeal)"
-                )
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("[pay for and submit your appeal](/case/IA/Asylum/" + caseId + "/trigger/paymentAppeal)");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("Not ready to submit yet?")
-        );
-
+                callbackResponse.getConfirmationBody().get())
+                .contains("Not ready to submit yet?");
     }
 
 

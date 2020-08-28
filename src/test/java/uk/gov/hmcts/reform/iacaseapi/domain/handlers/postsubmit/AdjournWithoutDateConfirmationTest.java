@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -78,17 +76,14 @@ class AdjournWithoutDateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        Assert.assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# The hearing has been adjourned")
-        );
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# The hearing has been adjourned");
 
-        Assert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
-                + "Both parties will be notified and a Notice of Adjournment will be generated."
-            )
-        );
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
+                + "Both parties will be notified and a Notice of Adjournment will be generated.");
     }
 
     @Test

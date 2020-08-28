@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class EndAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have ended the appeal")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have ended the appeal");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("A notification has been sent to all parties.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("A notification has been sent to all parties.");
     }
 
     @Test

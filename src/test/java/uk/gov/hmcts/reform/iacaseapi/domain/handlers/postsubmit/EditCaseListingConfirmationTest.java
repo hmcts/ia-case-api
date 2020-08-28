@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class EditCaseListingConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("The case has been re-listed")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("The case has been re-listed");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("A new hearing notice has been generated. All parties will be notified by email.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("A new hearing notice has been generated. All parties will be notified by email.<br>");
     }
 
     @Test

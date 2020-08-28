@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_TIME_EXTENSION_DECISION;
@@ -46,18 +46,17 @@ class ReviewTimeExtensionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have granted a time extension")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have granted a time extension");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
                            + "The appellant has been notified that their request has been "
                            + "granted"
                            + " and that they must submit their Appeal Reasons by the new due date.<br>"
                            + "You will be notified when it is ready to review.\n"
-            ));
+            );
     }
 
     @Test
@@ -76,18 +75,17 @@ class ReviewTimeExtensionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have refused a time extension")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have refused a time extension");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
                            + "The appellant has been notified that their request has been "
                            + "refused"
                            + " and that they must submit their Appeal Reasons by the new due date.<br>"
                            + "You will be notified when it is ready to review.\n"
-            ));
+            );
     }
 
     @Test

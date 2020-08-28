@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.GRANTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.REFUSED;
@@ -68,14 +66,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -98,14 +94,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -129,14 +123,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [change the direction due date](/case/IA/Asylum/" + caseId + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [change the direction due date](/case/IA/Asylum/" + caseId + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -160,14 +152,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -191,14 +181,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [update the hearing requirements](/case/IA/Asylum/" + caseId + "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [update the hearing requirements](/case/IA/Asylum/" + caseId + "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -222,14 +210,12 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [change the designated hearing centre](/case/IA/Asylum/" + caseId + "/trigger/changeHearingCentre) based on the new information provided in the application. The application decision is available to view in the Application tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [change the designated hearing centre](/case/IA/Asylum/" + caseId + "/trigger/changeHearingCentre) based on the new information provided in the application. The application decision is available to view in the Application tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
@@ -253,14 +239,13 @@ class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The application decision has been recorded and is available in the applications tab. You must now [edit the appeal details](/case/IA/Asylum/" + caseId +  "/trigger/editAppealAfterSubmit) based on the new information provided in the application.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The application decision has been recorded and is available in the applications tab. You must now [edit the appeal details](/case/IA/Asylum/" + caseId +  "/trigger/editAppealAfterSubmit) based on the new information provided in the application.");
+
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);

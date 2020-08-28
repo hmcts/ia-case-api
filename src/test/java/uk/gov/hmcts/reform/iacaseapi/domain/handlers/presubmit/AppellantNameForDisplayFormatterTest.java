@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -119,9 +118,9 @@ class AppellantNameForDisplayFormatterTest {
                 boolean canHandle = appellantNameForDisplayFormatter.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
-                    assertTrue("Can handle event " + event, canHandle);
+                    assertTrue(canHandle, "Can handle event " + event);
                 } else {
-                    assertFalse("Cannot handle event " + event, canHandle);
+                    assertFalse(canHandle, "Cannot handle event " + event);
                 }
             }
 
@@ -138,7 +137,7 @@ class AppellantNameForDisplayFormatterTest {
 
         boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(canHandle, is(false));
+        assertSame(canHandle, false);
     }
 
     @Test
@@ -150,7 +149,7 @@ class AppellantNameForDisplayFormatterTest {
 
         boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(canHandle, is(false));
+        assertSame(canHandle, false);
     }
 
     @Test
@@ -162,7 +161,7 @@ class AppellantNameForDisplayFormatterTest {
 
         boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(canHandle, is(true));
+        assertSame(canHandle, true);
     }
 
     @Test
@@ -174,7 +173,7 @@ class AppellantNameForDisplayFormatterTest {
 
         boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(canHandle, is(true));
+        assertSame(canHandle, true);
     }
 
     @Test
@@ -186,7 +185,7 @@ class AppellantNameForDisplayFormatterTest {
 
         boolean canHandle = appellantNameForDisplayFormatter.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        assertThat(canHandle, is(true));
+        assertSame(canHandle, true);
     }
 
     @Test

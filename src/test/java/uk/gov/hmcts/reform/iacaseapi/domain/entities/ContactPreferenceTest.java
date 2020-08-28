@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -11,13 +9,13 @@ class ContactPreferenceTest {
 
     @Test
     void has_correct_asylum_contact_preference() {
-        assertThat(ContactPreference.from("wantsEmail").get(), is(ContactPreference.WANTS_EMAIL));
-        assertThat(ContactPreference.from("wantsSms").get(), is(ContactPreference.WANTS_SMS));
+        assertSame(ContactPreference.from("wantsEmail").get(), ContactPreference.WANTS_EMAIL);
+        assertSame(ContactPreference.from("wantsSms").get(), ContactPreference.WANTS_SMS);
     }
 
     @Test
     void returns_optional_for_unknown_contact_preference() {
-        assertThat(ContactPreference.from("some_unknown_type"), is(Optional.empty()));
+        assertSame(ContactPreference.from("some_unknown_type"), Optional.empty());
     }
 
     @Test

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -42,23 +42,19 @@ class ChangeDirectionDueDateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("changed the due date")
-        );
+        assertThat(callbackResponse.getConfirmationHeader().get())
+            .contains("changed the due date");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "[directions tab]"
                 + "(/case/IA/Asylum/" + caseId + "#directions)"
-            )
-        );
+            );
     }
 
     @Test

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -39,23 +39,20 @@ class GenerateHearingBundleConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("The hearing bundle is being generated")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("The hearing bundle is being generated");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "You will soon be able to view the hearing bundle in the documents tab.</br>"
                 + "You and the other parties will be notified when the hearing bundle is available.</br>"
                 + "If the bundle fails to generate, you will be notified and will need to generate the bundle again."
-            )
-        );
+            );
     }
 
     @Test

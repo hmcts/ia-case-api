@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,24 +37,20 @@ class EditAppealAfterSubmitConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've updated the application")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've updated the application");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties have been notified and the service will be updated.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified and the service will be updated.");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The new details will be used on all future correspondence and documents.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The new details will be used on all future correspondence and documents.");
     }
 
     @Test

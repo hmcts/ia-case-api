@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
@@ -244,7 +244,7 @@ class GenerateDocumentHandlerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse("failed callback: " + callbackStage + ", failed event " + event, canHandle);
+                    assertFalse(canHandle, "failed callback: " + callbackStage + ", failed event " + event);
                 }
             }
 
@@ -320,7 +320,7 @@ class GenerateDocumentHandlerTest {
                         || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
                     assertFalse(canHandle);
                 } else {
-                    assertFalse("event: " + event + ", stage: " + callbackStage, canHandle);
+                    assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);
                 }
 
             }

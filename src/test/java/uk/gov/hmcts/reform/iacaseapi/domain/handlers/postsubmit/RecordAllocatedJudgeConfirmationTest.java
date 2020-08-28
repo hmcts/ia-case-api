@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class RecordAllocatedJudgeConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("You've recorded which judge is dealing with the application")
-        );
+                callbackResponse.getConfirmationHeader().get())
+                .contains("You've recorded which judge is dealing with the application");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("The judge will consider the application.")
-        );
+                callbackResponse.getConfirmationBody().get())
+                .contains("The judge will consider the application.");
     }
 
     @Test

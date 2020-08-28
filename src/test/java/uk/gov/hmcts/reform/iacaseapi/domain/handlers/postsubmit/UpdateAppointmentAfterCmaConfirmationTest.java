@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,15 +37,12 @@ class UpdateAppointmentAfterCmaConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have updated the details of the appointment")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have updated the details of the appointment");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("he updated details are available to view in the hearing and appointment tab. All parties will be notified that the appointments details have been updated.")
-        );
-
+            callbackResponse.getConfirmationBody().get())
+            .contains("he updated details are available to view in the hearing and appointment tab. All parties will be notified that the appointments details have been updated.");
     }
 
     @Test

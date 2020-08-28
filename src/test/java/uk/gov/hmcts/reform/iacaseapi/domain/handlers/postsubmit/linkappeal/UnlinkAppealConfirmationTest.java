@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.linkappeal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,16 +63,14 @@ class UnlinkAppealConfirmationTest {
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
 
-        Assert.assertThat(
-            actualResponse.getConfirmationHeader().get(),
-            containsString("# You have unlinked this appeal")
-        );
+        assertThat(
+            actualResponse.getConfirmationHeader().get())
+            .contains("# You have unlinked this appeal");
 
-        Assert.assertThat(
-            actualResponse.getConfirmationBody().get(),
-            containsString("This appeal is now unlinked and will proceed as usual. "
-                + "You must update the linked appeal spreadsheet to reflect this change.")
-        );
+        assertThat(
+            actualResponse.getConfirmationBody().get())
+            .contains("This appeal is now unlinked and will proceed as usual. "
+                + "You must update the linked appeal spreadsheet to reflect this change.");
 
     }
 

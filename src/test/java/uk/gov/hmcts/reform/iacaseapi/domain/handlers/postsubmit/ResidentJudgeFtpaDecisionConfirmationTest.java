@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -47,19 +47,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test
@@ -79,19 +76,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test
@@ -111,19 +105,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test
@@ -143,19 +134,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test
@@ -175,19 +163,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties will be notified of the decision. A Caseworker will review any Tribunal instructions and then relist the case.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
 
@@ -208,19 +193,16 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the First-tier permission to appeal decision")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Both parties have been notified of the decision.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Both parties have been notified of the decision.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
     }
 
     @Test

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTOM_LEGAL_REP_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
@@ -268,7 +268,7 @@ class CustomiseHearingBundlePreparerTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @org.junit.Test
+    @Test
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {

@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
 
@@ -60,9 +59,9 @@ class RequestResponseAmendHandlerTest {
         List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
         List<YesOrNo> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
-        assertThat(
+        assertSame(
             asylumCaseValues.get(extractors.indexOf(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE)),
-            is(YesOrNo.YES)
+            YesOrNo.YES
         );
 
         verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);

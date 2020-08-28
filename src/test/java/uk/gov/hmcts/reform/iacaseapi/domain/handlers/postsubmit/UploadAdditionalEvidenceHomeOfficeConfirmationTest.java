@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class UploadAdditionalEvidenceHomeOfficeConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have uploaded\n# additional evidence")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have uploaded\n# additional evidence");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The evidence is now available in the documents tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The evidence is now available in the documents tab.");
     }
 
     @Test

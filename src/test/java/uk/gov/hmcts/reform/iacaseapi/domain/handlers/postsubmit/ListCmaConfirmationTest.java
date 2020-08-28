@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class ListCmaConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have listed the case management appointment")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have listed the case management appointment");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The Notice of Case Management Appointment will be sent to all parties.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The Notice of Case Management Appointment will be sent to all parties.");
     }
 
     @Test

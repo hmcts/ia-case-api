@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -42,15 +42,12 @@ class UpdateHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've updated the hearing requirements")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've updated the hearing requirements");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [update the hearing adjustments or confirm they haven't changed.](/case/IA/Asylum/" + caseId + "/trigger/updateHearingAdjustments)")
-        );
-
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [update the hearing adjustments or confirm they haven't changed.](/case/IA/Asylum/" + caseId + "/trigger/updateHearingAdjustments)");
     }
 
     @Test

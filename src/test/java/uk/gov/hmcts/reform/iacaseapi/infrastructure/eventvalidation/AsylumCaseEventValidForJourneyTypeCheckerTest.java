@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.REP;
@@ -56,7 +55,7 @@ class AsylumCaseEventValidForJourneyTypeCheckerTest {
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
-        assertThat(check.isValid(), is(true));
+        assertSame(check.isValid(), true);
     }
 
     @Test
@@ -65,8 +64,8 @@ class AsylumCaseEventValidForJourneyTypeCheckerTest {
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
-        assertThat(check.isValid(), is(false));
-        assertThat(check.getInvalidReason(), is("You've made an invalid request. The hearing must be submitted by a representative to make this request."));
+        assertSame(check.isValid(), false);
+        assertSame(check.getInvalidReason(), "You've made an invalid request. The hearing must be submitted by a representative to make this request.");
 
         Assertions.assertThat(loggingEventListAppender.list)
             .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
@@ -79,8 +78,8 @@ class AsylumCaseEventValidForJourneyTypeCheckerTest {
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
 
-        assertThat(check.isValid(), is(false));
-        assertThat(check.getInvalidReason(), is("You've made an invalid request. The hearing must be submitted by an appellant to make this request."));
+        assertSame(check.isValid(), false);
+        assertSame(check.getInvalidReason(), "You've made an invalid request. The hearing must be submitted by an appellant to make this request.");
 
         Assertions.assertThat(loggingEventListAppender.list)
             .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)

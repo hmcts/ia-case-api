@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,12 @@ class UploadHearingRecordingConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You’ve uploaded the hearing recording")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You’ve uploaded the hearing recording");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("This file is now available in the Documents tab and the Hearing tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("This file is now available in the Documents tab and the Hearing tab.");
     }
 
     @Test

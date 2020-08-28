@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -51,35 +51,30 @@ class BuildCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("Upload saved")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("Upload saved");
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You still need to submit your case")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You still need to submit your case");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "[submit your case]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/submitCase)"
-            )
-        );
+            );
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "[build your case]"
                 + "(/case/IA/Asylum/" + caseId + "/trigger/buildCase)"
-            )
-        );
+            );
     }
 
     @Test

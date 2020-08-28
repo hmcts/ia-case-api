@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -37,19 +37,16 @@ class SubmitHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've submitted your hearing requirements")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've submitted your hearing requirements");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The Tribunal will review your hearing requirements and any additional requests for adjustments.<br><br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("We'll notify you when the hearing is listed. You'll then be able to review the hearing requirements.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("We'll notify you when the hearing is listed. You'll then be able to review the hearing requirements.");
     }
 
     @Test

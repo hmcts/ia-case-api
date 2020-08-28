@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -76,14 +76,12 @@ class RequestCaseBuildingPreparerTest {
         List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
-                containsString(expectedExplanationContains)
-        );
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .contains(expectedExplanationContains);
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)),
-                containsString(expectedDueDate)
-        );
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+                .contains(expectedDueDate);
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
