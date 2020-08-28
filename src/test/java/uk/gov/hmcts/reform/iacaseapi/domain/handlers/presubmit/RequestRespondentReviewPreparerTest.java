@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @SuppressWarnings("unchecked")
 class RequestRespondentReviewPreparerTest {
 
-    static final int DUE_IN_DAYS = 14;
+    private static final int DUE_IN_DAYS = 14;
 
     @Mock private DateProvider dateProvider;
     @Mock private Callback<AsylumCase> callback;
@@ -41,7 +41,7 @@ class RequestRespondentReviewPreparerTest {
     @Captor ArgumentCaptor<String> asylumValueCaptor;
     @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    RequestRespondentReviewPreparer requestRespondentReviewPreparer;
+    private RequestRespondentReviewPreparer requestRespondentReviewPreparer;
 
     @BeforeEach
     void setUp() {

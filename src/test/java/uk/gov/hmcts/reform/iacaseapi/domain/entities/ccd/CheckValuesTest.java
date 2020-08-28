@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 class CheckValuesTest {
 
-    final List<String> values = new ArrayList<>();
+    private final List<String> values = new ArrayList<>();
 
-    CheckValues<String> checkValues = new CheckValues<>(values);
+    private CheckValues<String> checkValues = new CheckValues<>(values);
 
     @Test
     void should_hold_onto_values() {

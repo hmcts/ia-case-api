@@ -19,11 +19,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 @ExtendWith(MockitoExtension.class)
 class CallbackTest {
 
-    final Event event = Event.START_APPEAL;
+    private final Event event = Event.START_APPEAL;
     @Mock private CaseDetails<CaseData> caseDetails;
-    final Optional<CaseDetails<CaseData>> caseDetailsBefore = Optional.empty();
+    private final Optional<CaseDetails<CaseData>> caseDetailsBefore = Optional.empty();
 
-    Callback<CaseData> callback;
+    private Callback<CaseData> callback;
 
     @BeforeEach
     void setUp() {

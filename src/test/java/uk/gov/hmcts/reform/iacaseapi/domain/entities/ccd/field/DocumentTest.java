@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 class DocumentTest {
 
-    final String documentUrl = "http://doc-store/A";
-    final String documentBinaryUrl = "http://doc-store/A/binary";
-    final String documentFilename = "evidence.pdf";
+    private final String documentUrl = "http://doc-store/A";
+    private final String documentBinaryUrl = "http://doc-store/A/binary";
+    private final String documentFilename = "evidence.pdf";
 
-    Document document = new Document(
+    private Document document = new Document(
         documentUrl,
         documentBinaryUrl,
         documentFilename

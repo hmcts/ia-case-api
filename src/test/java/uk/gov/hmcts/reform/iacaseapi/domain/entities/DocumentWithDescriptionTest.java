@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 class DocumentWithDescriptionTest {
 
-    final Document document = mock(Document.class);
-    final String description = "Some evidence";
+    private final Document document = mock(Document.class);
+    private final String description = "Some evidence";
 
     DocumentWithDescription documentWithDescription =
         new DocumentWithDescription(

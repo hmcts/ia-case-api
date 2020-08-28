@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 class PreviousDatesTest {
 
-    final String dateDue = "2019-12-01";
-    final String dateSent = "2018-12-01T12:34:56";
+    private final String dateDue = "2019-12-01";
+    private final String dateSent = "2018-12-01T12:34:56";
 
 
-    PreviousDates previousDates = new PreviousDates(
+    private PreviousDates previousDates = new PreviousDates(
         dateDue,
         dateSent
     );

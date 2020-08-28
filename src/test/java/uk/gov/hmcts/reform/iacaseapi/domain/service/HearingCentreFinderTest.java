@@ -18,9 +18,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 @SuppressWarnings("unchecked")
 class HearingCentreFinderTest {
 
-    final HearingCentre defaultHearingCentre = HearingCentre.TAYLOR_HOUSE;
+    private final HearingCentre defaultHearingCentre = HearingCentre.TAYLOR_HOUSE;
 
-    final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas =
+    private final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas =
         ImmutableMap
             .<HearingCentre, List<String>>builder()
             .put(
@@ -76,7 +76,7 @@ class HearingCentreFinderTest {
             )
             .build();
 
-    final Map<HearingCentre, String> hearingCentreActivationDates =
+    private final Map<HearingCentre, String> hearingCentreActivationDates =
         ImmutableMap
             .<HearingCentre, String>builder()
             .put(HearingCentre.BRADFORD, "2019-01-01")
@@ -89,7 +89,7 @@ class HearingCentreFinderTest {
             .put(HearingCentre.GLASGOW, "2019-01-01")
             .build();
 
-    final HearingCentreFinder hearingCentreFinder =
+    private final HearingCentreFinder hearingCentreFinder =
         new HearingCentreFinder(
             defaultHearingCentre,
             hearingCentreCatchmentAreas,

@@ -10,13 +10,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 class CaseNoteTest {
 
-    final String caseNoteSubject = "some-subject";
-    final String caseNoteDescription = "some-description";
-    final String user = "some-user";
-    final String dateAdded = "some-date";
-    final Document caseNoteDocument = mock(Document.class);
+    private final String caseNoteSubject = "some-subject";
+    private final String caseNoteDescription = "some-description";
+    private final String user = "some-user";
+    private final String dateAdded = "some-date";
+    private final Document caseNoteDocument = mock(Document.class);
 
-    CaseNote caseNote;
+    private CaseNote caseNote;
 
     @BeforeEach
     void setUp() {

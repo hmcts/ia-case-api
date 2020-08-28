@@ -41,4 +41,11 @@
         <cpe>cpe:/a:apache:log4j:2.12.1</cpe>
         <cve>CVE-2020-9488</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Suppressing all vulnerabilities as it is for Mock generated code
+        file name: snakeyaml-1.25.jar
+        ]]></notes>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
 </suppressions>

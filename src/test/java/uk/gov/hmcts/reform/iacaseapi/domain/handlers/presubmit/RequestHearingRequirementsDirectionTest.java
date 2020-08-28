@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @SuppressWarnings("unchecked")
 class RequestHearingRequirementsDirectionTest {
 
-    static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
+    private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
@@ -42,9 +42,9 @@ class RequestHearingRequirementsDirectionTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
+    @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
-    RequestHearingRequirementsDirectionHandler requestHearingRequirementsDirectionHandler;
+    private RequestHearingRequirementsDirectionHandler requestHearingRequirementsDirectionHandler;
 
     @BeforeEach
     void setUp() {

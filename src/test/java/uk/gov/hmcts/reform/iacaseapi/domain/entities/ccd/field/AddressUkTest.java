@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 
 class AddressUkTest {
 
-    final String addressLine1 = "A";
-    final String addressLine2 = "B";
-    final String addressLine3 = "C";
-    final String postTown = "D";
-    final String county = "E";
-    final String postCode = "F";
-    final String country = "G";
+    private final String addressLine1 = "A";
+    private final String addressLine2 = "B";
+    private final String addressLine3 = "C";
+    private final String postTown = "D";
+    private final String county = "E";
+    private final String postCode = "F";
+    private final String country = "G";
 
-    AddressUk addressUk = new AddressUk(
+    private AddressUk addressUk = new AddressUk(
         addressLine1,
         addressLine2,
         addressLine3,

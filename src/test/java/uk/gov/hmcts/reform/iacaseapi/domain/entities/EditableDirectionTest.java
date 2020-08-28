@@ -11,7 +11,7 @@ class EditableDirectionTest {
     private final Parties parties = Parties.RESPONDENT;
     private final String dateDue = "2018-12-31T12:34:56";
 
-    EditableDirection editableDirection = new EditableDirection(
+    private EditableDirection editableDirection = new EditableDirection(
         explanation,
         parties,
         dateDue

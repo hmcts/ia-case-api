@@ -42,10 +42,10 @@ class UploadHomeOfficeBundlePreparerTest {
     @Mock private Document document2;
     final String evidence01FileName = "Evidence01";
     final String evidence02FileName = "Evidence02";
-    @Captor ArgumentCaptor<String> fileNames;
+    @Captor private ArgumentCaptor<String> fileNames;
 
 
-    UploadHomeOfficeBundlePreparer uploadHomeOfficeBundlePreparer;
+    private UploadHomeOfficeBundlePreparer uploadHomeOfficeBundlePreparer;
 
     @BeforeEach
     void setUp() {

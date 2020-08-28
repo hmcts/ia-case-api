@@ -324,7 +324,7 @@ dependencies {
                     "org.junit.vintage:junit-vintage-engine:5.6.2"
 
 
-//pact contract testing
+    //pact contract testing
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
 

@@ -10,13 +10,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 class CaseDetailsTest {
 
-    final long id = 123L;
-    final String jurisdiction = "IA";
-    final State state = State.APPEAL_STARTED;
-    final CaseData caseData = mock(CaseData.class);
-    final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
+    private final long id = 123L;
+    private final String jurisdiction = "IA";
+    private final State state = State.APPEAL_STARTED;
+    private final CaseData caseData = mock(CaseData.class);
+    private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
 
-    CaseDetails<CaseData> caseDetails = new CaseDetails<>(
+    private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
         id,
         jurisdiction,
         state,

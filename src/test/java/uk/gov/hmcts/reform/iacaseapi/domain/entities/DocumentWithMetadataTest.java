@@ -8,12 +8,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 class DocumentWithMetadataTest {
 
-    final Document document = mock(Document.class);
-    final String description = "Some evidence";
-    final String dateUploaded = "2018-12-25";
-    final DocumentTag tag = DocumentTag.CASE_ARGUMENT;
+    private final Document document = mock(Document.class);
+    private final String description = "Some evidence";
+    private final String dateUploaded = "2018-12-25";
+    private final DocumentTag tag = DocumentTag.CASE_ARGUMENT;
 
-    DocumentWithMetadata documentWithMetadata =
+    private DocumentWithMetadata documentWithMetadata =
         new DocumentWithMetadata(
             document,
             description,

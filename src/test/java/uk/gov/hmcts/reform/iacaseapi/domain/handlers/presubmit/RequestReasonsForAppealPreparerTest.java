@@ -28,17 +28,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @ExtendWith(MockitoExtension.class)
 class RequestReasonsForAppealPreparerTest {
 
-    static final int DUE_IN_DAYS = 28;
+    private static final int DUE_IN_DAYS = 28;
 
     @Mock private DateProvider dateProvider;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
-    @Captor ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
+    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
-    RequestReasonsForAppealPreparer requestReasonsForAppealPreparer;
+    private RequestReasonsForAppealPreparer requestReasonsForAppealPreparer;
 
     @BeforeEach
     void setUp() {

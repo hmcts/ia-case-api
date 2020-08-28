@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 class DirectionTest {
 
-    final String explanation = "Do the thing";
-    final Parties parties = Parties.RESPONDENT;
-    final String dateDue = "2018-12-31T12:34:56";
-    final String dateSent = "2018-12-25";
-    DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
-    List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
+    private final String explanation = "Do the thing";
+    private final Parties parties = Parties.RESPONDENT;
+    private final String dateDue = "2018-12-31T12:34:56";
+    private final String dateSent = "2018-12-25";
+    private DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
+    private List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
 
-    Direction direction = new Direction(
+    private Direction direction = new Direction(
         explanation,
         parties,
         dateDue,

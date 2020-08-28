@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 
 class IdValueTest {
 
-    final String id = "1";
-    final Integer value = 1234;
+    private final String id = "1";
+    private final Integer value = 1234;
 
-    IdValue<Integer> addressUk = new IdValue<>(id, value);
+    private IdValue<Integer> addressUk = new IdValue<>(id, value);
 
     @Test
     void should_hold_onto_values() {

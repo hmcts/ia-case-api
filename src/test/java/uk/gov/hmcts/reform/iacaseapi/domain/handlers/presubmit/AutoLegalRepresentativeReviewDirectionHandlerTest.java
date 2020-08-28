@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @SuppressWarnings("unchecked")
 class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
-    static final int REVIEW_DUE_IN_DAYS = 5;
+    private static final int REVIEW_DUE_IN_DAYS = 5;
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
@@ -41,9 +41,9 @@ class AutoLegalRepresentativeReviewDirectionHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Captor ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
+    @Captor private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
 
-    AutoLegalRepresentativeReviewDirectionHandler autoLegalRepresentativeReviewDirectionHandler;
+    private AutoLegalRepresentativeReviewDirectionHandler autoLegalRepresentativeReviewDirectionHandler;
 
     @BeforeEach
     void setUp() {

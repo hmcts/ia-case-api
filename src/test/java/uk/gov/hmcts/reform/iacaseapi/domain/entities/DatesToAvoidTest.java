@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 class DatesToAvoidTest {
 
-    final LocalDate dateToAvoid = LocalDate.parse("2019-11-29");
-    final String dateToAvoidReason = "Some Reason";
-    DatesToAvoid datesToAvoid;
+    private final LocalDate dateToAvoid = LocalDate.parse("2019-11-29");
+    private final String dateToAvoidReason = "Some Reason";
+    private DatesToAvoid datesToAvoid;
 
     DatesToAvoidTest() {
     }
