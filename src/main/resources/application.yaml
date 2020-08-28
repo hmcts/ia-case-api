@@ -12,8 +12,9 @@ management:
   endpoints:
     web:
       base-path: "/"
-
-health:
+  health:
+    probes:
+      enabled: true
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
@@ -141,6 +142,7 @@ security:
     - "/"
     - "/health"
     - "/health/liveness"
+    - "/health/readiness"
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"

@@ -19,7 +19,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
     id 'au.com.dius.pact' version '4.0.4'
     id "io.freefair.lombok" version "5.1.0"
 }
@@ -36,7 +36,7 @@ def versions = [
     reformHealthStarter: '0.0.5',
     serenity           : '2.2.12',
     sonarPitest        : '0.5',
-    springBoot         : '2.2.4.RELEASE',
+    springBoot         : '2.3.3.RELEASE',
     springHystrix      : '2.1.1.RELEASE',
     springfoxSwagger   : '2.9.2',
     pact_version       : '3.5.24'
@@ -263,6 +263,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
@@ -288,7 +289,6 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
-    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealthStarter
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
@@ -296,9 +296,9 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.23'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
 
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.1'
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"

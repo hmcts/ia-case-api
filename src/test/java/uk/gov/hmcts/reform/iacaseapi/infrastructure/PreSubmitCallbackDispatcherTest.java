@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

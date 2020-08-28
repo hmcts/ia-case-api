@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
+import com.launchdarkly.client.Components;
 import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDClientInterface;
 import com.launchdarkly.client.LDConfig;
@@ -22,8 +23,11 @@ public class FeatureToggleConfiguration {
     @Bean
     public LDConfig ldConfig() {
         return new LDConfig.Builder()
-            .connectTimeout(connectionTimeout)
-            .socketTimeout(socketTimeout)
+            .http(Components
+                .httpConfiguration()
+                .connectTimeoutMillis(connectionTimeout)
+                .socketTimeoutMillis(socketTimeout)
+            )
             .build();
     }
 

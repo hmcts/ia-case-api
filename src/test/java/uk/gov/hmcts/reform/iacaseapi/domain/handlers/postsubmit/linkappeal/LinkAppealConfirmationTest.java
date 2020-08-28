@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.linkappeal;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -11,7 +12,6 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,17 +77,17 @@ public class LinkAppealConfirmationTest {
         assertTrue(actualResponse.getConfirmationHeader().isPresent());
         assertTrue(actualResponse.getConfirmationBody().isPresent());
 
-        Assert.assertThat(
+        assertThat(
             actualResponse.getConfirmationHeader().get(),
             containsString("# You have linked this appeal")
         );
 
-        Assert.assertThat(
+        assertThat(
             actualResponse.getConfirmationBody().get(),
             containsString("#### What happens next\r\n\r\n")
         );
 
-        Assert.assertThat(
+        assertThat(
             actualResponse.getConfirmationBody().get(),
             containsString(
                 "The appeal will now be considered as part of a set of linked appeals. "
