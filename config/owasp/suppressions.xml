@@ -41,4 +41,10 @@
         <cpe>cpe:/a:apache:log4j:2.12.1</cpe>
         <cve>CVE-2020-9488</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     It is transitive dependency from Launch Darkly Client
+   ]]></notes>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
 </suppressions>
