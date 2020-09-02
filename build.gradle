@@ -288,7 +288,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.23'
 
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.0.3'
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
