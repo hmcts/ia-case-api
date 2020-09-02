@@ -3,11 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_OFFLINE_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -22,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
@@ -93,7 +90,7 @@ public class FeePaymentHandlerTest {
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(expectedUpdatedCase, times(1))
-                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
+                .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
             verify(expectedUpdatedCase, times(1))
                 .write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
 
@@ -127,7 +124,7 @@ public class FeePaymentHandlerTest {
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(expectedUpdatedCase, times(1))
-                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
+                .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
 
             reset(callback);
             reset(feePayment);
@@ -159,7 +156,7 @@ public class FeePaymentHandlerTest {
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(expectedUpdatedCase, times(1))
-                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
+                .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
 
             reset(callback);
             reset(feePayment);

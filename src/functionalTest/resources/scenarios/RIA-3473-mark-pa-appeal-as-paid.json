@@ -1,0 +1,42 @@
+{
+  "description": "RIA-3473 Mark PA appeal as paid ",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 3473,
+      "eventId": "markAppealPaid",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "paymentStatus": "Payment pending",
+          "eaHuAppealTypePaymentOption": "payOffline",
+          "paidDate": "${TODAY-2}",
+          "feeAmount": "80.00",
+          "paidAmount": "8000",
+          "hearingDecisionSelected": "Decision without a hearing. The fee for this type of appeal is £80",
+          "decisionHearingFeeOption": "decisionWithoutHearing",
+          "additionalPaymentInfo": "Payment for the appeal is now complete",
+          "legalRepresentativeDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "feeAmount": "80.00",
+        "paymentDate": "${TODAY-2}",
+        "paymentStatus": "Paid",
+        "additionalPaymentInfo": "Payment for the appeal is now complete",
+        "currentCaseStateVisibleToAdminOfficer": "caseBuilding"
+      }
+    }
+  }
+}
