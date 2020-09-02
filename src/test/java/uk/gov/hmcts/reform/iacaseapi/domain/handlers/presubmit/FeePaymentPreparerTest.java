@@ -1,27 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.FeePaymentPreparer;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentPreparerTest {
 
@@ -34,6 +37,7 @@ public class FeePaymentPreparerTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
 
         feePaymentPreparer =
                 new FeePaymentPreparer(true, feePayment);
@@ -79,11 +83,13 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_write_feePaymentEnabled() {
+    @Parameters({ "protection", "refusalOfEu", "refusalOfHumanRights" })
+    public void should_write_feePaymentEnabled(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -92,7 +98,7 @@ public class FeePaymentPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
     }
 
     @Test

@@ -60,11 +60,17 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+        final PreSubmitCallbackResponse<AsylumCase> preSubmitCallbackResponse =
+            new PreSubmitCallbackResponse<>(asylumCase);
 
-        asylumCase = feePayment.aboutToStart(callback);
+        if (preSubmitCallbackResponse.getErrors().isEmpty()) {
+            asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+            asylumCase = feePayment.aboutToStart(callback);
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+            preSubmitCallbackResponse.setData(asylumCase);
+        }
+
+        return preSubmitCallbackResponse;
     }
 
 }
