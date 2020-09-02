@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
@@ -934,6 +933,9 @@ public enum AsylumCaseFieldDefinition {
 
     CUSTOM_HEARING_DOCUMENTS(
             "customHearingDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    IS_HOME_OFFICE_INTEGRATION_ENABLED(
+        "isHomeOfficeIntegrationEnabled", new TypeReference<String>() {}),
 
     HOME_OFFICE_CASE_STATUS_DATA(
         "homeOfficeCaseStatusData", new TypeReference<HomeOfficeCaseStatus>() {}),

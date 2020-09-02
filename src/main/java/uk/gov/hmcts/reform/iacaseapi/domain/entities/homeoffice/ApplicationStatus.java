@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice;
 
-import static java.util.Objects.requireNonNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +50,10 @@ public class ApplicationStatus {
     }
 
     public CodeWithDescription getDecisionType() {
-        requireNonNull(decisionType);
         return decisionType;
     }
 
     public String getDecisionDate() {
-        requireNonNull(decisionDate);
         return decisionDate;
     }
 

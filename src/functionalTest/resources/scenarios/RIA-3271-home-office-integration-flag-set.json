@@ -1,8 +1,7 @@
 {
-  "description": "RIA-3271 Gets Home Office data for the IA appeal reference",
-  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "description": "RIA-3271 Set Home Office integration enabled flag value",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "submitAppeal",
@@ -22,10 +21,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0061-7075",
-        "isHomeOfficeIntegrationEnabled": "Yes",
-        "contactPreferenceDescription": "Text message",
-        "appealTypeDescription": "Refusal of protection claim",
-        "homeOfficeSearchStatus": "SUCCESS"
+        "isHomeOfficeIntegrationEnabled": "No"
       }
     }
   }

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice;
 
-import static java.util.Objects.requireNonNull;
-
 public class Person {
 
     private CodeWithDescription gender;
@@ -39,12 +37,10 @@ public class Person {
     }
 
     public String getGivenName() {
-        requireNonNull(givenName);
         return givenName;
     }
 
     public String getFamilyName() {
-        requireNonNull(familyName);
         return familyName;
     }
 
