@@ -92,7 +92,6 @@ public class GenerateDocumentHandlerTest {
             SUBMIT_CASE,
             LIST_CASE,
             EDIT_CASE_LISTING,
-            GENERATE_HEARING_BUNDLE,
             GENERATE_DECISION_AND_REASONS,
             SEND_DECISION_AND_REASONS,
             ADJOURN_HEARING_WITHOUT_DATE,
@@ -232,7 +231,6 @@ public class GenerateDocumentHandlerTest {
                         UPDATE_HEARING_REQUIREMENTS,
                         LIST_CASE,
                         EDIT_CASE_LISTING,
-                        GENERATE_HEARING_BUNDLE,
                         GENERATE_DECISION_AND_REASONS,
                         SEND_DECISION_AND_REASONS,
                         ADJOURN_HEARING_WITHOUT_DATE,
@@ -318,7 +316,8 @@ public class GenerateDocumentHandlerTest {
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && (eventsThatDontRequireStitching.contains(event))) {
                     assertTrue(canHandle);
-                } else if (event.equals(GENERATE_HEARING_BUNDLE)) {
+                } else if (event.equals(GENERATE_HEARING_BUNDLE)
+                        || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
                     assertFalse(canHandle);
                 } else {
                     assertFalse("event: " + event + ", stage: " + callbackStage, canHandle);

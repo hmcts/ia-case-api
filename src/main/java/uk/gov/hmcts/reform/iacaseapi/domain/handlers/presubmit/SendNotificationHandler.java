@@ -66,7 +66,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE,
             Event.REQUEST_RESPONSE_REVIEW,
             Event.SEND_DECISION_AND_REASONS,
-            Event.GENERATE_HEARING_BUNDLE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE,
             Event.UPLOAD_ADDITIONAL_EVIDENCE_HOME_OFFICE,
             Event.UPLOAD_ADDENDUM_EVIDENCE,

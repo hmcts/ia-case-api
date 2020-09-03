@@ -1,82 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-   file name: groovy-xml-2.4.15.jar
+
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+             Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
+             Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
+            ]]></notes>
+        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://nvd.nist.gov/vuln/detail/CVE-2018-1258
+                 False positive &#45;&#45; we do not use Spring Framework 5.0.5.RELEASE (5.0.8.RELEASE at the time of writing)
+                 Additionally, we do not use Spring method security annotations which are the specific vulnerability
+                ]]></notes>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+             Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5407)
+           ]]></notes>
+        <gav regex="true">org.springframework.security:spring-security-*.*</gav>
+        <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
+        <cve>CVE-2020-5407</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+             Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5408)
+           ]]></notes>
+        <gav regex="true">org.springframework.security:spring-security-*.*</gav>
+        <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
+        <cve>CVE-2020-5408</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     Suppressing as SMTP appender is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-9488)
    ]]></notes>
-    <gav regex="true">^org\.codehaus\.groovy:groovy-xml:.*$</gav>
-    <cpe>cpe:/a:apache:groovy</cpe>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-   file name: groovy-json-2.4.15.jar
+        <gav regex="true">org.apache.logging.log4j:log4j.*</gav>
+        <cpe>cpe:/a:apache:log4j:2.12.1</cpe>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     It is transitive dependency from Launch Darkly Client
    ]]></notes>
-    <gav regex="true">^org\.codehaus\.groovy:groovy-json:.*$</gav>
-    <cpe>cpe:/a:apache:groovy</cpe>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-	The offending library and class and not used in our code
-	https://tools.hmcts.net/jira/browse/RIA-951
-	]]></notes>
-    <gav regex="true">.*</gav>
-    <cve>CVE-2018-8088</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-         Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
-         Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
-        ]]></notes>
-    <gav regex="true">^com\.google\.guava:guava:.*$</gav>
-    <cve>CVE-2018-10237</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-         CVE-2018-1115: Vulnerability applies to postgresql before versions 10.4, 9.6.9 is vulnerable. We use PostgreSQL 10.5 in Azure which does not have this issue.
-       ]]></notes>
-    <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
-    <cve>CVE-2018-1115</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-         CVE-2016-7048: Vulnerability applies to PostgreSQL before 9.3.15, 9.4.x before 9.4.10, and 9.5.x before 9.5.5 only. We use PostgreSQL 10.5 in Azure which does not have this issue.
-        ]]></notes>
-    <cve>CVE-2016-7048</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-         https://nvd.nist.gov/vuln/detail/CVE-2018-1258
-         False positive -- we do not use Spring Framework 5.0.5.RELEASE (5.0.8.RELEASE at the time of writing)
-         Additionally, we do not use Spring method security annotations which are the specific vulnerability
-        ]]></notes>
-    <cve>CVE-2018-1258</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-	   Insecure randomness vulnerability when using SecureRandomFactoryBean#setSeed to configure a SecureRandom instance. However we do not use the offending Bean.
-	   ]]></notes>
-    <cve>CVE-2019-3795</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-         Improper validation of certificate with host mismatch in Apache Log4j SMTP appender. Only affects SMTPS which we do not use in this project.
-         ]]></notes>
-    <cve>CVE-2020-9488</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-     Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5407)
-   ]]></notes>
-    <gav regex="true">org.springframework.security:spring-security-*.*</gav>
-    <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
-    <cve>CVE-2020-5407</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-     Suppressing SAML vulnerability as it is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-5408)
-   ]]></notes>
-    <gav regex="true">org.springframework.security:spring-security-*.*</gav>
-    <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
-    <cve>CVE-2020-5408</cve>
-  </suppress>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
 </suppressions>

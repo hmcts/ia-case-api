@@ -8,27 +8,21 @@ import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockFilterConfig;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 
 /**
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-@SpringJUnitWebConfig
-@SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("integration")
-class SwaggerPublisher {
+public class SwaggerPublisher extends SpringBootIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -36,18 +30,17 @@ class SwaggerPublisher {
     @Autowired
     private WebApplicationContext wac;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         WebRequestTrackingFilter filter;
         filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
     }
 
-    @DisplayName("Generate swagger documentation")
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-    void generateDocs() throws Exception {
+    public void generateDocs() throws Exception {
         byte[] specs = mvc.perform(get("/v2/api-docs"))
             .andExpect(status().isOk())
             .andReturn()
