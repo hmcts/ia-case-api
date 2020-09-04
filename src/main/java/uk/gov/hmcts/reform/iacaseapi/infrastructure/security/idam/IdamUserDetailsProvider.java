@@ -2,16 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestClientException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
@@ -40,71 +39,71 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
     }
 
     public IdamUserDetails getUserDetails() {
-        long startTime = System.currentTimeMillis();
 
-        final String accessToken = accessTokenProvider.getAccessToken();
-
-        log.info("Request for access token processed in {}ms", System.currentTimeMillis() - startTime);
+        String accessToken = accessTokenProvider.getAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, accessToken);
 
         HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
 
-        Map<String, Object> response;
-
         try {
 
-            startTime = System.currentTimeMillis();
-
-            response =
-                restTemplate
+            Map<String, Object> response = Optional
+                .of(restTemplate
                     .exchange(
                         baseUrl + detailsUri,
                         HttpMethod.GET,
                         requestEntity,
                         new ParameterizedTypeReference<Map<String, Object>>() {
                         }
-                    ).getBody();
+                    )
+                )
+                .map(ResponseEntity::getBody)
+                .orElse(new HashMap<>());
 
-            log.info("Request for user details processed in {}ms", System.currentTimeMillis() - startTime);
+            if (response.get("id") == null) {
+                throw new IllegalStateException("IDAM user details missing 'id' field");
+            }
 
-        } catch (RestClientException ex) {
+            if (response.get("roles") == null) {
+                throw new IllegalStateException("IDAM user details missing 'roles' field");
+            }
+
+            if (response.get("email") == null) {
+                throw new IllegalStateException("IDAM user details missing 'email' field");
+            }
+
+            if (response.get("forename") == null) {
+                throw new IllegalStateException("IDAM user details missing 'forename' field");
+            }
+
+            if (response.get("surname") == null) {
+                throw new IllegalStateException("IDAM user details missing 'surname' field");
+            }
+
+            return new IdamUserDetails(
+                accessToken,
+                String.valueOf(response.get("id")),
+                castRolesToList(response.get("roles")),
+                (String) response.get("email"),
+                (String) response.get("forename"),
+                (String) response.get("surname")
+            );
+
+        } catch (RestClientResponseException ex) {
 
             throw new IdentityManagerResponseException(
                 "Could not get user details with IDAM",
                 ex
             );
-        }
+        } catch (IllegalStateException e) {
 
-        if (response.get("id") == null) {
-            throw new IllegalStateException("IDAM user details missing 'id' field");
+            throw new IdentityManagerResponseException(
+                e.getMessage(),
+                e
+            );
         }
-
-        if (response.get("roles") == null) {
-            throw new IllegalStateException("IDAM user details missing 'roles' field");
-        }
-
-        if (response.get("email") == null) {
-            throw new IllegalStateException("IDAM user details missing 'email' field");
-        }
-
-        if (response.get("forename") == null) {
-            throw new IllegalStateException("IDAM user details missing 'forename' field");
-        }
-
-        if (response.get("surname") == null) {
-            throw new IllegalStateException("IDAM user details missing 'surname' field");
-        }
-
-        return new IdamUserDetails(
-            accessToken,
-            String.valueOf(response.get("id")),
-            castRolesToList(response.get("roles")),
-            (String) response.get("email"),
-            (String) response.get("forename"),
-            (String) response.get("surname")
-        );
     }
 
     @SuppressWarnings("unchecked")

@@ -128,7 +128,7 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'id' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'roles' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 
     @Test
@@ -188,7 +188,7 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'email' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 
     @Test
@@ -218,7 +218,7 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'forename' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 
     @Test
@@ -248,7 +248,7 @@ public class IdamUserDetailsProviderTest {
 
         assertThatThrownBy(() -> idamUserDetailsProvider.getUserDetails())
             .hasMessage("IDAM user details missing 'surname' field")
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IdentityManagerResponseException.class);
     }
 
     @Test
