@@ -36,6 +36,14 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
+        final String paymentOptionPayOffline = "payOffline";
+        final String paymentOptionPayLater = "payLater";
+        final String whatHappensNextLabel = "#### What happens next\n\n";
+        final String paPayAppealLabel = "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
+        final String euHuPayAppealLabel = paPayAppealLabel + " You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.";
+
+        final String paOverviewTabLabel = "[" + "overview tab" + "](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#overview)";
+        final String paPayLaterLabel = "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the " + paOverviewTabLabel + " and following the instructions.";
 
         YesOrNo submissionOutOfTime =
             requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
@@ -47,21 +55,26 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         if (submissionOutOfTime.equals(NO)) {
             postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
 
-            if (paAppealTypePaymentOption.equals("payOffline")) {
-
+            if (paAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "You still need to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online."
+                    whatHappensNextLabel
+                    + paPayAppealLabel
                 );
-            } else if (eaHuAppealTypePaymentOption.equals("payOffline")) {
 
+            } else if (paAppealTypePaymentOption.equals(paymentOptionPayLater)) {
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
-                    + "You still need to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal."
+                    whatHappensNextLabel
+                    + paPayLaterLabel
+                );
+
+            } else if (eaHuAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
+                postSubmitResponse.setConfirmationBody(
+                    whatHappensNextLabel
+                    + euHuPayAppealLabel
                 );
             } else {
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
+                    whatHappensNextLabel
                     + "You will receive an email confirming that this appeal has been submitted successfully."
                 );
             }
@@ -69,11 +82,33 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         } else {
 
             postSubmitResponse.setConfirmationHeader("");
-            postSubmitResponse.setConfirmationBody(
+
+            final String reviewLabel = "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.";
+            StringBuilder confirmationBody = new StringBuilder();
+            confirmationBody.append(
                 "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                + "## What happens Next\n\n"
-                + "You have submitted this appeal beyond the deadline.  The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead."
+                + whatHappensNextLabel
             );
+
+            if (paAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
+                confirmationBody.append(paPayAppealLabel);
+                confirmationBody.append(reviewLabel);
+                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+
+            } else if (paAppealTypePaymentOption.equals(paymentOptionPayLater)) {
+                confirmationBody.append(paPayLaterLabel);
+                confirmationBody.append(reviewLabel);
+                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+
+            } else if (eaHuAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
+                confirmationBody.append(euHuPayAppealLabel);
+                confirmationBody.append(reviewLabel);
+                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+
+            } else {
+                confirmationBody.append("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead.");
+                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+            }
         }
 
         return postSubmitResponse;
