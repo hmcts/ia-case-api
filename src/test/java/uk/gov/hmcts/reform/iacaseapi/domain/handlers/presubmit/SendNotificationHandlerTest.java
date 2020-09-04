@@ -49,6 +49,7 @@ public class SendNotificationHandlerTest {
 
         Arrays.asList(
             Event.SUBMIT_APPEAL,
+            Event.PAY_AND_SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
@@ -173,6 +174,7 @@ public class SendNotificationHandlerTest {
                     &&
                     Arrays.asList(
                         Event.SUBMIT_APPEAL,
+                        Event.PAY_AND_SUBMIT_APPEAL,
                         Event.SEND_DIRECTION,
                         Event.CHANGE_DIRECTION_DUE_DATE,
                         Event.REQUEST_RESPONDENT_EVIDENCE,

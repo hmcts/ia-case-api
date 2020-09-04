@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAY_FOR_THE_APPEAL_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -36,28 +36,26 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String payForAppealNowLaterOption = asylumCase
-                .read(PAY_FOR_THE_APPEAL_OPTION, String.class)
+        String payForAppealNowLaterOption = null;
+
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
+
+        if (appealType == AppealType.EA || appealType == AppealType.HU) {
+            payForAppealNowLaterOption = asylumCase
+                .read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                 .orElse("");
-
-        boolean foundPaymentAppealType = false;
-
-        Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE);
-        if (appealType.isPresent()
-            &&
-            (appealType.get().equals(AppealType.EA)
-            || appealType.get().equals(AppealType.HU)
-            || appealType.get().equals(AppealType.PA))) {
-
-            foundPaymentAppealType = true;
-
+        } else if (appealType == AppealType.PA) {
+            payForAppealNowLaterOption = asylumCase
+                .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                .orElse("");
         }
 
         String submitPaymentAppealUrl = "";
         String payOrSubmitLabel = "";
 
-        if (payForAppealNowLaterOption.equals("payNow") && foundPaymentAppealType) {
-            submitPaymentAppealUrl = "/trigger/paymentAppeal";
+        if (payForAppealNowLaterOption != null && payForAppealNowLaterOption.equals("payNow")) {
+            submitPaymentAppealUrl = "/trigger/payAndSubmitAppeal";
             payOrSubmitLabel = "pay for and submit your appeal";
         } else {
             submitPaymentAppealUrl = "/trigger/submitAppeal";

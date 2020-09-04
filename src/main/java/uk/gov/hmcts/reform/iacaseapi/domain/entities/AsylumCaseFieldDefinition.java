@@ -880,6 +880,10 @@ public enum AsylumCaseFieldDefinition {
             "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
     PAY_FOR_THE_APPEAL_OPTION(
             "payForTheAppealOption", new TypeReference<String>() {}),
+    PA_APPEAL_TYPE_PAYMENT_OPTION(
+        "paAppealTypePaymentOption", new TypeReference<String>() {}),
+    EA_HU_APPEAL_TYPE_PAYMENT_OPTION(
+        "eaHuAppealTypePaymentOption", new TypeReference<String>() {}),
     APPEAL_FEE_HEARING_DESC(
             "appealFeeHearingDesc", new TypeReference<String>(){}),
     APPEAL_FEE_WITHOUT_HEARING_DESC(
@@ -889,7 +893,7 @@ public enum AsylumCaseFieldDefinition {
     FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
             "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
     PAYMENT_STATUS(
-            "paymentStatus", new TypeReference<String>(){}),
+            "paymentStatus", new TypeReference<PaymentStatus>(){}),
     FEE_PAYMENT_APPEAL_TYPE(
             "feePaymentAppealType", new TypeReference<String>(){}),
     PAYMENT_REFERENCE(
@@ -910,6 +914,8 @@ public enum AsylumCaseFieldDefinition {
             "paymentErrorCode", new TypeReference<String>(){}),
     PAYMENT_ERROR_MESSAGE(
             "paymentErrorMessage", new TypeReference<String>(){}),
+    PAYMENT_FAILED_FOR_DISPLAY(
+        "paymentFailedForDisplay", new TypeReference<String>(){}),
 
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),

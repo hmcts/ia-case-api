@@ -68,10 +68,13 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
         if (check.isValid()) {
 
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
+
             State state = dispatchToStateHandlers(callbackStage, callback, callbackStateHandlers, callbackResponse);
 
             if (state != null) {
-                callbackResponse = new PreSubmitCallbackResponse<>(caseData, state);
+                callbackResponse = new PreSubmitCallbackResponse<>(callbackResponse.getData(), state);
                 callback = new Callback<>(
                     new CaseDetails<>(
                         callback.getCaseDetails().getId(),
@@ -83,11 +86,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                     callback.getCaseDetailsBefore(),
                     callback.getEvent()
                 );
-
             }
 
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLIEST);
-            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.EARLY);
             dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
             dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
 

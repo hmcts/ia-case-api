@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_to_replace_draft_when_appeal_submitted() {
+    public void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -84,11 +85,33 @@ public class AppealReferenceNumberHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER,"the-next-appeal-reference-number");
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_if_not_present() {
+    public void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted_and_paid() {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
+
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
+            .thenReturn("the-next-appeal-reference-number");
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
+    }
+
+    @Test
+    public void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -110,12 +133,48 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_do_nothing_if_non_draft_number_already_present() {
+    public void should_set_next_appeal_reference_number_if_not_present_for_pay_and_submit_appeal() {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+
+        when(dateProvider.now()).thenReturn(LocalDate.of(2019, 10, 7));
+
+        when(appealReferenceNumberGenerator.generate(123, AppealType.PA))
+            .thenReturn("the-next-appeal-reference-number");
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "the-next-appeal-reference-number");
+    }
+
+    @Test
+    public void should_do_nothing_if_non_draft_number_already_present_for_submit_appeal() {
 
         Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(appealReference);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verifyNoInteractions(appealReferenceNumberGenerator);
+        verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    public void should_do_nothing_if_non_draft_number_already_present_for_pay_and_submit_appeal() {
+
+        Optional<Object> appealReference = Optional.of("some-existing-reference-number");
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(appealReference);
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
         appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
 
@@ -134,8 +193,11 @@ public class AppealReferenceNumberHandlerTest {
 
                 boolean canHandle = appealReferenceNumberHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL
-                     || event == Event.SUBMIT_APPEAL)
+                if (Arrays.asList(
+                    Event.START_APPEAL,
+                    Event.SUBMIT_APPEAL,
+                    Event.PAY_AND_SUBMIT_APPEAL)
+                        .contains(callback.getEvent())
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

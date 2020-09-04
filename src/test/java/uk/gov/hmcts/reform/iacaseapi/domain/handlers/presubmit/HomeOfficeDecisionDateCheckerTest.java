@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -119,7 +120,10 @@ public class HomeOfficeDecisionDateCheckerTest {
 
                 boolean canHandle = homeOfficeDecisionDateChecker.canHandle(callbackStage, callback);
 
-                if ((event == Event.SUBMIT_APPEAL)
+                if (Arrays.asList(
+                        Event.SUBMIT_APPEAL,
+                        Event.PAY_AND_SUBMIT_APPEAL)
+                        .contains(callback.getEvent())
                     && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT || callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)) {
 
                     assertTrue(canHandle);
