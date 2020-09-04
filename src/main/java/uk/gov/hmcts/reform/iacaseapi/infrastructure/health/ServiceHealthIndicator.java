@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -29,7 +30,10 @@ public class ServiceHealthIndicator implements HealthIndicator {
             ResponseEntity<String> response = restTemplate
                 .getForEntity(uri, String.class);
 
-            String responseBody = response.getBody().replaceAll("\\s", "");
+            String responseBody = Optional
+                .ofNullable(response.getBody())
+                .map(body -> body.replaceAll("\\s", ""))
+                .orElse("");
 
             if (response.getStatusCode() == HttpStatus.OK
                 && responseBody.contains(matcher)

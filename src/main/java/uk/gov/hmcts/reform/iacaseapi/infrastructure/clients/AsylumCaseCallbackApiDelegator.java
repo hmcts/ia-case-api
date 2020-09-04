@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -54,19 +52,21 @@ public class AsylumCaseCallbackApiDelegator {
 
         HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
 
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-
         try {
 
-            callbackResponse =
-                restTemplate
+            return Optional
+                .of(restTemplate
                     .exchange(
                         endpoint,
                         HttpMethod.POST,
                         requestEntity,
                         new ParameterizedTypeReference<PreSubmitCallbackResponse<AsylumCase>>() {
                         }
-                    ).getBody();
+                    )
+                )
+                .map(ResponseEntity::getBody)
+                .map(PreSubmitCallbackResponse::getData)
+                .orElse(new AsylumCase());
 
         } catch (RestClientException e) {
 
@@ -75,7 +75,5 @@ public class AsylumCaseCallbackApiDelegator {
                 e
             );
         }
-
-        return callbackResponse.getData();
     }
 }

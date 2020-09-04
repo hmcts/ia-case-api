@@ -2,17 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import java.util.Base64;
 import java.util.Map;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -68,19 +65,21 @@ public class IdamAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        Map<String, String> response;
-
         try {
 
-            response =
-                restTemplate
+            return Optional
+                .of(restTemplate
                     .exchange(
                         baseUrl + "/oauth2/authorize",
                         HttpMethod.POST,
                         requestEntity,
                         new ParameterizedTypeReference<Map<String, String>>() {
                         }
-                    ).getBody();
+                    )
+                )
+                .map(ResponseEntity::getBody)
+                .map(res -> res.getOrDefault("code", ""))
+                .orElse("");
 
         } catch (RestClientResponseException e) {
 
@@ -89,8 +88,6 @@ public class IdamAuthorizor {
                 e
             );
         }
-
-        return response.getOrDefault("code", "");
     }
 
     private String fetchTokenAuthorization(
@@ -108,28 +105,27 @@ public class IdamAuthorizor {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        Map<String, String> response;
-
         try {
 
-            response =
-                restTemplate
+            return Optional
+                .of(restTemplate
                     .exchange(
                         baseUrl + "/oauth2/token",
                         HttpMethod.POST,
                         requestEntity,
                         new ParameterizedTypeReference<Map<String, String>>() {
                         }
-                    ).getBody();
+                    ))
+                .map(ResponseEntity::getBody)
+                .map(res -> res.getOrDefault("access_token", ""))
+                .orElse("");
 
-        } catch (RestClientException e) {
+        } catch (RestClientResponseException e) {
 
             throw new IdentityManagerResponseException(
                 "Could not get auth token with IDAM",
                 e
             );
         }
-
-        return response.getOrDefault("access_token", "");
     }
 }
