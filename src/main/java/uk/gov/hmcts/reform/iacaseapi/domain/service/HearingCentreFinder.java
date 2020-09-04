@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,5 +69,13 @@ public class HearingCentreFinder {
 
     public boolean hearingCentreIsActive(HearingCentre hearingCentre) {
         return hearingCentreIsActive(hearingCentreActivationDates.get(hearingCentre));
+    }
+
+    public boolean isListingOnlyHearingCentre(HearingCentre hearingCentre) {
+        return Arrays.asList(
+            HearingCentre.COVENTRY,
+            HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
+            HearingCentre.NEWCASTLE,
+            HearingCentre.NOTTINGHAM).contains(hearingCentre);
     }
 }
