@@ -47,4 +47,16 @@
    ]]></notes>
         <cve>CVE-2017-18640</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     It is transitive dependency from Postgresql driver and Caffeine
+   ]]></notes>
+        <cve>CVE-2020-10517</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+     It is transitive dependency from Postgresql driver and Caffeine
+   ]]></notes>
+        <cve>CVE-2020-10518</cve>
+    </suppress>
 </suppressions>
