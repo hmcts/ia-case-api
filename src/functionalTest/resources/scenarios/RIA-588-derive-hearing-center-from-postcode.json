@@ -25,7 +25,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantHasFixedAddress": "Yes",
-        "hearingCentre": "manchester"
+        "hearingCentre": "manchester",
+        "staffLocationId": "",
+        "staffLocation": "Manchester"
       }
     }
   }

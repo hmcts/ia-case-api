@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @Component
 public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -39,9 +40,9 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-                    Event.SUBMIT_APPEAL,
-                    Event.EDIT_APPEAL_AFTER_SUBMIT,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+            Event.SUBMIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.PAY_AND_SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
@@ -95,13 +96,16 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
             String appellantPostcode = optionalAppellantPostcode.get();
             HearingCentre hearingCentre = hearingCentreFinder.find(appellantPostcode);
-
             asylumCase.write(HEARING_CENTRE, hearingCentre);
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-
+            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentre).getName());
+            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentre).getId());
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName());
+            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getId());
+
         }
     }
 }

@@ -22,7 +22,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appellantHasFixedAddress": "No",
-        "hearingCentre": "taylorHouse"
+        "hearingCentre": "taylorHouse",
+        "staffLocationId": "",
+        "staffLocation": "Taylor House"
       }
     }
   }

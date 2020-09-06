@@ -935,7 +935,15 @@ public enum AsylumCaseFieldDefinition {
             "customAdditionalEvidenceDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     CUSTOM_RESPONDENT_DOCUMENTS(
-            "customRespondentDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){})
+            "customRespondentDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    STAFF_LOCATION(
+        "staffLocation", new TypeReference<String>(){}),
+
+    STAFF_LOCATION_ID(
+        "staffLocationId", new TypeReference<String>(){})
+
+
     ;
 
     private final String value;
