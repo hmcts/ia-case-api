@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +23,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 
 @Component
-public class UploadAddendumEvidenceLegalRepHomeOfficeHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UploadAddendumEvidenceLegalRepHomeOfficeHandler(
+    public UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -45,7 +44,9 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeHandler implements PreSubmi
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP);
+               && (callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
+                   || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
+                   || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -61,7 +62,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeHandler implements PreSubmi
                 .getCaseDetails()
                 .getCaseData();
 
-        String party = callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE ? "The respondent" : "The appellant";
+        String party = getParty(callback.getEvent(), asylumCase);
 
         List<DocumentWithMetadata> addendumEvidenceDocuments =
             asylumCase
@@ -86,7 +87,28 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeHandler implements PreSubmi
         asylumCase.write(ADDENDUM_EVIDENCE_DOCUMENTS, allAddendumEvidenceDocuments);
 
         asylumCase.clear(ADDENDUM_EVIDENCE);
-
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private String getParty(Event event, AsylumCase asylumCase) {
+
+        String party;
+        switch (event) {
+            case UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE:
+                party = "The respondent";
+                break;
+            case UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP:
+                party = "The appellant";
+                break;
+            case UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER:
+                party = asylumCase
+                    .<String>read(IS_APPELLANT_RESPONDENT)
+                    .orElseThrow(() -> new IllegalStateException("isAppellantRespondent is not present"));
+                asylumCase.clear(IS_APPELLANT_RESPONDENT);
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot workout party from event: " + event);
+        }
+        return party;
     }
 }

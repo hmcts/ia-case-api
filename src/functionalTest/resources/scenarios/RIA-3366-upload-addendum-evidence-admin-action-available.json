@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3366 Upload addendum evidence Admin Officer action becomes available in appropriate state",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "addCaseNote",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "addCaseNoteSubject": "second case note subject",
+          "addCaseNoteDescription": "second case note description",
+          "uploadAddendumEvidenceAdminOfficerActionAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "listCaseHearingCentre": "taylorHouse",
+        "uploadAddendumEvidenceAdminOfficerActionAvailable": "Yes"
+      }
+    }
+  }
+}

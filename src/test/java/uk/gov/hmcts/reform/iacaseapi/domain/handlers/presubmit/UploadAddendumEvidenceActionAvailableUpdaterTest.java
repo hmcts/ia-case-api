@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import org.junit.Test;
@@ -59,10 +57,12 @@ public class UploadAddendumEvidenceActionAvailableUpdaterTest {
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.YES);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
+                verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.YES);
             } else {
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.NO);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.NO);
+                verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.NO);
 
             }
 

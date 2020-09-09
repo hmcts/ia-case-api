@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -51,10 +49,12 @@ public class UploadAddendumEvidenceActionAvailableUpdater implements PreSubmitCa
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
+            asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.YES);
         } else {
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.NO);
+            asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.NO);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
