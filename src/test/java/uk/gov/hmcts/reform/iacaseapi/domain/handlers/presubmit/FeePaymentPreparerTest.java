@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Optional;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
@@ -17,9 +18,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
@@ -83,13 +86,11 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    @Parameters({ "protection", "refusalOfEu", "refusalOfHumanRights" })
-    public void should_write_feePaymentEnabled(String type) {
+    public void should_write_feePaymentEnabled() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -128,5 +129,91 @@ public class FeePaymentPreparerTest {
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 
+    }
+
+    @Test
+    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+    public void should_error_on_pay_and_submit_for_pay_offline(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Pay and submit your appeal option is not available. "
+                      + "Select Submit your appeal if you want to submit the appeal now.");
+    }
+
+    @Test
+    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+    public void should_error_on_duplicate_payment_for_pay_and_submit(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Pay and submit your appeal option is not available. "
+                      + "Select Submit your appeal if you want to submit the appeal now.");
+    }
+
+    @Test
+    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+    public void should_error_on_duplicate_payment_for_make_a_payment(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Make a payment option is not available.");
+    }
+
+    @Test
+    @Parameters({ "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL" })
+    public void should_error_on_pay_later_in_appeal_started_state(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_STARTED);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .containsAnyOf("The Make a payment option is not available.",
+                "The Pay and submit your appeal option is not available. "
+                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 }
