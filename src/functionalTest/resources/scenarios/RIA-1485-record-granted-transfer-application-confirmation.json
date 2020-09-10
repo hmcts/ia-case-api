@@ -11,7 +11,8 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "applicationType": "Transfer",
-          "applicationDecision": "Granted"
+          "applicationDecision": "Granted",
+          "listCaseHearingCentre": "taylorHouse"
         }
       }
     }
