@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED_OUT_OF_TIME;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,9 +30,9 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.SUBMIT_APPEAL
-            && (callback.getCaseDetails().getState() == APPEAL_SUBMITTED
-            || callback.getCaseDetails().getState() == APPEAL_SUBMITTED_OUT_OF_TIME);
+            && (callback.getEvent() == Event.SUBMIT_APPEAL
+            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+            || callback.getEvent() == Event.MARK_APPEAL_PAID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

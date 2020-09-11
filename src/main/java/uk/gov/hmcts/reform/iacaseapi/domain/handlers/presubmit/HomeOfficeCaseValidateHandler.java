@@ -9,8 +9,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED_OUT_OF_TIME;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,9 +52,9 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
 
         return isHomeOfficeIntegrationEnabled
             && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPEAL
-            && (callback.getCaseDetails().getState() == APPEAL_SUBMITTED
-            || callback.getCaseDetails().getState() == APPEAL_SUBMITTED_OUT_OF_TIME);
+            && (callback.getEvent() == Event.SUBMIT_APPEAL
+            || callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+            || callback.getEvent() == Event.MARK_APPEAL_PAID);
     }
 
 

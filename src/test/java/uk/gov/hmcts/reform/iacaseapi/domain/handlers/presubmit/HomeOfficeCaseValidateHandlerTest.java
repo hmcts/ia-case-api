@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,6 +17,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -35,7 +36,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -74,11 +74,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     @Test
     public void should_call_home_office_api_and_update_the_case() {
 
-        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
         when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(java.util.Optional.of(homeOfficeCaseStatus));
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
@@ -117,8 +113,6 @@ public class HomeOfficeCaseValidateHandlerTest {
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_SUBMITTED);
 
             when(callback.getEvent()).thenReturn(event);
 
@@ -127,8 +121,9 @@ public class HomeOfficeCaseValidateHandlerTest {
                 boolean canHandle = homeOfficeCaseValidateHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
-                    && callback.getEvent() == SUBMIT_APPEAL
-                    && callback.getCaseDetails().getState() == State.APPEAL_SUBMITTED
+                    && (callback.getEvent() == SUBMIT_APPEAL
+                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
+                    || callback.getEvent() == MARK_APPEAL_PAID)
                 ) {
                     assertTrue(canHandle);
                 } else {

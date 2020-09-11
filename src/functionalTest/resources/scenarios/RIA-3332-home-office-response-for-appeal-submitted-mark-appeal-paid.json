@@ -1,0 +1,32 @@
+{
+  "description": "RIA-3332 Gets Home Office data for the IA appeal reference for Pay later Mark as paid event",
+  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "markAppealPaid",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "isHomeOfficeIntegrationEnabled": "Yes",
+        "contactPreferenceDescription": "Text message",
+        "appealTypeDescription": "Refusal of protection claim",
+        "homeOfficeSearchStatus": "SUCCESS"
+      }
+    }
+  }
+}
