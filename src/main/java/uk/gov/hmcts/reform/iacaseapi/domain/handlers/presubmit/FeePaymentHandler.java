@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,42 +71,34 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
             isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
+        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
+            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, PAYMENT_PENDING);
+        }
+
         asylumCaseWithPaymentStatus.read(APPEAL_TYPE, AppealType.class)
             .ifPresent((appealType) -> {
-                if (appealType == EA || appealType == HU || appealType == PA) {
-                    PaymentStatus paymentStatus =
-                        asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()
-                            ? asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).get()
-                            : PAYMENT_DUE;
 
-                    switch (appealType) {
-                        case EA:
-                        case HU:
-                            paymentStatus = asylumCaseWithPaymentStatus.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                                .filter(option -> option.equals("payOffline"))
-                                .map(s -> PaymentStatus.PAYMENT_PENDING)
-                                .orElse(paymentStatus);
-                            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, paymentStatus);
-                            asylumCaseWithPaymentStatus.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-                            break;
+                switch (appealType) {
+                    case EA:
+                    case HU:
+                        asylumCaseWithPaymentStatus.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+                        break;
 
-                        case PA:
-                            paymentStatus = asylumCaseWithPaymentStatus.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                                .filter(option -> option.equals("payOffline"))
-                                .map(s -> PaymentStatus.PAYMENT_PENDING)
-                                .orElse(paymentStatus);
-                            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, paymentStatus);
-                            asylumCaseWithPaymentStatus.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-                            break;
+                    case PA:
+                        asylumCaseWithPaymentStatus.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+                        break;
 
-                        default:
-                            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, paymentStatus);
-                    }
-
-                    feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCaseWithPaymentStatus);
+                    default:
+                        asylumCaseWithPaymentStatus.clear(DECISION_HEARING_FEE_OPTION);
+                        asylumCaseWithPaymentStatus.clear(HEARING_DECISION_SELECTED);
+                        asylumCaseWithPaymentStatus.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCaseWithPaymentStatus.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCaseWithPaymentStatus.clear(PAYMENT_STATUS);
                 }
-            });
 
+                feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCaseWithPaymentStatus);
+
+            });
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
     }
