@@ -1,0 +1,33 @@
+{
+  "description": "RIA-2010-add-stateless-start-appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantStateless": "isStateless"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantNationalities": [
+          {
+            "value": {
+              "code": "ZZ"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
