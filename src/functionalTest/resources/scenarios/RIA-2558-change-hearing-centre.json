@@ -46,6 +46,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "hearingCentre": "glasgow",
+        "staffLocationId": "",
+        "staffLocation": "Glasgow",
         "applicationChangeHearingCentreExists": null,
         "currentCaseStateVisibleToCaseOfficer": "preHearing",
         "applications": [

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 @SuppressWarnings("unchecked")
 @RunWith(JUnitParamsRunner.class)
@@ -110,6 +111,8 @@ public class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
+        when(asylumCase.read(STAFF_LOCATION)).thenReturn(Optional.of(StaffLocation.getLocation(existingHearingCentre).getName()));
+
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -117,6 +120,7 @@ public class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase, never()).write(STAFF_LOCATION, StaffLocation.getLocation(existingHearingCentre).getName());
     }
 
     @Test
@@ -144,9 +148,9 @@ public class DeriveHearingCentreHandlerTest {
                 boolean canHandle = deriveHearingCentreHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                        Event.SUBMIT_APPEAL,
-                        Event.EDIT_APPEAL_AFTER_SUBMIT,
-                        Event.PAY_AND_SUBMIT_APPEAL)
+                    Event.SUBMIT_APPEAL,
+                    Event.EDIT_APPEAL_AFTER_SUBMIT,
+                    Event.PAY_AND_SUBMIT_APPEAL)
                         .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
