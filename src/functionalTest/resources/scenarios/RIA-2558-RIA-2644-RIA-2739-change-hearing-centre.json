@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
           "currentCaseStateVisibleToHomeOfficeAll": "preHearing",
           "applicationChangeHearingCentreExists": "Yes",
           "applicationChangeDesignatedHearingCentre": "glasgow",
