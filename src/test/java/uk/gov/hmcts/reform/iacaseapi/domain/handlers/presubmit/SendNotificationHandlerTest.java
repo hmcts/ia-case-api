@@ -101,6 +101,7 @@ public class SendNotificationHandlerTest {
             Event.LINK_APPEAL,
             Event.LEADERSHIP_JUDGE_FTPA_DECISION,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.REQUEST_RESPONSE_AMEND,
             Event.PAYMENT_APPEAL
         ).forEach(event -> {
 
@@ -230,6 +231,7 @@ public class SendNotificationHandlerTest {
                         Event.FORCE_REQUEST_CASE_BUILDING,
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
                         Event.RESIDENT_JUDGE_FTPA_DECISION,
+                        Event.REQUEST_RESPONSE_AMEND,
                         Event.PAYMENT_APPEAL
                     ).contains(event)) {
 
