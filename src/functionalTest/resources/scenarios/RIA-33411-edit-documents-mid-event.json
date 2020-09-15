@@ -1,0 +1,81 @@
+{
+  "description": "RIA-33411 edit documents mid-event handler",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editDocuments",
+      "state": "caseUnderReview",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "respondentDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+                },
+                "description": "Some FTPA respondent grounds of application",
+                "dateUploaded": "{$TODAY}",
+                "tag": "ftpaRespondent"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-respondent-evidence.pdf"
+                },
+                "description": "Some FTPA respondent application evidence",
+                "dateUploaded": "{$TODAY}",
+                "tag": "ftpaRespondent"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "respondentDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-respondent-grounds-documents.pdf"
+              },
+              "description": "Some FTPA respondent grounds of application",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-respondent-evidence.pdf"
+              },
+              "description": "Some FTPA respondent application evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
