@@ -73,6 +73,7 @@ public class RecordApplicationHandlerTest {
     );
 
     private final List<State> editAppealApplicationStates = newArrayList(
+        State.APPEAL_SUBMITTED,
         State.AWAITING_RESPONDENT_EVIDENCE,
         State.CASE_BUILDING,
         State.CASE_UNDER_REVIEW,
