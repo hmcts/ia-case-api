@@ -213,6 +213,7 @@ security:
       - "linkAppeal"
       - "unlinkAppeal"
       - "editAppealAfterSubmit"
+      - "uploadSensitiveDocuments"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -231,6 +232,7 @@ security:
       - "linkAppeal"
       - "unlinkAppeal"
       - "uploadAddendumEvidenceAdminOfficer"
+      - "uploadSensitiveDocuments"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -273,6 +275,7 @@ security:
       - "addCaseNote"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "uploadSensitiveDocuments"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
 
