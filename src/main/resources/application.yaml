@@ -213,6 +213,7 @@ security:
       - "linkAppeal"
       - "unlinkAppeal"
       - "editAppealAfterSubmit"
+      - "allocateCase"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
