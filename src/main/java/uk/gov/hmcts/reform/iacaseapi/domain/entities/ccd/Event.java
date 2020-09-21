@@ -90,7 +90,7 @@ public enum Event {
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
-    ALLOCATE_CASE("allocateCase"),
+    UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
