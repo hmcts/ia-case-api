@@ -6,11 +6,19 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import lombok.Value;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -18,9 +26,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class AllocateCaseConfirmationTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -36,9 +47,10 @@ public class AllocateCaseConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation() {
+    @Parameters(method = "generateTestScenarios")
+    public void should_return_confirmation(TestScenario scenario) {
         AsylumCase asylum = new AsylumCase();
-        asylum.write(AsylumCaseFieldDefinition.ALLOCATION_TYPE, "Allocate to me");
+        asylum.write(AsylumCaseFieldDefinition.ALLOCATION_TYPE, scenario.allocationType);
         when(caseDetails.getCaseData()).thenReturn(asylum);
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
@@ -58,13 +70,45 @@ public class AllocateCaseConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("The tasks for this case will now appear in your task list.")
+            containsString(scenario.confirmationBodyContent1Expected)
         );
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("Should you wish, you can write [a case note](/case/IA/Asylum/0/trigger/addCaseNote).")
+            containsString(scenario.confirmationBodyContent2Expected)
         );
+    }
+
+    private List<TestScenario> generateTestScenarios() {
+        return TestScenario.testScenarioBuilder();
+    }
+
+    @Value
+    private static class TestScenario {
+        String allocationType;
+        String confirmationBodyContent1Expected;
+        String confirmationBodyContent2Expected;
+
+        public static List<TestScenario> testScenarioBuilder() {
+            List<TestScenario> testScenarioList = new ArrayList<>();
+
+            TestScenario scenario1 = new TestScenario(
+                "Allocate to me",
+                "The tasks for this case will now appear in your task list.",
+                "Should you wish, you can write [a case note](/case/IA/Asylum/0/trigger/addCaseNote)."
+            );
+            TestScenario scenario2 = new TestScenario(
+                "Allocate to a colleague",
+                "The tasks for this case will now appear in your colleague's task list.",
+                "Should you wish, you can [write them a case note](/case/IA/Asylum/0/trigger/addCaseNote)."
+                    + " They will be notified that this case has been allocated to them."
+            );
+
+            testScenarioList.add(scenario1);
+            testScenarioList.add(scenario2);
+
+            return testScenarioList;
+        }
     }
 
     @Test
@@ -109,5 +153,4 @@ public class AllocateCaseConfirmationTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
 }
