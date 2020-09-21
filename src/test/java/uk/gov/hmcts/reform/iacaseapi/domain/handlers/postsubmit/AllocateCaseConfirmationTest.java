@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -36,7 +37,9 @@ public class AllocateCaseConfirmationTest {
 
     @Test
     public void should_return_confirmation() {
-
+        AsylumCase asylum = new AsylumCase();
+        asylum.write(AsylumCaseFieldDefinition.ALLOCATION_TYPE, "Allocate to me");
+        when(caseDetails.getCaseData()).thenReturn(asylum);
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
