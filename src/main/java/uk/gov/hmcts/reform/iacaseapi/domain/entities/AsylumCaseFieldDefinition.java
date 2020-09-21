@@ -975,7 +975,10 @@ public enum AsylumCaseFieldDefinition {
         "staffLocation", new TypeReference<String>(){}),
 
     STAFF_LOCATION_ID(
-        "staffLocationId", new TypeReference<String>(){})
+        "staffLocationId", new TypeReference<String>(){}),
+
+    ALLOCATION_TYPE(
+        "allocationType", new TypeReference<String>() {}),
 
 
     ;
