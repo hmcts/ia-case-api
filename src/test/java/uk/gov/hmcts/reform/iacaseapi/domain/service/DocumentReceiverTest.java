@@ -114,6 +114,37 @@ public class DocumentReceiverTest {
     }
 
     @Test
+    public void should_try_to_receive_all_documents_by_adding_metadata_with_supplied_by() {
+
+        Document document = mock(Document.class);
+        String description = "Description";
+        String dateUploaded = "2018-12-25";
+
+        DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);
+        DocumentTag tag = DocumentTag.RESPONDENT_EVIDENCE;
+
+        List<IdValue<DocumentWithDescription>> documentsWithDescription =
+            Collections.singletonList(new IdValue<>("1", documentWithDescription));
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(dateUploaded));
+        when(documentWithDescription.getDocument()).thenReturn(Optional.of(document));
+        when(documentWithDescription.getDescription()).thenReturn(Optional.of(description));
+
+        List<DocumentWithMetadata> actualReceivedDocuments =
+            documentReceiver.tryReceiveAll(documentsWithDescription, tag, "Appellant");
+
+        verify(dateProvider, times(1)).now();
+
+        assertNotNull(actualReceivedDocuments);
+        assertEquals(1, actualReceivedDocuments.size());
+        assertEquals(document, actualReceivedDocuments.get(0).getDocument());
+        assertEquals(description, actualReceivedDocuments.get(0).getDescription());
+        assertEquals(dateUploaded, actualReceivedDocuments.get(0).getDateUploaded());
+        assertEquals(tag, actualReceivedDocuments.get(0).getTag());
+        assertEquals("Appellant", actualReceivedDocuments.get(0).getSuppliedBy());
+    }
+
+    @Test
     public void should_not_receive_document_if_file_is_not_actually_uploaded() {
 
         DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);

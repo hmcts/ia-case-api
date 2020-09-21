@@ -1,0 +1,60 @@
+{
+  "description": "RIA-3391: View sensitive documents",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "uploadSensitiveDocuments",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "uploadSensitiveDocs": [],
+          "uploadSensitiveDocsFileUploads": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some sensitive document filename",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some sensitive document description"
+              }
+            }
+          ],
+          "uploadSensitiveDocsIsAppellantRespondent": "The respondent"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadSensitiveDocs": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "sensitiveDocument",
+              "document": {
+                "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                "document_filename": "some sensitive document filename",
+                "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+              },
+              "description": "some sensitive document description",
+              "dateUploaded": "{$TODAY}",
+              "suppliedBy": "The respondent"
+            }
+          }
+        ],
+        "uploadSensitiveDocsFileUploads": null,
+        "uploadSensitiveDocsIsAppellantRespondent": null
+      }
+    }
+  }
+}
+
