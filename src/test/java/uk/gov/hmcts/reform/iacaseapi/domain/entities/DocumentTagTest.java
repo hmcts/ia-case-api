@@ -27,11 +27,12 @@ public class DocumentTagTest {
         assertEquals("ftpaRespondent", DocumentTag.FTPA_RESPONDENT.toString());
         assertEquals("ftpaDecisionAndReasons", DocumentTag.FTPA_DECISION_AND_REASONS.toString());
         assertEquals("homeOfficeDecisionLetter", DocumentTag.HO_DECISION_LETTER.toString());
+        assertEquals("sensitiveDocument", DocumentTag.SENSITIVE_DOCUMENT.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(20, DocumentTag.values().length);
+        assertEquals(21, DocumentTag.values().length);
     }
 }
