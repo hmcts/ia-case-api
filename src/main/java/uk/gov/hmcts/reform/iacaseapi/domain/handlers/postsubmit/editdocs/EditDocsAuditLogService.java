@@ -1,15 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DRAFT_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,7 +49,7 @@ public class EditDocsAuditLogService {
         return docIds;
     }
 
-    public static List<AsylumCaseFieldDefinition> getListOfDocumentFields() {
+    private List<AsylumCaseFieldDefinition> getListOfDocumentFields() {
         return Arrays.asList(
             ADDITIONAL_EVIDENCE_DOCUMENTS,
             TRIBUNAL_DOCUMENTS,
@@ -68,6 +59,7 @@ public class EditDocsAuditLogService {
             RESPONDENT_DOCUMENTS,
             DRAFT_DECISION_AND_REASONS_DOCUMENTS,
             FINAL_DECISION_AND_REASONS_DOCUMENTS,
-            HEARING_RECORDING_DOCUMENTS);
+            HEARING_RECORDING_DOCUMENTS,
+            UPLOAD_SENSITIVE_DOCS);
     }
 }
