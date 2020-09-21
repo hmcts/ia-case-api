@@ -157,6 +157,18 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
+    public void should_return_error_when_timed_event_turned_off(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(featureToggler.getValue("timed-event-turning-off", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertTrue(callbackResponse.getErrors().contains("Service is temporary in maintenance mode, please try again later"));
+    }
+
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 

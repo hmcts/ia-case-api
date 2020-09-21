@@ -77,6 +77,13 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
                 .getCaseDetails()
                 .getCaseData();
 
+        if (featureToggler.getValue("timed-event-turning-off", false)) {
+            final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+            asylumCasePreSubmitCallbackResponse.addError("Service is temporary in maintenance mode, please try again later");
+
+            return asylumCasePreSubmitCallbackResponse;
+        }
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault());
 
