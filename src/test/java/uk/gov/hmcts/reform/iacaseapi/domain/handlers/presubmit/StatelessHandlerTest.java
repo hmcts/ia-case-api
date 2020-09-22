@@ -5,10 +5,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_STATELESS;
 
-import java.util.*;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,16 +58,7 @@ public class StatelessHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).read(APPELLANT_STATELESS, String.class);
-
-        List<Map> list = new ArrayList<Map>();
-        Map<String, String> map = new HashMap<>();
-        map.put("code", "ZZ");
-
-        Map<String, Object> valueMap = new HashMap<>();
-        valueMap.put("value", map);
-        list.add(valueMap);
-
-        verify(asylumCase).write(eq(APPELLANT_NATIONALITIES), eq(list));
+        verify(asylumCase).clear(APPELLANT_NATIONALITIES);
     }
 
     @Test

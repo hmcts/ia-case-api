@@ -7,9 +7,11 @@ import java.util.*;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Service
@@ -42,14 +44,8 @@ public class StatelessHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (stateless.equals(IS_STATELESS)) {
             asylumCase.clear(APPELLANT_NATIONALITIES);
 
-            List<Map> list = new ArrayList<Map>();
-            Map<String, String> map = new HashMap<>();
-            map.put("code", "ZZ");
-
-            Map<String, Object> valueMap = new HashMap<>();
-            valueMap.put("value", map);
-            list.add(valueMap);
-
+            List<IdValue<NationalityFieldValue>> list = new ArrayList<>();
+            list.add(new IdValue<>("1", new NationalityFieldValue("ZZ")));
             asylumCase.write(APPELLANT_NATIONALITIES, list);
         }
 

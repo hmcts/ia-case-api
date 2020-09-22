@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2010-add-stateless-start-appeal",
+  "description": "RIA-2010-RIA-3628-add-stateless-start-appeal",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -22,6 +22,7 @@
       "replacements": {
         "appellantNationalities": [
           {
+            "id" : "1",
             "value": {
               "code": "ZZ"
             }
