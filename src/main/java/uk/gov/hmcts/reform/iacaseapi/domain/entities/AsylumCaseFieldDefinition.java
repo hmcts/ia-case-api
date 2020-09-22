@@ -977,6 +977,9 @@ public enum AsylumCaseFieldDefinition {
     STAFF_LOCATION_ID(
         "staffLocationId", new TypeReference<String>(){}),
 
+    ALLOCATION_TYPE(
+        "allocationType", new TypeReference<String>() {}),
+
     UPLOAD_SENSITIVE_DOCS_FILE_UPLOADS(
         "uploadSensitiveDocsFileUploads", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
