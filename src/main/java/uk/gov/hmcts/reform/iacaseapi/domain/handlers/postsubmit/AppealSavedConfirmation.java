@@ -36,17 +36,17 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String payForAppealNowLaterOption = null;
+        String paymentOption = null;
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
         if (appealType == AppealType.EA || appealType == AppealType.HU) {
-            payForAppealNowLaterOption = asylumCase
+            paymentOption = asylumCase
                 .read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                 .orElse("");
         } else if (appealType == AppealType.PA) {
-            payForAppealNowLaterOption = asylumCase
+            paymentOption = asylumCase
                 .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                 .orElse("");
         }
@@ -54,7 +54,7 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         String submitPaymentAppealUrl = "";
         String payOrSubmitLabel = "";
 
-        if (payForAppealNowLaterOption != null && payForAppealNowLaterOption.equals("payNow")) {
+        if (paymentOption != null && paymentOption.equals("payNow")) {
             submitPaymentAppealUrl = "/trigger/payAndSubmitAppeal";
             payOrSubmitLabel = "pay for and submit your appeal";
         } else {

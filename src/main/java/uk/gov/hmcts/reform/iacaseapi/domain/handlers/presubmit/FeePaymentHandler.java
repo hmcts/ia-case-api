@@ -1,8 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_OFFLINE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_DUE;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -62,22 +68,25 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         AsylumCase asylumCaseWithPaymentStatus = feePayment.aboutToSubmit(callback);
 
         asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
-            isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+            YesOrNo.YES);
 
         final boolean isOfflineAppealType = asylumCaseWithPaymentStatus
             .read(APPEAL_TYPE, AppealType.class)
-            .map(type -> type == PA).orElse(false);
+            .map(type -> type == HU || type == EA || type == PA).orElse(false);
 
         final boolean isOfflinePaymentTypeOption = asylumCaseWithPaymentStatus
+            .read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+            .map(type -> type.equals("payOffline")).orElse(false);
+
+        final boolean isOfflinePaymentTypeOptionPA = asylumCaseWithPaymentStatus
             .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
             .map(type -> type.equals("payOffline")).orElse(false);
 
-        if (isOfflineAppealType && isOfflinePaymentTypeOption) {
+        if (isOfflineAppealType && (isOfflinePaymentTypeOption || isOfflinePaymentTypeOptionPA)) {
             asylumCaseWithPaymentStatus.write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
-            feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCaseWithPaymentStatus);
         }
 
-        if (asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isEmpty()) {
+        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
             asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, PAYMENT_DUE);
         }
 

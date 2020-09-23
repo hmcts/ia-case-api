@@ -3,18 +3,26 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_OFFLINE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
@@ -54,6 +62,104 @@ public class FeePaymentHandlerTest {
             assertEquals(expectedUpdatedCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
+
+            reset(callback);
+            reset(feePayment);
+        });
+    }
+
+    @Test
+    public void should_write_pending_for_pa_offline_payment() {
+
+        Arrays.asList(
+            Event.START_APPEAL
+        ).forEach(event -> {
+
+            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+
+            when(callback.getEvent()).thenReturn(event);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
+            when(expectedUpdatedCase.read(APPEAL_TYPE,
+                AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+            when(expectedUpdatedCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION,
+                String.class)).thenReturn(Optional.of("payOffline"));
+
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+            verify(feePayment, times(1)).aboutToSubmit(callback);
+            verify(expectedUpdatedCase, times(1))
+                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
+            verify(expectedUpdatedCase, times(1))
+                .write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+
+            reset(callback);
+            reset(feePayment);
+        });
+    }
+
+    @Test
+    public void should_write_pending_for_hu_offline_payment() {
+
+        Arrays.asList(
+            Event.START_APPEAL
+        ).forEach(event -> {
+
+            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+
+            when(callback.getEvent()).thenReturn(event);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
+            when(expectedUpdatedCase.read(APPEAL_TYPE,
+                AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+            when(expectedUpdatedCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION,
+                String.class)).thenReturn(Optional.of("payOffline"));
+
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+            verify(feePayment, times(1)).aboutToSubmit(callback);
+            verify(expectedUpdatedCase, times(1))
+                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
+
+            reset(callback);
+            reset(feePayment);
+        });
+    }
+
+    @Test
+    public void should_write_pending_for_ea_offline_payment() {
+
+        Arrays.asList(
+            Event.START_APPEAL
+        ).forEach(event -> {
+
+            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+
+            when(callback.getEvent()).thenReturn(event);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
+            when(expectedUpdatedCase.read(APPEAL_TYPE,
+                AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+            when(expectedUpdatedCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION,
+                String.class)).thenReturn(Optional.of("payOffline"));
+
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+
+            verify(feePayment, times(1)).aboutToSubmit(callback);
+            verify(expectedUpdatedCase, times(1))
+                .write(PAYMENT_OFFLINE_FOR_DISPLAY, "Payment pending");
 
             reset(callback);
             reset(feePayment);

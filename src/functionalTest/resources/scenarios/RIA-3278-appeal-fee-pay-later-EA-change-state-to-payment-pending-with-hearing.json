@@ -1,19 +1,21 @@
 {
-  "description": "RIA-3252 Pay later for appeal type EA",
-  "enabled": "false",
+  "description": "RIA-3278 Change state to paymentPending for appeal type EA for pay later (with a hearing)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "startAppeal",
+      "eventId": "submitAppeal",
       "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "payForTheAppeal": "payLater",
           "appealType": "refusalOfEu",
           "decisionHearingFeeOption": "decisionWithHearing",
-          "payForTheAppealOption": "payLater",
-          "homeOfficeDecisionDate": "{$TODAY-14}"
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "paymentStatus": "Payment due",
+          "sendDirectionActionAvailable": "No"
         }
       }
     }
@@ -26,11 +28,9 @@
       "replacements": {
         "appealType": "refusalOfEu",
         "homeOfficeDecisionDate": "{$TODAY-14}",
-        "paymentStatus":"Payment due",
-        "feeHearingAmountForDisplay":"£140",
-        "feeWithoutHearingAmountForDisplay":"£80",
-        "appealFeeHearingDesc":"The fee for an appeal with a hearing is £140",
-        "appealFeeWithoutHearingDesc":"The fee for an appeal without a hearing is £80"
+        "paymentStatus": "Payment due",
+        "sendDirectionActionAvailable": "No",
+        "currentCaseStateVisibleToLegalRepresentative": "pendingPayment"
       }
     }
   }
