@@ -43,7 +43,7 @@ public class EditCaseListingConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get(),
-            containsString("A new hearing notice has been generated. All parties will be notified by email.<br>")
+            containsString("A new Notice of Hearing has been generated. All parties will be notified by email.<br>")
         );
     }
 

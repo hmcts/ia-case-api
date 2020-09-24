@@ -33,7 +33,7 @@ public class EditCaseListingConfirmation implements PostSubmitCallbackHandler<As
         postSubmitResponse.setConfirmationHeader("# The case has been re-listed");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "A new hearing notice has been generated. All parties will be notified by email.<br>"
+            + "A new Notice of Hearing has been generated. All parties will be notified by email.<br>"
         );
 
         return postSubmitResponse;
