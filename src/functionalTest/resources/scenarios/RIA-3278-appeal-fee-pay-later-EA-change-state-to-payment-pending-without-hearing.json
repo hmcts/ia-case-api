@@ -1,23 +1,21 @@
 {
-  "description": "RIA-2935-EA-appeal-fee-pay-now-without-hearing.json",
+  "description": "RIA-3278 Change state to paymentPending for appeal type EA for pay later (without a hearing)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "eventId": "paymentAppeal",
+      "eventId": "submitAppeal",
       "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "payForTheAppeal": "payLater",
           "appealType": "refusalOfEu",
           "decisionHearingFeeOption": "decisionWithoutHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "paymentAccountList": "PBA0087535",
-          "homeOfficeReferenceNumber": "A123456",
-          "paymentDescription": "An IA pba test payment",
-          "payForTheAppealOption": "payNow",
-          "customerReference": "543232"
+          "paymentStatus": "Payment due",
+          "sendDirectionActionAvailable": "No"
         }
       }
     }
@@ -28,16 +26,11 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "sendDirectionActionAvailable": "No",
         "appealType": "refusalOfEu",
         "homeOfficeDecisionDate": "{$TODAY-14}",
-        "paymentStatus":"Paid",
-        "pbaNumber":"PBA0087535",
-        "feeCode":"FEE0373",
-        "feeVersion":"1",
-        "feeAmount":"80.00",
-        "feeDescription":"Notice of Appeal - appellant consents without hearing A",
-        "paymentDescription":"Appeal determined without a hearing"
+        "paymentStatus": "Payment due",
+        "sendDirectionActionAvailable": "No",
+        "currentCaseStateVisibleToLegalRepresentative": "pendingPayment"
       }
     }
   }

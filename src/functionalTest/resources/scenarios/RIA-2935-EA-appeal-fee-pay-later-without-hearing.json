@@ -13,7 +13,7 @@
           "appealType": "refusalOfEu",
           "decisionHearingFeeOption": "decisionWithoutHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "pbaNumber": "PBA0072626",
+          "paymentAccountList": "PBA0087535",
           "homeOfficeReferenceNumber": "A123456",
           "paymentDescription": "An IA pba test payment",
           "payForTheAppealOption": "payLater",
@@ -32,12 +32,12 @@
         "appealType": "refusalOfEu",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "paymentStatus":"Paid",
-        "pbaNumber":"PBA0072626",
-        "feeCode":"FEE0456",
-        "feeVersion":"2",
+        "pbaNumber":"PBA0087535",
+        "feeCode":"FEE0373",
+        "feeVersion":"1",
         "feeAmount":"80.00",
-        "feeDescription":"Appeal determined without a hearing",
-        "paymentDescription":"The fee for this type of appeal without a hearing is £80.00"
+        "feeDescription":"Notice of Appeal - appellant consents without hearing A",
+        "paymentDescription":"Appeal determined without a hearing"
       }
     }
   }

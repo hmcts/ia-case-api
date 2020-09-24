@@ -15,7 +15,7 @@
     "status": 200,
     "confirmation": {
       "header": "# The case has been re-listed",
-      "body": "#### What happens next\n\nA new hearing notice has been generated. All parties will be notified by email.<br>"
+      "body": "#### What happens next\n\nA new Notice of Hearing has been generated. All parties will be notified by email.<br>"
     }
   }
 }

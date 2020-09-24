@@ -938,6 +938,14 @@ public enum AsylumCaseFieldDefinition {
             "paymentErrorMessage", new TypeReference<String>(){}),
     PAYMENT_FAILED_FOR_DISPLAY(
         "paymentFailedForDisplay", new TypeReference<String>(){}),
+    PAYMENT_OFFLINE_FOR_DISPLAY(
+        "paymentOfflineForDisplay", new TypeReference<String>(){}),
+    DECISION_WITH_HEARING(
+        "decisionWithHearing", new TypeReference<String>(){}),
+    DECISION_WITHOUT_HEARING(
+        "decisionWithoutHearing", new TypeReference<String>(){}),
+    DECISION_HEARING_FEE_OPTION(
+        "decisionHearingFeeOption", new TypeReference<String>(){}),
 
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
