@@ -103,9 +103,7 @@ public class MakeAnApplicationTypesProviderTest {
         "CASE_BUILDING",
         "CASE_UNDER_REVIEW",
         "RESPONDENT_REVIEW",
-        "SUBMIT_HEARING_REQUIREMENTS",
-        "FTPA_SUBMITTED",
-        "FTPA_DECIDED"
+        "SUBMIT_HEARING_REQUIREMENTS"
     })
     public void should_return_given_application_types_in_pending_payment_case_building(State state) {
 
@@ -121,6 +119,35 @@ public class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(OTHER.name(), OTHER.toString()));
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList).isEqualTo(actualList);
+    }
+
+    @Test
+    @Parameters({
+        "FTPA_SUBMITTED",
+        "FTPA_DECIDED"
+    })
+    public void should_return_valid_application_types_in_ftpa_states(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(userDetailsProvider.getUserDetails())
+            .thenReturn(userDetails);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
             new Value(OTHER.name(), OTHER.toString()));

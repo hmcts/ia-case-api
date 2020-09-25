@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
@@ -86,6 +87,7 @@ public class MakeAnApplicationHandler implements PreSubmitCallbackHandler<Asylum
 
 
         asylumCase.write(MAKE_AN_APPLICATIONS, allMakeAnApplications);
+        asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.YES);
 
         asylumCase.clear(MAKE_AN_APPLICATION_TYPES);
         asylumCase.clear(MAKE_AN_APPLICATION_DETAILS);

@@ -20,6 +20,9 @@ public class MakeAnApplication {
     private String decision;
     private String state;
     private String applicantRole;
+    private String decisionReason;
+    private String decisionDate;
+    private String decisionMaker;
 
     public MakeAnApplication() {
 
@@ -92,5 +95,37 @@ public class MakeAnApplication {
     public String getApplicantRole() {
         requireNonNull(applicantRole);
         return applicantRole;
+    }
+
+    public void setDecision(String decision) {
+        requireNonNull(decision);
+        this.decision = decision;
+    }
+
+    public void setDecisionReason(String decisionReason) {
+        requireNonNull(decisionReason);
+        this.decisionReason = decisionReason;
+    }
+
+    public void setDecisionDate(String decisionDate) {
+        requireNonNull(decisionDate);
+        this.decisionDate = decisionDate;
+    }
+
+    public void setDecisionMaker(String decisionMaker) {
+        requireNonNull(decisionMaker);
+        this.decisionMaker = decisionMaker;
+    }
+
+    public String getDecisionReason() {
+        return decisionReason;
+    }
+
+    public String getDecisionDate() {
+        return decisionDate;
+    }
+
+    public String getDecisionMaker() {
+        return decisionMaker;
     }
 }
