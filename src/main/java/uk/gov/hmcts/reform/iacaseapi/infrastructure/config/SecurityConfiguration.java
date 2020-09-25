@@ -2,38 +2,43 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.ImmutableMap;
+import java.util.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
-import uk.gov.hmcts.reform.auth.checker.core.service.Service;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
-import uk.gov.hmcts.reform.auth.checker.spring.serviceanduser.AuthCheckerServiceAndUserFilter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AuthorizedRolesProvider;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SpringAuthorizedRolesProvider;
 
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> anonymousPaths = new ArrayList<>();
-    private final RequestAuthorizer<User> userRequestAuthorizer;
-    private final RequestAuthorizer<Service> serviceRequestAuthorizer;
-    private final AuthenticationManager authenticationManager;
+    private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
-    public SecurityConfiguration(
-        RequestAuthorizer<User> userRequestAuthorizer,
-        RequestAuthorizer<Service> serviceRequestAuthorizer,
-        AuthenticationManager authenticationManager
-    ) {
-        this.userRequestAuthorizer = userRequestAuthorizer;
-        this.serviceRequestAuthorizer = serviceRequestAuthorizer;
-        this.authenticationManager = authenticationManager;
+    private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
+    private final ServiceAuthFilter serviceAuthFiler;
+
+    public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
+                                 ServiceAuthFilter serviceAuthFiler) {
+        this.idamAuthoritiesConverter = idamAuthoritiesConverter;
+        this.serviceAuthFiler = serviceAuthFiler;
     }
 
     public List<String> getAnonymousPaths() {
@@ -52,19 +57,45 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        AuthCheckerServiceAndUserFilter authCheckerServiceAndUserFilter =
-            new AuthCheckerServiceAndUserFilter(serviceRequestAuthorizer, userRequestAuthorizer);
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
-        authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
 
         http
-            .addFilter(authCheckerServiceAndUserFilter)
+            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
+            .exceptionHandling()
             .and()
             .csrf().disable()
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests().anyRequest().authenticated()
-        ;
+            .and()
+            .oauth2ResourceServer()
+            .jwt()
+            .jwtAuthenticationConverter(jwtAuthenticationConverter)
+            .and()
+            .and()
+            .oauth2Client();
     }
+
+    @Bean
+    public AuthorizedRolesProvider authorizedRolesProvider() {
+        return new SpringAuthorizedRolesProvider();
+    }
+
+    @Bean
+    public CcdEventAuthorizor getCcdEventAuthorizor(AuthorizedRolesProvider authorizedRolesProvider) {
+
+        return new CcdEventAuthorizor(
+            ImmutableMap.copyOf(roleEventAccess),
+            authorizedRolesProvider
+        );
+    }
+
+    public Map<String, List<Event>> getRoleEventAccess() {
+        return roleEventAccess;
+    }
+
 }

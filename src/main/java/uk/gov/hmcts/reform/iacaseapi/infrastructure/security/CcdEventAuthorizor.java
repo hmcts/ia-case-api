@@ -3,54 +3,38 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 @Slf4j
 public class CcdEventAuthorizor {
 
     private final Map<String, List<Event>> roleEventAccess;
-    private final UserDetailsProvider userDetailsProvider;
+    private final AuthorizedRolesProvider authorizedRolesProvider;
 
-    public CcdEventAuthorizor(
-        Map<String, List<Event>> roleEventAccess,
-        UserDetailsProvider userDetailsProvider
-    ) {
+    public CcdEventAuthorizor(Map<String, List<Event>> roleEventAccess, AuthorizedRolesProvider authorizedRolesProvider) {
         this.roleEventAccess = roleEventAccess;
-        this.userDetailsProvider = userDetailsProvider;
+        this.authorizedRolesProvider = authorizedRolesProvider;
     }
 
-    public void throwIfNotAuthorized(
-        Event event
-    ) {
-        long startTime = System.currentTimeMillis();
+    public void throwIfNotAuthorized(Event event) {
 
         List<String> requiredRoles = getRequiredRolesForEvent(event);
-        List<String> userRoles =
-            userDetailsProvider
-                .getUserDetails()
-                .getRoles();
+        Set<String> userRoles = authorizedRolesProvider.getRoles();
 
         if (requiredRoles.isEmpty()
             || userRoles.isEmpty()
             || Collections.disjoint(requiredRoles, userRoles)) {
 
-            log.error("Access Denied Exception thrown within CcdEventAuthorizor for event: {}", event.toString());
-
-            throw new AccessDeniedException(
-                "Event '" + event.toString() + "' not allowed"
-            );
+            throw new AccessDeniedException("Event '" + event.toString() + "' not allowed");
         }
-
-        log.info("Request within CcdEventAuthorizor for event: {} processed in {}ms", event.toString(), System.currentTimeMillis() - startTime);
     }
 
-    private List<String> getRequiredRolesForEvent(
-        Event event
-    ) {
+    private List<String> getRequiredRolesForEvent(Event event) {
+
         return roleEventAccess
             .entrySet()
             .stream()
