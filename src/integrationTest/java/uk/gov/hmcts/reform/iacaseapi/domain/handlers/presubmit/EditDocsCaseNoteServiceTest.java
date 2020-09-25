@@ -1,15 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITIONAL_EVIDENCE;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
@@ -20,10 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HasDocument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.AuditDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.editdocs.EditDocsCaseNoteService;
@@ -42,16 +43,19 @@ public class EditDocsCaseNoteServiceTest {
 
     @Test
     public void shouldWriteAuditCaseNote() {
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON, "some reasons");
+        AsylumCase asylumCaseBefore = new AsylumCase();
+        mockAsylumCaseBeforeToHaveOneDocument(asylumCaseBefore);
         mockUserDetailsProvider();
+        AsylumCase asylumCaseAfterWithDocumentDeleted = new AsylumCase();
+        asylumCaseAfterWithDocumentDeleted.write(AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON, "some reasons");
 
-        editDocsCaseNoteService.writeAuditCaseNoteForGivenCaseId(1L, asylumCase, asylumCase);
+        editDocsCaseNoteService
+            .writeAuditCaseNoteForGivenCaseId(1L, asylumCaseAfterWithDocumentDeleted, asylumCaseBefore);
 
-        String editDocsReason = asylumCase.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null);
+        String editDocsReason = asylumCaseAfterWithDocumentDeleted.read(EDIT_DOCUMENTS_REASON, String.class).orElse(null);
         assertNull(editDocsReason);
 
-        Optional<List<IdValue<CaseNote>>> idCaseNoteValues = asylumCase.read(AsylumCaseFieldDefinition.CASE_NOTES);
+        Optional<List<IdValue<CaseNote>>> idCaseNoteValues = asylumCaseAfterWithDocumentDeleted.read(AsylumCaseFieldDefinition.CASE_NOTES);
         if (idCaseNoteValues.isPresent()) {
             IdValue<CaseNote> caseNoteIdValue = idCaseNoteValues.get().get(0);
             CaseNote caseNote = caseNoteIdValue.getValue();
@@ -61,8 +65,43 @@ public class EditDocsCaseNoteServiceTest {
         }
     }
 
+    private void mockAsylumCaseBeforeToHaveOneDocument(AsylumCase asylumCaseBefore) {
+        Document doc = buildTestDoc("some doc name");
+        DocumentWithMetadata metadata = buildTestMetadata(doc);
+
+        Document doc2 = buildTestDoc("some other doc name");
+        DocumentWithMetadata metadata2 = buildTestMetadata(doc2);
+
+        asylumCaseBefore.write(ADDITIONAL_EVIDENCE_DOCUMENTS,
+            Arrays.asList(
+                new IdValue<HasDocument>("1", metadata),
+                new IdValue<HasDocument>("2", metadata2)
+            )
+        );
+    }
+
+    @NotNull
+    private DocumentWithMetadata buildTestMetadata(Document doc) {
+        return new DocumentWithMetadata(
+            doc,
+            "desc",
+            "1-1-2020",
+            ADDITIONAL_EVIDENCE,
+            null
+        );
+    }
+
+    @NotNull
+    private Document buildTestDoc(String filename) {
+        return new Document(
+            "http://dm-store:89/someId",
+            "",
+            filename
+        );
+    }
+
     private void assertCaseNote(CaseNote caseNote) {
-        assertEquals("Edit documents audit note", caseNote.getCaseNoteSubject());
+        assertEquals("A document was edited or deleted", caseNote.getCaseNoteSubject());
         assertCaseNoteDescription(caseNote);
         assertEquals("some forename some surname", caseNote.getUser());
         assertNull(caseNote.getCaseNoteDocument());
@@ -77,12 +116,15 @@ public class EditDocsCaseNoteServiceTest {
 
     private String getExpectedCaseNoteDescription() {
         AuditDetails expectedAudit = AuditDetails.builder()
-            .documentIds(Collections.emptyList())
+            .documentIds(Arrays.asList("someId", "someId"))
+            .documentNames(Arrays.asList("some doc name", "some other doc name"))
             .reason("some reasons")
             .build();
-        return String.format("documentIds: %s" + System.lineSeparator() + "reason: %s",
-            expectedAudit.getDocumentIds(),
-            expectedAudit.getReason());
+        return String.format(
+            "Document names: %s" + System.lineSeparator() + "reason: %s",
+            expectedAudit.getDocumentNames(),
+            expectedAudit.getReason()
+        );
     }
 
     private void mockUserDetailsProvider() {

@@ -107,6 +107,12 @@ sourceSets {
     }
 }
 
+lombok {
+    config['config.stopbubbling'] = 'true'
+    config['lombok.addLombokGeneratedAnnotation'] = 'true'
+    config['lombok.anyConstructor.addConstructorProperties'] = 'true'
+}
+
 idea {
     module {
         testSourceDirs += project.sourceSets.integrationTest.java.srcDirs

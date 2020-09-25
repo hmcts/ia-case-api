@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,16 @@ public class EditDocsAuditService {
         return docIds;
     }
 
+    public List<String> getUpdatedAndDeletedDocNamesForGivenField(AsylumCase asylumCase, AsylumCase asylumCaseBefore,
+                                                                AsylumCaseFieldDefinition field) {
+        List<IdValue<HasDocument>> doc = getDocField(asylumCase, field);
+        List<IdValue<HasDocument>> docBefore = getDocField(asylumCaseBefore, field);
+        docBefore.removeAll(doc);
+        List<String> docNames = new ArrayList<>();
+        docBefore.forEach(d -> docNames.add(d.getValue().getDocument().getDocumentFilename()));
+        return docNames;
+    }
+
     public static String getIdFromDocUrl(String documentUrl) {
         String regexToGetStringFromTheLastForwardSlash = "([^/]+$)";
         Pattern pattern = Pattern.compile(regexToGetStringFromTheLastForwardSlash);
@@ -35,7 +44,6 @@ public class EditDocsAuditService {
     }
 
     private List<IdValue<HasDocument>> getDocField(AsylumCase asylumCase, AsylumCaseFieldDefinition field) {
-        Optional<List<IdValue<HasDocument>>> doc = asylumCase.read(field);
-        return doc.orElse(Collections.emptyList());
+        return asylumCase.<List<IdValue<HasDocument>>>read(field).orElse(Collections.emptyList());
     }
 }
