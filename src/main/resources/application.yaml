@@ -190,6 +190,7 @@ security:
       - "editCaseListing"
       - "recordApplication"
       - "endAppeal"
+      - "reinstateAppeal"
       - "requestCaseBuilding"
       - "forceRequestCaseBuilding"
       - "requestResponseReview"
@@ -244,6 +245,7 @@ security:
       - "uploadSensitiveDocuments"
       - "markAppealPaid"
       - "endAppeal"
+      - "reinstateAppeal"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -284,6 +286,7 @@ security:
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
+      - "reinstateAppeal"
       - "sendDecisionAndReasons"
       - "changeDirectionDueDate"
       - "sendDirection"

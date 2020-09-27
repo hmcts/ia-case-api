@@ -93,6 +93,7 @@ public class EventTest {
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
         assertEquals("makeAnApplication", Event.MAKE_AN_APPLICATION.toString());
+        assertEquals("reinstateAppeal", Event.REINSTATE_APPEAL.toString());
     }
 
     @Test

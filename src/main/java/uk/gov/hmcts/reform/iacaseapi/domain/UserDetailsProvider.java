@@ -1,21 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 
 public interface UserDetailsProvider {
 
     UserDetails getUserDetails();
 
-    default UserRole getLoggedInUserRole() {
+    UserRole getLoggedInUserRole();
 
-        Stream<UserRole> allowedRoles = Arrays.stream(UserRole.values());
+    UserRoleLabel getLoggedInUserRoleLabel();
 
-        return allowedRoles
-            .filter(r -> getUserDetails().getRoles().contains(r.toString()))
-            .findAny()
-            .orElseThrow(() -> new IllegalStateException("No valid user role is present."));
-    }
 }

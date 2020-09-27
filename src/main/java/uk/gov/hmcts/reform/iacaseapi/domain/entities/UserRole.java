@@ -8,6 +8,7 @@ public enum UserRole {
     ADMIN_OFFICER("caseworker-ia-admofficer"),
     LEGAL_REPRESENTATIVE("caseworker-ia-legalrep-solicitor"),
     JUDICIARY("caseworker-ia-judiciary"),
+    JUDGE("caseworker-ia-iacjudge"),
     SYSTEM("caseworker-ia-system"),
     HOME_OFFICE_APC("caseworker-ia-homeofficeapc"),
     HOME_OFFICE_LART("caseworker-ia-homeofficelart"),

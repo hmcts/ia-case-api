@@ -1,0 +1,25 @@
+{
+  "description": "RIA-3039 Reinstate event error if state before end appeal is unknown",
+  "launchDarklyKey": "reinstate-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reinstateAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "stateBeforeEndAppeal": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The appeal cannot be reinstated"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

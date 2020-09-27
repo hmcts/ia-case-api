@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.END_APPEAL_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RECORD_APPLICATION_ACTION_DISABLED;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +11,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -65,8 +65,20 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         asylumCase.clear(APPLICATION_WITHDRAW_EXISTS);
         asylumCase.clear(DISABLE_OVERVIEW_PAGE);
+        asylumCase.clear(REINSTATE_APPEAL_REASON);
+        asylumCase.clear(REINSTATED_DECISION_MAKER);
+        asylumCase.clear(APPEAL_STATUS);
+        asylumCase.clear(REINSTATE_APPEAL_DATE);
+        asylumCase.clear(RECORD_APPLICATION_ACTION_DISABLED);
 
         changeWithdrawApplicationsToCompleted(asylumCase);
+
+        State previousState = callback
+            .getCaseDetailsBefore()
+            .map(CaseDetails::getState)
+            .orElseThrow(() -> new IllegalStateException("cannot find previous case state"));
+
+        asylumCase.write(STATE_BEFORE_END_APPEAL, previousState);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
