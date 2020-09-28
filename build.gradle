@@ -314,7 +314,7 @@ dependencies {
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
     testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
-    testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+    testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
     testCompile 'org.codehaus.sonar-plugins:sonar-pitest-plugin:0.5'
 
     testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
