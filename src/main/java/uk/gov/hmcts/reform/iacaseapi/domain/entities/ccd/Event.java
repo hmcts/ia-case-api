@@ -92,6 +92,7 @@ public enum Event {
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
     MARK_APPEAL_PAID("markAppealPaid"),
+    ALLOCATE_TASK("allocateCase"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
