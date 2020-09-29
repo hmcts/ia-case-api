@@ -86,9 +86,10 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_write_feePaymentEnabled() {
+    @Parameters({ "START_APPEAL", "EDIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL" })
+    public void should_write_feePaymentEnabled(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
@@ -196,10 +197,9 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    @Parameters({ "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL" })
-    public void should_error_on_pay_later_in_appeal_started_state(Event event) {
+    public void should_error_on_pay_later_in_appeal_started_state_pay_and_submit() {
 
-        when(callback.getEvent()).thenReturn(event);
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_STARTED);
@@ -212,8 +212,64 @@ public class FeePaymentPreparerTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
-            .containsAnyOf("The Make a payment option is not available.",
-                "The Pay and submit your appeal option is not available. "
-                + "Select Submit your appeal if you want to submit the appeal now.");
+            .containsAnyOf("The Pay and submit your appeal option is not available. "
+                           + "Select Submit your appeal if you want to submit the appeal now.");
     }
+
+    @Test
+    public void should_error_on_pay_later_in_appeal_started_state_make_payment() {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(State.APPEAL_STARTED);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .containsAnyOf("The Make a payment option is not available.");
+    }
+
+    @Test
+    @Parameters({ "deprivation", "revocationOfProtection" })
+    public void should_error_on_pay_and_submit_for_non_payment_appeal(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Pay and submit your appeal option is not available. "
+                      + "Select Submit your appeal if you want to submit the appeal now.");
+    }
+
+    @Test
+    @Parameters({ "deprivation", "revocationOfProtection" })
+    public void should_error_on_make_a_payment_for_non_payment_appeal(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("You do not have to pay for this type of appeal.");
+    }
+
 }
