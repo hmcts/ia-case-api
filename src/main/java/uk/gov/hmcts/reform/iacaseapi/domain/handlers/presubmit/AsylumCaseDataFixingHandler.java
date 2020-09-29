@@ -10,20 +10,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class AsylumCaseDataFixingHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final List<DataFixer> dataFixers;
-    private final FeatureToggler featureToggler;
 
-    public AsylumCaseDataFixingHandler(
-        List<DataFixer> dataFixers,
-        FeatureToggler featureToggler
-    ) {
+    public AsylumCaseDataFixingHandler(List<DataFixer> dataFixers) {
         this.dataFixers = dataFixers;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -50,9 +44,6 @@ public class AsylumCaseDataFixingHandler implements PreSubmitCallbackHandler<Asy
 
         final CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
         final AsylumCase asylumCase = caseDetails.getCaseData();
-
-        // feature toggler temporary placed for keeping footprint for all users in LD register
-        featureToggler.getValue("timed-event-short-delay", false);
 
         dataFixers.forEach(df -> df.fix(asylumCase));
 

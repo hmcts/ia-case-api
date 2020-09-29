@@ -34,6 +34,68 @@ public class EditDocsAuditServiceTest {
     private List<IdValue<HasDocument>> idValuesWithHearingBefore;
 
     @Test
+    @Parameters(method = "generateNewFileAddedForNameScenarios, generateFileUpdatedForNameScenarios, generateDeleteFileForNameScenarios")
+    public void getUpdatedAndDeletedDocNamesForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
+                                                          List<IdValue<DocumentWithMetadata>> idValuesBefore,
+                                                          AsylumCaseFieldDefinition caseFieldDefinition,
+                                                          List<String> expectedNames) {
+        EditDocsAuditService service = new EditDocsAuditService();
+
+        AsylumCase asylum = new AsylumCase();
+        asylum.write(caseFieldDefinition, idValues);
+
+        AsylumCase asylumCaseBefore = new AsylumCase();
+        asylumCaseBefore.write(caseFieldDefinition, idValuesBefore);
+
+        List<String> docNames = service.getUpdatedAndDeletedDocNamesForGivenField(
+            asylum, asylumCaseBefore, caseFieldDefinition);
+
+        assertEquals(docNames, expectedNames);
+    }
+
+    private Object[] generateNewFileAddedForNameScenarios() {
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        idValuesAfter = Arrays.asList(idValue1, idValue2);
+        idValuesBefore = Collections.singletonList(idValue1);
+
+        return new Object[] {
+            new Object[] {idValuesAfter, null, ADDITIONAL_EVIDENCE_DOCUMENTS, Collections.emptyList()},
+            new Object[] {idValuesAfter, null, TRIBUNAL_DOCUMENTS, Collections.emptyList()},
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.emptyList()}
+        };
+    }
+
+    private Object[] generateFileUpdatedForNameScenarios() {
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
+            false, "someDocNameUpdated").get(0);
+        idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
+        idValuesBefore = Arrays.asList(idValue1, idValue2);
+
+        return new Object[] {
+            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
+                Collections.singletonList("someDocName2")},
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("someDocName2")}
+        };
+    }
+
+    private Object[] generateDeleteFileForNameScenarios() {
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocNameDeleted").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
+        idValuesAfter = Collections.singletonList(idValue2);
+        idValuesBefore = Arrays.asList(idValue1, idValue2);
+
+        return new Object[] {
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("someDocNameDeleted")},
+            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS, Collections.singletonList("someDocNameDeleted")}
+        };
+    }
+
+
+
+    @Test
     @Parameters(method = "generateNewFileAddedScenarios, generateFileUpdatedScenarios, generateDeleteFileScenarios")
     public void getUpdatedAndDeletedDocIdsForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
                                                         List<IdValue<DocumentWithMetadata>> idValuesBefore,
@@ -54,85 +116,89 @@ public class EditDocsAuditServiceTest {
     }
 
     private Object[] generateNewFileAddedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         idValuesAfter = Arrays.asList(idValue1, idValue2);
         idValuesBefore = Collections.singletonList(idValue1);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", HEARING_RECORDING_DOCUMENTS).get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").get(0);
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", HEARING_RECORDING_DOCUMENTS).get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").get(0);
         idValuesWithHearingAfter = Arrays.asList(
             idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
         idValuesWithHearingBefore = Collections.singletonList(idValue1WithHearingRecDoc);
 
-        return new Object[]{
-            new Object[]{idValuesAfter, null, ADDITIONAL_EVIDENCE_DOCUMENTS, Collections.emptyList()},
-            new Object[]{idValuesAfter, null, TRIBUNAL_DOCUMENTS, Collections.emptyList()},
-            new Object[]{idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.emptyList()},
-            new Object[]{idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
+        return new Object[] {
+            new Object[] {idValuesAfter, null, ADDITIONAL_EVIDENCE_DOCUMENTS, Collections.emptyList()},
+            new Object[] {idValuesAfter, null, TRIBUNAL_DOCUMENTS, Collections.emptyList()},
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.emptyList()},
+            new Object[] {idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
                 Collections.emptyList()}
         };
     }
 
     private Object[] generateFileUpdatedScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
-            ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
+            false, "someDocName").get(0);
         idValuesAfter = Arrays.asList(idValue1, idValue2Updated);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", HEARING_RECORDING_DOCUMENTS).get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").get(0);
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", HEARING_RECORDING_DOCUMENTS).get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").get(0);
         IdValue<HasDocument> idValue2WithHearingRecDocUpdated = buildIdValue(
-            "2", "3333-4444", "desc3", HEARING_RECORDING_DOCUMENTS).get(0);
+            "2", "3333-4444", "desc3", true, "someDocName").get(0);
         idValuesWithHearingAfter = Arrays.asList(idValue1WithHearingRecDoc, idValue2WithHearingRecDocUpdated);
         idValuesWithHearingBefore = Arrays.asList(idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
 
-        return new Object[]{
-            new Object[]{idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
+        return new Object[] {
+            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
                 Collections.singletonList("2222-3333")},
-            new Object[]{idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("2222-3333")},
-            new Object[]{idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("2222-3333")},
+            new Object[] {idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
                 Collections.singletonList("2222-3333")}
         };
     }
 
     private Object[] generateDeleteFileScenarios() {
-        idValue1 = buildIdValue("1", "1111-2222", "desc1", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
-        idValue2 = buildIdValue("2", "2222-3333", "desc2", ADDITIONAL_EVIDENCE_DOCUMENTS).get(0);
+        idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
+        idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
         idValue1WithHearingRecDoc = buildIdValue(
-            "1", "1111-2222", "desc1", HEARING_RECORDING_DOCUMENTS).get(0);
+            "1", "1111-2222", "desc1", true, "someDocName").get(0);
         idValueW2ithHearingRecDoc = buildIdValue(
-            "2", "2222-3333", "desc2", HEARING_RECORDING_DOCUMENTS).get(0);
+            "2", "2222-3333", "desc2", true, "someDocName").get(0);
         idValuesWithHearingAfter = Collections.singletonList(idValueW2ithHearingRecDoc);
         idValuesWithHearingBefore = Arrays.asList(idValue1WithHearingRecDoc, idValueW2ithHearingRecDoc);
 
-        return new Object[]{
-            new Object[]{idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("1111-2222")},
-            new Object[]{idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
+        return new Object[] {
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("1111-2222")},
+            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
                 Collections.singletonList("1111-2222")},
-            new Object[]{idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
+            new Object[] {idValuesWithHearingAfter, idValuesWithHearingBefore, HEARING_RECORDING_DOCUMENTS,
                 Collections.singletonList("1111-2222")}
         };
     }
 
     private List<IdValue<HasDocument>> buildIdValue(String id, String docId, String description,
-                                                    AsylumCaseFieldDefinition fieldDefinition) {
-        Document doc = new Document("http://dm-store:89/" + docId, "", "");
-        IdValue<HasDocument> idValue = new IdValue<>(id, buildValue(doc, description, fieldDefinition));
+                                                    boolean hearingRecordingDocFlag, String filename) {
+        Document doc = new Document(
+            "http://dm-store:89/" + docId,
+            "",
+            filename
+        );
+        IdValue<HasDocument> idValue = new IdValue<>(id, buildValue(doc, description, hearingRecordingDocFlag));
         return Collections.singletonList(idValue);
     }
 
-    private HasDocument buildValue(Document doc, String desc, AsylumCaseFieldDefinition fieldDefinition) {
-        if (!fieldDefinition.equals(HEARING_RECORDING_DOCUMENTS)) {
+    private HasDocument buildValue(Document doc, String desc, boolean hearingRecordingDocFlag) {
+        if (!hearingRecordingDocFlag) {
             return new DocumentWithMetadata(doc, desc, "1-1-2020", ADDITIONAL_EVIDENCE, null);
         }
         return new HearingRecordingDocument(doc, desc);

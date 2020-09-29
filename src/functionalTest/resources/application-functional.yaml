@@ -3,3 +3,9 @@ targetInstance: ${TEST_URL:http://localhost:8090}
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 
 spring.flyway.enabled: false
+
+idam:
+  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
+  scope: "openid profile roles"
+
+

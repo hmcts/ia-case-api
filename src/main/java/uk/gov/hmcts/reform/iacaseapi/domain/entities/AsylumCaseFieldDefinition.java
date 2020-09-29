@@ -920,6 +920,10 @@ public enum AsylumCaseFieldDefinition {
             "feePaymentAppealType", new TypeReference<String>(){}),
     PAYMENT_REFERENCE(
             "paymentReference", new TypeReference<String>() {}),
+    PAID_DATE(
+        "paidDate", new TypeReference<String>(){}),
+    PAYMENT_DATE(
+        "paymentDate", new TypeReference<String>(){}),
     FEE_CODE(
             "feeCode", new TypeReference<String>(){}),
     FEE_DESCRIPTION(

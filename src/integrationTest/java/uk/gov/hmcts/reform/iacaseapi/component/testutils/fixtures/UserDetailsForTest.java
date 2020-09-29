@@ -1,23 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Set;
 import lombok.Data;
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserDetailsForTest {
 
-    private String id;
+    private String sub;
+    private String uid;
     private Set<String> roles;
-    private String email;
-    private String forename;
-    private String surname;
+    private String name;
+    @JsonProperty("given_name")
+    private String givenName;
+    @JsonProperty("family_name")
+    private String familyName;
 
-    UserDetailsForTest(String id, Set<String> roles, String email, String forename, String surname) {
-        this.id = id;
+    UserDetailsForTest(String uid, Set<String> roles, String sub, String givenName, String familyName) {
+        this.uid = uid;
         this.roles = roles;
-        this.email = email;
-        this.forename = forename;
-        this.surname = surname;
+        this.sub = sub;
+        this.givenName = givenName;
+        this.familyName = familyName;
     }
 
     public static class UserDetailsForTestBuilder implements Builder<UserDetailsForTest> {

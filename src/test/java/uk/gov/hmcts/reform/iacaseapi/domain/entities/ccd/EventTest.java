@@ -91,10 +91,11 @@ public class EventTest {
         assertEquals("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString());
         assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
         assertEquals("allocateCase", Event.ALLOCATE_CASE.toString());
+        assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(88, Event.values().length);
+        assertEquals(89, Event.values().length);
     }
 }
