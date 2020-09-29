@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
@@ -90,6 +91,11 @@ public class FlagCaseMidEventHandler implements PreSubmitCallbackHandler<AsylumC
                 break;
             case UNACCOMPANIED_MINOR:
                 additionalInfo = asylumCase.read(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, String.class)
+                    .orElse(StringUtils.EMPTY);
+                asylumCase.write(FLAG_CASE_ADDITIONAL_INFORMATION, additionalInfo);
+                break;
+            case SET_ASIDE_REHEARD:
+                additionalInfo = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, String.class)
                     .orElse(StringUtils.EMPTY);
                 asylumCase.write(FLAG_CASE_ADDITIONAL_INFORMATION, additionalInfo);
                 break;

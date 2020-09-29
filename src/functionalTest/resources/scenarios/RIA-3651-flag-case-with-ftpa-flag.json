@@ -1,0 +1,41 @@
+{
+  "description": "RIA-3651 Flag case with Set aside - Reheard flag",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "flagCaseTypeOfFlag": "setAsideReheard",
+          "flagCaseAdditionalInformation": "some additional information"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "setAsideReheard",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "caseFlagSetAsideReheardAdditionalInformation": "some additional information"
+      }
+    }
+  }
+}

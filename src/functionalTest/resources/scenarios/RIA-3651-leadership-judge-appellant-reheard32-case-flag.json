@@ -1,0 +1,64 @@
+{
+  "description": "RIA-3651 Leadership judge record FTPA appellant decision (Reheard Rule 32) - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "leadershipJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ftpaAppellantDecisionOutcomeType": "reheardRule32",
+          "ftpaAppellantDecisionDocument": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+                },
+                "description": "Some FTPA appellant decision and reasons"
+              }
+            }
+          ],
+          "allFtpaAppellantDecisionDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "ftpaAppellantDecisionDate": "{$TODAY}",
+        "isFtpaAppellantDecided": "Yes",
+        "allFtpaAppellantDecisionDocs": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+              },
+              "description": "Some FTPA appellant decision and reasons",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaDecisionAndReasons"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}

@@ -51,6 +51,7 @@ public class FtpaDecisionMidEvent implements PreSubmitCallbackHandler<AsylumCase
             ftpaApplicantType.equals(APPELLANT.toString()) ? FTPA_APPELLANT_SUBMITTED : FTPA_RESPONDENT_SUBMITTED, String.class);
 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
         if (callback.getCaseDetails().getState() == State.FTPA_SUBMITTED || callback.getCaseDetails().getState() == State.FTPA_DECIDED) {
             if ((callback.getEvent() == Event.LEADERSHIP_JUDGE_FTPA_DECISION || callback.getEvent() == Event.RESIDENT_JUDGE_FTPA_DECISION)
                 && ftpaApplicantType.equals(APPELLANT.toString()) && !ftpaSubmitted.isPresent()) {

@@ -13,6 +13,7 @@ public enum CaseFlagType {
     POTENTIALLY_VIOLENT_PERSON("potentiallyViolentPerson", "Potentially violent person"),
     UNACCEPTABLE_CUSTOMER_BEHAVIOUR("unacceptableCustomerBehaviour", "Unacceptable customer behaviour"),
     UNACCOMPANIED_MINOR("unaccompaniedMinor", "Unaccompanied minor"),
+    SET_ASIDE_REHEARD("setAsideReheard", "Set aside - Reheard"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown", "Unknown");

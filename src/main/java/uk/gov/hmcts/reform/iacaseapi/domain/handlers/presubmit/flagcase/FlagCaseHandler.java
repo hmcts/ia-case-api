@@ -16,14 +16,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final CaseFlagAppender caseFlagAppender;
+    private final FeatureToggler featureToggler;
 
-    public FlagCaseHandler(CaseFlagAppender caseFlagAppender) {
+    public FlagCaseHandler(
+        CaseFlagAppender caseFlagAppender,
+        FeatureToggler featureToggler
+    ) {
         this.caseFlagAppender = caseFlagAppender;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -102,6 +108,11 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case UNACCOMPANIED_MINOR:
                 asylumCase.write(CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, additionalInformation);
+                break;
+            case SET_ASIDE_REHEARD:
+                asylumCase.write(AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED, featureToggler.getValue("reheard-feature", false) ? YesOrNo.YES : YesOrNo.NO);
+                asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
+                asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, additionalInformation);
                 break;
             default:
                 break;

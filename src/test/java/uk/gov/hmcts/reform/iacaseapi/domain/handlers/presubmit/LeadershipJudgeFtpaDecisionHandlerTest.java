@@ -30,6 +30,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -38,7 +40,8 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     @Mock private DocumentReceiver documentReceiver;
     @Mock private DocumentsAppender documentsAppender;
     @Mock private DateProvider dateProvider;
-    @Mock private FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    @Mock private FtpaDisplayService ftpaDisplayService;
+    @Mock private FeatureToggler featureToggler;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -58,7 +61,8 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
             dateProvider,
             documentReceiver,
             documentsAppender,
-            ftpaFinalDecisionDisplayProvider
+            ftpaDisplayService,
+            featureToggler
         );
     }
 
