@@ -112,6 +112,7 @@ public class DeriveHearingCentreHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
         when(asylumCase.read(STAFF_LOCATION)).thenReturn(Optional.of(StaffLocation.getLocation(existingHearingCentre).getName()));
+        when(asylumCase.read(STAFF_LOCATION_ID)).thenReturn(Optional.of(StaffLocation.getLocation(existingHearingCentre).getId()));
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =

@@ -15,23 +15,23 @@ public class StaffLocation {
             case "birmingham":
             case "nottingham":
             case "coventry":
-                return new Location("", "Birmingham");
+                return new Location("231596", "Birmingham");
             case "glasgow":
             case "glasgowTribunalsCentre":
             case "belfast":
-                return new Location("", "Glasgow");
+                return new Location("198444", "Glasgow");
             case "bradford":
-                return new Location("", "Bradford");
+                return new Location("698118", "Bradford");
             case "hattonCross":
-                return new Location("", "Hatton Cross");
+                return new Location("386417", "Hatton Cross");
             case "manchester":
-                return new Location("", "Manchester");
+                return new Location("512401", "Manchester");
             case "newcastle":
                 return new Location("", "Newcastle");
             case "newport":
-                return new Location("", "Newport");
+                return new Location("227101", "Newport");
             case "taylorHouse":
-                return new Location("", "Taylor House");
+                return new Location("765324", "Taylor House");
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }
