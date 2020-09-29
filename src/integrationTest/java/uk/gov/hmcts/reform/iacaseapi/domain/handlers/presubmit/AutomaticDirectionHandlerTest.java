@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -59,6 +60,7 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void should_trigger_timed_event_service() {
         AsylumCase asylumCase = new AsylumCase();
 ;

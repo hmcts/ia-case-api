@@ -14,6 +14,7 @@ public class AuditDetails {
     String idamUserId;
     String user;
     List<String> documentIds;
+    List<String> documentNames;
     long caseId;
     String reason;
     LocalDateTime dateTime;

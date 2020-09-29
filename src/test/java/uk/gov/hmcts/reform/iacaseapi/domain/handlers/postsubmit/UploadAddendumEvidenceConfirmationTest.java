@@ -67,7 +67,8 @@ public class UploadAddendumEvidenceConfirmationTest {
 
             if (event == Event.UPLOAD_ADDENDUM_EVIDENCE
                 || event == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
-                || event == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE) {
+                || event == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
+                || event == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER) {
 
                 assertTrue(canHandle);
             } else {

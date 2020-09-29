@@ -199,6 +199,10 @@ public class AddAppealResponseHandlerTest {
 
         verify(asylumCase, times(1)).write(RESPONDENT_DOCUMENTS, allRespondentDocuments);
         verify(asylumCase, times(1)).write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test

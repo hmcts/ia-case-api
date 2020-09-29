@@ -50,6 +50,7 @@ public enum Event {
     REQUEST_RESPONSE_AMEND("requestResponseAmend"),
     UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP("uploadAddendumEvidenceLegalRep"),
     UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE("uploadAddendumEvidenceHomeOffice"),
+    UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER("uploadAddendumEvidenceAdminOfficer"),
     SUBMIT_HEARING_REQUIREMENTS("submitHearingRequirements"),
     REMOVE_APPEAL_FROM_ONLINE("removeAppealFromOnline"),
     SHARE_A_CASE("shareACase"),
@@ -89,6 +90,8 @@ public enum Event {
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
+    UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
+    MARK_APPEAL_PAID("markAppealPaid"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

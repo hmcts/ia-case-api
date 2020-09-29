@@ -7,14 +7,17 @@ import java.util.Optional;
 
 public enum ContactPreference {
 
-    WANTS_EMAIL("wantsEmail"),
-    WANTS_SMS("wantsSms");
+    WANTS_EMAIL("wantsEmail", "Email"),
+    WANTS_SMS("wantsSms", "Text message");
 
     @JsonValue
     private String value;
 
-    ContactPreference(String value) {
+    private String description;
+
+    ContactPreference(String value, String description) {
         this.value = value;
+        this.description = description;
     }
 
     public static Optional<ContactPreference> from(
@@ -29,8 +32,12 @@ public enum ContactPreference {
         return value;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public String toString() {
-        return value;
+        return value + ": " + description;
     }
 }

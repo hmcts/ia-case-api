@@ -33,7 +33,6 @@ public class HearingAttendeesAndDurationRecordedConfirmation implements PostSubm
         postSubmitResponse.setConfirmationHeader("# You have recorded the attendees and duration of the hearing");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The judge will record the decision and reasons.<br>"
             + "You don't need to do anything more with this case."
         );
 

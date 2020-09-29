@@ -92,4 +92,18 @@ public class DocumentReceiver {
             .map(Optional::get)
             .collect(Collectors.toList());
     }
+
+    public List<DocumentWithMetadata> tryReceiveAll(List<IdValue<DocumentWithDescription>> documentsWithDescription,
+                                                    DocumentTag tag,
+                                                    String suppliedBy) {
+        requireNonNull(documentsWithDescription, "documentWithDescription must not be null");
+
+        return documentsWithDescription
+            .stream()
+            .map(IdValue::getValue)
+            .map(document -> tryReceive(document, tag, suppliedBy))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+    }
 }

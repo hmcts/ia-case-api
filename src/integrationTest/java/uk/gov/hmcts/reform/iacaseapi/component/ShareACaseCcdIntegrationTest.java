@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
@@ -76,6 +77,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
 
         dynamicList = new DynamicList(value2, values);
@@ -112,6 +114,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_failure_when_user_is_invalid() {
 
         // invalid user is chosen in dropdown

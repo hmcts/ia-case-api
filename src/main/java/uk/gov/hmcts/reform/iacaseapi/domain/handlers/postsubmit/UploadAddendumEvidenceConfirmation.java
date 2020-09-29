@@ -19,7 +19,8 @@ public class UploadAddendumEvidenceConfirmation implements PostSubmitCallbackHan
 
         return callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE
                || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
-               || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE;
+               || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
+               || callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER;
     }
 
     public PostSubmitCallbackResponse handle(

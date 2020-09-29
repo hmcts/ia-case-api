@@ -16,7 +16,7 @@
     "status": 200,
     "confirmation": {
       "header": "# The hearing has been adjourned",
-      "body": "#### What happens next\n\nBoth parties will be notified and a Notice of Adjournment will be generated."
+      "body": "#### What happens next\n\nA new Notice of Hearing has been generated."
     }
   }
 }

@@ -4,12 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
 public enum AsylumCaseFieldDefinition {
 
-    
+
     BUNDLE_CONFIGURATION(
         "bundleConfiguration", new TypeReference<String>(){}),
 
@@ -34,6 +41,12 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_FAMILY_NAME(
         "appellantFamilyName", new TypeReference<String>(){}),
 
+    APPELLANT_NATIONALITIES(
+            "appellantNationalities", new TypeReference<List<String>>(){}),
+
+    APPELLANT_STATELESS(
+            "appellantStateless", new TypeReference<String>(){}),
+
     APPELLANT_HAS_FIXED_ADDRESS(
         "appellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
 
@@ -46,6 +59,9 @@ public enum AsylumCaseFieldDefinition {
     CONTACT_PREFERENCE(
         "contactPreference", new TypeReference<ContactPreference>(){}),
 
+    CONTACT_PREFERENCE_DESCRIPTION(
+        "contactPreferenceDescription", new TypeReference<String>(){}),
+
     EMAIL(
         "email", new TypeReference<String>(){}),
 
@@ -54,6 +70,9 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
+
+    APPEAL_TYPE_DESCRIPTION(
+        "appealTypeDescription", new TypeReference<String>(){}),
 
     APPEAL_GROUNDS_PROTECTION(
         "appealGroundsProtection", new TypeReference<CheckValues<String>>(){}),
@@ -533,6 +552,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE(
         "uploadAddendumEvidenceHomeOfficeActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE(
+        "uploadAddendumEvidenceAdminOfficerActionAvailable", new TypeReference<YesOrNo>(){}),
+
     ADDENDUM_EVIDENCE(
         "addendumEvidence", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
@@ -898,6 +920,10 @@ public enum AsylumCaseFieldDefinition {
             "feePaymentAppealType", new TypeReference<String>(){}),
     PAYMENT_REFERENCE(
             "paymentReference", new TypeReference<String>() {}),
+    PAID_DATE(
+        "paidDate", new TypeReference<String>(){}),
+    PAYMENT_DATE(
+        "paymentDate", new TypeReference<String>(){}),
     FEE_CODE(
             "feeCode", new TypeReference<String>(){}),
     FEE_DESCRIPTION(
@@ -916,6 +942,14 @@ public enum AsylumCaseFieldDefinition {
             "paymentErrorMessage", new TypeReference<String>(){}),
     PAYMENT_FAILED_FOR_DISPLAY(
         "paymentFailedForDisplay", new TypeReference<String>(){}),
+    PAYMENT_OFFLINE_FOR_DISPLAY(
+        "paymentOfflineForDisplay", new TypeReference<String>(){}),
+    DECISION_WITH_HEARING(
+        "decisionWithHearing", new TypeReference<String>(){}),
+    DECISION_WITHOUT_HEARING(
+        "decisionWithoutHearing", new TypeReference<String>(){}),
+    DECISION_HEARING_FEE_OPTION(
+        "decisionHearingFeeOption", new TypeReference<String>(){}),
 
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
@@ -927,6 +961,18 @@ public enum AsylumCaseFieldDefinition {
 
     CUSTOM_HEARING_DOCUMENTS(
             "customHearingDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    IS_HOME_OFFICE_INTEGRATION_ENABLED(
+        "isHomeOfficeIntegrationEnabled", new TypeReference<String>() {}),
+
+    HOME_OFFICE_CASE_STATUS_DATA(
+        "homeOfficeCaseStatusData", new TypeReference<HomeOfficeCaseStatus>() {}),
+
+    HOME_OFFICE_SEARCH_STATUS(
+        "homeOfficeSearchStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_INSTRUCT_STATUS(
+        "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
@@ -941,8 +987,16 @@ public enum AsylumCaseFieldDefinition {
         "staffLocation", new TypeReference<String>(){}),
 
     STAFF_LOCATION_ID(
-        "staffLocationId", new TypeReference<String>(){})
+        "staffLocationId", new TypeReference<String>(){}),
 
+    UPLOAD_SENSITIVE_DOCS_FILE_UPLOADS(
+        "uploadSensitiveDocsFileUploads", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    UPLOAD_SENSITIVE_DOCS(
+        "uploadSensitiveDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT(
+        "uploadSensitiveDocsIsAppellantRespondent", new TypeReference<String>(){}),
 
     ;
 

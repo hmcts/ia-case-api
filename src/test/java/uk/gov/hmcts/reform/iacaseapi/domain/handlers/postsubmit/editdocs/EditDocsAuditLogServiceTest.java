@@ -41,7 +41,7 @@ public class EditDocsAuditLogServiceTest {
     @Test
     public void shouldBuildAuditDetails() {
         mockUserDetailsProvider();
-        mockAuditServiceDependencies();
+        mockEditDocsAuditService();
         given(asylumCase.read(eq(AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON), eq(String.class)))
             .willReturn(Optional.of("some reasons"));
 
@@ -49,8 +49,13 @@ public class EditDocsAuditLogServiceTest {
 
         assertEquals("user-id-124", actualAuditDetails.getIdamUserId());
         assertEquals("some forename some surname", actualAuditDetails.getUser());
-        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9"),
+        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10"),
             actualAuditDetails.getDocumentIds());
+        assertEquals(Arrays.asList(
+            "docName1", "docName2", "docName3", "docName4", "docName5", "docName6", "docName7", "docName8",
+            "docName9", "docName10"),
+            actualAuditDetails.getDocumentNames()
+        );
         assertEquals(1L, actualAuditDetails.getCaseId());
         assertEquals("some reasons", actualAuditDetails.getReason());
         assertNotNull(actualAuditDetails.getDateTime());
@@ -63,7 +68,7 @@ public class EditDocsAuditLogServiceTest {
         when(userDetails.getSurname()).thenReturn("some surname");
     }
 
-    private void mockAuditServiceDependencies() {
+    private void mockEditDocsAuditService() {
         when(editDocsAuditService.getUpdatedAndDeletedDocIdsForGivenField(any(AsylumCase.class),
             any(AsylumCase.class), any(AsylumCaseFieldDefinition.class)))
             .thenReturn(Collections.singletonList("id1"))
@@ -75,6 +80,21 @@ public class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("id7"))
             .thenReturn(Collections.singletonList("id8"))
             .thenReturn(Collections.singletonList("id9"))
+            .thenReturn(Collections.singletonList("id10"))
+            .thenThrow(new RuntimeException("no more calls expected"));
+
+        when(editDocsAuditService.getUpdatedAndDeletedDocNamesForGivenField(any(AsylumCase.class),
+            any(AsylumCase.class), any(AsylumCaseFieldDefinition.class)))
+            .thenReturn(Collections.singletonList("docName1"))
+            .thenReturn(Collections.singletonList("docName2"))
+            .thenReturn(Collections.singletonList("docName3"))
+            .thenReturn(Collections.singletonList("docName4"))
+            .thenReturn(Collections.singletonList("docName5"))
+            .thenReturn(Collections.singletonList("docName6"))
+            .thenReturn(Collections.singletonList("docName7"))
+            .thenReturn(Collections.singletonList("docName8"))
+            .thenReturn(Collections.singletonList("docName9"))
+            .thenReturn(Collections.singletonList("docName10"))
             .thenThrow(new RuntimeException("no more calls expected"));
     }
 

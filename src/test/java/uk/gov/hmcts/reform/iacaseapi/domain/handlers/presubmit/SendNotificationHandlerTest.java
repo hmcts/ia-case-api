@@ -75,6 +75,7 @@ public class SendNotificationHandlerTest {
             Event.UPLOAD_ADDENDUM_EVIDENCE,
             Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
             Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+            Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
             Event.REQUEST_REASONS_FOR_APPEAL,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.UPDATE_HEARING_ADJUSTMENTS,
@@ -99,7 +100,10 @@ public class SendNotificationHandlerTest {
             Event.UNLINK_APPEAL,
             Event.LINK_APPEAL,
             Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-            Event.RESIDENT_JUDGE_FTPA_DECISION
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.REQUEST_RESPONSE_AMEND,
+            Event.PAYMENT_APPEAL,
+            Event.MARK_APPEAL_PAID
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -200,6 +204,7 @@ public class SendNotificationHandlerTest {
                         Event.UPLOAD_ADDENDUM_EVIDENCE,
                         Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP,
                         Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE,
+                        Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER,
                         Event.REQUEST_REASONS_FOR_APPEAL,
                         Event.SUBMIT_REASONS_FOR_APPEAL,
                         Event.UPDATE_HEARING_ADJUSTMENTS,
@@ -226,7 +231,10 @@ public class SendNotificationHandlerTest {
                         Event.EDIT_DOCUMENTS,
                         Event.FORCE_REQUEST_CASE_BUILDING,
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION
+                        Event.RESIDENT_JUDGE_FTPA_DECISION,
+                        Event.REQUEST_RESPONSE_AMEND,
+                        Event.PAYMENT_APPEAL,
+                        Event.MARK_APPEAL_PAID
                     ).contains(event)) {
 
                     assertTrue(canHandle);

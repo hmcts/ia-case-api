@@ -33,6 +33,13 @@
         <cpe>cpe:2.3:a:security-framework_project:security-framework:5.2.1:*:*:*:*:*:*:*</cpe>
         <cve>CVE-2020-5408</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: snakeyaml-1.25.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
     <suppress until="2030-01-01">
         <notes><![CDATA[
      Suppressing as SMTP appender is not used in this project (see: https://nvd.nist.gov/vuln/detail/CVE-2020-9488)

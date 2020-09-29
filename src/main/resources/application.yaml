@@ -36,6 +36,19 @@ spring:
     name: Immigration & Asylum case API
   main:
     allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o
+        registration:
+          oidc:
+            client-id: ${IA_IDAM_CLIENT_ID:ia}
+            client-secret: ${IA_IDAM_SECRET:something}
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5050}/${POSTGRES_NAME:ia_case_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -74,6 +87,7 @@ featureFlag:
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
   isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:true}
+  isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:false}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
@@ -112,6 +126,10 @@ paymentApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
+homeOfficeApi:
+  endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
+  aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+
 emBundler.url: ${EM_BUNDLER_URL:http://localhost:4623}
 emBundler.stitch.uri: ${EM_BUNDLER_STITCH_URI:/api/new-bundle}
 
@@ -129,12 +147,6 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
-  authorisedServices:
-    - "ccd"
-    - "ccd_data"
-    - "ccd_gw"
-    - "ccd_ps"
-    - "iac"
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
@@ -208,6 +220,7 @@ security:
       - "linkAppeal"
       - "unlinkAppeal"
       - "editAppealAfterSubmit"
+      - "uploadSensitiveDocuments"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -225,6 +238,10 @@ security:
       - "updateDetailsAfterCma"
       - "linkAppeal"
       - "unlinkAppeal"
+      - "uploadAddendumEvidenceAdminOfficer"
+      - "uploadSensitiveDocuments"
+      - "markAppealPaid"
+      - "endAppeal"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -267,6 +284,7 @@ security:
       - "addCaseNote"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
+      - "uploadSensitiveDocuments"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
 
@@ -274,17 +292,30 @@ security:
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
-auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
-auth.idam.client.detailsUri: "/details"
-auth.idam.client.id: ${IA_IDAM_CLIENT_ID:ia}
-auth.idam.client.secret: ${IA_IDAM_SECRET:something}
-auth.idam.client.redirectUri: ${IA_IDAM_REDIRECT_URI:http://localhost}
-auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:4502}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
 document_management.url: ${DM_URL:http://127.0.0.1:4506}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+#OpenID
+idam:
+  baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  s2s-auth:
+    totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
+    microservice: ${IA_S2S_MICROSERVICE:ia}
+    url: ${S2S_URL:http://127.0.0.1:4502}
+  s2s-authorised:
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
 

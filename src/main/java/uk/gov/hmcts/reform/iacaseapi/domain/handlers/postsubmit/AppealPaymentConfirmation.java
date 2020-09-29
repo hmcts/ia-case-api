@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
@@ -41,6 +43,8 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
             new PostSubmitCallbackResponse();
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        final String feeLabel = "\n\n#### Fee\n";
+        final String paymentReferenceNumberLabel = "\n\n#### Payment reference number\n";
 
         if (appealPaymentConfirmationProvider.getPaymentStatus(asylumCase).equals(Optional.of(FAILED))) {
 
@@ -52,33 +56,53 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
             postSubmitResponse.setConfirmationBody(
                 "![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n"
                 + "#### Do this next\n\n"
-                + "You still need to [pay for your appeal](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/paymentAppeal)."
+                + "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.\n\n"
                 + "\n\n\n#### Payment failed"
-                + "\n\n#### Payment reference number\n"
+                + paymentReferenceNumberLabel
                 + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
                 + "\n\n#### Payment by account number\n"
                 + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
-                + "\n\n#### Fee\n"
+                + feeLabel
                 + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
                 + "\n\n#### Reason for failed payment\n"
                 + paymentErrorMessage
             );
-        } else {
-            postSubmitResponse.setConfirmationHeader("# You have paid for the appeal \n# You still need to submit it");
-            postSubmitResponse.setConfirmationBody(
-                "#### Do this next\n\n"
-                + "You still need to [submit your appeal](/case/IA/Asylum/"
-                + callback.getCaseDetails().getId() + "/trigger/submitAppeal)"
-                + "\n\n\n#### Payment successful"
-                + "\n\n#### Payment reference number\n"
-                + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
-                + "\n\n#### Payment by account number\n"
-                + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
-                + "\n\n#### Fee\n"
-                + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
-            );
+        }
 
+        if (appealPaymentConfirmationProvider.getPaymentStatus(asylumCase).equals(Optional.of(PAID))) {
+            final State currentState =
+                callback
+                    .getCaseDetails()
+                    .getState();
+
+            if (currentState.equals(State.APPEAL_STARTED)) {
+                postSubmitResponse.setConfirmationHeader("# You have paid for the appeal \n# You still need to submit it");
+                postSubmitResponse.setConfirmationBody(
+                    "#### Do this next\n\n"
+                    + "You still need to [submit your appeal](/case/IA/Asylum/"
+                    + callback.getCaseDetails().getId() + "/trigger/submitAppeal)"
+                    + "\n\n\n#### Payment successful"
+                    + paymentReferenceNumberLabel
+                    + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
+                    + "\n\n#### Payment by account number\n"
+                    + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
+                    + feeLabel
+                    + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
+                );
+            } else {
+                postSubmitResponse.setConfirmationHeader("# You have paid for the appeal");
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "You will receive a notification to confirm the payment has been made."
+                    + "\n\n\n#### Payment successful"
+                    + paymentReferenceNumberLabel
+                    + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)
+                    + "\n\n#### Payment by Account number\n"
+                    + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
+                    + feeLabel
+                    + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
+                );
+            }
         }
         return postSubmitResponse;
     }
