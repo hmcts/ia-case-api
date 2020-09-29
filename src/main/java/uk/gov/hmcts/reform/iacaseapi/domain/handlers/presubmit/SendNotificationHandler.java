@@ -103,7 +103,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_RESPONSE_AMEND,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
             Event.PAYMENT_APPEAL,
-            Event.RESIDENT_JUDGE_FTPA_DECISION,
             Event.MARK_APPEAL_PAID
         );
         if (!isSaveAndContinueEnabled) {
