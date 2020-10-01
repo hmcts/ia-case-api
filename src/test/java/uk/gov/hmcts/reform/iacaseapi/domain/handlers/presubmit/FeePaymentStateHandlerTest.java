@@ -156,12 +156,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_pa_payment_due_payAndSubmit_as_appeal_started_state() {
+    public void should_return_current_state_for_pa_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -175,12 +175,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_hu_payment_due_payAndSubmit_as_appeal_started_state() {
+    public void should_return_current_state_for_hu_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -194,12 +194,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_ea_payment_due_payAndSubmit_as_appeal_started_state() {
+    public void should_return_current_state_for_ea_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -213,12 +213,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_pa_payment_due_submit_as_submitted_state() {
+    public void should_return_updated_state_for_pa_payment_pending_submit_as_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -232,12 +232,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_hu_payment_due_submit_as_pending_payment_state() {
+    public void should_return_updated_state_for_hu_payment_pending_submit_as_pending_payment_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -251,12 +251,12 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_ea_payment_due_submit_as_pending_payment_state() {
+    public void should_return_updated_state_for_ea_payment_pending_submit_as_pending_payment_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -275,7 +275,7 @@ public class FeePaymentStateHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_DUE));
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.DC));
 
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

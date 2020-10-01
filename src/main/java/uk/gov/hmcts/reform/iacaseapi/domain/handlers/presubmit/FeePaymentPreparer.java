@@ -69,7 +69,7 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
             = new PreSubmitCallbackResponse<>(asylumCase);
 
         final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
-            .orElse(PaymentStatus.PAYMENT_DUE);
+            .orElse(PaymentStatus.PAYMENT_PENDING);
 
         asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent(type -> {
