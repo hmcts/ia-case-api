@@ -54,7 +54,7 @@ public class MarkPaymentPaidStateHandlerTest {
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(appealType));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_DUE));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
@@ -78,7 +78,7 @@ public class MarkPaymentPaidStateHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.CASE_BUILDING);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_DUE));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
