@@ -1,6 +1,6 @@
 # Temporary fix for template API version error on deployment
 provider "azurerm" {
-  version = "1.22.1"
+  version = "1.27.1"
 }
 
 locals {
