@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
 import feign.FeignException;
+import org.springframework.cache.annotation.Cacheable;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
@@ -20,6 +21,7 @@ public class IdamUserDetailsProvider implements UserDetailsProvider {
         this.idamApi = idamApi;
     }
 
+    @Cacheable(value = "IdamUserDetails", key="#root.method", unless = "#result == null", cacheResolver = "cacheResolver")
     public IdamUserDetails getUserDetails() {
 
         String accessToken = accessTokenProvider.getAccessToken();

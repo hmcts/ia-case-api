@@ -11,12 +11,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetailsProvider;
 
 @ActiveProfiles("integration")
 @RunWith(SpringRunner.class)
@@ -36,6 +38,9 @@ public abstract class SpringBootIntegrationTest {
     @Autowired
     protected MockMvc mockMvc;
 
+    @Autowired
+    protected CacheManager cacheManager;
+
     private DocumentsApiCallbackTransformer documentsApiCallbackTransformer = new DocumentsApiCallbackTransformer();
 
     protected GivensBuilder given;
@@ -50,6 +55,11 @@ public abstract class SpringBootIntegrationTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @Before
+    public void setUpCacheManager() {
+        this.cacheManager.getCache("IdamUserDetails").clear();
+    }
 
     @Before
     public void setUpGivens() {
