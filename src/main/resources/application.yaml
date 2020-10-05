@@ -227,6 +227,7 @@ security:
       - "uploadSensitiveDocuments"
       - "requestHomeOfficeData"
       - "decideAnApplication"
+      - "requestNewHearingRequirements"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -303,6 +304,7 @@ security:
       - "residentJudgeFtpaDecision"
       - "uploadSensitiveDocuments"
       - "decideAnApplication"
+      - "requestNewHearingRequirements"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
 

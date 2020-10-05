@@ -12,6 +12,7 @@ public class DirectionTagTest {
         assertEquals("caseEdit", DirectionTag.CASE_EDIT.toString());
         assertEquals("legalRepresentativeReview", DirectionTag.LEGAL_REPRESENTATIVE_REVIEW.toString());
         assertEquals("legalRepresentativeHearingRequirements", DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS.toString());
+        assertEquals("requestNewHearingRequirements", DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS.toString());
         assertEquals("respondentEvidence", DirectionTag.RESPONDENT_EVIDENCE.toString());
         assertEquals("respondentReview", DirectionTag.RESPONDENT_REVIEW.toString());
         assertEquals("requestCaseBuilding", DirectionTag.REQUEST_CASE_BUILDING.toString());
@@ -25,6 +26,6 @@ public class DirectionTagTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(13, DirectionTag.values().length);
+        assertEquals(14, DirectionTag.values().length);
     }
 }

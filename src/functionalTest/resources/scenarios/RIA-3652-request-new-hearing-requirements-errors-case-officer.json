@@ -1,0 +1,36 @@
+{
+  "description": "RIA-3652 Request new hearing requirements (case officer) when not a reheard decision - return error message",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234,
+      "eventId": "requestNewHearingRequirements",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "caseFlagSetAsideReheardExists": "No",
+          "notificationsSent": [],
+          "homeOfficeBundle": [],
+          "uploadHomeOfficeBundleAvailable": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You cannot request hearing requirements for this appeal in this state."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "No",
+        "notificationsSent": [],
+        "uploadHomeOfficeBundleAvailable": "No"
+      }
+    }
+  }
+}
