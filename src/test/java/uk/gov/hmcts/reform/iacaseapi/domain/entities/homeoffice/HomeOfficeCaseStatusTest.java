@@ -37,7 +37,7 @@ public class HomeOfficeCaseStatusTest {
     @Test
     public void create_new_object_has_correct_values_for_display() {
         homeOfficeCaseStatus = new HomeOfficeCaseStatus(
-            person, applicationStatus, "some-text", "some-text", "some-text", "some-text", "some-text", "some-text"
+            person, applicationStatus, "some-text", "some-text", "some-text", "some-text", "some-text", "some-text", "some-text", "some-text"
         );
         assertNotNull(homeOfficeCaseStatus);
         assertEquals(person, homeOfficeCaseStatus.getPerson());
@@ -48,6 +48,7 @@ public class HomeOfficeCaseStatusTest {
         assertEquals("some-text", homeOfficeCaseStatus.getDisplayMetadataValueBoolean());
         assertEquals("some-text", homeOfficeCaseStatus.getDisplayMetadataValueDateTime());
         assertEquals("some-text", homeOfficeCaseStatus.getDisplayRejectionReasons());
-
+        assertEquals("some-text", homeOfficeCaseStatus.getDisplayAppellantDetailsTitle());
+        assertEquals("some-text", homeOfficeCaseStatus.getDisplayApplicationDetailsTitle());
     }
 }

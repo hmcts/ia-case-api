@@ -9,7 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0061-7075"
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083"
         }
       }
     }
@@ -20,7 +20,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1212-0099-0061-7075",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "isHomeOfficeIntegrationEnabled": "No"
       }
     }

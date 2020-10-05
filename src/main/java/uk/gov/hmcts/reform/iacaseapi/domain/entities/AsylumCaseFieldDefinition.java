@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -42,7 +43,10 @@ public enum AsylumCaseFieldDefinition {
         "appellantFamilyName", new TypeReference<String>(){}),
 
     APPELLANT_NATIONALITIES(
-            "appellantNationalities", new TypeReference<List<String>>(){}),
+            "appellantNationalities", new TypeReference<List<IdValue<NationalityFieldValue>>>(){}),
+
+    APPELLANT_NATIONALITIES_DESCRIPTION(
+        "appellantNationalitiesDescription", new TypeReference<String>(){}),
 
     APPELLANT_STATELESS(
             "appellantStateless", new TypeReference<String>(){}),
