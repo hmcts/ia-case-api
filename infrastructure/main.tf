@@ -16,8 +16,8 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
-  location = "${var.location}"
-  tags     = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  location = var.location
+  tags     = merge(var.common_tags, map("lastUpdated", "${timestamp()}"))
 }
 
 data "azurerm_key_vault" "ia_key_vault" {
@@ -39,7 +39,7 @@ module "ia_case_api_database" {
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name         = "${var.component}-POSTGRES-PASS"
-  value        = "${module.ia_case_api_database.postgresql_password}"
-  key_vault_id = "${data.azurerm_key_vault.ia_key_vault.id}"
+  value        = module.ia_case_api_database.postgresql_password
+  key_vault_id = data.azurerm_key_vault.ia_key_vault.id
 }
 
