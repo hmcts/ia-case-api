@@ -10,7 +10,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "legalRepCompany": "Amazing Law Firm",
-          "legalRepName": "A legal Rep",
+          "legalRepName": "{$IA_USER_PREFIX}A legal Rep",
           "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
           "legalRepReferenceNumber": "ABC-123",
           "updateLegalRepName": "Jane Doe",
