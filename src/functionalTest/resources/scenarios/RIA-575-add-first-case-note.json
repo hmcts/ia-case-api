@@ -15,7 +15,7 @@
               "value": {
                 "caseNoteSubject": "first case note subject",
                 "caseNoteDescription": "first case note description",
-                "user": "Case Officer",
+                "user": "{$IA_USER_PREFIX}Case Officer",
                 "dateAdded": "{$TODAY}"
               }
             }
@@ -39,7 +39,7 @@
             "value": {
               "caseNoteSubject": "second case note subject",
               "caseNoteDescription": "second case note description",
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}"
             }
           },
@@ -48,7 +48,7 @@
             "value": {
               "caseNoteSubject": "first case note subject",
               "caseNoteDescription": "first case note description",
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}"
             }
           }

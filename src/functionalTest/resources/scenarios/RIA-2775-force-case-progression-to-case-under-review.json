@@ -28,7 +28,7 @@
             "value": {
               "caseNoteSubject": "Reason for forcing case progression to case under review",
               "caseNoteDescription": "some reason",
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}"
             }
           }

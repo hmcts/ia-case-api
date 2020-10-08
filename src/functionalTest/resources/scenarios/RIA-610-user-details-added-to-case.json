@@ -18,7 +18,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "appealReferenceNumber": "$/(.+)/",
-        "legalRepresentativeName": "A Legal Rep",
+        "legalRepresentativeName": "{$IA_USER_PREFIX}A Legal Rep",
         "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}"
       }
     }

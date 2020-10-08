@@ -30,7 +30,7 @@
             "value": {
               "caseNoteSubject": "Reason for forcing the case progression to submit hearing requirements",
               "caseNoteDescription": "some reason",
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}"
             }
           }

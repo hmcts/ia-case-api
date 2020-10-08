@@ -41,7 +41,7 @@
           {
             "id": "1",
             "value": {
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}",
               "caseNoteSubject": "Force case from Awaiting Respondent Evidence to Case Building",
               "caseNoteDescription": "some reasons to force the case progression"

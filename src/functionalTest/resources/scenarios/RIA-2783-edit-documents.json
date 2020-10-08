@@ -118,7 +118,7 @@
             "value": {
               "caseNoteSubject": "A document was edited or deleted",
               "caseNoteDescription": "Document names: [PA 50023 2020-Gonzlez-Decision-and-reasons-FINAL.pdf]\nreason: some reasons",
-              "user": "Case Officer",
+              "user": "{$IA_USER_PREFIX}Case Officer",
               "dateAdded": "{$TODAY}"
             }
           }

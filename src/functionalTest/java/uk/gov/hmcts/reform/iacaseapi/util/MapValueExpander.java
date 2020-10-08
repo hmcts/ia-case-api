@@ -128,7 +128,11 @@ public final class MapValueExpander {
 
                     String property = ENVIRONMENT_PROPERTIES.getProperty(propertyName);
 
-                    expandedValue = expandedValue.replace(token, property);
+                    if (property == null) {
+                        expandedValue = expandedValue.replace(token, "");
+                    } else {
+                        expandedValue = expandedValue.replace(token, property);
+                    }
                 }
             }
         }
