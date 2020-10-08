@@ -4,16 +4,15 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @Component
 public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -28,17 +28,20 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
     private final int hearingRequirementsDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
+    private final PreviousHearingAppender previousHearingAppender;
     private final FeatureToggler featureToggler;
 
     public RequestNewHearingRequirementsDirectionHandler(
         @Value("${legalRepresentativeHearingRequirements.dueInDays}") int hearingRequirementsDueInDays,
         DateProvider dateProvider,
         DirectionAppender directionAppender,
+        PreviousHearingAppender previousHearingAppender,
         FeatureToggler featureToggler
     ) {
         this.hearingRequirementsDueInDays = hearingRequirementsDueInDays;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
+        this.previousHearingAppender = previousHearingAppender;
         this.featureToggler = featureToggler;
     }
 
@@ -94,6 +97,84 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         asylumCase.clear(SEND_DIRECTION_PARTIES);
         asylumCase.clear(SEND_DIRECTION_DATE_DUE);
 
+        writePreviousHearingsToAsylumCase(asylumCase);
+
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    protected void writePreviousHearingsToAsylumCase(AsylumCase asylumCase) {
+
+        Optional<List<IdValue<PreviousHearing>>> maybePreviousHearings =
+            asylumCase.read(PREVIOUS_HEARINGS);
+
+        final List<IdValue<PreviousHearing>> existingPreviousHearings =
+            maybePreviousHearings.orElse(Collections.emptyList());
+
+        final String attendingJudge = asylumCase.read(ATTENDING_JUDGE, String.class)
+            .orElseThrow(() -> new IllegalStateException("attendingJudge is missing."));
+
+        final Optional<String> attendingAppellant = asylumCase.read(ATTENDING_APPELLANT, String.class);
+
+        final Optional<String> attendingHomeOfficeLegalRepresentative = asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class);
+
+        final HoursAndMinutes actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class)
+            .orElseThrow(() -> new IllegalStateException("actualCaseHearingLength is missing."));
+
+        final String ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
+            .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
+
+        final HearingCentre listCaseHearingCentre = asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)
+            .orElseThrow(() -> new IllegalStateException("listCaseHearingCentre is missing."));
+
+        final String listCaseHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
+            .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
+
+        final String listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
+            .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
+
+        Optional<List<IdValue<HearingRecordingDocument>>> maybeHearingRecordingDocuments =
+            asylumCase.read(HEARING_RECORDING_DOCUMENTS);
+
+        final List<IdValue<HearingRecordingDocument>> hearingRecordingDocuments =
+            maybeHearingRecordingDocuments.orElse(emptyList());
+
+        final String appealDecision = asylumCase.read(APPEAL_DECISION, String.class)
+            .orElseThrow(() -> new IllegalStateException("appealDecision is missing."));
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeFinalDecisionAndReasonsDocuments =
+            asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS);
+
+        final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments =
+            maybeFinalDecisionAndReasonsDocuments.orElse(emptyList());
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingRequirements =
+            asylumCase.read(HEARING_REQUIREMENTS);
+
+        final List<IdValue<DocumentWithMetadata>> hearingRequirements =
+            maybeHearingRequirements.orElse(emptyList());
+
+        final PreviousHearing previousHearing = new PreviousHearing(
+            attendingJudge,
+            attendingAppellant,
+            attendingHomeOfficeLegalRepresentative,
+            actualCaseHearingLength,
+            ariaListingReference,
+            listCaseHearingCentre,
+            listCaseHearingDate,
+            listCaseHearingLength,
+            hearingRecordingDocuments,
+            appealDecision,
+            finalDecisionAndReasonsDocuments,
+            hearingRequirements
+        );
+
+        List<IdValue<PreviousHearing>> allPreviousHearings =
+            previousHearingAppender.append(
+                existingPreviousHearings,
+                previousHearing);
+
+        asylumCase.write(PREVIOUS_HEARINGS, allPreviousHearings);
+
+        asylumCase.clear(HEARING_REQUIREMENTS);
     }
 }

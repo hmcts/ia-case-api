@@ -24,71 +24,71 @@ public class FtpaDisplayService {
 
     private final CaseFlagAppender caseFlagAppender;
 
-    private static final String granted = "granted";
-    private static final String partiallyGranted = "partiallyGranted";
-    private static final String refused = "refused";
-    private static final String notAdmitted = "notAdmitted";
-    private static final String reheardRule35 = "reheardRule35";
-    private static final String reheardRule32 = "reheardRule32";
-    private static final String remadeRule32 = "remadeRule32";
-    private static final String appealDecision = "appealDecision";
+    private static final String GRANTED = "granted";
+    private static final String PARTIALLY_GRANTED = "partiallyGranted";
+    private static final String REFUSED = "refused";
+    private static final String NOT_ADMITTED = "notAdmitted";
+    private static final String REHEARD_RULE_35 = "reheardRule35";
+    private static final String REHEARD_RULE_32 = "reheardRule32";
+    private static final String REMADE_RULE_32 = "remadeRule32";
+    private static final String APPEAL_DECISION = "appealDecision";
 
     private final Map<Pair<String, String>, String> ftpaDisplayMap = new ImmutableMap.Builder<Pair<String, String>, String>()
-        .put(new ImmutablePair<>(granted, granted), granted)
-        .put(new ImmutablePair<>(granted, partiallyGranted), granted)
-        .put(new ImmutablePair<>(granted, refused), granted)
-        .put(new ImmutablePair<>(granted, notAdmitted), granted)
-        .put(new ImmutablePair<>(granted, reheardRule35), granted)
-        .put(new ImmutablePair<>(granted, reheardRule32), granted)
-        .put(new ImmutablePair<>(granted, remadeRule32), granted)
+        .put(new ImmutablePair<>(GRANTED, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REFUSED), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, NOT_ADMITTED), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_35), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(GRANTED, REMADE_RULE_32), GRANTED)
 
-        .put(new ImmutablePair<>(partiallyGranted, granted), granted)
-        .put(new ImmutablePair<>(partiallyGranted, partiallyGranted), granted)
-        .put(new ImmutablePair<>(partiallyGranted, refused), granted)
-        .put(new ImmutablePair<>(partiallyGranted, notAdmitted), granted)
-        .put(new ImmutablePair<>(partiallyGranted, reheardRule35), granted)
-        .put(new ImmutablePair<>(partiallyGranted, reheardRule32), granted)
-        .put(new ImmutablePair<>(partiallyGranted, remadeRule32), granted)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REFUSED), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, NOT_ADMITTED), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_35), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REHEARD_RULE_32), GRANTED)
+        .put(new ImmutablePair<>(PARTIALLY_GRANTED, REMADE_RULE_32), GRANTED)
 
-        .put(new ImmutablePair<>(refused, granted), granted)
-        .put(new ImmutablePair<>(refused, partiallyGranted), granted)
-        .put(new ImmutablePair<>(refused, refused), appealDecision)
-        .put(new ImmutablePair<>(refused, notAdmitted), notAdmitted)
-        .put(new ImmutablePair<>(refused, reheardRule35), reheardRule35)
-        .put(new ImmutablePair<>(refused, reheardRule32), reheardRule32)
-        .put(new ImmutablePair<>(refused, remadeRule32), remadeRule32)
+        .put(new ImmutablePair<>(REFUSED, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REFUSED, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REFUSED, REFUSED), APPEAL_DECISION)
+        .put(new ImmutablePair<>(REFUSED, NOT_ADMITTED), NOT_ADMITTED)
+        .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REFUSED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REFUSED, REMADE_RULE_32), REMADE_RULE_32)
 
-        .put(new ImmutablePair<>(notAdmitted, granted), granted)
-        .put(new ImmutablePair<>(notAdmitted, partiallyGranted), granted)
-        .put(new ImmutablePair<>(notAdmitted, refused), refused)
-        .put(new ImmutablePair<>(notAdmitted, notAdmitted), appealDecision)
-        .put(new ImmutablePair<>(notAdmitted, reheardRule35), reheardRule35)
-        .put(new ImmutablePair<>(notAdmitted, reheardRule32), reheardRule32)
-        .put(new ImmutablePair<>(notAdmitted, remadeRule32), remadeRule32)
+        .put(new ImmutablePair<>(NOT_ADMITTED, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(NOT_ADMITTED, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REFUSED), REFUSED)
+        .put(new ImmutablePair<>(NOT_ADMITTED, NOT_ADMITTED), APPEAL_DECISION)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(NOT_ADMITTED, REMADE_RULE_32), REMADE_RULE_32)
 
-        .put(new ImmutablePair<>(reheardRule35, granted), granted)
-        .put(new ImmutablePair<>(reheardRule35, partiallyGranted), granted)
-        .put(new ImmutablePair<>(reheardRule35, refused), reheardRule35)
-        .put(new ImmutablePair<>(reheardRule35, notAdmitted), reheardRule35)
-        .put(new ImmutablePair<>(reheardRule35, reheardRule35), reheardRule35)
-        .put(new ImmutablePair<>(reheardRule35, reheardRule32), reheardRule32)
-        .put(new ImmutablePair<>(reheardRule35, remadeRule32), remadeRule32)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REFUSED), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, NOT_ADMITTED), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_35, REMADE_RULE_32), REMADE_RULE_32)
 
-        .put(new ImmutablePair<>(reheardRule32, granted), granted)
-        .put(new ImmutablePair<>(reheardRule32, partiallyGranted), granted)
-        .put(new ImmutablePair<>(reheardRule32, refused), reheardRule32)
-        .put(new ImmutablePair<>(reheardRule32, notAdmitted), reheardRule32)
-        .put(new ImmutablePair<>(reheardRule32, reheardRule35), reheardRule35)
-        .put(new ImmutablePair<>(reheardRule32, reheardRule32), reheardRule32)
-        .put(new ImmutablePair<>(reheardRule32, remadeRule32), remadeRule32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REFUSED), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, NOT_ADMITTED), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REHEARD_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
 
-        .put(new ImmutablePair<>(remadeRule32, granted), granted)
-        .put(new ImmutablePair<>(remadeRule32, partiallyGranted), granted)
-        .put(new ImmutablePair<>(remadeRule32, refused), remadeRule32)
-        .put(new ImmutablePair<>(remadeRule32, notAdmitted), remadeRule32)
-        .put(new ImmutablePair<>(remadeRule32, reheardRule35), reheardRule35)
-        .put(new ImmutablePair<>(remadeRule32, reheardRule32), reheardRule32)
-        .put(new ImmutablePair<>(remadeRule32, remadeRule32), remadeRule32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_32, PARTIALLY_GRANTED), GRANTED)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REFUSED), REMADE_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, NOT_ADMITTED), REMADE_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_35), REHEARD_RULE_35)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REHEARD_RULE_32), REHEARD_RULE_32)
+        .put(new ImmutablePair<>(REMADE_RULE_32, REMADE_RULE_32), REMADE_RULE_32)
         .build();
 
     public FtpaDisplayService(CaseFlagAppender caseFlagAppender) {
@@ -97,8 +97,8 @@ public class FtpaDisplayService {
 
     public String getFinalDisplayDecision(AsylumCase asylumCase, String firstDecision, String secondDecision) {
 
-        if (ftpaDisplayMap.get(Pair.of(firstDecision, secondDecision)).equals(appealDecision)) {
-            return asylumCase.read(APPEAL_DECISION)
+        if (ftpaDisplayMap.get(Pair.of(firstDecision, secondDecision)).equals(APPEAL_DECISION)) {
+            return asylumCase.read(AsylumCaseFieldDefinition.APPEAL_DECISION)
                 .orElseThrow(() -> new IllegalStateException("appealDecision is mandatory"))
                 .equals("Allowed") ? "allowed" : "dismissed";
         }

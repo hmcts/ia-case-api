@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -30,12 +32,13 @@ public class DraftHearingRequirementsHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private FeatureToggler featureToggler;
 
     private DraftHearingRequirementsHandler draftHearingRequirementsHandler;
 
     @Before
     public void setUp() {
-        draftHearingRequirementsHandler = new DraftHearingRequirementsHandler();
+        draftHearingRequirementsHandler = new DraftHearingRequirementsHandler(featureToggler);
 
         when(callback.getEvent()).thenReturn(Event.DRAFT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -72,6 +75,41 @@ public class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).read(WITNESS_DETAILS);
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.WITNESS_COUNT), eq(2));
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+    }
+
+    @Test
+    public void should_set_current_hearing_details_visibility_to_no_for_case_flag() {
+
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.NO));
+    }
+
+    @Test
+    public void should_set_current_hearing_details_visibility_to_yes_for_case_flag() {
+
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.YES));
+    }
+
+    @Test
+    public void should_set_current_hearing_details_visibility_to_yes_when_feature_flag_disabled() {
+
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.YES));
     }
 
     @Test
