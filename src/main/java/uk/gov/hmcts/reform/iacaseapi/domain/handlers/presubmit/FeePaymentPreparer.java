@@ -71,6 +71,10 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
 
+        final String paymentOptionNotAvailableLabel = "The Make a payment option is not available.";
+        final String payAndSubmitOptionNotAvailableLabel = "The Pay and submit your appeal option is not available. "
+                                                            + "Select Submit your appeal if you want to submit the appeal now.";
+
         asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent(type -> {
                 switch (type) {
@@ -83,12 +87,11 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
                                 if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 
                                     asylumCasePreSubmitCallbackResponse
-                                        .addError("The Pay and submit your appeal option is not available. "
-                                                  + "Select Submit your appeal if you want to submit the appeal now.");
+                                        .addError(payAndSubmitOptionNotAvailableLabel);
                                 }
                                 if (callback.getEvent() == Event.PAYMENT_APPEAL) {
 
-                                    asylumCasePreSubmitCallbackResponse.addError("The Make a payment option is not available.");
+                                    asylumCasePreSubmitCallbackResponse.addError(paymentOptionNotAvailableLabel);
                                 }
 
                             });
@@ -103,16 +106,25 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
                                 if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 
                                     asylumCasePreSubmitCallbackResponse
-                                        .addError("The Pay and submit your appeal option is not available. "
-                                                  + "Select Submit your appeal if you want to submit the appeal now.");
+                                        .addError(payAndSubmitOptionNotAvailableLabel);
                                 }
                                 if (callback.getEvent() == Event.PAYMENT_APPEAL) {
 
-                                    asylumCasePreSubmitCallbackResponse.addError("The Make a payment option is not available.");
+                                    asylumCasePreSubmitCallbackResponse.addError(paymentOptionNotAvailableLabel);
                                 }
                             });
                         break;
+                    case RP:
+                    case DC:
+                        if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 
+                            asylumCasePreSubmitCallbackResponse.addError(payAndSubmitOptionNotAvailableLabel);
+
+                        } else if (callback.getEvent() == Event.PAYMENT_APPEAL) {
+
+                            asylumCasePreSubmitCallbackResponse.addError("You do not have to pay for this type of appeal.");
+                        }
+                        break;
                     default:
                         break;
 
@@ -120,7 +132,7 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
             });
 
 
-        asylumCase.write(IS_FEE_PAYMENT_ENABLED, isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+        asylumCase.write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
 
         if (asylumCasePreSubmitCallbackResponse.getErrors().isEmpty()) {
             asylumCasePreSubmitCallbackResponse.setData(feePayment.aboutToStart(callback));
