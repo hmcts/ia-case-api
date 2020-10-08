@@ -45,6 +45,8 @@ public class CcdScenarioRunnerTest {
     @Autowired private List<Verifier> verifiers;
     @Autowired private List<Fixture> fixtures;
 
+    @Autowired private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
+
     @Before
     public void setUp() {
         MapSerializer.setObjectMapper(objectMapper);
@@ -86,15 +88,28 @@ public class CcdScenarioRunnerTest {
         for (String scenarioSource : scenarioSources) {
 
             Map<String, Object> scenario = deserializeWithExpandedValues(scenarioSource);
+            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
 
             String description = MapValueExtractor.extract(scenario, "description");
 
-            Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled");
+            Object scenarioEnabled = MapValueExtractor.extract(scenario, "enabled") == null
+                ? MapValueExtractor.extract(scenario, "launchDarklyKey")
+                : MapValueExtractor.extract(scenario, "enabled");
 
             if (scenarioEnabled == null) {
                 scenarioEnabled = true;
             } else if (scenarioEnabled instanceof String) {
-                scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
+
+                if (String.valueOf(scenarioEnabled).contains("feature")) {
+
+                    String[] keys = ((String) scenarioEnabled).split(":");
+
+                    scenarioEnabled = launchDarklyFunctionalTestClient
+                                          .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
+                                      && Boolean.valueOf(keys[1]);
+                } else {
+                    scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
+                }
             }
 
             Object scenarioDisabled = MapValueExtractor.extract(scenario, "disabled");
@@ -130,7 +145,6 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            final Headers authorizationHeaders = getAuthorizationHeaders(scenario);
             final String requestUri = MapValueExtractor.extract(scenario, "request.uri");
             final int expectedStatus = MapValueExtractor.extractOrDefault(scenario, "expectation.status", 200);
 
@@ -349,7 +363,7 @@ public class CcdScenarioRunnerTest {
 
         if ("Citizen".equalsIgnoreCase(credentials)) {
             return authorizationHeadersProvider
-                    .getCitizenAuthorization();
+                .getCitizenAuthorization();
         }
 
         return new Headers();
