@@ -103,7 +103,8 @@ public class SendNotificationHandlerTest {
             Event.RESIDENT_JUDGE_FTPA_DECISION,
             Event.REQUEST_RESPONSE_AMEND,
             Event.PAYMENT_APPEAL,
-            Event.MARK_APPEAL_PAID
+            Event.MARK_APPEAL_PAID,
+            Event.REINSTATE_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -234,7 +235,8 @@ public class SendNotificationHandlerTest {
                         Event.RESIDENT_JUDGE_FTPA_DECISION,
                         Event.REQUEST_RESPONSE_AMEND,
                         Event.PAYMENT_APPEAL,
-                        Event.MARK_APPEAL_PAID
+                        Event.MARK_APPEAL_PAID,
+                        Event.REINSTATE_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
