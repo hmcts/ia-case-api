@@ -70,7 +70,7 @@ public class SubmitAppealPreparerTest {
     public void should_return_true_for_HU_payNow() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
 
         assertTrue(submitAppealPreparer.isPaymentAppealTypePayNow(asylumCase));
     }
@@ -79,7 +79,7 @@ public class SubmitAppealPreparerTest {
     public void should_return_false_for_HU_payLater() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
-        when(asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
 
         assertFalse(submitAppealPreparer.isPaymentAppealTypePayNow(asylumCase));
     }
