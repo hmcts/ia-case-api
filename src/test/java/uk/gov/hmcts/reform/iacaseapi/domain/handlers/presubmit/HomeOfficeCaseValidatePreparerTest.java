@@ -8,10 +8,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
 import org.junit.Before;
@@ -50,7 +50,6 @@ public class HomeOfficeCaseValidatePreparerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -70,9 +69,8 @@ public class HomeOfficeCaseValidatePreparerTest {
 
         homeOfficeCaseValidatePreparer = new HomeOfficeCaseValidatePreparer(false);
 
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -90,8 +88,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
+
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
@@ -99,9 +96,9 @@ public class HomeOfficeCaseValidatePreparerTest {
                 boolean canHandle = homeOfficeCaseValidatePreparer.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_START
-                    && callback.getEvent() == SUBMIT_APPEAL
-                    && (callback.getCaseDetails().getState() == APPEAL_SUBMITTED
-                    || callback.getCaseDetails().getState() == APPEAL_SUBMITTED_OUT_OF_TIME)
+                    && (callback.getEvent() == SUBMIT_APPEAL
+                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
+                    || callback.getEvent() == MARK_APPEAL_PAID)
                 ) {
                     assertTrue(canHandle);
                 } else {
