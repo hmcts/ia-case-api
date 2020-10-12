@@ -13,7 +13,7 @@
         "replacements": {
           "appealType": "refusalOfHumanRights",
           "homeOfficeDecisionDate": "{$TODAY-15}",
-          "payForTheAppealOption": "payNow",
+          "eaHuAppealTypePaymentOption": "payNow",
           "paymentAccountList":{
             "value":{
               "code":"PBA0087535",

@@ -17,7 +17,7 @@
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "paymentAccountList": "PBA0087535",
           "paymentDescription": "An IA pba test payment",
-          "payForTheAppealOption": "payLater",
+          "eaHuAppealTypePaymentOption": "payLater",
           "customerReference": "543232",
           "paymentStatus": "Payment due"
         }
