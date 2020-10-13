@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 
@@ -29,20 +30,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 @SuppressWarnings("unchecked")
 public class HomeOfficeCaseNotificationsHandlerTest {
 
-    private final boolean isHomeOfficeIntegrationEnabled = true;
-    @Mock
-    private HomeOfficeApi<AsylumCase> homeOfficeApi;
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private AsylumCase asylumCase;
+    @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private AsylumCase asylumCase;
+    @Mock private FeatureToggler featureToggler;
+
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
     @Before
     public void setUp() {
 
         homeOfficeCaseNotificationsHandler =
-            new HomeOfficeCaseNotificationsHandler(isHomeOfficeIntegrationEnabled, homeOfficeApi);
+            new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -120,8 +120,9 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     @Test
     public void handler_throws_error_if_feature_not_enabled() {
 
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(false);
         homeOfficeCaseNotificationsHandler = new HomeOfficeCaseNotificationsHandler(
-            false,
+            featureToggler,
             homeOfficeApi
         );
 

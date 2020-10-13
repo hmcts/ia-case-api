@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -10,19 +9,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 
 @Component
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
-    private final boolean isHomeOfficeIntegrationEnabled;
+
+    private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
     public HomeOfficeCaseNotificationsHandler(
-        @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
+        FeatureToggler featureToggler,
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
-        this.isHomeOfficeIntegrationEnabled = isHomeOfficeIntegrationEnabled;
+        this.featureToggler = featureToggler;
         this.homeOfficeApi = homeOfficeApi;
     }
 
@@ -33,7 +35,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return isHomeOfficeIntegrationEnabled
+        return featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)
                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE;
     }
