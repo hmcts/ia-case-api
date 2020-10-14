@@ -39,7 +39,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
                     Event.REQUEST_RESPONDENT_EVIDENCE,
-                    Event.REQUEST_RESPONDENT_REVIEW
+                    Event.REQUEST_RESPONDENT_REVIEW,
+                    Event.LIST_CASE
                 ).contains(callback.getEvent())
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }

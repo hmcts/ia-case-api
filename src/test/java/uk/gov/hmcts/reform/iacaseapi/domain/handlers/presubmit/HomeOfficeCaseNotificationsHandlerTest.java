@@ -9,8 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
@@ -78,6 +77,21 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
+    public void should_call_home_office_api_and_update_the_case_for_list_case() {
+
+        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(1)).call(callback);
+    }
+
+    @Test
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -91,7 +105,8 @@ public class HomeOfficeCaseNotificationsHandlerTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && Arrays.asList(
                         Event.REQUEST_RESPONDENT_EVIDENCE,
-                        Event.REQUEST_RESPONDENT_REVIEW
+                        Event.REQUEST_RESPONDENT_REVIEW,
+                        Event.LIST_CASE
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
