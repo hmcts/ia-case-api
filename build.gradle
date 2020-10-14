@@ -108,7 +108,7 @@ sourceSets {
 }
 
 lombok {
-    config['config.stopbubbling'] = 'true'
+    config['config.stopBubbling'] = 'true'
     config['lombok.addLombokGeneratedAnnotation'] = 'true'
     config['lombok.anyConstructor.addConstructorProperties'] = 'true'
 }
