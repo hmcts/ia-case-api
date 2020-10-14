@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecutor;
@@ -60,11 +62,19 @@ public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler
             callback
                 .getCaseDetails()
                 .getCaseData();
-
         asylumCase.clear(AsylumCaseFieldDefinition.HMCTS);
         asylumCase.write(AsylumCaseFieldDefinition.HMCTS,"[userImage:hmcts.png]");
         asylumCase.clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
-        asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
+
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,YesOrNo.class);
+
+        if (maybeCaseFlagSetAsideReheardExists.isPresent()
+                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES) {
+            asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
+        } else {
+            asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
+        }
+
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, getBundlePrefix(asylumCase));
 
         final PreSubmitCallbackResponse<AsylumCase> response = bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri);

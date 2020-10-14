@@ -141,8 +141,11 @@ public class FtpaDisplayService {
 
         if (isReheardAppealEnabled && currentDecision.toLowerCase().contains("reheard")) {
             asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YES);
+            asylumCase.write(STITCHING_STATUS,"");
             updateCaseFlags(asylumCase);
         }
+
+
     }
 
     protected void updateCaseFlags(AsylumCase asylumCase) {

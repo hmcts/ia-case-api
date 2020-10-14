@@ -159,6 +159,7 @@ public class FtpaDisplayServiceTest {
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "reheardRule32");
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
         verify(asylumCase, times(1)).write(CASE_FLAGS, Collections.emptyList());
     }
 
@@ -168,6 +169,7 @@ public class FtpaDisplayServiceTest {
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "reheardRule35");
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
         verify(asylumCase, times(1)).write(CASE_FLAGS, Collections.emptyList());
     }
 

@@ -1071,6 +1071,43 @@ public enum AsylumCaseFieldDefinition {
     IS_REHEARD_APPEAL_ENABLED(
         "isReheardAppealEnabled", new TypeReference<YesOrNo>() {}),
 
+    CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS(
+            "customAppAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS(
+            "customRespAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FTPA_APPELLANT_DOCS(
+            "customFtpaAppellantDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FTPA_RESPONDENT_DOCS(
+            "customFtpaRespondentDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FINAL_DECISION_AND_REASONS_DOCS(
+            "customFinalDecisionAndReasonsDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS(
+            "customAppAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    APPELLANT_ADDENDUM_EVIDENCE_DOCS(
+            "appellantAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    CUSTOM_RESP_ADDENDUM_EVIDENCE_DOCS(
+            "customRespAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    RESPONDENT_ADDENDUM_EVIDENCE_DOCS(
+            "respondentAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    CUSTOM_REHEARD_HEARING_DOCS(
+            "customReheardHearingDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    APP_ADDITIONAL_EVIDENCE_DOCS(
+        "appAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    RESP_ADDITIONAL_EVIDENCE_DOCS(
+        "respAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+
     ATTENDING_JUDGE(
         "attendingJudge", new TypeReference<String>(){}),
 

@@ -92,6 +92,27 @@ public class AdvancedBundlingCallbackHandlerTest {
     }
 
     @Test
+    public void should_successfully_handle_the_callback_in_reheard() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedBundlingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(APPEAL_REFERENCE_NUMBER, String.class);
+        verify(asylumCase, times(1)).read(APPELLANT_FAMILY_NAME, String.class);
+
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+        verify(asylumCase).clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
+        verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, "PA 50002 2020-" + appellantFamilyName);
+
+    }
+
+    @Test
     public void should_throw_when_appeal_reference_is_not_present() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());

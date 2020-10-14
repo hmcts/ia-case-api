@@ -4,12 +4,12 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CUSTOM_LEGAL_REP_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +25,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.SystemDateProvider;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,6 +40,7 @@ public class CustomiseHearingBundlePreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private Appender<DocumentWithDescription> appender;
+    @Mock private FeatureToggler featureToggler;
 
     @Captor
     private ArgumentCaptor<DocumentWithDescription> legalRepresentativeDocumentsCaptor;
@@ -46,7 +50,7 @@ public class CustomiseHearingBundlePreparerTest {
     @Before
     public void setUp() {
         customiseHearingBundlePreparer =
-                new CustomiseHearingBundlePreparer(appender);
+                new CustomiseHearingBundlePreparer(appender,featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -56,89 +60,16 @@ public class CustomiseHearingBundlePreparerTest {
     public void should_create_custom_collections() {
         when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
 
-        DocumentWithDescription customDocument = new DocumentWithDescription(
-                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                "description"
-        );
-        List<IdValue<DocumentWithDescription>> customCollections = asList(
-                new IdValue<DocumentWithDescription>(
-                        "1",
-                        customDocument
-                )
-        );
+        List<IdValue<DocumentWithDescription>> customCollections = asList(new IdValue("1", createDocumentWithDescription()));
+        List<IdValue<DocumentWithMetadata>> hearingDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.HEARING_NOTICE,"test")));
 
-
-
-        DocumentWithMetadata hearingDocument = new DocumentWithMetadata(
-                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                "description",
-                "dateUploaded",
-                DocumentTag.HEARING_NOTICE
-        );
-        List<IdValue<DocumentWithMetadata>> hearingDocumentList = asList(
-                new IdValue<DocumentWithMetadata>(
-                        "1",
-                        hearingDocument
-                )
-        );
-        DocumentWithMetadata legalDocument = new DocumentWithMetadata(
-                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                "description",
-                "dateUploaded",
-                DocumentTag.CASE_ARGUMENT
-        );
         List<IdValue<DocumentWithMetadata>> legalDocumentList = asList(
-                new IdValue<DocumentWithMetadata>(
-                        "1",
-                        legalDocument
-                ),
-                new IdValue<DocumentWithMetadata>(
-                        "2",
-                        new DocumentWithMetadata(
-                                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                                "description",
-                                "dateUploaded",
-                                DocumentTag.APPEAL_SUBMISSION
-                        )
-                ),
-                new IdValue<DocumentWithMetadata>(
-                        "3",
-                        new DocumentWithMetadata(
-                                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                                "description",
-                                "dateUploaded",
-                                DocumentTag.CASE_SUMMARY
-                        )
-                )
-        );
+                new IdValue("1", createDocumentWithMetadata(DocumentTag.CASE_ARGUMENT,"test")),
+                new IdValue("2", createDocumentWithMetadata(DocumentTag.APPEAL_SUBMISSION,"tes")),
+                new IdValue("3", createDocumentWithMetadata(DocumentTag.CASE_SUMMARY,"test")));
 
-        DocumentWithMetadata additionalEvidenceDocument = new DocumentWithMetadata(
-                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                "description",
-                "dateUploaded",
-                DocumentTag.ADDITIONAL_EVIDENCE
-        );
-
-        List<IdValue<DocumentWithMetadata>> additionalEvidenceList = asList(
-                new IdValue<DocumentWithMetadata>(
-                        "1",
-                        additionalEvidenceDocument
-                )
-        );
-
-        DocumentWithMetadata respondentDocument = new DocumentWithMetadata(
-                new Document("documentUrl", "binaryUrl", "documentFilename"),
-                "description",
-                "dateUploaded",
-                DocumentTag.RESPONDENT_EVIDENCE
-        );
-
-        List<IdValue<DocumentWithMetadata>> respondentList = asList(
-                new IdValue<DocumentWithMetadata>(
-                        "1",
-                        respondentDocument
-                )
-        );
+        List<IdValue<DocumentWithMetadata>> additionalEvidenceList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.ADDITIONAL_EVIDENCE,"test")));
+        List<IdValue<DocumentWithMetadata>> respondentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.RESPONDENT_EVIDENCE,"test")));
 
         when(appender.append(any(DocumentWithDescription.class), anyList()))
                 .thenReturn(customCollections);
@@ -161,6 +92,65 @@ public class CustomiseHearingBundlePreparerTest {
         verify(asylumCase).write(CUSTOM_LEGAL_REP_DOCUMENTS, customCollections);
         verify(asylumCase).write(AsylumCaseFieldDefinition.CUSTOM_ADDITIONAL_EVIDENCE_DOCUMENTS, customCollections);
         verify(asylumCase).write(AsylumCaseFieldDefinition.CUSTOM_RESPONDENT_DOCUMENTS, customCollections);
+    }
+
+    @Test
+    public void should_create_custom_collections_in_reheard_case() {
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(callback.getCaseDetails().getCaseData().read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertEquals(callback.getCaseDetails().getCaseData().read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class),Optional.of(YesOrNo.YES));
+
+        when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
+
+        final List<IdValue<DocumentWithDescription>> customDocumentList = asList(new IdValue("1",createDocumentWithDescription()));
+
+        final List<IdValue<DocumentWithMetadata>> hearingDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.REHEARD_HEARING_NOTICE,"test")));
+        final List<IdValue<DocumentWithMetadata>> ftpaAppellantEvidenceDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.ADDITIONAL_EVIDENCE,"")));
+        final List<IdValue<DocumentWithMetadata>> ftpaRespondentEvidenceDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.ADDITIONAL_EVIDENCE,"")));
+        final List<IdValue<DocumentWithMetadata>> ftpaAppellantDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.FTPA_APPELLANT,"test")));
+        final List<IdValue<DocumentWithMetadata>> ftpaRespondentDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.FTPA_RESPONDENT,"test")));
+        final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocumentList = asList(new IdValue("1", createDocumentWithMetadata(DocumentTag.FINAL_DECISION_AND_REASONS_PDF,"test")));
+
+        final List<IdValue<DocumentWithMetadata>> addendumEvidenceDocumentList = asList(
+            new IdValue("2", createDocumentWithMetadata(DocumentTag.ADDENDUM_EVIDENCE, "The appellant")),
+            new IdValue("1",createDocumentWithMetadata(DocumentTag.ADDENDUM_EVIDENCE,"The respondent")));
+
+        when(appender.append(any(DocumentWithDescription.class), anyList()))
+                .thenReturn(customDocumentList);
+
+        when(asylumCase.read(APP_ADDITIONAL_EVIDENCE_DOCS))
+                .thenReturn(Optional.of(ftpaAppellantEvidenceDocumentList));
+
+        when(asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS))
+                .thenReturn(Optional.of(ftpaRespondentEvidenceDocumentList));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS))
+                .thenReturn(Optional.of(ftpaAppellantDocumentList));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.FTPA_RESPONDENT_DOCUMENTS))
+                .thenReturn(Optional.of(ftpaRespondentDocumentList));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.FINAL_DECISION_AND_REASONS_DOCUMENTS))
+                .thenReturn(Optional.of(finalDecisionAndReasonsDocumentList));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS))
+                .thenReturn(Optional.of(hearingDocumentList));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS))
+                .thenReturn(Optional.of(addendumEvidenceDocumentList));
+
+
+        customiseHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(CUSTOM_REHEARD_HEARING_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_FTPA_APPELLANT_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_FTPA_RESPONDENT_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_FINAL_DECISION_AND_REASONS_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS, customDocumentList);
+        verify(asylumCase).write(CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS, customDocumentList);
     }
 
     @Test
@@ -257,6 +247,20 @@ public class CustomiseHearingBundlePreparerTest {
         verify(asylumCase, never()).write(any(), any());
     }
 
+    @Test
+    public void should_not_create_custom_collections_if_source_collections_are_empty_in_reheard_case() {
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        customiseHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, never()).write(any(), any());
+    }
+
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
@@ -308,5 +312,28 @@ public class CustomiseHearingBundlePreparerTest {
         assertThatThrownBy(() -> customiseHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    private DocumentWithDescription createDocumentWithDescription() {
+        return
+            new DocumentWithDescription(new Document("some-url",
+                "some-binary-url",
+                RandomStringUtils.randomAlphabetic(20)),"test");
+    }
+
+    private Document createDocument() {
+        return
+            new Document("some-url",
+                "some-binary-url",
+                "some-filename");
+    }
+
+    private DocumentWithMetadata createDocumentWithMetadata(DocumentTag documentTag,String suppliedBy) {
+
+        return
+            new DocumentWithMetadata(createDocument(),
+                "some-description",
+                new SystemDateProvider().now().toString(), documentTag,suppliedBy);
+
     }
 }
