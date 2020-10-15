@@ -63,11 +63,11 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        if (asylumCase.read(HEARING_CENTRE).isEmpty()
-            || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
+//        if (asylumCase.read(HEARING_CENTRE).isEmpty()
+//            || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
             trySetHearingCentreFromPostcode(asylumCase);
-        }
+//        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
