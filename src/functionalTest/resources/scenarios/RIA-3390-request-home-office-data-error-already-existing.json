@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3390 Display error if Request Home Office data call is made when Home Office data is already displayed",
+  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHomeOfficeData",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeCaseStatusData": {}
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The Home Office data has already been retrieved successfully and is available in the validation tab."],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS"
+      }
+    }
+  }
+}

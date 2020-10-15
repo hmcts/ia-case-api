@@ -967,13 +967,16 @@ public enum AsylumCaseFieldDefinition {
             "customHearingDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     IS_HOME_OFFICE_INTEGRATION_ENABLED(
-        "isHomeOfficeIntegrationEnabled", new TypeReference<String>() {}),
+        "isHomeOfficeIntegrationEnabled", new TypeReference<YesOrNo>() {}),
 
     HOME_OFFICE_CASE_STATUS_DATA(
         "homeOfficeCaseStatusData", new TypeReference<HomeOfficeCaseStatus>() {}),
 
     HOME_OFFICE_SEARCH_STATUS(
         "homeOfficeSearchStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_SEARCH_STATUS_MESSAGE(
+        "homeOfficeSearchStatusMessage", new TypeReference<String>() {}),
 
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),

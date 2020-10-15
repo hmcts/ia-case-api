@@ -10,6 +10,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -60,7 +62,7 @@ public class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
-            IS_HOME_OFFICE_INTEGRATION_ENABLED, "Yes");
+            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
 
     }
 
@@ -81,7 +83,7 @@ public class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
-            IS_HOME_OFFICE_INTEGRATION_ENABLED, "No");
+            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
     }
 
     @Test
@@ -98,7 +100,8 @@ public class HomeOfficeCaseValidatePreparerTest {
                 if (callbackStage == ABOUT_TO_START
                     && (callback.getEvent() == SUBMIT_APPEAL
                     || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
-                    || callback.getEvent() == MARK_APPEAL_PAID)
+                    || callback.getEvent() == MARK_APPEAL_PAID
+                    || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {
                     assertTrue(canHandle);
                 } else {
