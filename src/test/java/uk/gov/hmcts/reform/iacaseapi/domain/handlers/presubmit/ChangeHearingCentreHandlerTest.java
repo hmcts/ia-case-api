@@ -31,10 +31,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 public class ChangeHearingCentreHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
 
@@ -72,6 +76,10 @@ public class ChangeHearingCentreHandlerTest {
 
     @Test
     public void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, BaseLocation.TAYLOR_HOUSE);
+        when(caseManagementLocationService.getCaseManagementLocation("Taylor House"))
+            .thenReturn(expectedCaseManagementLocation);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -86,6 +94,9 @@ public class ChangeHearingCentreHandlerTest {
 
         verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(maybePreviousState));
         verify(asylumCase).write(eq(HEARING_CENTRE), eq(HearingCentre.TAYLOR_HOUSE));
+
+
+        verify(asylumCase).write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).clear(APPLICATION_CHANGE_HEARING_CENTRE_EXISTS);
