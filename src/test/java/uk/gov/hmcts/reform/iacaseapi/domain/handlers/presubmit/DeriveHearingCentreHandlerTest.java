@@ -47,13 +47,15 @@ public class DeriveHearingCentreHandlerTest {
 
     @Mock
     private HearingCentreFinder hearingCentreFinder;
+    @Mock
+    private CaseManagementLocationService caseManagementLocationService;
 
     private DeriveHearingCentreHandler deriveHearingCentreHandler;
 
     @Before
     public void setUp() {
         deriveHearingCentreHandler =
-            new DeriveHearingCentreHandler(hearingCentreFinder);
+            new DeriveHearingCentreHandler(hearingCentreFinder, caseManagementLocationService);
     }
 
     @Test
@@ -86,6 +88,11 @@ public class DeriveHearingCentreHandlerTest {
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
 
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -95,8 +102,6 @@ public class DeriveHearingCentreHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
 
         verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
-        CaseManagementLocation expectedCaseManagementLocation =
-            new CaseManagementLocation(Region.NATIONAL, baseLocation);
         verify(asylumCase, times(1))
             .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
 
@@ -127,6 +132,11 @@ public class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(hearingCentre);
 
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -135,8 +145,6 @@ public class DeriveHearingCentreHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
 
         verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
-        CaseManagementLocation expectedCaseManagementLocation =
-            new CaseManagementLocation(Region.NATIONAL, baseLocation);
         verify(asylumCase, times(1))
             .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
 

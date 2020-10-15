@@ -20,6 +20,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 @Component
 public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final CaseManagementLocationService caseManagementLocationService;
+
+    public ChangeHearingCentreHandler(CaseManagementLocationService caseManagementLocationService) {
+        this.caseManagementLocationService = caseManagementLocationService;
+    }
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -45,16 +51,18 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseData();
 
         HearingCentre maybeHearingCentre =
-            asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.TAYLOR_HOUSE);
+            asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
+                .orElse(HearingCentre.TAYLOR_HOUSE);
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
 
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
         asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
-        asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(maybeHearingCentre).getName());
-        asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(maybeHearingCentre).getId());
 
-
+        String staffLocationName = StaffLocation.getLocation(maybeHearingCentre).getName();
+        asylumCase.write(STAFF_LOCATION, staffLocationName);
+        asylumCase.write(CASE_MANAGEMENT_LOCATION,
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
 
         changeHearingCentreApplicationsToCompleted(asylumCase);
 

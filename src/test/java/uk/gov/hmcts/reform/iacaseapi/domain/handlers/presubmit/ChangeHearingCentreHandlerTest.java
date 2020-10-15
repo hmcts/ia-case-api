@@ -35,6 +35,8 @@ public class ChangeHearingCentreHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private CaseManagementLocationService caseManagementLocationService;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -60,7 +62,7 @@ public class ChangeHearingCentreHandlerTest {
 
     @Before
     public void setUp() {
-        changeHearingCentreHandler = new ChangeHearingCentreHandler();
+        changeHearingCentreHandler = new ChangeHearingCentreHandler(caseManagementLocationService);
 
         when(callback.getEvent()).thenReturn(Event.CHANGE_HEARING_CENTRE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
