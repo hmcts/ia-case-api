@@ -26,8 +26,11 @@
       "replacements": {
         "appellantHasFixedAddress": "Yes",
         "hearingCentre": "manchester",
-        "staffLocationId": "",
-        "staffLocation": "Manchester"
+        "staffLocation": "Manchester",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "512401"
+        }
       }
     }
   }
