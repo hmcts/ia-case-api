@@ -9,7 +9,11 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.casemanagementlocation.BaseLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.casemanagementlocation.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.casemanagementlocation.Region;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -18,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.HearingCenterMapper;
 
 @Component
 public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -39,11 +43,11 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(
+            && Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL)
-                   .contains(callback.getEvent());
+            .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -59,7 +63,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!asylumCase.read(HEARING_CENTRE).isPresent()
+        if (asylumCase.read(HEARING_CENTRE).isEmpty()
             || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
             trySetHearingCentreFromPostcode(asylumCase);
@@ -72,7 +76,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         AsylumCase asylumCase
     ) {
         if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
-                .orElse(NO) == YES) {
+            .orElse(NO) == YES) {
 
             Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
@@ -93,19 +97,22 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         Optional<String> optionalAppellantPostcode = getAppellantPostcode(asylumCase);
 
         if (optionalAppellantPostcode.isPresent()) {
-
             String appellantPostcode = optionalAppellantPostcode.get();
             HearingCentre hearingCentre = hearingCentreFinder.find(appellantPostcode);
             asylumCase.write(HEARING_CENTRE, hearingCentre);
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentre).getName());
-            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentre).getId());
+            asylumCase.write(AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION,
+                getCaseManagementLocation(hearingCentre));
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
-            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
-            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName());
-            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getId());
-
+            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE,
+                hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase.write(AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION,
+                getCaseManagementLocation(hearingCentreFinder.getDefaultHearingCentre()));
         }
+    }
+
+    private CaseManagementLocation getCaseManagementLocation(HearingCentre hearingCentre) {
+        return new CaseManagementLocation(Region.NATIONAL, HearingCenterMapper.getBaseLocation(hearingCentre));
     }
 }

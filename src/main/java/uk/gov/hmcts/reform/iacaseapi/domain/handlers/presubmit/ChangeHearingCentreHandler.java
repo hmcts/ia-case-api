@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.HearingCenterMapper;
 
 @Component
 public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -51,8 +51,9 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
         asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
         asylumCase.write(HEARING_CENTRE, maybeHearingCentre);
-        asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(maybeHearingCentre).getName());
-        asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(maybeHearingCentre).getId());
+        //fixme
+        //        asylumCase.write(STAFF_LOCATION, HearingCenterMapper.getBaseLocation(maybeHearingCentre).getName());
+        //        asylumCase.write(STAFF_LOCATION_ID, HearingCenterMapper.getBaseLocation(maybeHearingCentre).getId());
 
 
 

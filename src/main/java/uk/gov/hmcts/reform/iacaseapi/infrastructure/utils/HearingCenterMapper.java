@@ -1,37 +1,37 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.utils;
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Location;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.casemanagementlocation.BaseLocation;
 
-public class StaffLocation {
+public class HearingCenterMapper {
 
-    private StaffLocation() {
+    private HearingCenterMapper() {
 
     }
 
-    public static Location getLocation(HearingCentre hearingCentre) throws IllegalArgumentException {
+    public static BaseLocation getBaseLocation(HearingCentre hearingCentre) throws IllegalArgumentException {
         String centre = hearingCentre.getValue();
         switch (centre) {
             case "birmingham":
             case "nottingham":
             case "coventry":
-                return new Location("", "Birmingham");
+                return BaseLocation.BIRMINGHAM;
             case "glasgow":
             case "glasgowTribunalsCentre":
             case "belfast":
-                return new Location("", "Glasgow");
+                return BaseLocation.GLASGOW;
             case "bradford":
-                return new Location("", "Bradford");
+                return BaseLocation.BRADFORD;
             case "hattonCross":
-                return new Location("", "Hatton Cross");
+                return BaseLocation.HATTON_CROSS;
             case "manchester":
-                return new Location("", "Manchester");
+                return BaseLocation.MANCHESTER;
             case "newcastle":
-                return new Location("", "Newcastle");
+                return BaseLocation.NEWCASTLE;
             case "newport":
-                return new Location("", "Newport");
+                return BaseLocation.NEWPORT;
             case "taylorHouse":
-                return new Location("", "Taylor House");
+                return BaseLocation.TAYLOR_HOUSE;
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }

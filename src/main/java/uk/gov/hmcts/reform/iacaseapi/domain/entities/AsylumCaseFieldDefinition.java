@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.casemanagementlocation.CaseManagementLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -1003,7 +1004,7 @@ public enum AsylumCaseFieldDefinition {
         "uploadSensitiveDocsIsAppellantRespondent", new TypeReference<String>(){}),
 
     CASE_MANAGEMENT_LOCATION(
-        "caseManagementLocation", new TypeReference<Direction>(){}),
+        "caseManagementLocation", new TypeReference<CaseManagementLocation>(){}),
 
     ;
 

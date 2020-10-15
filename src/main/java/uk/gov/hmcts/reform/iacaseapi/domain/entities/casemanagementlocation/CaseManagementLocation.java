@@ -5,4 +5,5 @@ import lombok.Value;
 @Value
 public class CaseManagementLocation {
     Region region;
+    BaseLocation baseLocation;
 }
