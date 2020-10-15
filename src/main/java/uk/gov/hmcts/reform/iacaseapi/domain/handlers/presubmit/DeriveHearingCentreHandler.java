@@ -7,9 +7,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.util.Arrays;
 import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -39,11 +39,11 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(
+            && Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL)
-                   .contains(callback.getEvent());
+            .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -72,7 +72,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         AsylumCase asylumCase
     ) {
         if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
-                .orElse(NO) == YES) {
+            .orElse(NO) == YES) {
 
             Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
@@ -93,19 +93,32 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         Optional<String> optionalAppellantPostcode = getAppellantPostcode(asylumCase);
 
         if (optionalAppellantPostcode.isPresent()) {
-
             String appellantPostcode = optionalAppellantPostcode.get();
             HearingCentre hearingCentre = hearingCentreFinder.find(appellantPostcode);
             asylumCase.write(HEARING_CENTRE, hearingCentre);
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentre).getName());
-            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentre).getId());
+
+            String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
+            asylumCase.write(STAFF_LOCATION, staffLocationName);
+
+            asylumCase.write(CASE_MANAGEMENT_LOCATION,
+                new CaseManagementLocation(Region.NATIONAL, getBaseLocation(staffLocationName)));
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
-            asylumCase.write(STAFF_LOCATION, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName());
-            asylumCase.write(STAFF_LOCATION_ID, StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getId());
 
+            String staffLocationName =
+                StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName();
+            asylumCase.write(STAFF_LOCATION, staffLocationName);
+            asylumCase.write(CASE_MANAGEMENT_LOCATION,
+                new CaseManagementLocation(Region.NATIONAL, getBaseLocation(staffLocationName)));
         }
+    }
+
+    private BaseLocation getBaseLocation(String staffLocationName) {
+        String fromStaffLocationNameToBaseLocationEnumName =
+            StringUtils.upperCase(staffLocationName).replace(" ", "_");
+        BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);
+        return baseLocation;
     }
 }

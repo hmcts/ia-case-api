@@ -17,8 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -36,12 +35,17 @@ public class DeriveHearingCentreHandlerTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private AddressUk addressUk;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private AddressUk addressUk;
 
-    @Mock private HearingCentreFinder hearingCentreFinder;
+    @Mock
+    private HearingCentreFinder hearingCentreFinder;
 
     private DeriveHearingCentreHandler deriveHearingCentreHandler;
 
@@ -53,11 +57,20 @@ public class DeriveHearingCentreHandlerTest {
 
     @Test
     @Parameters({
-        "SUBMIT_APPEAL",
-        "EDIT_APPEAL_AFTER_SUBMIT",
-        "PAY_AND_SUBMIT_APPEAL"
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
-    public void should_derive_hearing_centre_from_appellant_postcode(Event event) {
+    public void should_derive_hearing_centre_from_appellant_postcode(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -66,7 +79,7 @@ public class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(hearingCentreFinder.find("A123 4BC")).thenReturn(HearingCentre.MANCHESTER);
+        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -74,32 +87,55 @@ public class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(hearingCentreFinder, times(1)).find("A123 4BC");
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
-        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
     }
 
     @Test
     @Parameters({
-        "SUBMIT_APPEAL",
-        "EDIT_APPEAL_AFTER_SUBMIT",
-        "PAY_AND_SUBMIT_APPEAL"
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
-    public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(Event event) {
+    public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(HearingCentre.TAYLOR_HOUSE);
+        when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(hearingCentre);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
-        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
     }
 
     @Test
@@ -151,7 +187,7 @@ public class DeriveHearingCentreHandlerTest {
                     Event.SUBMIT_APPEAL,
                     Event.EDIT_APPEAL_AFTER_SUBMIT,
                     Event.PAY_AND_SUBMIT_APPEAL)
-                        .contains(callback.getEvent())
+                    .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
