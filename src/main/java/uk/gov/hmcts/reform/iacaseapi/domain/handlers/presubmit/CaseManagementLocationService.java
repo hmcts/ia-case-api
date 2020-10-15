@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
 
 @Service
 public class CaseManagementLocationService {
-    public CaseManagementLocationService() {
-    }
+
+    private static final String LOCATION_WITH_NO_CODE = "Newcastle";
 
     public CaseManagementLocation getCaseManagementLocation(String staffLocationName) {
         Optional<BaseLocation> baseLocation = getBaseLocation(staffLocationName);
@@ -20,7 +20,7 @@ public class CaseManagementLocationService {
     }
 
     private Optional<BaseLocation> getBaseLocation(String staffLocationName) {
-        if (!DeriveHearingCentreHandler.LOCATION_WITH_NO_CODE.equals(staffLocationName)) {
+        if (!LOCATION_WITH_NO_CODE.equals(staffLocationName)) {
             String fromStaffLocationNameToBaseLocationEnumName =
                 StringUtils.upperCase(staffLocationName).replace(" ", "_");
             BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);

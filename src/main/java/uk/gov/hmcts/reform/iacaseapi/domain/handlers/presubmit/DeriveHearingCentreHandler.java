@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 @Component
 public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    public static final String LOCATION_WITH_NO_CODE = "Newcastle";
     private final HearingCentreFinder hearingCentreFinder;
     private final CaseManagementLocationService caseManagementLocationService;
 
