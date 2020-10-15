@@ -95,10 +95,12 @@ public class EventTest {
         assertEquals("reinstateAppeal", Event.REINSTATE_APPEAL.toString());
         assertEquals("decideAnApplication", Event.DECIDE_AN_APPLICATION.toString());
         assertEquals("requestNewHearingRequirements", Event.REQUEST_NEW_HEARING_REQUIREMENTS.toString());
+        assertEquals("allocateTheCase", Event.ALLOCATE_THE_CASE.toString());
+
     }
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(93, Event.values().length);
+        assertEquals(94, Event.values().length);
     }
 }

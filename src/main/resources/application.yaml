@@ -127,6 +127,9 @@ paymentApi:
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
+role-assignment-service:
+  url: ${ROLE_ASSIGNMENT_URL:http://role-assignment}
+
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
@@ -228,6 +231,7 @@ security:
       - "requestHomeOfficeData"
       - "decideAnApplication"
       - "requestNewHearingRequirements"
+      - "allocateTheCase"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
