@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 @Component
 public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    public static final String LOCATION_WITH_NO_CODE = "Newcastle";
     private final HearingCentreFinder hearingCentreFinder;
 
     public DeriveHearingCentreHandler(
@@ -100,9 +101,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
             String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
             asylumCase.write(STAFF_LOCATION, staffLocationName);
-
-            asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                new CaseManagementLocation(Region.NATIONAL, getBaseLocation(staffLocationName)));
+            asylumCase.write(CASE_MANAGEMENT_LOCATION, getCaseManagementLocation(staffLocationName));
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
             asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
@@ -110,15 +109,24 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             String staffLocationName =
                 StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName();
             asylumCase.write(STAFF_LOCATION, staffLocationName);
-            asylumCase.write(CASE_MANAGEMENT_LOCATION,
-                new CaseManagementLocation(Region.NATIONAL, getBaseLocation(staffLocationName)));
+            asylumCase.write(CASE_MANAGEMENT_LOCATION, getCaseManagementLocation(staffLocationName));
         }
     }
 
-    private BaseLocation getBaseLocation(String staffLocationName) {
-        String fromStaffLocationNameToBaseLocationEnumName =
-            StringUtils.upperCase(staffLocationName).replace(" ", "_");
-        BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);
-        return baseLocation;
+    private CaseManagementLocation getCaseManagementLocation(String staffLocationName) {
+        Optional<BaseLocation> baseLocation = getBaseLocation(staffLocationName);
+        return baseLocation.map(location ->
+            new CaseManagementLocation(Region.NATIONAL, location))
+            .orElseGet(() -> new CaseManagementLocation(Region.NATIONAL, null));
+    }
+
+    private Optional<BaseLocation> getBaseLocation(String staffLocationName) {
+        if (!LOCATION_WITH_NO_CODE.equals(staffLocationName)) {
+            String fromStaffLocationNameToBaseLocationEnumName =
+                StringUtils.upperCase(staffLocationName).replace(" ", "_");
+            BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);
+            return Optional.of(baseLocation);
+        }
+        return Optional.empty();
     }
 }

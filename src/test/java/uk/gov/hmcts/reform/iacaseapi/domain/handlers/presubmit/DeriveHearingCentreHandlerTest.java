@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import junitparams.converters.Nullable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,10 +68,14 @@ public class DeriveHearingCentreHandlerTest {
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
         "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle, null",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle, null",
+        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle, null"
     })
     public void should_derive_hearing_centre_from_appellant_postcode(
-        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
+        Event event, HearingCentre hearingCentre, String staffLocation, @Nullable BaseLocation baseLocation) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);

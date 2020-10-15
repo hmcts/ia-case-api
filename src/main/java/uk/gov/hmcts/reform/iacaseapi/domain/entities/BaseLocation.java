@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum BaseLocation {
@@ -8,7 +9,6 @@ public enum BaseLocation {
     GLASGOW("198444"),
     HATTON_CROSS("386417"),
     MANCHESTER("512401"),
-    NEWCASTLE(""),
     NEWPORT("227101"),
     TAYLOR_HOUSE("765324");
 
