@@ -167,6 +167,7 @@ security:
       - "uploadAddendumEvidenceLegalRep"
       - "applyForFTPAAppellant"
       - "updateLegalRepresentativesDetails"
+      - "makeAnApplication"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -247,21 +248,25 @@ security:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "makeAnApplication"
     caseworker-ia-homeofficelart:
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
+      - "makeAnApplication"
     caseworker-ia-homeofficepou:
       - "sendDirection"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
+      - "makeAnApplication"
     caseworker-ia-respondentofficer:
       - "uploadHomeOfficeBundle"
       - "uploadHomeOfficeAppealResponse"
       - "uploadAdditionalEvidenceHomeOffice"
       - "uploadAddendumEvidenceHomeOffice"
       - "applyForFTPARespondent"
+      - "makeAnApplication"
     citizen:
       - "startAppeal"
       - "editAppeal"

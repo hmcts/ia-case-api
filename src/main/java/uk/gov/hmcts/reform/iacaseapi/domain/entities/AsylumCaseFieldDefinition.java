@@ -586,6 +586,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_TYPE(
         "applicationType", new TypeReference<String>(){}),
 
+    MAKE_AN_APPLICATION_TYPES(
+        "makeAnApplicationTypes", new TypeReference<DynamicList>(){}),
+
+    MAKE_AN_APPLICATION_DETAILS_LABEL(
+        "makeAnApplicationDetailsLabel", new TypeReference<String>(){}),
+
     APPLICATION_SUPPLIER(
         "applicationSupplier", new TypeReference<String>(){}),
 
@@ -1003,6 +1009,24 @@ public enum AsylumCaseFieldDefinition {
 
     UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT(
         "uploadSensitiveDocsIsAppellantRespondent", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_TYPE(
+        "makeAnApplicationType", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_DETAILS(
+        "makeAnApplicationDetails", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_EVIDENCE(
+        "makeAnApplicationEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
+    MAKE_AN_APPLICATION_DATE(
+        "makeAnApplicationDate", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_DECISION(
+        "makeAnApplicationDecision", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATIONS(
+        "makeAnApplications", new TypeReference<List<IdValue<MakeAnApplication>>>(){}),
 
     ;
 
