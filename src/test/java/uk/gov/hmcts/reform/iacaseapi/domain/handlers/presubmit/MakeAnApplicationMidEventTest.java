@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static com.google.common.base.CaseFormat.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -23,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvider;
 
 @RunWith(JUnitParamsRunner.class)
@@ -34,7 +33,7 @@ public class MakeAnApplicationMidEventTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Mock private FeatureTogglerService featureTogglerService;
+    @Mock private FeatureToggler featureToggler;
 
     @Mock private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
 
@@ -48,7 +47,7 @@ public class MakeAnApplicationMidEventTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MAKE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureTogglerService.getValueForMakeAnApplicationFeature()).thenReturn(true);
+        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @Test

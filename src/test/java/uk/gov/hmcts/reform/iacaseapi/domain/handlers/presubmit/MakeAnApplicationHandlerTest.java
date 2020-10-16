@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +37,7 @@ public class MakeAnApplicationHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Mock private FeatureTogglerService featureTogglerService;
+    @Mock private FeatureToggler featureToggler;
 
     @Mock private MakeAnApplicationAppender makeAnApplicationAppender;
 
@@ -49,8 +49,8 @@ public class MakeAnApplicationHandlerTest {
 
         MockitoAnnotations.openMocks(this);
 
-        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender, featureTogglerService);
-        when(featureTogglerService.getValueForMakeAnApplicationFeature()).thenReturn(true);
+        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender, featureToggler);
+        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @Test

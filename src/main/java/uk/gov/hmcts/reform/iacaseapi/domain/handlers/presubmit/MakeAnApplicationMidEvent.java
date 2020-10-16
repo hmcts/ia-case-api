@@ -11,18 +11,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvider;
 
 @Component
 public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
-    private final FeatureTogglerService featureTogglerService;
+    private final FeatureToggler featureToggler;
 
     public MakeAnApplicationMidEvent(MakeAnApplicationTypesProvider makeAnApplicationTypesProvider,
-                                     FeatureTogglerService featureTogglerService) {
-        this.featureTogglerService = featureTogglerService;
+                                     FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
         this.makeAnApplicationTypesProvider = makeAnApplicationTypesProvider;
     }
 
@@ -34,7 +34,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getEvent() == Event.MAKE_AN_APPLICATION
-               && featureTogglerService.getValueForMakeAnApplicationFeature();
+               && featureToggler.getValue("make-an-application-feature", false);
     }
 
     @Override
