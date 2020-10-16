@@ -13,7 +13,7 @@
         "replacements": {
           "appealReferenceNumber": "PA/12345/2018",
           "appealType": "refusalOfHumanRights",
-          "payForTheAppealOption": "payNow"
+          "eaHuAppealTypePaymentOption": "payNow"
           }
         }
       }
