@@ -41,6 +41,10 @@
             }
           ]
         }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "state": "appealSubmitted"
       }
     }
   },
@@ -55,6 +59,7 @@
         "endAppealApproverType": "Judge",
         "endAppealApproverName": "John Doe",
         "endAppealDate": "{$TODAY}",
+        "stateBeforeEndAppeal": "appealSubmitted",
         "tribunalDocuments": [
           {
             "id": "1",

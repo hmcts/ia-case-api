@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3039 Reinstate appeal to the state before End appeal",
+  "launchDarklyKey": "reinstate-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reinstateAppeal",
+      "state": "ended",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "stateBeforeEndAppeal": "appealSubmitted"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "state": "appealSubmitted",
+      "replacements": {
+        "appealStatus": "Reinstated",
+        "recordApplicationActionDisabled": "No",
+        "stateBeforeEndAppeal": null
+      }
+    }
+  }
+}

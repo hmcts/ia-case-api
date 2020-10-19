@@ -7,17 +7,20 @@ import static org.mockito.Mockito.*;
 import feign.FeignException;
 import java.util.Arrays;
 import java.util.List;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
+@SuppressWarnings("unchecked")
 public class IdamUserDetailsProviderTest {
 
     @Mock private AccessTokenProvider accessTokenProvider;
@@ -28,6 +31,7 @@ public class IdamUserDetailsProviderTest {
     @Before
     public void setUp() {
 
+        MockitoAnnotations.openMocks(this);
         idamUserDetailsProvider =
             new IdamUserDetailsProvider(
                 accessTokenProvider,
@@ -69,6 +73,88 @@ public class IdamUserDetailsProviderTest {
         assertEquals(expectedEmailAddress, actualUserDetails.getEmailAddress());
         assertEquals(expectedForename, actualUserDetails.getForename());
         assertEquals(expectedSurname, actualUserDetails.getSurname());
+    }
+
+    @Test
+    @Parameters({
+        "caseworker-ia-caseofficer",
+        "caseworker-ia-admofficer",
+        "caseworker-ia-iacjudge",
+        "caseworker-ia-judiciary",
+        "caseworker-ia-legalrep-solicitor",
+        "caseworker-ia-system"
+    })
+    public void should_get_logged_in_with_a_valid_user_role(String roleName) {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList(roleName, "role-2");
+
+        UserInfo userInfo = new UserInfo("", expectedId,
+            expectedRoles, "", "", "");
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(idamApi.userInfo(expectedAccessToken)).thenReturn(userInfo);
+
+        assertEquals(roleName, idamUserDetailsProvider.getLoggedInUserRole().toString());
+
+        switch (roleName) {
+            case "caseworker-ia-caseofficer":
+                assertEquals("Tribunal Caseworker", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
+                break;
+
+            case "caseworker-ia-admofficer":
+                assertEquals("Admin Officer", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
+                break;
+
+            case "caseworker-ia-iacjudge":
+            case "caseworker-ia-judiciary":
+                assertEquals("Judge", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
+                break;
+
+            case "caseworker-ia-legalrep-solicitor":
+                assertEquals("Legal representative", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
+                break;
+
+            default:
+                assertEquals("System", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
+        }
+    }
+
+    @Test
+    public void should_get_logged_in_user_role_unknown() {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList("caseworker-ia-unknown", "role-2");
+
+        UserInfo userInfo = new UserInfo("", expectedId,
+            expectedRoles, "", "", "");
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(idamApi.userInfo(expectedAccessToken)).thenReturn(userInfo);
+
+        assertThatThrownBy(() -> idamUserDetailsProvider.getLoggedInUserRole())
+            .hasMessage("No valid user role is present.")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @Parameters({"caseworker-ia-respondentofficer", "caseworker-ia-homeofficeapc", "caseworker-ia-homeofficelart", "caseworker-ia-homeofficepou"})
+    public void should_get_logged_in_user_role_home_office_generic(String emailId) {
+
+        String expectedAccessToken = "ABCDEFG";
+        String expectedId = "1234";
+        List<String> expectedRoles = Arrays.asList(emailId, "role-2");
+
+        UserInfo userInfo = new UserInfo("", expectedId,
+            expectedRoles, "", "", "");
+
+        when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
+        when(idamApi.userInfo(expectedAccessToken)).thenReturn(userInfo);
+
+        assertEquals(emailId, idamUserDetailsProvider.getLoggedInUserRole().toString());
+        assertEquals("Respondent", idamUserDetailsProvider.getLoggedInUserRoleLabel().toString());
     }
 
     @Test

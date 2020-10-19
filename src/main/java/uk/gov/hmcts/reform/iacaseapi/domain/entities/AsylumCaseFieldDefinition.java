@@ -1028,6 +1028,20 @@ public enum AsylumCaseFieldDefinition {
     MAKE_AN_APPLICATIONS(
         "makeAnApplications", new TypeReference<List<IdValue<MakeAnApplication>>>(){}),
 
+    STATE_BEFORE_END_APPEAL(
+        "stateBeforeEndAppeal", new TypeReference<State>(){}),
+
+    REINSTATE_APPEAL_DATE(
+        "reinstateAppealDate", new TypeReference<String>(){}),
+
+    REINSTATE_APPEAL_REASON(
+        "reinstateAppealReason", new TypeReference<String>(){}),
+
+    APPEAL_STATUS(
+        "appealStatus", new TypeReference<AppealStatus>(){}),
+    REINSTATED_DECISION_MAKER(
+        "reinstatedDecisionMaker", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
