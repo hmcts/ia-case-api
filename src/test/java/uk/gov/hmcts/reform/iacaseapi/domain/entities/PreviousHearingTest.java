@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 public class PreviousHearingTest {
 
-    private final String attendingJudge = "Judge Joe";
+    private final Optional<String> attendingJudge = Optional.of("Judge Joe");
     private final Optional<String> attendingAppellant = Optional.of("Joe Bloggs");
     private final Optional<String> attendingHomeOfficeLegalRepresentative = Optional.of("Mr Cliff Evans");
-    private final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("4", "30");
+    private final Optional<HoursAndMinutes> actualCaseHearingLength = Optional.of(new HoursAndMinutes("4", "30"));
     private final String ariaListingReference = "123456";
     private final HearingCentre listCaseHearingCentre = HearingCentre.TAYLOR_HOUSE;
     private final String listCaseHearingDate = "13/10/2020";
@@ -51,12 +51,12 @@ public class PreviousHearingTest {
         DocumentTag.HEARING_REQUIREMENTS
     );
 
-    private final List<IdValue<HearingRecordingDocument>> allHearingRecordingDocuments = asList(
+    private final Optional<List<IdValue<HearingRecordingDocument>>> allHearingRecordingDocuments = Optional.of(asList(
         new IdValue<>(
             "1",
             hearingRecordingDocument1
         )
-    );
+    ));
 
     private final List<IdValue<DocumentWithMetadata>> allFinalDecisionAndReasonsDocuments = asList(
         new IdValue<DocumentWithMetadata>(
@@ -107,36 +107,6 @@ public class PreviousHearingTest {
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new PreviousHearing(
-            null,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            allHearingRecordingDocuments,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            null,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            allHearingRecordingDocuments,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
             attendingJudge,
             attendingAppellant,
             attendingHomeOfficeLegalRepresentative,
@@ -191,21 +161,6 @@ public class PreviousHearingTest {
             listCaseHearingDate,
             null,
             allHearingRecordingDocuments,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            null,
             appealDecision,
             allFinalDecisionAndReasonsDocuments,
             allHearingRequirementsDocuments))

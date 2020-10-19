@@ -13,15 +13,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @ToString
 public class PreviousHearing {
 
-    private String attendingJudge;
+    private Optional<String> attendingJudge;
     private Optional<String> attendingAppellant;
     private Optional<String> attendingHomeOfficeLegalRepresentative;
-    private HoursAndMinutes actualCaseHearingLength;
+    private Optional<HoursAndMinutes> actualCaseHearingLength;
     private String ariaListingReference;
     private HearingCentre listCaseHearingCentre;
     private String listCaseHearingDate;
     private String listCaseHearingLength;
-    private List<IdValue<HearingRecordingDocument>> hearingRecordingDocuments;
+    private Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments;
     private String appealDecision;
     private List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
     private List<IdValue<DocumentWithMetadata>> hearingRequirements;
@@ -31,27 +31,24 @@ public class PreviousHearing {
     }
 
     public PreviousHearing(
-        String attendingJudge,
+        Optional<String> attendingJudge,
         Optional<String> attendingAppellant,
         Optional<String> attendingHomeOfficeLegalRepresentative,
-        HoursAndMinutes actualCaseHearingLength,
+        Optional<HoursAndMinutes> actualCaseHearingLength,
         String ariaListingReference,
         HearingCentre listCaseHearingCentre,
         String listCaseHearingDate,
         String listCaseHearingLength,
-        List<IdValue<HearingRecordingDocument>> hearingRecordingDocuments,
+        Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments,
         String appealDecision,
         List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments,
         List<IdValue<DocumentWithMetadata>> hearingRequirements
 
     ) {
-        requireNonNull(attendingJudge);
-        requireNonNull(actualCaseHearingLength);
         requireNonNull(ariaListingReference);
         requireNonNull(listCaseHearingCentre);
         requireNonNull(listCaseHearingDate);
         requireNonNull(listCaseHearingLength);
-        requireNonNull(hearingRecordingDocuments);
         requireNonNull(appealDecision);
         requireNonNull(finalDecisionAndReasonsDocuments);
         requireNonNull(hearingRequirements);
@@ -70,8 +67,7 @@ public class PreviousHearing {
         this.hearingRequirements = hearingRequirements;
     }
 
-    public String getAttendingJudge() {
-        requireNonNull(attendingAppellant);
+    public Optional<String> getAttendingJudge() {
         return attendingJudge;
     }
 
@@ -83,8 +79,7 @@ public class PreviousHearing {
         return attendingHomeOfficeLegalRepresentative;
     }
 
-    public HoursAndMinutes getActualCaseHearingLength() {
-        requireNonNull(actualCaseHearingLength);
+    public Optional<HoursAndMinutes> getActualCaseHearingLength() {
         return actualCaseHearingLength;
     }
 
@@ -108,8 +103,7 @@ public class PreviousHearing {
         return listCaseHearingLength;
     }
 
-    public List<IdValue<HearingRecordingDocument>> getHearingRecordingDocuments() {
-        requireNonNull(hearingRecordingDocuments);
+    public Optional<List<IdValue<HearingRecordingDocument>>> getHearingRecordingDocuments() {
         return hearingRecordingDocuments;
     }
 

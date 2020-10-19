@@ -65,6 +65,12 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         if (featureToggler.getValue("reheard-feature", false)
             && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
+            asylumCase.write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+            asylumCase.clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+            asylumCase.clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+            asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+            asylumCase.clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+            asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
         } else {
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         }
