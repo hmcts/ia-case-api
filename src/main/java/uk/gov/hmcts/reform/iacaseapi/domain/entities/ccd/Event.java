@@ -93,6 +93,8 @@ public enum Event {
     UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
+    MAKE_AN_APPLICATION("makeAnApplication"),
+    REINSTATE_APPEAL("reinstateAppeal"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAY_FOR_THE_APPEAL_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +73,7 @@ public class SubmitAppealPreparer implements PreSubmitCallbackHandler<AsylumCase
         if (appealType.isPresent()) {
             if (appealType.get().equals(AppealType.EA)
                 || appealType.get().equals(AppealType.HU)) {
-                foundPaymentAppealTypePayNow = asylumCase.read(PAY_FOR_THE_APPEAL_OPTION, String.class).orElse("").equals(payNowOption);
+                foundPaymentAppealTypePayNow = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("").equals(payNowOption);
             }
             if (appealType.get().equals(AppealType.PA)) {
                 foundPaymentAppealTypePayNow = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("").equals(payNowOption);

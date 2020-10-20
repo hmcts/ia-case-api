@@ -586,6 +586,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATION_TYPE(
         "applicationType", new TypeReference<String>(){}),
 
+    MAKE_AN_APPLICATION_TYPES(
+        "makeAnApplicationTypes", new TypeReference<DynamicList>(){}),
+
+    MAKE_AN_APPLICATION_DETAILS_LABEL(
+        "makeAnApplicationDetailsLabel", new TypeReference<String>(){}),
+
     APPLICATION_SUPPLIER(
         "applicationSupplier", new TypeReference<String>(){}),
 
@@ -904,8 +910,7 @@ public enum AsylumCaseFieldDefinition {
         "hearingDecisionSelected", new TypeReference<String>(){}),
     IS_FEE_PAYMENT_ENABLED(
             "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
-    PAY_FOR_THE_APPEAL_OPTION(
-            "payForTheAppealOption", new TypeReference<String>() {}),
+
     PA_APPEAL_TYPE_PAYMENT_OPTION(
         "paAppealTypePaymentOption", new TypeReference<String>() {}),
     EA_HU_APPEAL_TYPE_PAYMENT_OPTION(
@@ -1007,6 +1012,38 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_MANAGEMENT_LOCATION(
         "caseManagementLocation", new TypeReference<CaseManagementLocation>(){}),
+
+    MAKE_AN_APPLICATION_TYPE(
+        "makeAnApplicationType", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_DETAILS(
+        "makeAnApplicationDetails", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_EVIDENCE(
+        "makeAnApplicationEvidence", new TypeReference<List<IdValue<Document>>>(){}),
+
+    MAKE_AN_APPLICATION_DATE(
+        "makeAnApplicationDate", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATION_DECISION(
+        "makeAnApplicationDecision", new TypeReference<String>(){}),
+
+    MAKE_AN_APPLICATIONS(
+        "makeAnApplications", new TypeReference<List<IdValue<MakeAnApplication>>>(){}),
+
+    STATE_BEFORE_END_APPEAL(
+        "stateBeforeEndAppeal", new TypeReference<State>(){}),
+
+    REINSTATE_APPEAL_DATE(
+        "reinstateAppealDate", new TypeReference<String>(){}),
+
+    REINSTATE_APPEAL_REASON(
+        "reinstateAppealReason", new TypeReference<String>(){}),
+
+    APPEAL_STATUS(
+        "appealStatus", new TypeReference<AppealStatus>(){}),
+    REINSTATED_DECISION_MAKER(
+        "reinstatedDecisionMaker", new TypeReference<String>(){}),
 
     ;
 

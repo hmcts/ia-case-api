@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -39,6 +40,7 @@ public class EndAppealHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
+    @Mock private CaseDetails<AsylumCase> previousCaseDetails;
 
     @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
@@ -49,6 +51,7 @@ public class EndAppealHandlerTest {
     private String applicationDecisionReason = "Granted";
     private String applicationDateOfDecision = "31/01/2019";
     private String applicationStatus = "In progress";
+    private State previousState = State.AWAITING_RESPONDENT_EVIDENCE;
 
     private EndAppealHandler endAppealHandler;
 
@@ -59,6 +62,10 @@ public class EndAppealHandlerTest {
 
         when(dateProvider.now()).thenReturn(date);
         endAppealHandler = new EndAppealHandler(dateProvider);
+        when(previousCaseDetails.getState()).thenReturn(previousState);
+        when(callback
+            .getCaseDetailsBefore()).thenReturn(Optional.of(previousCaseDetails));
+
     }
 
     @Test
@@ -81,6 +88,40 @@ public class EndAppealHandlerTest {
 
         verify(asylumCase).write(END_APPEAL_DATE, date.toString());
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+    }
+
+
+    @Test
+    public void should_set_state_before_end_appeal() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(STATE_BEFORE_END_APPEAL, previousState);
+        verify(asylumCase).clear(REINSTATE_APPEAL_REASON);
+        verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
+        verify(asylumCase).clear(APPEAL_STATUS);
+        verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
+    }
+
+    @Test
+    public void should_throw_exception_if_previous_state_not_found() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback
+            .getCaseDetailsBefore()).thenReturn(Optional.empty());
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.END_APPEAL);
+
+        assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("cannot find previous case state")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -162,6 +203,10 @@ public class EndAppealHandlerTest {
 
         verify(asylumCase).clear(APPLICATION_WITHDRAW_EXISTS);
         verify(asylumCase).clear(DISABLE_OVERVIEW_PAGE);
+        verify(asylumCase).clear(REINSTATE_APPEAL_REASON);
+        verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
+        verify(asylumCase).clear(APPEAL_STATUS);
+        verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }

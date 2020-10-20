@@ -16,7 +16,7 @@
           "paymentAccountList": "PBA0087535",
           "homeOfficeReferenceNumber": "A123456",
           "paymentDescription": "An IA pba test payment",
-          "payForTheAppealOption": "payLater",
+          "eaHuAppealTypePaymentOption": "payLater",
           "customerReference": "543232"
         }
       }
