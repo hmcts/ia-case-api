@@ -108,7 +108,6 @@ public class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
-        verify(asylumCase).clear(RECORD_APPLICATION_ACTION_DISABLED);
     }
 
     @Test
@@ -208,7 +207,6 @@ public class EndAppealHandlerTest {
         verify(asylumCase).clear(REINSTATED_DECISION_MAKER);
         verify(asylumCase).clear(APPEAL_STATUS);
         verify(asylumCase).clear(REINSTATE_APPEAL_DATE);
-        verify(asylumCase).clear(RECORD_APPLICATION_ACTION_DISABLED);
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
     }

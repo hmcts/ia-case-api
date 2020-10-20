@@ -69,7 +69,6 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(REINSTATED_DECISION_MAKER);
         asylumCase.clear(APPEAL_STATUS);
         asylumCase.clear(REINSTATE_APPEAL_DATE);
-        asylumCase.clear(RECORD_APPLICATION_ACTION_DISABLED);
 
         changeWithdrawApplicationsToCompleted(asylumCase);
 

@@ -60,6 +60,7 @@
         "endAppealApproverName": "John Doe",
         "endAppealDate": "{$TODAY}",
         "stateBeforeEndAppeal": "caseBuilding",
+        "recordApplicationActionDisabled": "Yes",
         "tribunalDocuments": [
           {
             "id": "1",
