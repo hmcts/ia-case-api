@@ -598,6 +598,12 @@ public enum AsylumCaseFieldDefinition {
     APPLICATIONS(
         "applications", new TypeReference<List<IdValue<Application>>>(){}),
 
+    MAKE_AN_APPLICATIONS_LIST(
+        "makeAnApplicationsList", new TypeReference<DynamicList>(){}),
+
+    APPLICATION_DETAILS(
+        "applicationDetails", new TypeReference<String>(){}),
+
     APPLICATION_WITHDRAW_EXISTS(
         "applicationWithdrawExists", new TypeReference<String>(){}),
 
@@ -1023,10 +1029,19 @@ public enum AsylumCaseFieldDefinition {
         "makeAnApplicationDate", new TypeReference<String>(){}),
 
     MAKE_AN_APPLICATION_DECISION(
-        "makeAnApplicationDecision", new TypeReference<String>(){}),
+        "makeAnApplicationDecision", new TypeReference<MakeAnApplicationDecision>(){}),
+
+    MAKE_AN_APPLICATION_DECISION_REASON(
+        "makeAnApplicationDecisionReason", new TypeReference<String>(){}),
 
     MAKE_AN_APPLICATIONS(
         "makeAnApplications", new TypeReference<List<IdValue<MakeAnApplication>>>(){}),
+
+    MAKE_AN_APPLICATION_FIELDS(
+        "makeAnApplicationFields", new TypeReference<String>(){}),
+
+    DECIDE_AN_APPLICATION_ID(
+        "decideAnApplicationId", new TypeReference<String>(){}),
 
     STATE_BEFORE_END_APPEAL(
         "stateBeforeEndAppeal", new TypeReference<State>(){}),
@@ -1039,8 +1054,12 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_STATUS(
         "appealStatus", new TypeReference<AppealStatus>(){}),
+
     REINSTATED_DECISION_MAKER(
         "reinstatedDecisionMaker", new TypeReference<String>(){}),
+
+    HAS_APPLICATIONS_TO_DECIDE(
+        "hasApplicationsToDecide", new TypeReference<String>(){}),
 
     ;
 

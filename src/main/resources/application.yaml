@@ -224,6 +224,7 @@ security:
       - "editAppealAfterSubmit"
       - "uploadSensitiveDocuments"
       - "requestHomeOfficeData"
+      - "decideAnApplication"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -291,9 +292,15 @@ security:
       - "changeDirectionDueDate"
       - "sendDirection"
       - "addCaseNote"
+      - "linkAppeal"
+      - "unlinkAppeal"
+      - "editAppealAfterSubmit"
+      - "updateHearingRequirements"
+      - "updateHearingAdjustments"
       - "leadershipJudgeFtpaDecision"
       - "residentJudgeFtpaDecision"
       - "uploadSensitiveDocuments"
+      - "decideAnApplication"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
 
