@@ -64,7 +64,6 @@ public class EventTest {
         assertEquals("leadershipJudgeFtpaDecision", Event.LEADERSHIP_JUDGE_FTPA_DECISION.toString());
         assertEquals("residentJudgeFtpaDecision", Event.RESIDENT_JUDGE_FTPA_DECISION.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
-        assertEquals("changeHearingCentre", Event.CHANGE_HEARING_CENTRE.toString());
         assertEquals("editDocuments", Event.EDIT_DOCUMENTS.toString());
         assertEquals("recordAllocatedJudge", Event.RECORD_ALLOCATED_JUDGE.toString());
         assertEquals("editTimeExtension", Event.EDIT_TIME_EXTENSION.toString());
