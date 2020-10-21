@@ -20,22 +20,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureTogglerService featureTogglerService;
+    private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final UserDetailsProvider userDetailsProvider;
 
     public DecideAnApplicationHandler(
         DateProvider dateProvider,
         UserDetailsProvider userDetailsProvider,
-        FeatureTogglerService featureTogglerService) {
+        FeatureToggler featureToggler) {
         this.dateProvider = dateProvider;
         this.userDetailsProvider = userDetailsProvider;
-        this.featureTogglerService = featureTogglerService;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && callback.getEvent() == Event.DECIDE_AN_APPLICATION
-               && featureTogglerService.getValueForMakeAnApplicationFeature();
+               && featureToggler.getValue("make-an-application-feature", false);
     }
 
     @Override

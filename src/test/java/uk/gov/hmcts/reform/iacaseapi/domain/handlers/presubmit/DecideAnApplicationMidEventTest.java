@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -35,19 +35,19 @@ public class DecideAnApplicationMidEventTest {
     @Mock private AsylumCase asylumCase;
 
     @Mock private DateProvider dateProvider;
-    @Mock private FeatureTogglerService featureTogglerService;
+    @Mock private FeatureToggler featureToggler;
 
     private DecideAnApplicationMidEvent decideAnApplicationMidEvent;
 
     @Before
     public void setUp() {
 
-        decideAnApplicationMidEvent = new DecideAnApplicationMidEvent(featureTogglerService);
+        decideAnApplicationMidEvent = new DecideAnApplicationMidEvent(featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureTogglerService.getValueForMakeAnApplicationFeature()).thenReturn(true);
+        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @Test

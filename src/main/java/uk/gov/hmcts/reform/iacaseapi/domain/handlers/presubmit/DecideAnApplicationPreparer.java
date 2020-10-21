@@ -16,15 +16,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeatureTogglerService featureTogglerService;
+    private final FeatureToggler featureToggler;
 
-    public DecideAnApplicationPreparer(FeatureTogglerService featureTogglerService) {
-        this.featureTogglerService = featureTogglerService;
+    public DecideAnApplicationPreparer(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DecideAnApplicationPreparer implements PreSubmitCallbackHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                && callback.getEvent() == Event.DECIDE_AN_APPLICATION
-               && featureTogglerService.getValueForMakeAnApplicationFeature();
+               && featureToggler.getValue("make-an-application-feature", false);
     }
 
     @Override

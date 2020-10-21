@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureTogglerService;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -36,9 +36,8 @@ public class DecideAnApplicationHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    @Mock private UserDetails userDetails;
     @Mock private DateProvider dateProvider;
-    @Mock private FeatureTogglerService featureTogglerService;
+    @Mock private FeatureToggler featureToggler;
     @Mock private UserDetailsProvider userDetailsProvider;
 
     private DecideAnApplicationHandler decideAnApplicationHandler;
@@ -46,12 +45,12 @@ public class DecideAnApplicationHandlerTest {
     @Before
     public void setUp() {
 
-        decideAnApplicationHandler = new DecideAnApplicationHandler(dateProvider, userDetailsProvider, featureTogglerService);
+        decideAnApplicationHandler = new DecideAnApplicationHandler(dateProvider, userDetailsProvider, featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureTogglerService.getValueForMakeAnApplicationFeature()).thenReturn(true);
+        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @Test
