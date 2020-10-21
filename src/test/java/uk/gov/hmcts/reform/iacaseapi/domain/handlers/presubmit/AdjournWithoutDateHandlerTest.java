@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
@@ -123,7 +122,8 @@ public class AdjournWithoutDateHandlerTest {
         given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
         given(callback.getCaseDetails()).willReturn(caseDetails);
         given(caseDetails.getCaseData()).willReturn(asylumCase);
-        given(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)).willReturn(Optional.of(State.PREPARE_FOR_HEARING));
+        given(callback.getCaseDetailsBefore()).willReturn(Optional.of(caseDetails));
+        given(caseDetails.getState()).willReturn(State.PREPARE_FOR_HEARING);
         given(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).willReturn(Optional.of("05/05/2020"));
 
         handler.handle(ABOUT_TO_SUBMIT, callback);

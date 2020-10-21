@@ -54,6 +54,17 @@ public class MakeAnApplicationTypesProvider {
             case CASE_UNDER_REVIEW:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
+                values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
+                if (hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
+                        UPDATE_APPEAL_DETAILS.toString()));
+                }
+                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
+                values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                values.add(new Value(OTHER.name(), OTHER.toString()));
+                break;
+
             case FTPA_SUBMITTED:
             case FTPA_DECIDED:
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
@@ -61,7 +72,6 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
-                values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));

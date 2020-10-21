@@ -95,6 +95,7 @@ public enum Event {
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),
     MAKE_AN_APPLICATION("makeAnApplication"),
     REINSTATE_APPEAL("reinstateAppeal"),
+    DECIDE_AN_APPLICATION("decideAnApplication"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

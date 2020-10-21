@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2957 RIA-2959 Adjourn without a date",
+  "description": "RIA-2957 RIA-2959 RIA-3712 Adjourn without a date",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -19,6 +19,12 @@
           "ariaListingReference": "LP/12345/2019",
           "currentCaseStateVisibleToCaseOfficer": "listing",
           "notificationsSent": []
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "state": "pre-hearing"
         }
       }
     }
