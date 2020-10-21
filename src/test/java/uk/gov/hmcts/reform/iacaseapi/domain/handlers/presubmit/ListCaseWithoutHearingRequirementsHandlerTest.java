@@ -75,7 +75,6 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
 
         verify(asylumCase, times(1)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(PREVIOUS_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
         verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
         verify(asylumCase, times(1)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
@@ -98,7 +97,6 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
 
         verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(PREVIOUS_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
         verify(asylumCase, times(0)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
@@ -120,7 +118,6 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
 
         verify(asylumCase, times(0)).write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-        verify(asylumCase, times(0)).write(PREVIOUS_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.NO);
         verify(asylumCase, times(0)).clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);

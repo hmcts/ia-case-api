@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
@@ -60,8 +61,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             }
         }
 
+        asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         asylumCase.clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         asylumCase.clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+        asylumCase.clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
+        asylumCase.clear(ATTENDING_TCW);
+        asylumCase.clear(ATTENDING_JUDGE);
+        asylumCase.clear(ATTENDING_APPELLANT);
+        asylumCase.clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        asylumCase.clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        asylumCase.clear(ACTUAL_CASE_HEARING_LENGTH);
+        asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
+        asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
+        asylumCase.clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -143,6 +143,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_DOCUMENTS(
         "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    REHEARD_HEARING_DOCUMENTS(
+        "reheardHearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
     LEGAL_REPRESENTATIVE_DOCUMENTS(
         "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
@@ -1103,9 +1106,6 @@ public enum AsylumCaseFieldDefinition {
 
     REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS(
         "reheardCaseListedWithoutHearingRequirements", new TypeReference<YesOrNo>() {}),
-
-    PREVIOUS_HEARING_DETAILS_VISIBLE(
-        "previousHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
 
     LIST_CASE_HEARING_LENGTH_VISIBLE(
         "listCaseHearingLengthVisible", new TypeReference<YesOrNo>() {}),

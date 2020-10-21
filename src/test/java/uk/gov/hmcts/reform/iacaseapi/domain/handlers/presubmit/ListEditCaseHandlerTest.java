@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
 
@@ -55,6 +56,17 @@ public class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
     @Test
@@ -73,6 +85,17 @@ public class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
     @Test
@@ -91,6 +114,17 @@ public class ListEditCaseHandlerTest {
         verify(asylumCase, times(0)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
 
@@ -110,6 +144,17 @@ public class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
         verify(asylumCase, times(1)).clear(REVIEWED_UPDATED_HEARING_REQUIREMENTS);
         verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
     @Test

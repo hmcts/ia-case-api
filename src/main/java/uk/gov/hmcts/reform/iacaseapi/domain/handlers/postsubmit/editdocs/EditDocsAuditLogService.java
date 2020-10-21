@@ -64,6 +64,7 @@ public class EditDocsAuditLogService {
         return Arrays.asList(
             ADDITIONAL_EVIDENCE_DOCUMENTS,
             TRIBUNAL_DOCUMENTS,
+            REHEARD_HEARING_DOCUMENTS,
             HEARING_DOCUMENTS,
             LEGAL_REPRESENTATIVE_DOCUMENTS,
             ADDENDUM_EVIDENCE_DOCUMENTS,
