@@ -33,8 +33,8 @@ public class AdjournWithoutDateHandler implements PreSubmitCallbackHandler<Asylu
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        State currentState = asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.class)
-            .orElse(State.UNKNOWN);
+        State currentState = callback.getCaseDetailsBefore().orElseThrow(() -> new IllegalStateException("cannot find previous state")).getState();
+
         String currentHearingDate = asylumCase.read(LIST_CASE_HEARING_DATE, String.class)
             .orElseThrow(() -> new IllegalStateException("listCaseHearingDate is missing."));
 
