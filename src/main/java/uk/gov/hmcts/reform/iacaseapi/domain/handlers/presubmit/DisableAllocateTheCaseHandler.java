@@ -11,16 +11,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RoleAssignmentService;
 
 @Component
-public class AllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class DisableAllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final RoleAssignmentService roleAssignmentService;
     private final FeatureToggler featureToggler;
 
-    public AllocateTheCaseHandler(RoleAssignmentService roleAssignmentService, FeatureToggler featureToggler) {
-        this.roleAssignmentService = roleAssignmentService;
+    public DisableAllocateTheCaseHandler(FeatureToggler featureToggler) {
         this.featureToggler = featureToggler;
     }
 
@@ -28,9 +25,9 @@ public class AllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                 && callback.getEvent() == Event.ALLOCATE_THE_CASE
-                && featureToggler.getValue("allocate-a-case-feature", false);
+                && !featureToggler.getValue("allocate-a-case-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
@@ -40,9 +37,9 @@ public class AllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCa
         }
 
         CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(caseDetails.getCaseData());
+        response.addError("Allocate case feature had been disabled");
 
-        roleAssignmentService.assignRole(caseDetails);
-
-        return new PreSubmitCallbackResponse<>(caseDetails.getCaseData());
+        return response;
     }
 }
