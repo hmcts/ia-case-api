@@ -13,11 +13,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -26,8 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class HomeOfficeCaseNotificationsHandlerTest {
 
@@ -36,11 +38,12 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
 
+    @InjectMocks
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
     @Before
     public void setUp() {
-
+        MockitoAnnotations.openMocks(this);
         homeOfficeCaseNotificationsHandler =
             new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -77,24 +80,14 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
-    public void should_call_home_office_api_and_update_the_case_for_list_case() {
+    @Parameters({
+        "LIST_CASE",
+        "EDIT_CASE_LISTING",
+        "ADJOURN_HEARING_WITHOUT_DATE"
+    })
+    public void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
-        when(callback.getEvent()).thenReturn(LIST_CASE);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(homeOfficeApi, times(1)).call(callback);
-    }
-
-    @Test
-    public void should_call_home_office_api_and_update_the_case_for_edit_case_listing() {
-
-        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -122,7 +115,8 @@ public class HomeOfficeCaseNotificationsHandlerTest {
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.LIST_CASE,
-                        Event.EDIT_CASE_LISTING
+                        Event.EDIT_CASE_LISTING,
+                        Event.ADJOURN_HEARING_WITHOUT_DATE
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
