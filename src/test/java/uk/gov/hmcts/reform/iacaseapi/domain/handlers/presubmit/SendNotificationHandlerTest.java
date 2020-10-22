@@ -105,7 +105,8 @@ public class SendNotificationHandlerTest {
             Event.PAYMENT_APPEAL,
             Event.MARK_APPEAL_PAID,
             Event.MAKE_AN_APPLICATION,
-            Event.REINSTATE_APPEAL
+            Event.REINSTATE_APPEAL,
+            Event.DECIDE_AN_APPLICATION
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -237,9 +238,9 @@ public class SendNotificationHandlerTest {
                         Event.REQUEST_RESPONSE_AMEND,
                         Event.PAYMENT_APPEAL,
                         Event.MARK_APPEAL_PAID,
-                        Event.PAYMENT_APPEAL,
                         Event.MAKE_AN_APPLICATION,
-                        Event.REINSTATE_APPEAL
+                        Event.REINSTATE_APPEAL,
+                        Event.DECIDE_AN_APPLICATION
                     ).contains(event)) {
 
                     assertTrue(canHandle);
