@@ -104,6 +104,7 @@ public class SendNotificationHandlerTest {
             Event.REQUEST_RESPONSE_AMEND,
             Event.PAYMENT_APPEAL,
             Event.MARK_APPEAL_PAID,
+            Event.MAKE_AN_APPLICATION,
             Event.REINSTATE_APPEAL
         ).forEach(event -> {
 
@@ -236,6 +237,8 @@ public class SendNotificationHandlerTest {
                         Event.REQUEST_RESPONSE_AMEND,
                         Event.PAYMENT_APPEAL,
                         Event.MARK_APPEAL_PAID,
+                        Event.PAYMENT_APPEAL,
+                        Event.MAKE_AN_APPLICATION,
                         Event.REINSTATE_APPEAL
                     ).contains(event)) {
 
