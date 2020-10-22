@@ -1,14 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -17,6 +19,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private static final String PAYMENT_OPTION_PAY_OFFLINE = "payOffline";
+    private static final String PAYMENT_OPTION_PAY_LATER = "payLater";
+    private static final String WHAT_HAPPENS_NEXT_LABEL = "#### What happens next\n\n";
+    private static final String PA_PAY_APPEAL_LABEL = "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
+    private static final String EU_HU_PAY_APPEAL_LABEL = PA_PAY_APPEAL_LABEL + " You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.";
+    private static final String HO_WAIVER_REMISSION_LABEL = "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be asked to "
+                                                            + "provide more information. Once the review is complete you will be notified if there is any fee to pay.";
+    private static final String REVIEW_LABEL = "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be "
+                                               + "notified if it can proceed.";
+    private static final String OUT_OF_TIME_PNG = "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n\n";
+    private static final String OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL = OUT_OF_TIME_PNG + WHAT_HAPPENS_NEXT_LABEL;
+    private static final String DEFAULT_LABEL = "You will receive an email confirming that this appeal has been submitted successfully.";
+    private static final String OUT_OF_TIME_DEFAULT_LABEL = "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
+                                                            + "telling you whether your appeal can go ahead.";
+    private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -36,81 +54,122 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        final String paymentOptionPayOffline = "payOffline";
-        final String paymentOptionPayLater = "payLater";
-        final String whatHappensNextLabel = "#### What happens next\n\n";
-        final String paPayAppealLabel = "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online.";
-        final String euHuPayAppealLabel = paPayAppealLabel + " You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal.";
-
-        final String paOverviewTabLabel = "[" + "overview tab" + "](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#overview)";
-        final String paPayLaterLabel = "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the " + paOverviewTabLabel + " and following the instructions.";
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         YesOrNo submissionOutOfTime =
-            requireNonNull(callback.getCaseDetails().getCaseData().read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
+            requireNonNull(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)
                 .<RequiredFieldMissingException>orElseThrow(() -> new RequiredFieldMissingException("submission out of time is a required field")));
 
-        String paAppealTypePaymentOption = callback.getCaseDetails().getCaseData().read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
-        String eaHuAppealTypePaymentOption = callback.getCaseDetails().getCaseData().read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-        if (submissionOutOfTime.equals(NO)) {
-            postSubmitResponse.setConfirmationHeader("# Your appeal has been submitted");
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-            if (paAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
-                postSubmitResponse.setConfirmationBody(
-                    whatHappensNextLabel
-                    + paPayAppealLabel
-                );
+        postSubmitResponse.setConfirmationHeader(
+            submissionOutOfTime == NO ? DEFAULT_HEADER : ""
+        );
 
-            } else if (paAppealTypePaymentOption.equals(paymentOptionPayLater)) {
-                postSubmitResponse.setConfirmationBody(
-                    whatHappensNextLabel
-                    + paPayLaterLabel
-                );
+        switch (appealType) {
 
-            } else if (eaHuAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
-                postSubmitResponse.setConfirmationBody(
-                    whatHappensNextLabel
-                    + euHuPayAppealLabel
-                );
-            } else {
-                postSubmitResponse.setConfirmationBody(
-                    whatHappensNextLabel
-                    + "You will receive an email confirming that this appeal has been submitted successfully."
-                );
-            }
+            case EA:
+            case HU:
+                if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
-        } else {
+                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
+                } else if (remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
 
-            postSubmitResponse.setConfirmationHeader("");
+                    setEaHuAppealTypesConfirmation(postSubmitResponse, asylumCase, submissionOutOfTime);
+                } else {
 
-            final String reviewLabel = "\n\nOnce you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.";
-            StringBuilder confirmationBody = new StringBuilder();
-            confirmationBody.append(
-                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
-                + whatHappensNextLabel
-            );
+                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
+                }
+                break;
 
-            if (paAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
-                confirmationBody.append(paPayAppealLabel);
-                confirmationBody.append(reviewLabel);
-                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+            case PA:
+                if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
-            } else if (paAppealTypePaymentOption.equals(paymentOptionPayLater)) {
-                confirmationBody.append(paPayLaterLabel);
-                confirmationBody.append(reviewLabel);
-                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+                    setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
+                } else if (remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
 
-            } else if (eaHuAppealTypePaymentOption.equals(paymentOptionPayOffline)) {
-                confirmationBody.append(euHuPayAppealLabel);
-                confirmationBody.append(reviewLabel);
-                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
+                    setPaAppealTypeConfirmation(postSubmitResponse, callback, asylumCase, submissionOutOfTime);
+                } else {
 
-            } else {
-                confirmationBody.append("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email telling you whether your appeal can go ahead.");
-                postSubmitResponse.setConfirmationBody(confirmationBody.toString());
-            }
+                    setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
+                }
+                break;
+
+            default:
+                setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
         }
 
         return postSubmitResponse;
+    }
+
+    private void setEaHuAppealTypesConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse, AsylumCase asylumCase, YesOrNo submissionOutOfTime) {
+
+        asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+            .ifPresent(paymentOption -> {
+
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE)) {
+
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + EU_HU_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                }
+            });
+    }
+
+    private void setPaAppealTypeConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse, Callback<AsylumCase> callback, AsylumCase asylumCase, YesOrNo submissionOutOfTime) {
+
+        final String paOverviewTabLabel = "[" + "overview tab" + "](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "#overview)";
+        final String paPayLaterLabel = "You still have to pay for this appeal. You can do this by selecting Make a payment from the dropdown on the "
+                                       + paOverviewTabLabel + " and following the instructions.";
+
+        asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+            .ifPresent(paymentOption -> {
+
+                if (paymentOption.equals(PAYMENT_OPTION_PAY_OFFLINE)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + PA_PAY_APPEAL_LABEL + REVIEW_LABEL
+                    );
+                } else if (paymentOption.equals(PAYMENT_OPTION_PAY_LATER)) {
+                    postSubmitCallbackResponse.setConfirmationBody(
+                        submissionOutOfTime == NO
+                            ? WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel
+                            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayLaterLabel + REVIEW_LABEL
+                    );
+                }
+            });
+    }
+
+    private void setRemissionConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                          RemissionType remissionType,
+                                          YesOrNo submissionOutOfTime) {
+
+        if (remissionType == HO_WAIVER_REMISSION) {
+
+            postSubmitCallbackResponse.setConfirmationBody(
+                submissionOutOfTime == NO
+                    ? WHAT_HAPPENS_NEXT_LABEL + HO_WAIVER_REMISSION_LABEL
+                    : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL
+                      + HO_WAIVER_REMISSION_LABEL
+                      + "\n\n\nA Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if "
+                      + "it can proceed."
+            );
+        }
+    }
+
+    private void setDefaultConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                        YesOrNo submissionOutOfTime) {
+
+        postSubmitCallbackResponse.setConfirmationBody(
+            submissionOutOfTime == NO
+                ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL
+                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL
+        );
     }
 }

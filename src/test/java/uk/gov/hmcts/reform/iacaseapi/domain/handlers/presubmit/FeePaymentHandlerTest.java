@@ -8,13 +8,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import java.util.Optional;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -24,21 +28,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentHandlerTest {
 
     @Mock private FeePayment<AsylumCase> feePayment;
     @Mock private Callback<AsylumCase> callback;
-    @Mock private FeePaymentDisplayProvider feePaymentDisplayProvider;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private FeePaymentHandler feePaymentHandler;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
 
         feePaymentHandler =
-            new FeePaymentHandler(true, feePayment, feePaymentDisplayProvider);
+            new FeePaymentHandler(true, feePayment);
     }
 
     @Test
@@ -48,16 +54,18 @@ public class FeePaymentHandlerTest {
             Event.PAYMENT_APPEAL
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+            when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(AppealType.PA));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
 
@@ -73,26 +81,30 @@ public class FeePaymentHandlerTest {
             Event.START_APPEAL
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
-            when(expectedUpdatedCase.read(APPEAL_TYPE,
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+            when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
-            verify(expectedUpdatedCase, times(1))
-                .clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+            verify(asylumCase, times(1))
+                .clear(RP_DC_APPEAL_HEARING_OPTION);
+            verify(asylumCase, times(1))
+                .clear(REMISSION_CLAIM);
+            verify(asylumCase, times(1))
+                .clear(FEE_REMISSION_TYPE);
             reset(callback);
             reset(feePayment);
         });
@@ -105,24 +117,23 @@ public class FeePaymentHandlerTest {
             Event.START_APPEAL
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
-            when(expectedUpdatedCase.read(APPEAL_TYPE,
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+            when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-            verify(expectedUpdatedCase, times(1))
-                .clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+            verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
             reset(callback);
             reset(feePayment);
         });
@@ -135,66 +146,146 @@ public class FeePaymentHandlerTest {
             Event.START_APPEAL
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
-            when(expectedUpdatedCase.read(APPEAL_TYPE,
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+            when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-            verify(expectedUpdatedCase, times(1))
-                .clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+            verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
             reset(callback);
             reset(feePayment);
         });
     }
 
     @Test
-    public void should_clear_all_payment_details_for_non_payment_appeal_type() {
+    @Parameters({ "DC", "RP" })
+    public void should_clear_all_payment_details_for_non_payment_appeal_type(String type) {
 
         Arrays.asList(
             Event.START_APPEAL
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
-            when(expectedUpdatedCase.read(APPEAL_TYPE,
-                AppealType.class)).thenReturn(Optional.of(AppealType.DC));
-            when(expectedUpdatedCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
-                .thenReturn(Optional.of("decisionWithHearing"));
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+            when(asylumCase.read(APPEAL_TYPE,
+                AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+            when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+                .thenReturn(Optional.of("decisionWithoutHearing"));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(expectedUpdatedCase, times(1))
-                .write(DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
+                .write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+            verify(asylumCase, times(1))
                 .clear(HEARING_DECISION_SELECTED);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-            verify(expectedUpdatedCase, times(1))
+            verify(asylumCase, times(1))
                 .clear(PAYMENT_STATUS);
-
+            verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
+            verify(asylumCase, times(1)).clear(REMISSION_TYPE);
+            verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
             reset(callback);
             reset(feePayment);
         });
+    }
+
+    @Test
+    public void should_return_remission_for_asylum_support() {
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_CLAIM, String.class))
+            .thenReturn(Optional.of("asylumSupport"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(feePayment, times(0)).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+    }
+
+    @Test
+    public void should_return_remission_for_legal_aid() {
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_CLAIM, String.class))
+            .thenReturn(Optional.of("legalAid"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(feePayment, times(0)).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+    }
+
+    @Test
+    public void should_not_return_remission_for_remissions_not_enabled() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+        verify(asylumCase, times(0)).write(FEE_REMISSION_TYPE, "Legal Aid");
+        verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(0)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
+        verify(asylumCase, times(0)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(0)).clear(ASYLUM_SUPPORT_DOCUMENT);
     }
 
     @Test
@@ -203,8 +294,7 @@ public class FeePaymentHandlerTest {
         FeePaymentHandler feePaymentHandlerWithDisabledPayment =
             new FeePaymentHandler(
                 false,
-                feePayment,
-                feePaymentDisplayProvider
+                feePayment
             );
 
         assertThatThrownBy(() -> feePaymentHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -255,7 +345,7 @@ public class FeePaymentHandlerTest {
     public void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePaymentHandler =
-            new FeePaymentHandler(false, feePayment, feePaymentDisplayProvider);
+            new FeePaymentHandler(false, feePayment);
 
         for (Event event : Event.values()) {
 
@@ -297,5 +387,21 @@ public class FeePaymentHandlerTest {
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @Parameters({ "DC", "RP" })
+    public void should_throw_for_missing_appeal_hearing_option(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE,
+            AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+
+        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Appeal hearing option is not present");
     }
 }

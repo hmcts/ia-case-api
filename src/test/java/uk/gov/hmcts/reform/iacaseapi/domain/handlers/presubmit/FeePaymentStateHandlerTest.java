@@ -7,14 +7,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import java.util.Optional;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -23,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentStateHandlerTest {
 
@@ -36,6 +39,8 @@ public class FeePaymentStateHandlerTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         feePaymentStateHandler = new FeePaymentStateHandler(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
@@ -270,6 +275,79 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
+    @Parameters({ "EA", "HU", "PA" })
+    public void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.valueOf(type)));
+        asylumCase.write(REMISSION_TYPE, RemissionType.HO_WAIVER_REMISSION);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+
+        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        } else {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        }
+    }
+
+    @Test
+    @Parameters({ "EA", "HU", "PA" })
+    public void should_return_appeal_submitted_state_with_no_remission(String type) {
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.valueOf(type)));
+        asylumCase.write(REMISSION_TYPE, RemissionType.NO_REMISSION);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+
+        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        } else {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        }
+    }
+
+    @Test
+    @Parameters({ "FAILED", "PAYMENT_PENDING" })
+    public void should_return_current_state_for_failed_and_pending_payments(String paymentStatus) {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.valueOf(paymentStatus)));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
+        asylumCase.write(REMISSION_TYPE, RemissionType.NO_REMISSION);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertEquals(State.APPEAL_STARTED, returnedCallbackResponse.getState());
+
+    }
+
+    @Test
     public void should_return_updated_state_for_dc_submit_as_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -314,12 +392,9 @@ public class FeePaymentStateHandlerTest {
         AsylumCase asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_STARTED);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Appeal type is not present");
     }
 
     @Test
