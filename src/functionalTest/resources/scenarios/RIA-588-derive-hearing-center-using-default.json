@@ -23,8 +23,11 @@
       "replacements": {
         "appellantHasFixedAddress": "No",
         "hearingCentre": "taylorHouse",
-        "staffLocationId": "",
-        "staffLocation": "Taylor House"
+        "staffLocation": "Taylor House",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "765324"
+        }
       }
     }
   }

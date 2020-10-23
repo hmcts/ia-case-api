@@ -1016,6 +1016,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT(
         "uploadSensitiveDocsIsAppellantRespondent", new TypeReference<String>(){}),
 
+    CASE_MANAGEMENT_LOCATION(
+        "caseManagementLocation", new TypeReference<CaseManagementLocation>(){}),
+
     MAKE_AN_APPLICATION_TYPE(
         "makeAnApplicationType", new TypeReference<String>(){}),
 
