@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 
@@ -35,6 +36,7 @@ public class FeePaymentPreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeePayment<AsylumCase> feePayment;
+    @Mock private FeatureToggler featureToggler;
 
     private FeePaymentPreparer feePaymentPreparer;
 
@@ -43,7 +45,7 @@ public class FeePaymentPreparerTest {
         MockitoAnnotations.openMocks(this);
 
         feePaymentPreparer =
-                new FeePaymentPreparer(true, feePayment);
+                new FeePaymentPreparer(true, featureToggler, feePayment);
     }
 
     @Test
@@ -52,6 +54,7 @@ public class FeePaymentPreparerTest {
         FeePaymentPreparer feePaymentPreparerWithDisabledPayment =
             new FeePaymentPreparer(
                 false,
+                featureToggler,
                 feePayment
             );
 
@@ -93,6 +96,7 @@ public class FeePaymentPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -101,6 +105,7 @@ public class FeePaymentPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_REMISSIONS_ENABLED, YesOrNo.YES);
     }
 
     @Test

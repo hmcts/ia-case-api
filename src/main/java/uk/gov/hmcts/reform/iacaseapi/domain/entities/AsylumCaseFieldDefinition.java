@@ -1193,6 +1193,12 @@ public enum AsylumCaseFieldDefinition {
     IS_FEE_CONSISTENT_WITH_DECISION(
         "isFeeConsistentWithDecision", new TypeReference<YesOrNo>() {}),
 
+    IS_REMISSIONS_ENABLED(
+        "isRemissionsEnabled", new TypeReference<YesOrNo>(){}),
+
+    RP_DC_APPEAL_HEARING_OPTION(
+        "rpDcAppealHearingOption", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
