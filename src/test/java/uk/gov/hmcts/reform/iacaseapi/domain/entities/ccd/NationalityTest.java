@@ -16,7 +16,7 @@ public class NationalityTest {
         assertEquals("American Samoa", Nationality.AS.toString());
         assertEquals("Andorra", Nationality.AD.toString());
         assertEquals("Angola", Nationality.AO.toString());
-        assertEquals("Anguilla", Nationality.AT.toString());
+        assertEquals("Anguilla", Nationality.AI.toString());
         assertEquals("Antarctica", Nationality.AQ.toString());
         assertEquals("Antigua and Barbuda", Nationality.AG.toString());
         assertEquals("Argentina", Nationality.AR.toString());
@@ -264,6 +264,6 @@ public class NationalityTest {
 
     @Test
     public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(253, Nationality.values().length);
+        assertEquals(252, Nationality.values().length);
     }
 }
