@@ -1216,6 +1216,15 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_AID_ACCOUNT_NUMBER(
         "legalAidAccountNumber", new TypeReference<String>(){}),
 
+    SECTION17_DOCUMENT(
+        "section17Document", new TypeReference<Document>(){}),
+
+    SECTION20_DOCUMENT(
+        "section20Document", new TypeReference<Document>(){}),
+
+    HOME_OFFICE_WAIVER_DOCUMENT(
+        "homeOfficeWaiverDocument", new TypeReference<Document>(){}),
+
     ;
 
     private final String value;

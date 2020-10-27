@@ -100,6 +100,12 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase.clear(FEE_REMISSION_TYPE);
                 asylumCase.clear(REMISSION_TYPE);
                 asylumCase.clear(REMISSION_CLAIM);
+                asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+                asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+                asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+                asylumCase.clear(SECTION17_DOCUMENT);
+                asylumCase.clear(SECTION20_DOCUMENT);
+                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
                 break;
 
             default:
@@ -117,12 +123,45 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case "asylumSupport":
                 asylumCase.write(FEE_REMISSION_TYPE, "Asylum support");
                 asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+                asylumCase.clear(SECTION17_DOCUMENT);
+                asylumCase.clear(SECTION20_DOCUMENT);
+                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
                 break;
 
             case "legalAid":
                 asylumCase.write(FEE_REMISSION_TYPE, "Legal Aid");
                 asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
                 asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+                asylumCase.clear(SECTION17_DOCUMENT);
+                asylumCase.clear(SECTION20_DOCUMENT);
+                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+                break;
+
+            case "section17":
+                asylumCase.write(FEE_REMISSION_TYPE, "Section 17");
+                asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+                asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+                asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+                asylumCase.clear(SECTION20_DOCUMENT);
+                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+                break;
+
+            case "section20":
+                asylumCase.write(FEE_REMISSION_TYPE, "Section 20");
+                asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+                asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+                asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+                asylumCase.clear(SECTION17_DOCUMENT);
+                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+                break;
+
+            case "homeOfficeWaiver":
+                asylumCase.write(FEE_REMISSION_TYPE, "Home Office fee waiver");
+                asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+                asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+                asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+                asylumCase.clear(SECTION17_DOCUMENT);
+                asylumCase.clear(SECTION20_DOCUMENT);
                 break;
 
             default:
@@ -150,5 +189,11 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
         asylumCase.clear(FEE_REMISSION_TYPE);
         asylumCase.clear(REMISSION_CLAIM);
+        asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
+        asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
+        asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
+        asylumCase.clear(SECTION17_DOCUMENT);
+        asylumCase.clear(SECTION20_DOCUMENT);
+        asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
     }
 }
