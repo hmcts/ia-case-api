@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.mockito.BDDMockito.given;
@@ -13,7 +14,6 @@ import java.util.List;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import lombok.Value;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,12 +92,12 @@ public class AdjournWithoutDateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        Assert.assertThat(
+        assertThat(
             callbackResponse.getConfirmationHeader().get(),
             containsString("# The hearing has been adjourned")
         );
 
-        Assert.assertThat(
+        assertThat(
             callbackResponse.getConfirmationBody().get(),
             containsString("#### What happens next\n\n"
                 + "A new Notice of Hearing has been generated."
