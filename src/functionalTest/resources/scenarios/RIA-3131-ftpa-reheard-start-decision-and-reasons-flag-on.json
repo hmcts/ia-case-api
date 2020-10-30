@@ -1,0 +1,46 @@
+{
+  "description": "RIA-3131 Clear start decision and reasons fields for FTPA reheard case - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "decisionAndReasonsStarted",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "caseFlagSetAsideReheardExists": "Yes",
+          "caseIntroductionDescription": "some case introduction",
+          "appellantCaseSummaryDescription": "some appellant case summary",
+          "immigrationHistoryAgreement": "Yes",
+          "agreedImmigrationHistoryDescription": "some agreed immigration history",
+          "appellantsDisputedScheduleOfIssuesDescription": "some appellants disputed schedule of issues",
+          "appellantsAgreedScheduleOfIssuesDescription": "some appellants agreed schedule of issues",
+          "scheduleOfIssuesAgreement": "Yes",
+          "scheduleOfIssuesDisagreementDescription": "some schedule of issues disagreement"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "caseIntroductionDescription": null,
+        "appellantCaseSummaryDescription": null,
+        "immigrationHistoryAgreement": null,
+        "agreedImmigrationHistoryDescription": null,
+        "appellantsDisputedScheduleOfIssuesDescription": null,
+        "appellantsAgreedScheduleOfIssuesDescription": null,
+        "scheduleOfIssuesAgreement": null,
+        "scheduleOfIssuesDisagreementDescription": null
+      }
+    }
+  }
+}

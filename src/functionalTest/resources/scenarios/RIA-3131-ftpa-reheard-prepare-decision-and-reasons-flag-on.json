@@ -1,0 +1,36 @@
+{
+  "description": "RIA-3131 Clear prepare decision and reasons fields for FTPA reheard case - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateDecisionAndReasons",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "caseFlagSetAsideReheardExists": "Yes",
+          "anonymityOrder": "No",
+          "appellantRepresentative": "appellant representative",
+          "respondentRepresentative": "respondent representative"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "Yes",
+        "anonymityOrder": null,
+        "appellantRepresentative": null,
+        "respondentRepresentative": null
+      }
+    }
+  }
+}
