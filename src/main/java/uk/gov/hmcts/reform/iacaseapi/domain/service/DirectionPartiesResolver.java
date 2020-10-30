@@ -23,6 +23,7 @@ public class DirectionPartiesResolver {
             case REQUEST_CASE_BUILDING:
             case FORCE_REQUEST_CASE_BUILDING:
             case REQUEST_RESPONSE_REVIEW:
+            case REQUEST_NEW_HEARING_REQUIREMENTS:
                 return Parties.LEGAL_REPRESENTATIVE;
 
             case REQUEST_RESPONSE_AMEND:

@@ -38,6 +38,9 @@ public class DirectionTagResolver {
             case REQUEST_REASONS_FOR_APPEAL:
                 return DirectionTag.REQUEST_REASONS_FOR_APPEAL;
 
+            case REQUEST_NEW_HEARING_REQUIREMENTS:
+                return DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS;
+
             default:
                 return DirectionTag.NONE;
         }

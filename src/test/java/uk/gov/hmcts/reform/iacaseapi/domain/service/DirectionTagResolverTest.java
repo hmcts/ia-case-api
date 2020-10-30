@@ -42,6 +42,7 @@ public class DirectionTagResolverTest {
                 .put(Event.REQUEST_CASE_BUILDING, DirectionTag.REQUEST_CASE_BUILDING)
                 .put(Event.REQUEST_RESPONSE_REVIEW, DirectionTag.REQUEST_RESPONSE_REVIEW)
                 .put(Event.REQUEST_RESPONSE_AMEND, DirectionTag.REQUEST_RESPONSE_AMEND)
+                .put(Event.REQUEST_NEW_HEARING_REQUIREMENTS, DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS)
                 .build();
 
         exampleInputOutputs

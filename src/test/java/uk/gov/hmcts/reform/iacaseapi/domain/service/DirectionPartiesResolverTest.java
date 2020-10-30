@@ -54,6 +54,7 @@ public class DirectionPartiesResolverTest {
                 .put(Event.REQUEST_RESPONSE_REVIEW, Parties.LEGAL_REPRESENTATIVE)
                 .put(Event.REQUEST_RESPONSE_AMEND, Parties.RESPONDENT)
                 .put(Event.REQUEST_REASONS_FOR_APPEAL, Parties.APPELLANT)
+                .put(Event.REQUEST_NEW_HEARING_REQUIREMENTS, Parties.LEGAL_REPRESENTATIVE)
                 .build();
 
         exampleInputOutputs
