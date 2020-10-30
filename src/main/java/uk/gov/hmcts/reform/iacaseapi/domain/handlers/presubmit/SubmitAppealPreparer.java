@@ -81,5 +81,4 @@ public class SubmitAppealPreparer implements PreSubmitCallbackHandler<AsylumCase
         }
         return foundPaymentAppealTypePayNow;
     }
-
 }

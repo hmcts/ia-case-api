@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @Component
 public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -28,18 +30,21 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
     private final DateProvider dateProvider;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-    private final FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider;
+    private final FtpaDisplayService ftpaDisplayService;
+    private final FeatureToggler featureToggler;
 
     public LeadershipJudgeFtpaDecisionHandler(
         DateProvider dateProvider,
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
-        FtpaFinalDecisionDisplayProvider ftpaFinalDecisionDisplayProvider
+        FtpaDisplayService ftpaDisplayService,
+        FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
-        this.ftpaFinalDecisionDisplayProvider = ftpaFinalDecisionDisplayProvider;
+        this.ftpaDisplayService = ftpaDisplayService;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -135,10 +140,16 @@ public class LeadershipJudgeFtpaDecisionHandler implements PreSubmitCallbackHand
             asylumCase.read(FTPA_FIRST_DECISION)
                 .orElse("").toString();
 
-        ftpaFinalDecisionDisplayProvider.handleFtpaDecisions(
+        ftpaDisplayService.handleFtpaDecisions(
             asylumCase,
             currentDecision,
             ftpaFirstDecision
+        );
+
+        ftpaDisplayService.setFtpaCaseFlag(
+            asylumCase,
+            featureToggler.getValue("reheard-feature", false),
+            currentDecision
         );
 
         return new PreSubmitCallbackResponse<>(asylumCase);

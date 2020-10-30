@@ -854,6 +854,12 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION(
         "caseFlagUnaccompaniedMinorAdditionalInformation", new TypeReference<String>() {}),
 
+    CASE_FLAG_SET_ASIDE_REHEARD_EXISTS(
+        "caseFlagSetAsideReheardExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION(
+        "caseFlagSetAsideReheardAdditionalInformation", new TypeReference<String>() {}),
+
     IS_APPELLANT_MINOR(
         "isAppellantMinor", new TypeReference<YesOrNo>() {}),
     APPELLANT_DATE_OF_BIRTH(
@@ -1063,6 +1069,9 @@ public enum AsylumCaseFieldDefinition {
 
     HAS_APPLICATIONS_TO_DECIDE(
         "hasApplicationsToDecide", new TypeReference<String>(){}),
+
+    IS_REHEARD_APPEAL_ENABLED(
+        "isReheardAppealEnabled", new TypeReference<YesOrNo>() {}),
 
     ;
 

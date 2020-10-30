@@ -1,0 +1,89 @@
+{
+  "description": "RIA-3651 Resident judge record appellant FTPA decision (Reheard Rule 35) - feature flag off",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 1234,
+      "eventId": "residentJudgeFtpaDecision",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaApplicantType": "appellant",
+          "ftpaAppellantSubmitted": "Yes",
+          "ftpaAppellantRjDecisionOutcomeType": "reheardRule35",
+          "ariaListingReference": "987654321",
+          "listCaseHearingCentre": "taylorHouse",
+          "ftpaAppellantDecisionDocument": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+                },
+                "description": "Some FTPA appellant decision and reasons"
+              }
+            }
+          ],
+          "ftpaAppellantNoticeDocument": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-notice.pdf"
+                },
+                "description": "Some FTPA appellant notice"
+              }
+            }
+          ],
+          "allFtpaAppellantDecisionDocuments": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantDecisionDate": "{$TODAY}",
+        "isFtpaAppellantDecided": "Yes",
+        "allFtpaAppellantDecisionDocs": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-decision-and-reasons.pdf"
+              },
+              "description": "Some FTPA appellant decision and reasons",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaDecisionAndReasons"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-notice.pdf"
+              },
+              "description": "Some FTPA appellant notice",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaDecisionAndReasons"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
