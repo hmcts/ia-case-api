@@ -47,12 +47,15 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {        "REQUEST_RESPONDENT_EVIDENCE",
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_RESPONDENT_EVIDENCE",
         "REQUEST_RESPONDENT_REVIEW",
         "LIST_CASE",
         "EDIT_CASE_LISTING",
         "ADJOURN_HEARING_WITHOUT_DATE",
-        "SEND_DECISION_AND_REASONS"
+        "SEND_DECISION_AND_REASONS",
+        "APPLY_FOR_FTPA_APPELLANT",
+        "APPLY_FOR_FTPA_RESPONDENT"
     })
     void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
@@ -86,7 +89,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.LIST_CASE,
                         Event.EDIT_CASE_LISTING,
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
-                        Event.SEND_DECISION_AND_REASONS
+                        Event.SEND_DECISION_AND_REASONS,
+                        Event.APPLY_FOR_FTPA_APPELLANT,
+                        Event.APPLY_FOR_FTPA_RESPONDENT
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
