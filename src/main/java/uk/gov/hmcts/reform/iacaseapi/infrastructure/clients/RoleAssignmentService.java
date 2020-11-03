@@ -50,12 +50,11 @@ public class RoleAssignmentService {
                         RoleType.CASE,
                         ROLE_NAME,
                         RoleCategory.STAFF,
-                        Classification.PUBLIC, // ticket says restricted
+                        Classification.RESTRICTED,
                         GrantType.SPECIFIC,
                         false,
                         attributes
                 ))
-
         );
 
         roleAssignmentApi.assignRole(accessToken, serviceAuthorizationToken, body);

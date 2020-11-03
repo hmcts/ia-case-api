@@ -55,7 +55,7 @@ public class RoleAssignmentServiceTest {
                                 RoleType.CASE,
                                 "tribunal-caseworker",
                                 RoleCategory.STAFF,
-                                Classification.PUBLIC, // ticket says restricted
+                                Classification.RESTRICTED,
                                 GrantType.SPECIFIC,
                                 false,
                                 attributes
