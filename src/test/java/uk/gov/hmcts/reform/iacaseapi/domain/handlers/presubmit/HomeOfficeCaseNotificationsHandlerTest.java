@@ -56,7 +56,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         "APPLY_FOR_FTPA_APPELLANT",
         "APPLY_FOR_FTPA_RESPONDENT",
         "LEADERSHIP_JUDGE_FTPA_DECISION",
-        "RESIDENT_JUDGE_FTPA_DECISION"
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "END_APPEAL"
     })
     void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
@@ -94,7 +95,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.APPLY_FOR_FTPA_APPELLANT,
                         Event.APPLY_FOR_FTPA_RESPONDENT,
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION
+                        Event.RESIDENT_JUDGE_FTPA_DECISION,
+                        Event.END_APPEAL
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);

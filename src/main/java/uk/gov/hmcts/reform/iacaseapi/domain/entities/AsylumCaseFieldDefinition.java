@@ -1027,6 +1027,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS(
         "homeOfficeFtpaRespondentDecidedInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS(
+        "homeOfficeEndAppealInstructStatus", new TypeReference<String>() {}),
+
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
