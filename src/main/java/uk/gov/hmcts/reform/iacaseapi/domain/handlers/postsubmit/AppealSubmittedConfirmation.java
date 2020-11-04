@@ -150,7 +150,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                                           RemissionType remissionType,
                                           YesOrNo submissionOutOfTime) {
 
-        if (remissionType == HO_WAIVER_REMISSION) {
+        if (remissionType == HO_WAIVER_REMISSION || remissionType == HELP_WITH_FEES) {
 
             postSubmitCallbackResponse.setConfirmationBody(
                 submissionOutOfTime == NO

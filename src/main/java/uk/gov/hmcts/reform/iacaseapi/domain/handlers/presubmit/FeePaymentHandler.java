@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.util.Arrays;
@@ -75,15 +76,20 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case EA:
             case HU:
             case PA:
-                Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-                if (isRemissionsEnabled == YesOrNo.YES
-                    && remissionType.isPresent()
-                    && remissionType.get() != RemissionType.NO_REMISSION) {
+                Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+                if (isRemissionsEnabled == YesOrNo.YES && optRemissionType.isPresent()
+                    && optRemissionType.get() == HO_WAIVER_REMISSION) {
 
                     setFeeRemissionTypeDetails(asylumCase);
+                } else if (isRemissionsEnabled == YesOrNo.YES && optRemissionType.isPresent()
+                           && optRemissionType.get() == HELP_WITH_FEES) {
+
+                    setHelpWithFeesDetails(asylumCase);
                 } else {
+
                     asylumCase = feePayment.aboutToSubmit(callback);
                     setFeePaymentDetails(asylumCase, appealType);
+                    clearRemissionDetails(asylumCase);
                 }
                 asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
                 break;
@@ -93,19 +99,10 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 String hearingOption = asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
                     .orElseThrow(() -> new IllegalStateException("Appeal hearing option is not present"));
                 asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
-                asylumCase.clear(HEARING_DECISION_SELECTED);
-                asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-                asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-                asylumCase.clear(PAYMENT_STATUS);
-                asylumCase.clear(FEE_REMISSION_TYPE);
                 asylumCase.clear(REMISSION_TYPE);
-                asylumCase.clear(REMISSION_CLAIM);
-                asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
-                asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);
-                asylumCase.clear(LEGAL_AID_ACCOUNT_NUMBER);
-                asylumCase.clear(SECTION17_DOCUMENT);
-                asylumCase.clear(SECTION20_DOCUMENT);
-                asylumCase.clear(HOME_OFFICE_WAIVER_DOCUMENT);
+                asylumCase.clear(FEE_REMISSION_TYPE);
+                clearFeeOptionDetails(asylumCase);
+                clearRemissionDetails(asylumCase);
                 break;
 
             default:
@@ -168,9 +165,17 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
         }
 
-        asylumCase.clear(HEARING_DECISION_SELECTED);
-        asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-        asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
+        clearFeeOptionDetails(asylumCase);
+    }
+
+    private void setHelpWithFeesDetails(AsylumCase asylumCase) {
+
+        asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
+        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
+        clearRemissionDetails(asylumCase);
+        clearFeeOptionDetails(asylumCase);
+
     }
 
     private void setFeePaymentDetails(AsylumCase asylumCase, AppealType appealType) {
@@ -188,6 +193,18 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         }
         asylumCase.clear(FEE_REMISSION_TYPE);
+    }
+
+    private void clearFeeOptionDetails(AsylumCase asylumCase) {
+
+        asylumCase.clear(HEARING_DECISION_SELECTED);
+        asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+        asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        asylumCase.clear(PAYMENT_STATUS);
+    }
+
+    private void clearRemissionDetails(AsylumCase asylumCase) {
+
         asylumCase.clear(REMISSION_CLAIM);
         asylumCase.clear(ASYLUM_SUPPORT_REFERENCE);
         asylumCase.clear(ASYLUM_SUPPORT_DOCUMENT);

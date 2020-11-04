@@ -1,0 +1,36 @@
+{
+  "description": "RIA-3084 Legal representative submits appeal with help with fees",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "remissionType": "helpWithFees"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionType": "helpWithFees",
+        "feeRemissionType": "Help with Fees",
+        "paymentStatus": null,
+        "paAppealTypePaymentOption": null
+      }
+    }
+  }
+}
