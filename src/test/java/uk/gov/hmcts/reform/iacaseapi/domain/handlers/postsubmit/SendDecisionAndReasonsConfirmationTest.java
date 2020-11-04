@@ -8,11 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -22,8 +25,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class SendDecisionAndReasonsConfirmationTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
     private SendDecisionAndReasonsConfirmation sendDecisionAndReasonsConfirmation =
         new SendDecisionAndReasonsConfirmation();
@@ -31,6 +35,8 @@ class SendDecisionAndReasonsConfirmationTest {
     @Test
     void should_return_confirmation() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
 
         PostSubmitCallbackResponse callbackResponse =
@@ -52,6 +58,35 @@ class SendDecisionAndReasonsConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab.");
+    }
+
+    @Test
+    void should_return_notification_failed_confirmation() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
+        when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS, String.class))
+            .thenReturn(Optional.of("FAIL"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            sendDecisionAndReasonsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getConfirmationHeader()).isNotPresent();
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("![Respondent notification failed confirmation]"
+                      + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
     }
 
     @Test

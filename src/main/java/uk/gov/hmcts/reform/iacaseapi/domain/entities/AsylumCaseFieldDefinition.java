@@ -1015,6 +1015,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
         "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
+
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
