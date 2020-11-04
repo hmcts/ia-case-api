@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3389 Home Office Reference Number Formatter - without slash",
+  "description": "RIA-3389 Home Office Reference Number CID Formatter",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -10,7 +10,7 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "homeOfficeReferenceNumber": "A123456"
+          "homeOfficeReferenceNumber": "123456"
         }
       }
     }
@@ -24,7 +24,7 @@
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5}\/[0-9]{4}/",
-        "homeOfficeReferenceNumber": "A123456"
+        "homeOfficeReferenceNumber": "$/([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9})/"
       }
     }
   }
