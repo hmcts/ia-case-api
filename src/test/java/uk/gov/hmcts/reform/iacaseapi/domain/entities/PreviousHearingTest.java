@@ -65,13 +65,6 @@ public class PreviousHearingTest {
         )
     );
 
-    private final List<IdValue<DocumentWithMetadata>> allHearingRequirementsDocuments = asList(
-        new IdValue<DocumentWithMetadata>(
-            "1",
-            hearingRequirementsDocument
-        )
-    );
-
     private PreviousHearing previousHearing = new PreviousHearing(
         attendingJudge,
         attendingAppellant,
@@ -83,8 +76,7 @@ public class PreviousHearingTest {
         listCaseHearingLength,
         allHearingRecordingDocuments,
         appealDecision,
-        allFinalDecisionAndReasonsDocuments,
-        allHearingRequirementsDocuments
+        allFinalDecisionAndReasonsDocuments
     );
 
     @Test
@@ -100,7 +92,6 @@ public class PreviousHearingTest {
         Assert.assertEquals(allHearingRecordingDocuments, previousHearing.getHearingRecordingDocuments());
         Assert.assertEquals(appealDecision, previousHearing.getAppealDecision());
         Assert.assertEquals(allFinalDecisionAndReasonsDocuments, previousHearing.getFinalDecisionAndReasonsDocuments());
-        Assert.assertEquals(allHearingRequirementsDocuments, previousHearing.getHearingRequirements());
     }
 
     @Test
@@ -117,8 +108,7 @@ public class PreviousHearingTest {
             listCaseHearingLength,
             allHearingRecordingDocuments,
             appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
+            allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
@@ -132,8 +122,7 @@ public class PreviousHearingTest {
             listCaseHearingLength,
             allHearingRecordingDocuments,
             appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
+            allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
@@ -147,8 +136,7 @@ public class PreviousHearingTest {
             listCaseHearingLength,
             allHearingRecordingDocuments,
             appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
+            allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
@@ -162,8 +150,7 @@ public class PreviousHearingTest {
             null,
             allHearingRecordingDocuments,
             appealDecision,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
+            allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
@@ -177,8 +164,7 @@ public class PreviousHearingTest {
             listCaseHearingLength,
             allHearingRecordingDocuments,
             null,
-            allFinalDecisionAndReasonsDocuments,
-            allHearingRequirementsDocuments))
+            allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> new PreviousHearing(
@@ -192,22 +178,6 @@ public class PreviousHearingTest {
             listCaseHearingLength,
             allHearingRecordingDocuments,
             appealDecision,
-            null,
-            allHearingRequirementsDocuments))
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> new PreviousHearing(
-            attendingJudge,
-            attendingAppellant,
-            attendingHomeOfficeLegalRepresentative,
-            actualCaseHearingLength,
-            ariaListingReference,
-            listCaseHearingCentre,
-            listCaseHearingDate,
-            listCaseHearingLength,
-            allHearingRecordingDocuments,
-            appealDecision,
-            allFinalDecisionAndReasonsDocuments,
             null))
             .isExactlyInstanceOf(NullPointerException.class);
     }

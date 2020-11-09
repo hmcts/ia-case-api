@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,6 +30,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     @Mock private FeatureToggler featureToggler;
 
     private ListCaseWithoutHearingRequirementsHandler listCaseWithoutHearingRequirementsHandler;
@@ -36,7 +38,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     @Before
     public void setUp() {
         listCaseWithoutHearingRequirementsHandler =
-            new ListCaseWithoutHearingRequirementsHandler(featureToggler);
+            new ListCaseWithoutHearingRequirementsHandler(previousRequirementsAndRequestsAppender, featureToggler);
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -86,6 +88,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
         verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(HEARING_REQUIREMENTS);
     }
 
     @Test
@@ -108,11 +111,11 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(ACTUAL_CASE_HEARING_LENGTH);
         verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
     }
 
     @Test
     public void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
-
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -129,6 +132,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
         verify(asylumCase, times(0)).clear(ACTUAL_CASE_HEARING_LENGTH);
         verify(asylumCase, times(0)).clear(HEARING_CONDUCTION_OPTIONS);
         verify(asylumCase, times(0)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(0)).clear(HEARING_REQUIREMENTS);
     }
 
     @Test

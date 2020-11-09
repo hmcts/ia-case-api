@@ -83,7 +83,6 @@ public class DraftHearingRequirementsHandlerTest {
     @Test
     public void should_set_current_hearing_details_visibility_to_yes_for_normal_case() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -129,9 +128,20 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
+    public void should_set_current_hearing_details_visibility_when_feature_flag_disabled() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE), eq(YesOrNo.YES));
+    }
+
+    @Test
     public void should_set_current_hearing_details_visibility_to_yes_for_case_flag() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -142,8 +152,6 @@ public class DraftHearingRequirementsHandlerTest {
 
     @Test
     public void should_set_current_hearing_details_visibility_to_yes_when_feature_flag_disabled() {
-
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);

@@ -1110,6 +1110,9 @@ public enum AsylumCaseFieldDefinition {
     LIST_CASE_HEARING_LENGTH_VISIBLE(
         "listCaseHearingLengthVisible", new TypeReference<YesOrNo>() {}),
 
+    PREVIOUS_HEARING_REQUIREMENTS(
+        "previousHearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
     ;
 
     private final String value;

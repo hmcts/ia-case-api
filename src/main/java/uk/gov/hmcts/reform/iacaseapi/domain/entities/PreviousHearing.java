@@ -24,7 +24,6 @@ public class PreviousHearing {
     private Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments;
     private String appealDecision;
     private List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
-    private List<IdValue<DocumentWithMetadata>> hearingRequirements;
 
     private PreviousHearing() {
         // noop -- for deserializer
@@ -41,8 +40,7 @@ public class PreviousHearing {
         String listCaseHearingLength,
         Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments,
         String appealDecision,
-        List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments,
-        List<IdValue<DocumentWithMetadata>> hearingRequirements
+        List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments
 
     ) {
         requireNonNull(ariaListingReference);
@@ -51,7 +49,6 @@ public class PreviousHearing {
         requireNonNull(listCaseHearingLength);
         requireNonNull(appealDecision);
         requireNonNull(finalDecisionAndReasonsDocuments);
-        requireNonNull(hearingRequirements);
 
         this.attendingJudge = attendingJudge;
         this.attendingAppellant = attendingAppellant;
@@ -64,7 +61,6 @@ public class PreviousHearing {
         this.hearingRecordingDocuments = hearingRecordingDocuments;
         this.appealDecision = appealDecision;
         this.finalDecisionAndReasonsDocuments = finalDecisionAndReasonsDocuments;
-        this.hearingRequirements = hearingRequirements;
     }
 
     public Optional<String> getAttendingJudge() {
@@ -115,10 +111,5 @@ public class PreviousHearing {
     public List<IdValue<DocumentWithMetadata>> getFinalDecisionAndReasonsDocuments() {
         requireNonNull(finalDecisionAndReasonsDocuments);
         return finalDecisionAndReasonsDocuments;
-    }
-
-    public List<IdValue<DocumentWithMetadata>> getHearingRequirements() {
-        requireNonNull(hearingRequirements);
-        return hearingRequirements;
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -39,6 +40,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
+    @Mock private DocumentWithMetadata hearingRequirements1;
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
     private RequestNewHearingRequirementsDirectionHandler requestNewHearingRequirementsDirectionHandler;
@@ -80,6 +82,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
+        final List<IdValue<DocumentWithMetadata>> hearingRequirements = singletonList(new IdValue<>("1", hearingRequirements1));
 
         final String expectedExplanation = "Do the thing";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
