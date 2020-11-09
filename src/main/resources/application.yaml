@@ -91,7 +91,7 @@ featureFlag:
   timedEventServiceEnabled: ${IA_TIMED_EVENT_SERVICE_ENABLED:false}
   isfeePaymentEnabled: ${IA_FEEPAYMENT_ENABLED:false}
   isSaveAndContinueEnabled: ${IS_SAVE_AND_CONTINUE_ENABLED:true}
-  isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:false}
+  isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
