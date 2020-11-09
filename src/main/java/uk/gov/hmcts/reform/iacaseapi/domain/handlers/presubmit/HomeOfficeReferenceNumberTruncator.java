@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^[A-Za-z][0-9]{6}[0-9]?(|\\/[0-9][0-9]?[0-9]?)$");
+    private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,

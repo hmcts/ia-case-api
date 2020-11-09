@@ -37,13 +37,9 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
-                .put("A1234567", "A1234567")
-                .put("A1234567/", "A1234567/")
-                .put("A123456/001", "A123456")
-                .put("A123456/1234567", "A123456/1234567")
-                .put("A1234567/001", "A1234567")
-                .put("A1234567/1234567", "A1234567/1234567")
-                .put("A123456789/1234567", "A123456789/1234567")
+                .put("1234567", "1234567")
+                .put("123456", "123456")
+                .put("2266-7654-9987-1234", "2266-7654-9987-1234")
                 .build();
 
         exampleInputOutputs
@@ -74,13 +70,9 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
-                .put("A1234567", "A1234567")
-                .put("A1234567/", "A1234567/")
-                .put("A123456/001", "A123456")
-                .put("A123456/1234567", "A123456/1234567")
-                .put("A1234567/001", "A1234567")
-                .put("A1234567/1234567", "A1234567/1234567")
-                .put("A123456789/1234567", "A123456789/1234567")
+                .put("1234567", "1234567")
+                .put("123456", "123456")
+                .put("2266-7654-9987-1234", "2266-7654-9987-1234")
                 .build();
 
         exampleInputOutputs
