@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -71,6 +72,11 @@ public class HomeOfficeCaseValidateHandlerTest {
 
         homeOfficeCaseValidateHandler =
             new HomeOfficeCaseValidateHandler(isHomeOfficeIntegrationEnabled, homeOfficeApi);
+    }
+
+    @Test
+    public void should_be_handled_at_earliest_point() {
+        assertEquals(DispatchPriority.EARLIEST, homeOfficeCaseValidateHandler.getDispatchPriority());
     }
 
     @Test

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
@@ -38,6 +39,11 @@ public class LegalRepresentativeDetailsHandlerTest {
 
         legalRepresentativeDetailsHandler =
             new LegalRepresentativeDetailsHandler(userDetailsProvider);
+    }
+
+    @Test
+    public void should_be_handled_at_earliest_point() {
+        assertEquals(DispatchPriority.EARLIEST, legalRepresentativeDetailsHandler.getDispatchPriority());
     }
 
     @Test

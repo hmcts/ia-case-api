@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -25,6 +26,12 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
         this.userDetailsProvider = userDetailsProvider;
     }
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
+
+    @Override
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback
@@ -39,6 +46,7 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
                    .contains(callback.getEvent());
     }
 
+    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
             PreSubmitCallbackStage callbackStage,
             Callback<AsylumCase> callback

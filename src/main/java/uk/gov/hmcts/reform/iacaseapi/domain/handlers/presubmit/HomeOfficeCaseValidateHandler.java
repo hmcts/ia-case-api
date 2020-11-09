@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Nationality;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -47,6 +48,12 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
         this.homeOfficeApi = homeOfficeApi;
     }
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
+
+    @Override
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -62,7 +69,7 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             || callback.getEvent() == REQUEST_HOME_OFFICE_DATA);
     }
 
-
+    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback

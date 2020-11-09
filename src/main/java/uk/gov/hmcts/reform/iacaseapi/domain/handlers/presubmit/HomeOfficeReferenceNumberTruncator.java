@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -21,6 +22,12 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
 
     private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^[A-Za-z][0-9]{6}[0-9]?(|\\/[0-9][0-9]?[0-9]?)$");
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
+
+    @Override
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -35,6 +42,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                    .contains(callback.getEvent());
     }
 
+    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback

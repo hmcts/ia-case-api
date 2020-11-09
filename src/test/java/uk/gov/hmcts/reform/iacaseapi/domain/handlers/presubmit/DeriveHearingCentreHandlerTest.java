@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
@@ -149,6 +150,11 @@ public class DeriveHearingCentreHandlerTest {
             .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
 
         verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
+
+    @Test
+    public void should_be_handled_at_earliest_point() {
+        assertEquals(DispatchPriority.EARLIEST, deriveHearingCentreHandler.getDispatchPriority());
     }
 
     @Test

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -25,7 +26,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Slf4j
 public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private LocalDate appellantDob;
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -43,42 +47,24 @@ public class MinorTagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        setAppellantMinorFlag(asylumCase);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private void setAppellantMinorFlag(AsylumCase asylumCase) {
         if (isAppellantMinor(asylumCase)) {
             asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.YES);
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.IS_APPELLANT_MINOR, YesOrNo.NO);
         }
-    }
-
-    private boolean isAppellantDobValid(AsylumCase asylumCase) {
-        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
-        if (appellantDobAsString != null) {
-            return isAppellantDobAValidDate(appellantDobAsString);
-        }
-        return false;
-    }
-
-    private boolean isAppellantDobAValidDate(String appellantDobAsString) {
-        try {
-            appellantDob = LocalDate.parse(appellantDobAsString);
-        } catch (Exception e) {
-            log.warn("Error when parsing Appellant dob: ", e);
-            return false;
-        }
-        return true;
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private boolean isAppellantMinor(AsylumCase asylumCase) {
-        YesOrNo result = YesOrNo.NO;
-        if (isAppellantDobValid(asylumCase)) {
-            result = Period.between(appellantDob, LocalDate.now()).getYears() < 18 ? YesOrNo.YES : YesOrNo.NO;
+        String appellantDobAsString = asylumCase.read(APPELLANT_DATE_OF_BIRTH, String.class).orElse(null);
+        if (appellantDobAsString != null) {
+            try {
+                return Period.between(LocalDate.parse(appellantDobAsString), LocalDate.now()).getYears() < 18;
+            } catch (Exception e) {
+                log.warn("Error when parsing Appellant dob: ", e);
+                return false;
+            }
         }
-        return result.equals(YesOrNo.YES);
+        return false;
     }
 }

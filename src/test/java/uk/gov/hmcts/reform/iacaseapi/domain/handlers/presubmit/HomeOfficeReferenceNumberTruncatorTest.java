@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
@@ -31,6 +32,11 @@ public class HomeOfficeReferenceNumberTruncatorTest {
 
     private HomeOfficeReferenceNumberTruncator homeOfficeReferenceNumberTruncator =
         new HomeOfficeReferenceNumberTruncator();
+
+    @Test
+    public void should_be_handled_at_earliest_point() {
+        assertEquals(DispatchPriority.EARLIEST, homeOfficeReferenceNumberTruncator.getDispatchPriority());
+    }
 
     @Test
     public void should_truncate_home_office_reference_numbers_for_submit_appeal() {
