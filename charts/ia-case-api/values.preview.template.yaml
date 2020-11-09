@@ -14,7 +14,7 @@ java:
     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
     IA_CASE_PAYMENTS_API_URL: "http://ia-case-payments-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-    IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
+    IA_HOME_OFFICE_INTEGRATION_ENABLED: "true"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
     CCD_URL: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
