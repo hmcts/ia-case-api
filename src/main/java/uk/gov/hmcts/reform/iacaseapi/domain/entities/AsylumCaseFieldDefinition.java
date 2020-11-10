@@ -1225,6 +1225,12 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_WAIVER_DOCUMENT(
         "homeOfficeWaiverDocument", new TypeReference<Document>(){}),
 
+    EXCEPTIONAL_CIRCUMSTANCES(
+        "exceptionalCircumstances", new TypeReference<String>(){}),
+
+    REMISSION_EC_EVIDENCE_DOCUMENTS(
+        "remissionEcEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
     ;
 
     private final String value;

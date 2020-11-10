@@ -324,7 +324,7 @@ class FeePaymentPreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "HO_WAIVER_REMISSION", "HELP_WITH_FEES" })
+    @ValueSource(strings = { "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
     public void should_error_on_pay_and_submit_in_remissions(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);

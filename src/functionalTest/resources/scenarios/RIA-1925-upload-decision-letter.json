@@ -6,7 +6,7 @@
     "input": {
       "id": 1122,
       "eventId": "submitAppeal",
-      "state": "appealStarted",
+      "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
@@ -26,7 +26,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "sendDirectionActionAvailable": "No",
+        "sendDirectionActionAvailable": "Yes",
         "legalRepresentativeDocuments": [
           {
             "id": "2",
