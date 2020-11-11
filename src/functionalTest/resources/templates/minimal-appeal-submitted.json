@@ -1,5 +1,5 @@
 {
-  "homeOfficeReferenceNumber": "A123456",
+  "homeOfficeReferenceNumber": "123456789",
   "homeOfficeDecisionDate": "{$TODAY}",
   "appellantTitle": "Mr",
   "appellantGivenNames": "Talha",
