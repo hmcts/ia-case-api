@@ -3,15 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
@@ -1072,6 +1067,30 @@ public enum AsylumCaseFieldDefinition {
 
     IS_REHEARD_APPEAL_ENABLED(
         "isReheardAppealEnabled", new TypeReference<YesOrNo>() {}),
+
+    ATTENDING_JUDGE(
+        "attendingJudge", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANT(
+        "attendingAppellant", new TypeReference<String>(){}),
+
+    ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE(
+        "attendingHomeOfficeLegalRepresentative", new TypeReference<String>(){}),
+
+    LIST_CASE_HEARING_LENGTH(
+        "listCaseHearingLength", new TypeReference<String>() {}),
+
+    HEARING_REQUIREMENTS(
+        "hearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    ACTUAL_CASE_HEARING_LENGTH(
+        "actualCaseHearingLength", new TypeReference<HoursAndMinutes>() {}),
+
+    PREVIOUS_HEARINGS(
+        "previousHearings", new TypeReference<List<IdValue<PreviousHearing>>>(){}),
+
+    CURRENT_HEARING_DETAILS_VISIBLE(
+        "currentHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
 
     ;
 

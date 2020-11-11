@@ -1,0 +1,132 @@
+{
+  "description": "RIA-3652-RIA-3555 Request new hearing requirements (judge) - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Judge",
+    "input": {
+      "id": 3652,
+      "eventId": "requestNewHearingRequirements",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionActionAvailable": "No",
+          "isReheardAppealEnabled": "Yes",
+          "sendDirectionExplanation": "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed",
+          "sendDirectionDueDate": "{$TODAY+5}",
+          "appealDecision": "Allowed",
+          "listCaseHearingDate": "2020-10-28T10:30:00.000",
+          "ariaListingReference": "LP/12345/2019",
+          "listCaseHearingCentre": "taylorHouse",
+          "listCaseHearingLength": "360",
+          "attendingJudge": "Judge Fudge",
+          "attendingAppellant": "José González",
+          "attendingHomeOfficeLegalRepresentative": "Perry Mason",
+          "actualCaseHearingLength": {
+            "hours": "2",
+            "minutes": "30"
+          },
+          "hearingRecordingDocuments": [
+            {
+              "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+                  "document_filename": "HearingRecording.mp3",
+                  "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
+                },
+                "description": "some description"
+              }
+            }
+          ],
+          "finalDecisionAndReasonsDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "tag": "finalDecisionAndReasonsPdf",
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/1c437524-5fc0-4642-9872-3832771379a0",
+                  "document_filename": "PA 50089 2020-Gonzlez-Decision-and-reasons-FINAL.pdf",
+                  "document_binary_url": "http://dm-store:4506/documents/1c437524-5fc0-4642-9872-3832771379a0/binary"
+                },
+                "suppliedBy": "",
+                "description": "",
+                "dateUploaded": "2020-10-14"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "tag": "decisionAndReasonsCoverLetter",
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/60eee78b-fa67-450a-a779-03287d5a4415",
+                  "document_filename": "PA 50089 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
+                  "document_binary_url": "http://dm-store:4506/documents/60eee78b-fa67-450a-a779-03287d5a4415/binary"
+                },
+                "suppliedBy": "",
+                "description": "",
+                "dateUploaded": "2020-10-14"
+              }
+            }
+          ],
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "Do the first thing",
+                "parties": "legalRepresentative",
+                "dateDue": "2018-12-31",
+                "dateSent": "2018-12-25",
+                "tag": ""
+              }
+            }
+          ],
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "isReheardAppealEnabled": "Yes",
+        "attendingJudge": "Judge Fudge",
+        "attendingAppellant": "José González",
+        "attendingHomeOfficeLegalRepresentative": "Perry Mason",
+        "directions": [
+          {
+            "id": "2",
+            "value": {
+              "explanation": "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+5}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestNewHearingRequirements"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Do the first thing",
+              "parties": "legalRepresentative",
+              "dateDue": "2018-12-31",
+              "dateSent": "2018-12-25",
+              "tag": ""
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "3652_LEGAL_REPRESENTATIVE_REQUEST_NEW_HEARING_REQUIREMENTS_DIRECTION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

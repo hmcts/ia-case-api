@@ -30,7 +30,7 @@ public class FtpaDisplayServiceTest {
     }
 
     @Test
-    public void should_return_the_correct_final_display_decisions() {
+    public void should_return_the_correct_final_display_decisions_for_granted() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "granted", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "granted", "partiallyGranted")).isEqualTo("granted");
@@ -39,6 +39,10 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "granted", "reheardRule35")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "granted", "reheardRule32")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "granted", "remadeRule32")).isEqualTo("granted");
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for__partially_granted() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "partiallyGranted", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "partiallyGranted", "partiallyGranted")).isEqualTo("granted");
@@ -47,6 +51,10 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "partiallyGranted", "reheardRule35")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "partiallyGranted", "reheardRule32")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "partiallyGranted", "remadeRule32")).isEqualTo("granted");
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for_refused() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "refused", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "refused", "partiallyGranted")).isEqualTo("granted");
@@ -54,6 +62,10 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "refused", "reheardRule35")).isEqualTo("reheardRule35");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "refused", "reheardRule32")).isEqualTo("reheardRule32");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "refused", "remadeRule32")).isEqualTo("remadeRule32");
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for_not_admitted() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "notAdmitted", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "notAdmitted", "partiallyGranted")).isEqualTo("granted");
@@ -61,6 +73,10 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "notAdmitted", "reheardRule35")).isEqualTo("reheardRule35");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "notAdmitted", "reheardRule32")).isEqualTo("reheardRule32");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "notAdmitted", "remadeRule32")).isEqualTo("remadeRule32");
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for_reheard_rule35() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule35", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule35", "partiallyGranted")).isEqualTo("granted");
@@ -70,6 +86,11 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule35", "reheardRule32")).isEqualTo("reheardRule32");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule35", "remadeRule32")).isEqualTo("remadeRule32");
 
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for_reheard_rule32() {
+
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "partiallyGranted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "refused")).isEqualTo("reheardRule32");
@@ -77,6 +98,11 @@ public class FtpaDisplayServiceTest {
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "reheardRule35")).isEqualTo("reheardRule35");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "reheardRule32")).isEqualTo("reheardRule32");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "reheardRule32", "remadeRule32")).isEqualTo("remadeRule32");
+
+    }
+
+    @Test
+    public void should_return_the_correct_final_display_decisions_for_remade_rule32() {
 
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "remadeRule32", "granted")).isEqualTo("granted");
         assertThat(ftpaDisplayService.getFinalDisplayDecision(asylumCase, "remadeRule32", "partiallyGranted")).isEqualTo("granted");

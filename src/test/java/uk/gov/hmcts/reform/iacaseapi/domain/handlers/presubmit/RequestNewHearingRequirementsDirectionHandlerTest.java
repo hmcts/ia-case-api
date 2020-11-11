@@ -19,12 +19,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -32,6 +34,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
 
     @Mock private DateProvider dateProvider;
     @Mock private DirectionAppender directionAppender;
+    @Mock private PreviousHearingAppender previousHearingAppender;
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
@@ -47,6 +50,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
                 dateProvider,
                 directionAppender,
+                previousHearingAppender,
                 featureToggler
             );
     }
@@ -62,6 +66,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
                 HEARING_REQUIREMENTS_DUE_IN_DAYS,
                 dateProvider,
                 directionAppender,
+                previousHearingAppender,
                 featureToggler
             );
 
@@ -81,15 +86,34 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
         final String expectedDateDue = "2020-10-06";
         final DirectionTag expectedDirectionTag = DirectionTag.REQUEST_NEW_HEARING_REQUIREMENTS;
         final Event event = Event.REQUEST_NEW_HEARING_REQUIREMENTS;
+        final String attendingJudge = "Judge Johnson";
+        final String attendingAppellant = "Joe Bloggs";
+        final String attendingHomeOfficeLegalRepresentative = "Jim Smith";
+        final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
+        final String ariaListingReference = "LP/12345/2020";
+        final HearingCentre listCaseHearingCentre = HearingCentre.TAYLOR_HOUSE;
+        final String listCaseHearingDate = "13/10/2020";
+        final String listCaseHearingLength = "6 hours";
+        final String appealDecision = "Dismissed";
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-10-01"));
+
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
         when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
+        when(asylumCase.read(ATTENDING_JUDGE, String.class)).thenReturn(Optional.of(attendingJudge));
+        when(asylumCase.read(ATTENDING_APPELLANT, String.class)).thenReturn(Optional.of(attendingAppellant));
+        when(asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class)).thenReturn(Optional.of(attendingHomeOfficeLegalRepresentative));
+        when(asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class)).thenReturn(Optional.of(actualCaseHearingLength));
+        when(asylumCase.read(ARIA_LISTING_REFERENCE, String.class)).thenReturn(Optional.of(ariaListingReference));
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.of(listCaseHearingCentre));
+        when(asylumCase.read(LIST_CASE_HEARING_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
+        when(asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)).thenReturn(Optional.of(listCaseHearingLength));
+        when(asylumCase.read(APPEAL_DECISION, String.class)).thenReturn(Optional.of(appealDecision));
 
         when(directionAppender.append(
             existingDirections,
