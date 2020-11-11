@@ -166,7 +166,12 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
 
         asylumCase.write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
 
-        if (asylumCasePreSubmitCallbackResponse.getErrors().isEmpty()) {
+        if (asylumCasePreSubmitCallbackResponse.getErrors().isEmpty()
+            && Arrays.asList(
+                Event.PAYMENT_APPEAL,
+                Event.PAY_AND_SUBMIT_APPEAL).contains(callback.getEvent())
+        ) {
+
             asylumCasePreSubmitCallbackResponse.setData(feePayment.aboutToStart(callback));
         }
 

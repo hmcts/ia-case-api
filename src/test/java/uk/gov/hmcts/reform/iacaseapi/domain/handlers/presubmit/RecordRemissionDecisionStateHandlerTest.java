@@ -1,0 +1,201 @@
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
+
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
+class RecordRemissionDecisionStateHandlerTest {
+
+    @Mock private AsylumCase asylumCase;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+
+    @Mock private FeatureToggler featureToggler;
+
+    private RecordRemissionDecisionStateHandler recordRemissionDecisionStateHandler;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler);
+    }
+
+    @Test
+    void handling_should_throw_if_appeal_type_is_not_present() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Appeal type is not present");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handling_should_throw_if_remission_decision_is_not_present(AppealType type) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .isExactlyInstanceOf(IllegalStateException.class)
+            .hasMessage("Remission decision is not present");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU" })
+    void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu(AppealType type) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU" })
+    void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
+    }
+
+    @Test
+    void should_return_appeal_submitted_state_on_remission_approved_for_pa() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        assertThat(returnedCallbackResponse.getState()).isEqualTo(State.CASE_BUILDING);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+    }
+
+    @Test
+    void handling_should_throw_if_cannot_actually_handle() {
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void it_can_handle_callback() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        for (Event event : Event.values()) {
+
+            when(callback.getEvent()).thenReturn(event);
+
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+                boolean canHandle = recordRemissionDecisionStateHandler.canHandle(callbackStage, callback);
+
+                if ((event == Event.RECORD_REMISSION_DECISION)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+
+                    assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+        }
+    }
+
+    @Test
+    void should_not_allow_null_arguments() {
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler.handle(null, callback, callbackResponse))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+    }
+}

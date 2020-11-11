@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_REFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PBA_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -47,9 +44,19 @@ class AppealPaymentConfirmationProviderTest {
     @Test
     void should_return_correct_value_for_fee_amount_for_display() {
 
-        when(asylumCase.read(FEE_AMOUNT_FOR_DISPLAY, String.class)).thenReturn(Optional.of("£10"));
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
+        when(asylumCase.read(FEE_WITH_HEARING, String.class)).thenReturn(Optional.of("140"));
 
-        assertThat(appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)).isEqualTo("£10");
+        assertThat(appealPaymentConfirmationProvider.getFee(asylumCase)).isEqualTo("140");
+    }
+
+    @Test
+    void should_return_correct_fee_for_fee_without_hearing() {
+
+        when(asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)).thenReturn(Optional.of("decisionWithoutHearing"));
+        when(asylumCase.read(FEE_WITHOUT_HEARING, String.class)).thenReturn(Optional.of("80"));
+
+        assertThat(appealPaymentConfirmationProvider.getFee(asylumCase)).isEqualTo("80");
     }
 
     @Test

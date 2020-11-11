@@ -929,10 +929,6 @@ public enum AsylumCaseFieldDefinition {
             "appealFeeHearingDesc", new TypeReference<String>(){}),
     APPEAL_FEE_WITHOUT_HEARING_DESC(
             "appealFeeWithoutHearingDesc", new TypeReference<String>(){}),
-    FEE_HEARING_AMOUNT_FOR_DISPLAY(
-            "feeHearingAmountForDisplay", new TypeReference<String>(){}),
-    FEE_WITHOUT_HEARING_AMOUNT_FOR_DISPLAY(
-            "feeWithoutHearingAmountForDisplay", new TypeReference<String>(){}),
     PAYMENT_STATUS(
             "paymentStatus", new TypeReference<PaymentStatus>(){}),
     FEE_PAYMENT_APPEAL_TYPE(
@@ -951,6 +947,8 @@ public enum AsylumCaseFieldDefinition {
             "feeVersion", new TypeReference<String>(){}),
     FEE_AMOUNT_FOR_DISPLAY(
         "feeAmountForDisplay", new TypeReference<String>(){}),
+    FEE_AMOUNT(
+        "feeAmount", new TypeReference<String>(){}),
     PBA_NUMBER(
             "pbaNumber", new TypeReference<String>(){}),
     PAYMENT_DESCRIPTION(
@@ -969,6 +967,12 @@ public enum AsylumCaseFieldDefinition {
         "decisionWithoutHearing", new TypeReference<String>(){}),
     DECISION_HEARING_FEE_OPTION(
         "decisionHearingFeeOption", new TypeReference<String>(){}),
+
+    FEE_WITH_HEARING(
+        "feeWithHearing", new TypeReference<String>(){}),
+
+    FEE_WITHOUT_HEARING(
+        "feeWithoutHearing", new TypeReference<String>(){}),
 
     DATES_TO_AVOID(
         "datesToAvoid", new TypeReference<List<IdValue<DatesToAvoid>>>(){}),
@@ -1230,6 +1234,15 @@ public enum AsylumCaseFieldDefinition {
 
     REMISSION_EC_EVIDENCE_DOCUMENTS(
         "remissionEcEvidenceDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    REMISSION_DECISION(
+        "remissionDecision", new TypeReference<RemissionDecision>(){}),
+
+    AMOUNT_REMITTED(
+        "amountRemitted", new TypeReference<String>(){}),
+
+    AMOUNT_LEFT_TO_PAY(
+        "amountLeftToPay", new TypeReference<String>(){}),
 
     ;
 

@@ -97,6 +97,7 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
+                asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {
                     setFeeRemissionTypeDetails(asylumCase);
@@ -108,7 +109,6 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     setExceptionalCircumstancesRemissionDetails(asylumCase);
                 } else {
 
-                    asylumCase = feePayment.aboutToSubmit(callback);
                     setFeePaymentDetails(asylumCase, appealType);
                     clearRemissionDetails(asylumCase);
                 }
@@ -123,6 +123,7 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
                 asylumCase.clear(REMISSION_TYPE);
                 asylumCase.clear(FEE_REMISSION_TYPE);
+                asylumCase.clear(PAYMENT_STATUS);
                 clearFeeOptionDetails(asylumCase);
                 clearRemissionDetails(asylumCase);
                 break;
@@ -187,14 +188,12 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
         }
 
-        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
         clearFeeOptionDetails(asylumCase);
     }
 
     private void setHelpWithFeesDetails(AsylumCase asylumCase) {
 
         asylumCase.write(FEE_REMISSION_TYPE, "Help with Fees");
-        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
         clearRemissionDetails(asylumCase);
         clearFeeOptionDetails(asylumCase);
 
@@ -203,7 +202,6 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
     private void setExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
 
         asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
-        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
         clearRemissionDetails(asylumCase);
         clearFeeOptionDetails(asylumCase);
 
@@ -231,7 +229,6 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.clear(HEARING_DECISION_SELECTED);
         asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        asylumCase.clear(PAYMENT_STATUS);
     }
 
     private void clearRemissionDetails(AsylumCase asylumCase) {

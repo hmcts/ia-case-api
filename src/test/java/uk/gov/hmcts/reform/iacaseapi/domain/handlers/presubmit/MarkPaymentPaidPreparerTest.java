@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class MarkPaymentPaidHandlerTest {
+class MarkPaymentPaidPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -44,13 +44,15 @@ class MarkPaymentPaidHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private MarkPaymentPaidHandler markPaymentPaidHandler =
-        new MarkPaymentPaidHandler(true);
+    private MarkPaymentPaidPreparer markPaymentPaidPreparer;
 
     @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
+
+        markPaymentPaidPreparer =
+            new MarkPaymentPaidPreparer(true);
     }
 
 
@@ -63,9 +65,10 @@ class MarkPaymentPaidHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(returnedCallbackResponse);
         assertThat(returnedCallbackResponse.getErrors()).contains("The fee for this appeal has already been paid.");
@@ -82,7 +85,7 @@ class MarkPaymentPaidHandlerTest {
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(returnedCallbackResponse);
         assertThat(returnedCallbackResponse.getErrors()).contains("Payment is not required for this type of appeal.");
@@ -98,18 +101,56 @@ class MarkPaymentPaidHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(returnedCallbackResponse);
         assertThat(returnedCallbackResponse.getErrors()).contains("The Mark appeal as paid option is not available.");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "PA" })
+    public void handling_should_error_for_remission_decision_not_present(String type) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because the remission decision has not been recorded.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "PA" })
+    public void handling_should_error_for_remission_decision_approved(String type) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.APPROVED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(returnedCallbackResponse);
+        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because a full remission has been approved.");
+    }
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
@@ -124,7 +165,7 @@ class MarkPaymentPaidHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = markPaymentPaidHandler.canHandle(callbackStage, callback);
+                boolean canHandle = markPaymentPaidPreparer.canHandle(callbackStage, callback);
 
                 if ((event == Event.MARK_APPEAL_PAID)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
@@ -142,19 +183,19 @@ class MarkPaymentPaidHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> markPaymentPaidHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> markPaymentPaidPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> markPaymentPaidHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> markPaymentPaidPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> markPaymentPaidHandler.handle(null, callback))
+        assertThatThrownBy(() -> markPaymentPaidPreparer.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

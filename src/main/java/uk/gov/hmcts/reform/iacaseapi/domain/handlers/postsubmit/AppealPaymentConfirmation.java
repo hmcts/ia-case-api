@@ -63,7 +63,7 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                 + "\n\n#### Payment by account number\n"
                 + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
                 + feeLabel
-                + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
+                + "£" + appealPaymentConfirmationProvider.getFee(asylumCase)
                 + "\n\n#### Reason for failed payment\n"
                 + paymentErrorMessage
             );
@@ -87,7 +87,7 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                     + "\n\n#### Payment by account number\n"
                     + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
                     + feeLabel
-                    + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
+                    + "£" + appealPaymentConfirmationProvider.getFee(asylumCase)
                 );
             } else {
                 postSubmitResponse.setConfirmationHeader("# You have paid for the appeal");
@@ -100,7 +100,7 @@ public class AppealPaymentConfirmation implements PostSubmitCallbackHandler<Asyl
                     + "\n\n#### Payment by Account number\n"
                     + appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)
                     + feeLabel
-                    + appealPaymentConfirmationProvider.getFeeWithFormat(asylumCase)
+                    + "£" + appealPaymentConfirmationProvider.getFee(asylumCase)
                 );
             }
         }
