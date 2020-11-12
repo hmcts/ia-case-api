@@ -9,7 +9,7 @@ public class HearingConductionOptionsTest {
 
     @Test
     public void has_correct_values() {
-        assertEquals("decisionWithoutHearing", HearingConductionOptions.DECISION_WITHOUT_HEARING.toString());
+        assertEquals("decisionWithouHearing", HearingConductionOptions.DECISION_WITHOUT_HEARING.toString());
         assertEquals("videoWithNoParticipants", HearingConductionOptions.VIDEO_WITH_NO_PARTICIPANTS.toString());
         assertEquals("videoWithAtLeastOne", HearingConductionOptions.VIDEO_WITH_AT_LEAST_ONE.toString());
         assertEquals("audioWithNoParticipants", HearingConductionOptions.AUDIO_WITH_NO_PARTICIPANTS.toString());
