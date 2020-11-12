@@ -92,7 +92,6 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     @Test
     public void should_hold_on_to_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_does_not_exist() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -116,7 +115,6 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     @Test
     public void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
 
-        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
