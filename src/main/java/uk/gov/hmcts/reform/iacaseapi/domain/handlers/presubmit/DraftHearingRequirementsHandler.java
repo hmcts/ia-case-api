@@ -71,6 +71,7 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
             asylumCase.clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
             asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
+            asylumCase.clear(HEARING_REQUIREMENTS);
         } else {
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         }

@@ -1092,6 +1092,21 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_HEARING_DETAILS_VISIBLE(
         "currentHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
 
+    ATTENDING_TCW(
+        "attendingTcw", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE(
+        "attendingAppellantsLegalRepresentative", new TypeReference<String>(){}),
+
+    HEARING_CONDUCTION_OPTIONS(
+        "hearingConductionOptions", new TypeReference<List<IdValue<HearingConductionOptions>>>(){}),
+
+    REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS(
+        "reheardCaseListedWithoutHearingRequirements", new TypeReference<YesOrNo>() {}),
+
+    PREVIOUS_HEARING_DETAILS_VISIBLE(
+        "previousHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
+
     LIST_CASE_HEARING_LENGTH_VISIBLE(
         "listCaseHearingLengthVisible", new TypeReference<YesOrNo>() {}),
 

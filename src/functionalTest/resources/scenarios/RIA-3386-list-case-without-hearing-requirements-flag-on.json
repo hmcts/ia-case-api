@@ -1,0 +1,88 @@
+{
+  "description": "RIA-3386 List case without submitting hearing requirements - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 3386,
+      "eventId": "listCaseWithoutHearingRequirements",
+      "state": "submitHearingRequirements",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "listCaseHearingLength": "90",
+          "attendingTcw": "some TCW",
+          "attendingJudge": "some Judge",
+          "attendingAppellant": "some Appellant",
+          "attendingHomeOfficeLegalRepresentative": "some HO",
+          "attendingAppellantsLegalRepresentative": "some legal rep",
+          "actualCaseHearingLength": {
+            "hours": "2",
+            "minutes": "30"
+          },
+          "hearingConductionOptions": "allParticipants",
+          "hearingRecordingDocuments": [
+            {
+              "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+                  "document_filename": "HearingRecording.mp3",
+                  "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
+                },
+                "description": "some description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "submitHearingRequirementsAvailable": "Yes",
+        "reviewedHearingRequirements": "Yes",
+        "caseListedWithoutHearingRequirements": "Yes",
+        "listCaseHearingLength": "90",
+        "attendingTcw": "some TCW",
+        "attendingJudge": "some Judge",
+        "attendingAppellant": "some Appellant",
+        "attendingHomeOfficeLegalRepresentative": "some HO",
+        "attendingAppellantsLegalRepresentative": "some legal rep",
+        "actualCaseHearingLength": {
+          "hours": "2",
+          "minutes": "30"
+        },
+        "hearingConductionOptions": "allParticipants",
+        "hearingRecordingDocuments": [
+          {
+            "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+                "document_filename": "HearingRecording.mp3",
+                "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
+              },
+              "description": "some description"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "3386_WITHOUT_HEARING_REQUIREMENTS_ADMIN_OFFICER",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
