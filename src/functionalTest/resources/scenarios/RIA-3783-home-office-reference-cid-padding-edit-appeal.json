@@ -1,0 +1,27 @@
+{
+  "description": "RIA-3783 Home Office Reference CID Number zero padding - edit appeal before submit",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "123456"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "000123456"
+      }
+    }
+  }
+}
