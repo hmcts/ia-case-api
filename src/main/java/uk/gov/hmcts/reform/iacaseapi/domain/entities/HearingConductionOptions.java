@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum HearingConductionOptions {
-    DECISION_WITHOUT_HEARING("decisionWithoutHearing"),
+    DECISION_WITHOUT_HEARING("decisionWithouHearing"),
     VIDEO_WITH_NO_PARTICIPANTS("videoWithNoParticipants"),
     VIDEO_WITH_AT_LEAST_ONE("videoWithAtLeastOne"),
     AUDIO_WITH_NO_PARTICIPANTS("audioWithNoParticipants"),

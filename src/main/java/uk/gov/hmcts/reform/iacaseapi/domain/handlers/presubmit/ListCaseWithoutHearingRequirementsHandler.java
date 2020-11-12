@@ -56,25 +56,21 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
             && featureToggler.getValue("reheard-feature", false)) {
             asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
-            asylumCase.write(PREVIOUS_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
-            clearAttendanceAndDurationFields(asylumCase);
+            asylumCase.clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
+            asylumCase.clear(ATTENDING_TCW);
+            asylumCase.clear(ATTENDING_JUDGE);
+            asylumCase.clear(ATTENDING_APPELLANT);
+            asylumCase.clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+            asylumCase.clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+            asylumCase.clear(ACTUAL_CASE_HEARING_LENGTH);
+            asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
+            asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
+
         } else {
             asylumCase.write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    protected void clearAttendanceAndDurationFields(AsylumCase asylumCase) {
-        asylumCase.clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
-        asylumCase.clear(ATTENDING_TCW);
-        asylumCase.clear(ATTENDING_JUDGE);
-        asylumCase.clear(ATTENDING_APPELLANT);
-        asylumCase.clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
-        asylumCase.clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
-        asylumCase.clear(ACTUAL_CASE_HEARING_LENGTH);
-        asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
-        asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
     }
 }
 
