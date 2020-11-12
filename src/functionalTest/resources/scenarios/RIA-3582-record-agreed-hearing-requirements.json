@@ -1,0 +1,47 @@
+{
+  "description": "RIA-3582 Review hearing requirements - feature flag enabled",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "reviewHearingRequirements",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "caseFlagSetAsideReheardExists": "No",
+          "reviewedHearingRequirements": "No",
+          "listCaseHearingLength": "300",
+          "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+          "multimediaTribunalResponse": "multimedia reason",
+          "singleSexCourtTribunalResponse": "singleSexCourt reason",
+          "inCameraCourtTribunalResponse": "inCameraCourt reason",
+          "additionalTribunalResponse": "additional reason",
+          "uploadAdditionalEvidenceActionAvailable": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "No",
+        "listCaseHearingLengthVisible": null,
+        "reviewedHearingRequirements": "Yes",
+        "listCaseHearingLength": "300",
+        "vulnerabilitiesTribunalResponse": "vulnerabilities reason",
+        "multimediaTribunalResponse": "multimedia reason",
+        "singleSexCourtTribunalResponse": "singleSexCourt reason",
+        "inCameraCourtTribunalResponse": "inCameraCourt reason",
+        "additionalTribunalResponse": "additional reason",
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
+      }
+    }
+  }
+}

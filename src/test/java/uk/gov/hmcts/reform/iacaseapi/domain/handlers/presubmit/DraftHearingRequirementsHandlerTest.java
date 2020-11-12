@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -59,6 +58,44 @@ public class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).read(WITNESS_DETAILS);
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.WITNESS_COUNT), eq(0));
         verify(asylumCase, times(1)).write(eq(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE), eq(YesOrNo.YES));
+    }
+
+    @Test
+    public void should_clear_previous_agreed_adjustment_fields_for_reheard_appeal() {
+
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(1)).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(1)).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(1)).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(1)).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
+    }
+
+    @Test
+    public void should_set_current_hearing_details_visibility_to_yes_for_normal_case() {
+
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(0)).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(0)).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(0)).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase, times(0)).clear(ADDITIONAL_TRIBUNAL_RESPONSE);
     }
 
     @Test

@@ -1092,6 +1092,9 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_HEARING_DETAILS_VISIBLE(
         "currentHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
 
+    LIST_CASE_HEARING_LENGTH_VISIBLE(
+        "listCaseHearingLengthVisible", new TypeReference<YesOrNo>() {}),
+
     ;
 
     private final String value;

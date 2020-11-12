@@ -110,15 +110,13 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<PreviousHearing>> existingPreviousHearings =
             maybePreviousHearings.orElse(Collections.emptyList());
 
-        final String attendingJudge = asylumCase.read(ATTENDING_JUDGE, String.class)
-            .orElseThrow(() -> new IllegalStateException("attendingJudge is missing."));
+        final Optional<String> attendingJudge = asylumCase.read(ATTENDING_JUDGE, String.class);
 
         final Optional<String> attendingAppellant = asylumCase.read(ATTENDING_APPELLANT, String.class);
 
         final Optional<String> attendingHomeOfficeLegalRepresentative = asylumCase.read(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE, String.class);
 
-        final HoursAndMinutes actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class)
-            .orElseThrow(() -> new IllegalStateException("actualCaseHearingLength is missing."));
+        final Optional<HoursAndMinutes> actualCaseHearingLength = asylumCase.read(ACTUAL_CASE_HEARING_LENGTH, HoursAndMinutes.class);
 
         final String ariaListingReference = asylumCase.read(ARIA_LISTING_REFERENCE, String.class)
             .orElseThrow(() -> new IllegalStateException("ariaListingReference is missing."));
@@ -162,7 +160,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             listCaseHearingCentre,
             listCaseHearingDate,
             listCaseHearingLength,
-            hearingRecordingDocuments,
+            Optional.of(hearingRecordingDocuments),
             appealDecision,
             finalDecisionAndReasonsDocuments,
             hearingRequirements
