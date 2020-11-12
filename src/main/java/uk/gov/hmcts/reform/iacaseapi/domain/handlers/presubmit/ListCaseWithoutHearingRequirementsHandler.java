@@ -52,8 +52,8 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
         asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
 
-        if (featureToggler.getValue("reheard-feature", false)
-            && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+            && featureToggler.getValue("reheard-feature", false)) {
             asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
             asylumCase.write(PREVIOUS_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
