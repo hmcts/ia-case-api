@@ -1,14 +1,21 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,13 +25,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
+
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -34,9 +45,35 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
     @Mock private Callback<AsylumCase> callback;
     @Mock private AsylumCase asylumCase;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private FeatureToggler featureToggler;
+    @Mock private Direction nonStandardDirection;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
+
+    private IdValue originalDirection8 = new IdValue(
+        "8",
+        new Direction("explanation8", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+    );
+
+    private IdValue originalDirection9 = new IdValue(
+        "9",
+        new Direction("explanation9", Parties.RESPONDENT, "2020-01-02",
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+    );
+
+    private IdValue originalDirection10 = new IdValue(
+        "10",
+        new Direction("explanation10", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
+            "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList())
+    );
+
+    private IdValue originalDirection11 = new IdValue(
+        "11",
+        new Direction("explanation11", Parties.RESPONDENT, "2020-01-02",
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+    );
 
     @BeforeEach
     void setUp() {
@@ -64,6 +101,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -74,7 +114,38 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
+    void should_return_right_direction_for_multiple_send_direction() {
+
+        List<IdValue<Direction>> directionList = new ArrayList<>();
+        directionList.add(originalDirection8);
+        directionList.add(originalDirection9);
+        directionList.add(originalDirection10);
+        directionList.add(originalDirection11);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
+
+        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
+
+        assertTrue(selectedDirection.isPresent());
+        assertTrue(selectedDirection.get().getParties().equals(Parties.RESPONDENT));
+        assertTrue(selectedDirection.get().getExplanation().equals("explanation11"));
+    }
+
+    @Test
+    void should_return_empty_direction_for_invalid_send_direction() {
+
+        List<IdValue<Direction>> directionList = new ArrayList<>();
+        directionList.add(originalDirection9);
+        directionList.add(originalDirection10);
+        when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
+
+        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
+
+        assertTrue(selectedDirection.isEmpty());
+    }
+
+    @Test
     void it_can_handle_callback() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
 
         for (Event event : Event.values()) {
 
@@ -82,10 +153,20 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
+                for (State state : State.values()) {
 
-                if (callbackStage == ABOUT_TO_SUBMIT
-                    && Arrays.asList(
+                    when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+                    when(callback.getCaseDetails().getState()).thenReturn(state);
+
+                    List<IdValue<Direction>> directionList = new ArrayList<>();
+                    directionList.add(originalDirection8);
+                    directionList.add(originalDirection9);
+                    when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
+
+                    boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
+
+                    if (callbackStage == ABOUT_TO_SUBMIT
+                        && Arrays.asList(
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.LIST_CASE,
@@ -96,17 +177,23 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.APPLY_FOR_FTPA_RESPONDENT,
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
                         Event.RESIDENT_JUDGE_FTPA_DECISION,
-                        Event.END_APPEAL
+                        Event.END_APPEAL,
+                        Event.SEND_DIRECTION
                     ).contains(callback.getEvent())
-                ) {
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
+                    ) {
+                        if (event == Event.SEND_DIRECTION
+                            && state != State.AWAITING_RESPONDENT_EVIDENCE) {
+                            assertFalse(canHandle);
+                        } else {
+                            assertTrue(canHandle);
+                        }
+                    } else {
+                        assertFalse(canHandle);
+                    }
                 }
             }
-
-            reset(callback);
         }
+        reset(callback);
     }
 
     @Test
