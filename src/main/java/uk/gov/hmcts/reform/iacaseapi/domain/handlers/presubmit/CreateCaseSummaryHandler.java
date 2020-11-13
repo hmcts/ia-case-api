@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -69,18 +70,22 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
                 .read(CASE_SUMMARY_DESCRIPTION, String.class)
                 .orElse("");
 
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-                asylumCase.read(HEARING_DOCUMENTS);
-
-        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-            maybeHearingDocuments.orElse(emptyList());
-
         DocumentWithMetadata caseSummaryDocumentWithMetadata =
             documentReceiver.receive(
                 caseSummaryDocument,
                 caseSummaryDescription,
                 DocumentTag.CASE_SUMMARY
             );
+
+        Optional<YesOrNo> caseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS);
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+            caseFlagSetAsideReheardExists.isPresent() && caseFlagSetAsideReheardExists.get() == YesOrNo.YES
+                ? asylumCase.read(REHEARD_HEARING_DOCUMENTS)
+                : asylumCase.read(HEARING_DOCUMENTS);
+
+        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
+            maybeHearingDocuments.orElse(emptyList());
 
         List<IdValue<DocumentWithMetadata>> allHearingDocuments =
             documentsAppender.append(
@@ -89,7 +94,11 @@ public class CreateCaseSummaryHandler implements PreSubmitCallbackHandler<Asylum
                 DocumentTag.CASE_SUMMARY
             );
 
-        asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
+        if (caseFlagSetAsideReheardExists.isPresent() && caseFlagSetAsideReheardExists.get() == YesOrNo.YES) {
+            asylumCase.write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        } else {
+            asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
