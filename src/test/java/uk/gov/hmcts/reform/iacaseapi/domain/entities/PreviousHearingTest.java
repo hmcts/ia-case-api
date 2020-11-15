@@ -27,10 +27,6 @@ public class PreviousHearingTest {
         "binaryUrl",
         "documentFilename");
 
-    private final HearingRecordingDocument hearingRecordingDocument1 = new HearingRecordingDocument(
-        doc,
-        "some description");
-
     private final DocumentWithMetadata decisionAndReasonsDocument = new DocumentWithMetadata(
         new Document(
             "documentUrl",
@@ -40,23 +36,6 @@ public class PreviousHearingTest {
         "dateUploaded",
         DocumentTag.FINAL_DECISION_AND_REASONS_PDF
     );
-
-    private final DocumentWithMetadata hearingRequirementsDocument = new DocumentWithMetadata(
-        new Document(
-            "documentUrl",
-            "binaryUrl",
-            "documentFilename"),
-        "description",
-        "dateUploaded",
-        DocumentTag.HEARING_REQUIREMENTS
-    );
-
-    private final Optional<List<IdValue<HearingRecordingDocument>>> allHearingRecordingDocuments = Optional.of(asList(
-        new IdValue<>(
-            "1",
-            hearingRecordingDocument1
-        )
-    ));
 
     private final List<IdValue<DocumentWithMetadata>> allFinalDecisionAndReasonsDocuments = asList(
         new IdValue<DocumentWithMetadata>(
@@ -74,7 +53,6 @@ public class PreviousHearingTest {
         listCaseHearingCentre,
         listCaseHearingDate,
         listCaseHearingLength,
-        allHearingRecordingDocuments,
         appealDecision,
         allFinalDecisionAndReasonsDocuments
     );
@@ -89,7 +67,6 @@ public class PreviousHearingTest {
         Assert.assertEquals(listCaseHearingCentre, previousHearing.getListCaseHearingCentre());
         Assert.assertEquals(listCaseHearingDate, previousHearing.getListCaseHearingDate());
         Assert.assertEquals(listCaseHearingLength, previousHearing.getListCaseHearingLength());
-        Assert.assertEquals(allHearingRecordingDocuments, previousHearing.getHearingRecordingDocuments());
         Assert.assertEquals(appealDecision, previousHearing.getAppealDecision());
         Assert.assertEquals(allFinalDecisionAndReasonsDocuments, previousHearing.getFinalDecisionAndReasonsDocuments());
     }
@@ -106,7 +83,6 @@ public class PreviousHearingTest {
             listCaseHearingCentre,
             listCaseHearingDate,
             listCaseHearingLength,
-            allHearingRecordingDocuments,
             appealDecision,
             allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
@@ -120,7 +96,6 @@ public class PreviousHearingTest {
             null,
             listCaseHearingDate,
             listCaseHearingLength,
-            allHearingRecordingDocuments,
             appealDecision,
             allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
@@ -134,7 +109,6 @@ public class PreviousHearingTest {
             listCaseHearingCentre,
             null,
             listCaseHearingLength,
-            allHearingRecordingDocuments,
             appealDecision,
             allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
@@ -148,7 +122,6 @@ public class PreviousHearingTest {
             listCaseHearingCentre,
             listCaseHearingDate,
             null,
-            allHearingRecordingDocuments,
             appealDecision,
             allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
@@ -162,7 +135,6 @@ public class PreviousHearingTest {
             listCaseHearingCentre,
             listCaseHearingDate,
             listCaseHearingLength,
-            allHearingRecordingDocuments,
             null,
             allFinalDecisionAndReasonsDocuments))
             .isExactlyInstanceOf(NullPointerException.class);
@@ -176,7 +148,6 @@ public class PreviousHearingTest {
             listCaseHearingCentre,
             listCaseHearingDate,
             listCaseHearingLength,
-            allHearingRecordingDocuments,
             appealDecision,
             null))
             .isExactlyInstanceOf(NullPointerException.class);

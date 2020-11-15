@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3582-RIA-3763 Current hearing adjustments cleared for FTPA reheard appeal - feature flag enabled",
+  "description": "RIA-3555-RIA-3763-RIA-3784 Submit new hearing requirements (FTPA reheard decision)",
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -12,6 +12,7 @@
         "replacements": {
           "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "Yes",
+          "currentHearingDetailsVisible": "Yes",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -59,7 +60,19 @@
             }
           ],
           "uploadAdditionalEvidenceActionAvailable": "Yes",
-          "multimediaTribunalResponse": "Some multimedia response",
+          "hearingRecordingDocuments": [
+            {
+              "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+              "value": {
+                "document": {
+                  "document_url": "some-document-url",
+                  "document_filename": "HearingRecording.mp3",
+                  "document_binary_url": "some-binary-url"
+                },
+                "description": "some description"
+              }
+            }
+          ],
           "previousHearings": [
             {
               "id": "1",
@@ -76,19 +89,6 @@
                 },
                 "attendingAppellant": "José González",
                 "attendingHomeOfficeLegalRepresentative": "Perry Mason",
-                "hearingRecordingDocuments": [
-                  {
-                    "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
-                    "value": {
-                      "document": {
-                        "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
-                        "document_filename": "HearingRecording.mp3",
-                        "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
-                      },
-                      "description": "some description"
-                    }
-                  }
-                ],
                 "finalDecisionAndReasonsDocuments": [
                   {
                     "id": "2",
@@ -198,19 +198,6 @@
               },
               "attendingAppellant": "José González",
               "attendingHomeOfficeLegalRepresentative": "Perry Mason",
-              "hearingRecordingDocuments": [
-                {
-                  "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
-                  "value": {
-                    "document": {
-                      "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
-                      "document_filename": "HearingRecording.mp3",
-                      "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
-                    },
-                    "description": "some description"
-                  }
-                }
-              ],
               "finalDecisionAndReasonsDocuments": [
                 {
                   "id": "2",
@@ -241,6 +228,19 @@
                   }
                 }
               ]
+            }
+          }
+        ],
+        "previousHearingRecordingDocuments": [
+          {
+            "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+            "value": {
+              "document": {
+                "document_url": "some-document-url",
+                "document_filename": "HearingRecording.mp3",
+                "document_binary_url": "some-binary-url"
+              },
+              "description": "some description"
             }
           }
         ]
