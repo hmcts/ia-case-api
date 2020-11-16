@@ -21,7 +21,6 @@ public class PreviousHearing {
     private HearingCentre listCaseHearingCentre;
     private String listCaseHearingDate;
     private String listCaseHearingLength;
-    private Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments;
     private String appealDecision;
     private List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments;
 
@@ -38,7 +37,6 @@ public class PreviousHearing {
         HearingCentre listCaseHearingCentre,
         String listCaseHearingDate,
         String listCaseHearingLength,
-        Optional<List<IdValue<HearingRecordingDocument>>> hearingRecordingDocuments,
         String appealDecision,
         List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments
 
@@ -58,7 +56,6 @@ public class PreviousHearing {
         this.listCaseHearingCentre = listCaseHearingCentre;
         this.listCaseHearingDate = listCaseHearingDate;
         this.listCaseHearingLength = listCaseHearingLength;
-        this.hearingRecordingDocuments = hearingRecordingDocuments;
         this.appealDecision = appealDecision;
         this.finalDecisionAndReasonsDocuments = finalDecisionAndReasonsDocuments;
     }
@@ -97,10 +94,6 @@ public class PreviousHearing {
     public String getListCaseHearingLength() {
         requireNonNull(listCaseHearingLength);
         return listCaseHearingLength;
-    }
-
-    public Optional<List<IdValue<HearingRecordingDocument>>> getHearingRecordingDocuments() {
-        return hearingRecordingDocuments;
     }
 
     public String getAppealDecision() {

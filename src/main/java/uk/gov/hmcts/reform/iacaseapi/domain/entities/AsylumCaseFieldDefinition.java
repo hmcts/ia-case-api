@@ -1113,6 +1113,9 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_HEARING_REQUIREMENTS(
         "previousHearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    PREVIOUS_HEARING_RECORDING_DOCUMENTS(
+        "previousHearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
+
     ;
 
     private final String value;

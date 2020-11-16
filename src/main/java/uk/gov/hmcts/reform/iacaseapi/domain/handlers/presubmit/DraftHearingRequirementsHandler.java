@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingRecordingDocument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -76,6 +77,15 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
 
             final List<IdValue<DocumentWithMetadata>> previousHearingRequirements =
                 new ArrayList<>(hearingRequirements);
+
+            Optional<List<IdValue<HearingRecordingDocument>>> maybeHearingRecordingDocuments =
+                asylumCase.read(HEARING_RECORDING_DOCUMENTS);
+
+            final List<IdValue<HearingRecordingDocument>> hearingRecordingDocuments =
+                maybeHearingRecordingDocuments.orElse(emptyList());
+
+            asylumCase.write(PREVIOUS_HEARING_RECORDING_DOCUMENTS, hearingRecordingDocuments);
+            asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
 
             asylumCase.write(PREVIOUS_HEARING_REQUIREMENTS, previousHearingRequirements);
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);

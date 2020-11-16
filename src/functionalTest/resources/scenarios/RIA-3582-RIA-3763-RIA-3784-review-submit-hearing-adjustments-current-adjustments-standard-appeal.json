@@ -1,6 +1,5 @@
 {
-  "description": "RIA-3555-RIA-3763 Submit new hearing requirements (FTPA reheard decision)",
-  "launchDarklyKey": "reheard-feature:true",
+  "description": "RIA-3582-RIA-3763-RIA-3784 Current hearing adjustments visible for standard appeal - feature flag disabled",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -10,9 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isReheardAppealEnabled": "Yes",
-          "caseFlagSetAsideReheardExists": "Yes",
-          "currentHearingDetailsVisible": "Yes",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -60,6 +56,11 @@
             }
           ],
           "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "multimediaTribunalResponse": "Some multimedia response",
+          "singleSexCourtTribunalResponse": "Some single-sex court response",
+          "inCameraCourtTribunalResponse": "Some in-camera court response",
+          "vulnerabilitiesTribunalResponse": "Some vulnerabilities response",
+          "additionalTribunalResponse": "Some additional response",
           "previousHearings": [
             {
               "id": "1",
@@ -76,19 +77,6 @@
                 },
                 "attendingAppellant": "José González",
                 "attendingHomeOfficeLegalRepresentative": "Perry Mason",
-                "hearingRecordingDocuments": [
-                  {
-                    "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
-                    "value": {
-                      "document": {
-                        "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
-                        "document_filename": "HearingRecording.mp3",
-                        "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
-                      },
-                      "description": "some description"
-                    }
-                  }
-                ],
                 "finalDecisionAndReasonsDocuments": [
                   {
                     "id": "2",
@@ -132,9 +120,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "isReheardAppealEnabled": "Yes",
-        "caseFlagSetAsideReheardExists": "Yes",
-        "currentHearingDetailsVisible": "No",
+        "currentHearingDetailsVisible": "Yes",
         "isAppellantAttendTheHearing": "Yes",
         "isAppellantGivingOralEvidence": "Yes",
         "isWitnessesAttending": "Yes",
@@ -182,68 +168,11 @@
           }
         ],
         "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "previousHearings": [
-          {
-            "id": "1",
-            "value": {
-              "attendingJudge": "Judge Fudge",
-              "appealDecision": "Allowed",
-              "listCaseHearingDate": "2020-10-28T10:30:00.000",
-              "ariaListingReference": "LP/12345/2019",
-              "listCaseHearingCentre": "taylorHouse",
-              "listCaseHearingLength": "360",
-              "actualCaseHearingLength": {
-                "hours": "2",
-                "minutes": "30"
-              },
-              "attendingAppellant": "José González",
-              "attendingHomeOfficeLegalRepresentative": "Perry Mason",
-              "hearingRecordingDocuments": [
-                {
-                  "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
-                  "value": {
-                    "document": {
-                      "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
-                      "document_filename": "HearingRecording.mp3",
-                      "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
-                    },
-                    "description": "some description"
-                  }
-                }
-              ],
-              "finalDecisionAndReasonsDocuments": [
-                {
-                  "id": "2",
-                  "value": {
-                    "tag": "finalDecisionAndReasonsPdf",
-                    "document": {
-                      "document_url": "http://dm-store:4506/documents/1c437524-5fc0-4642-9872-3832771379a0",
-                      "document_filename": "PA 50089 2020-Gonzlez-Decision-and-reasons-FINAL.pdf",
-                      "document_binary_url": "http://dm-store:4506/documents/1c437524-5fc0-4642-9872-3832771379a0/binary"
-                    },
-                    "suppliedBy": "",
-                    "description": "",
-                    "dateUploaded": "2020-10-14"
-                  }
-                },
-                {
-                  "id": "1",
-                  "value": {
-                    "tag": "decisionAndReasonsCoverLetter",
-                    "document": {
-                      "document_url": "http://dm-store:4506/documents/60eee78b-fa67-450a-a779-03287d5a4415",
-                      "document_filename": "PA 50089 2020-Gonzlez-Decision-and-reasons-Cover-letter.PDF",
-                      "document_binary_url": "http://dm-store:4506/documents/60eee78b-fa67-450a-a779-03287d5a4415/binary"
-                    },
-                    "suppliedBy": "",
-                    "description": "",
-                    "dateUploaded": "2020-10-14"
-                  }
-                }
-              ]
-            }
-          }
-        ]
+        "multimediaTribunalResponse": "Some multimedia response",
+        "singleSexCourtTribunalResponse": "Some single-sex court response",
+        "inCameraCourtTribunalResponse": "Some in-camera court response",
+        "vulnerabilitiesTribunalResponse": "Some vulnerabilities response",
+        "additionalTribunalResponse": "Some additional response"
       }
     }
   }

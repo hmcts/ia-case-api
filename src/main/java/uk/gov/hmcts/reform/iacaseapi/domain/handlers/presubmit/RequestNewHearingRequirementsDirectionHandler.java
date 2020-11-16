@@ -131,12 +131,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final String listCaseHearingLength = asylumCase.read(LIST_CASE_HEARING_LENGTH, String.class)
             .orElseThrow(() -> new IllegalStateException("listCaseHearingLength is missing."));
 
-        Optional<List<IdValue<HearingRecordingDocument>>> maybeHearingRecordingDocuments =
-            asylumCase.read(HEARING_RECORDING_DOCUMENTS);
-
-        final List<IdValue<HearingRecordingDocument>> hearingRecordingDocuments =
-            maybeHearingRecordingDocuments.orElse(emptyList());
-
         final String appealDecision = asylumCase.read(APPEAL_DECISION, String.class)
             .orElseThrow(() -> new IllegalStateException("appealDecision is missing."));
 
@@ -155,7 +149,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             listCaseHearingCentre,
             listCaseHearingDate,
             listCaseHearingLength,
-            Optional.of(hearingRecordingDocuments),
             appealDecision,
             finalDecisionAndReasonsDocuments
         );
