@@ -52,8 +52,7 @@ public class AdvancedBundlingCallbackHandlerTest {
             new AdvancedBundlingCallbackHandler(
                 emBundlerUrl,
                 emBundlerStitchUri,
-                bundleRequestExecutor
-            );
+                bundleRequestExecutor);
 
         when(callback.getEvent()).thenReturn(Event.GENERATE_HEARING_BUNDLE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

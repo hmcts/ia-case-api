@@ -1,6 +1,6 @@
 {
   "description": "RIA-3130 finalBundling to prehearing",
-  "disabled": "{$featureFlag.isEmStitchingEnabled}",
+  "enabled": "{$featureFlag.isEmStitchingEnabled}",
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -230,14 +230,14 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appAdditionalEvidenceDocs": [
+        "additionalEvidenceDocuments": [
           {
             "id": "2",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
               "description": ""
             }
@@ -246,22 +246,22 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
               "description": ""
             }
           }
         ],
-        "respAdditionalEvidenceDocs": [
+        "respondentDocuments": [
           {
             "id": "2",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
               "description": ""
             }
@@ -270,9 +270,9 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
               "description": ""
             }
@@ -383,9 +383,9 @@
             "id": "2",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",
@@ -397,9 +397,9 @@
             "id": "1",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",

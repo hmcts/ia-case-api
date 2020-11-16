@@ -170,8 +170,8 @@ public class CustomiseHearingBundleHandlerTest {
         IdValue<DocumentWithDescription> respondentAddendumEvidenceDoc = new IdValue<>("1", createDocumentWithDescription());
 
 
-        when(asylumCase.read(CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(appellantAdditionalEvidenceDocuments)));
-        when(asylumCase.read(CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAdditionalEvidenceDocuments)));
+        when(asylumCaseCopy.read(CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(appellantAdditionalEvidenceDocuments)));
+        when(asylumCaseCopy.read(CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAdditionalEvidenceDocuments)));
         when(asylumCaseCopy.read(CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(appellantAdditionalEvidenceDocuments)));
         when(asylumCaseCopy.read(CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAdditionalEvidenceDocuments)));
         when(asylumCaseCopy.read(CUSTOM_FTPA_APPELLANT_DOCS)).thenReturn(Optional.of(Lists.newArrayList(ftpaAppellantDocuments)));
@@ -180,8 +180,6 @@ public class CustomiseHearingBundleHandlerTest {
         when(asylumCaseCopy.read(CUSTOM_REHEARD_HEARING_DOCS)).thenReturn(Optional.of(Lists.newArrayList(hearingDocuments)));
         when(asylumCaseCopy.read(CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(new IdValue<>("2", createDocumentWithDescription()),appellantAddendumEvidenceDoc)));
         when(asylumCaseCopy.read(CUSTOM_RESP_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAddendumEvidenceDoc)));
-
-
 
         IdValue<DocumentWithMetadata> appellantAdditionalEvidenceDoc = new IdValue<>("1", createDocumentWithMetadata(DocumentTag.ADDITIONAL_EVIDENCE,"The appellant"));
         IdValue<DocumentWithMetadata> respondentAdditionalEvidenceDoc = new IdValue<>("1", createDocumentWithMetadata(DocumentTag.ADDITIONAL_EVIDENCE,"The respondent"));
@@ -216,8 +214,8 @@ public class CustomiseHearingBundleHandlerTest {
         when(asylumCase.read(FINAL_DECISION_AND_REASONS_DOCUMENTS)).thenReturn(Optional.of(Lists.newArrayList(finalDecisionsAndReasonsDocs)));
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(Lists.newArrayList(reheardHearingDocs)));
         when(asylumCase.read(APPELLANT_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(reheardHearingDocs)));
-        when(asylumCase.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(appellantAddendumEvidenceList)));
-        when(asylumCase.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAddendumEvidenceList)));
+        when(asylumCaseCopy.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(appellantAddendumEvidenceList)));
+        when(asylumCaseCopy.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS)).thenReturn(Optional.of(Lists.newArrayList(respondentAddendumEvidenceList)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 customiseHearingBundleHandler.handle(ABOUT_TO_SUBMIT, callback);

@@ -95,11 +95,7 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
 
         if (isReheardCase) {
             //populate these collections to avoid error on the Stitching api
-            asylumCase.write(APPELLANT_ADDENDUM_EVIDENCE_DOCS,getIdValues(asylumCase,CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS, SUPPLIED_BY_APPELLANT,DocumentTag.ADDENDUM_EVIDENCE));
-            asylumCase.write(RESPONDENT_ADDENDUM_EVIDENCE_DOCS,getIdValues(asylumCase,CUSTOM_RESP_ADDENDUM_EVIDENCE_DOCS, SUPPLIED_BY_RESPONDENT,DocumentTag.ADDENDUM_EVIDENCE));
-
-            asylumCase.write(APP_ADDITIONAL_EVIDENCE_DOCS,getIdValues(asylumCase, CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS, SUPPLIED_BY_APPELLANT,DocumentTag.ADDITIONAL_EVIDENCE));
-            asylumCase.write(RESP_ADDITIONAL_EVIDENCE_DOCS,getIdValues(asylumCase, CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS, SUPPLIED_BY_RESPONDENT,DocumentTag.ADDITIONAL_EVIDENCE));
+            initializeNewCollections(asylumCase);
 
             asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
         } else {
@@ -139,7 +135,7 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
         restoreCollections(asylumCase, asylumCaseCopy,isReheardCase);
 
         restoreAddendumEvidence(asylumCase, asylumCaseCopy,isReheardCase);
-
+        
         Optional<List<IdValue<Bundle>>> maybeCaseBundles = responseData.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
         asylumCase.write(AsylumCaseFieldDefinition.CASE_BUNDLES, maybeCaseBundles);
 
@@ -159,6 +155,24 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void initializeNewCollections(AsylumCase asylumCase) {
+        if (!asylumCase.read(APPELLANT_ADDENDUM_EVIDENCE_DOCS).isPresent()) {
+            asylumCase.write(APPELLANT_ADDENDUM_EVIDENCE_DOCS, emptyList());
+        }
+
+        if (!asylumCase.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS).isPresent()) {
+            asylumCase.write(RESPONDENT_ADDENDUM_EVIDENCE_DOCS, emptyList());
+        }
+
+        if (!asylumCase.read(APP_ADDITIONAL_EVIDENCE_DOCS).isPresent()) {
+            asylumCase.write(RESP_ADDITIONAL_EVIDENCE_DOCS, emptyList());
+        }
+
+        if (!asylumCase.read(RESP_ADDITIONAL_EVIDENCE_DOCS).isPresent()) {
+            asylumCase.write(RESP_ADDITIONAL_EVIDENCE_DOCS, emptyList());
+        }
     }
 
     private Optional<IdValue<DocumentWithMetadata>> isDocumentWithDescriptionPresent(
@@ -197,7 +211,8 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
         //filter any document missing from the current list of document
         List<IdValue<DocumentWithMetadata>> missingAppellantDocuments = beforeDocuments
             .stream()
-            .filter(document -> !contains(currentAppellantAddendumEvidenceDocs.orElse(emptyList()), document, SUPPLIED_BY_APPELLANT))
+            .filter(document -> document.getValue().getSuppliedBy().equals(SUPPLIED_BY_APPELLANT))
+            .filter(document -> !contains(currentAppellantAddendumEvidenceDocs.orElse(emptyList()), document))
             .collect(Collectors.toList());
 
         List<IdValue<DocumentWithMetadata>> allAppellantDocuments = currentAppellantAddendumEvidenceDocs.orElse(emptyList());
@@ -208,7 +223,8 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
 
         List<IdValue<DocumentWithMetadata>> missingRespondentDocuments = beforeDocuments
             .stream()
-            .filter(document -> !contains(currentRespondentAddendumEvidenceDocs.orElse(emptyList()), document, SUPPLIED_BY_RESPONDENT))
+            .filter(document -> document.getValue().getSuppliedBy().equals(SUPPLIED_BY_RESPONDENT))
+            .filter(document -> !contains(currentRespondentAddendumEvidenceDocs.orElse(emptyList()), document))
             .collect(Collectors.toList());
 
         List<IdValue<DocumentWithMetadata>> allRespondentDocuments = currentRespondentAddendumEvidenceDocs.orElse(emptyList());
@@ -231,6 +247,7 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
         asylumCase.write(ADDENDUM_EVIDENCE_DOCUMENTS, allDocuments);
 
     }
+
 
     private void restoreCollections(
             AsylumCase asylumCase,
@@ -274,25 +291,6 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
             Document legalDocument = doc.getValue().getDocument();
             Document document = documentWithMetadata.getValue().getDocument();
             if (legalDocument.getDocumentBinaryUrl().equals(document.getDocumentBinaryUrl())) {
-                found = true;
-            }
-        }
-
-        return found;
-    }
-
-    private boolean contains(
-            List<IdValue<DocumentWithMetadata>> existingDocuments,
-            IdValue<DocumentWithMetadata> documentWithMetadata,String suppliedBy
-    ) {
-
-        boolean found = false;
-
-        for (IdValue<DocumentWithMetadata> doc : existingDocuments) {
-            Document legalDocument = doc.getValue().getDocument();
-            Document document = documentWithMetadata.getValue().getDocument();
-            if (legalDocument.getDocumentBinaryUrl().equals(document.getDocumentBinaryUrl())
-                && doc.getValue().getSuppliedBy().equals(suppliedBy)) {
                 found = true;
             }
         }
@@ -403,6 +401,7 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
                     Document document = documentWithDescription.getValue().getDocument().orElseThrow(() -> new IllegalStateException(MISSING_DOCUMENT_EXCEPTION_MESSAGE));
 
                     DocumentWithMetadata newDocumentWithMetadata = null;
+
                     if (maybeDocument.isPresent()) {
                         newDocumentWithMetadata = new DocumentWithMetadata(document,
                             documentWithDescription.getValue().getDescription().orElse(""),
@@ -433,13 +432,25 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
                                     "");
                                 break;
                             case CUSTOM_ADDITIONAL_EVIDENCE_DOCUMENTS:
-                            case CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS:
-                            case CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS:
                                 newDocumentWithMetadata = new DocumentWithMetadata(document,
                                     documentWithDescription.getValue().getDescription().orElse(""),
                                     dateProvider.now().toString(),
                                     DocumentTag.ADDITIONAL_EVIDENCE,
                                     "");
+                                break;
+                            case CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS:
+                                newDocumentWithMetadata = new DocumentWithMetadata(document,
+                                    documentWithDescription.getValue().getDescription().orElse(""),
+                                    dateProvider.now().toString(),
+                                    DocumentTag.ADDITIONAL_EVIDENCE,
+                                    SUPPLIED_BY_RESPONDENT);
+                                break;
+                            case CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS:
+                                newDocumentWithMetadata = new DocumentWithMetadata(document,
+                                    documentWithDescription.getValue().getDescription().orElse(""),
+                                    dateProvider.now().toString(),
+                                    DocumentTag.ADDITIONAL_EVIDENCE,
+                                    SUPPLIED_BY_APPELLANT);
                                 break;
                             case CUSTOM_RESPONDENT_DOCUMENTS:
                                 newDocumentWithMetadata = new DocumentWithMetadata(document,
@@ -495,30 +506,6 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
             asylumCase.write(targetField, customDocuments);
         });
 
-    }
-
-    private List<IdValue<DocumentWithMetadata>> getIdValues(
-        AsylumCase asylumCase,
-        AsylumCaseFieldDefinition fieldDefinition,String suppliedBy, DocumentTag tag
-    ) {
-        List<IdValue<DocumentWithMetadata>> customDocuments = new ArrayList<>();
-
-        if (asylumCase != null) {
-            Optional<List<IdValue<DocumentWithDescription>>> maybeIdValues = asylumCase
-                .read(fieldDefinition);
-
-            List<IdValue<DocumentWithDescription>> documents =
-                maybeIdValues.orElse(emptyList());
-            for (IdValue<DocumentWithDescription> documentWithDescription : documents) {
-                Document document = documentWithDescription.getValue().getDocument().orElseThrow(() -> new IllegalStateException(MISSING_DOCUMENT_EXCEPTION_MESSAGE));
-                customDocuments = documentWithMetadataAppender.append(new DocumentWithMetadata(document,
-                    documentWithDescription.getValue().getDescription().orElse(""),
-                    dateProvider.now().toString(),
-                    tag,
-                    suppliedBy), customDocuments);
-            }
-        }
-        return customDocuments;
     }
 
 }
