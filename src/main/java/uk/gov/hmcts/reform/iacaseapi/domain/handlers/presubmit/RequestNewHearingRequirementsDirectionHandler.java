@@ -146,12 +146,6 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
         final List<IdValue<DocumentWithMetadata>> finalDecisionAndReasonsDocuments =
             maybeFinalDecisionAndReasonsDocuments.orElse(emptyList());
 
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingRequirements =
-            asylumCase.read(HEARING_REQUIREMENTS);
-
-        final List<IdValue<DocumentWithMetadata>> hearingRequirements =
-            maybeHearingRequirements.orElse(emptyList());
-
         final PreviousHearing previousHearing = new PreviousHearing(
             attendingJudge,
             attendingAppellant,
@@ -163,8 +157,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
             listCaseHearingLength,
             Optional.of(hearingRecordingDocuments),
             appealDecision,
-            finalDecisionAndReasonsDocuments,
-            hearingRequirements
+            finalDecisionAndReasonsDocuments
         );
 
         List<IdValue<PreviousHearing>> allPreviousHearings =

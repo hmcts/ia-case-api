@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3555 Submit new hearing requirements (FTPA reheard decision)",
+  "description": "RIA-3582-RIA-3763 Current hearing adjustments cleared for FTPA reheard appeal - feature flag enabled",
   "launchDarklyKey": "reheard-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -12,7 +12,6 @@
         "replacements": {
           "isReheardAppealEnabled": "Yes",
           "caseFlagSetAsideReheardExists": "Yes",
-          "currentHearingDetailsVisible": "Yes",
           "isAppellantAttendTheHearing": "Yes",
           "isAppellantGivingOralEvidence": "Yes",
           "isWitnessesAttending": "Yes",
@@ -60,28 +59,13 @@
             }
           ],
           "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "multimediaTribunalResponse": "Some multimedia response",
           "previousHearings": [
             {
               "id": "1",
               "value": {
                 "attendingJudge": "Judge Fudge",
                 "appealDecision": "Allowed",
-                "hearingRequirements": [
-                  {
-                    "id": "1",
-                    "value": {
-                      "tag": "hearingRequirements",
-                      "document": {
-                        "document_url": "http://dm-store:4506/documents/31b81d15-1da4-4a34-b963-4e5990257454",
-                        "document_filename": "PA 50089 2020-Gonzlez-hearing-requirements.PDF",
-                        "document_binary_url": "http://dm-store:4506/documents/31b81d15-1da4-4a34-b963-4e5990257454/binary"
-                      },
-                      "suppliedBy": "",
-                      "description": "",
-                      "dateUploaded": "2020-10-14"
-                    }
-                  }
-                ],
                 "listCaseHearingDate": "2020-10-28T10:30:00.000",
                 "ariaListingReference": "LP/12345/2019",
                 "listCaseHearingCentre": "taylorHouse",
@@ -204,22 +188,6 @@
             "value": {
               "attendingJudge": "Judge Fudge",
               "appealDecision": "Allowed",
-              "hearingRequirements": [
-                {
-                  "id": "1",
-                  "value": {
-                    "tag": "hearingRequirements",
-                    "document": {
-                      "document_url": "http://dm-store:4506/documents/31b81d15-1da4-4a34-b963-4e5990257454",
-                      "document_filename": "PA 50089 2020-Gonzlez-hearing-requirements.PDF",
-                      "document_binary_url": "http://dm-store:4506/documents/31b81d15-1da4-4a34-b963-4e5990257454/binary"
-                    },
-                    "suppliedBy": "",
-                    "description": "",
-                    "dateUploaded": "2020-10-14"
-                  }
-                }
-              ],
               "listCaseHearingDate": "2020-10-28T10:30:00.000",
               "ariaListingReference": "LP/12345/2019",
               "listCaseHearingCentre": "taylorHouse",

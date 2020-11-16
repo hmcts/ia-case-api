@@ -12,14 +12,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 
 @Component
 public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
     private final FeatureToggler featureToggler;
 
-    public ListCaseWithoutHearingRequirementsHandler(FeatureToggler featureToggler) {
+    public ListCaseWithoutHearingRequirementsHandler(
+        PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender,
+        FeatureToggler featureToggler
+    ) {
+        this.previousRequirementsAndRequestsAppender = previousRequirementsAndRequestsAppender;
         this.featureToggler = featureToggler;
     }
 
@@ -54,6 +60,9 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
 
         if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
+
+            previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
+
             asylumCase.write(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
             asylumCase.clear(HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED);
@@ -65,7 +74,7 @@ public class ListCaseWithoutHearingRequirementsHandler implements PreSubmitCallb
             asylumCase.clear(ACTUAL_CASE_HEARING_LENGTH);
             asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
             asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
-
+            asylumCase.clear(HEARING_REQUIREMENTS);
         } else {
             asylumCase.write(CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS, YesOrNo.YES);
         }

@@ -8,10 +8,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.reset;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +25,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -36,6 +35,8 @@ public class UpdateHearingRequirementsHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
+    @Mock private FeatureToggler featureToggler;
     @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
     private String applicationSupplier = "Legal representative";
@@ -62,7 +63,10 @@ public class UpdateHearingRequirementsHandlerTest {
 
     @Before
     public void setUp() {
-        updateHearingRequirementsHandler = new UpdateHearingRequirementsHandler();
+        updateHearingRequirementsHandler = new UpdateHearingRequirementsHandler(
+            previousRequirementsAndRequestsAppender,
+            featureToggler
+        );
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -128,6 +132,73 @@ public class UpdateHearingRequirementsHandlerTest {
 
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    public void should_append_and_trim_hearing_requirements_and_requests_when_ftpa_reheard() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(previousRequirementsAndRequestsAppender, times(1)).appendAndTrim(asylumCase);
+    }
+
+    @Test
+    public void should_not_append_and_trim_hearing_requirements_and_requests_when_ftpa_reheard_and_feature_flag_disabled() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
+    }
+
+    @Test
+    public void should_not_trim_hearing_requirements_and_requests_when_feature_flag_disabled() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
+    }
+
+    @Test
+    public void should_not_trim_hearing_requirements_and_requests_when_not_a_reheard_case() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            updateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(previousRequirementsAndRequestsAppender, times(0)).appendAndTrim(asylumCase);
     }
 
     @Test

@@ -17,9 +17,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
 
 @Component
 public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender;
+    private final FeatureToggler featureToggler;
+
+    public UpdateHearingRequirementsHandler(
+        PreviousRequirementsAndRequestsAppender previousRequirementsAndRequestsAppender,
+        FeatureToggler featureToggler
+    ) {
+        this.previousRequirementsAndRequestsAppender = previousRequirementsAndRequestsAppender;
+        this.featureToggler = featureToggler;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -69,6 +82,11 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
         asylumCase.clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
         asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
+
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+            && featureToggler.getValue("reheard-feature", false)) {
+            previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
