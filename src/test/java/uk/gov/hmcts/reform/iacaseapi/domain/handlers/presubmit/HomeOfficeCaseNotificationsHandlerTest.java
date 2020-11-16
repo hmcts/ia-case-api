@@ -6,7 +6,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
@@ -55,7 +54,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
         "ADJOURN_HEARING_WITHOUT_DATE",
         "SEND_DECISION_AND_REASONS",
         "APPLY_FOR_FTPA_APPELLANT",
-        "APPLY_FOR_FTPA_RESPONDENT"
+        "APPLY_FOR_FTPA_RESPONDENT",
+        "LEADERSHIP_JUDGE_FTPA_DECISION",
+        "RESIDENT_JUDGE_FTPA_DECISION"
     })
     void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
@@ -91,7 +92,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.ADJOURN_HEARING_WITHOUT_DATE,
                         Event.SEND_DECISION_AND_REASONS,
                         Event.APPLY_FOR_FTPA_APPELLANT,
-                        Event.APPLY_FOR_FTPA_RESPONDENT
+                        Event.APPLY_FOR_FTPA_RESPONDENT,
+                        Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                        Event.RESIDENT_JUDGE_FTPA_DECISION
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);

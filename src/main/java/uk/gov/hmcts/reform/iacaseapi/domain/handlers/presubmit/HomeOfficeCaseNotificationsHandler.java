@@ -45,7 +45,9 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     Event.ADJOURN_HEARING_WITHOUT_DATE,
                     Event.SEND_DECISION_AND_REASONS,
                     Event.APPLY_FOR_FTPA_APPELLANT,
-                    Event.APPLY_FOR_FTPA_RESPONDENT
+                    Event.APPLY_FOR_FTPA_RESPONDENT,
+                    Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                    Event.RESIDENT_JUDGE_FTPA_DECISION
                 ).contains(callback.getEvent())
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }

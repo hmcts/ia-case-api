@@ -11,6 +11,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_DECISION_OUTCOME_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import java.util.Optional;
@@ -166,6 +169,95 @@ class LeadershipJudgeFtpaDecisionConfirmationTest {
             .contains("#### What happens next");
 
     }
+
+    @Test
+    public void should_return_notification_failed_confirmation_appellant() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("notAdmitted"));
+        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            leadershipJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("![Respondent notification failed confirmation]"
+                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get()).contains("#### Do this next");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
+    }
+
+    @Test
+    public void should_return_notification_failed_confirmation_respondent() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
+        when(asylumCase.read(FTPA_RESPONDENT_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("notAdmitted"));
+        when(asylumCase.read(HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            leadershipJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertFalse(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("![Respondent notification failed confirmation]"
+                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get()).contains("#### Do this next");
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
+    }
+
+    @Test
+    public void should_not_return_failed_notification_confirmation_on_ok_status() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
+        when(asylumCase.read(FTPA_APPELLANT_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("notAdmitted"));
+        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            leadershipJudgeFtpaDecisionConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the First-tier permission to appeal decision");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("The applicant has been notified that the application was not admitted. "
+                      + "They'll also be able to access this information in the FTPA tab.<br>");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get()).contains("#### What happens next");
+    }
+
 
     @Test
     void should_throw_if_ftpa_applicant_type_missing() {
