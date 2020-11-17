@@ -1071,6 +1071,9 @@ public enum AsylumCaseFieldDefinition {
     IS_REHEARD_APPEAL_ENABLED(
         "isReheardAppealEnabled", new TypeReference<YesOrNo>() {}),
 
+    CUSTOM_FTPA_APPELLANT_EVIDENCE_DOCS(
+            "customFtpaAppellantEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS(
             "customAppAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
@@ -1152,6 +1155,34 @@ public enum AsylumCaseFieldDefinition {
 
     PREVIOUS_HEARING_RECORDING_DOCUMENTS(
         "previousHearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
+
+
+    CASE_INTRODUCTION_DESCRIPTION(
+        "caseIntroductionDescription", new TypeReference<String>(){}),
+
+    APPELLANT_CASE_SUMMARY_DESCRIPTION(
+        "appellantCaseSummaryDescription", new TypeReference<String>(){}),
+
+    IMMIGRATION_HISTORY_AGREEMENT(
+        "immigrationHistoryAgreement", new TypeReference<YesOrNo>() {}),
+
+    AGREED_IMMIGRATION_HISTORY_DESCRIPTION(
+        "agreedImmigrationHistoryDescription", new TypeReference<String>(){}),
+
+    SCHEDULE_OF_ISSUES_AGREEMENT(
+        "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>() {}),
+
+   SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
+        "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
+
+    ANONYMITY_ORDER(
+        "anonymityOrder", new TypeReference<YesOrNo>() {}),
+
+    APPELLANT_REPRESENTATIVE(
+        "appellantRepresentative", new TypeReference<String>(){}),
+
+    RESPONDENT_REPRESENTATIVE(
+        "respondentRepresentative", new TypeReference<String>(){}),
 
     ;
 
