@@ -69,12 +69,12 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "ftpaAppellantSubmitted": "Yes",
-        "ftpaAppellantSubmissionOutOfTime": "No",
-        "ftpaAppellantApplicationDate": "{$TODAY}",
+        "ftpaRespondentSubmitted": "Yes",
+        "ftpaRespondentSubmissionOutOfTime": "No",
+        "ftpaRespondentApplicationDate": "{$TODAY}",
         "sendDirectionActionAvailable": "Yes",
-        "ftpaAppellantGroundsDocuments": null,
-        "ftpaAppellantEvidenceDocuments": null
+        "ftpaRespondentGroundsDocuments": null,
+        "ftpaRespondentEvidenceDocuments": null
       }
     }
   }
