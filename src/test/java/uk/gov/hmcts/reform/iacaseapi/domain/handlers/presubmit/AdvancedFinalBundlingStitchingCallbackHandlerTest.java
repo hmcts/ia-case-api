@@ -102,6 +102,40 @@ public class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
+    public void should_successfully_handle_the_callback_in_reheard_case() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertEquals(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class),Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.HEARING_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
+
+        when(documentsAppender.append(
+            anyList(),
+            anyList(),
+            eq(DocumentTag.HEARING_BUNDLE)
+        )).thenReturn(allHearingDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).read(REHEARD_HEARING_DOCUMENTS);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
+        verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
+
+    }
+
+    @Test
     public void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());

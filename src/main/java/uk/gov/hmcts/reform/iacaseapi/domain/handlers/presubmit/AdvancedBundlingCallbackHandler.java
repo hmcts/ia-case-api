@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecutor;
@@ -22,15 +24,19 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecuto
 @Component
 public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String SUPPLIED_BY_RESPONDENT = "The respondent";
+    private static final String SUPPLIED_BY_APPELLANT = "The appellant";
+
     private final BundleRequestExecutor bundleRequestExecutor;
     private final String emBundlerUrl;
     private final String emBundlerStitchUri;
 
+
+
     public AdvancedBundlingCallbackHandler(
         @Value("${emBundler.url}") String emBundlerUrl,
         @Value("${emBundler.stitch.uri}") String emBundlerStitchUri,
-        BundleRequestExecutor bundleRequestExecutor
-    ) {
+        BundleRequestExecutor bundleRequestExecutor) {
         this.emBundlerUrl = emBundlerUrl;
         this.emBundlerStitchUri = emBundlerStitchUri;
         this.bundleRequestExecutor = bundleRequestExecutor;
@@ -60,11 +66,26 @@ public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler
             callback
                 .getCaseDetails()
                 .getCaseData();
-
         asylumCase.clear(AsylumCaseFieldDefinition.HMCTS);
         asylumCase.write(AsylumCaseFieldDefinition.HMCTS,"[userImage:hmcts.png]");
         asylumCase.clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
-        asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
+
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,YesOrNo.class);
+
+        if (maybeCaseFlagSetAsideReheardExists.isPresent()
+                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES) {
+
+            asylumCase.write(APPELLANT_ADDENDUM_EVIDENCE_DOCS,getIdValues(asylumCase,ADDENDUM_EVIDENCE_DOCUMENTS, SUPPLIED_BY_APPELLANT,DocumentTag.ADDENDUM_EVIDENCE));
+            asylumCase.write(RESPONDENT_ADDENDUM_EVIDENCE_DOCS,getIdValues(asylumCase,ADDENDUM_EVIDENCE_DOCUMENTS, SUPPLIED_BY_RESPONDENT,DocumentTag.ADDENDUM_EVIDENCE));
+
+            asylumCase.write(APP_ADDITIONAL_EVIDENCE_DOCS,getIdValues(asylumCase, ADDITIONAL_EVIDENCE_DOCUMENTS, SUPPLIED_BY_APPELLANT,DocumentTag.ADDITIONAL_EVIDENCE));
+            asylumCase.write(RESP_ADDITIONAL_EVIDENCE_DOCS,getIdValues(asylumCase, RESPONDENT_DOCUMENTS, SUPPLIED_BY_RESPONDENT,DocumentTag.ADDITIONAL_EVIDENCE));
+
+            asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
+        } else {
+            asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
+        }
+
         asylumCase.write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, getBundlePrefix(asylumCase));
 
         final PreSubmitCallbackResponse<AsylumCase> response = bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri);
@@ -105,4 +126,29 @@ public class AdvancedBundlingCallbackHandler implements PreSubmitCallbackHandler
         return appealReferenceNumber.replace("/", " ")
                + "-" + appellantFamilyName;
     }
+
+    private List<IdValue<DocumentWithMetadata>> getIdValues(
+        AsylumCase asylumCase,
+        AsylumCaseFieldDefinition fieldDefinition,String suppliedBy, DocumentTag tag
+    ) {
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeIdValues = asylumCase
+            .read(fieldDefinition);
+
+        List<IdValue<DocumentWithMetadata>> documents =
+            maybeIdValues.orElse(Collections.emptyList());
+        if (fieldDefinition == ADDENDUM_EVIDENCE_DOCUMENTS) {
+            return documents.stream()
+                .filter(document -> document.getValue().getSuppliedBy().equals(suppliedBy))
+                .filter(document -> document.getValue().getTag() == tag)
+                .collect(Collectors.toList());
+        } else {
+            return documents.stream()
+                .filter(document -> document.getValue().getTag() == tag)
+                .collect(Collectors.toList());
+        }
+
+
+    }
+
 }
