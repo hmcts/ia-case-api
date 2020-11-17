@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
@@ -23,13 +25,16 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
 
     private final DateProvider dateProvider;
     private final int ftpaAppellantAppealOutOfTimeDays;
+    private final FeatureToggler featureToggler;
 
     public FtpaAppellantPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaAppellantAppealOutOfTimeDays}") int ftpaAppellantAppealOutOfTimeDays
+        @Value("${ftpaAppellantAppealOutOfTimeDays}") int ftpaAppellantAppealOutOfTimeDays,
+        FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.ftpaAppellantAppealOutOfTimeDays = ftpaAppellantAppealOutOfTimeDays;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -58,10 +63,19 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
 
         final Optional<String> mayBeAppellantAppealSubmitted = asylumCase.read(FTPA_APPELLANT_SUBMITTED);
 
-        if (mayBeAppellantAppealSubmitted.isPresent() && mayBeAppellantAppealSubmitted.get().equals("Yes")) {
+        final boolean isFtpaSetAsideAndReheard =
+            asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+            && featureToggler.getValue("reheard-feature", false);
+
+        if (mayBeAppellantAppealSubmitted.isPresent() && mayBeAppellantAppealSubmitted.get().equals("Yes") && !isFtpaSetAsideAndReheard) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've already submitted an application. You can only make one application at a time.");
             return asylumCasePreSubmitCallbackResponse;
+        }
+
+        if (isFtpaSetAsideAndReheard) {
+            asylumCase.clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+            asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
         }
 
         final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);

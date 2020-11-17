@@ -1184,6 +1184,15 @@ public enum AsylumCaseFieldDefinition {
     RESPONDENT_REPRESENTATIVE(
         "respondentRepresentative", new TypeReference<String>(){}),
 
+    FINAL_DECISION_AND_REASONS_DOCUMENT(
+        "finalDecisionAndReasonsDocument", new TypeReference<Document>(){}),
+
+    IS_DOCUMENT_SIGNED_TODAY(
+        "isDocumentSignedToday", new TypeReference<YesOrNo>() {}),
+
+    IS_FEE_CONSISTENT_WITH_DECISION(
+        "isFeeConsistentWithDecision", new TypeReference<YesOrNo>() {}),
+
     ;
 
     private final String value;
