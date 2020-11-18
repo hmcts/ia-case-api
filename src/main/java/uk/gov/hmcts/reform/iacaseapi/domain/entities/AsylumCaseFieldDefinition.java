@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -1192,6 +1193,9 @@ public enum AsylumCaseFieldDefinition {
 
     IS_FEE_CONSISTENT_WITH_DECISION(
         "isFeeConsistentWithDecision", new TypeReference<YesOrNo>() {}),
+
+    LOCAL_AUTHORITY_POLICY(
+        "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 
     ;
 

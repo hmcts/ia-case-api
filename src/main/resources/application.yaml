@@ -349,3 +349,6 @@ launchDarkly:
 
 timed-event-service:
   url: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}
+
+ia_local_authority_user:
+    mapping: 'example=>1,2,3'

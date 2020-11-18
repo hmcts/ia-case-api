@@ -16,15 +16,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.OrganisationService;
 
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String DRAFT = "DRAFT";
-
     private final DateProvider dateProvider;
-
     private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
+    private final OrganisationService organisationService;
 
     @Override
     public DispatchPriority getDispatchPriority() {
@@ -33,10 +33,12 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
     public AppealReferenceNumberHandler(
         DateProvider dateProvider,
-        AppealReferenceNumberGenerator appealReferenceNumberGenerator
+        AppealReferenceNumberGenerator appealReferenceNumberGenerator,
+        OrganisationService organisationService
     ) {
         this.dateProvider = dateProvider;
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
+        this.organisationService = organisationService;
     }
 
     @Override
@@ -92,6 +94,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                     callback.getCaseDetails().getId(),
                     appealType
                 );
+
+            organisationService.findOrganisationPolicy().ifPresent(policy -> asylumCase.write(LOCAL_AUTHORITY_POLICY, policy));
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
 
