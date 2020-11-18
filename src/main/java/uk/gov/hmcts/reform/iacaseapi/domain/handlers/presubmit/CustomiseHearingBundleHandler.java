@@ -198,8 +198,8 @@ public class CustomiseHearingBundleHandler implements PreSubmitCallbackHandler<A
             return;
         }
 
-        Optional<List<IdValue<DocumentWithMetadata>>> currentAppellantAddendumEvidenceDocs = asylumCase.read(APPELLANT_ADDENDUM_EVIDENCE_DOCS);
-        Optional<List<IdValue<DocumentWithMetadata>>> currentRespondentAddendumEvidenceDocs = asylumCase.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS);
+        Optional<List<IdValue<DocumentWithMetadata>>> currentAppellantAddendumEvidenceDocs = asylumCaseBefore.read(APPELLANT_ADDENDUM_EVIDENCE_DOCS);
+        Optional<List<IdValue<DocumentWithMetadata>>> currentRespondentAddendumEvidenceDocs = asylumCaseBefore.read(RESPONDENT_ADDENDUM_EVIDENCE_DOCS);
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeAddendumEvidenceDocs = asylumCaseBefore.read(ADDENDUM_EVIDENCE_DOCUMENTS);
 
