@@ -1156,7 +1156,6 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_HEARING_RECORDING_DOCUMENTS(
         "previousHearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
 
-
     CASE_INTRODUCTION_DESCRIPTION(
         "caseIntroductionDescription", new TypeReference<String>(){}),
 

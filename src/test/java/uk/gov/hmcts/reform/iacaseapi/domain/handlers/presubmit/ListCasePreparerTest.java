@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
@@ -30,6 +30,7 @@ public class ListCasePreparerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private FeatureToggler featureToggler;
 
     private ListCasePreparer listCasePreparer;
 
@@ -37,7 +38,7 @@ public class ListCasePreparerTest {
     public void setUp() {
 
         listCasePreparer =
-            new ListCasePreparer();
+            new ListCasePreparer(featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
@@ -147,6 +148,47 @@ public class ListCasePreparerTest {
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, never()).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
+    }
+
+    @Test
+    public void should_clear_hearing_details_when_reheard_case_listed() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_DATE);
+        verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_LENGTH);
+    }
+
+    @Test
+    public void should_not_clear_hearing_details_when_not_a_reheard_case_listed() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
+    }
+
+    @Test
+    public void should_not_clear_hearing_details_when_feature_flag_disabled() {
+
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_CENTRE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_DATE);
+        verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
     }
 
     @Test
