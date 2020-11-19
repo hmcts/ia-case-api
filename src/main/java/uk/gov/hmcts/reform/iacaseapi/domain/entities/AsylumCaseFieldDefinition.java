@@ -1247,6 +1247,12 @@ public enum AsylumCaseFieldDefinition {
     REMISSION_REJECTED_DATE_PLUS_14DAYS(
         "remissionRejectedDatePlus14days", new TypeReference<String>(){}),
 
+    FEE_UPDATE_STATUS(
+        "feeUpdateStatus", new TypeReference<CheckValues<String>>(){}),
+
+    FEE_UPDATE_COMPLETED_STAGES(
+        "feeUpdateCompletedStages", new TypeReference<List<String>>(){}),
+
     ;
 
     private final String value;

@@ -1,0 +1,41 @@
+{
+  "description": "RIA-3792 Case officer manage fee update of fee update required",
+  "launchDarklyKey": "manage-fee-update-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "manageFeeUpdate",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "newFeeAmount": "2000",
+          "paymentStatus": "Paid",
+          "feeUpdateReason": "decisionTypeChanged",
+          "feeUpdateStatus": {
+            "values": [
+              "feeUpdateRecorded"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "newFeeAmount": "2000",
+        "paymentStatus": "Paid",
+        "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateCompletedStages": [
+          "feeUpdateRecorded"
+        ]
+      }
+    }
+  }
+}

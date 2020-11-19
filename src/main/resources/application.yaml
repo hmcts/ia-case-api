@@ -233,6 +233,7 @@ security:
       - "decideAnApplication"
       - "requestNewHearingRequirements"
       - "allocateTheCase"
+      - "manageFeeUpdate"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -256,6 +257,7 @@ security:
       - "endAppeal"
       - "reinstateAppeal"
       - "recordRemissionDecision"
+      - "manageFeeUpdate"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
