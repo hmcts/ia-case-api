@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -66,24 +67,19 @@ class EndAppealConfirmationTest {
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
 
-        Assert.assertNotNull(callbackResponse);
-        Assert.assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
-        Assert.assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        Assert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("![Respondent notification failed confirmation]"
-                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)")
-        );
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("![Respondent notification failed confirmation]"
+                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
 
-        Assert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### Do this next")
-        );
-        Assert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Contact the respondent to tell them what has changed, including any action they need to take.")
-        );
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next");
+        assertThat(callbackResponse.getConfirmationBody().get())
+            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
     }
 
     @Test

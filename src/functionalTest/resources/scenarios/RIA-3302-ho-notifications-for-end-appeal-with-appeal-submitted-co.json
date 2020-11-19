@@ -11,7 +11,6 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1111-2222-3333-4444",
-          "endAppealDate": "2020-01-01",
           "endAppealOutcome": "Struck out",
           "endAppealOutcomeReason": "fees not paid"
         }
