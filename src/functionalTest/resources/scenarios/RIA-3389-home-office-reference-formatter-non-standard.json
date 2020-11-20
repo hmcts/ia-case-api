@@ -10,7 +10,7 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "homeOfficeReferenceNumber": "223-567-012/003"
+          "homeOfficeReferenceNumber": "9876-7890-2234-4456"
         }
       }
     }
@@ -24,7 +24,7 @@
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5}\/[0-9]{4}/",
-        "homeOfficeReferenceNumber": "223-567-012/003"
+        "homeOfficeReferenceNumber": "$/([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9})/"
       }
     }
   }

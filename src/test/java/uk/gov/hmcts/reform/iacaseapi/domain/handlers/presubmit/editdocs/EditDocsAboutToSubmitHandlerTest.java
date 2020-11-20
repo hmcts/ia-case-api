@@ -139,6 +139,9 @@ public class EditDocsAboutToSubmitHandlerTest {
         AsylumCase asylumCaseWithTribunalDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
             TRIBUNAL_DOCUMENTS);
 
+        AsylumCase asylumCaseWithReheardHearingDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
+            REHEARD_HEARING_DOCUMENTS);
+
         AsylumCase asylumCaseWithHearingDoc = buildAsylumCaseGivenParams(expectedSuppliedBy, DocumentTag.NONE,
             HEARING_DOCUMENTS);
 
@@ -163,6 +166,8 @@ public class EditDocsAboutToSubmitHandlerTest {
             new Object[]{asylumCaseWithAdditionalEvidenceDoc, asylumCaseBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
                 expectedSuppliedBy, NONE},
             new Object[]{asylumCaseWithTribunalDoc, asylumCaseBefore, TRIBUNAL_DOCUMENTS, expectedSuppliedBy,
+                DocumentTag.NONE},
+            new Object[]{asylumCaseWithReheardHearingDoc, asylumCaseBefore, REHEARD_HEARING_DOCUMENTS, expectedSuppliedBy,
                 DocumentTag.NONE},
             new Object[]{asylumCaseWithHearingDoc, asylumCaseBefore, HEARING_DOCUMENTS, expectedSuppliedBy,
                 DocumentTag.NONE},

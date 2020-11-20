@@ -49,11 +49,11 @@ public class EditDocsAuditLogServiceTest {
 
         assertEquals("user-id-124", actualAuditDetails.getIdamUserId());
         assertEquals("some forename some surname", actualAuditDetails.getUser());
-        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10"),
+        assertEquals(Arrays.asList("id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9", "id10", "id11"),
             actualAuditDetails.getDocumentIds());
         assertEquals(Arrays.asList(
             "docName1", "docName2", "docName3", "docName4", "docName5", "docName6", "docName7", "docName8",
-            "docName9", "docName10"),
+            "docName9", "docName10", "docName11"),
             actualAuditDetails.getDocumentNames()
         );
         assertEquals(1L, actualAuditDetails.getCaseId());
@@ -81,6 +81,7 @@ public class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("id8"))
             .thenReturn(Collections.singletonList("id9"))
             .thenReturn(Collections.singletonList("id10"))
+            .thenReturn(Collections.singletonList("id11"))
             .thenThrow(new RuntimeException("no more calls expected"));
 
         when(editDocsAuditService.getUpdatedAndDeletedDocNamesForGivenField(any(AsylumCase.class),
@@ -95,6 +96,7 @@ public class EditDocsAuditLogServiceTest {
             .thenReturn(Collections.singletonList("docName8"))
             .thenReturn(Collections.singletonList("docName9"))
             .thenReturn(Collections.singletonList("docName10"))
+            .thenReturn(Collections.singletonList("docName11"))
             .thenThrow(new RuntimeException("no more calls expected"));
     }
 

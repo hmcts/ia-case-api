@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
@@ -86,33 +87,13 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,YesOrNo.class);
+
+        boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
+                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+
         if (stitchedDocument.isPresent()) {
-
-            Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
-                asylumCase.read(HEARING_DOCUMENTS);
-
-            final List<IdValue<DocumentWithMetadata>> hearingDocuments =
-                maybeHearingDocuments.orElse(emptyList());
-
-            List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
-
-            hearingBundleDocuments.add(
-                documentReceiver
-                    .receive(
-                        stitchedDocument.get(),
-                        "",
-                        DocumentTag.HEARING_BUNDLE
-                    )
-            );
-
-            List<IdValue<DocumentWithMetadata>> allHearingDocuments =
-                documentsAppender.append(
-                    hearingDocuments,
-                    hearingBundleDocuments,
-                    DocumentTag.HEARING_BUNDLE
-                );
-
-            asylumCase.write(HEARING_DOCUMENTS, allHearingDocuments);
+            saveHearingBundleDocument(asylumCase, stitchedDocument,isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
@@ -123,5 +104,34 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
 
+    }
+
+    private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, AsylumCaseFieldDefinition field) {
+
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingDocuments =
+            asylumCase.read(field);
+
+        final List<IdValue<DocumentWithMetadata>> hearingDocuments =
+            maybeHearingDocuments.orElse(emptyList());
+
+        List<DocumentWithMetadata> hearingBundleDocuments = new ArrayList<>();
+
+        hearingBundleDocuments.add(
+            documentReceiver
+                .receive(
+                    stitchedDocument.orElse(null),
+                    "",
+                    DocumentTag.HEARING_BUNDLE
+                )
+        );
+
+        List<IdValue<DocumentWithMetadata>> allHearingDocuments =
+            documentsAppender.append(
+                hearingDocuments,
+                hearingBundleDocuments,
+                DocumentTag.HEARING_BUNDLE
+            );
+
+        asylumCase.write(field, allHearingDocuments);
     }
 }

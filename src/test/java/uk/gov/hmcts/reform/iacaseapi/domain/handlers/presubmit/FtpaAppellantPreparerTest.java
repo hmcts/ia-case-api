@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,6 +31,7 @@ public class FtpaAppellantPreparerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private DateProvider dateProvider;
+    @Mock private FeatureToggler featureToggler;
 
     private FtpaAppellantPreparer ftpaAppellantPreparer;
 
@@ -37,7 +39,7 @@ public class FtpaAppellantPreparerTest {
     @Before
     public void setUp() {
         ftpaAppellantPreparer =
-            new FtpaAppellantPreparer(dateProvider, 14);
+            new FtpaAppellantPreparer(dateProvider, 14, featureToggler);
     }
 
     @Test
@@ -104,6 +106,68 @@ public class FtpaAppellantPreparerTest {
         verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
         verify(asylumCase, never()).read(APPEAL_DATE);
         verify(dateProvider, never()).now();
+
+    }
+
+    @Test
+    public void should_clear_existing_fields_for_ftpa_reheard_case() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.of("Yes"));
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+        final String appealDate = dateProvider.now().minusDays(15).toString();
+        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+        verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+
+    }
+
+    @Test
+    public void should_not_clear_existing_fields_when_not_a_ftpa_reheard() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.of("Yes"));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
+
+    }
+
+    @Test
+    public void should_not_clear_existing_fields_when_feature_flag_disabled() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPELLANT_SUBMITTED)).thenReturn(Optional.of("Yes"));
+
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_GROUNDS_DOCUMENTS);
+        verify(asylumCase, times(0)).clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
 
     }
 

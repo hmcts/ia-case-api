@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
 
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,13 +30,14 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+    @Mock private FeatureToggler featureToggler;
 
     private ReviewDraftHearingRequirementsHandler reviewDraftHearingRequirementsHandler;
 
     @Before
     public void setup() {
         reviewDraftHearingRequirementsHandler =
-            new ReviewDraftHearingRequirementsHandler();
+            new ReviewDraftHearingRequirementsHandler(featureToggler);
     }
 
     @Test
@@ -51,6 +55,50 @@ public class ReviewDraftHearingRequirementsHandlerTest {
 
         reset(callback);
         reset(asylumCase);
+    }
+
+    @Test
+    public void should_set_list_case_hearing_length_visible_field_for_reheard_appeal() {
+
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
+    }
+
+    @Test
+    public void should_not_set_list_case_hearing_length_visible_field_for_normal_appeal() {
+
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
+    }
+
+    @Test
+    public void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
+
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
     }
 
     @Test
@@ -73,7 +121,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            for (PreSubmitCallbackStage callbackStage : values()) {
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = reviewDraftHearingRequirementsHandler.canHandle(callbackStage, callback);
 

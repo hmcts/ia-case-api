@@ -10,6 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "manchester",
           "appealResponseAvailable": null,
           "homeOfficeAppealResponseDocument": {
             "document_url": "http://document-store/AAA",
@@ -68,6 +69,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "listCaseHearingCentre": "manchester",
         "ftpaAppellantSubmitted": "Yes",
         "ftpaAppellantSubmissionOutOfTime": "Yes",
         "ftpaAppellantApplicationDate": "{$TODAY}",

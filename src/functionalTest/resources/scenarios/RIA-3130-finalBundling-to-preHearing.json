@@ -1,0 +1,369 @@
+{
+  "description": "RIA-3130 finalBundling to prehearing",
+  "enabled": "{$featureFlag.isEmStitchingEnabled}",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "customiseHearingBundle",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
+          "ariaListingReference": "LP/12345/2019",
+          "legalRepReferenceNumber": "REF54321",
+          "caseFlagSetAsideReheardExists": "Yes",
+          "customAppAdditionalEvidenceDocs": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customRespAdditionalEvidenceDocs": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customFtpaAppellantDocs": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customFtpaRespondentDocs": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customFinalDecisionAndReasonsDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customAppAddendumEvidenceDocs": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customRespAddendumEvidenceDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ],
+          "customReheardHearingDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                  "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                },
+                "description": ""
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "additionalEvidenceDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ],
+        "respondentDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": ""
+            }
+          }
+        ],
+        "ftpaAppellantDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          }
+        ],
+        "ftpaRespondentDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaRespondent"
+            }
+          }
+        ],
+        "finalDecisionAndReasonsDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaDecisionAndReasons"
+            }
+          }
+        ],
+        "reheardHearingDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "reheardHearingNotice"
+            }
+          }
+        ],
+        "addendumEvidenceDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC3_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "addendumEvidence",
+              "suppliedBy": "The respondent"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "addendumEvidence",
+              "suppliedBy": "The appellant"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
+                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "addendumEvidence",
+              "suppliedBy": "The appellant"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
