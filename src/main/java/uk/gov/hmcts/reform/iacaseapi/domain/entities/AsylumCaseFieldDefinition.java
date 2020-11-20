@@ -3,15 +3,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
@@ -147,6 +142,9 @@ public enum AsylumCaseFieldDefinition {
 
     HEARING_DOCUMENTS(
         "hearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    REHEARD_HEARING_DOCUMENTS(
+        "reheardHearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
     LEGAL_REPRESENTATIVE_DOCUMENTS(
         "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
@@ -1072,6 +1070,127 @@ public enum AsylumCaseFieldDefinition {
 
     IS_REHEARD_APPEAL_ENABLED(
         "isReheardAppealEnabled", new TypeReference<YesOrNo>() {}),
+
+    CUSTOM_FTPA_APPELLANT_EVIDENCE_DOCS(
+            "customFtpaAppellantEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_APP_ADDITIONAL_EVIDENCE_DOCS(
+            "customAppAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_RESP_ADDITIONAL_EVIDENCE_DOCS(
+            "customRespAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FTPA_APPELLANT_DOCS(
+            "customFtpaAppellantDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FTPA_RESPONDENT_DOCS(
+            "customFtpaRespondentDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_FINAL_DECISION_AND_REASONS_DOCS(
+            "customFinalDecisionAndReasonsDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    CUSTOM_APP_ADDENDUM_EVIDENCE_DOCS(
+            "customAppAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    APPELLANT_ADDENDUM_EVIDENCE_DOCS(
+            "appellantAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    CUSTOM_RESP_ADDENDUM_EVIDENCE_DOCS(
+            "customRespAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    RESPONDENT_ADDENDUM_EVIDENCE_DOCS(
+            "respondentAddendumEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    CUSTOM_REHEARD_HEARING_DOCS(
+            "customReheardHearingDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
+    APP_ADDITIONAL_EVIDENCE_DOCS(
+        "appAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    RESP_ADDITIONAL_EVIDENCE_DOCS(
+        "respAdditionalEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+
+    ATTENDING_JUDGE(
+        "attendingJudge", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANT(
+        "attendingAppellant", new TypeReference<String>(){}),
+
+    ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE(
+        "attendingHomeOfficeLegalRepresentative", new TypeReference<String>(){}),
+
+    LIST_CASE_HEARING_LENGTH(
+        "listCaseHearingLength", new TypeReference<String>() {}),
+
+    HEARING_REQUIREMENTS(
+        "hearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    ACTUAL_CASE_HEARING_LENGTH(
+        "actualCaseHearingLength", new TypeReference<HoursAndMinutes>() {}),
+
+    PREVIOUS_HEARINGS(
+        "previousHearings", new TypeReference<List<IdValue<PreviousHearing>>>(){}),
+
+    CURRENT_HEARING_DETAILS_VISIBLE(
+        "currentHearingDetailsVisible", new TypeReference<YesOrNo>() {}),
+
+    ATTENDING_TCW(
+        "attendingTCW", new TypeReference<String>(){}),
+
+    ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE(
+        "attendingAppellantsLegalRepresentative", new TypeReference<String>(){}),
+
+    HEARING_CONDUCTION_OPTIONS(
+        "hearingConductionOptions", new TypeReference<List<IdValue<HearingConductionOptions>>>(){}),
+
+    REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS(
+        "reheardCaseListedWithoutHearingRequirements", new TypeReference<YesOrNo>() {}),
+
+    LIST_CASE_HEARING_LENGTH_VISIBLE(
+        "listCaseHearingLengthVisible", new TypeReference<YesOrNo>() {}),
+
+    PREVIOUS_HEARING_REQUIREMENTS(
+        "previousHearingRequirements", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    PREVIOUS_HEARING_RECORDING_DOCUMENTS(
+        "previousHearingRecordingDocuments", new TypeReference<List<IdValue<HearingRecordingDocument>>>(){}),
+
+    CASE_INTRODUCTION_DESCRIPTION(
+        "caseIntroductionDescription", new TypeReference<String>(){}),
+
+    APPELLANT_CASE_SUMMARY_DESCRIPTION(
+        "appellantCaseSummaryDescription", new TypeReference<String>(){}),
+
+    IMMIGRATION_HISTORY_AGREEMENT(
+        "immigrationHistoryAgreement", new TypeReference<YesOrNo>() {}),
+
+    AGREED_IMMIGRATION_HISTORY_DESCRIPTION(
+        "agreedImmigrationHistoryDescription", new TypeReference<String>(){}),
+
+    SCHEDULE_OF_ISSUES_AGREEMENT(
+        "scheduleOfIssuesAgreement", new TypeReference<YesOrNo>() {}),
+
+   SCHEDULE_OF_ISSUES_DISAGREEMENT_DESCRIPTION(
+        "scheduleOfIssuesDisagreementDescription", new TypeReference<String>(){}),
+
+    ANONYMITY_ORDER(
+        "anonymityOrder", new TypeReference<YesOrNo>() {}),
+
+    APPELLANT_REPRESENTATIVE(
+        "appellantRepresentative", new TypeReference<String>(){}),
+
+    RESPONDENT_REPRESENTATIVE(
+        "respondentRepresentative", new TypeReference<String>(){}),
+
+    FINAL_DECISION_AND_REASONS_DOCUMENT(
+        "finalDecisionAndReasonsDocument", new TypeReference<Document>(){}),
+
+    IS_DOCUMENT_SIGNED_TODAY(
+        "isDocumentSignedToday", new TypeReference<YesOrNo>() {}),
+
+    IS_FEE_CONSISTENT_WITH_DECISION(
+        "isFeeConsistentWithDecision", new TypeReference<YesOrNo>() {}),
 
     ;
 

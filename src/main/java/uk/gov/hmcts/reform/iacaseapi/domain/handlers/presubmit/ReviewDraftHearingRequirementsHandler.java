@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -11,10 +12,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @Component
 public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final FeatureToggler featureToggler;
+
+    public ReviewDraftHearingRequirementsHandler(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -38,6 +46,11 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
                 .getCaseData();
 
         asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+
+        if (featureToggler.getValue("reheard-feature", false)
+            && asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)) {
+            asylumCase.write(AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

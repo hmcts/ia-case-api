@@ -1,0 +1,31 @@
+{
+  "description": "RIA-3680 Home Office Reference Number Formatter - UAN home-office reference number",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "homeOfficeReferenceNumber": "1234-4321-5678-8756"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "submissionOutOfTime": "No",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5}\/[0-9]{4}/",
+        "homeOfficeReferenceNumber": "$/([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9})/"
+      }
+    }
+  }
+}

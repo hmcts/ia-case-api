@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -103,6 +104,36 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
+    public void should_append_case_summary_to_reheard_hearing_documents_for_the_case() {
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
+        when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION,String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
+
+        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+
+        verify(documentsAppender, times(1))
+            .append(
+                existingHearingDocuments,
+                Collections.singletonList(caseSummaryWithMetadata),
+                DocumentTag.CASE_SUMMARY
+            );
+
+        verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+    }
+
+    @Test
     public void should_add_case_summary_to_the_case_when_no_hearing_documents_exist() {
 
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.empty());
@@ -135,6 +166,44 @@ public class CreateCaseSummaryHandlerTest {
         assertEquals(0, hearingDocuments.size());
 
         verify(asylumCase, times(1)).write(HEARING_DOCUMENTS, allHearingDocuments);
+    }
+
+    @Test
+    public void should_add_case_summary_to_the_case_when_no_reheard_hearing_documents_exist() {
+
+        when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.empty());
+        when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
+        verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
+
+        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+
+        verify(documentsAppender, times(1))
+            .append(
+                hearingDocumentsCaptor.capture(),
+                eq(Collections.singletonList(caseSummaryWithMetadata)),
+                eq(DocumentTag.CASE_SUMMARY)
+            );
+
+        List<IdValue<DocumentWithMetadata>> hearingDocuments =
+            hearingDocumentsCaptor
+                .getAllValues()
+                .get(0);
+
+        assertEquals(0, hearingDocuments.size());
+
+        verify(asylumCase, times(0)).write(HEARING_DOCUMENTS, allHearingDocuments);
+        verify(asylumCase, times(1)).write(REHEARD_HEARING_DOCUMENTS, allHearingDocuments);
+
     }
 
     @Test

@@ -1,0 +1,85 @@
+{
+  "description": "RIA-3129 Create case summary on reheard",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "createCaseSummary",
+      "state": "finalBundling",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseFlagSetAsideReheardExists": "Yes",
+          "caseSummaryDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "case-summary.pdf"
+          },
+          "caseSummaryDescription": "Case summary",
+          "reheardHearingDocuments": [],
+          "hearingDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "case-summary-before.pdf"
+                },
+                "description": "Case summary",
+                "dateUploaded": "{$TODAY}",
+                "tag": "caseSummary"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseSummaryDocument": {
+          "document_url": "http://document-store/AAA",
+          "document_binary_url": "http://document-store/AAA/binary",
+          "document_filename": "case-summary.pdf"
+        },
+        "caseSummaryDescription": "Case summary",
+        "reheardHearingDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "case-summary.pdf"
+              },
+              "description": "Case summary",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseSummary"
+            }
+          }
+        ],
+        "hearingDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "case-summary-before.pdf"
+              },
+              "description": "Case summary",
+              "dateUploaded": "{$TODAY}",
+              "tag": "caseSummary"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

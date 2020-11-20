@@ -13,9 +13,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final FeatureToggler featureToggler;
+
+    public ListCasePreparer(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -42,7 +49,7 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseData();
 
         Optional<HearingCentre> maybeHearingCentre =
-                asylumCase.read(HEARING_CENTRE);
+            asylumCase.read(HEARING_CENTRE);
 
         if (asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
@@ -52,7 +59,14 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+            && featureToggler.getValue("reheard-feature", false)) {
+            asylumCase.clear(LIST_CASE_HEARING_CENTRE);
+            asylumCase.clear(LIST_CASE_HEARING_DATE);
+            asylumCase.clear(LIST_CASE_HEARING_LENGTH);
+        } else {
+            maybeHearingCentre.ifPresent(hearingCentre -> asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre));
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -1,0 +1,37 @@
+{
+  "description": "RIA-3131 Hold onto prepare decision and reasons fields for normal case (caseFlagSetAsideReheardExists missing) - feature flag on",
+  "launchDarklyKey": "reheard-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "generateDecisionAndReasons",
+      "state": "preHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isReheardAppealEnabled": "Yes",
+          "caseFlagSetAsideReheardExists": "No",
+          "caseIntroductionDescription": "some case introduction",
+          "anonymityOrder": "No",
+          "appellantRepresentative": "appellant representative",
+          "respondentRepresentative": "respondent representative"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isReheardAppealEnabled": "Yes",
+        "caseFlagSetAsideReheardExists": "No",
+        "anonymityOrder": "No",
+        "appellantRepresentative": "appellant representative",
+        "respondentRepresentative": "respondent representative"
+      }
+    }
+  }
+}
