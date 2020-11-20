@@ -47,4 +47,5 @@ java:
         - em-stitching-enabled
         - launch-darkly-sdk-key
         - case-api-POSTGRES-PASS
+        - case-api-POSTGRES-PASS-11
         - AppInsightsInstrumentationKey
