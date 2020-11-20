@@ -1,0 +1,46 @@
+{
+  "description": "RIA-3692 home office notification for amend response for respondentReview",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestResponseAmend",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "sendDirectionExplanation": "Review the case",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "You have to review the appellant's argument and evidence.",
+                "parties": "respondent",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestResponseAmend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeAmendResponseInstructStatus": "OK"
+      }
+    }
+  }
+}

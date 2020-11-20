@@ -1039,6 +1039,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_AMEND_BUNDLE_INSTRUCT_STATUS(
         "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
+        "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {}),
+
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
