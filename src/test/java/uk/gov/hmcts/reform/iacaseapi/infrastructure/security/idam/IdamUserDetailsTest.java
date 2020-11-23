@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IdamUserDetailsTest {
 

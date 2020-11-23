@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
@@ -14,17 +19,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -37,12 +41,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class UploadDecisionLetterHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
+    private final Document someDoc = new Document(
+        "some url",
+        "some binary url",
+        "some filename");
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -55,17 +61,10 @@ public class UploadDecisionLetterHandlerTest {
     private DocumentsAppender documentsAppender;
     @Mock
     private DocumentWithMetadata newLegalRepDoc;
-
     @InjectMocks
     private UploadDecisionLetterHandler handler;
 
-    private final Document someDoc = new Document(
-        "some url",
-        "some binary url",
-        "some filename");
-
-
-    @Before
+    @BeforeEach
     public void setUp() {
         given(callback.getEvent()).willReturn(Event.SUBMIT_APPEAL);
         given(callback.getCaseDetails()).willReturn(caseDetails);
@@ -76,8 +75,9 @@ public class UploadDecisionLetterHandlerTest {
             );
     }
 
-    @Test
-    @Parameters(method = "generateTestScenarios")
+
+    @ParameterizedTest
+    @MethodSource("generateTestScenarios")
     public void canHandle(TestScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.getEvent());
         given(asylumCase.read(
@@ -90,37 +90,9 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @SuppressWarnings("unused")
-    private List<TestScenario> generateTestScenarios() {
+    private static List<TestScenario> generateTestScenarios() {
         return TestScenario.testScenarioBuilder();
     }
-
-    @Value
-    private static class TestScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        Document document;
-        boolean canBeHandledExpected;
-
-        public static List<TestScenario> testScenarioBuilder() {
-            List<TestScenario> testScenarioList = new ArrayList<>();
-            for (Event e : Event.values()) {
-                for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
-                    Document someDoc = new Document(
-                        "some url",
-                        "some binary url",
-                        "some filename");
-                    if (e.equals(Event.SUBMIT_APPEAL) && cb.equals(ABOUT_TO_SUBMIT)) {
-                        testScenarioList.add(new TestScenario(e, cb, someDoc, true));
-                    } else {
-                        testScenarioList.add(new TestScenario(e, cb, someDoc, false));
-                    }
-                    testScenarioList.add(new TestScenario(e, cb, null, false));
-                }
-            }
-            return testScenarioList;
-        }
-    }
-
 
     @Test
     public void handle() {
@@ -172,6 +144,33 @@ public class UploadDecisionLetterHandlerTest {
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Value
+    private static class TestScenario {
+        Event event;
+        PreSubmitCallbackStage callbackStage;
+        Document document;
+        boolean canBeHandledExpected;
+
+        public static List<TestScenario> testScenarioBuilder() {
+            List<TestScenario> testScenarioList = new ArrayList<>();
+            for (Event e : Event.values()) {
+                for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
+                    Document someDoc = new Document(
+                        "some url",
+                        "some binary url",
+                        "some filename");
+                    if (e.equals(Event.SUBMIT_APPEAL) && cb.equals(ABOUT_TO_SUBMIT)) {
+                        testScenarioList.add(new TestScenario(e, cb, someDoc, true));
+                    } else {
+                        testScenarioList.add(new TestScenario(e, cb, someDoc, false));
+                    }
+                    testScenarioList.add(new TestScenario(e, cb, null, false));
+                }
+            }
+            return testScenarioList;
+        }
     }
 
 }

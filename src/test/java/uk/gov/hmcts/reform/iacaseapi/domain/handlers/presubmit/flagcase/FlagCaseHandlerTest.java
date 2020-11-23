@@ -1,28 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -38,12 +40,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class FlagCaseHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
+    private final String additionalInformation = "some additional information";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -54,22 +55,22 @@ public class FlagCaseHandlerTest {
     private CaseFlagAppender caseFlagAppender;
     @Mock
     private FeatureToggler featureToggler;
-
-    private final String additionalInformation = "some additional information";
     private FlagCaseHandler flagCaseHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(callback.getEvent()).thenReturn(Event.FLAG_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class)).thenReturn(Optional.of(additionalInformation));
+        when(asylumCase.read(FLAG_CASE_ADDITIONAL_INFORMATION, String.class))
+            .thenReturn(Optional.of(additionalInformation));
 
         flagCaseHandler = new FlagCaseHandler(caseFlagAppender, featureToggler);
     }
 
-    @Test
-    @Parameters({
+
+    @ParameterizedTest
+    @CsvSource({
         "ANONYMITY, CASE_FLAG_ANONYMITY_EXISTS, CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION",
         "COMPLEX_CASE, CASE_FLAG_COMPLEX_CASE_EXISTS, CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION",
         "DEPORT, CASE_FLAG_DEPORT_EXISTS, CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION",
@@ -78,7 +79,7 @@ public class FlagCaseHandlerTest {
         "POTENTIALLY_VIOLENT_PERSON, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_EXISTS, CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION",
         "UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION",
         "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION",
-        "SET_ASIDE_REHEARD, CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION",
+        "SET_ASIDE_REHEARD, CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION"
     })
     public void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
                                                         AsylumCaseFieldDefinition caseFlagExists,

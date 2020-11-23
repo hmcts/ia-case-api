@@ -1,34 +1,39 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 // suppress warning because of changes in jackson-core library API version: 2.10.0.pr3
 @SuppressWarnings("unchecked")
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class AsylumCaseCallbackDeserializerTest {
 
-    @Mock private ObjectMapper mapper;
-    @Mock private Callback<AsylumCase> expectedAsylumCaseCallback;
+    @Mock
+    private ObjectMapper mapper;
+    @Mock
+    private Callback<AsylumCase> expectedAsylumCaseCallback;
 
     private AsylumCaseCallbackDeserializer asylumCaseCallbackDeserializer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         asylumCaseCallbackDeserializer = new AsylumCaseCallbackDeserializer(mapper);
     }

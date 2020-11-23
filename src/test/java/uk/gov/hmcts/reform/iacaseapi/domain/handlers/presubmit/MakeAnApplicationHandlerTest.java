@@ -1,20 +1,35 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_APPLICATION;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
@@ -29,22 +44,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MakeAnApplicationHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private FeatureToggler featureToggler;
 
-    @Mock private MakeAnApplicationAppender makeAnApplicationAppender;
+    @Mock
+    private MakeAnApplicationAppender makeAnApplicationAppender;
 
     @InjectMocks
     private MakeAnApplicationHandler makeAnApplicationHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
@@ -75,7 +96,8 @@ public class MakeAnApplicationHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.LISTING);
         when(asylumCase.read(MAKE_AN_APPLICATION_TYPES, DynamicList.class))
             .thenReturn(Optional.of(makeAnApplicationTypes));
-        when(asylumCase.read(MAKE_AN_APPLICATION_DETAILS, String.class)).thenReturn(Optional.of(newMakeAnApplicationReason));
+        when(asylumCase.read(MAKE_AN_APPLICATION_DETAILS, String.class))
+            .thenReturn(Optional.of(newMakeAnApplicationReason));
         when(asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE)).thenReturn(Optional.of(newMakeAnApplicationEvidence));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(existingMakeAnApplications));
 
@@ -136,7 +158,8 @@ public class MakeAnApplicationHandlerTest {
         when(asylumCase.read(MAKE_AN_APPLICATION_TYPES, DynamicList.class))
             .thenReturn(Optional.of(new DynamicList("updateAppealDetails")));
 
-        Assertions.assertThatThrownBy(() -> makeAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        Assertions
+            .assertThatThrownBy(() -> makeAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("MakeAnApplication details is not present");
     }

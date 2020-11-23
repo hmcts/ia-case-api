@@ -1,23 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
-import org.assertj.core.api.Assertions;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -25,31 +22,67 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(MockitoExtension.class)
 public class UploadSensitiveDocsConfirmationTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
+    UploadSensitiveDocsConfirmation handler = new UploadSensitiveDocsConfirmation();
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    UploadSensitiveDocsConfirmation handler = new UploadSensitiveDocsConfirmation();
-
-    @Test
-    @Parameters(method = "generateCanHandleScenarios")
+    @ParameterizedTest
+    @MethodSource("generateCanHandleScenarios")
     public void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
         boolean result = handler.canHandle(callback);
 
-        Assertions.assertThat(result).isEqualTo(scenario.canHandleExpectedResult);
+        assertThat(result).isEqualTo(scenario.canHandleExpectedResult);
     }
 
-    private List<CanHandleScenario> generateCanHandleScenarios() {
+    private static List<CanHandleScenario> generateCanHandleScenarios() {
         return CanHandleScenario.builder();
+    }
+
+    @Test
+    public void handle() {
+        when(callback.getEvent()).thenReturn(Event.UPLOAD_SENSITIVE_DOCUMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(1593428851262042L);
+
+        PostSubmitCallbackResponse actualResponse = handler.handle(callback);
+
+        assertTrue(actualResponse.getConfirmationHeader().isPresent());
+        assertTrue(actualResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            actualResponse.getConfirmationHeader().get())
+            .contains("# You have uploaded sensitive documentation");
+
+        assertThat(
+            actualResponse.getConfirmationBody().get())
+            .contains("#### What happens next\r\n\r\n");
+
+        assertThat(
+            actualResponse.getConfirmationBody().get())
+            .contains(
+                "You can see the documentation in the [documents tab](/cases/case-details/1593428851262042#documents). "
+                    + "Select Edit documents from the Next step dropdown if you need to remove a document."
+            );
+    }
+
+    @Test
+    public void should_throw_exception() {
+        assertThatThrownBy(() -> handler.canHandle(null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        when(callback.getEvent()).thenReturn(Event.ADD_CASE_NOTE);
+        assertThatThrownBy(() -> handler.handle(callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Value
@@ -68,49 +101,6 @@ public class UploadSensitiveDocsConfirmationTest {
             }
             return scenarios;
         }
-    }
-
-
-    @Test
-    public void handle() {
-        when(callback.getEvent()).thenReturn(Event.UPLOAD_SENSITIVE_DOCUMENTS);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(1593428851262042L);
-
-        PostSubmitCallbackResponse actualResponse = handler.handle(callback);
-
-        assertTrue(actualResponse.getConfirmationHeader().isPresent());
-        assertTrue(actualResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-            actualResponse.getConfirmationHeader().get(),
-            containsString("# You have uploaded sensitive documentation")
-        );
-
-        assertThat(
-            actualResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\r\n\r\n")
-        );
-
-        assertThat(
-            actualResponse.getConfirmationBody().get(),
-            containsString(
-                "You can see the documentation in the [documents tab](/cases/case-details/1593428851262042#documents). "
-                    + "Select Edit documents from the Next step dropdown if you need to remove a document."
-            )
-        );
-    }
-
-    @Test
-    public void should_throw_exception() {
-        assertThatThrownBy(() -> handler.canHandle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        when(callback.getEvent()).thenReturn(Event.ADD_CASE_NOTE);
-        assertThatThrownBy(() -> handler.handle(callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 

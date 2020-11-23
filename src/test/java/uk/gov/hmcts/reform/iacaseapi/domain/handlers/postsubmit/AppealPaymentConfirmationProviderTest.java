@@ -2,21 +2,26 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_AMOUNT_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PBA_NUMBER;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AppealPaymentConfirmationProviderTest {
 
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCase;
 
     private AppealPaymentConfirmationProvider appealPaymentConfirmationProvider =
         new AppealPaymentConfirmationProvider();
@@ -26,7 +31,8 @@ public class AppealPaymentConfirmationProviderTest {
 
         when(asylumCase.read(PAYMENT_REFERENCE, String.class)).thenReturn(Optional.of("Some account reference"));
 
-        assertThat(appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)).isEqualTo("Some account reference");
+        assertThat(appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase))
+            .isEqualTo("Some account reference");
     }
 
     @Test
@@ -34,7 +40,8 @@ public class AppealPaymentConfirmationProviderTest {
 
         when(asylumCase.read(PBA_NUMBER, String.class)).thenReturn(Optional.of("Some account number"));
 
-        assertThat(appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase)).isEqualTo("Some account number");
+        assertThat(appealPaymentConfirmationProvider.getPaymentAccountNumber(asylumCase))
+            .isEqualTo("Some account number");
     }
 
     @Test
@@ -50,6 +57,7 @@ public class AppealPaymentConfirmationProviderTest {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 
-        assertThat(appealPaymentConfirmationProvider.getPaymentStatus(asylumCase)).isEqualTo(Optional.of(PaymentStatus.PAID));
+        assertThat(appealPaymentConfirmationProvider.getPaymentStatus(asylumCase))
+            .isEqualTo(Optional.of(PaymentStatus.PAID));
     }
 }

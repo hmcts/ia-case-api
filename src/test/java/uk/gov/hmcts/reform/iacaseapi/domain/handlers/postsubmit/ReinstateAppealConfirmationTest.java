@@ -1,24 +1,24 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ReinstateAppealConfirmationTest {
 
@@ -40,15 +40,13 @@ public class ReinstateAppealConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# This appeal has been reinstated")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# This appeal has been reinstated");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The legal representative and the Home Office "
-                + "will be notified that the case has been reinstated.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The legal representative and the Home Office "
+                + "will be notified that the case has been reinstated.");
     }
 
     @Test

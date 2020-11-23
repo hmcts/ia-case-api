@@ -6,26 +6,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class CaseNoteAppenderTest {
 
     @Mock
     private CaseNote newCaseNote;
-    @Mock private CaseNote oldCaseNote;
-    @Mock private CaseNote oldestCaseNote;
+    @Mock
+    private CaseNote oldCaseNote;
+    @Mock
+    private CaseNote oldestCaseNote;
 
     private Appender<CaseNote> caseNoteAppender;
     private List<IdValue<CaseNote>> oldCaseNotes = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         oldCaseNotes.add(new IdValue<>(

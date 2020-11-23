@@ -1,20 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAID_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -25,20 +37,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MarkPaymentPaidStateHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-
     private static final String paymentDate = "2020-08-31";
-
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     private MarkPaymentPaidStateHandler markPaymentPaidStateHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
@@ -46,15 +61,17 @@ public class MarkPaymentPaidStateHandlerTest {
             new MarkPaymentPaidStateHandler(true);
     }
 
-    @Test
-    @Parameters({ "refusalOfEu", "refusalOfHumanRights" })
+
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights"})
     public void should_mark_appeal_as_paid_and_state_change_for_ea_and_hu_appeals(String appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(appealType));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
@@ -78,7 +95,8 @@ public class MarkPaymentPaidStateHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(State.CASE_BUILDING);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
@@ -104,7 +122,8 @@ public class MarkPaymentPaidStateHandlerTest {
         when(asylumCase.read(PAID_DATE, String.class))
             .thenReturn(Optional.of(paymentDate));
 
-        assertThatThrownBy(() -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(() -> markPaymentPaidStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("AppealType is not present");
     }
@@ -118,7 +137,8 @@ public class MarkPaymentPaidStateHandlerTest {
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
-        assertThatThrownBy(() -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(() -> markPaymentPaidStateHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Paid date is not present");
     }
@@ -126,7 +146,8 @@ public class MarkPaymentPaidStateHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+        assertThatThrownBy(
+            () -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -167,7 +188,8 @@ public class MarkPaymentPaidStateHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
+        assertThatThrownBy(
+            () -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

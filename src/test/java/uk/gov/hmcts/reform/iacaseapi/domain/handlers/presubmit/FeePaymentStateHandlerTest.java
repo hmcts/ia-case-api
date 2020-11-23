@@ -1,20 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.util.Arrays;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
@@ -26,21 +36,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentStateHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     private FeePaymentStateHandler feePaymentStateHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         feePaymentStateHandler = new FeePaymentStateHandler(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
@@ -274,8 +287,8 @@ public class FeePaymentStateHandlerTest {
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
-    @Test
-    @Parameters({ "EA", "HU", "PA" })
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "PA"})
     public void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -300,8 +313,8 @@ public class FeePaymentStateHandlerTest {
         }
     }
 
-    @Test
-    @Parameters({ "EA", "HU", "PA" })
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "PA"})
     public void should_return_appeal_submitted_state_with_no_remission(String type) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -325,8 +338,8 @@ public class FeePaymentStateHandlerTest {
         }
     }
 
-    @Test
-    @Parameters({ "FAILED", "PAYMENT_PENDING" })
+    @ParameterizedTest
+    @ValueSource(strings = {"FAILED", "PAYMENT_PENDING"})
     public void should_return_current_state_for_failed_and_pending_payments(String paymentStatus) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -392,7 +405,8 @@ public class FeePaymentStateHandlerTest {
         AsylumCase asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(
+            () -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Appeal type is not present");
     }
@@ -400,13 +414,15 @@ public class FeePaymentStateHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+        assertThatThrownBy(
+            () -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
 
-        assertThatThrownBy(() -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(
+            () -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 

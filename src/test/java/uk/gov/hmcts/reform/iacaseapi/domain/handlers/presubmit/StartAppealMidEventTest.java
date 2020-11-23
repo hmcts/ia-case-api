@@ -2,19 +2,27 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 
-import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,21 +30,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class StartAppealMidEventTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private String correctHomeOfficeReferenceFormatCid = "01234567";
     private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
     private String wrongHomeOfficeReferenceFormat = "A234567";
-    private String callbackErrorMessage = "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
+    private String callbackErrorMessage =
+        "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
     private StartAppealMidEvent startAppealMidEvent;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         startAppealMidEvent = new StartAppealMidEvent();
 
@@ -71,32 +84,33 @@ public class StartAppealMidEventTest {
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> startAppealMidEvent.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> startAppealMidEvent.canHandle(MID_EVENT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void should_error_when_home_office_reference_format_is_wrong() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(wrongHomeOfficeReferenceFormat));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(wrongHomeOfficeReferenceFormat));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -106,10 +120,11 @@ public class StartAppealMidEventTest {
 
     @Test
     public void should_successfully_validate_when_home_office_reference_format_is_correct_cid() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -119,10 +134,11 @@ public class StartAppealMidEventTest {
 
     @Test
     public void should_successfully_validate_when_home_office_reference_format_is_correct_uan() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(correctHomeOfficeReferenceFormatUan));
+        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatUan));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());

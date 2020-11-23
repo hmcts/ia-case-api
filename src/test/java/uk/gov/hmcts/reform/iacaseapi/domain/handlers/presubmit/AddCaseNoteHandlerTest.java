@@ -4,19 +4,28 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_SUBJECT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -31,35 +40,44 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AddCaseNoteHandlerTest {
 
-    @Mock
-    private Appender<CaseNote> caseNoteAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
-    @Mock private UserDetailsProvider userProvider;
-    @Mock private CaseNote existingCaseNote;
-    @Mock private List allAppendedCaseNotes;
-    @Mock private UserDetails userDetails;
-    @Mock private Document newCaseNoteDocument;
-
-    @Captor private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
-    @Captor private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
-
     private final LocalDate now = LocalDate.now();
-    private final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
     private final String newCaseNoteSubject = "some-subject";
     private final String newCaseNoteDescription = "some-description";
     private final String forename = "Frank";
     private final String surname = "Butcher";
-
+    @Mock
+    private Appender<CaseNote> caseNoteAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private UserDetailsProvider userProvider;
+    @Mock
+    private CaseNote existingCaseNote;
+    private final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
+    @Mock
+    private List allAppendedCaseNotes;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private Document newCaseNoteDocument;
+    @Captor
+    private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
+    @Captor
+    private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
     private AddCaseNoteHandler addCaseNoteHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_CASE_NOTE);

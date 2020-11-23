@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +32,18 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class PreSubmitCallbackControllerTest {
 
-    @Mock private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private FeatureToggler featureToggler;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private FeatureToggler featureToggler;
+    @Mock
+    private AsylumCase asylumCase;
 
     private PreSubmitCallbackController preSubmitCallbackController;
 
@@ -109,7 +119,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL" })
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
     public void should_not_dispatch_callback_when_suspend_flag_is_true_and_event_is_submit_appeal(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -123,7 +133,8 @@ public class PreSubmitCallbackControllerTest {
 
         assertNotNull(actualResponse);
         assertNotNull(actualResponse.getBody());
-        assertTrue(actualResponse.getBody().getErrors().contains("There is planned maintenance work in progress. Your appeal has been saved and you will be able to submit it later. Please try again in few hours."));
+        assertTrue(actualResponse.getBody().getErrors().contains(
+            "There is planned maintenance work in progress. Your appeal has been saved and you will be able to submit it later. Please try again in few hours."));
         verifyNoInteractions(callbackDispatcher);
     }
 

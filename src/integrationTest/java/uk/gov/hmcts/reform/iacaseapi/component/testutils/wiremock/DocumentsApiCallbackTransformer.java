@@ -41,7 +41,8 @@ public class DocumentsApiCallbackTransformer extends ResponseDefinitionTransform
     ) {
         Callback<AsylumCase> asylumCaseCallback = readValue(
             request,
-            new TypeReference<Callback<AsylumCase>>() {});
+            new TypeReference<Callback<AsylumCase>>() {
+            });
 
         AsylumCase incomingAsylumCase = asylumCaseCallback
             .getCaseDetails()
@@ -74,13 +75,6 @@ public class DocumentsApiCallbackTransformer extends ResponseDefinitionTransform
     @Override
     public boolean applyGlobally() {
         return false;
-    }
-
-    public void addAdditionalAsylumCaseData(
-        String fieldname,
-        Object value
-    ) {
-        additionalAsylumCaseData.put(fieldname, value);
     }
 
     private String writeValue(PreSubmitCallbackResponseForTest preSubmitCallbackResponseForTest) {

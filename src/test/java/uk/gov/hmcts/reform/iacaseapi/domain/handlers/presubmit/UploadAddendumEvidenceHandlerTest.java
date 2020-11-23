@@ -1,20 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_RESPONDENT;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -28,28 +40,41 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class UploadAddendumEvidenceHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithDescription additionalEvidence1;
-    @Mock private DocumentWithDescription additionalEvidence2;
-    @Mock private DocumentWithMetadata additionalEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata additionalEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingAddendumEvidenceDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allAddendumEvidenceDocuments;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DocumentWithDescription additionalEvidence1;
+    @Mock
+    private DocumentWithDescription additionalEvidence2;
+    @Mock
+    private DocumentWithMetadata additionalEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata additionalEvidence2WithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingAddendumEvidenceDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allAddendumEvidenceDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
 
     private String appellantRespondent;
     private UploadAddendumEvidenceHandler uploadAddendumEvidenceHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         uploadAddendumEvidenceHandler =
@@ -102,8 +127,10 @@ public class UploadAddendumEvidenceHandlerTest {
         verify(asylumCase, times(1)).read(ADDENDUM_EVIDENCE);
         verify(asylumCase, times(1)).read(IS_APPELLANT_RESPONDENT);
 
-        verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
-        verify(documentReceiver, times(1)).tryReceive(additionalEvidence2, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
+        verify(documentReceiver, times(1))
+            .tryReceive(additionalEvidence1, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
+        verify(documentReceiver, times(1))
+            .tryReceive(additionalEvidence2, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
 
         verify(documentsAppender, times(1)).append(existingAddendumEvidenceDocuments, additionalEvidenceWithMetadata);
 
@@ -116,7 +143,8 @@ public class UploadAddendumEvidenceHandlerTest {
     @Test
     public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
 
-        List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
+        List<IdValue<DocumentWithDescription>> additionalEvidence =
+            Arrays.asList(new IdValue<>("1", additionalEvidence1));
         List<DocumentWithMetadata> additionalEvidenceWithMetadata = Arrays.asList(additionalEvidence1WithMetadata);
 
         when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.empty());
@@ -137,9 +165,11 @@ public class UploadAddendumEvidenceHandlerTest {
 
         verify(asylumCase, times(1)).read(ADDENDUM_EVIDENCE);
 
-        verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
+        verify(documentReceiver, times(1))
+            .tryReceive(additionalEvidence1, DocumentTag.ADDENDUM_EVIDENCE, appellantRespondent);
 
-        verify(documentsAppender, times(1)).append(existingAdditionalEvidenceDocumentsCaptor.capture(), eq(additionalEvidenceWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(existingAdditionalEvidenceDocumentsCaptor.capture(), eq(additionalEvidenceWithMetadata));
 
         List<IdValue<DocumentWithMetadata>> actualExistingAdditionalDocuments =
             existingAdditionalEvidenceDocumentsCaptor
@@ -166,7 +196,8 @@ public class UploadAddendumEvidenceHandlerTest {
 
     @Test
     public void should_throw_when_is_appellant_respondent_is_not_present() {
-        List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
+        List<IdValue<DocumentWithDescription>> additionalEvidence =
+            Arrays.asList(new IdValue<>("1", additionalEvidence1));
 
         when(asylumCase.read(ADDENDUM_EVIDENCE)).thenReturn(Optional.of(additionalEvidence));
         when(asylumCase.read(IS_APPELLANT_RESPONDENT)).thenReturn(Optional.empty());

@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -18,20 +23,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class DecisionAndReasonsGeneratedSubStateProgressionTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private DecisionAndReasonsGeneratedSubStateProgression decisionAndReasonsGeneratedSubStateProgression;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         decisionAndReasonsGeneratedSubStateProgression =
-                new DecisionAndReasonsGeneratedSubStateProgression();
+            new DecisionAndReasonsGeneratedSubStateProgression();
     }
 
     @Test
@@ -42,7 +51,7 @@ public class DecisionAndReasonsGeneratedSubStateProgressionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                decisionAndReasonsGeneratedSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            decisionAndReasonsGeneratedSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(DECISION_AND_REASONS_AVAILABLE, YesOrNo.YES);
 
@@ -52,14 +61,16 @@ public class DecisionAndReasonsGeneratedSubStateProgressionTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> decisionAndReasonsGeneratedSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> decisionAndReasonsGeneratedSubStateProgression
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
-        assertThatThrownBy(() -> decisionAndReasonsGeneratedSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> decisionAndReasonsGeneratedSubStateProgression
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -74,7 +85,7 @@ public class DecisionAndReasonsGeneratedSubStateProgressionTest {
                 boolean canHandle = decisionAndReasonsGeneratedSubStateProgression.canHandle(callbackStage, callback);
 
                 if ((event == Event.GENERATE_DECISION_AND_REASONS)
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
                 } else {

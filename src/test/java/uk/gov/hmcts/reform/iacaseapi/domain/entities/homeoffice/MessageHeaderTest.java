@@ -2,20 +2,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MessageHeaderTest {
     @Mock
     private CodeWithDescription consumerType;
     private MessageHeader messageHeader;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         messageHeader = new MessageHeader(
             consumerType,

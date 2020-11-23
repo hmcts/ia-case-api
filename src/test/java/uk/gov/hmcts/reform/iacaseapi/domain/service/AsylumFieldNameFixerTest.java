@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 
 public class AsylumFieldNameFixerTest {
@@ -13,7 +13,7 @@ public class AsylumFieldNameFixerTest {
     private AsylumFieldNameFixer asylumFieldNameFixer;
     private AsylumCase asylumCase;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         asylumFieldNameFixer = new AsylumFieldNameFixer(

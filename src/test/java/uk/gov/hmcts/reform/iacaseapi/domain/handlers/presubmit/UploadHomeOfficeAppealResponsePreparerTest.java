@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOADED_HOME_OFFICE_APPEAL_RESPONSE_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
@@ -13,13 +17,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -32,26 +38,34 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class UploadHomeOfficeAppealResponsePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-
-    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
-    @Mock private Document document1;
-    @Mock private Document document2;
     private final String appealResponse01FileName = "Evidence01";
     private final String appealResponse02FileName = "Evidence02";
-    @Captor private ArgumentCaptor<String> fileNames;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock
+    private Document document1;
+    @Mock
+    private Document document2;
+    @Captor
+    private ArgumentCaptor<String> fileNames;
 
 
     private UploadHomeOfficeAppealResponsePreparer uploadHomeOfficeAppealResponsePreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         uploadHomeOfficeAppealResponsePreparer =
@@ -91,7 +105,8 @@ public class UploadHomeOfficeAppealResponsePreparerTest {
             uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertThat(callbackResponse.getErrors()).hasSize(1);
-        assertTrue(callbackResponse.getErrors().contains("You cannot upload more documents until your response has been reviewed"));
+        assertTrue(callbackResponse.getErrors()
+            .contains("You cannot upload more documents until your response has been reviewed"));
         verify(asylumCase).read(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE);
     }
 
@@ -170,12 +185,14 @@ public class UploadHomeOfficeAppealResponsePreparerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -191,7 +208,8 @@ public class UploadHomeOfficeAppealResponsePreparerTest {
 
                 boolean canHandle = uploadHomeOfficeAppealResponsePreparer.canHandle(callbackStage, callback);
 
-                if ((callback.getEvent() == Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE || callback.getEvent() == Event.ADD_APPEAL_RESPONSE)
+                if ((callback.getEvent() == Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE
+                    || callback.getEvent() == Event.ADD_APPEAL_RESPONSE)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
@@ -211,7 +229,8 @@ public class UploadHomeOfficeAppealResponsePreparerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponsePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponsePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -219,7 +238,8 @@ public class UploadHomeOfficeAppealResponsePreparerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponsePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

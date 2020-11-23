@@ -1,18 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
@@ -20,14 +22,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MakeAnApplicationAppenderTest {
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private DateProvider dateProvider;
-    @Mock private IdValue<MakeAnApplication> makeAnApplicationById1;
-    @Mock private IdValue<MakeAnApplication> makeAnApplicationById2;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private IdValue<MakeAnApplication> makeAnApplicationById1;
+    @Mock
+    private IdValue<MakeAnApplication> makeAnApplicationById2;
 
     private String newMakeAnApplicationType = "newMakeAnApplicationType";
     private String newMakeAnApplicationDesc = "newMakeAnApplicationDesc";
@@ -37,7 +44,7 @@ public class MakeAnApplicationAppenderTest {
 
     private MakeAnApplicationAppender makeAnApplicationAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         makeAnApplicationAppender =
@@ -56,10 +63,12 @@ public class MakeAnApplicationAppenderTest {
         MakeAnApplication existingMakeAnApplication2 = mock(MakeAnApplication.class);
         when(makeAnApplicationById2.getValue()).thenReturn(existingMakeAnApplication2);
 
-        List<IdValue<MakeAnApplication>> existingMakeAnApplications = Arrays.asList(makeAnApplicationById1, makeAnApplicationById2);
+        List<IdValue<MakeAnApplication>> existingMakeAnApplications =
+            Arrays.asList(makeAnApplicationById1, makeAnApplicationById2);
         List<IdValue<MakeAnApplication>> allMakeAnApplications = makeAnApplicationAppender.append(
             existingMakeAnApplications, newMakeAnApplicationType,
-            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision, newMakeAnApplicationState);
+            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision,
+            newMakeAnApplicationState);
 
         assertNotNull(allMakeAnApplications);
         assertEquals(3, allMakeAnApplications.size());
@@ -89,7 +98,8 @@ public class MakeAnApplicationAppenderTest {
 
         List<IdValue<MakeAnApplication>> allMakeAnApplications = makeAnApplicationAppender.append(
             existingMakeAnApplications, newMakeAnApplicationType,
-            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision, newMakeAnApplicationState);
+            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision,
+            newMakeAnApplicationState);
 
         assertNotNull(allMakeAnApplications);
         assertEquals(1, allMakeAnApplications.size());
@@ -99,7 +109,8 @@ public class MakeAnApplicationAppenderTest {
         assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.get(0).getValue().getEvidence());
         assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.get(0).getValue().getDecision());
         assertEquals(newMakeAnApplicationState, allMakeAnApplications.get(0).getValue().getState());
-        assertEquals(UserRole.LEGAL_REPRESENTATIVE.toString(), allMakeAnApplications.get(0).getValue().getApplicantRole());
+        assertEquals(UserRole.LEGAL_REPRESENTATIVE.toString(),
+            allMakeAnApplications.get(0).getValue().getApplicantRole());
     }
 
     @Test
@@ -109,12 +120,14 @@ public class MakeAnApplicationAppenderTest {
 
         assertThatThrownBy(() -> makeAnApplicationAppender.append(
             null, newMakeAnApplicationType,
-            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision, newMakeAnApplicationState))
+            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision,
+            newMakeAnApplicationState))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> makeAnApplicationAppender.append(
             existingMakeAnApplications, null,
-            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision, newMakeAnApplicationState))
+            newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision,
+            newMakeAnApplicationState))
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> makeAnApplicationAppender.append(

@@ -1,29 +1,37 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.PreviousHearing;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class PreviousHearingAppenderTest {
 
-    @Mock private IdValue<PreviousHearing> existingPreviousHearingById1;
-    @Mock private IdValue<PreviousHearing> existingPreviousHearingById2;
-    @Mock private PreviousHearing existingPreviousHearing1 = mock(PreviousHearing.class);
-    @Mock private PreviousHearing existingPreviousHearing2 = mock(PreviousHearing.class);
-    @Mock private PreviousHearing newPreviousHearing1 = mock(PreviousHearing.class);
+    @Mock
+    private IdValue<PreviousHearing> existingPreviousHearingById1;
+    @Mock
+    private IdValue<PreviousHearing> existingPreviousHearingById2;
+    @Mock
+    private PreviousHearing existingPreviousHearing1 = mock(PreviousHearing.class);
+    @Mock
+    private PreviousHearing existingPreviousHearing2 = mock(PreviousHearing.class);
+    @Mock
+    private PreviousHearing newPreviousHearing1 = mock(PreviousHearing.class);
 
     private PreviousHearingAppender previousHearingAppender = new PreviousHearingAppender();
 

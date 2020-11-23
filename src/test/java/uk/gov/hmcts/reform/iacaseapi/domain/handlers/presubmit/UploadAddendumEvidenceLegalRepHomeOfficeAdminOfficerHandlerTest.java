@@ -1,20 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDENDUM_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_APPELLANT_RESPONDENT;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -28,27 +40,41 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithDescription additionalEvidence1;
-    @Mock private DocumentWithDescription additionalEvidence2;
-    @Mock private DocumentWithMetadata additionalEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata additionalEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingAddendumEvidenceDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allAddendumEvidenceDocuments;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DocumentWithDescription additionalEvidence1;
+    @Mock
+    private DocumentWithDescription additionalEvidence2;
+    @Mock
+    private DocumentWithMetadata additionalEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata additionalEvidence2WithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingAddendumEvidenceDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allAddendumEvidenceDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingAdditionalEvidenceDocumentsCaptor;
 
-    private UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler;
+    private UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+        uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler =
@@ -138,7 +164,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
 
         when(asylumCase.read(ADDENDUM_EVIDENCE)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("additionalEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -146,12 +173,14 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -165,11 +194,12 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.canHandle(callbackStage, callback);
+                boolean canHandle =
+                    uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.canHandle(callbackStage, callback);
 
                 if ((event == Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE
-                     || event == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
-                     || event == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER)
+                    || event == Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP
+                    || event == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -189,7 +219,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+            .canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -197,7 +228,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -228,7 +260,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
             .thenReturn(allAddendumEvidenceDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -245,7 +278,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     private void addAddendumEvidenceAsNewList(String party) {
-        List<IdValue<DocumentWithDescription>> additionalEvidence = Arrays.asList(new IdValue<>("1", additionalEvidence1));
+        List<IdValue<DocumentWithDescription>> additionalEvidence =
+            Arrays.asList(new IdValue<>("1", additionalEvidence1));
         List<DocumentWithMetadata> additionalEvidenceWithMetadata = Arrays.asList(additionalEvidence1WithMetadata);
 
         when(asylumCase.read(ADDENDUM_EVIDENCE_DOCUMENTS)).thenReturn(Optional.empty());
@@ -258,7 +292,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
             .thenReturn(allAddendumEvidenceDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
+                .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -267,7 +302,8 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
 
         verify(documentReceiver, times(1)).tryReceive(additionalEvidence1, DocumentTag.ADDENDUM_EVIDENCE, party);
 
-        verify(documentsAppender, times(1)).append(existingAdditionalEvidenceDocumentsCaptor.capture(), eq(additionalEvidenceWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(existingAdditionalEvidenceDocumentsCaptor.capture(), eq(additionalEvidenceWithMetadata));
 
         List<IdValue<DocumentWithMetadata>> actualExistingAdditionalDocuments =
             existingAdditionalEvidenceDocumentsCaptor

@@ -1,19 +1,20 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -22,15 +23,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
-
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class FtpaRespondentConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private FtpaRespondentConfirmation ftpaRespondentConfirmation =
         new FtpaRespondentConfirmation();
@@ -41,7 +43,8 @@ public class FtpaRespondentConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(eq(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME), eq(YesOrNo.class))).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(eq(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME), eq(YesOrNo.class)))
+            .thenReturn(Optional.of(YesOrNo.NO));
 
         PostSubmitCallbackResponse callbackResponse =
             ftpaRespondentConfirmation.handle(callback);
@@ -51,19 +54,17 @@ public class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've applied for permission to appeal to the Upper Tribunal")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've applied for permission to appeal to the Upper Tribunal");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will review your application and decide shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+
     }
 
     @Test
@@ -81,19 +82,17 @@ public class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've applied for permission to appeal to the Upper Tribunal")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've applied for permission to appeal to the Upper Tribunal");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will review your application and decide shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The First-tier Tribunal will review your application and decide shortly.<br>");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+
     }
 
 
@@ -103,7 +102,8 @@ public class FtpaRespondentConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(eq(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME), eq(YesOrNo.class))).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(eq(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME), eq(YesOrNo.class)))
+            .thenReturn(Optional.of(YesOrNo.YES));
 
         PostSubmitCallbackResponse callbackResponse =
             ftpaRespondentConfirmation.handle(callback);
@@ -113,20 +113,19 @@ public class FtpaRespondentConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons,"
-                           + " it will consider your application and make a decision shortly.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The First-tier Tribunal will consider the reasons it has been submitted out of time. If the Tribunal accepts your reasons,"
+                    + " it will consider your application and make a decision shortly.<br>");
+
     }
 
     @Test

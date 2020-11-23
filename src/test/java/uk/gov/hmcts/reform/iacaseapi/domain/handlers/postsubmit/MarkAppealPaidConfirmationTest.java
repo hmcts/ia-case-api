@@ -1,26 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MarkAppealPaidConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private MarkAppealPaidConfirmation markAppealPaidConfirmation
         = new MarkAppealPaidConfirmation();
@@ -38,19 +41,17 @@ public class MarkAppealPaidConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# Your have marked the appeal as paid")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your have marked the appeal as paid");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The Tribunal will be notified that the fee has been paid. The appeal will progress as usual.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The Tribunal will be notified that the fee has been paid. The appeal will progress as usual.");
+
     }
 
     @Test

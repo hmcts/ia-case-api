@@ -1,24 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -26,11 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(MockitoExtension.class)
 public class CaseSubmittedConfirmationTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,14 +48,12 @@ public class CaseSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have submitted your case")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have submitted your case");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The case officer will now review your appeal")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The case officer will now review your appeal");
     }
 
     @Test
@@ -70,8 +64,8 @@ public class CaseSubmittedConfirmationTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    @Parameters(method = "generateDifferentEventScenarios")
+    @ParameterizedTest
+    @MethodSource("generateDifferentEventScenarios")
     public void it_can_handle_callback(EventScenarios event) {
         ReflectionTestUtils.setField(caseSubmittedConfirmation, "isSaveAndContinueEnabled", event.isFlag());
         when(callback.getEvent()).thenReturn(event.getEvent());
@@ -81,8 +75,20 @@ public class CaseSubmittedConfirmationTest {
         Assertions.assertThat(canHandle).isEqualTo(event.isExpected());
     }
 
-    private List<EventScenarios> generateDifferentEventScenarios() {
+    private static List<EventScenarios> generateDifferentEventScenarios() {
         return EventScenarios.builder();
+    }
+
+    @Test
+    public void should_not_allow_null_arguments() {
+
+        assertThatThrownBy(() -> caseSubmittedConfirmation.canHandle(null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> caseSubmittedConfirmation.handle(null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Value
@@ -107,17 +113,5 @@ public class CaseSubmittedConfirmationTest {
             }
             return testScenarios;
         }
-    }
-
-    @Test
-    public void should_not_allow_null_arguments() {
-
-        assertThatThrownBy(() -> caseSubmittedConfirmation.canHandle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> caseSubmittedConfirmation.handle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

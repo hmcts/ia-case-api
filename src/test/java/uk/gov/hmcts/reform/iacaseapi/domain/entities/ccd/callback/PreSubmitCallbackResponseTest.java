@@ -1,26 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class PreSubmitCallbackResponseTest {
 
-    @Mock private CaseData caseData;
+    @Mock
+    private CaseData caseData;
 
     private PreSubmitCallbackResponse<CaseData> preSubmitCallbackResponse;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         preSubmitCallbackResponse = new PreSubmitCallbackResponse<>(caseData);
     }

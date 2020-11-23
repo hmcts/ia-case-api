@@ -1,25 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.health;
 
-import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfiguration;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class DownStreamHealthIndicatorTest {
 
-    @Mock RestTemplate restTemplate;
-    @Mock HealthCheckConfiguration healthCheckConfiguration;
+    @Mock
+    RestTemplate restTemplate;
+    @Mock
+    HealthCheckConfiguration healthCheckConfiguration;
 
     private DownStreamHealthIndicator downStreamHealthIndicator;
 

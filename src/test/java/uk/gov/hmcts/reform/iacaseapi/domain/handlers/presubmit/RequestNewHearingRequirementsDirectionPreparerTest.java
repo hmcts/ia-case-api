@@ -1,18 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -24,20 +34,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class RequestNewHearingRequirementsDirectionPreparerTest {
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
-
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
     private RequestNewHearingRequirementsDirectionPreparer requestNewHearingRequirementsDirectionPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         requestNewHearingRequirementsDirectionPreparer =
             new RequestNewHearingRequirementsDirectionPreparer(
@@ -60,7 +75,8 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
                 featureToggler
             );
 
-        boolean canHandle = requestNewHearingRequirementsDirectionPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        boolean canHandle =
+            requestNewHearingRequirementsDirectionPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertTrue(canHandle);
     }
@@ -68,11 +84,15 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
-                                                   + "# Next steps\n\n"
-                                                   + "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n"
-                                                   + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n"
-                                                   + "If you do not submit the hearing requirements within 5 working days, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
+        final String expectedExplanationContains =
+            "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
+                + "# Next steps\n\n"
+                +
+                "Visit the online service and use the HMCTS reference to find the case. Use the link on the overview tab to submit the appellant’s hearing requirements.\n"
+                +
+                "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n"
+                +
+                "If you do not submit the hearing requirements within 5 working days, the Tribunal may not be able to accommodate the appellant's needs for the hearing.";
 
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2020-10-06";
@@ -110,17 +130,20 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).contains("You cannot request hearing requirements for this appeal in this state.");
+        assertThat(callbackResponse.getErrors())
+            .contains("You cannot request hearing requirements for this appeal in this state.");
     }
 
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer
+            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -172,7 +195,8 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> requestNewHearingRequirementsDirectionPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -180,7 +204,8 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> requestNewHearingRequirementsDirectionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

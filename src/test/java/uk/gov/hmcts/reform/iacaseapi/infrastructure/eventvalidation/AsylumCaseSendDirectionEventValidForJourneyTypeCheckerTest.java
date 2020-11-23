@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.eventvalidation;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.Level;
@@ -10,11 +9,11 @@ import ch.qos.logback.core.read.ListAppender;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -24,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     @Mock
     private Callback<AsylumCase> callback;
@@ -35,10 +34,11 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
 
     private ListAppender<ILoggingEvent> loggingEventListAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
-        loggingEventListAppender = LoggerUtil.getListAppenderForClass(AsylumCaseSendDirectionEventValidForJourneyTypeChecker.class);
+        loggingEventListAppender =
+            LoggerUtil.getListAppenderForClass(AsylumCaseSendDirectionEventValidForJourneyTypeChecker.class);
     }
 
     @Test
@@ -46,7 +46,8 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid, is(new EventValid("You cannot use this function to send a direction to an appellant in person.")));
+        assertThat(eventValid)
+            .isEqualTo(new EventValid("You cannot use this function to send a direction to an appellant in person."));
 
         Assertions.assertThat(loggingEventListAppender.list)
             .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
@@ -58,7 +59,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.RESPONDENT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid, is(EventValid.VALID_EVENT));
+        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
     @Test
@@ -66,7 +67,8 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid, is(new EventValid("This is a legally represented case. You cannot select appellant as the recipient.")));
+        assertThat(eventValid).isEqualTo(
+            new EventValid("This is a legally represented case. You cannot select appellant as the recipient."));
 
         Assertions.assertThat(loggingEventListAppender.list)
             .extracting(ILoggingEvent::getMessage, ILoggingEvent::getLevel)
@@ -78,7 +80,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.LEGAL_REPRESENTATIVE);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
-        assertThat(eventValid, is(EventValid.VALID_EVENT));
+        assertThat(eventValid).isEqualTo(EventValid.VALID_EVENT);
     }
 
     private void setupCallback(Event event, JourneyType journeyType, Parties party) {
@@ -86,6 +88,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE)).thenReturn(Optional.of(journeyType));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class)).thenReturn(Optional.of(party));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES, Parties.class))
+            .thenReturn(Optional.of(party));
     }
 }

@@ -1,23 +1,40 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.REINSTATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -27,25 +44,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MakeAnApplicationTypesProviderTest {
 
-    @Mock Callback<AsylumCase> callback;
-    @Mock CaseDetails<AsylumCase> caseCaseDetails;
-
-    @Mock private UserDetails userDetails;
-    @Mock private UserDetailsProvider userDetailsProvider;
-
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
-
+    @Mock
+    Callback<AsylumCase> callback;
+    @Mock
+    CaseDetails<AsylumCase> caseCaseDetails;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
     @InjectMocks
     private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void should_return_given_application_types_in_appeal_submitted_state() {
@@ -96,8 +110,8 @@ public class MakeAnApplicationTypesProviderTest {
         assertThat(expectedList).isEqualTo(actualList);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
         "PENDING_PAYMENT",
         "AWAITING_RESPONDENT_EVIDENCE",
         "CASE_BUILDING",
@@ -130,8 +144,8 @@ public class MakeAnApplicationTypesProviderTest {
         assertThat(expectedList).isEqualTo(actualList);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
         "FTPA_SUBMITTED",
         "FTPA_DECIDED"
     })
@@ -159,8 +173,10 @@ public class MakeAnApplicationTypesProviderTest {
         assertThat(expectedList).isEqualTo(actualList);
     }
 
-    @Test
-    @Parameters({ "ADJOURNED", "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION" })
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "ADJOURNED", "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
     public void should_return_given_application_types_in_adjourned_to_decision(State state) {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));

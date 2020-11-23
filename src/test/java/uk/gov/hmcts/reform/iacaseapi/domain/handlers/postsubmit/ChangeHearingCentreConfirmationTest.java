@@ -1,26 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ChangeHearingCentreConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private ChangeHearingCentreConfirmation changeHearingCentreConfirmation =
         new ChangeHearingCentreConfirmation();
@@ -38,19 +41,17 @@ public class ChangeHearingCentreConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've updated the designated hearing centre")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've updated the designated hearing centre");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The appellant will be notified and the service will be updated.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The appellant will be notified and the service will be updated.");
+
     }
 
     @Test

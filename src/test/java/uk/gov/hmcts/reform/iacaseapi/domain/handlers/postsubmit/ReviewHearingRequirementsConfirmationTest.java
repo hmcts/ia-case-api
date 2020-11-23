@@ -1,31 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ReviewHearingRequirementsConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         reviewHearingRequirementsConfirmation =
             new ReviewHearingRequirementsConfirmation();
@@ -44,14 +47,14 @@ public class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the agreed hearing adjustments")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the agreed hearing adjustments");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.");
+
     }
 
     @Test
@@ -67,14 +70,14 @@ public class ReviewHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You've recorded the agreed hearing adjustments")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the agreed hearing adjustments");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.");
+
     }
 
     @Test
@@ -94,7 +97,8 @@ public class ReviewHearingRequirementsConfirmationTest {
 
             boolean canHandle = reviewHearingRequirementsConfirmation.canHandle(callback);
 
-            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS || event == Event.UPDATE_HEARING_ADJUSTMENTS) {
+            if (event == Event.REVIEW_HEARING_REQUIREMENTS || event == Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS
+                || event == Event.UPDATE_HEARING_ADJUSTMENTS) {
 
                 assertTrue(canHandle);
             } else {

@@ -1,19 +1,35 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
@@ -28,20 +44,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
-
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class FeePaymentPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private FeePayment<AsylumCase> feePayment;
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private FeePayment<AsylumCase> feePayment;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private FeePaymentPreparer feePaymentPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
@@ -59,7 +80,8 @@ public class FeePaymentPreparerTest {
                 feePayment
             );
 
-        assertThatThrownBy(() -> feePaymentPreparerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> feePaymentPreparerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -69,15 +91,15 @@ public class FeePaymentPreparerTest {
 
         for (Event event : Event.values()) {
 
-            when(callback.getEvent()).thenReturn(event);    
+            when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = feePaymentPreparer.canHandle(callbackStage, callback);
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL
-                            || event == Event.PAYMENT_APPEAL || event == Event.PAY_AND_SUBMIT_APPEAL)
-                        && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
+                    || event == Event.PAYMENT_APPEAL || event == Event.PAY_AND_SUBMIT_APPEAL)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);
                 } else {
@@ -89,8 +111,10 @@ public class FeePaymentPreparerTest {
         }
     }
 
-    @Test
-    @Parameters({ "START_APPEAL", "EDIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL" })
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL"
+    })
     public void should_write_feePaymentEnabled(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -100,7 +124,7 @@ public class FeePaymentPreparerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -131,33 +155,33 @@ public class FeePaymentPreparerTest {
     public void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentPreparer.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentPreparer.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
     }
 
-    @Test
-    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
     public void should_error_on_pay_and_submit_for_pay_offline(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -174,11 +198,12 @@ public class FeePaymentPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("The Pay and submit your appeal option is not available. "
-                      + "Select Submit your appeal if you want to submit the appeal now.");
+                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 
-    @Test
-    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
     public void should_error_on_duplicate_payment_for_pay_and_submit(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -196,11 +221,12 @@ public class FeePaymentPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("The Pay and submit your appeal option is not available. "
-                      + "Select Submit your appeal if you want to submit the appeal now.");
+                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 
-    @Test
-    @Parameters({ "refusalOfEu", "refusalOfHumanRights", "protection" })
+
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
     public void should_error_on_duplicate_payment_for_make_a_payment(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
@@ -237,7 +263,7 @@ public class FeePaymentPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .containsAnyOf("The Pay and submit your appeal option is not available. "
-                           + "Select Submit your appeal if you want to submit the appeal now.");
+                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 
     @Test
@@ -259,8 +285,9 @@ public class FeePaymentPreparerTest {
             .containsAnyOf("The Make a payment option is not available.");
     }
 
-    @Test
-    @Parameters({ "deprivation", "revocationOfProtection" })
+
+    @ParameterizedTest
+    @ValueSource(strings = {"deprivation", "revocationOfProtection"})
     public void should_error_on_pay_and_submit_for_non_payment_appeal(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -275,11 +302,11 @@ public class FeePaymentPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("The Pay and submit your appeal option is not available. "
-                      + "Select Submit your appeal if you want to submit the appeal now.");
+                + "Select Submit your appeal if you want to submit the appeal now.");
     }
 
-    @Test
-    @Parameters({ "deprivation", "revocationOfProtection" })
+    @ParameterizedTest
+    @ValueSource(strings = {"deprivation", "revocationOfProtection"})
     public void should_error_on_make_a_payment_for_non_payment_appeal(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);

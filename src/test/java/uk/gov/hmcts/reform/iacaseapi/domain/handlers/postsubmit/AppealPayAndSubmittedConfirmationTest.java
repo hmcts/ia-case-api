@@ -1,22 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.FAILED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -25,13 +30,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AppealPayAndSubmittedConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private AppealPaymentConfirmationProvider appealPaymentConfirmationProvider =
         new AppealPaymentConfirmationProvider();
@@ -39,7 +48,7 @@ public class AppealPayAndSubmittedConfirmationTest {
     private AppealPayAndSubmittedConfirmation appealPayAndSubmittedConfirmation =
         new AppealPayAndSubmittedConfirmation(appealPaymentConfirmationProvider);
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -61,19 +70,16 @@ public class AppealPayAndSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# Your appeal has been paid for and submitted")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# Your appeal has been paid for and submitted");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("### What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You will receive an email confirming that this appeal has been submitted successfully.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You will receive an email confirming that this appeal has been submitted successfully.");
     }
 
     @Test
@@ -91,19 +97,18 @@ public class AppealPayAndSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.");
     }
 
     @Test
@@ -118,14 +123,13 @@ public class AppealPayAndSubmittedConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimePaidConfirmation.png)\n")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimePaidConfirmation.png)\n");
     }
 
     @Test

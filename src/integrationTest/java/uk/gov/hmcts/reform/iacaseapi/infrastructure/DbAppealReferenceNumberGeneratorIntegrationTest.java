@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -12,30 +12,26 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.iacaseapi.Application;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-@ActiveProfiles("integration")
-public class DbAppealReferenceNumberGeneratorIntegrationTest {
 
-    @MockBean private DateProvider dateProvider;
+public class DbAppealReferenceNumberGeneratorIntegrationTest extends SpringBootIntegrationTest {
 
-    @Autowired private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
-    @Autowired private JdbcTemplate jdbcTemplate;
+    @MockBean
+    private DateProvider dateProvider;
+    @Autowired
+    private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         deleteAnyTestAppealReferenceNumbers();
@@ -54,8 +50,8 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String secondAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(2, AppealType.RP);
 
-        assertThat(firstAppealReferenceNumber, is("PA/50020/2019"));
-        assertThat(secondAppealReferenceNumber, is("RP/50020/2019"));
+        assertThat(firstAppealReferenceNumber).contains("PA/50020/2019");
+        assertThat(secondAppealReferenceNumber).contains("RP/50020/2019");
     }
 
     @Test
@@ -70,9 +66,9 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String thirdAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(3, AppealType.PA);
 
-        assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(secondAppealReferenceNumber, is("PA/50002/2018"));
-        assertThat(thirdAppealReferenceNumber, is("PA/50003/2018"));
+        assertThat(firstAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(secondAppealReferenceNumber).contains("PA/50002/2018");
+        assertThat(thirdAppealReferenceNumber).contains("PA/50003/2018");
     }
 
     @Test
@@ -87,9 +83,9 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String thirdAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(3, AppealType.RP);
 
-        assertThat(firstAppealReferenceNumber, is("RP/50001/2018"));
-        assertThat(secondAppealReferenceNumber, is("RP/50002/2018"));
-        assertThat(thirdAppealReferenceNumber, is("RP/50003/2018"));
+        assertThat(firstAppealReferenceNumber).contains("RP/50001/2018");
+        assertThat(secondAppealReferenceNumber).contains("RP/50002/2018");
+        assertThat(thirdAppealReferenceNumber).contains("RP/50003/2018");
     }
 
     @Test
@@ -107,10 +103,10 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String fourthAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(4, AppealType.RP);
 
-        assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(secondAppealReferenceNumber, is("RP/50001/2018"));
-        assertThat(thirdAppealReferenceNumber, is("PA/50002/2018"));
-        assertThat(fourthAppealReferenceNumber, is("RP/50002/2018"));
+        assertThat(firstAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(secondAppealReferenceNumber).contains("RP/50001/2018");
+        assertThat(thirdAppealReferenceNumber).contains("PA/50002/2018");
+        assertThat(fourthAppealReferenceNumber).contains("RP/50002/2018");
     }
 
     @Test
@@ -125,9 +121,9 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String thirdAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
 
-        assertThat(firstAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(secondAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(thirdAppealReferenceNumber, is("PA/50001/2018"));
+        assertThat(firstAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(secondAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(thirdAppealReferenceNumber).contains("PA/50001/2018");
     }
 
     @Test
@@ -148,13 +144,14 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String thirdAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(3, AppealType.PA);
 
-        assertThat(firstAppealReferenceNumber, is("PA/50001/2022"));
-        assertThat(secondAppealReferenceNumber, is("PA/50001/2023"));
-        assertThat(thirdAppealReferenceNumber, is("PA/50001/2024"));
+        assertThat(firstAppealReferenceNumber).contains("PA/50001/2022");
+        assertThat(secondAppealReferenceNumber).contains("PA/50001/2023");
+        assertThat(thirdAppealReferenceNumber).contains("PA/50001/2024");
     }
 
     @Test
-    public void should_not_create_duplicate_appeal_reference_numbers_when_used_concurrently() throws InterruptedException, ExecutionException {
+    public void should_not_create_duplicate_appeal_reference_numbers_when_used_concurrently()
+        throws InterruptedException, ExecutionException {
 
         Set<String> appealReferenceNumbers =
             (new ForkJoinPool(32))
@@ -167,9 +164,9 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
 
         NavigableSet<String> sortedAppealReferenceNumbers = new TreeSet<>(appealReferenceNumbers);
 
-        assertThat(sortedAppealReferenceNumbers.size(), is(10000));
-        assertThat(sortedAppealReferenceNumbers.pollFirst(), is("PA/50001/2018"));
-        assertThat(sortedAppealReferenceNumbers.pollLast(), is("PA/60000/2018"));
+        assertThat(sortedAppealReferenceNumbers.size()).isEqualTo(10000);
+        assertThat(sortedAppealReferenceNumbers.pollFirst()).contains("PA/50001/2018");
+        assertThat(sortedAppealReferenceNumbers.pollLast()).contains("PA/60000/2018");
     }
 
     @Test
@@ -181,8 +178,8 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String subsequentAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.RP);
 
-        assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));
+        assertThat(originalAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(subsequentAppealReferenceNumber).contains("PA/50001/2018");
     }
 
     @Test
@@ -198,8 +195,8 @@ public class DbAppealReferenceNumberGeneratorIntegrationTest {
         final String subsequentAppealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(1, AppealType.PA);
 
-        assertThat(originalAppealReferenceNumber, is("PA/50001/2018"));
-        assertThat(subsequentAppealReferenceNumber, is("PA/50001/2018"));
+        assertThat(originalAppealReferenceNumber).contains("PA/50001/2018");
+        assertThat(subsequentAppealReferenceNumber).contains("PA/50001/2018");
     }
 
     private void deleteAnyTestAppealReferenceNumbers() {

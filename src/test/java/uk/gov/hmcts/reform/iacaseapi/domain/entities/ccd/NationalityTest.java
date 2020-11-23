@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -195,7 +195,7 @@ public class NationalityTest {
         assertEquals("Romania", Nationality.RO.toString());
         assertEquals("Russian Federation", Nationality.RU.toString());
         assertEquals("Rwanda", Nationality.RW.toString());
-        assertEquals("Saint-Barthélemy",Nationality.BL.toString());
+        assertEquals("Saint-Barthélemy", Nationality.BL.toString());
         assertEquals("Saint Helena", Nationality.SH.toString());
         assertEquals("Saint Kitts and Nevis", Nationality.KN.toString());
         assertEquals("Saint Lucia", Nationality.LC.toString());

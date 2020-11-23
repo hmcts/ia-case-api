@@ -2,18 +2,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtensionStatus;
@@ -21,13 +24,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class TimeExtensionAppenderTest {
 
-    @Mock private DateProvider dateProvider;
-    @Mock private IdValue<TimeExtension> existingTimeExtensionById1;
-    @Mock private IdValue<TimeExtension> existingTimeExtensionById2;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private IdValue<TimeExtension> existingTimeExtensionById1;
+    @Mock
+    private IdValue<TimeExtension> existingTimeExtensionById2;
     private String newTimeExtensionReason = "New direction";
     private State caseState = State.AWAITING_REASONS_FOR_APPEAL;
     private List<IdValue<Document>> newTimeExtensionEvidence = Collections.emptyList();
@@ -35,7 +41,7 @@ public class TimeExtensionAppenderTest {
 
     private TimeExtensionAppender timeExtensionAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         timeExtensionAppender = new TimeExtensionAppender(dateProvider);
     }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -10,16 +11,15 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -27,11 +27,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(MockitoExtension.class)
 public class EditDocsAuditLogHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @InjectMocks
     private EditDocsAuditLogHandler editDocsAuditLogHandler;
@@ -48,8 +46,9 @@ public class EditDocsAuditLogHandlerTest {
     @Mock
     private AsylumCase asylumCaseBefore;
 
-    @Test
-    @Parameters({
+
+    @ParameterizedTest
+    @CsvSource({
         "EDIT_DOCUMENTS, true",
         "SUBMIT_CLARIFYING_QUESTION_ANSWERS, false"
     })
@@ -61,9 +60,11 @@ public class EditDocsAuditLogHandlerTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void given_null_callback_should_throw_exception() {
-        editDocsAuditLogHandler.canHandle(null);
+        assertThrows(NullPointerException.class, () -> {
+            editDocsAuditLogHandler.canHandle(null);
+        });
     }
 
 

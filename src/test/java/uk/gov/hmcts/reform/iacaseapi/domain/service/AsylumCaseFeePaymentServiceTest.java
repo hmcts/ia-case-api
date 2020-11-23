@@ -1,20 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCaseFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AsylumCaseFeePaymentServiceTest {
 
@@ -22,12 +27,14 @@ public class AsylumCaseFeePaymentServiceTest {
     private static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
     private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
 
-    @Mock private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
-    @Mock private Callback<AsylumCase> callback;
+    @Mock
+    private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private AsylumCaseFeePaymentService asylumCaseFeeApiPayment;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         asylumCaseFeeApiPayment =

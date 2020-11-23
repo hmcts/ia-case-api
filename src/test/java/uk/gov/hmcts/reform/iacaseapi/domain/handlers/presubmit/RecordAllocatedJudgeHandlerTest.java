@@ -2,17 +2,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -24,19 +31,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class RecordAllocatedJudgeHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private Appender<String> appender;
+    @Mock
+    private Appender<String> appender;
 
     private RecordAllocatedJudgeHandler recordAllocatedJudgeHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         recordAllocatedJudgeHandler =
             new RecordAllocatedJudgeHandler(appender);
@@ -51,7 +63,8 @@ public class RecordAllocatedJudgeHandlerTest {
 
         String allocatedJudge = "Judge nr 1";
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE_EDIT, String.class)).thenReturn(Optional.of(allocatedJudge));
+        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE_EDIT, String.class))
+            .thenReturn(Optional.of(allocatedJudge));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             recordAllocatedJudgeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -71,10 +84,12 @@ public class RecordAllocatedJudgeHandlerTest {
 
         String allocatedJudgeNr1 = "Judge nr 1";
         String allocatedJudgeNr2 = "Judge nr 2";
-        List<IdValue<String>> previousJudgeAllocations = newArrayList(new IdValue<>("1",allocatedJudgeNr1));
+        List<IdValue<String>> previousJudgeAllocations = newArrayList(new IdValue<>("1", allocatedJudgeNr1));
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE, String.class)).thenReturn(Optional.of(allocatedJudgeNr1));
-        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE_EDIT, String.class)).thenReturn(Optional.of(allocatedJudgeNr2));
+        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE, String.class))
+            .thenReturn(Optional.of(allocatedJudgeNr1));
+        when(asylumCase.read(AsylumCaseFieldDefinition.ALLOCATED_JUDGE_EDIT, String.class))
+            .thenReturn(Optional.of(allocatedJudgeNr2));
         when(appender.append(allocatedJudgeNr1, Collections.emptyList())).thenReturn(previousJudgeAllocations);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =

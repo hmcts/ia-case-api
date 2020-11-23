@@ -1,31 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class MakeAnApplicationConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseCaseDetails;
-
     private final MakeAnApplicationConfirmation makeAnApplicationConfirmation =
         new MakeAnApplicationConfirmation();
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseCaseDetails;
 
     @Test
     public void should_return_confirmation() {
@@ -42,18 +45,16 @@ public class MakeAnApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You've made an application")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You've made an application");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
-                           + "The Tribunal will consider your application as soon as possible. "
-                           + "All parties will be notified when a decision has been made. "
-                           + "you can review any applications you've made in the "
-                           + "[application tab](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/#applications).")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
+                + "The Tribunal will consider your application as soon as possible. "
+                + "All parties will be notified when a decision has been made. "
+                + "you can review any applications you've made in the "
+                + "[application tab](/case/IA/Asylum/" + callback.getCaseDetails().getId() + "/#applications).");
     }
 
     @Test

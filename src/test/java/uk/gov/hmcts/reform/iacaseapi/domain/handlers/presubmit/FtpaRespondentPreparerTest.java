@@ -1,18 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_GROUNDS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMITTED;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -23,21 +36,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class FtpaRespondentPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private FtpaRespondentPreparer ftpaRespondentPreparer;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ftpaRespondentPreparer =
             new FtpaRespondentPreparer(dateProvider, 14, featureToggler);
@@ -99,12 +117,13 @@ public class FtpaRespondentPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("Yes"));
 
-        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         assertEquals("You've already submitted an application. "
-                     + "You can only make one application at a time.", callbackResponse.getErrors().iterator().next());
+            + "You can only make one application at a time.", callbackResponse.getErrors().iterator().next());
 
         verify(asylumCase, never()).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
         verify(asylumCase, never()).read(APPEAL_DATE);
@@ -126,7 +145,8 @@ public class FtpaRespondentPreparerTest {
         final String appealDate = dateProvider.now().minusDays(15).toString();
         when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
 
-        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -146,7 +166,8 @@ public class FtpaRespondentPreparerTest {
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("Yes"));
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
-        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -164,7 +185,8 @@ public class FtpaRespondentPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("Yes"));
 
-        final PreSubmitCallbackResponse<AsylumCase> callbackResponse = ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());

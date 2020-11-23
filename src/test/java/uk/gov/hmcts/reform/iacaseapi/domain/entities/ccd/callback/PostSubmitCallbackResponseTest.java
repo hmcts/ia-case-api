@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class PostSubmitCallbackResponseTest {
 
     private PostSubmitCallbackResponse postSubmitCallbackResponse =

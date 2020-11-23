@@ -1,17 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
@@ -23,18 +37,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class ListCasePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private ListCasePreparer listCasePreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         listCasePreparer =
@@ -48,7 +67,8 @@ public class ListCasePreparerTest {
     @Test
     public void should_set_default_list_case_hearing_centre_field() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.MANCHESTER));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -76,9 +96,12 @@ public class ListCasePreparerTest {
     @Test
     public void should_set_error_when_requirements_not_reviewed() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -86,9 +109,11 @@ public class ListCasePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
-        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
+            "You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
 
-        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1))
+            .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
@@ -96,9 +121,12 @@ public class ListCasePreparerTest {
     @Test
     public void should_set_error_when_reviewed_requirements_flag_not_set() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -106,9 +134,11 @@ public class ListCasePreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
-        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder("You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
+            "You've made an invalid request. You cannot list the case until the hearing requirements have been reviewed.");
 
-        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1))
+            .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
@@ -116,9 +146,12 @@ public class ListCasePreparerTest {
     @Test
     public void should_not_set_error_when_requirements_have_been_reviewed() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -127,7 +160,8 @@ public class ListCasePreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         Assertions.assertThat(callbackResponse.getErrors()).isEmpty();
 
-        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1))
+            .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
@@ -135,8 +169,10 @@ public class ListCasePreparerTest {
     @Test
     public void should_work_for_old_flow_when_requirements_not_captured() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE)).thenReturn(Optional.of(HearingCentre.MANCHESTER));
-        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.MANCHESTER));
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -145,7 +181,8 @@ public class ListCasePreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         Assertions.assertThat(callbackResponse.getErrors()).isEmpty();
 
-        verify(asylumCase, times(1)).read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
+        verify(asylumCase, times(1))
+            .read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class);
         verify(asylumCase, never()).read(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }

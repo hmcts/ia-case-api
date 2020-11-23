@@ -14,15 +14,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -32,23 +32,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class MinorTagHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+    public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
+    public static final String APPELLANT_MINOR = LocalDate.now().toString();
+    private final MinorTagHandler minorTagHandler = new MinorTagHandler();
 
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    private final MinorTagHandler minorTagHandler = new MinorTagHandler();
-    public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
-    public static final String APPELLANT_MINOR = LocalDate.now().toString();
-
-    @Test
-    @Parameters(method = "generateCanHandleTestScenario")
+    @ParameterizedTest
+    @MethodSource("generateCanHandleTestScenario")
     public void it_can_handle_callback(CanHandleTestScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -58,42 +56,12 @@ public class MinorTagHandlerTest {
         assertThat(canHandleActual).isEqualTo(scenario.canHandledExpected);
     }
 
-    private List<CanHandleTestScenario> generateCanHandleTestScenario() {
+    private static List<CanHandleTestScenario> generateCanHandleTestScenario() {
         return CanHandleTestScenario.builder();
     }
 
-    @Value
-    private static class CanHandleTestScenario {
-        PreSubmitCallbackStage callbackStage;
-        Event event;
-        boolean canHandledExpected;
-
-        private static List<CanHandleTestScenario> builder() {
-            List<CanHandleTestScenario> scenarios = new ArrayList<>();
-            List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL,
-                            EDIT_APPEAL_AFTER_SUBMIT, PAY_AND_SUBMIT_APPEAL);
-            for (Event event : Event.values()) {
-                if (validEvents.contains(event)) {
-                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                        if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
-                            scenarios.add(new CanHandleTestScenario(ABOUT_TO_SUBMIT, event, true));
-                        } else {
-                            scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
-                        }
-                    }
-                } else {
-                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                        scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
-                    }
-                }
-            }
-            return scenarios;
-        }
-
-    }
-
-    @Test
-    @Parameters(method = "generateAppellantDobScenarios")
+    @ParameterizedTest
+    @MethodSource("generateAppellantDobScenarios")
     public void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -109,25 +77,8 @@ public class MinorTagHandlerTest {
         assertThat(isAppellantMinor).isEqualTo(scenario.isAppellantMinorExpected);
     }
 
-    private List<AppellantDobScenario> generateAppellantDobScenarios() {
+    private static List<AppellantDobScenario> generateAppellantDobScenarios() {
         return AppellantDobScenario.builder();
-    }
-
-    @Value
-    private static class AppellantDobScenario {
-        String appellantDob;
-        Event event;
-        YesOrNo isAppellantMinorExpected;
-
-        private static List<AppellantDobScenario> builder() {
-            List<AppellantDobScenario> scenarios = new ArrayList<>();
-            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, SUBMIT_APPEAL, YesOrNo.YES));
-            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, SUBMIT_APPEAL, YesOrNo.NO));
-            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.YES));
-            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.NO));
-            return scenarios;
-        }
-
     }
 
     @Test
@@ -149,8 +100,8 @@ public class MinorTagHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @CsvSource({
         "ABOUT_TO_START, SUBMIT_APPEAL",
         "ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
         "ABOUT_TO_SUBMIT, START_APPEAL"
@@ -169,6 +120,53 @@ public class MinorTagHandlerTest {
         assertThatThrownBy(() -> minorTagHandler.handle(callbackStage, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Value
+    private static class CanHandleTestScenario {
+        PreSubmitCallbackStage callbackStage;
+        Event event;
+        boolean canHandledExpected;
+
+        private static List<CanHandleTestScenario> builder() {
+            List<CanHandleTestScenario> scenarios = new ArrayList<>();
+            List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL,
+                EDIT_APPEAL_AFTER_SUBMIT, PAY_AND_SUBMIT_APPEAL);
+            for (Event event : Event.values()) {
+                if (validEvents.contains(event)) {
+                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                        if (callbackStage.equals(ABOUT_TO_SUBMIT)) {
+                            scenarios.add(new CanHandleTestScenario(ABOUT_TO_SUBMIT, event, true));
+                        } else {
+                            scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
+                        }
+                    }
+                } else {
+                    for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                        scenarios.add(new CanHandleTestScenario(callbackStage, event, false));
+                    }
+                }
+            }
+            return scenarios;
+        }
+
+    }
+
+    @Value
+    private static class AppellantDobScenario {
+        String appellantDob;
+        Event event;
+        YesOrNo isAppellantMinorExpected;
+
+        private static List<AppellantDobScenario> builder() {
+            List<AppellantDobScenario> scenarios = new ArrayList<>();
+            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, SUBMIT_APPEAL, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, SUBMIT_APPEAL, YesOrNo.NO));
+            scenarios.add(new AppellantDobScenario(APPELLANT_MINOR, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.YES));
+            scenarios.add(new AppellantDobScenario(APPELLANT_ADULT, EDIT_APPEAL_AFTER_SUBMIT, YesOrNo.NO));
+            return scenarios;
+        }
+
     }
 
 }

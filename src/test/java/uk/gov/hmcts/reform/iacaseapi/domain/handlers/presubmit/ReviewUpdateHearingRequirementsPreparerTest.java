@@ -1,10 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_HEARING_REQUIREMENTS_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS_READONLY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -13,11 +22,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
@@ -28,20 +39,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-
-
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class ReviewUpdateHearingRequirementsPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private List<IdValue<WitnessDetails>> witnessDetails;
-    @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private List<IdValue<WitnessDetails>> witnessDetails;
+    @Mock
+    private List<IdValue<InterpreterLanguage>> interpreterLanguage;
 
     private ReviewUpdateHearingRequirementsPreparer reviewUpdateHearingRequirementsPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         reviewUpdateHearingRequirementsPreparer =
             new ReviewUpdateHearingRequirementsPreparer();
@@ -97,7 +112,8 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         Assertions.assertThat(errors).hasSize(1);
-        Assertions.assertThat(errors).containsOnly("You've made an invalid request. You must update the Hearing requirements before you can update the adjustments.");
+        Assertions.assertThat(errors).containsOnly(
+            "You've made an invalid request. You must update the Hearing requirements before you can update the adjustments.");
 
         verify(asylumCase, never()).read(WITNESS_DETAILS);
         verify(asylumCase, never()).read(INTERPRETER_LANGUAGE);
@@ -123,7 +139,8 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         Assertions.assertThat(errors).hasSize(1);
-        Assertions.assertThat(errors).containsOnly("You've made an invalid request. You must update the Hearing requirements before you can update the adjustments.");
+        Assertions.assertThat(errors).containsOnly(
+            "You've made an invalid request. You must update the Hearing requirements before you can update the adjustments.");
 
         verify(asylumCase, never()).read(WITNESS_DETAILS);
         verify(asylumCase, never()).read(INTERPRETER_LANGUAGE);

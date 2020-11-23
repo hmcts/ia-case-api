@@ -5,25 +5,55 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.GRANTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.REFUSED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.ADJOURN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.CHANGE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.TIME_EXTENSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.TRANSFER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_HEARING_CENTRE_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_DECISION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_LISTING_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_SUPPLIER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TIME_EXTENSION_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_UPDATE_HEARING_REQUIREMENTS_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -35,8 +65,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class RecordApplicationHandlerTest {
 
@@ -84,26 +114,36 @@ public class RecordApplicationHandlerTest {
         State.FINAL_BUNDLING,
         State.PRE_HEARING
     );
-
-    @Mock private NotificationSender<AsylumCase> notificationSender;
-    @Mock private Appender<Application> appender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private AsylumCase asylumCaseWithNotifications;
-    @Mock private DateProvider dateProvider;
-    @Mock private UserDetailsProvider userProvider;
-    @Mock private Application existingApplication;
-    @Mock private List allAppendedApplications;
-    @Mock private UserDetails userDetails;
-    @Mock private List<IdValue<Document>> newApplicationDocuments;
-
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> existingApplicationsCaptor;
-    @Captor private ArgumentCaptor<Application> newApplicationCaptor;
-
     private final LocalDate now = LocalDate.now();
+    @Mock
+    private NotificationSender<AsylumCase> notificationSender;
+    @Mock
+    private Appender<Application> appender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private AsylumCase asylumCaseWithNotifications;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private UserDetailsProvider userProvider;
+    @Mock
+    private Application existingApplication;
     private final List<Application> existingApplications = singletonList(existingApplication);
-
+    @Mock
+    private List allAppendedApplications;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private List<IdValue<Document>> newApplicationDocuments;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Application>>> existingApplicationsCaptor;
+    @Captor
+    private ArgumentCaptor<Application> newApplicationCaptor;
     private String applicationSupplier = "The respondent";
     private String applicationType = TIME_EXTENSION.toString();
     private String applicationReason = "some-reason";
@@ -114,7 +154,7 @@ public class RecordApplicationHandlerTest {
 
     private RecordApplicationHandler recordApplicationHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
@@ -130,7 +170,8 @@ public class RecordApplicationHandlerTest {
         when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.of(applicationReason));
         when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.of(applicationDate));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(applicationDecision));
-        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.of(applicationDecisionReason));
+        when(asylumCase.read(APPLICATION_DECISION_REASON, String.class))
+            .thenReturn(Optional.of(applicationDecisionReason));
         when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.of(newApplicationDocuments));
 
         when(appender.append(any(Application.class), anyList()))
@@ -265,7 +306,8 @@ public class RecordApplicationHandlerTest {
     public void should_add_new_flag_for_update_hearing_requirements_and_remove_other_flags() {
 
         when(callback.getCaseDetails().getState()).thenReturn(State.FINAL_BUNDLING);
-        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(UPDATE_HEARING_REQUIREMENTS.toString()));
+        when(asylumCase.read(APPLICATION_TYPE, String.class))
+            .thenReturn(Optional.of(UPDATE_HEARING_REQUIREMENTS.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
 
         recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -291,7 +333,8 @@ public class RecordApplicationHandlerTest {
     @Test
     public void should_add_new_flag_for_edit_appeal_after_submit() {
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
-        when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(EDIT_APPEAL_AFTER_SUBMIT.toString()));
+        when(asylumCase.read(APPLICATION_TYPE, String.class))
+            .thenReturn(Optional.of(EDIT_APPEAL_AFTER_SUBMIT.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
 
         recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -317,13 +360,19 @@ public class RecordApplicationHandlerTest {
 
                 if ((type.equals(ApplicationType.TIME_EXTENSION) && !timeExtensionSates.contains(state))
                     ||
-                    ((type.equals(ApplicationType.ADJOURN) || type.equals(ApplicationType.EXPEDITE) || type.equals(ApplicationType.TRANSFER)) && !editListingStates.contains(state))
-                    || (type.equals(ApplicationType.UPDATE_HEARING_REQUIREMENTS) && !updateHearingRequirementsStates.contains(state))
-                    || (type.equals(ApplicationType.CHANGE_HEARING_CENTRE) && !changeHearingCentreStates.contains(state))
-                    || (type.equals(ApplicationType.EDIT_APPEAL_AFTER_SUBMIT) && !editAppealApplicationStates.contains(state))) {
+                    ((type.equals(ApplicationType.ADJOURN) || type.equals(ApplicationType.EXPEDITE)
+                        || type.equals(ApplicationType.TRANSFER)) && !editListingStates.contains(state))
+                    || (type.equals(ApplicationType.UPDATE_HEARING_REQUIREMENTS)
+                    && !updateHearingRequirementsStates.contains(state))
+                    ||
+                    (type.equals(ApplicationType.CHANGE_HEARING_CENTRE) && !changeHearingCentreStates.contains(state))
+                    || (type.equals(ApplicationType.EDIT_APPEAL_AFTER_SUBMIT)
+                    && !editAppealApplicationStates.contains(state))) {
 
                     assertThat(callbackResponse.getErrors().size()).isEqualTo(1);
-                    assertThat(callbackResponse.getErrors().iterator().next()).isEqualTo("You can't record application with '" + type + "' type when case is in '" + state.name() + "' state");
+                    assertThat(callbackResponse.getErrors().iterator().next()).isEqualTo(
+                        "You can't record application with '" + type + "' type when case is in '" + state.name()
+                           + "' state");
                 } else {
 
                     assertThat(callbackResponse.getErrors().size()).isEqualTo(0);

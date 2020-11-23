@@ -1,30 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.controllers.advice;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class CallbackControllerAdviceTest {
 
-    @Mock private ErrorResponseLogger errorResponseLogger;
-    @Mock HttpServletRequest request;
-
+    @Mock
+    HttpServletRequest request;
+    @Mock
+    private ErrorResponseLogger errorResponseLogger;
     private CallbackControllerAdvice callbackControllerAdvice;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         callbackControllerAdvice = new CallbackControllerAdvice(errorResponseLogger);
 

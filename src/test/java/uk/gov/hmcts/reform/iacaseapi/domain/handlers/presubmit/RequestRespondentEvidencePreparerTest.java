@@ -1,21 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -27,23 +37,30 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class RequestRespondentEvidencePreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> asylumCaseValuesCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor
+    private ArgumentCaptor<String> asylumCaseValuesCaptor;
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestRespondentEvidencePreparer requestRespondentEvidencePreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
             new RequestRespondentEvidencePreparer(DUE_IN_DAYS, dateProvider);
@@ -73,14 +90,12 @@ public class RequestRespondentEvidencePreparerTest {
         List<String> asylumCaseValues = asylumCaseValuesCaptor.getAllValues();
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
-                containsString("You have " + DUE_IN_DAYS + " days")
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains("You have " + DUE_IN_DAYS + " days");
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
-                containsString(expectedExplanationContains)
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
@@ -90,12 +105,14 @@ public class RequestRespondentEvidencePreparerTest {
     @Test
     public void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(
+            () -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -131,7 +148,8 @@ public class RequestRespondentEvidencePreparerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> requestRespondentEvidencePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> requestRespondentEvidencePreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

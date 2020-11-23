@@ -1,9 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUNDLES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -11,11 +21,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,16 +40,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecutor;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class AdvancedBundlingCallbackHandlerTest {
 
-    @Mock private BundleRequestExecutor bundleRequestExecutor;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock
+    private BundleRequestExecutor bundleRequestExecutor;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     private String emBundlerUrl = "bundleurl";
     private String emBundlerStitchUri = "stitchingUri";
@@ -46,7 +63,7 @@ public class AdvancedBundlingCallbackHandlerTest {
     private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
     private AdvancedBundlingCallbackHandler advancedBundlingCallbackHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         advancedBundlingCallbackHandler =
             new AdvancedBundlingCallbackHandler(
@@ -60,14 +77,18 @@ public class AdvancedBundlingCallbackHandlerTest {
 
         when(bundleRequestExecutor.post(callback, emBundlerUrl + emBundlerStitchUri)).thenReturn(callbackResponse);
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of(appealReference));
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.of(appealReference));
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.of(appellantFamilyName));
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.of(appellantFamilyName));
 
         when(callbackResponse.getData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
 
-        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(), YesOrNo.YES, YesOrNo.YES, "fileName");
+        Bundle bundle =
+            new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(),
+                YesOrNo.YES, YesOrNo.YES, "fileName");
         caseBundles.add(new IdValue<>("1", bundle));
     }
 
@@ -86,7 +107,8 @@ public class AdvancedBundlingCallbackHandlerTest {
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
         verify(asylumCase).clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
         verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-hearing-bundle-config.yaml");
-        verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, "PA 50002 2020-" + appellantFamilyName);
+        verify(asylumCase)
+            .write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, "PA 50002 2020-" + appellantFamilyName);
 
     }
 
@@ -106,15 +128,18 @@ public class AdvancedBundlingCallbackHandlerTest {
 
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
         verify(asylumCase).clear(AsylumCaseFieldDefinition.CASE_BUNDLES);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
-        verify(asylumCase).write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, "PA 50002 2020-" + appellantFamilyName);
+        verify(asylumCase)
+            .write(AsylumCaseFieldDefinition.BUNDLE_CONFIGURATION, "iac-reheard-hearing-bundle-config.yaml");
+        verify(asylumCase)
+            .write(AsylumCaseFieldDefinition.BUNDLE_FILE_NAME_PREFIX, "PA 50002 2020-" + appellantFamilyName);
 
     }
 
     @Test
     public void should_throw_when_appeal_reference_is_not_present() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class))
+            .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> advancedBundlingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("appealReferenceNumber is not present")
@@ -124,7 +149,8 @@ public class AdvancedBundlingCallbackHandlerTest {
     @Test
     public void should_throw_when_appellant_family_name_is_not_present() {
 
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class))
+            .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> advancedBundlingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("appellantFamilyName is not present")
@@ -195,7 +221,8 @@ public class AdvancedBundlingCallbackHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> advancedBundlingCallbackHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(
+            () -> advancedBundlingCallbackHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

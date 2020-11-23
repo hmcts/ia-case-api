@@ -1,18 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalMatchers.and;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.contains;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,28 +27,29 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class DbAppealReferenceNumberGeneratorTest {
 
     private static final int SEQUENCE_SEED = 50000;
-
-    @Mock private DateProvider dateProvider;
-    @Mock private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Captor private ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
-    @Captor private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
-
     private final long caseId = 123;
     private final AppealType appealType = AppealType.PA;
     private final int currentYear = 2017;
-
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private NamedParameterJdbcTemplate jdbcTemplate;
+    @Captor
+    private ArgumentCaptor<MapSqlParameterSource> insertParametersCaptor;
+    @Captor
+    private ArgumentCaptor<MapSqlParameterSource> selectParametersCaptor;
     private MapSqlParameterSource expectedParameters;
     private String expectedAppealReferenceNumber = "PA/12345/2017";
 
     private DbAppealReferenceNumberGenerator dbAppealReferenceNumberGenerator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         dbAppealReferenceNumberGenerator =

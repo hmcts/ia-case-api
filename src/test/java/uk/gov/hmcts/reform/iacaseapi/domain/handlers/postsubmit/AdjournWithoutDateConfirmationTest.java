@@ -3,42 +3,37 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(MockitoExtension.class)
 public class AdjournWithoutDateConfirmationTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock
     private Callback<AsylumCase> callback;
 
     private AdjournWithoutDateConfirmation handler = new AdjournWithoutDateConfirmation();
 
-    @Test
-    @Parameters(method = "generateTestScenarios")
+    @ParameterizedTest
+    @MethodSource("generateTestScenarios")
     public void given_callback_can_handle(TestScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.event);
 
@@ -47,28 +42,8 @@ public class AdjournWithoutDateConfirmationTest {
         assertThat(actualResult).isEqualTo(scenario.canBeHandledExpected);
     }
 
-    private List<TestScenario> generateTestScenarios() {
+    private static List<TestScenario> generateTestScenarios() {
         return TestScenario.testScenarioBuilder();
-    }
-
-    @Value
-    private static class TestScenario {
-        Event event;
-        boolean canBeHandledExpected;
-
-        public static List<TestScenario> testScenarioBuilder() {
-            List<TestScenario> testScenarioList = new ArrayList<>();
-            for (Event e : Event.values()) {
-                TestScenario testScenario;
-                if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
-                    testScenario = new TestScenario(e, true);
-                } else {
-                    testScenario = new TestScenario(e, false);
-                }
-                testScenarioList.add(testScenario);
-            }
-            return testScenarioList;
-        }
     }
 
     @Test
@@ -93,16 +68,14 @@ public class AdjournWithoutDateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# The hearing has been adjourned")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# The hearing has been adjourned");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
                 + "A new Notice of Hearing has been generated."
-            )
-        );
+            );
     }
 
     @Test
@@ -110,5 +83,25 @@ public class AdjournWithoutDateConfirmationTest {
         assertThatThrownBy(() -> handler.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Value
+    private static class TestScenario {
+        Event event;
+        boolean canBeHandledExpected;
+
+        public static List<TestScenario> testScenarioBuilder() {
+            List<TestScenario> testScenarioList = new ArrayList<>();
+            for (Event e : Event.values()) {
+                TestScenario testScenario;
+                if (e.equals(Event.ADJOURN_HEARING_WITHOUT_DATE)) {
+                    testScenario = new TestScenario(e, true);
+                } else {
+                    testScenario = new TestScenario(e, false);
+                }
+                testScenarioList.add(testScenario);
+            }
+            return testScenarioList;
+        }
     }
 }

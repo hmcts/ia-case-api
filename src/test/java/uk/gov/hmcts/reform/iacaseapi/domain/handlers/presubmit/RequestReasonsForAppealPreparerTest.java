@@ -1,21 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -26,31 +32,39 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class RequestReasonsForAppealPreparerTest {
 
     private static final int DUE_IN_DAYS = 28;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor
+    private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestReasonsForAppealPreparer requestReasonsForAppealPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         requestReasonsForAppealPreparer =
-                new RequestReasonsForAppealPreparer(DUE_IN_DAYS, dateProvider);
+            new RequestReasonsForAppealPreparer(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
     public void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "You must now tell us why you think the Home Office decision to refuse your claim is wrong.";
+        final String expectedExplanationContains =
+            "You must now tell us why you think the Home Office decision to refuse your claim is wrong.";
         final Parties expectedParties = Parties.APPELLANT;
         final String expectedDueDate = "2019-10-08";
 
@@ -60,7 +74,7 @@ public class RequestReasonsForAppealPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
 
         assertNotNull(callbackResponse);
@@ -72,14 +86,12 @@ public class RequestReasonsForAppealPreparerTest {
         List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
-                containsString(expectedExplanationContains)
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)),
-                containsString(expectedDueDate)
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+            .contains(expectedDueDate);
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
@@ -87,14 +99,16 @@ public class RequestReasonsForAppealPreparerTest {
 
     @Test
     public void handling_should_throw_if_cannot_actuall_handle() {
-        assertThatThrownBy(() -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(
+            () -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(
+            () -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -122,19 +136,19 @@ public class RequestReasonsForAppealPreparerTest {
     @Test
     public void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestReasonsForAppealPreparer.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestReasonsForAppealPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestReasonsForAppealPreparer.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

@@ -1,39 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = MOCK)
-@ActiveProfiles("integration")
-public class BadRequestsTest {
-
-    private MockMvc mockMvc;
+public class BadRequestsTest extends SpringBootIntegrationTest {
 
     private static final String ABOUT_TO_SUBMIT_PATH = "/asylum/ccdAboutToSubmit";
     private static final String SUBMITTED_PATH = "/asylum/ccdSubmitted";
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Before
-    public void setUp() {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     public void shouldRequestUnsupportedMediaTypeToServerAndReceiveHttp415() throws Exception {

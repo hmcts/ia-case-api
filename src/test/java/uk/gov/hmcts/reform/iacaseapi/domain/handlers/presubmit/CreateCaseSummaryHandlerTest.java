@@ -1,22 +1,36 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_SUMMARY_DESCRIPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_SUMMARY_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -31,26 +45,37 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class CreateCaseSummaryHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private Document caseSummaryDocument;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private Document caseSummaryDocument;
     private String caseSummaryDescription = "Case summary description";
-    @Mock private DocumentWithMetadata caseSummaryWithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingHearingDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock
+    private DocumentWithMetadata caseSummaryWithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingHearingDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> hearingDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> hearingDocumentsCaptor;
 
     private CreateCaseSummaryHandler createCaseSummaryHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         createCaseSummaryHandler =
             new CreateCaseSummaryHandler(
@@ -80,7 +105,7 @@ public class CreateCaseSummaryHandlerTest {
 
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
-        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION,String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             createCaseSummaryHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -91,7 +116,8 @@ public class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
 
-        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
         verify(documentsAppender, times(1))
             .append(
@@ -108,7 +134,7 @@ public class CreateCaseSummaryHandlerTest {
 
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
-        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION,String.class)).thenReturn(Optional.of(caseSummaryDescription));
+        when(asylumCase.read(CASE_SUMMARY_DESCRIPTION, String.class)).thenReturn(Optional.of(caseSummaryDescription));
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -120,7 +146,8 @@ public class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
 
-        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
         verify(documentsAppender, times(1))
             .append(
@@ -149,7 +176,8 @@ public class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
 
-        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
         verify(documentsAppender, times(1))
             .append(
@@ -185,7 +213,8 @@ public class CreateCaseSummaryHandlerTest {
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DOCUMENT, Document.class);
         verify(asylumCase, times(1)).read(CASE_SUMMARY_DESCRIPTION, String.class);
 
-        verify(documentReceiver, times(1)).receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
+        verify(documentReceiver, times(1))
+            .receive(caseSummaryDocument, caseSummaryDescription, DocumentTag.CASE_SUMMARY);
 
         verify(documentsAppender, times(1))
             .append(

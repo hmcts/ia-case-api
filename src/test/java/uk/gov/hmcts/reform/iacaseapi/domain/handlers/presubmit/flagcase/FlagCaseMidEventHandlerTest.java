@@ -6,20 +6,22 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.FLAG_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.ArrayList;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -30,20 +32,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class FlagCaseMidEventHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-
+    private final FlagCaseMidEventHandler handler = new FlagCaseMidEventHandler();
     @Mock
     private Callback<AsylumCase> callback;
-    private final FlagCaseMidEventHandler handler = new FlagCaseMidEventHandler();
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    @Test
-    @Parameters(method = "generateCanHandleScenarios")
+    @ParameterizedTest
+    @MethodSource("generateCanHandleScenarios")
     public void canHandle(CanHandleScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.event);
 
@@ -52,37 +52,12 @@ public class FlagCaseMidEventHandlerTest {
         assertThat(actualResult).isEqualTo(scenario.expectedResult);
     }
 
-    private List<CanHandleScenario> generateCanHandleScenarios() {
+    private static List<CanHandleScenario> generateCanHandleScenarios() {
         return CanHandleScenario.builder();
     }
 
-    @Value
-    private static class CanHandleScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        boolean expectedResult;
-
-        private static List<CanHandleScenario> builder() {
-            List<CanHandleScenario> scenarios = new ArrayList<>();
-            for (Event e : Event.values()) {
-                if (FLAG_CASE.equals(e)) {
-                    addScenario(scenarios, e, true);
-                } else {
-                    addScenario(scenarios, e, false);
-                }
-            }
-            return scenarios;
-        }
-
-        private static void addScenario(List<CanHandleScenario> scenarios, Event event, boolean expected) {
-            scenarios.add(new CanHandleScenario(event, ABOUT_TO_START, false));
-            scenarios.add(new CanHandleScenario(event, ABOUT_TO_SUBMIT, false));
-            scenarios.add(new CanHandleScenario(event, MID_EVENT, expected));
-        }
-    }
-
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @CsvSource({
         "CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION, some anonymity additional info, ANONYMITY",
         "CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION, some complex case additional info, COMPLEX_CASE",
         "CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION, some deport additional info, DEPORT",
@@ -131,11 +106,11 @@ public class FlagCaseMidEventHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @CsvSource({
         "FLAG_CASE, ABOUT_TO_SUBMIT",
         "FLAG_CASE, ABOUT_TO_START",
-        "START_APPEAL, MID_EVENT",
+        "START_APPEAL, MID_EVENT"
     })
     public void should_throw_illegal_state_exception(Event event, PreSubmitCallbackStage callbackStage) {
         given(callback.getEvent()).willReturn(event);
@@ -143,5 +118,30 @@ public class FlagCaseMidEventHandlerTest {
         assertThatThrownBy(() -> handler.handle(callbackStage, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Value
+    private static class CanHandleScenario {
+        Event event;
+        PreSubmitCallbackStage callbackStage;
+        boolean expectedResult;
+
+        private static List<CanHandleScenario> builder() {
+            List<CanHandleScenario> scenarios = new ArrayList<>();
+            for (Event e : Event.values()) {
+                if (FLAG_CASE.equals(e)) {
+                    addScenario(scenarios, e, true);
+                } else {
+                    addScenario(scenarios, e, false);
+                }
+            }
+            return scenarios;
+        }
+
+        private static void addScenario(List<CanHandleScenario> scenarios, Event event, boolean expected) {
+            scenarios.add(new CanHandleScenario(event, ABOUT_TO_START, false));
+            scenarios.add(new CanHandleScenario(event, ABOUT_TO_SUBMIT, false));
+            scenarios.add(new CanHandleScenario(event, MID_EVENT, expected));
+        }
     }
 }

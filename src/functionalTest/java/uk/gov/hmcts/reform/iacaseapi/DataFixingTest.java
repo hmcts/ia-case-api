@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,20 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
 import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
 @SuppressWarnings("Unchecked")
@@ -43,7 +41,7 @@ public class DataFixingTest {
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();

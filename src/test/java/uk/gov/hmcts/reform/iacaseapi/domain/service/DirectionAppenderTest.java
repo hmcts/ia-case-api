@@ -2,18 +2,21 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
@@ -21,13 +24,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class DirectionAppenderTest {
 
-    @Mock private DateProvider dateProvider;
-    @Mock private IdValue<Direction> existingDirectionById1;
-    @Mock private IdValue<Direction> existingDirectionById2;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private IdValue<Direction> existingDirectionById1;
+    @Mock
+    private IdValue<Direction> existingDirectionById2;
     private String newDirectionExplanation = "New direction";
     private Parties newDirectionParties = Parties.BOTH;
     private String newDirectionDateDue = "2018-12-25";
@@ -36,7 +42,7 @@ public class DirectionAppenderTest {
 
     private DirectionAppender directionAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         directionAppender = new DirectionAppender(dateProvider);
     }
@@ -186,18 +192,19 @@ public class DirectionAppenderTest {
         when(existingDirectionById2.getValue()).thenReturn(existingDirection2);
 
         List<IdValue<Direction>> existingDirections =
-                asList(existingDirectionById1, existingDirectionById2);
+            asList(existingDirectionById1, existingDirectionById2);
 
-        List<IdValue<ClarifyingQuestion>> newQuestions = asList(new IdValue<>("1", new ClarifyingQuestion("Question 1")));
+        List<IdValue<ClarifyingQuestion>> newQuestions =
+            asList(new IdValue<>("1", new ClarifyingQuestion("Question 1")));
         List<IdValue<Direction>> allDirections =
-                directionAppender.append(
-                        existingDirections,
-                        newDirectionExplanation,
-                        newDirectionParties,
-                        newDirectionDateDue,
-                        expectedTag,
-                        newQuestions
-                );
+            directionAppender.append(
+                existingDirections,
+                newDirectionExplanation,
+                newDirectionParties,
+                newDirectionDateDue,
+                expectedTag,
+                newQuestions
+            );
 
         verify(existingDirectionById1, never()).getId();
         verify(existingDirectionById2, never()).getId();

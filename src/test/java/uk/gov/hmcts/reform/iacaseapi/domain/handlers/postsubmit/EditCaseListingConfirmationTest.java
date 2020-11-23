@@ -1,26 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class EditCaseListingConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private EditCaseListingConfirmation editCaseListingConfirmation =
         new EditCaseListingConfirmation();
@@ -38,14 +41,13 @@ public class EditCaseListingConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("The case has been re-listed")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("The case has been re-listed");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("A new Notice of Hearing has been generated. All parties will be notified by email.<br>")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("A new Notice of Hearing has been generated. All parties will be notified by email.<br>");
+
     }
 
     @Test

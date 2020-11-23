@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 public class CaseDetailsTest {

@@ -1,21 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -26,20 +39,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class DecideAnApplicationMidEventTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private DecideAnApplicationMidEvent decideAnApplicationMidEvent;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         decideAnApplicationMidEvent = new DecideAnApplicationMidEvent(featureToggler);
@@ -64,7 +83,8 @@ public class DecideAnApplicationMidEventTest {
                 evidence, dateProvider.now().toString(), "Pending",
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
-        final List<IdValue<MakeAnApplication>> makeAnApplications = Arrays.asList(new IdValue<>("1", makeAnApplication));
+        final List<IdValue<MakeAnApplication>> makeAnApplications =
+            Arrays.asList(new IdValue<>("1", makeAnApplication));
         DynamicList makeAnApplicationsList = new DynamicList(new Value("1", "Legal representative : Application 1"),
             Arrays.asList(new Value("1", "Legal representative : Application 1")));
 
@@ -81,10 +101,10 @@ public class DecideAnApplicationMidEventTest {
         verify(asylumCase, times(1))
             .write(MAKE_AN_APPLICATION_FIELDS,
                 "<table><tr><td>Type of application</td><td>Update appeal details</td></tr>"
-                + "<tr><td>Application details</td><td>A reason to update appeal details</td></tr>"
-                + "<tr><td>Documents supporting application</td>"
-                + "<td></br><a href='/documents/123456' target='_blank'>DocumentName.pdf</a></td></tr>"
-                + "<tr><td>Date application was made</td><td>31 Dec +999999999</td></tr></table>");
+                    + "<tr><td>Application details</td><td>A reason to update appeal details</td></tr>"
+                    + "<tr><td>Documents supporting application</td>"
+                    + "<td></br><a href='/documents/123456' target='_blank'>DocumentName.pdf</a></td></tr>"
+                    + "<tr><td>Date application was made</td><td>31 Dec +999999999</td></tr></table>");
         verify(asylumCase, times(1))
             .write(MAKE_AN_APPLICATIONS_LIST,
                 new DynamicList(new Value("1", "Legal representative : Application 1"),
