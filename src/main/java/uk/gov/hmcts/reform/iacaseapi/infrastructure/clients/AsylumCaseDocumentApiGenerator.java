@@ -14,15 +14,18 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
     private final AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
     private final String documentsApiEndpoint;
     private final String aboutToSubmitPath;
+    private final String aboutToStartPath;
 
     public AsylumCaseDocumentApiGenerator(
         AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator,
         @Value("${documentsApi.endpoint}") String documentsApiEndpoint,
-        @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath
+        @Value("${documentsApi.aboutToSubmitPath}") String aboutToSubmitPath,
+        @Value("${documentsApi.aboutToStartPath}") String aboutToStartPath
     ) {
         this.asylumCaseCallbackApiDelegator = asylumCaseCallbackApiDelegator;
         this.documentsApiEndpoint = documentsApiEndpoint;
         this.aboutToSubmitPath = aboutToSubmitPath;
+        this.aboutToStartPath = aboutToStartPath;
     }
 
     public AsylumCase generate(
@@ -33,6 +36,17 @@ public class AsylumCaseDocumentApiGenerator implements DocumentGenerator<AsylumC
         return asylumCaseCallbackApiDelegator.delegate(
             callback,
             documentsApiEndpoint + aboutToSubmitPath
+        );
+    }
+
+    public AsylumCase aboutToStart(
+        Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callback, "callback must not be null");
+
+        return asylumCaseCallbackApiDelegator.delegate(
+            callback,
+            documentsApiEndpoint + aboutToStartPath
         );
     }
 }

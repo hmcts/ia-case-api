@@ -22,6 +22,7 @@ class AsylumCaseDocumentApiGeneratorTest {
 
     private static final String ENDPOINT = "http://endpoint";
     private static final String ABOUT_TO_SUBMIT_PATH = "/path";
+    private static final String ABOUT_TO_START_PATH = "/path";
 
     @Mock
     private AsylumCaseCallbackApiDelegator asylumCaseCallbackApiDelegator;
@@ -37,7 +38,8 @@ class AsylumCaseDocumentApiGeneratorTest {
             new AsylumCaseDocumentApiGenerator(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
-                ABOUT_TO_SUBMIT_PATH
+                ABOUT_TO_SUBMIT_PATH,
+                ABOUT_TO_START_PATH
             );
     }
 
@@ -53,6 +55,22 @@ class AsylumCaseDocumentApiGeneratorTest {
 
         verify(asylumCaseCallbackApiDelegator, times(1))
             .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
+
+        assertEquals(notifiedAsylumCase, actualAsylumCase);
+    }
+
+    @Test
+    public void should_delegate_about_to_start_callback_to_downstream_api() {
+
+        final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
+
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_START_PATH))
+            .thenReturn(notifiedAsylumCase);
+
+        final AsylumCase actualAsylumCase = asylumCaseDocumentApiGenerator.generate(callback);
+
+        verify(asylumCaseCallbackApiDelegator, times(1))
+            .delegate(callback, ENDPOINT + ABOUT_TO_START_PATH);
 
         assertEquals(notifiedAsylumCase, actualAsylumCase);
     }
