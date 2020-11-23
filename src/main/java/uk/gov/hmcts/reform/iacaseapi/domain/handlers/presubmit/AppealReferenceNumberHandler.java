@@ -16,6 +16,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @Service
 public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -26,6 +29,8 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
     private final AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
+    private final FeatureToggler featureToggler;
+
     @Override
     public DispatchPriority getDispatchPriority() {
         return DispatchPriority.EARLIEST;
@@ -33,10 +38,12 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
     public AppealReferenceNumberHandler(
         DateProvider dateProvider,
-        AppealReferenceNumberGenerator appealReferenceNumberGenerator
+        AppealReferenceNumberGenerator appealReferenceNumberGenerator,
+        FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
         this.appealReferenceNumberGenerator = appealReferenceNumberGenerator;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -49,9 +56,9 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-                    Event.START_APPEAL,
-                    Event.SUBMIT_APPEAL,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+            Event.START_APPEAL,
+            Event.SUBMIT_APPEAL,
+            Event.PAY_AND_SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
@@ -70,7 +77,22 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                 .getCaseData();
 
         if (callback.getEvent() == Event.START_APPEAL) {
+
+            if (featureToggler.getValue("share-case-feature", false)) {
+                final OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
+                    .organisation(Organisation.builder()
+                        .organisationID("0UFUG4Z")
+                        .build()
+                    )
+                    .orgPolicyCaseAssignedRole("caseworker-ia-legalrep-solicitor")
+                    .orgPolicyReference("Some reference")
+                    .build();
+
+                asylumCase.write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
+            }
+
             asylumCase.write(APPEAL_REFERENCE_NUMBER, DRAFT);
+
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
