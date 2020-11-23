@@ -16,19 +16,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
 public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
+    private final FeatureToggler featureToggler;
     private final boolean isfeePaymentEnabled;
 
     public FeePaymentPreparer(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
+        FeatureToggler featureToggler,
         FeePayment<AsylumCase> feePayment
     ) {
         this.feePayment = feePayment;
+        this.featureToggler = featureToggler;
         this.isfeePaymentEnabled = isfeePaymentEnabled;
     }
 
@@ -74,6 +78,10 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         final String paymentOptionNotAvailableLabel = "The Make a payment option is not available.";
         final String payAndSubmitOptionNotAvailableLabel = "The Pay and submit your appeal option is not available. "
                                                             + "Select Submit your appeal if you want to submit the appeal now.";
+
+        YesOrNo isRemissionEnabled
+            = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
+        asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionEnabled);
 
         asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent(type -> {

@@ -1,12 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.util.Arrays;
@@ -66,40 +61,42 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithPaymentStatus = feePayment.aboutToSubmit(callback);
+        AsylumCase asylumCase = feePayment.aboutToSubmit(callback);
 
-        asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
+        asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
             isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
-        if (!asylumCaseWithPaymentStatus.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
-            asylumCaseWithPaymentStatus.write(PAYMENT_STATUS, PAYMENT_PENDING);
+        if (!asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
+            asylumCase.write(PAYMENT_STATUS, PAYMENT_PENDING);
         }
 
-        asylumCaseWithPaymentStatus.read(APPEAL_TYPE, AppealType.class)
+        asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent((appealType) -> {
 
                 switch (appealType) {
                     case EA:
                     case HU:
-                        asylumCaseWithPaymentStatus.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
                         break;
 
                     case PA:
-                        asylumCaseWithPaymentStatus.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
                         break;
 
                     default:
-                        asylumCaseWithPaymentStatus.clear(DECISION_HEARING_FEE_OPTION);
-                        asylumCaseWithPaymentStatus.clear(HEARING_DECISION_SELECTED);
-                        asylumCaseWithPaymentStatus.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-                        asylumCaseWithPaymentStatus.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
-                        asylumCaseWithPaymentStatus.clear(PAYMENT_STATUS);
+                        String hearingOption = asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
+                            .orElseThrow(() -> new IllegalStateException("Appeal hearing option is not present"));
+                        asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
+                        asylumCase.clear(HEARING_DECISION_SELECTED);
+                        asylumCase.clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCase.clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+                        asylumCase.clear(PAYMENT_STATUS);
                 }
 
-                feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCaseWithPaymentStatus);
+                feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCase);
 
             });
 
-        return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

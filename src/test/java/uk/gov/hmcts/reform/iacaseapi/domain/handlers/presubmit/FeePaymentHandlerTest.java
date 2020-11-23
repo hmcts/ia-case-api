@@ -171,6 +171,8 @@ public class FeePaymentHandlerTest {
             when(feePayment.aboutToSubmit(callback)).thenReturn(expectedUpdatedCase);
             when(expectedUpdatedCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+            when(expectedUpdatedCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+                .thenReturn(Optional.of("decisionWithHearing"));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -180,7 +182,7 @@ public class FeePaymentHandlerTest {
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(expectedUpdatedCase, times(1))
-                .clear(DECISION_HEARING_FEE_OPTION);
+                .write(DECISION_HEARING_FEE_OPTION, "decisionWithHearing");
             verify(expectedUpdatedCase, times(1))
                 .clear(HEARING_DECISION_SELECTED);
             verify(expectedUpdatedCase, times(1))
