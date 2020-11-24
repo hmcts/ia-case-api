@@ -1042,6 +1042,12 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
         "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeReviewChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 

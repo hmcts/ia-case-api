@@ -8,13 +8,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
@@ -23,10 +28,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class ChangeDirectionDueDateConfirmationTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private AsylumCase asylumCase;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
 
     private ChangeDirectionDueDateConfirmation changeDirectionDueDateConfirmation =
         new ChangeDirectionDueDateConfirmation();
@@ -39,6 +43,9 @@ class ChangeDirectionDueDateConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        //when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS, String.class))
+        //    .thenReturn(Optional.of("OK"));
 
         PostSubmitCallbackResponse callbackResponse =
             changeDirectionDueDateConfirmation.handle(callback);
@@ -62,6 +69,40 @@ class ChangeDirectionDueDateConfirmationTest {
                     + "(/case/IA/Asylum/" + caseId + "#directions)"
             );
 
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "RESPONDENT_REVIEW, HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS",
+        "AWAITING_RESPONDENT_EVIDENCE, HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS"
+    })
+    void should_return_failed_notification(State state, AsylumCaseFieldDefinition status) {
+
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(status, String.class)).thenReturn(Optional.of("FAIL"));
+
+        PostSubmitCallbackResponse callbackResponse =
+            changeDirectionDueDateConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isEmpty());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("![Respondent notification failed confirmation]"
+                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### Do this next");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
     }
 
     @Test
