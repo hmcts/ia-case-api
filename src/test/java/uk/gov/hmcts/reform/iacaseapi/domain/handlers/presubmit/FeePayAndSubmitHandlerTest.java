@@ -24,7 +24,6 @@ public class FeePayAndSubmitHandlerTest {
 
     @Mock private FeePayment<AsylumCase> feePayment;
     @Mock private Callback<AsylumCase> callback;
-    @Mock private FeePaymentDisplayProvider feePaymentDisplayProvider;
 
     private FeePayAndSubmitHandler feePayAndSubmitHandler;
 
@@ -32,7 +31,7 @@ public class FeePayAndSubmitHandlerTest {
     public void setUp() {
 
         feePayAndSubmitHandler =
-            new FeePayAndSubmitHandler(true, feePayment, feePaymentDisplayProvider);
+            new FeePayAndSubmitHandler(true, feePayment);
     }
 
     @Test
@@ -66,8 +65,7 @@ public class FeePayAndSubmitHandlerTest {
         FeePayAndSubmitHandler feePayAndSubmitHandlerWithDisabledPayment =
             new FeePayAndSubmitHandler(
                 false,
-                feePayment,
-                feePaymentDisplayProvider
+                feePayment
             );
 
         assertThatThrownBy(() -> feePayAndSubmitHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -112,7 +110,7 @@ public class FeePayAndSubmitHandlerTest {
     public void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePayAndSubmitHandler =
-            new FeePayAndSubmitHandler(false, feePayment, feePaymentDisplayProvider);
+            new FeePayAndSubmitHandler(false, feePayment);
 
         for (Event event : Event.values()) {
 

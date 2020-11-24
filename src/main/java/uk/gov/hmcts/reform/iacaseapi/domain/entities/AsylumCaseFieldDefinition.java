@@ -1198,6 +1198,24 @@ public enum AsylumCaseFieldDefinition {
     RP_DC_APPEAL_HEARING_OPTION(
         "rpDcAppealHearingOption", new TypeReference<String>(){}),
 
+    REMISSION_TYPE(
+        "remissionType", new TypeReference<RemissionType>(){}),
+
+    REMISSION_CLAIM(
+        "remissionClaim", new TypeReference<String>(){}),
+
+    FEE_REMISSION_TYPE(
+        "feeRemissionType", new TypeReference<String>(){}),
+
+    ASYLUM_SUPPORT_REFERENCE(
+        "asylumSupportReference", new TypeReference<String>(){}),
+
+    ASYLUM_SUPPORT_DOCUMENT(
+        "asylumSupportDocument", new TypeReference<Document>(){}),
+
+    LEGAL_AID_ACCOUNT_NUMBER(
+        "legalAidAccountNumber", new TypeReference<String>(){}),
+
     ;
 
     private final String value;

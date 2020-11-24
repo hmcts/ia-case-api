@@ -1,0 +1,34 @@
+{
+  "description": "RIA-3088 Legal representative submits appeal with remission",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "isRemissionsEnabled": "Yes",
+          "remissionType": "hoWaiverRemission",
+          "remissionClaim": "asylumSupport"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionType": "hoWaiverRemission",
+        "feeRemissionType": "Asylum support",
+        "paAppealTypePaymentOption": null
+      }
+    }
+  }
+}

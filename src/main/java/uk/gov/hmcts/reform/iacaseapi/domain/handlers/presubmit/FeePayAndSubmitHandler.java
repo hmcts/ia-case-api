@@ -20,16 +20,13 @@ public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCa
 
     private final FeePayment<AsylumCase> feePayment;
     private final boolean isfeePaymentEnabled;
-    private final FeePaymentDisplayProvider feePaymentDisplayProvider;
 
     public FeePayAndSubmitHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment,
-        FeePaymentDisplayProvider feePaymentDisplayProvider
+        FeePayment<AsylumCase> feePayment
     ) {
         this.feePayment = feePayment;
         this.isfeePaymentEnabled = isfeePaymentEnabled;
-        this.feePaymentDisplayProvider = feePaymentDisplayProvider;
     }
 
     @Override
@@ -62,8 +59,6 @@ public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCa
 
         asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
             isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
-
-        feePaymentDisplayProvider.writeDecisionHearingOptionToCaseData(asylumCaseWithPaymentStatus);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
     }

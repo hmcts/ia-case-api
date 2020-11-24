@@ -7,7 +7,11 @@
       "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
-        "template": "minimal-appeal-submitted.json"
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "submissionOutOfTime": "No",
+          "appealType": "deprivation"
+        }
       }
     }
   },

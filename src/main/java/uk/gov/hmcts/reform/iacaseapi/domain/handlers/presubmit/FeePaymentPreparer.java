@@ -4,10 +4,12 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -71,6 +73,16 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse
             = new PreSubmitCallbackResponse<>(asylumCase);
+
+        Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        if (optRemissionType.isPresent()
+            && optRemissionType.get() == RemissionType.HO_WAIVER_REMISSION
+            && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+        ) {
+            asylumCasePreSubmitCallbackResponse
+                .addError("The Pay and submit option is not available. Select Submit your appeal to submit the appeal.");
+            return asylumCasePreSubmitCallbackResponse;
+        }
 
         final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);

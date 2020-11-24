@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 
+import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -39,7 +40,7 @@ public class FeePaymentStateHandler implements PreSubmitCallbackStateHandler<Asy
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-                    || callback.getEvent() == Event.SUBMIT_APPEAL)
+                   || callback.getEvent() == Event.SUBMIT_APPEAL)
                && isfeePaymentEnabled;
     }
 
@@ -65,34 +66,28 @@ public class FeePaymentStateHandler implements PreSubmitCallbackStateHandler<Asy
         final Optional<PaymentStatus> paymentStatus = asylumCase
             .read(PAYMENT_STATUS, PaymentStatus.class);
 
-        final Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE);
-
-        State newState = getNewStateForAppeal(currentState, appealType, paymentStatus, callback.getEvent());
-
-        return new PreSubmitCallbackResponse<>(asylumCase, newState);
-    }
-
-    protected State getNewStateForAppeal(State currentState, Optional<AppealType> appealType, Optional<PaymentStatus> paymentStatus, Event event) {
-
-        State newState = currentState;
-
-        if (appealType.isEmpty()) {
-            return currentState;
+        if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+            && (paymentStatus.isPresent() && Arrays.asList(FAILED, PAYMENT_PENDING).contains(paymentStatus.get()))) {
+            return new PreSubmitCallbackResponse<>(asylumCase, currentState);
         }
 
-        if (paymentStatus.isEmpty()) {
-            return State.APPEAL_SUBMITTED;
-        }
+        final Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-        if (paymentStatus.get().equals(PaymentStatus.PAID)) {
-            newState = State.APPEAL_SUBMITTED;
-        } else if ((event == Event.SUBMIT_APPEAL)
-                   && (appealType.get().equals(EA) || appealType.get().equals(HU))) {
-            newState = State.PENDING_PAYMENT;
-        } else if (event == Event.SUBMIT_APPEAL) {
-            newState = State.APPEAL_SUBMITTED;
-        }
-        return newState;
+        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        switch (appealType) {
+            case EA:
+            case HU:
+                if (callback.getEvent() == Event.SUBMIT_APPEAL
+                    && ((paymentStatus.isPresent() && Arrays.asList(PAYMENT_PENDING).contains(paymentStatus.get()))
+                        || (remissionType.isPresent() && !Arrays.asList(RemissionType.NO_REMISSION).contains(remissionType.get())))) {
+                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+                }
+                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+
+            default:
+                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
+        }
     }
 }
