@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -39,6 +42,7 @@ class RecordRemissionDecisionStateHandlerTest {
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     @Mock private FeatureToggler featureToggler;
+    @Mock private DateProvider dateProvider;
 
     private RecordRemissionDecisionStateHandler recordRemissionDecisionStateHandler;
 
@@ -46,7 +50,7 @@ class RecordRemissionDecisionStateHandlerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler);
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider);
     }
 
     @Test
@@ -115,6 +119,7 @@ class RecordRemissionDecisionStateHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.now());
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
@@ -148,6 +153,31 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(State.CASE_BUILDING);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handle_should_return_payment_due_for_remission_rejected(AppealType type) {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.PENDING_PAYMENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            recordRemissionDecisionStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertThat(returnedCallbackResponse).isNotNull();
+        assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
+        verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
+        verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+            LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
     }
 
     @Test

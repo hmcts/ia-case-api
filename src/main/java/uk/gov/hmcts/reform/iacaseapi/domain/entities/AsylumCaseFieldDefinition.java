@@ -1244,6 +1244,9 @@ public enum AsylumCaseFieldDefinition {
     AMOUNT_LEFT_TO_PAY(
         "amountLeftToPay", new TypeReference<String>(){}),
 
+    REMISSION_REJECTED_DATE_PLUS_14DAYS(
+        "remissionRejectedDatePlus14days", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
