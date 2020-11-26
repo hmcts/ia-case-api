@@ -1,0 +1,25 @@
+{
+  "description": "RWA-137 Allocate a case to me",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1234567890,
+      "eventId": "allocateTheCase",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "allocateTheCaseTo": "me"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have allocated the case",
+      "body": "#### What happens next\n\nThe tasks for this case will now appear in your task list. Should you wish, you can write [a case note](/case/IA/Asylum/1234567890/trigger/addCaseNote)."
+    }
+  }
+}

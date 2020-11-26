@@ -271,7 +271,6 @@ public class CcdScenarioRunnerTest {
         Map<String, Object> expectation,
         Map<String, String> templatesByFilename
     ) throws IOException {
-
         if (MapValueExtractor.extract(expectation, "confirmation") != null) {
 
             final Map<String, Object> callbackResponse = new HashMap<>();
