@@ -13,7 +13,7 @@
           "newFeeAmount": "2000",
           "paymentStatus": "Paid",
           "feeUpdateReason": "decisionTypeChanged",
-          "feeUpdateStatus": {
+          "feeUpdateRecorded": {
             "values": [
               "feeUpdateRecorded",
               "refundApproved"
@@ -33,6 +33,12 @@
         "newFeeAmount": "2000",
         "paymentStatus": "Paid",
         "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateRecorded": {
+          "values": [
+            "feeUpdateRecorded",
+            "refundApproved"
+          ]
+        },
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded",
           "refundApproved"

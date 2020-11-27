@@ -63,7 +63,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
 
                 if (paymentStatus != PaymentStatus.PAID) {
 
-                    callbackResponse.addError("Manage fee update is not valid with payment pending for the appeal.");
+                    callbackResponse.addError("You cannot manage a fee update for this appeal because the fee has not been paid yet");
                 } else {
                     callbackResponse.setData(asylumCase);
                 }
