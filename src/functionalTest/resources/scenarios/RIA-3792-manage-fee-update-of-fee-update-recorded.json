@@ -10,10 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "newFeeAmount": "2000",
-          "paymentStatus": "Paid",
-          "feeUpdateReason": "decisionTypeChanged",
-          "feeUpdateStatus": {
+          "feeUpdateRecorded": {
             "values": [
               "feeUpdateRecorded"
             ]
@@ -29,9 +26,11 @@
       "template": "minimal-appeal-started.json",
       "replacements": {
         "appealReferenceNumber": "$/(.+)/",
-        "newFeeAmount": "2000",
-        "paymentStatus": "Paid",
-        "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateRecorded": {
+          "values": [
+            "feeUpdateRecorded"
+          ]
+        },
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded"
         ]
