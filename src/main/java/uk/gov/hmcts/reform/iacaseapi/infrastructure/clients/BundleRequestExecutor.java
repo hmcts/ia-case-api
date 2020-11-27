@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -27,12 +26,12 @@ public class BundleRequestExecutor {
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
 
-    public BundleRequestExecutor(RestTemplate restTemplate, AuthTokenGenerator serviceAuthTokenGenerator, UserDetailsProvider userDetailsProvider) {
+    public BundleRequestExecutor(RestTemplate restTemplate, AuthTokenGenerator serviceAuthTokenGenerator, UserDetails userDetails) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> post(
@@ -43,9 +42,8 @@ public class BundleRequestExecutor {
         requireNonNull(payload, "payload must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
 
-        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
-        final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

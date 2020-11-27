@@ -7,8 +7,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -23,17 +24,21 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
 
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
+
 
     private static final String REINSTATE_FEATURE = "reinstate-feature";
 
     public ReinstateAppealStateHandler(FeatureToggler featureToggler,
                                        DateProvider dateProvider,
-                                       UserDetailsProvider userDetailsProvider
+                                       UserDetails userDetails,
+                                       UserDetailsHelper userDetailsHelper
     ) {
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     public boolean canHandle(
@@ -44,8 +49,8 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.REINSTATE_APPEAL
-            && featureToggler.getValue(REINSTATE_FEATURE, false);
+               && callback.getEvent() == Event.REINSTATE_APPEAL
+               && featureToggler.getValue(REINSTATE_FEATURE, false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -64,13 +69,13 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
 
         final Optional<State> stateBeforeEndAppeal = asylumCase.read(STATE_BEFORE_END_APPEAL, State.class);
 
-        if (!stateBeforeEndAppeal.isPresent()) {
+        if (stateBeforeEndAppeal.isEmpty()) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("The appeal cannot be reinstated");
             return asylumCasePreSubmitCallbackResponse;
         }
 
-        asylumCase.write(REINSTATED_DECISION_MAKER, userDetailsProvider.getLoggedInUserRoleLabel().toString());
+        asylumCase.write(REINSTATED_DECISION_MAKER, userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
         asylumCase.write(APPEAL_STATUS, REINSTATED);
         asylumCase.write(REINSTATE_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);

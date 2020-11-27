@@ -35,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -50,14 +49,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 class MakeAnApplicationTypesProviderTest {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
-    @Mock
-    Callback<AsylumCase> callback;
-    @Mock
-    CaseDetails<AsylumCase> caseCaseDetails;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
+
+    @Mock Callback<AsylumCase> callback;
+    @Mock CaseDetails<AsylumCase> caseCaseDetails;
+
+    @Mock UserDetails userDetails;
+
     @InjectMocks
     private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
 
@@ -68,8 +65,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -93,8 +88,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(DECIDED);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -125,8 +118,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -155,8 +146,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -183,8 +172,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -213,8 +200,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(ENDED);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -235,8 +220,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(FINAL_BUNDLING);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -262,8 +245,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -286,8 +267,6 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_TAKEN_OFFLINE);
-        when(userDetailsProvider.getUserDetails())
-            .thenReturn(userDetails);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);

@@ -5,9 +5,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -17,12 +17,12 @@ public class MakeAnApplicationTypesProvider {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
 
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
 
     public MakeAnApplicationTypesProvider(
-        UserDetailsProvider userDetailsProvider
+        UserDetails userDetails
     ) {
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
     }
 
     public DynamicList getMakeAnApplicationTypes(Callback<AsylumCase> callback) {
@@ -150,9 +150,7 @@ public class MakeAnApplicationTypesProvider {
 
     private boolean hasRole(String roleName) {
 
-
-        return userDetailsProvider
-            .getUserDetails()
+        return userDetails
             .getRoles()
             .contains(roleName);
     }

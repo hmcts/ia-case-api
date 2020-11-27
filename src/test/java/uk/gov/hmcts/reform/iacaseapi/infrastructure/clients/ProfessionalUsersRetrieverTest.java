@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
@@ -37,21 +36,17 @@ class ProfessionalUsersRetrieverTest {
     private String refdataUrl = "http:/some-url";
     private String refdataPath = "/some-path";
 
-    @Mock
-    private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private RestTemplate restTemplate;
-    @Mock
-    private ResponseEntity responseEntity;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private UserDetails userDetails;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity responseEntity;
 
     @BeforeEach
     public void setup() {
 
         professionalUsersRetriever = new ProfessionalUsersRetriever(restTemplate,
             serviceAuthTokenGenerator,
-            userDetailsProvider,
+            userDetails,
             refdataUrl,
             refdataPath);
 
@@ -64,10 +59,8 @@ class ProfessionalUsersRetrieverTest {
         final String expectedAccessToken = "HIJKLMN";
         final ProfessionalUsersResponse professionalUsersResponse =
             mock(ProfessionalUsersResponse.class);
-        final UserDetails userDetails = mock(UserDetails.class);
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(expectedAccessToken);
 
         doReturn(responseEntity)
@@ -99,10 +92,8 @@ class ProfessionalUsersRetrieverTest {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
-        final UserDetails userDetails = mock(UserDetails.class);
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(expectedServiceToken);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(expectedAccessToken);
 
         final RestClientResponseException restException = mock(RestClientResponseException.class);

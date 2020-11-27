@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static java.util.Objects.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -15,11 +17,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @Service
 public class MakeAnApplicationAppender {
 
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
     private final DateProvider dateProvider;
 
-    public MakeAnApplicationAppender(UserDetailsProvider userDetailsProvider, DateProvider dateProvider) {
-        this.userDetailsProvider = userDetailsProvider;
+    public MakeAnApplicationAppender(UserDetails userDetails, DateProvider dateProvider) {
+        this.userDetails = userDetails;
         this.dateProvider = dateProvider;
     }
 
@@ -39,7 +41,12 @@ public class MakeAnApplicationAppender {
         requireNonNull(makeAnApplicationDecision);
         requireNonNull(makeAnApplicationState);
 
-        UserRole applicantRole = userDetailsProvider.getLoggedInUserRole();
+        Stream<UserRole> allowedRoles = Arrays.stream(UserRole.values());
+        UserRole applicantRole =  allowedRoles
+            .filter(r -> userDetails.getRoles().contains(r.toString()))
+            .findAny()
+            .orElseThrow(() -> new IllegalStateException("No valid user role is present."));
+
         String applicant = getApplicantType(applicantRole);
 
         final MakeAnApplication newMakeAnApplication =

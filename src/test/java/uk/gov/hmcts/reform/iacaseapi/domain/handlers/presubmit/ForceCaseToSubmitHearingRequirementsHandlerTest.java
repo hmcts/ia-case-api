@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -42,34 +41,27 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @SuppressWarnings("unchecked")
 class ForceCaseToSubmitHearingRequirementsHandlerTest {
 
+    @Mock
+    private Appender<CaseNote> caseNoteAppender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private CaseNote existingCaseNote;
+    @Mock private List allAppendedCaseNotes;
+    @Mock private UserDetails userDetails;
+
+    @Captor
+    private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
+    @Captor private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
+
     private final LocalDate now = LocalDate.now();
+    private final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
     private final String newCaseNoteSubject = "Reason for forcing the case progression to submit hearing requirements";
     private final String newCaseNoteDescription = "some-reason";
     private final String forename = "Frank";
     private final String surname = "Butcher";
-    @Mock
-    private Appender<CaseNote> caseNoteAppender;
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private DateProvider dateProvider;
-    @Mock
-    private UserDetailsProvider userProvider;
-    @Mock
-    private CaseNote existingCaseNote;
-    private final List<CaseNote> existingCaseNotes = singletonList(existingCaseNote);
-    @Mock
-    private List allAppendedCaseNotes;
-    @Mock
-    private UserDetails userDetails;
-    @Captor
-    private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
-    @Captor
-    private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
+
     private ForceCaseToSubmitHearingRequirementsHandler forceCaseToSubmitHearingRequirementsHandler;
 
     @BeforeEach
@@ -78,7 +70,6 @@ class ForceCaseToSubmitHearingRequirementsHandlerTest {
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(userProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getForename()).thenReturn(forename);
         when(userDetails.getSurname()).thenReturn(surname);
 
@@ -95,7 +86,7 @@ class ForceCaseToSubmitHearingRequirementsHandlerTest {
             new ForceCaseToSubmitHearingRequirementsHandler(
                 caseNoteAppender,
                 dateProvider,
-                userProvider
+                userDetails
             );
     }
 

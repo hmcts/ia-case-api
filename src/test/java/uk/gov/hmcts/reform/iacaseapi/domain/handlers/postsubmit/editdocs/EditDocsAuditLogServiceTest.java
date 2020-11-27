@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -32,8 +31,7 @@ class EditDocsAuditLogServiceTest {
     private UserDetails userDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
+
     @InjectMocks
     private EditDocsAuditLogService editDocsAuditLogService;
 
@@ -61,7 +59,6 @@ class EditDocsAuditLogServiceTest {
     }
 
     private void mockUserDetailsProvider() {
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn("user-id-124");
         when(userDetails.getForename()).thenReturn("some forename");
         when(userDetails.getSurname()).thenReturn("some surname");

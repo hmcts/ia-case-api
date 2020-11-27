@@ -8,11 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -27,14 +24,17 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
 
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
+    private final UserDetailsHelper userDetailsHelper;
 
     public DecideAnApplicationHandler(
         DateProvider dateProvider,
-        UserDetailsProvider userDetailsProvider,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper,
         FeatureToggler featureToggler) {
         this.dateProvider = dateProvider;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
         this.featureToggler = featureToggler;
     }
 
@@ -68,7 +68,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
             .orElseThrow(() -> new IllegalStateException("No application decision is present"));
         String decisionReason = asylumCase.read(MAKE_AN_APPLICATION_DECISION_REASON, String.class)
             .orElseThrow(() -> new IllegalStateException("No application decision reason is present"));
-        String decisionMakerRole = userDetailsProvider.getLoggedInUserRoleLabel().toString();
+        String decisionMakerRole = userDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString();
 
         Optional<List<IdValue<MakeAnApplication>>> mayBeMakeAnApplications = asylumCase.read(MAKE_AN_APPLICATIONS);
 

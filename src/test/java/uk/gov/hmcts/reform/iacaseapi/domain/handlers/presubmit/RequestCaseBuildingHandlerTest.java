@@ -35,9 +35,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.lang.Nullable;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -47,7 +47,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +57,7 @@ class RequestCaseBuildingHandlerTest {
     @Mock
     private static CaseDetails<AsylumCase> caseDetails;
     @Mock
-    private static UserDetailsProvider userDetailsProvider;
+    private UserDetails userDetails;
     @Mock
     private static AsylumCase asylumCase;
     @Mock
@@ -188,9 +187,7 @@ class RequestCaseBuildingHandlerTest {
     }
 
     private void mockUserDetailsProvider() {
-        given(userDetailsProvider.getUserDetails())
-            .willReturn(new IdamUserDetails("some token", "some id", Collections.emptyList(),
-                "some email", "some forename", "some surname"));
+        when(userDetails.getForenameAndSurname()).thenReturn("some forename" + "some surname");
     }
 
     @ParameterizedTest

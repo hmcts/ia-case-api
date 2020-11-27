@@ -27,7 +27,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -44,21 +43,13 @@ class BundleRequestExecutorTest {
     private static final String SERVICE_TOKEN = randomAlphabetic(32);
     private static final String ACCESS_TOKEN = randomAlphabetic(32);
 
-    @Mock
-    private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock
-    private RestTemplate restTemplate;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private RestTemplate restTemplate;
 
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock
-    private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
+    @Mock private UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> responseEntity;
 
 
     private BundleRequestExecutor bundleRequestExecutor;
@@ -68,11 +59,10 @@ class BundleRequestExecutorTest {
         bundleRequestExecutor = new BundleRequestExecutor(
             restTemplate,
             serviceAuthTokenGenerator,
-            userDetailsProvider
+            userDetails
         );
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
     }
 

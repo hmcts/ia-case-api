@@ -25,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -47,36 +46,26 @@ class CcdUpdaterTest {
     private String ccdUrl = "some-host";
     private String ccdPermissionsApiPath = "some-path";
 
-    @Mock
-    private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private RestTemplate restTemplate;
-    @Mock
-    private ResponseEntity<Object> responseEntity;
+    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock private RestTemplate restTemplate;
+    @Mock private ResponseEntity<Object> responseEntity;
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private UserDetails userDetails;
 
     @BeforeEach
     public void setUp() {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
         when(userDetails.getId()).thenReturn(IDAM_ID_OF_USER_SHARING_CASE);
 
         ccdUpdater = new CcdUpdater(
             restTemplate,
             serviceAuthTokenGenerator,
-            userDetailsProvider,
+            userDetails,
             ccdUrl,
             ccdPermissionsApiPath);
     }

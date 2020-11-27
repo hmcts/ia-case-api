@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -17,12 +16,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
 
-    public LegalRepresentativeDetailsHandler(
-            UserDetailsProvider userDetailsProvider
-    ) {
-        this.userDetailsProvider = userDetailsProvider;
+    public LegalRepresentativeDetailsHandler(UserDetails userDetails) {
+        this.userDetails = userDetails;
     }
 
     public boolean canHandle(
@@ -46,8 +43,6 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-
-        UserDetails userDetails = userDetailsProvider.getUserDetails();
 
         final AsylumCase asylumCase =
                 callback

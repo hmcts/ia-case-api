@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -18,13 +17,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 public class EditDocsAuditLogService {
 
     @Autowired
-    private UserDetailsProvider userDetailsProvider;
+    private UserDetails userDetails;
 
     @Autowired
     private EditDocsAuditService editDocsAuditService;
 
     public AuditDetails buildAuditDetails(long caseId, AsylumCase asylumCase, AsylumCase asylumCaseBefore) {
-        UserDetails userDetails = userDetailsProvider.getUserDetails();
         return AuditDetails.builder()
             .caseId(caseId)
             .documentIds(getDeletedDocIds(asylumCase, asylumCaseBefore))

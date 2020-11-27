@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -39,16 +38,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class LegalRepresentativeDetailsHandlerTest {
 
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private UserDetails userDetails;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private UserDetails userDetails;
 
     private LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
 
@@ -56,7 +49,7 @@ class LegalRepresentativeDetailsHandlerTest {
     public void setUp() {
 
         legalRepresentativeDetailsHandler =
-            new LegalRepresentativeDetailsHandler(userDetailsProvider);
+            new LegalRepresentativeDetailsHandler(userDetails);
     }
 
     @Test
@@ -70,7 +63,6 @@ class LegalRepresentativeDetailsHandlerTest {
         when(userDetails.getForename()).thenReturn("John");
         when(userDetails.getSurname()).thenReturn("Doe");
         when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -103,7 +95,6 @@ class LegalRepresentativeDetailsHandlerTest {
         when(userDetails.getForename()).thenReturn("John");
         when(userDetails.getSurname()).thenReturn("Doe");
         when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -128,8 +119,6 @@ class LegalRepresentativeDetailsHandlerTest {
     @Test
     void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
 
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -148,8 +137,6 @@ class LegalRepresentativeDetailsHandlerTest {
 
     @Test
     void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
-
-        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
