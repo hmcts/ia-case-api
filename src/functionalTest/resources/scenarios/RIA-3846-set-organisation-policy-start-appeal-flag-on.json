@@ -1,0 +1,35 @@
+{
+  "description": "RIA-3846 Set OrganisationPolicy at start appeal - feature flag on",
+  "launchDarklyKey": "share-case-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "localAuthorityPolicy": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "D1HRWLA",
+            "OrganisationName": null
+          },
+          "OrgPolicyCaseAssignedRole": "caseworker-ia-legalrep-solicitor"
+        }
+      }
+    }
+  }
+}

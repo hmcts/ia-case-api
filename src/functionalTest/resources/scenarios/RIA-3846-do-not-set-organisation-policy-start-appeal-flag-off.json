@@ -1,6 +1,6 @@
 {
-  "description": "RIA-3686 Legal representative submits appeal Legal Aid remission",
-  "launchDarklyKey": "remissions-feature:true",
+  "description": "RIA-3846 Do not set OrganisationPolicy at start appeal - feature flag off",
+  "launchDarklyKey": "share-case-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgSuccess",
@@ -8,12 +8,10 @@
       "eventId": "startAppeal",
       "state": "appealStarted",
       "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "homeOfficeDecisionDate": "{$TODAY-14}",
-          "isRemissionsEnabled": "Yes",
-          "remissionType": "hoWaiverRemission",
-          "remissionClaim": "section17"
+          "localAuthorityPolicy": null
         }
       }
     }
@@ -24,10 +22,7 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealReferenceNumber": "$/(.+)/",
-        "homeOfficeDecisionDate": "{$TODAY-14}",
-        "paymentStatus": null,
-        "paAppealTypePaymentOption": null
+        "localAuthorityPolicy": null
       }
     }
   }

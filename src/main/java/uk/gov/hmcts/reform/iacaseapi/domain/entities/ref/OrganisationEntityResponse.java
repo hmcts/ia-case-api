@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ref;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +21,11 @@ public class OrganisationEntityResponse {
     private ProfessionalUser superUser;
     private List<String> paymentAccount;
     private List<LegRepAddressUk> contactInformation;
+
+    public String getOrganisationIdentifier() {
+        requireNonNull(organisationIdentifier);
+        return organisationIdentifier;
+    }
 
     public List<String> getPaymentAccount() {
         return paymentAccount;

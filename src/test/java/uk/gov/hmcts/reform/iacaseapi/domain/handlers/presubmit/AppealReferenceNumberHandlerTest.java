@@ -37,9 +37,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -57,35 +54,18 @@ class AppealReferenceNumberHandlerTest {
     private DateProvider dateProvider;
     @Mock
     private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private AppealReferenceNumberHandler appealReferenceNumberHandler;
-
-    private String organisationIdentifier = "0UFUG4Z";
-
-    private OrganisationPolicy organisationPolicy;
 
     @BeforeEach
     public void setUp() {
 
         appealReferenceNumberHandler =
-            new AppealReferenceNumberHandler(dateProvider, appealReferenceNumberGenerator, featureToggler);
-
-        organisationPolicy =
-            OrganisationPolicy.builder()
-                .organisation(Organisation.builder()
-                    .organisationID(organisationIdentifier)
-                    .build()
-                )
-                .orgPolicyReference("Some reference")
-                .orgPolicyCaseAssignedRole("caseworker-ia-legalrep-solicitor")
-                .build();
+            new AppealReferenceNumberHandler(dateProvider, appealReferenceNumberGenerator);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
     }
 
     @Test
@@ -97,7 +77,6 @@ class AppealReferenceNumberHandlerTest {
     void should_set_draft_appeal_reference_when_appeal_started() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -106,7 +85,6 @@ class AppealReferenceNumberHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
-        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
 
         verifyNoInteractions(appealReferenceNumberGenerator);
     }
@@ -231,7 +209,6 @@ class AppealReferenceNumberHandlerTest {
     void should_not_write_to_local_authority_policy_if_feature_not_enabled() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -240,7 +217,6 @@ class AppealReferenceNumberHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
-        verify(asylumCase, times(0)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
 
         verifyNoInteractions(appealReferenceNumberGenerator);
     }

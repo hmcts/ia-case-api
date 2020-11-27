@@ -55,8 +55,6 @@ public class ProfessionalOrganisationRetriever {
         OrganisationEntityResponse response = null;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
-
-
         log.info("Authorization: {}", accessToken);
         log.info("Service Authorization: {}", serviceAuthorizationToken);
 
@@ -78,7 +76,5 @@ public class ProfessionalOrganisationRetriever {
         log.info("response returned: {}", response);
 
         return response;
-
-
     }
 }
