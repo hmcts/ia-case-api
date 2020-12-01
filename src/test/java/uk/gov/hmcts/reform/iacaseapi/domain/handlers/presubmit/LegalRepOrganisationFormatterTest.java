@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
@@ -51,6 +52,7 @@ class LegalRepOrganisationFormatterTest {
 
     @Mock ProfessionalOrganisationRetriever professionalOrganisationRetriever;
     @Mock OrganisationEntityResponse organisationEntityResponse;
+    @Mock CcdCaseAssignment ccdCaseAssignment;
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -60,8 +62,10 @@ class LegalRepOrganisationFormatterTest {
 
     @BeforeEach
     public void setUp() throws Exception {
+
         legalRepOrganisationFormatter = new LegalRepOrganisationFormatter(
             professionalOrganisationRetriever,
+            ccdCaseAssignment,
             featureToggler
         );
 
@@ -147,6 +151,9 @@ class LegalRepOrganisationFormatterTest {
         assertEquals(asylumCase, response.getData());
 
         verify(asylumCase, times(0)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
+        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback);
+        verify(ccdCaseAssignment, times(0)).getOrganisationUsers(organisationIdentifier);
+        verify(ccdCaseAssignment, times(0)).assignAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -183,5 +190,4 @@ class LegalRepOrganisationFormatterTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
-
 }

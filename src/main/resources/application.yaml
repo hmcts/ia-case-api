@@ -104,6 +104,10 @@ appellantReasonsForAppeal.dueInDays: 28
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
 core_case_data_api_permissions_path: "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users"
+core_case_data_api_permissions_revoke_path: "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users/{idamOfUserToRevokeAccess}"
+
+core_case_data_api_assignments_url: ${CCD_URL:http://localhost:8991}
+core_case_data_api_assignments_path: "/case-users"
 
 appealReferenceSequenceSeed: 50000
 
