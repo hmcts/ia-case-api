@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class StartAppealMidEventTest {
+class StartAppealMidEventTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,7 +59,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -81,7 +81,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -93,7 +93,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> startAppealMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -105,7 +105,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void should_error_when_home_office_reference_format_is_wrong() {
+    void should_error_when_home_office_reference_format_is_wrong() {
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(wrongHomeOfficeReferenceFormat));
 
@@ -119,7 +119,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void should_successfully_validate_when_home_office_reference_format_is_correct_cid() {
+    void should_successfully_validate_when_home_office_reference_format_is_correct_cid() {
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
 
@@ -133,7 +133,7 @@ public class StartAppealMidEventTest {
     }
 
     @Test
-    public void should_successfully_validate_when_home_office_reference_format_is_correct_uan() {
+    void should_successfully_validate_when_home_office_reference_format_is_correct_uan() {
         when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.of(correctHomeOfficeReferenceFormatUan));
 

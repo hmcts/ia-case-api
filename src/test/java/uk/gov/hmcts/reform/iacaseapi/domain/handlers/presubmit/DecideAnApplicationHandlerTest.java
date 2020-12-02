@@ -50,7 +50,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecideAnApplicationHandlerTest {
+class DecideAnApplicationHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -80,7 +80,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_handle_the_about_to_submit() {
+    void should_handle_the_about_to_submit() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -126,7 +126,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_no_make_an_applications_list() {
+    void should_throw_no_make_an_applications_list() {
 
         assertThatThrownBy(() -> decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -134,7 +134,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_no_decision() {
+    void should_throw_no_decision() {
 
         DynamicList makeAnApplicationsList = new DynamicList(
             new Value("1", "Legal representative : Application 1"),
@@ -148,7 +148,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_no_decision_reason() {
+    void should_throw_no_decision_reason() {
 
         final DynamicList makeAnApplicationsList = new DynamicList(
             new Value("1", "Legal representative : Application 1"),
@@ -164,7 +164,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> decideAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -172,7 +172,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> decideAnApplicationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -193,7 +193,7 @@ public class DecideAnApplicationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class DirectionTest {
+class DirectionTest {
 
     private final String explanation = "Do the thing";
     private final Parties parties = Parties.RESPONDENT;
@@ -27,7 +27,7 @@ public class DirectionTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(explanation, direction.getExplanation());
         assertEquals(parties, direction.getParties());
@@ -38,7 +38,7 @@ public class DirectionTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new Direction(null, parties, dateDue, dateSent, tag, previousDates))
             .isExactlyInstanceOf(NullPointerException.class);

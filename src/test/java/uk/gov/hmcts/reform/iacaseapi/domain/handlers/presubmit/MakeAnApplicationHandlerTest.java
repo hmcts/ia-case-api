@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationHandlerTest {
+class MakeAnApplicationHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -75,7 +75,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_append_make_an_application() {
+    void should_append_make_an_application() {
 
         final List<IdValue<MakeAnApplication>> existingMakeAnApplications = new ArrayList<>();
         final List<IdValue<MakeAnApplication>> newMakeAnApplications = new ArrayList<>();
@@ -137,7 +137,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_on_missing_make_an_application_type() {
+    void should_throw_on_missing_make_an_application_type() {
 
         when(callback.getEvent()).thenReturn(MAKE_AN_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -149,7 +149,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_on_missing_make_an_application_reason() {
+    void should_throw_on_missing_make_an_application_reason() {
 
         when(callback.getEvent()).thenReturn(MAKE_AN_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -165,7 +165,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> makeAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -177,7 +177,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> makeAnApplicationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -198,7 +198,7 @@ public class MakeAnApplicationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

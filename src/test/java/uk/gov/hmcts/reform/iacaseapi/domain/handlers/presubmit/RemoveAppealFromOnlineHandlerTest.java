@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RemoveAppealFromOnlineHandlerTest {
+class RemoveAppealFromOnlineHandlerTest {
 
     @Mock
     DateProvider dateProvider;
@@ -55,7 +55,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void should_set_remove_appeal_date_as_now_and_visibility_flags() {
+    void should_set_remove_appeal_date_as_now_and_visibility_flags() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -72,7 +72,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -80,7 +80,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -104,7 +104,7 @@ public class RemoveAppealFromOnlineHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

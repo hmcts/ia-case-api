@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DerivePostcodeHandlerTest {
+class DerivePostcodeHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -56,7 +56,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void should_derive_postcode_from_appellant_address() {
+    void should_derive_postcode_from_appellant_address() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -73,7 +73,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void should_not_set_postcode_if_appellant_has_no_fixed_address() {
+    void should_not_set_postcode_if_appellant_has_no_fixed_address() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -88,7 +88,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void should_not_set_hearing_centre_if_already_exists() {
+    void should_not_set_hearing_centre_if_already_exists() {
 
         final HearingCentre existingHearingCentre = HearingCentre.MANCHESTER;
 
@@ -104,7 +104,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> derivePostcodeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -113,7 +113,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -136,7 +136,7 @@ public class DerivePostcodeHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> derivePostcodeHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

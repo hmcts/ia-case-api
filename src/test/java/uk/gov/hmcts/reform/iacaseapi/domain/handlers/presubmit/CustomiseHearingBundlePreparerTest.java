@@ -60,7 +60,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.SystemDateProvider;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CustomiseHearingBundlePreparerTest {
+class CustomiseHearingBundlePreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -88,7 +88,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_create_custom_collections() {
+    void should_create_custom_collections() {
         when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
 
         List<IdValue<DocumentWithDescription>> customCollections =
@@ -130,7 +130,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_create_custom_collections_in_reheard_case() {
+    void should_create_custom_collections_in_reheard_case() {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(callback.getCaseDetails().getCaseData().read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
@@ -198,7 +198,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_filter_legal_rep_document_with_correct_tags() {
+    void should_filter_legal_rep_document_with_correct_tags() {
 
         when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
 
@@ -270,7 +270,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_not_create_custom_collections_if_source_collections_are_empty() {
+    void should_not_create_custom_collections_if_source_collections_are_empty() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.CUSTOMISE_HEARING_BUNDLE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -291,7 +291,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_not_create_custom_collections_if_source_collections_are_empty_in_reheard_case() {
+    void should_not_create_custom_collections_if_source_collections_are_empty_in_reheard_case() {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
 
@@ -306,7 +306,7 @@ public class CustomiseHearingBundlePreparerTest {
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> customiseHearingBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -315,7 +315,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -339,7 +339,7 @@ public class CustomiseHearingBundlePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> customiseHearingBundlePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

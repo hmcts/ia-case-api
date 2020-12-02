@@ -45,7 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ListEditCaseHandlerTest {
+class ListEditCaseHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -70,7 +70,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void should_set_default_list_case_hearing_centre_field() {
+    void should_set_default_list_case_hearing_centre_field() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -95,7 +95,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void should_set_default_if_listing_hearing_centre_is_not_active() {
+    void should_set_default_if_listing_hearing_centre_is_not_active() {
 
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -125,7 +125,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void should_not_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_listing_only() {
+    void should_not_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_listing_only() {
 
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.COVENTRY));
@@ -156,7 +156,7 @@ public class ListEditCaseHandlerTest {
 
 
     @Test
-    public void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {
+    void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {
 
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -186,7 +186,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -199,7 +199,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -223,7 +223,7 @@ public class ListEditCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> listEditCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

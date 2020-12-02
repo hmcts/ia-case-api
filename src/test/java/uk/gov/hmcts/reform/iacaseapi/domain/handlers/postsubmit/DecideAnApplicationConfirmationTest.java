@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecideAnApplicationConfirmationTest {
+class DecideAnApplicationConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -79,7 +79,7 @@ public class DecideAnApplicationConfirmationTest {
         "Update hearing requirements",
         "Withdraw"
     })
-    public void should_return_valid_confirmation_message_for_granted(String type) {
+    void should_return_valid_confirmation_message_for_granted(String type) {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
@@ -220,7 +220,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_valid_confirmation_message_for_refused() {
+    void should_return_valid_confirmation_message_for_refused() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
@@ -257,7 +257,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void should_throw_on_missing_application_id() {
+    void should_throw_on_missing_application_id() {
 
         Assertions.assertThatThrownBy(() -> decideAnApplicationConfirmation.handle(callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -265,7 +265,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -285,7 +285,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> decideAnApplicationConfirmation.handle(null))
             .hasMessage("callback must not be null")

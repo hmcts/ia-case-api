@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @ExtendWith(MockitoExtension.class)
-public class EventValidCheckersTest {
+class EventValidCheckersTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -32,7 +32,7 @@ public class EventValidCheckersTest {
     }
 
     @Test
-    public void eventIsValid() {
+    void eventIsValid() {
         Mockito.when(eventValidChecker1.check(callback)).thenReturn(VALID_EVENT);
         Mockito.when(eventValidChecker2.check(callback)).thenReturn(VALID_EVENT);
 
@@ -42,7 +42,7 @@ public class EventValidCheckersTest {
     }
 
     @Test
-    public void eventIsInValid() {
+    void eventIsInValid() {
         Mockito.when(eventValidChecker1.check(callback)).thenReturn(VALID_EVENT);
         EventValid invalidEvent = new EventValid("Some error");
         Mockito.when(eventValidChecker2.check(callback)).thenReturn(invalidEvent);

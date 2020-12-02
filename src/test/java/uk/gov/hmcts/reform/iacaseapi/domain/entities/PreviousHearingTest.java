@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class PreviousHearingTest {
+class PreviousHearingTest {
 
     private final Optional<String> attendingJudge = Optional.of("Judge Joe");
     private final Optional<String> attendingAppellant = Optional.of("Joe Bloggs");
@@ -59,7 +59,7 @@ public class PreviousHearingTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
         assertEquals(attendingJudge, previousHearing.getAttendingJudge());
         assertEquals(attendingAppellant, previousHearing.getAttendingAppellant());
         assertEquals(attendingHomeOfficeLegalRepresentative,
@@ -74,7 +74,7 @@ public class PreviousHearingTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new PreviousHearing(
             attendingJudge,

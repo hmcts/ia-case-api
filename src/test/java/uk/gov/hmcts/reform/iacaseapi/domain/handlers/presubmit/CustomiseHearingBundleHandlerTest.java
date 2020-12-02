@@ -83,7 +83,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.BundleRequestExecuto
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CustomiseHearingBundleHandlerTest {
+class CustomiseHearingBundleHandlerTest {
 
     @Mock
     private BundleRequestExecutor bundleRequestExecutor;
@@ -157,7 +157,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_successfully_handle_the_callback() throws JsonProcessingException {
+    void should_successfully_handle_the_callback() throws JsonProcessingException {
 
         IdValue<DocumentWithDescription> legalRepDoc = new IdValue<>("1", createDocumentWithDescription());
         IdValue<DocumentWithDescription> respondentDoc = new IdValue<>("1", createDocumentWithDescription());
@@ -225,7 +225,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_successfully_handle_Reheard_the_callback() throws JsonProcessingException {
+    void should_successfully_handle_Reheard_the_callback() throws JsonProcessingException {
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -357,7 +357,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_reference_is_not_present() {
+    void should_throw_when_appeal_reference_is_not_present() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER, String.class))
             .thenReturn(Optional.empty());
@@ -368,7 +368,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_asylumcase_can_not_copied() throws JsonProcessingException {
+    void should_throw_when_asylumcase_can_not_copied() throws JsonProcessingException {
 
         when(objectMapper.readValue("Test", AsylumCase.class))
             .thenThrow(new IllegalStateException("Cannot make a deep copy of the case"));
@@ -379,7 +379,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appellant_family_name_is_not_present() {
+    void should_throw_when_appellant_family_name_is_not_present() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, String.class))
             .thenReturn(Optional.empty());
@@ -390,7 +390,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -400,7 +400,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_empty() {
+    void should_throw_when_case_bundle_is_empty() {
 
         caseBundles.clear();
 
@@ -410,7 +410,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> customiseHearingBundleHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -423,7 +423,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -447,7 +447,7 @@ public class CustomiseHearingBundleHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> customiseHearingBundleHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

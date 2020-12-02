@@ -9,12 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CodeWithDescriptionTest {
+class CodeWithDescriptionTest {
 
     private CodeWithDescription codeWithDescription;
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
 
         codeWithDescription = new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service");
         assertEquals("HMCTS", codeWithDescription.getCode());

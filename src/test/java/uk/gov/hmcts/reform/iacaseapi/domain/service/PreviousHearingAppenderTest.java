@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PreviousHearingAppenderTest {
+class PreviousHearingAppenderTest {
 
     @Mock
     private IdValue<PreviousHearing> existingPreviousHearingById1;
@@ -36,7 +36,7 @@ public class PreviousHearingAppenderTest {
     private PreviousHearingAppender previousHearingAppender = new PreviousHearingAppender();
 
     @Test
-    public void should_append_previous_hearing_in_first_position() {
+    void should_append_previous_hearing_in_first_position() {
 
         List<IdValue<PreviousHearing>> existingPreviousHearings =
             Arrays.asList(
@@ -69,7 +69,7 @@ public class PreviousHearingAppenderTest {
     }
 
     @Test
-    public void should_return_new_previous_hearing_if_no_existing_previous_hearings_present() {
+    void should_return_new_previous_hearing_if_no_existing_previous_hearings_present() {
 
         List<IdValue<PreviousHearing>> existingDPreviousHearings = Collections.emptyList();
 
@@ -84,7 +84,7 @@ public class PreviousHearingAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         List<IdValue<PreviousHearing>> existingPreviousHearings = Arrays.asList(existingPreviousHearingById1);
         PreviousHearing newPreviousHearing = newPreviousHearing1;

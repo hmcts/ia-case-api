@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 
 @ExtendWith(MockitoExtension.class)
-public class RequestReasonsForAppealPreparerTest {
+class RequestReasonsForAppealPreparerTest {
 
     private static final int DUE_IN_DAYS = 28;
 
@@ -61,7 +61,7 @@ public class RequestReasonsForAppealPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
             "You must now tell us why you think the Home Office decision to refuse your claim is wrong.";
@@ -98,7 +98,7 @@ public class RequestReasonsForAppealPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actuall_handle() {
+    void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(
             () -> requestReasonsForAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -112,7 +112,7 @@ public class RequestReasonsForAppealPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -134,7 +134,7 @@ public class RequestReasonsForAppealPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arugments() {
+    void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestReasonsForAppealPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

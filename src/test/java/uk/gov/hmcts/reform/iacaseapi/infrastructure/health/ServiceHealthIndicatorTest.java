@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ServiceHealthIndicatorTest {
+class ServiceHealthIndicatorTest {
 
     @Mock
     RestTemplate restTemplate;
@@ -39,7 +39,7 @@ public class ServiceHealthIndicatorTest {
     }
 
     @Test
-    public void health_status_should_be_up_when_the_service_is_running() {
+    void health_status_should_be_up_when_the_service_is_running() {
         when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
         when(responseEntity.getBody()).thenReturn(serviceUpResponse);
         when(restTemplate.getForEntity(uri, String.class)).thenReturn(responseEntity);
@@ -48,7 +48,7 @@ public class ServiceHealthIndicatorTest {
     }
 
     @Test
-    public void health_status_should_show_down_when_the_service_is_not_running() {
+    void health_status_should_show_down_when_the_service_is_not_running() {
         when(responseEntity.getStatusCode()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
         when(responseEntity.getBody()).thenReturn(serviceDownResponse);
         when(restTemplate.getForEntity(uri, String.class)).thenReturn(responseEntity);
@@ -57,7 +57,7 @@ public class ServiceHealthIndicatorTest {
     }
 
     @Test
-    public void response_status_ok_but_the_service_is_down() {
+    void response_status_ok_but_the_service_is_down() {
         when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
         when(responseEntity.getBody()).thenReturn(statusUpServiceDown);
         when(restTemplate.getForEntity(uri, String.class)).thenReturn(responseEntity);
@@ -66,7 +66,7 @@ public class ServiceHealthIndicatorTest {
     }
 
     @Test
-    public void health_should_throw_exception_rest_error() {
+    void health_should_throw_exception_rest_error() {
         when(restTemplate.getForEntity(uri, String.class)).thenThrow(new RestClientException("Internal server error"));
 
         assertEquals(Health.down(new RestClientException("Internal server error")).build(),
@@ -74,7 +74,7 @@ public class ServiceHealthIndicatorTest {
     }
 
     @Test
-    public void response_status_ok_but_body_doesnt_match_the_matcher() {
+    void response_status_ok_but_body_doesnt_match_the_matcher() {
         when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
         when(responseEntity.getBody()).thenReturn(statusUnmatched);
         when(restTemplate.getForEntity(uri, String.class)).thenReturn(responseEntity);

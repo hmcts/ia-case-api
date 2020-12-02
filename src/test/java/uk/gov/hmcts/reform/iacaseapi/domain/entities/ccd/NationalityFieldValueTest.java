@@ -9,12 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class NationalityFieldValueTest {
+class NationalityFieldValueTest {
 
     private NationalityFieldValue nationalityFieldValue;
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
 
         nationalityFieldValue = new NationalityFieldValue("ZZ");
         assertEquals("ZZ", nationalityFieldValue.getCode());

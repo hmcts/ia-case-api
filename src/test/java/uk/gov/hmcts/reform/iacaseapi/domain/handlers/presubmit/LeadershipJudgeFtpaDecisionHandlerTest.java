@@ -75,7 +75,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LeadershipJudgeFtpaDecisionHandlerTest {
+class LeadershipJudgeFtpaDecisionHandlerTest {
 
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
@@ -116,7 +116,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_appellant_documents() {
+    void should_append_all_ftpa_appellant_documents() {
 
         List<DocumentWithMetadata> ftpaAppellantDecisionAndReasonsDocument =
             Arrays.asList(
@@ -172,7 +172,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_respondent_documents() {
+    void should_append_all_ftpa_respondent_documents() {
 
         List<DocumentWithMetadata> ftpaAppellantDecisionAndReasonsDocument =
             Arrays.asList(
@@ -227,7 +227,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_applicant_type_missing() {
+    void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -239,7 +239,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_decision_outcome_type_missing() {
+    void should_throw_if_ftpa_decision_outcome_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -252,7 +252,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> leadershipJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -268,7 +268,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -292,7 +292,7 @@ public class LeadershipJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> leadershipJudgeFtpaDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

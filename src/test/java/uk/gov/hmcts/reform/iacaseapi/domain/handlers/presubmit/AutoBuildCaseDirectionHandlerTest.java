@@ -45,7 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AutoBuildCaseDirectionHandlerTest {
+class AutoBuildCaseDirectionHandlerTest {
 
     private static final int BUILD_CASE_DUE_IN_DAYS = 28;
     private static final int BUILD_CASE_DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
@@ -78,7 +78,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    void should_append_new_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -120,7 +120,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    void should_add_new_direction_to_the_case_when_no_directions_exist() {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -167,7 +167,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void should_not_add_new_direction_if_same_direction_already_exists() {
+    void should_not_add_new_direction_if_same_direction_already_exists() {
 
         final Direction existingDirection = mock(Direction.class);
         final List<IdValue<Direction>> existingDirections =
@@ -190,7 +190,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> autoBuildCaseDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -203,7 +203,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -227,7 +227,7 @@ public class AutoBuildCaseDirectionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> autoBuildCaseDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationTypesProviderTest {
+class MakeAnApplicationTypesProviderTest {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
     @Mock
@@ -62,7 +62,7 @@ public class MakeAnApplicationTypesProviderTest {
     private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
 
     @Test
-    public void should_return_given_application_types_in_appeal_submitted_state() {
+    void should_return_given_application_types_in_appeal_submitted_state() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -87,7 +87,7 @@ public class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    public void should_return_given_application_types_in_decided_state() {
+    void should_return_given_application_types_in_decided_state() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -119,7 +119,7 @@ public class MakeAnApplicationTypesProviderTest {
         "RESPONDENT_REVIEW",
         "SUBMIT_HEARING_REQUIREMENTS"
     })
-    public void should_return_given_application_types_in_pending_payment_case_building(State state) {
+    void should_return_given_application_types_in_pending_payment_case_building(State state) {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -149,7 +149,7 @@ public class MakeAnApplicationTypesProviderTest {
         "FTPA_SUBMITTED",
         "FTPA_DECIDED"
     })
-    public void should_return_valid_application_types_in_ftpa_states(State state) {
+    void should_return_valid_application_types_in_ftpa_states(State state) {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -177,7 +177,7 @@ public class MakeAnApplicationTypesProviderTest {
     @EnumSource(value = State.class, names = {
         "ADJOURNED", "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
     })
-    public void should_return_given_application_types_in_adjourned_to_decision(State state) {
+    void should_return_given_application_types_in_adjourned_to_decision(State state) {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -207,7 +207,7 @@ public class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    public void should_return_given_application_types_in_ended_state() {
+    void should_return_given_application_types_in_ended_state() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -229,7 +229,7 @@ public class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    public void should_return_given_application_types_in_final_bundling() {
+    void should_return_given_application_types_in_final_bundling() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -256,7 +256,7 @@ public class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    public void should_return_given_application_types_in_listing() {
+    void should_return_given_application_types_in_listing() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -282,7 +282,7 @@ public class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    public void should_return_null_invalid_state() {
+    void should_return_null_invalid_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_TAKEN_OFFLINE);

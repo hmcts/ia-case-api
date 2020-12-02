@@ -44,7 +44,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionHandlerTest {
+class DirectionHandlerTest {
 
     @Mock
     private DirectionAppender directionAppender;
@@ -75,7 +75,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    void should_append_new_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -131,7 +131,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    void should_add_new_direction_to_the_case_when_no_directions_exist() {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -193,7 +193,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void should_throw_when_send_direction_explanation_is_not_present() {
+    void should_throw_when_send_direction_explanation_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
@@ -207,7 +207,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void should_throw_when_send_direction_date_due_is_not_present() {
+    void should_throw_when_send_direction_date_due_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
@@ -222,7 +222,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -235,7 +235,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -268,7 +268,7 @@ public class DirectionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> directionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

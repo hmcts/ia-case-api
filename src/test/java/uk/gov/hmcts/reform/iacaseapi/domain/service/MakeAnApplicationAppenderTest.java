@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationAppenderTest {
+class MakeAnApplicationAppenderTest {
 
     @Mock
     private UserDetailsProvider userDetailsProvider;
@@ -52,7 +52,7 @@ public class MakeAnApplicationAppenderTest {
     }
 
     @Test
-    public void should_append_the_new_application_in_first_position() {
+    void should_append_the_new_application_in_first_position() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         when(userDetailsProvider.getLoggedInUserRole()).thenReturn(UserRole.HOME_OFFICE_APC);
@@ -89,7 +89,7 @@ public class MakeAnApplicationAppenderTest {
     }
 
     @Test
-    public void should_return_new_application_if_no_existing_applications() {
+    void should_return_new_application_if_no_existing_applications() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         when(userDetailsProvider.getLoggedInUserRole()).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
@@ -114,7 +114,7 @@ public class MakeAnApplicationAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_values() {
+    void should_not_allow_null_values() {
 
         List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();
 

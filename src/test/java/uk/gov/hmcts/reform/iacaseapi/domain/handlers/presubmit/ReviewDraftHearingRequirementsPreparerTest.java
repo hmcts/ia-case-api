@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class ReviewDraftHearingRequirementsPreparerTest {
+class ReviewDraftHearingRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -62,7 +62,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_review_hearing_requirements() {
+    void should_review_hearing_requirements() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         witnessDetails = Arrays.asList(
@@ -95,7 +95,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_error_on_review_flag_is_missing() {
+    void should_return_error_on_review_flag_is_missing() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -111,7 +111,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_error_on_reviewing_hearing_requirements_twice() {
+    void should_return_error_on_reviewing_hearing_requirements_twice() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -127,7 +127,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -140,7 +140,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewDraftHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

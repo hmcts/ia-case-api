@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.HealthCheckConfigurat
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DownStreamHealthIndicatorTest {
+class DownStreamHealthIndicatorTest {
 
     @Mock
     RestTemplate restTemplate;
@@ -27,7 +27,7 @@ public class DownStreamHealthIndicatorTest {
     private DownStreamHealthIndicator downStreamHealthIndicator;
 
     @Test
-    public void testGetContributor() {
+    void testGetContributor() {
         when(healthCheckConfiguration.getServices()).thenReturn(getHealthCheckConfiguration());
 
         downStreamHealthIndicator = new DownStreamHealthIndicator(restTemplate, healthCheckConfiguration);
@@ -37,7 +37,7 @@ public class DownStreamHealthIndicatorTest {
     }
 
     @Test
-    public void should_throw_exception_when_services_list_is_null_or_empty() {
+    void should_throw_exception_when_services_list_is_null_or_empty() {
         when(healthCheckConfiguration.getServices()).thenReturn(null);
 
         Assertions.assertThatThrownBy(() -> new DownStreamHealthIndicator(restTemplate, healthCheckConfiguration))

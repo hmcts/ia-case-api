@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
-public class BundleTest {
+class BundleTest {
 
     private final String id = "some id";
     private final String title = "bundle title";
@@ -32,7 +32,7 @@ public class BundleTest {
 
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(id, bundle.getId());
         assertEquals(title, bundle.getTitle());

@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestCmaRequirementsConfirmationTest {
+class RequestCmaRequirementsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -29,7 +29,7 @@ public class RequestCmaRequirementsConfirmationTest {
         new RequestCmaRequirementsConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_CMA_REQUIREMENTS);
 
@@ -53,7 +53,7 @@ public class RequestCmaRequirementsConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestCmaRequirementsConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -61,7 +61,7 @@ public class RequestCmaRequirementsConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -81,7 +81,7 @@ public class RequestCmaRequirementsConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestCmaRequirementsConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

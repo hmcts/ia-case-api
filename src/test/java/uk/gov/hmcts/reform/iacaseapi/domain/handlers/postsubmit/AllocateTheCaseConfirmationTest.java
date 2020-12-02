@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AllocateTheCaseConfirmationTest {
+class AllocateTheCaseConfirmationTest {
 
     public static final long CASE_ID = 1234567890L;
     @Mock
@@ -32,7 +32,7 @@ public class AllocateTheCaseConfirmationTest {
         new AllocateTheCaseConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
         when(callback.getEvent()).thenReturn(Event.ALLOCATE_THE_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);
@@ -55,7 +55,7 @@ public class AllocateTheCaseConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
         assertThatThrownBy(() -> allocateTheCaseConfirmation.handle(callback))
@@ -64,7 +64,7 @@ public class AllocateTheCaseConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
             boolean canHandle = allocateTheCaseConfirmation.canHandle(callback);
@@ -79,7 +79,7 @@ public class AllocateTheCaseConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> allocateTheCaseConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

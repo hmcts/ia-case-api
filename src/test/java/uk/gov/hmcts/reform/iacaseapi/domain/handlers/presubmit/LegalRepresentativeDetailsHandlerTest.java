@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeDetailsHandlerTest {
+class LegalRepresentativeDetailsHandlerTest {
 
     @Mock
     private UserDetailsProvider userDetailsProvider;
@@ -60,7 +60,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
+    void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -93,7 +93,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
+    void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -126,7 +126,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
+    void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
@@ -147,7 +147,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
+    void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
@@ -168,7 +168,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -183,7 +183,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -210,7 +210,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> legalRepresentativeDetailsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RoleAssignmentServic
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AllocateTheCaseHandlerTest {
+class AllocateTheCaseHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +52,7 @@ public class AllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void assigns_role() {
+    void assigns_role() {
         when(callback.getEvent()).thenReturn(ALLOCATE_THE_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -63,7 +63,7 @@ public class AllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> allocateTheCaseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -74,7 +74,7 @@ public class AllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -98,7 +98,7 @@ public class AllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void cannot_handle_if_feature_disabled() {
+    void cannot_handle_if_feature_disabled() {
         when(callback.getEvent()).thenReturn(ALLOCATE_THE_CASE);
         when(featureToggler.getValue("allocate-a-case-feature", false)).thenReturn(false);
         boolean canHandle = allocateTheCaseHandler.canHandle(ABOUT_TO_SUBMIT, callback);
@@ -107,7 +107,7 @@ public class AllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> allocateTheCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

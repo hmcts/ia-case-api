@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentEvidenceHandlerTest {
+class RequestRespondentEvidenceHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -42,7 +42,7 @@ public class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_set_the_flag_on_valid_case_data() {
+    void should_set_the_flag_on_valid_case_data() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -53,7 +53,7 @@ public class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> requestRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -69,7 +69,7 @@ public class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -93,7 +93,7 @@ public class RequestRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestRespondentEvidenceHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

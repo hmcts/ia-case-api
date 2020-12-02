@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CaseFlagAppenderTest {
+class CaseFlagAppenderTest {
 
     private final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
     private final String newCaseFlagAdditionalInformation = "some additional information";
@@ -43,7 +43,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_append_new_case_flag_in_first_position() {
+    void should_append_new_case_flag_in_first_position() {
 
         when(existingCaseFlagById1.getValue()).thenReturn(caseFlag1);
         when(existingCaseFlagById2.getValue()).thenReturn(caseFlag2);
@@ -76,7 +76,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_return_new_case_flags_if_no_existing_case_flags_present() {
+    void should_return_new_case_flags_if_no_existing_case_flags_present() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.emptyList();
 
         List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
@@ -95,7 +95,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.singletonList(existingCaseFlagById1);
 
         assertThatThrownBy(() ->

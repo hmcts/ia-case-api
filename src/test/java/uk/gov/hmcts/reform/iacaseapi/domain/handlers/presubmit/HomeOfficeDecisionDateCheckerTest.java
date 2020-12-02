@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class HomeOfficeDecisionDateCheckerTest {
+class HomeOfficeDecisionDateCheckerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
@@ -67,7 +67,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handles_edge_case_when_in_time() {
+    void handles_edge_case_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2019-01-01"));
@@ -81,7 +81,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handles_edge_case_when_easily_out_of_time() {
+    void handles_edge_case_when_easily_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2015-01-01"));
@@ -95,7 +95,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -104,7 +104,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void handles_edge_case_when_out_of_time() {
+    void handles_edge_case_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-16"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2019-01-01"));
@@ -118,7 +118,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -144,7 +144,7 @@ public class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

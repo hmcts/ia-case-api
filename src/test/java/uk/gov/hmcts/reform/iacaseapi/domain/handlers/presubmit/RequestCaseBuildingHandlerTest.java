@@ -51,7 +51,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetail
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class RequestCaseBuildingHandlerTest {
+class RequestCaseBuildingHandlerTest {
 
     @Mock
     private static Callback<AsylumCase> callback;
@@ -140,7 +140,7 @@ public class RequestCaseBuildingHandlerTest {
     }
 
     @Test
-    public void should_set_the_flag_on_valid_case_data() {
+    void should_set_the_flag_on_valid_case_data() {
         mockCallback(asylumCase);
 
         requestCaseBuildingHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -156,7 +156,7 @@ public class RequestCaseBuildingHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateAsylumCaseWithDifferentCaseNotesScenarios")
-    public void givenValidCallback_shouldCopyReasonToCaseNote(AsylumCase customAsylumCase,
+    void givenValidCallback_shouldCopyReasonToCaseNote(AsylumCase customAsylumCase,
                                                               IdValue<CaseNote> expectedIdCaseNote,
                                                               List<IdValue<CaseNote>> expectedAppendedCaseNotes) {
         mockCallback(customAsylumCase);
@@ -195,7 +195,7 @@ public class RequestCaseBuildingHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateExceptionScenarios")
-    public void handling_should_throw_if_cannot_actually_handle(PreSubmitCallbackStage callbackStage,
+    void handling_should_throw_if_cannot_actually_handle(PreSubmitCallbackStage callbackStage,
                                                                 Callback<AsylumCase> callback,
                                                                 String expectedMsg) {
 
@@ -213,7 +213,7 @@ public class RequestCaseBuildingHandlerTest {
         "MID_EVENT, REQUEST_CASE_BUILDING, false",
         "ABOUT_TO_SUBMIT, UPLOAD_HEARING_RECORDING, false"
     })
-    public void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
+    void canHandle(PreSubmitCallbackStage callbackStage, Event event, boolean expectedResult) {
         if (!callbackStage.equals(PreSubmitCallbackStage.MID_EVENT)) {
             given(callback.getEvent()).willReturn(event);
         }
@@ -225,7 +225,7 @@ public class RequestCaseBuildingHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateNullArgsScenarios")
-    public void given_null_callback_should_throw_exception(@Nullable PreSubmitCallbackStage callbackStage,
+    void given_null_callback_should_throw_exception(@Nullable PreSubmitCallbackStage callbackStage,
                                                            @Nullable Callback<AsylumCase> callback,
                                                            String expectedMessage) {
 

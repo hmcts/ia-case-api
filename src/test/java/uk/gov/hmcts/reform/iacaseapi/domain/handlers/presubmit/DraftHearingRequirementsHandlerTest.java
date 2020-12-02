@@ -45,7 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DraftHearingRequirementsHandlerTest {
+class DraftHearingRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -68,7 +68,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_witness_count_to_zero_and_available_fields() {
+    void should_set_witness_count_to_zero_and_available_fields() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.empty());
 
@@ -85,7 +85,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_clear_previous_agreed_adjustment_fields_for_reheard_appeal() {
+    void should_clear_previous_agreed_adjustment_fields_for_reheard_appeal() {
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -105,7 +105,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_current_hearing_details_visibility_to_yes_for_normal_case() {
+    void should_set_current_hearing_details_visibility_to_yes_for_normal_case() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -124,7 +124,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_witness_count_and_available_fields() {
+    void should_set_witness_count_and_available_fields() {
 
         when(asylumCase.read(WITNESS_DETAILS)).thenReturn(Optional.of(Arrays
             .asList(new IdValue("1", new WitnessDetails("cap")), new IdValue("2", new WitnessDetails("Pan")))));
@@ -142,7 +142,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_current_hearing_details_visibility_to_no_for_case_flag() {
+    void should_set_current_hearing_details_visibility_to_no_for_case_flag() {
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -155,7 +155,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_current_hearing_details_visibility_when_feature_flag_disabled() {
+    void should_set_current_hearing_details_visibility_when_feature_flag_disabled() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
@@ -168,7 +168,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_current_hearing_details_visibility_to_yes_for_case_flag() {
+    void should_set_current_hearing_details_visibility_to_yes_for_case_flag() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -180,7 +180,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_current_hearing_details_visibility_to_yes_when_feature_flag_disabled() {
+    void should_set_current_hearing_details_visibility_to_yes_when_feature_flag_disabled() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -190,7 +190,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -199,7 +199,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -223,7 +223,7 @@ public class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> draftHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

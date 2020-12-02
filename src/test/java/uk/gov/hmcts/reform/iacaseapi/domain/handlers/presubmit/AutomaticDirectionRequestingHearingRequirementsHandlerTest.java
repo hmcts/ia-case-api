@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
+class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
 
     @Mock
@@ -181,7 +181,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -194,7 +194,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

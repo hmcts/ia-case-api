@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class CaseSubmittedConfirmationTest {
+class CaseSubmittedConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -35,7 +35,7 @@ public class CaseSubmittedConfirmationTest {
         new CaseSubmittedConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
         ReflectionTestUtils.setField(caseSubmittedConfirmation, "isSaveAndContinueEnabled", true);
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_CASE);
@@ -57,7 +57,7 @@ public class CaseSubmittedConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> caseSubmittedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -66,7 +66,7 @@ public class CaseSubmittedConfirmationTest {
 
     @ParameterizedTest
     @MethodSource("generateDifferentEventScenarios")
-    public void it_can_handle_callback(EventScenarios event) {
+    void it_can_handle_callback(EventScenarios event) {
         ReflectionTestUtils.setField(caseSubmittedConfirmation, "isSaveAndContinueEnabled", event.isFlag());
         when(callback.getEvent()).thenReturn(event.getEvent());
 
@@ -80,7 +80,7 @@ public class CaseSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> caseSubmittedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

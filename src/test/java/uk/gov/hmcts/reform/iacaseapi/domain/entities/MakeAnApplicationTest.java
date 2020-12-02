@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class MakeAnApplicationTest {
+class MakeAnApplicationTest {
 
     private final String type = "Adjourn";
     private final String details = "Some application text";
@@ -32,7 +32,7 @@ public class MakeAnApplicationTest {
         );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
         assertEquals(type, makeAnApplication.getType());
         assertEquals(details, makeAnApplication.getDetails());
         assertEquals(evidence, makeAnApplication.getEvidence());
@@ -46,7 +46,7 @@ public class MakeAnApplicationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new MakeAnApplication(
             null, type, details, evidence,

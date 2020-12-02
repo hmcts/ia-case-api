@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SubmitAppealPreparerTest {
+class SubmitAppealPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -55,7 +55,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_throw_error_on_submit_appeal_for_PA_payNow() {
+    void should_throw_error_on_submit_appeal_for_PA_payNow() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
@@ -69,7 +69,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_return_true_for_PA_payNow() {
+    void should_return_true_for_PA_payNow() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
@@ -78,7 +78,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_return_true_for_HU_payNow() {
+    void should_return_true_for_HU_payNow() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
@@ -87,7 +87,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_return_false_for_HU_payLater() {
+    void should_return_false_for_HU_payLater() {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
@@ -96,7 +96,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
             when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -121,7 +121,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_when_aip_journey() {
+    void it_cannot_handle_callback_when_aip_journey() {
 
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
@@ -131,7 +131,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_not_check_for_feePaymentDisabled() {
+    void should_not_check_for_feePaymentDisabled() {
 
         SubmitAppealPreparer submitAppealPreparer =
             new SubmitAppealPreparer(
@@ -144,7 +144,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> submitAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -152,7 +152,7 @@ public class SubmitAppealPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> submitAppealPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

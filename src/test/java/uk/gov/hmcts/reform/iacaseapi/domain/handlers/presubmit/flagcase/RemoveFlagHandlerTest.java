@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class RemoveFlagHandlerTest {
+class RemoveFlagHandlerTest {
 
     private final CaseFlag expectedCaseFlag =
         new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
@@ -70,7 +70,7 @@ public class RemoveFlagHandlerTest {
     }
 
     @Test
-    public void removes_a_specified_flag() {
+    void removes_a_specified_flag() {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
@@ -109,7 +109,7 @@ public class RemoveFlagHandlerTest {
         "UNACCEPTABLE_CUSTOMER_BEHAVIOUR, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_EXISTS, CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION",
         "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION"
     })
-    public void clear_display_flags_test(CaseFlagType flagType,
+    void clear_display_flags_test(CaseFlagType flagType,
                                          AsylumCaseFieldDefinition caseFlagExists,
                                          AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
         removeFlagHandler.clearDisplayFlags(flagType, asylumCase);
@@ -119,7 +119,7 @@ public class RemoveFlagHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeFlagHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

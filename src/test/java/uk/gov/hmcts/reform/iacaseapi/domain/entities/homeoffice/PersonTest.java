@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PersonTest {
+class PersonTest {
     @Mock
     CodeWithDescription mockCode;
 
@@ -31,7 +31,7 @@ public class PersonTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(person);
         assertNotNull(person.getNationality());
         assertNotNull(person.getGender());

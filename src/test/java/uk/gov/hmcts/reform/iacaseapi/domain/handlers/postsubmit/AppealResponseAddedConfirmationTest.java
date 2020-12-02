@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealResponseAddedConfirmationTest {
+class AppealResponseAddedConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -31,7 +31,7 @@ public class AppealResponseAddedConfirmationTest {
         new AppealResponseAddedConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
 
@@ -53,7 +53,7 @@ public class AppealResponseAddedConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> appealResponseAddedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -61,7 +61,7 @@ public class AppealResponseAddedConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -81,7 +81,7 @@ public class AppealResponseAddedConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealResponseAddedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

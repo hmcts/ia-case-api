@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @ExtendWith(MockitoExtension.class)
-public class AsylumCaseEventValidForJourneyTypeCheckerTest {
+class AsylumCaseEventValidForJourneyTypeCheckerTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -51,7 +51,7 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void canSendValidEvents() {
+    void canSendValidEvents() {
         setupCallback(Event.CHANGE_DIRECTION_DUE_DATE, AIP);
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
@@ -60,7 +60,7 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void cannotSendInvalidEventsForAip() {
+    void cannotSendInvalidEventsForAip() {
         setupCallback(Event.REQUEST_CASE_BUILDING, AIP);
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);
@@ -77,7 +77,7 @@ public class AsylumCaseEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void cannotSendInvalidEventsForLegalRep() {
+    void cannotSendInvalidEventsForLegalRep() {
         setupCallback(Event.REQUEST_REASONS_FOR_APPEAL, REP);
 
         EventValid check = asylumCaseEventValidForJourneyTypeChecker.check(callback);

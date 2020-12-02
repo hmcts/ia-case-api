@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-public class AddressUkTest {
+class AddressUkTest {
 
     private final String addressLine1 = "A";
     private final String addressLine2 = "B";
@@ -26,7 +26,7 @@ public class AddressUkTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(Optional.of(addressLine1), addressUk.getAddressLine1());
         assertEquals(Optional.of(addressLine2), addressUk.getAddressLine2());

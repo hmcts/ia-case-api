@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class StdSerializerTest {
+class StdSerializerTest {
 
     @Mock
     private ObjectMapper mapper;
@@ -28,7 +28,7 @@ public class StdSerializerTest {
     }
 
     @Test
-    public void should_serialize_argument_to_string() throws JsonProcessingException {
+    void should_serialize_argument_to_string() throws JsonProcessingException {
 
         Integer source = 123;
         String expectedSerializedSource = "123";
@@ -43,7 +43,7 @@ public class StdSerializerTest {
     }
 
     @Test
-    public void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
+    void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
 
         Integer source = 123;
 

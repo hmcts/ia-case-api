@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class UnlinkAppealConfirmationTest {
+class UnlinkAppealConfirmationTest {
 
     UnlinkAppealConfirmation unlinkAppealConfirmation = new UnlinkAppealConfirmation();
 
@@ -32,7 +32,7 @@ public class UnlinkAppealConfirmationTest {
 
     @ParameterizedTest
     @MethodSource("generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
+    void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
         boolean result = unlinkAppealConfirmation.canHandle(callback);
@@ -45,7 +45,7 @@ public class UnlinkAppealConfirmationTest {
     }
 
     @Test
-    public void handle() {
+    void handle() {
         when(callback.getEvent()).thenReturn(Event.UNLINK_APPEAL);
 
         PostSubmitCallbackResponse actualResponse = unlinkAppealConfirmation.handle(callback);
@@ -65,7 +65,7 @@ public class UnlinkAppealConfirmationTest {
     }
 
     @Test
-    public void should_throw_exception() {
+    void should_throw_exception() {
         assertThatThrownBy(() -> unlinkAppealConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

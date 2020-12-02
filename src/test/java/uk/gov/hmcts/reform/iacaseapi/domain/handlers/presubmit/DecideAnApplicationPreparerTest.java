@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecideAnApplicationPreparerTest {
+class DecideAnApplicationPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -71,7 +71,7 @@ public class DecideAnApplicationPreparerTest {
     }
 
     @Test
-    public void should_handle_the_about_to_start() {
+    void should_handle_the_about_to_start() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -100,7 +100,7 @@ public class DecideAnApplicationPreparerTest {
     }
 
     @Test
-    public void should_return_error_if_no_applications_to_decide() {
+    void should_return_error_if_no_applications_to_decide() {
 
         final List<IdValue<MakeAnApplication>> makeAnApplications = Collections.emptyList();
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -113,7 +113,7 @@ public class DecideAnApplicationPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> decideAnApplicationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -121,7 +121,7 @@ public class DecideAnApplicationPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> decideAnApplicationPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -142,7 +142,7 @@ public class DecideAnApplicationPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

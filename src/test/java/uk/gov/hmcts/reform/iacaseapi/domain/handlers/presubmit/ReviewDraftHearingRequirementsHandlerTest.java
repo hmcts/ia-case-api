@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewDraftHearingRequirementsHandlerTest {
+class ReviewDraftHearingRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -53,7 +53,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_submit_review_hearing_requirements() {
+    void should_submit_review_hearing_requirements() {
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -70,7 +70,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_list_case_hearing_length_visible_field_for_reheard_appeal() {
+    void should_set_list_case_hearing_length_visible_field_for_reheard_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -85,7 +85,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_set_list_case_hearing_length_visible_field_for_normal_appeal() {
+    void should_not_set_list_case_hearing_length_visible_field_for_normal_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -100,7 +100,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
+    void should_not_set_list_case_hearing_length_visible_field_fwhen_feature_flag_disabled() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -114,7 +114,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_throw_error_if_cannot_handle_callback() {
+    void should_throw_error_if_cannot_handle_callback() {
 
         assertThatThrownBy(
             () -> reviewDraftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -129,7 +129,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -152,7 +152,7 @@ public class ReviewDraftHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewDraftHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

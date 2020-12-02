@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePaymentStateHandlerTest {
+class FeePaymentStateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -60,7 +60,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_pa_successful_payAndSubmit_as_appeal_submitted_state() {
+    void should_return_updated_state_for_pa_successful_payAndSubmit_as_appeal_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -79,7 +79,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_hu_successful_payAndSubmit_as_appeal_submitted_state() {
+    void should_return_updated_state_for_hu_successful_payAndSubmit_as_appeal_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -98,7 +98,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_ea_successful_payAndSubmit_as_appeal_submitted_state() {
+    void should_return_updated_state_for_ea_successful_payAndSubmit_as_appeal_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -117,7 +117,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_pa_failed_payAndSubmit_as_appeal_started_state() {
+    void should_return_updated_state_for_pa_failed_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -136,7 +136,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_hu_failed_payAndSubmit_as_appeal_started_state() {
+    void should_return_current_state_for_hu_failed_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -155,7 +155,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_ea_failed_payAndSubmit_as_appeal_started_state() {
+    void should_return_updated_state_for_ea_failed_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -174,7 +174,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_pa_payment_pending_payAndSubmit_as_appeal_started_state() {
+    void should_return_current_state_for_pa_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -193,7 +193,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_hu_payment_pending_payAndSubmit_as_appeal_started_state() {
+    void should_return_current_state_for_hu_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -212,7 +212,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_ea_payment_pending_payAndSubmit_as_appeal_started_state() {
+    void should_return_current_state_for_ea_payment_pending_payAndSubmit_as_appeal_started_state() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -231,7 +231,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_pa_payment_pending_submit_as_submitted_state() {
+    void should_return_updated_state_for_pa_payment_pending_submit_as_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -250,7 +250,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_hu_payment_pending_submit_as_pending_payment_state() {
+    void should_return_updated_state_for_hu_payment_pending_submit_as_pending_payment_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -269,7 +269,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_ea_payment_pending_submit_as_pending_payment_state() {
+    void should_return_updated_state_for_ea_payment_pending_submit_as_pending_payment_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -289,7 +289,7 @@ public class FeePaymentStateHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"EA", "HU", "PA"})
-    public void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
+    void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -315,7 +315,7 @@ public class FeePaymentStateHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"EA", "HU", "PA"})
-    public void should_return_appeal_submitted_state_with_no_remission(String type) {
+    void should_return_appeal_submitted_state_with_no_remission(String type) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         AsylumCase asylumCase = new AsylumCase();
@@ -340,7 +340,7 @@ public class FeePaymentStateHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"FAILED", "PAYMENT_PENDING"})
-    public void should_return_current_state_for_failed_and_pending_payments(String paymentStatus) {
+    void should_return_current_state_for_failed_and_pending_payments(String paymentStatus) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -361,7 +361,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_dc_submit_as_submitted_state() {
+    void should_return_updated_state_for_dc_submit_as_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -380,7 +380,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_non_payment_rp_submit_as_submitted_state() {
+    void should_return_updated_state_for_non_payment_rp_submit_as_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -398,7 +398,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_return_current_state_for_empty_appeal_type() {
+    void should_return_current_state_for_empty_appeal_type() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -412,7 +412,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> feePaymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
@@ -430,7 +430,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -457,7 +457,7 @@ public class FeePaymentStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

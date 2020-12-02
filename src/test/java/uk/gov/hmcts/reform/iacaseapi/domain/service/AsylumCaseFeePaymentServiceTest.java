@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseFeePaymentServiceTest {
+class AsylumCaseFeePaymentServiceTest {
 
     private static final String ENDPOINT = "http://endpoint";
     private static final String ABOUT_TO_START_PATH = "/asylum/ccdAboutToStart";
@@ -47,7 +47,7 @@ public class AsylumCaseFeePaymentServiceTest {
     }
 
     @Test
-    public void should_delegate_callback_to_downstream_api() {
+    void should_delegate_callback_to_downstream_api() {
 
         final AsylumCase feePaymentAsylumCase = mock(AsylumCase.class);
 
@@ -63,7 +63,7 @@ public class AsylumCaseFeePaymentServiceTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseFeeApiPayment.aboutToSubmit(null))
             .hasMessage("callback must not be null")

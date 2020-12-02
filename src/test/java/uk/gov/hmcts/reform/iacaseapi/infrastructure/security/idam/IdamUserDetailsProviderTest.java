@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class IdamUserDetailsProviderTest {
+class IdamUserDetailsProviderTest {
 
     @Mock
     private AccessTokenProvider accessTokenProvider;
@@ -47,7 +47,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_call_idam_api_to_get_user_details() {
+    void should_call_idam_api_to_get_user_details() {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -91,7 +91,7 @@ public class IdamUserDetailsProviderTest {
         "caseworker-ia-legalrep-solicitor",
         "caseworker-ia-system"
     })
-    public void should_get_logged_in_with_a_valid_user_role(String roleName) {
+    void should_get_logged_in_with_a_valid_user_role(String roleName) {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -129,7 +129,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_get_logged_in_user_role_unknown() {
+    void should_get_logged_in_user_role_unknown() {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -151,7 +151,7 @@ public class IdamUserDetailsProviderTest {
         "caseworker-ia-respondentofficer", "caseworker-ia-homeofficeapc", "caseworker-ia-homeofficelart",
         "caseworker-ia-homeofficepou"
     })
-    public void should_get_logged_in_user_role_home_office_generic(String emailId) {
+    void should_get_logged_in_user_role_home_office_generic(String emailId) {
 
         String expectedAccessToken = "ABCDEFG";
         String expectedId = "1234";
@@ -168,7 +168,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_id_missing() {
+    void should_throw_exception_if_idam_id_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -191,7 +191,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_roles_missing() {
+    void should_throw_exception_if_idam_roles_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -214,7 +214,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_email_missing() {
+    void should_throw_exception_if_idam_email_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -237,7 +237,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_forename_missing() {
+    void should_throw_exception_if_idam_forename_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -260,7 +260,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_throw_exception_if_idam_surname_missing() {
+    void should_throw_exception_if_idam_surname_missing() {
 
         String accessToken = "ABCDEFG";
 
@@ -284,7 +284,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_wrap_server_exception_when_calling_idam() {
+    void should_wrap_server_exception_when_calling_idam() {
 
         String accessToken = "ABCDEFG";
 
@@ -301,7 +301,7 @@ public class IdamUserDetailsProviderTest {
     }
 
     @Test
-    public void should_wrap_client_exception_when_calling_idam() {
+    void should_wrap_client_exception_when_calling_idam() {
 
         String accessToken = "ABCDEFG";
 

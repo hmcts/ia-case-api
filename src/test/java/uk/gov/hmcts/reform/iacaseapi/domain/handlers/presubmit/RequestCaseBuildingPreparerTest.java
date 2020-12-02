@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class RequestCaseBuildingPreparerTest {
+class RequestCaseBuildingPreparerTest {
 
     private static final int DUE_IN_DAYS = 28;
     private static final int DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
@@ -66,7 +66,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
             "You have 28 days after the respondent’s bundle is provided, or 42 days after the Notice of Appeal, whichever is the later, to upload your Appeal Skeleton Argument and evidence";
@@ -104,7 +104,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actuall_handle() {
+    void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -116,7 +116,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -138,7 +138,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arugments() {
+    void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestCaseBuildingPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -157,7 +157,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void should_return_submission_date_plus_42_days_when_submission_date_is_2_days_ago() {
+    void should_return_submission_date_plus_42_days_when_submission_date_is_2_days_ago() {
 
         LocalDate submissionDateWithin42Days = LocalDate.now().minusDays(2);
 
@@ -174,7 +174,7 @@ public class RequestCaseBuildingPreparerTest {
     }
 
     @Test
-    public void should_return_current_date_plus_28_days_when_submission_date_is_20_days_ago() {
+    void should_return_current_date_plus_28_days_when_submission_date_is_20_days_ago() {
 
         LocalDate submissionDateWithin42Days = LocalDate.now().minusDays(20);
 

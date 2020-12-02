@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseCallbackApiDelegatorTest {
+class AsylumCaseCallbackApiDelegatorTest {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     private static final String ENDPOINT = "http://endpoint";
@@ -64,7 +64,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void should_call_document_api_to_generate_document() {
+    void should_call_document_api_to_generate_document() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";
@@ -113,7 +113,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseCallbackApiDelegator.delegate(null, ENDPOINT))
             .hasMessage("callback must not be null")
@@ -125,7 +125,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void wraps_http_server_exception_when_calling_documents_api() {
+    void wraps_http_server_exception_when_calling_documents_api() {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
         final String expectedServiceToken = "ABCDEFG";
@@ -149,7 +149,7 @@ public class AsylumCaseCallbackApiDelegatorTest {
     }
 
     @Test
-    public void wraps_http_client_exception_when_calling_documents_api() {
+    void wraps_http_client_exception_when_calling_documents_api() {
 
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
         final String expectedServiceToken = "ABCDEFG";

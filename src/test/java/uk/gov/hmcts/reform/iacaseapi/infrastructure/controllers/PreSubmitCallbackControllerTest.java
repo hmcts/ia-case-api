@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class PreSubmitCallbackControllerTest {
+class PreSubmitCallbackControllerTest {
 
     @Mock
     private PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
@@ -59,7 +59,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_about_to_start_callback_then_return_response() {
+    void should_dispatch_about_to_start_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -79,7 +79,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_about_to_submit_callback_then_return_response() {
+    void should_dispatch_about_to_submit_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -99,7 +99,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_mid_event_callback_then_return_response() {
+    void should_dispatch_mid_event_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -139,7 +139,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_callback_when_suspend_flag_is_true_and_event_is_not_submit_appeal() {
+    void should_dispatch_callback_when_suspend_flag_is_true_and_event_is_not_submit_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -162,7 +162,7 @@ public class PreSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_not_allow_null_constructor_arguments() {
+    void should_not_allow_null_constructor_arguments() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackController(null, featureToggler))
             .hasMessage("callbackDispatcher must not be null")

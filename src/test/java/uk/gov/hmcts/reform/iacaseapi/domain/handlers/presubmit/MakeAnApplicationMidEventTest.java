@@ -50,7 +50,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvid
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationMidEventTest {
+class MakeAnApplicationMidEventTest {
 
     @Mock
     private Callback callback;
@@ -90,7 +90,7 @@ public class MakeAnApplicationMidEventTest {
         "WITHDRAW",
         "OTHER"
     })
-    public void should_return_valid_make_an_application_types(String type) {
+    void should_return_valid_make_an_application_types(String type) {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -195,7 +195,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> makeAnApplicationMidEvent.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -207,7 +207,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> makeAnApplicationMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -228,7 +228,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestHearingRequirementsPreparerTest {
+class RequestHearingRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -44,7 +44,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_check_condition_for_hearing_requirements_is_no() {
+    void should_check_condition_for_hearing_requirements_is_no() {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -63,7 +63,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_check_condition_for_hearing_requirements_is_null() {
+    void should_check_condition_for_hearing_requirements_is_null() {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -81,7 +81,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_check_condition_for_hearing_requirements_is_yes() {
+    void should_check_condition_for_hearing_requirements_is_yes() {
 
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -99,7 +99,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> requestHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -114,7 +114,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -138,7 +138,7 @@ public class RequestHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

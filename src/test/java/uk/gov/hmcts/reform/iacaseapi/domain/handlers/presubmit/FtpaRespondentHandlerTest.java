@@ -63,7 +63,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaRespondentHandlerTest {
+class FtpaRespondentHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -108,7 +108,7 @@ public class FtpaRespondentHandlerTest {
     }
 
     @Test
-    public void should_append_all_documents_and_set_ll_flags() {
+    void should_append_all_documents_and_set_ll_flags() {
 
         List<DocumentWithMetadata> ftpaAppellantDocumentsWithMetadata =
             Arrays.asList(
@@ -175,7 +175,7 @@ public class FtpaRespondentHandlerTest {
     }
 
     @Test
-    public void should_not_set_out_of_time_flag() {
+    void should_not_set_out_of_time_flag() {
 
         List<DocumentWithMetadata> ftpaAppellantDocumentsWithMetadata =
             Arrays.asList(
@@ -226,7 +226,7 @@ public class FtpaRespondentHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaRespondentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -240,7 +240,7 @@ public class FtpaRespondentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -264,7 +264,7 @@ public class FtpaRespondentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaRespondentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

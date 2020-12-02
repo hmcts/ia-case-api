@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewUpdateHearingRequirementsHandlerTest {
+class ReviewUpdateHearingRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +52,7 @@ public class ReviewUpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_update_review_hearing_adjustments() {
+    void should_update_review_hearing_adjustments() {
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_HEARING_ADJUSTMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -78,7 +78,7 @@ public class ReviewUpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_throw_error_if_cannot_handle_callback() {
+    void should_throw_error_if_cannot_handle_callback() {
 
         assertThatThrownBy(
             () -> reviewUpdateHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -93,7 +93,7 @@ public class ReviewUpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -116,7 +116,7 @@ public class ReviewUpdateHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewUpdateHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

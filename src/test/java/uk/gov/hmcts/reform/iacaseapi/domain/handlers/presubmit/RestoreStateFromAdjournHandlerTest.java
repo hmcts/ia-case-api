@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RestoreStateFromAdjournHandlerTest {
+class RestoreStateFromAdjournHandlerTest {
 
     private final String listCaseHearingDate = "05/05/2020";
     @Mock
@@ -52,7 +52,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
+    void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESTORE_STATE_FROM_ADJOURN);
@@ -77,7 +77,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> restoreStateFromAdjournHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
@@ -87,7 +87,7 @@ public class RestoreStateFromAdjournHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -111,7 +111,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> restoreStateFromAdjournHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

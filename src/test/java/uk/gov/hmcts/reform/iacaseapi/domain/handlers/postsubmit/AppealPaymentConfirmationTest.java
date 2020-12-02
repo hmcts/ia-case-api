@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealPaymentConfirmationTest {
+class AppealPaymentConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -55,7 +55,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void should_return_payment_success_confirmation_when_payment_paid_when_appeal_started() {
+    void should_return_payment_success_confirmation_when_payment_paid_when_appeal_started() {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
 
@@ -81,7 +81,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void should_return_payment_success_confirmation_when_payment_paid_after_appeal_started() {
+    void should_return_payment_success_confirmation_when_payment_paid_after_appeal_started() {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
 
@@ -111,7 +111,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void should_return_payment_failed_confirmation_when_payment_failed() {
+    void should_return_payment_failed_confirmation_when_payment_failed() {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(FAILED));
         when(asylumCase.read(PAYMENT_ERROR_MESSAGE, String.class)).thenReturn(Optional.of("Your account is deleted"));
@@ -142,7 +142,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
@@ -152,7 +152,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -172,7 +172,7 @@ public class AppealPaymentConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealPaymentConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

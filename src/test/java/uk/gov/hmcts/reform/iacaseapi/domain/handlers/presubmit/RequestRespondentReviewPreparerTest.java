@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentReviewPreparerTest {
+class RequestRespondentReviewPreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
 
@@ -67,7 +67,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains = "You must respond to the Tribunal and tell them:";
         final Parties expectedParties = Parties.RESPONDENT;
@@ -113,7 +113,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -128,7 +128,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -152,7 +152,7 @@ public class RequestRespondentReviewPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestRespondentReviewPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeCaseStatusTest {
+class HomeOfficeCaseStatusTest {
     @Mock
     Person person;
     @Mock
@@ -27,7 +27,7 @@ public class HomeOfficeCaseStatusTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(homeOfficeCaseStatus);
         assertNotNull(homeOfficeCaseStatus.getPerson());
         assertNotNull(homeOfficeCaseStatus.getApplicationStatus());
@@ -36,7 +36,7 @@ public class HomeOfficeCaseStatusTest {
     }
 
     @Test
-    public void create_new_object_has_correct_values_for_display() {
+    void create_new_object_has_correct_values_for_display() {
         homeOfficeCaseStatus = new HomeOfficeCaseStatus(
             person, applicationStatus, "some-text", "some-text", "some-text", "some-text", "some-text", "some-text",
             "some-text", "some-text"

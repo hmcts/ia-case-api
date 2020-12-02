@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePayAndSubmitPreparerTest {
+class FeePayAndSubmitPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -46,7 +46,7 @@ public class FeePayAndSubmitPreparerTest {
     }
 
     @Test
-    public void should_throw_error_on_make_payment_for_paid_appeal() {
+    void should_throw_error_on_make_payment_for_paid_appeal() {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 
@@ -59,7 +59,7 @@ public class FeePayAndSubmitPreparerTest {
     }
 
     @Test
-    public void should_proceed_to_make_payment_for_paymentPending_appeal() {
+    void should_proceed_to_make_payment_for_paymentPending_appeal() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feePayAndSubmitPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -69,7 +69,7 @@ public class FeePayAndSubmitPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePayAndSubmitPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

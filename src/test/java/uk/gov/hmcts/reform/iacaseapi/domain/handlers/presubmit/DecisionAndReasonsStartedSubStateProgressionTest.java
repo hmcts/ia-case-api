@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecisionAndReasonsStartedSubStateProgressionTest {
+class DecisionAndReasonsStartedSubStateProgressionTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -47,7 +47,7 @@ public class DecisionAndReasonsStartedSubStateProgressionTest {
     }
 
     @Test
-    public void should_set_flag_decision_and_reasons_available_flag_to_no() {
+    void should_set_flag_decision_and_reasons_available_flag_to_no() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECISION_AND_REASONS_STARTED);
@@ -63,7 +63,7 @@ public class DecisionAndReasonsStartedSubStateProgressionTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> decisionAndReasonsStartSubStateProgression.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -78,7 +78,7 @@ public class DecisionAndReasonsStartedSubStateProgressionTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

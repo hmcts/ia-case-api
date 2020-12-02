@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher;
 
 @ExtendWith(MockitoExtension.class)
-public class PostSubmitCallbackControllerTest {
+class PostSubmitCallbackControllerTest {
 
     @Mock
     private PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
@@ -42,7 +42,7 @@ public class PostSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_dispatch_callback_then_return_response() {
+    void should_dispatch_callback_then_return_response() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -59,7 +59,7 @@ public class PostSubmitCallbackControllerTest {
     }
 
     @Test
-    public void should_not_allow_null_constructor_arguments() {
+    void should_not_allow_null_constructor_arguments() {
 
         assertThatThrownBy(() -> new PostSubmitCallbackController(null))
             .hasMessage("callbackDispatcher must not be null")

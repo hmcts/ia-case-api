@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionPartiesResolverTest {
+class DirectionPartiesResolverTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -40,7 +40,7 @@ public class DirectionPartiesResolverTest {
     }
 
     @Test
-    public void should_return_parties_for_send_direction_events() {
+    void should_return_parties_for_send_direction_events() {
 
         Parties expectedDirectionParties = Parties.BOTH;
 
@@ -79,7 +79,7 @@ public class DirectionPartiesResolverTest {
     }
 
     @Test
-    public void should_throw_when_callback_is_not_for_sending_a_direction() {
+    void should_throw_when_callback_is_not_for_sending_a_direction() {
 
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
 
@@ -89,7 +89,7 @@ public class DirectionPartiesResolverTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> directionPartiesResolver.resolve(null))
             .hasMessage("callback must not be null")

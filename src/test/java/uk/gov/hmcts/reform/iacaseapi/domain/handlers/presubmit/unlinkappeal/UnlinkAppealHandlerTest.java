@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UnlinkAppealHandlerTest {
+class UnlinkAppealHandlerTest {
 
     private final UnlinkAppealHandler unlinkAppealHandler = new UnlinkAppealHandler();
     @Mock
@@ -41,7 +41,7 @@ public class UnlinkAppealHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
+    void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
         boolean result = unlinkAppealHandler.canHandle(scenario.callbackStage, callback);
@@ -54,7 +54,7 @@ public class UnlinkAppealHandlerTest {
     }
 
     @Test
-    public void handle() {
+    void handle() {
         when(callback.getEvent()).thenReturn(Event.UNLINK_APPEAL);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -77,7 +77,7 @@ public class UnlinkAppealHandlerTest {
     }
 
     @Test
-    public void should_throw_exception() {
+    void should_throw_exception() {
 
         assertThatThrownBy(() -> unlinkAppealHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

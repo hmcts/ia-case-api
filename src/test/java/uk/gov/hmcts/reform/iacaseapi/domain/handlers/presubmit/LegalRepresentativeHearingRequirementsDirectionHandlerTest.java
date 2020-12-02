@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
+class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
 
@@ -75,7 +75,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void can_handle_submit_hearing_requirements_enabled() {
+    void can_handle_submit_hearing_requirements_enabled() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS);
 
@@ -93,7 +93,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    void should_append_new_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -135,7 +135,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    void should_add_new_direction_to_the_case_when_no_directions_exist() {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -183,7 +183,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -198,7 +198,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -223,7 +223,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> legalRepresentativeHearingRequirementsDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePayAndSubmitHandlerTest {
+class FeePayAndSubmitHandlerTest {
 
     @Mock
     private FeePayment<AsylumCase> feePayment;
@@ -44,7 +44,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void should_make_feePayment_and_update_the_case() {
+    void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
             Event.PAY_AND_SUBMIT_APPEAL
@@ -69,7 +69,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_fee_payment_not_enabled() {
+    void it_cannot_handle_callback_if_fee_payment_not_enabled() {
 
         FeePayAndSubmitHandler feePayAndSubmitHandlerWithDisabledPayment =
             new FeePayAndSubmitHandler(
@@ -84,7 +84,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> feePayAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -93,7 +93,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -117,7 +117,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feePayment_not_enabled() {
+    void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePayAndSubmitHandler =
             new FeePayAndSubmitHandler(false, feePayment);
@@ -137,7 +137,7 @@ public class FeePayAndSubmitHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePayAndSubmitHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

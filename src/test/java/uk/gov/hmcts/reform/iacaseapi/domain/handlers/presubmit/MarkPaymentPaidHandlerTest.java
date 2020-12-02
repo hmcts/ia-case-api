@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MarkPaymentPaidHandlerTest {
+class MarkPaymentPaidHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -56,7 +56,7 @@ public class MarkPaymentPaidHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"protection", "refusalOfEu", "refusalOfHumanRights"})
-    public void should_throw_error_if_payment_status_is_already_paid(String type) {
+    void should_throw_error_if_payment_status_is_already_paid(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -73,7 +73,7 @@ public class MarkPaymentPaidHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"deprivation", "revocationOfProtection"})
-    public void should_throw_error_for_non_payment_appeal(String type) {
+    void should_throw_error_for_non_payment_appeal(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -90,7 +90,7 @@ public class MarkPaymentPaidHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"protection"})
-    public void should_throw_error_for_pa_pay_later(String type) {
+    void should_throw_error_for_pa_pay_later(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -107,7 +107,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -116,7 +116,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -140,7 +140,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> markPaymentPaidHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

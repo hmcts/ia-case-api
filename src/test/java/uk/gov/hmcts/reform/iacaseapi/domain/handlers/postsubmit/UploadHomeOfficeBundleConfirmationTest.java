@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundleConfirmationTest {
+class UploadHomeOfficeBundleConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -29,7 +29,7 @@ public class UploadHomeOfficeBundleConfirmationTest {
         new UploadHomeOfficeBundleConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
 
@@ -50,7 +50,7 @@ public class UploadHomeOfficeBundleConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> hoUploadRespondentEvidenceConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -58,7 +58,7 @@ public class UploadHomeOfficeBundleConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -78,7 +78,7 @@ public class UploadHomeOfficeBundleConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> hoUploadRespondentEvidenceConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

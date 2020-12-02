@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UploadSensitiveDocsAboutToSubmitHandlerTest {
+class UploadSensitiveDocsAboutToSubmitHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -74,7 +74,7 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
+    void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
         boolean result = handler.canHandle(scenario.callbackStage, callback);
@@ -87,7 +87,7 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
     }
 
     @Test
-    public void handle() {
+    void handle() {
         mockCallback();
         mockAsylumCase();
         mockDocumentReceiver();
@@ -155,7 +155,7 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
     }
 
     @Test
-    public void should_throw_exception() {
+    void should_throw_exception() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

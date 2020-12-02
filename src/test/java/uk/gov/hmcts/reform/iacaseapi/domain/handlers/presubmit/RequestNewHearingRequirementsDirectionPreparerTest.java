@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestNewHearingRequirementsDirectionPreparerTest {
+class RequestNewHearingRequirementsDirectionPreparerTest {
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
     @Mock
@@ -63,7 +63,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void can_handle_request_hearing_requirements_feature() {
+    void can_handle_request_hearing_requirements_feature() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
@@ -82,7 +82,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
             "This appeal will be reheard. You should tell the Tribunal if the appellant’s hearing requirements have changed.\n\n"
@@ -117,7 +117,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void should_display_error_when_not_a_reheard_decision() {
+    void should_display_error_when_not_a_reheard_decision() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
@@ -135,7 +135,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -149,7 +149,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -189,7 +189,7 @@ public class RequestNewHearingRequirementsDirectionPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestNewHearingRequirementsDirectionPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

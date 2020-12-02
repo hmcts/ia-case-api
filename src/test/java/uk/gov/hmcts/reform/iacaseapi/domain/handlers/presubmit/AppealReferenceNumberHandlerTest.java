@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerat
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealReferenceNumberHandlerTest {
+class AppealReferenceNumberHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -70,12 +70,12 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void set_to_earliest() {
+    void set_to_earliest() {
         assertThat(appealReferenceNumberHandler.getDispatchPriority()).isEqualTo(EARLIEST);
     }
 
     @Test
-    public void should_set_draft_appeal_reference_when_appeal_started() {
+    void should_set_draft_appeal_reference_when_appeal_started() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
 
@@ -91,7 +91,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted() {
+    void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -113,7 +113,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted_and_paid() {
+    void should_set_next_appeal_reference_number_to_replace_draft_for_appeal_submitted_and_paid() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -135,7 +135,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
+    void should_set_next_appeal_reference_number_if_not_present_for_submit_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -157,7 +157,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_set_next_appeal_reference_number_if_not_present_for_pay_and_submit_appeal() {
+    void should_set_next_appeal_reference_number_if_not_present_for_pay_and_submit_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
 
@@ -179,7 +179,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_do_nothing_if_non_draft_number_already_present_for_submit_appeal() {
+    void should_do_nothing_if_non_draft_number_already_present_for_submit_appeal() {
 
         Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
@@ -193,7 +193,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_do_nothing_if_non_draft_number_already_present_for_pay_and_submit_appeal() {
+    void should_do_nothing_if_non_draft_number_already_present_for_pay_and_submit_appeal() {
 
         Optional<Object> appealReference = Optional.of("some-existing-reference-number");
 
@@ -207,7 +207,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -235,7 +235,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> appealReferenceNumberHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -243,7 +243,7 @@ public class AppealReferenceNumberHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealReferenceNumberHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

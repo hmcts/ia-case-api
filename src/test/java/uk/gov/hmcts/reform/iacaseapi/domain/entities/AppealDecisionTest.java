@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class AppealDecisionTest {
+class AppealDecisionTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals(AppealDecision.DISMISSED.toString(), AppealDecision.DISMISSED.getValue());
         assertEquals(AppealDecision.ALLOWED.toString(), AppealDecision.ALLOWED.getValue());
 
@@ -20,7 +20,7 @@ public class AppealDecisionTest {
     }
 
     @Test
-    public void should_throw_exception_when_name_unrecognised() {
+    void should_throw_exception_when_name_unrecognised() {
 
         assertThatThrownBy(() -> AppealDecision.from("unknown"))
             .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -29,7 +29,7 @@ public class AppealDecisionTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(2, AppealDecision.values().length);
     }
 

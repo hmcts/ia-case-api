@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PreviousRequirementsAndRequestsAppenderTest {
+class PreviousRequirementsAndRequestsAppenderTest {
 
     @Mock
     private IdValue<DocumentWithMetadata> existingPreviousRequirementsAndRequestsById1;
@@ -50,7 +50,7 @@ public class PreviousRequirementsAndRequestsAppenderTest {
         new PreviousRequirementsAndRequestsAppender();
 
     @Test
-    public void should_append_previous_hearing_in_first_position() {
+    void should_append_previous_hearing_in_first_position() {
 
         List<IdValue<DocumentWithMetadata>> existingPreviousRequirementsAndRequests =
             Arrays.asList(
@@ -86,7 +86,7 @@ public class PreviousRequirementsAndRequestsAppenderTest {
     }
 
     @Test
-    public void should_return_new_previous_requirements_and_requests_if_no_existing_previous_requirements_and_requests_present() {
+    void should_return_new_previous_requirements_and_requests_if_no_existing_previous_requirements_and_requests_present() {
 
         List<IdValue<DocumentWithMetadata>> existingDPreviousRequirementsAndRequests = Collections.emptyList();
 
@@ -102,7 +102,7 @@ public class PreviousRequirementsAndRequestsAppenderTest {
     }
 
     @Test
-    public void should_trim_hearing_requirements_and_requests_when_size_is_greater_than_one() {
+    void should_trim_hearing_requirements_and_requests_when_size_is_greater_than_one() {
 
         final List<IdValue<DocumentWithMetadata>> existingRequirementsAndRequests = asList(
             new IdValue<DocumentWithMetadata>(
@@ -165,7 +165,7 @@ public class PreviousRequirementsAndRequestsAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         List<IdValue<DocumentWithMetadata>> existingPreviousRequirementsAndRequests =
             Arrays.asList(existingPreviousRequirementsAndRequestsById1);

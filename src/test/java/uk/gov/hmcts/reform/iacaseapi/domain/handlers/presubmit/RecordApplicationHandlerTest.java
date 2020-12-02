@@ -68,7 +68,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordApplicationHandlerTest {
+class RecordApplicationHandlerTest {
 
     private final List<State> editListingStates = newArrayList(
         State.PREPARE_FOR_HEARING,
@@ -183,7 +183,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_append_new_application_to_existing_applications() {
+    void should_append_new_application_to_existing_applications() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -221,7 +221,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_time_extension() {
+    void should_add_new_flag_for_time_extension() {
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TIME_EXTENSION.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
         when(asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.empty());
@@ -234,7 +234,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_add_new_flag_for_time_extension_when_withdraw_exists() {
+    void should_not_add_new_flag_for_time_extension_when_withdraw_exists() {
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TIME_EXTENSION.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
         when(asylumCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
@@ -247,7 +247,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_edit_listing() {
+    void should_add_new_flag_for_edit_listing() {
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TRANSFER.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -261,7 +261,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_add_new_flag_for_edit_listing_when_withdraw_exists() {
+    void should_not_add_new_flag_for_edit_listing_when_withdraw_exists() {
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(TRANSFER.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -275,7 +275,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_withdraw_and_remove_other_flags() {
+    void should_add_new_flag_for_withdraw_and_remove_other_flags() {
 
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(WITHDRAW.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -290,7 +290,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_adjour_or_expedite() {
+    void should_add_new_flag_for_adjour_or_expedite() {
         when(caseDetails.getState()).thenReturn(State.PREPARE_FOR_HEARING);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(ADJOURN.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -303,7 +303,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_update_hearing_requirements_and_remove_other_flags() {
+    void should_add_new_flag_for_update_hearing_requirements_and_remove_other_flags() {
 
         when(callback.getCaseDetails().getState()).thenReturn(State.FINAL_BUNDLING);
         when(asylumCase.read(APPLICATION_TYPE, String.class))
@@ -318,7 +318,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_change_hearing_centre() {
+    void should_add_new_flag_for_change_hearing_centre() {
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.of(CHANGE_HEARING_CENTRE.toString()));
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.of(GRANTED.toString()));
@@ -331,7 +331,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_add_new_flag_for_edit_appeal_after_submit() {
+    void should_add_new_flag_for_edit_appeal_after_submit() {
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPLICATION_TYPE, String.class))
             .thenReturn(Optional.of(EDIT_APPEAL_AFTER_SUBMIT.toString()));
@@ -345,7 +345,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_return_client_error_when_application_type_does_not_suit_to_case_state() {
+    void should_return_client_error_when_application_type_does_not_suit_to_case_state() {
 
         for (ApplicationType type : ApplicationType.values()) {
 
@@ -382,7 +382,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_supplier_is_not_present() {
+    void should_throw_when_application_supplier_is_not_present() {
 
         when(asylumCase.read(APPLICATION_SUPPLIER, String.class)).thenReturn(Optional.empty());
 
@@ -392,7 +392,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_type_is_not_present() {
+    void should_throw_when_application_type_is_not_present() {
 
         when(asylumCase.read(APPLICATION_TYPE, String.class)).thenReturn(Optional.empty());
 
@@ -402,7 +402,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_reason_is_not_present() {
+    void should_throw_when_application_reason_is_not_present() {
 
         when(asylumCase.read(APPLICATION_REASON, String.class)).thenReturn(Optional.empty());
 
@@ -412,7 +412,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_date_is_not_present() {
+    void should_throw_when_application_date_is_not_present() {
 
         when(asylumCase.read(APPLICATION_DATE, String.class)).thenReturn(Optional.empty());
 
@@ -422,7 +422,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_decision_is_not_present() {
+    void should_throw_when_application_decision_is_not_present() {
 
         when(asylumCase.read(APPLICATION_DECISION, String.class)).thenReturn(Optional.empty());
 
@@ -432,7 +432,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_decision_reason_is_not_present() {
+    void should_throw_when_application_decision_reason_is_not_present() {
 
         when(asylumCase.read(APPLICATION_DECISION_REASON, String.class)).thenReturn(Optional.empty());
 
@@ -442,7 +442,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_throw_when_application_documents_is_not_present() {
+    void should_throw_when_application_documents_is_not_present() {
 
         when(asylumCase.read(APPLICATION_DOCUMENTS)).thenReturn(Optional.empty());
 
@@ -452,7 +452,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -465,7 +465,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -488,7 +488,7 @@ public class RecordApplicationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordApplicationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

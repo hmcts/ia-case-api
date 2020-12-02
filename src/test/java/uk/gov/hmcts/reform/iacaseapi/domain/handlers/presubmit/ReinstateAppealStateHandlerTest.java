@@ -44,7 +44,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReinstateAppealStateHandlerTest {
+class ReinstateAppealStateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -75,7 +75,7 @@ public class ReinstateAppealStateHandlerTest {
     }
 
     @Test
-    public void should_set_valid_state_before_end_appeal() {
+    void should_set_valid_state_before_end_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -99,7 +99,7 @@ public class ReinstateAppealStateHandlerTest {
 
 
     @Test
-    public void it_cannot_handle_callback_if_feature_not_enabled() {
+    void it_cannot_handle_callback_if_feature_not_enabled() {
 
         when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
         when(featureToggler.getValue("reinstate-feature", false)).thenReturn(false);
@@ -111,7 +111,7 @@ public class ReinstateAppealStateHandlerTest {
     }
 
     @Test
-    public void should_return_error_for_state_before_end_appeal_unknown() {
+    void should_return_error_for_state_before_end_appeal_unknown() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -126,7 +126,7 @@ public class ReinstateAppealStateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
@@ -135,7 +135,7 @@ public class ReinstateAppealStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -158,7 +158,7 @@ public class ReinstateAppealStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reinstateAppealStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-public class DocumentWithMetadataTest {
+class DocumentWithMetadataTest {
 
     private final Document document = mock(Document.class);
     private final String description = "Some evidence";
@@ -22,7 +22,7 @@ public class DocumentWithMetadataTest {
         );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(document, documentWithMetadata.getDocument());
         assertEquals(description, documentWithMetadata.getDescription());

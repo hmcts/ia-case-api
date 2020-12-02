@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AdvancedFinalBundlingStateHandlerTest {
+class AdvancedFinalBundlingStateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -71,7 +71,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_successfully_retain_the_current_state() {
+    void should_successfully_retain_the_current_state() {
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -86,7 +86,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_successfully_change_the_current_state_to_pre_hearing() {
+    void should_successfully_change_the_current_state_to_pre_hearing() {
 
         Bundle finishedBundle =
             new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("DONE"), Optional.empty(),
@@ -107,7 +107,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_not_present() {
+    void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
@@ -117,7 +117,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_bundle_is_empty() {
+    void should_throw_when_case_bundle_is_empty() {
 
         caseBundles.clear();
 
@@ -128,7 +128,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
@@ -141,7 +141,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -165,7 +165,7 @@ public class AdvancedFinalBundlingStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> advancedFinalBundlingStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

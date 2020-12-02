@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewTimeExtensionPreparerTest {
+class ReviewTimeExtensionPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -64,7 +64,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void preparer_review_time_extension_fields() {
+    void preparer_review_time_extension_fields() {
         IdValue<TimeExtension> extensionIdValue1 =
             new IdValue<>("1", new TimeExtension(null, "reasons1", State.APPEAL_SUBMITTED, IN_PROGRESS, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2",
@@ -100,7 +100,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void preparer_review_time_extension_fields_for_current_state() {
+    void preparer_review_time_extension_fields_for_current_state() {
         IdValue<TimeExtension> extensionIdValue1 =
             new IdValue<>("1", new TimeExtension("date1", "reasons1", State.APPEAL_SUBMITTED, SUBMITTED, emptyList()));
         IdValue<TimeExtension> extensionIdValue2 = new IdValue<>("2",
@@ -134,7 +134,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void gets_error_if_no_time_extension_request() {
+    void gets_error_if_no_time_extension_request() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -147,7 +147,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewTimeExtensionPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -160,7 +160,7 @@ public class ReviewTimeExtensionPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

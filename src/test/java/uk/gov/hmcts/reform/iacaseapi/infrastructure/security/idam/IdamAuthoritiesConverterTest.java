@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 
 
 @ExtendWith(MockitoExtension.class)
-public class IdamAuthoritiesConverterTest {
+class IdamAuthoritiesConverterTest {
 
     @Mock
     private org.springframework.security.oauth2.jwt.Jwt jwt;
@@ -40,7 +40,7 @@ public class IdamAuthoritiesConverterTest {
     private IdamAuthoritiesConverter idamAuthoritiesConverter;
 
     @Test
-    public void should_return_correct_granted_authority_collection() {
+    void should_return_correct_granted_authority_collection() {
 
         when(jwt.containsClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
@@ -64,7 +64,7 @@ public class IdamAuthoritiesConverterTest {
     }
 
     @Test
-    public void should_return_empty_list_when_token_is_missing() {
+    void should_return_empty_list_when_token_is_missing() {
 
         idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi);
 
@@ -72,7 +72,7 @@ public class IdamAuthoritiesConverterTest {
     }
 
     @Test
-    public void should_return_empty_list_when_user_info_does_not_contain_roles() {
+    void should_return_empty_list_when_user_info_does_not_contain_roles() {
 
         when(userInfo.getRoles()).thenReturn(Lists.newArrayList());
         when(idamApi.userInfo("Bearer " + tokenValue)).thenReturn(userInfo);
@@ -87,7 +87,7 @@ public class IdamAuthoritiesConverterTest {
     }
 
     @Test
-    public void should_throw_exception_when_auth_service_unavailable() {
+    void should_throw_exception_when_auth_service_unavailable() {
 
         when(idamApi.userInfo("Bearer " + tokenValue)).thenThrow(FeignException.class);
 

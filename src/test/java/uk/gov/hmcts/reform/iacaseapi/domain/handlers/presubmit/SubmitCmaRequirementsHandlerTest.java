@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SubmitCmaRequirementsHandlerTest {
+class SubmitCmaRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +52,7 @@ public class SubmitCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_additional_fields() {
+    void should_set_additional_fields() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             submitCmaRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -67,7 +67,7 @@ public class SubmitCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> submitCmaRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -75,7 +75,7 @@ public class SubmitCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -98,7 +98,7 @@ public class SubmitCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> submitCmaRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

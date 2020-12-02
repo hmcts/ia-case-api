@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class EditDocsAuditLogHandlerTest {
+class EditDocsAuditLogHandlerTest {
 
     @InjectMocks
     private EditDocsAuditLogHandler editDocsAuditLogHandler;
@@ -52,7 +52,7 @@ public class EditDocsAuditLogHandlerTest {
         "EDIT_DOCUMENTS, true",
         "SUBMIT_CLARIFYING_QUESTION_ANSWERS, false"
     })
-    public void canHandle(Event event, boolean expectedResult) {
+    void canHandle(Event event, boolean expectedResult) {
         when(callback.getEvent()).thenReturn(event);
 
         boolean actualResult = editDocsAuditLogHandler.canHandle(callback);
@@ -61,7 +61,7 @@ public class EditDocsAuditLogHandlerTest {
     }
 
     @Test
-    public void given_null_callback_should_throw_exception() {
+    void given_null_callback_should_throw_exception() {
         assertThrows(NullPointerException.class, () -> {
             editDocsAuditLogHandler.canHandle(null);
         });
@@ -69,7 +69,7 @@ public class EditDocsAuditLogHandlerTest {
 
 
     @Test
-    public void handle() {
+    void handle() {
         Logger fooLogger = (Logger) LoggerFactory.getLogger(EditDocsAuditLogHandler.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();

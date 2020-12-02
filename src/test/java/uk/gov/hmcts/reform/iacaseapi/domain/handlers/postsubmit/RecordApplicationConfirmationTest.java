@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordApplicationConfirmationTest {
+class RecordApplicationConfirmationTest {
 
     public static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
     @Mock
@@ -58,7 +58,7 @@ public class RecordApplicationConfirmationTest {
     private long caseId = 1234;
 
     @Test
-    public void should_return_confirmation_application_refused() {
+    void should_return_confirmation_application_refused() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -87,7 +87,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_edit_listing() {
+    void should_return_confirmation_application_edit_listing() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -116,7 +116,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_date() {
+    void should_return_confirmation_application_granted_change_date() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -146,7 +146,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_end_appeal() {
+    void should_return_confirmation_application_granted_end_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -175,7 +175,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_update_hearing_requirements() {
+    void should_return_confirmation_application_granted_update_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -206,7 +206,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_hearing_centre() {
+    void should_return_confirmation_application_granted_change_hearing_centre() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -236,7 +236,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_application_granted_edit_appeal_after_submit() {
+    void should_return_confirmation_application_granted_edit_appeal_after_submit() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -268,7 +268,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -276,7 +276,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -296,7 +296,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

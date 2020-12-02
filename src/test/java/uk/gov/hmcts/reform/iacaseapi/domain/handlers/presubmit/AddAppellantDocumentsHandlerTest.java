@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AddAppellantDocumentsHandlerTest {
+class AddAppellantDocumentsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -55,7 +55,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> addAppellantDocumentsHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -67,7 +67,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -91,7 +91,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> addAppellantDocumentsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -111,7 +111,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void addsReasonsForAppealEvidenceToAppellantEvidence() {
+    void addsReasonsForAppealEvidenceToAppellantEvidence() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -141,7 +141,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void addsClarifyQuestionsEvidenceToAppellantEvidence() {
+    void addsClarifyQuestionsEvidenceToAppellantEvidence() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -196,7 +196,7 @@ public class AddAppellantDocumentsHandlerTest {
     }
 
     @Test
-    public void donotAddAppellantDocumentsIfNoEvidenceHasBeenUploaded() {
+    void donotAddAppellantDocumentsIfNoEvidenceHasBeenUploaded() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);

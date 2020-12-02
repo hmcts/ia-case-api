@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentReviewHandlerTest {
+class RequestRespondentReviewHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +52,7 @@ public class RequestRespondentReviewHandlerTest {
     }
 
     @Test
-    public void should_prepare_ho_appeal_response_action_field() {
+    void should_prepare_ho_appeal_response_action_field() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
@@ -73,7 +73,7 @@ public class RequestRespondentReviewHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actual_handle() {
+    void handling_should_throw_if_cannot_actual_handle() {
         assertThatThrownBy(() -> requestRespondentReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -86,7 +86,7 @@ public class RequestRespondentReviewHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -108,7 +108,7 @@ public class RequestRespondentReviewHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> requestRespondentReviewHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

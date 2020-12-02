@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseSt
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeRequestHomeOfficeDataPreparerTest {
+class HomeOfficeRequestHomeOfficeDataPreparerTest {
 
     private static final String HOME_OFFICE_DATA_PRESENT_MESSAGE = "The Home Office data "
         + "has already been retrieved successfully "
@@ -55,7 +55,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void handler_checks_existing_home_office_data_returns_error_if_exists() {
+    void handler_checks_existing_home_office_data_returns_error_if_exists() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -78,7 +78,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void handler_checks_existing_home_office_case_data_returns_no_error_for_empty_case() {
+    void handler_checks_existing_home_office_case_data_returns_no_error_for_empty_case() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -98,7 +98,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void handler_checks_existing_home_office_data_returns_no_error_for_fail_status() {
+    void handler_checks_existing_home_office_data_returns_no_error_for_fail_status() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -118,7 +118,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -142,7 +142,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeDataPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -162,7 +162,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void handler_throws_error_if_cannot_actually_handle() {
+    void handler_throws_error_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> homeOfficeDataPreparer.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -176,7 +176,7 @@ public class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @Test
-    public void handler_throws_error_if_feature_not_enabled() {
+    void handler_throws_error_if_feature_not_enabled() {
 
         homeOfficeDataPreparer = new HomeOfficeRequestHomeOfficeDataPreparer(false);
 

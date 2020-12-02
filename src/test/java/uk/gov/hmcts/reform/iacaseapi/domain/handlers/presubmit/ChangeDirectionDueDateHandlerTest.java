@@ -55,7 +55,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ChangeDirectionDueDateHandlerTest {
+class ChangeDirectionDueDateHandlerTest {
 
     @Mock
     private DateProvider dateProvider;
@@ -107,7 +107,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
+    void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
 
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -189,7 +189,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeDirectionDueDateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -202,7 +202,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -226,7 +226,7 @@ public class ChangeDirectionDueDateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeDirectionDueDateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -247,7 +247,7 @@ public class ChangeDirectionDueDateHandlerTest {
 
     // remove when new CCD definitions are in Prod
     @Test
-    public void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes_deprecated_path() {
+    void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes_deprecated_path() {
 
         final List<IdValue<Direction>> existingDirections =
             Arrays.asList(

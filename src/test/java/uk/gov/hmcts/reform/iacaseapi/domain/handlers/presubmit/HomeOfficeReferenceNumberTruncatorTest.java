@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeReferenceNumberTruncatorTest {
+class HomeOfficeReferenceNumberTruncatorTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -46,7 +46,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
         new HomeOfficeReferenceNumberTruncator();
 
     @Test
-    public void should_truncate_home_office_reference_numbers_for_submit_appeal() {
+    void should_truncate_home_office_reference_numbers_for_submit_appeal() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
@@ -79,7 +79,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_truncate_home_office_reference_numbers_for_pay_and_submit_appeal() {
+    void should_truncate_home_office_reference_numbers_for_pay_and_submit_appeal() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap.<String, String>builder()
@@ -112,7 +112,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_touch_home_office_reference_numbers_that_are_not_too_long_for_submit_appeal() {
+    void should_not_touch_home_office_reference_numbers_that_are_not_too_long_for_submit_appeal() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap
@@ -142,7 +142,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_touch_home_office_reference_numbers_that_are_not_too_long_for_pay_and_submit_appeal() {
+    void should_not_touch_home_office_reference_numbers_that_are_not_too_long_for_pay_and_submit_appeal() {
 
         Map<String, String> exampleInputOutputs =
             ImmutableMap
@@ -172,7 +172,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_throw_when_home_office_reference_is_not_present_for_submit_appeal() {
+    void should_throw_when_home_office_reference_is_not_present_for_submit_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -186,7 +186,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_throw_when_home_office_reference_is_not_present_for_pay_and_submit_appeal() {
+    void should_throw_when_home_office_reference_is_not_present_for_pay_and_submit_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
@@ -200,7 +200,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(
             () -> homeOfficeReferenceNumberTruncator.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -214,7 +214,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -243,7 +243,7 @@ public class HomeOfficeReferenceNumberTruncatorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeReferenceNumberTruncator.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

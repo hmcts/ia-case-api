@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.UploadRespondent
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PostSubmitCallbackDispatcherTest {
+class PostSubmitCallbackDispatcherTest {
 
     @Mock
     private PostSubmitCallbackHandler<CaseData> handler1;
@@ -59,7 +59,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_dispatch_callback_to_first_eligible_handler_collecting_confirmation() {
+    void should_dispatch_callback_to_first_eligible_handler_collecting_confirmation() {
 
         Optional<String> expectedConfirmationHeader = Optional.of("header");
         Optional<String> expectedConfirmationBody = Optional.of("body");
@@ -90,7 +90,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_error_if_no_handlers_are_provided() {
+    void should_not_error_if_no_handlers_are_provided() {
 
         PostSubmitCallbackDispatcher<CaseData> postSubmitCallbackDispatcher =
             new PostSubmitCallbackDispatcher<>(Collections.emptyList());
@@ -110,7 +110,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_handlers() {
+    void should_not_allow_null_handlers() {
 
         assertThatThrownBy(() -> new PostSubmitCallbackDispatcher<>(null))
             .hasMessage("callbackHandlers must not be null")
@@ -118,7 +118,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> postSubmitCallbackDispatcher.handle(null))
             .hasMessage("callback must not be null")
@@ -126,7 +126,7 @@ public class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_sort_handlers_by_name() {
+    void should_sort_handlers_by_name() {
         PostSubmitCallbackHandler<AsylumCase> h1 = new AppealResponseAddedConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseConfirmation();
         PostSubmitCallbackHandler<AsylumCase> h3 = new GenerateHearingBundleConfirmation();

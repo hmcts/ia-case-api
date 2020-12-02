@@ -34,13 +34,13 @@ class SpringAuthorizedRolesProviderTest {
     }
 
     @Test
-    public void should_return_empty_list_when_authentication_is_null() {
+    void should_return_empty_list_when_authentication_is_null() {
 
         assertEquals(Collections.emptySet(), authorizedRolesProvider.getRoles());
     }
 
     @Test
-    public void should_return_empty_list_when_authorities_are_empty_null() {
+    void should_return_empty_list_when_authorities_are_empty_null() {
 
         when(securityContext.getAuthentication()).thenReturn(authentication);
         assertEquals(Collections.emptySet(), authorizedRolesProvider.getRoles());
@@ -48,7 +48,7 @@ class SpringAuthorizedRolesProviderTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void should_return_empty_list_when_authorities_return_some_roles() {
+    void should_return_empty_list_when_authorities_return_some_roles() {
         List grantedAuthorities =
             Lists.newArrayList(new SimpleGrantedAuthority("ccd-role"), new SimpleGrantedAuthority("ccd-admin"));
         when(authentication.getAuthorities()).thenReturn(grantedAuthorities);

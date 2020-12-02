@@ -49,7 +49,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeCaseValidateHandlerTest {
+class HomeOfficeCaseValidateHandlerTest {
 
     @Mock
     private HomeOfficeApi<AsylumCase> homeOfficeApi;
@@ -75,7 +75,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     }
 
     @Test
-    public void should_call_home_office_api_and_update_the_case() {
+    void should_call_home_office_api_and_update_the_case() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
@@ -113,7 +113,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -140,7 +140,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeCaseValidateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -160,7 +160,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     }
 
     @Test
-    public void handler_throws_error_if_cannot_actually_handle() {
+    void handler_throws_error_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -174,7 +174,7 @@ public class HomeOfficeCaseValidateHandlerTest {
     }
 
     @Test
-    public void handler_throws_error_if_feature_not_enabled() {
+    void handler_throws_error_if_feature_not_enabled() {
 
         homeOfficeCaseValidateHandler = new HomeOfficeCaseValidateHandler(
             false,

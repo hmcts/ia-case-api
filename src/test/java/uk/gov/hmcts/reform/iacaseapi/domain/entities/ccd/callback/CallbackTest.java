@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CallbackTest {
+class CallbackTest {
 
     private final Event event = Event.START_APPEAL;
     private final Optional<CaseDetails<CaseData>> caseDetailsBefore = Optional.empty();
@@ -37,7 +37,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(caseDetails, callback.getCaseDetails());
         assertEquals(caseDetailsBefore, callback.getCaseDetailsBefore());
@@ -45,7 +45,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_not_allow_null_values_when_required_if_using_reflection() throws Exception {
+    void should_not_allow_null_values_when_required_if_using_reflection() throws Exception {
 
         Class<?> clazz = Class.forName(Callback.class.getName());
         Optional<Constructor<?>> constructorOpt = Stream.of(clazz.getDeclaredConstructors())
@@ -65,7 +65,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_not_allow_null_values_in_constructor() {
+    void should_not_allow_null_values_in_constructor() {
 
         assertThatThrownBy(() -> new Callback<>(null, caseDetailsBefore, event))
             .isExactlyInstanceOf(NullPointerException.class);

@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeReferenceFormatterTest {
+class HomeOfficeReferenceFormatterTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,7 +52,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void should_zero_pad_ho_ref_number_less_than_9_digits() {
+    void should_zero_pad_ho_ref_number_less_than_9_digits() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         final String hoReference = "12345";
@@ -68,7 +68,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void should_retain_existing_valid_ho_ref_number_equal_to_9_digits() {
+    void should_retain_existing_valid_ho_ref_number_equal_to_9_digits() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         final String hoReference = "123456789";
@@ -84,7 +84,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void should_retain_existing_zero_pads_ho_ref_number_without_overwriting() {
+    void should_retain_existing_zero_pads_ho_ref_number_without_overwriting() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         final String hoReference = "000456789";
@@ -100,7 +100,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void should_retain_any_zero_pads_and_pad_the_rest_of_ho_reference() {
+    void should_retain_any_zero_pads_and_pad_the_rest_of_ho_reference() {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         final String hoReference = "006789";
@@ -116,7 +116,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> homeOfficeReferenceFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -129,7 +129,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -153,7 +153,7 @@ public class HomeOfficeReferenceFormatterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeReferenceFormatter.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

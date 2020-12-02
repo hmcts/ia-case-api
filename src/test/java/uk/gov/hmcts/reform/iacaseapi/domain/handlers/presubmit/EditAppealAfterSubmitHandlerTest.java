@@ -49,7 +49,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class EditAppealAfterSubmitHandlerTest {
+class EditAppealAfterSubmitHandlerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
@@ -99,7 +99,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
@@ -126,7 +126,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
@@ -151,7 +151,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_submission_out_of_time_when_out_of_time_mid_event() {
+    void should_set_submission_out_of_time_when_out_of_time_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
@@ -166,7 +166,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_submission_in_time_mid_event() {
+    void should_set_submission_in_time_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
@@ -183,7 +183,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -191,7 +191,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_missing_home_office_decision_date() {
+    void handling_should_throw_if_missing_home_office_decision_date() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .hasMessage("homeOfficeDecisionDate is missing")
@@ -204,7 +204,7 @@ public class EditAppealAfterSubmitHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -229,7 +229,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -52,7 +52,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AddAppealResponseHandlerTest {
+class AddAppealResponseHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -97,12 +97,12 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_be_handled_early() {
+    void should_be_handled_early() {
         assertEquals(DispatchPriority.EARLY, addAppealResponseHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_append_appeal_response_to_respondent_documents_for_the_case() {
+    void should_append_appeal_response_to_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -166,7 +166,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -241,7 +241,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_response_document_is_not_present() {
+    void should_throw_when_appeal_response_document_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
@@ -255,7 +255,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> addAppealResponseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -268,7 +268,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -292,7 +292,7 @@ public class AddAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> addAppealResponseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

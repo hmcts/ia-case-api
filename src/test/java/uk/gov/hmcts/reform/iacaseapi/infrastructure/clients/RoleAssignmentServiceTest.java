@@ -23,10 +23,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 
-public class RoleAssignmentServiceTest {
+class RoleAssignmentServiceTest {
 
     @Test
-    public void createsCaseRole() {
+    void createsCaseRole() {
         AuthTokenGenerator authTokenGenerator = mock(AuthTokenGenerator.class);
         String serviceToken = "serviceToken";
         when(authTokenGenerator.generate()).thenReturn(serviceToken);

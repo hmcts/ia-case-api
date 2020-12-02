@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePaymentPreparerTest {
+class FeePaymentPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -71,7 +71,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+    void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeePaymentPreparer feePaymentPreparerWithDisabledPayment =
             new FeePaymentPreparer(
@@ -87,7 +87,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -115,7 +115,7 @@ public class FeePaymentPreparerTest {
     @EnumSource(value = Event.class, names = {
         "START_APPEAL", "EDIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL"
     })
-    public void should_write_feePaymentEnabled(Event event) {
+    void should_write_feePaymentEnabled(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -134,7 +134,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_throw_for_remission_invalid_event_pay_and_submit_event() {
+    void should_throw_for_remission_invalid_event_pay_and_submit_event() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -152,7 +152,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -160,7 +160,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -182,7 +182,7 @@ public class FeePaymentPreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    public void should_error_on_pay_and_submit_for_pay_offline(String type) {
+    void should_error_on_pay_and_submit_for_pay_offline(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -204,7 +204,7 @@ public class FeePaymentPreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    public void should_error_on_duplicate_payment_for_pay_and_submit(String type) {
+    void should_error_on_duplicate_payment_for_pay_and_submit(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -227,7 +227,7 @@ public class FeePaymentPreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
-    public void should_error_on_duplicate_payment_for_make_a_payment(String type) {
+    void should_error_on_duplicate_payment_for_make_a_payment(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -247,7 +247,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_error_on_pay_later_in_appeal_started_state_pay_and_submit() {
+    void should_error_on_pay_later_in_appeal_started_state_pay_and_submit() {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -267,7 +267,7 @@ public class FeePaymentPreparerTest {
     }
 
     @Test
-    public void should_error_on_pay_later_in_appeal_started_state_make_payment() {
+    void should_error_on_pay_later_in_appeal_started_state_make_payment() {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -288,7 +288,7 @@ public class FeePaymentPreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"deprivation", "revocationOfProtection"})
-    public void should_error_on_pay_and_submit_for_non_payment_appeal(String type) {
+    void should_error_on_pay_and_submit_for_non_payment_appeal(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -307,7 +307,7 @@ public class FeePaymentPreparerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"deprivation", "revocationOfProtection"})
-    public void should_error_on_make_a_payment_for_non_payment_appeal(String type) {
+    void should_error_on_make_a_payment_for_non_payment_appeal(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

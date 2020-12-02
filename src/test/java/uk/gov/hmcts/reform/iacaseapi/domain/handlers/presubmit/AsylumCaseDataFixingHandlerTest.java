@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseDataFixingHandlerTest {
+class AsylumCaseDataFixingHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -50,12 +50,12 @@ public class AsylumCaseDataFixingHandlerTest {
     }
 
     @Test
-    public void set_to_earliest() {
+    void set_to_earliest() {
         assertThat(asylumCaseDataFixingHandler.getDispatchPriority()).isEqualTo(EARLIEST);
     }
 
     @Test
-    public void calls_all_fixers() {
+    void calls_all_fixers() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -66,7 +66,7 @@ public class AsylumCaseDataFixingHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

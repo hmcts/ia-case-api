@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class MakeAnApplicationTypesTest {
+class MakeAnApplicationTypesTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("Adjourn", MakeAnApplicationTypes.ADJOURN.toString());
         assertEquals("Expedite", MakeAnApplicationTypes.EXPEDITE.toString());
         assertEquals("Link/unlink appeals", MakeAnApplicationTypes.LINK_OR_UNLINK.toString());
@@ -22,7 +22,7 @@ public class MakeAnApplicationTypesTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(11, MakeAnApplicationTypes.values().length);
     }
 }

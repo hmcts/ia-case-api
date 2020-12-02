@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestCaseEditPreparerTest {
+class RequestCaseEditPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -47,7 +47,7 @@ public class RequestCaseEditPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_parties_field() {
+    void should_prepare_send_direction_parties_field() {
 
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
 
@@ -65,7 +65,7 @@ public class RequestCaseEditPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestCaseEditPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -78,7 +78,7 @@ public class RequestCaseEditPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -102,7 +102,7 @@ public class RequestCaseEditPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestCaseEditPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

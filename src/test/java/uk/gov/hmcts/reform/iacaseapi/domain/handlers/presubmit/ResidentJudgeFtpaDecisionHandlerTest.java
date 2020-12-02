@@ -81,7 +81,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FtpaDisplayService;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ResidentJudgeFtpaDecisionHandlerTest {
+class ResidentJudgeFtpaDecisionHandlerTest {
 
     @Mock
     List<IdValue<DocumentWithDescription>> maybeFtpaDecisionAndReasonsDocument;
@@ -130,7 +130,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_appellant_decision_documents() {
+    void should_append_all_ftpa_appellant_decision_documents() {
 
         List<DocumentWithMetadata> ftpaAppellantDecisionAndReasonsDocument =
             Arrays.asList(
@@ -193,7 +193,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_append_all_ftpa_respondent_decision_documents() {
+    void should_append_all_ftpa_respondent_decision_documents() {
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -258,7 +258,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_setup_appeal_field_on_remedy_rule_32() {
+    void should_setup_appeal_field_on_remedy_rule_32() {
 
         List<DocumentWithMetadata> ftpaRespondentDecisionAndReasonsDocument =
             Arrays.asList(
@@ -299,7 +299,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_applicant_type_missing() {
+    void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -311,7 +311,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_decision_outcome_type_missing() {
+    void should_throw_if_ftpa_decision_outcome_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -324,7 +324,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> residentJudgeFtpaDecisionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -340,7 +340,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -364,7 +364,7 @@ public class ResidentJudgeFtpaDecisionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

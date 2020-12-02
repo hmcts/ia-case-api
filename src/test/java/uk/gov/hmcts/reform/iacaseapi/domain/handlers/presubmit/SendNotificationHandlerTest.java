@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendNotificationHandlerTest {
+class SendNotificationHandlerTest {
 
     @Mock
     private NotificationSender<AsylumCase> notificationSender;
@@ -48,7 +48,7 @@ public class SendNotificationHandlerTest {
     }
 
     @Test
-    public void should_send_notification_and_update_the_case() {
+    void should_send_notification_and_update_the_case() {
 
         Arrays.asList(
             Event.SUBMIT_APPEAL,
@@ -132,7 +132,7 @@ public class SendNotificationHandlerTest {
     }
 
     @Test
-    public void should_notify_case_officer_that_case_is_listed() {
+    void should_notify_case_officer_that_case_is_listed() {
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
 
@@ -153,12 +153,12 @@ public class SendNotificationHandlerTest {
     }
 
     @Test
-    public void should_be_handled_at_latest_point() {
+    void should_be_handled_at_latest_point() {
         assertEquals(DispatchPriority.LATEST, sendNotificationHandler.getDispatchPriority());
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -171,7 +171,7 @@ public class SendNotificationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -259,7 +259,7 @@ public class SendNotificationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> sendNotificationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

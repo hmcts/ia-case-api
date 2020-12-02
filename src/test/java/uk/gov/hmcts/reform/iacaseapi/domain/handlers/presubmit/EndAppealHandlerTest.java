@@ -52,7 +52,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class EndAppealHandlerTest {
+class EndAppealHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -93,13 +93,13 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_be_set_on_early() {
+    void should_be_set_on_early() {
 
         assertEquals(DispatchPriority.EARLY, endAppealHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_set_end_appeal_date_as_now_and_visibility_flags() {
+    void should_set_end_appeal_date_as_now_and_visibility_flags() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -116,7 +116,7 @@ public class EndAppealHandlerTest {
 
 
     @Test
-    public void should_set_state_before_end_appeal() {
+    void should_set_state_before_end_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -135,7 +135,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_throw_exception_if_previous_state_not_found() {
+    void should_throw_exception_if_previous_state_not_found() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback
@@ -149,7 +149,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -157,7 +157,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -180,7 +180,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> endAppealHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -200,7 +200,7 @@ public class EndAppealHandlerTest {
     }
 
     @Test
-    public void should_handle_withdraw_and_set_application_status_to_completed() {
+    void should_handle_withdraw_and_set_application_status_to_completed() {
 
         List<IdValue<Application>> expectedApplications = newArrayList(new IdValue<>("1", new Application(
             Collections.emptyList(),

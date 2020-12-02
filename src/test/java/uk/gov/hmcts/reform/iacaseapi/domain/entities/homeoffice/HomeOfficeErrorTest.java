@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class HomeOfficeErrorTest {
+class HomeOfficeErrorTest {
 
     private HomeOfficeError error;
 
@@ -21,7 +21,7 @@ public class HomeOfficeErrorTest {
     }
 
     @Test
-    public void has_correct_values_after_setting() {
+    void has_correct_values_after_setting() {
         assertNotNull(error);
         assertEquals("1100", error.getErrorCode());
         assertEquals("some-error", error.getMessageText());

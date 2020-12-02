@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class RemoveFlagPreparerTest {
+class RemoveFlagPreparerTest {
 
     private final CaseFlag expectedCaseFlag =
         new CaseFlag(CaseFlagType.COMPLEX_CASE, "some complex flag additional info");
@@ -66,7 +66,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_set_available_flags_to_remove() {
+    void should_set_available_flags_to_remove() {
 
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
@@ -89,7 +89,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_throw_error_when_no_case_flags_present() {
+    void should_throw_error_when_no_case_flags_present() {
 
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
@@ -111,7 +111,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_get_existing_case_flag_elements_as_list() {
+    void should_get_existing_case_flag_elements_as_list() {
 
         final List<Value> actualList = removeFlagPreparer.getExistingCaseFlagListElements(expectedList);
         assertEquals(1, actualList.size());
@@ -119,7 +119,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void creates_dynamic_list_from_element_list() {
+    void creates_dynamic_list_from_element_list() {
         final List<Value> expectedElements = Optional.of(expectedList)
             .orElse(Collections.emptyList())
             .stream()
@@ -133,7 +133,7 @@ public class RemoveFlagPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeFlagPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -162,7 +162,7 @@ public class RemoveFlagPreparerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

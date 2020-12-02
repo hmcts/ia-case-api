@@ -45,7 +45,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class BuildCaseHandlerTest {
+class BuildCaseHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -90,7 +90,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void should_append_case_argument_to_legal_representative_documents_for_the_case() {
+    void should_append_case_argument_to_legal_representative_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> caseArgumentEvidence =
             Arrays.asList(
@@ -156,7 +156,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void should_add_case_argument_to_the_case_when_no_legal_representative_documents_exist() {
+    void should_add_case_argument_to_the_case_when_no_legal_representative_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> caseArgumentEvidence =
             Arrays.asList(
@@ -228,7 +228,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_argument_document_is_not_present() {
+    void should_throw_when_case_argument_document_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
@@ -242,7 +242,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> buildCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -255,7 +255,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -279,7 +279,7 @@ public class BuildCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> buildCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

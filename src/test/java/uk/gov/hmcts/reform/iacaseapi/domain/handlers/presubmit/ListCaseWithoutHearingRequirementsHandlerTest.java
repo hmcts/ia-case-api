@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndReque
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ListCaseWithoutHearingRequirementsHandlerTest {
+class ListCaseWithoutHearingRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -73,7 +73,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_set_witness_count_and_available_fields() {
+    void should_set_witness_count_and_available_fields() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -90,7 +90,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -99,7 +99,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_clear_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_exists() {
+    void should_clear_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_exists() {
 
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
@@ -123,7 +123,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_hold_on_to_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_does_not_exist() {
+    void should_hold_on_to_previous_attendance_and_duration_fields_when_set_aside_reheard_flag_does_not_exist() {
 
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -146,7 +146,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
+    void should_hold_on_to_previous_attendance_and_duration_fields_when_feature_flag_disabled() {
 
         listCaseWithoutHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -167,7 +167,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -191,7 +191,7 @@ public class ListCaseWithoutHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> listCaseWithoutHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UploadDecisionLetterHandlerTest {
+class UploadDecisionLetterHandlerTest {
 
     private final Document someDoc = new Document(
         "some url",
@@ -78,7 +78,7 @@ public class UploadDecisionLetterHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
-    public void canHandle(TestScenario scenario) {
+    void canHandle(TestScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.getEvent());
         given(asylumCase.read(
             eq(AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT), eq(Document.class)))
@@ -95,7 +95,7 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    public void handle() {
+    void handle() {
         given(documentReceiver.receive(any(Document.class), anyString(), eq(HO_DECISION_LETTER)))
             .willReturn(newLegalRepDoc);
 
@@ -114,7 +114,7 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -134,7 +134,7 @@ public class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

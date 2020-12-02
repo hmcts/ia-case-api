@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SubmitCasePreparerTest {
+class SubmitCasePreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -45,7 +45,7 @@ public class SubmitCasePreparerTest {
     }
 
     @Test
-    public void should_perform_submit_case_whith_out_build_case() {
+    void should_perform_submit_case_whith_out_build_case() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_CASE);
@@ -65,7 +65,7 @@ public class SubmitCasePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> submitCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -77,7 +77,7 @@ public class SubmitCasePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -101,7 +101,7 @@ public class SubmitCasePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> submitCasePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

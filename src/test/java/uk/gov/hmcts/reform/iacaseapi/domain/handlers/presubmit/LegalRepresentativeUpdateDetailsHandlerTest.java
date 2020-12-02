@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeUpdateDetailsHandlerTest {
+class LegalRepresentativeUpdateDetailsHandlerTest {
 
     private final String legalRepName = "John Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
@@ -65,7 +65,7 @@ public class LegalRepresentativeUpdateDetailsHandlerTest {
     }
 
     @Test
-    public void prepare_fields_test() {
+    void prepare_fields_test() {
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             legalRepresentativeUpdateDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -87,7 +87,7 @@ public class LegalRepresentativeUpdateDetailsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> legalRepresentativeUpdateDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -96,7 +96,7 @@ public class LegalRepresentativeUpdateDetailsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
@@ -117,7 +117,7 @@ public class LegalRepresentativeUpdateDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> legalRepresentativeUpdateDetailsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

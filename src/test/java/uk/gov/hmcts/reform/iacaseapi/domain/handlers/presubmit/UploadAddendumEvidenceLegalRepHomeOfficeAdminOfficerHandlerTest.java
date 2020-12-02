@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
+class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -89,7 +89,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_ho() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_ho() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -100,7 +100,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_legal_rep() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_legal_rep() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -111,7 +111,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_admin_officer() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case_admin_officer() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER);
         when(asylumCase.read(IS_APPELLANT_RESPONDENT)).thenReturn(Optional.of("The appellant"));
@@ -126,7 +126,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_ho() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_ho() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -137,7 +137,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_legal_rep() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_legal_rep() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -148,7 +148,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_admin_officer() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist_admin_officer() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER);
         when(asylumCase.read(IS_APPELLANT_RESPONDENT)).thenReturn(Optional.of("The appellant"));
@@ -160,7 +160,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(asylumCase.read(ADDENDUM_EVIDENCE)).thenReturn(Optional.empty());
 
@@ -171,7 +171,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -186,7 +186,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -213,7 +213,7 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

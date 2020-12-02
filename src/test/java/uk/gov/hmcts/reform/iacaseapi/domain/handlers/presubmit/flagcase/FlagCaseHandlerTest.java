@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class FlagCaseHandlerTest {
+class FlagCaseHandlerTest {
 
     private final String additionalInformation = "some additional information";
     @Mock
@@ -81,7 +81,7 @@ public class FlagCaseHandlerTest {
         "UNACCOMPANIED_MINOR, CASE_FLAG_UNACCOMPANIED_MINOR_EXISTS, CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION",
         "SET_ASIDE_REHEARD, CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION"
     })
-    public void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
+    void given_flag_type_should_set_correct_flag(CaseFlagType caseFlagType,
                                                         AsylumCaseFieldDefinition caseFlagExists,
                                                         AsylumCaseFieldDefinition caseFlagAdditionalInformation) {
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
@@ -106,7 +106,7 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void does_not_set_any_flags_when_bad_flag_given() {
+    void does_not_set_any_flags_when_bad_flag_given() {
 
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
         final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
@@ -133,7 +133,7 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void should_set_feature_flag_to_yes_when_set_aside_reheard_flag_given() {
+    void should_set_feature_flag_to_yes_when_set_aside_reheard_flag_given() {
 
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
         final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
@@ -161,7 +161,7 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void should_set_feature_flag_to_no_when_set_aside_reheard_flag_given() {
+    void should_set_feature_flag_to_no_when_set_aside_reheard_flag_given() {
 
         final List<IdValue<CaseFlag>> existingCaseFlags = new ArrayList<>();
         final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
@@ -189,7 +189,7 @@ public class FlagCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> flagCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -57,7 +57,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousHearingAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestNewHearingRequirementsDirectionHandlerTest {
+class RequestNewHearingRequirementsDirectionHandlerTest {
 
     private static final int HEARING_REQUIREMENTS_DUE_IN_DAYS = 5;
     @Mock
@@ -91,7 +91,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void can_handle_request_new_hearing_requirements() {
+    void can_handle_request_new_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.REQUEST_NEW_HEARING_REQUIREMENTS);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
@@ -112,7 +112,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    void should_append_new_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -188,7 +188,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestNewHearingRequirementsDirectionHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -202,7 +202,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -242,7 +242,7 @@ public class RequestNewHearingRequirementsDirectionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestNewHearingRequirementsDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

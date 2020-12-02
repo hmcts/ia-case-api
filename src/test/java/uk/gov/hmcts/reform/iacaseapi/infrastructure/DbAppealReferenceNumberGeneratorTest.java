@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DbAppealReferenceNumberGeneratorTest {
+class DbAppealReferenceNumberGeneratorTest {
 
     private static final int SEQUENCE_SEED = 50000;
     private final long caseId = 123;
@@ -78,7 +78,7 @@ public class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void should_call_db_to_generate_new_appeal_reference_number() {
+    void should_call_db_to_generate_new_appeal_reference_number() {
 
         String appealReferenceNumber =
             dbAppealReferenceNumberGenerator.generate(caseId, appealType);
@@ -125,7 +125,7 @@ public class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void should_return_existing_appeal_reference_number_already_when_exists() {
+    void should_return_existing_appeal_reference_number_already_when_exists() {
 
         when(jdbcTemplate.update(
             and(
@@ -142,7 +142,7 @@ public class DbAppealReferenceNumberGeneratorTest {
     }
 
     @Test
-    public void should_throw_when_appeal_reference_number_for_case_not_found() {
+    void should_throw_when_appeal_reference_number_for_case_not_found() {
 
         when(jdbcTemplate.queryForObject(
             and(

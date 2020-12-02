@@ -51,7 +51,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FeePaymentHandlerTest {
+class FeePaymentHandlerTest {
 
     @Mock
     private FeePayment<AsylumCase> feePayment;
@@ -72,7 +72,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_make_feePayment_and_update_the_case() {
+    void should_make_feePayment_and_update_the_case() {
 
         Arrays.asList(
             Event.PAYMENT_APPEAL
@@ -99,7 +99,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_clear_other_when_pa_offline_payment() {
+    void should_clear_other_when_pa_offline_payment() {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -135,7 +135,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_clear_other_when_hu_offline_payment() {
+    void should_clear_other_when_hu_offline_payment() {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -164,7 +164,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_clear_other_when_ea_offline_payment() {
+    void should_clear_other_when_ea_offline_payment() {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -194,7 +194,7 @@ public class FeePaymentHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"DC", "RP"})
-    public void should_clear_all_payment_details_for_non_payment_appeal_type(String type) {
+    void should_clear_all_payment_details_for_non_payment_appeal_type(String type) {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -234,7 +234,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_return_remission_for_asylum_support() {
+    void should_return_remission_for_asylum_support() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -260,7 +260,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_return_remission_for_legal_aid() {
+    void should_return_remission_for_legal_aid() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -287,7 +287,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_not_return_remission_for_remissions_not_enabled() {
+    void should_not_return_remission_for_remissions_not_enabled() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -313,7 +313,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feepayment_not_enabled() {
+    void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
         FeePaymentHandler feePaymentHandlerWithDisabledPayment =
             new FeePaymentHandler(
@@ -328,7 +328,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -341,7 +341,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -367,7 +367,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_feePayment_not_enabled() {
+    void it_cannot_handle_callback_if_feePayment_not_enabled() {
 
         feePaymentHandler =
             new FeePaymentHandler(false, feePayment);
@@ -387,7 +387,7 @@ public class FeePaymentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> feePaymentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -417,7 +417,7 @@ public class FeePaymentHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"DC", "RP"})
-    public void should_throw_for_missing_appeal_hearing_option(String type) {
+    void should_throw_for_missing_appeal_hearing_option(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

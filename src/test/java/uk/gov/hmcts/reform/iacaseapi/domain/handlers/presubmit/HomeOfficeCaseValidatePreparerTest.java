@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeCaseValidatePreparerTest {
+class HomeOfficeCaseValidatePreparerTest {
 
     private HomeOfficeCaseValidatePreparer homeOfficeCaseValidatePreparer;
 
@@ -49,7 +49,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    public void handler_checks_home_office_integration_enabled_returns_yes() {
+    void handler_checks_home_office_integration_enabled_returns_yes() {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -68,7 +68,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    public void handler_checks_home_office_integration_disabled_returns_no() {
+    void handler_checks_home_office_integration_disabled_returns_no() {
 
         homeOfficeCaseValidatePreparer = new HomeOfficeCaseValidatePreparer(false);
 
@@ -88,7 +88,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -115,7 +115,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeCaseValidatePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -135,7 +135,7 @@ public class HomeOfficeCaseValidatePreparerTest {
     }
 
     @Test
-    public void handler_throws_error_if_cannot_actually_handle() {
+    void handler_throws_error_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")

@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ProfessionalUsersRetrieverTest {
+class ProfessionalUsersRetrieverTest {
 
     private ProfessionalUsersRetriever professionalUsersRetriever;
 
@@ -58,7 +58,7 @@ public class ProfessionalUsersRetrieverTest {
     }
 
     @Test
-    public void should_successfully_get_prof_users_response() {
+    void should_successfully_get_prof_users_response() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";

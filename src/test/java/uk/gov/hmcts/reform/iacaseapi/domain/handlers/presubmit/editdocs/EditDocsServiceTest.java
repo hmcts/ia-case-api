@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs.EditDoc
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class EditDocsServiceTest {
+class EditDocsServiceTest {
 
     public static final String DOC_ID = "5c39421f-e518-49da-987b-c4c48dffab43";
     public static final String ANOTHER_DOC_ID = "ad22bb0f-5b5a-4a39-bd6d-b966e8602072";
@@ -45,7 +45,7 @@ public class EditDocsServiceTest {
         "theOverviewTabFieldIsNullScenario",
         "documentIsUpdatedScenario"
     })
-    public void cleanUpOverviewTabDocs(AsylumCase asylum,
+    void cleanUpOverviewTabDocs(AsylumCase asylum,
                                        AsylumCase asylumBefore,
                                        List<String> updatedDeletedDocIdsList,
                                        @Nullable Document expectedDocument) {

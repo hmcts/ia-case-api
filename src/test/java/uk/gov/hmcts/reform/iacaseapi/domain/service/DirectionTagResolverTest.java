@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionTagResolverTest {
+class DirectionTagResolverTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -32,7 +32,7 @@ public class DirectionTagResolverTest {
     }
 
     @Test
-    public void should_return_parties_for_send_direction_events() {
+    void should_return_parties_for_send_direction_events() {
 
         Map<Event, DirectionTag> exampleInputOutputs =
             ImmutableMap
@@ -63,7 +63,7 @@ public class DirectionTagResolverTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> directionTagResolver.resolve(null))
             .hasMessage("event must not be null")

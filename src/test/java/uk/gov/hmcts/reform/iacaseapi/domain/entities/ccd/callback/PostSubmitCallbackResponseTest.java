@@ -10,13 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PostSubmitCallbackResponseTest {
+class PostSubmitCallbackResponseTest {
 
     private PostSubmitCallbackResponse postSubmitCallbackResponse =
         new PostSubmitCallbackResponse();
 
     @Test
-    public void should_store_confirmation() {
+    void should_store_confirmation() {
 
         assertFalse(postSubmitCallbackResponse.getConfirmationHeader().isPresent());
         assertFalse(postSubmitCallbackResponse.getConfirmationBody().isPresent());
@@ -32,7 +32,7 @@ public class PostSubmitCallbackResponseTest {
     }
 
     @Test
-    public void should_convert_null_values_to_empty_optional() {
+    void should_convert_null_values_to_empty_optional() {
 
         assertFalse(postSubmitCallbackResponse.getConfirmationHeader().isPresent());
         assertFalse(postSubmitCallbackResponse.getConfirmationBody().isPresent());

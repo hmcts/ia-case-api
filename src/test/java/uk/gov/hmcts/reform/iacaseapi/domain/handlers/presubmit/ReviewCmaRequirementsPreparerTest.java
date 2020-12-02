@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class ReviewCmaRequirementsPreparerTest {
+class ReviewCmaRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -61,7 +61,7 @@ public class ReviewCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void should_review_hearing_requirements() {
+    void should_review_hearing_requirements() {
         interpreterLanguage = Arrays.asList(
             new IdValue<>("1", new InterpreterLanguage("Irish", "N/A"))
         );
@@ -92,7 +92,7 @@ public class ReviewCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewCmaRequirementsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -105,7 +105,7 @@ public class ReviewCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewCmaRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

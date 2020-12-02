@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class StatelessHandlerTest {
+class StatelessHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -51,7 +51,7 @@ public class StatelessHandlerTest {
     }
 
     @Test
-    public void should_set_nationality_to_stateless() {
+    void should_set_nationality_to_stateless() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_STATELESS, String.class)).thenReturn(Optional.of("isStateless"));
@@ -68,7 +68,7 @@ public class StatelessHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -91,7 +91,7 @@ public class StatelessHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> statelessHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

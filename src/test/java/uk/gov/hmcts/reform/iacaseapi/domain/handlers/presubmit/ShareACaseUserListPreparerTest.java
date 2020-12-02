@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRet
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ShareACaseUserListPreparerTest {
+class ShareACaseUserListPreparerTest {
 
     @Mock
     ProfessionalUsersRetriever professionalUsersRetriever;
@@ -65,7 +65,7 @@ public class ShareACaseUserListPreparerTest {
     }
 
     @Test
-    public void should_respond_with_asylum_case_with_dynamic_list_with_results() {
+    void should_respond_with_asylum_case_with_dynamic_list_with_results() {
 
         String userId = "12345";
         String userEmail = "some-email@somewhere.com";
@@ -100,7 +100,7 @@ public class ShareACaseUserListPreparerTest {
     }
 
     @Test
-    public void should_respond_with_asylum_case_with_empty_dynamic_list() {
+    void should_respond_with_asylum_case_with_empty_dynamic_list() {
 
         ArgumentCaptor<DynamicList> captor = ArgumentCaptor.forClass(DynamicList.class);
         List<ProfessionalUser> professionalUsers = Lists.newArrayList();
@@ -123,7 +123,7 @@ public class ShareACaseUserListPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -147,7 +147,7 @@ public class ShareACaseUserListPreparerTest {
 
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> shareACaseUserListPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

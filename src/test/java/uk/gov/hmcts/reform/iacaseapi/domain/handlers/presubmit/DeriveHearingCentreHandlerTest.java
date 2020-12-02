@@ -47,7 +47,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 @SuppressWarnings("unchecked")
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class DeriveHearingCentreHandlerTest {
+class DeriveHearingCentreHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -91,7 +91,7 @@ public class DeriveHearingCentreHandlerTest {
         "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
     })
 
-    public void should_derive_hearing_centre_from_appellant_postcode(
+    void should_derive_hearing_centre_from_appellant_postcode(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -139,7 +139,7 @@ public class DeriveHearingCentreHandlerTest {
         "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
 
-    public void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
+    void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -169,7 +169,7 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_not_set_hearing_centre_if_already_exists() {
+    void should_not_set_hearing_centre_if_already_exists() {
 
         final HearingCentre existingHearingCentre = HearingCentre.MANCHESTER;
 
@@ -191,7 +191,7 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -204,7 +204,7 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -232,7 +232,7 @@ public class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> deriveHearingCentreHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

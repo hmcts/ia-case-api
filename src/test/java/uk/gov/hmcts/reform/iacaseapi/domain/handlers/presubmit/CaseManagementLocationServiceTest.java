@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class CaseManagementLocationServiceTest {
+class CaseManagementLocationServiceTest {
 
     private final CaseManagementLocationService service = new CaseManagementLocationService();
 
@@ -30,7 +30,7 @@ public class CaseManagementLocationServiceTest {
         "Taylor House, TAYLOR_HOUSE",
         "Newcastle,"
     })
-    public void given_staffLocationName_then_return_caseManagementLocation(
+    void given_staffLocationName_then_return_caseManagementLocation(
         String staffLocationName, BaseLocation baseLocation) {
 
         CaseManagementLocation actual = service.getCaseManagementLocation(staffLocationName);

@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CcdUpdaterTest {
+class CcdUpdaterTest {
 
     private static final String SERVICE_TOKEN = "ABCDEF";
     private static final String ACCESS_TOKEN = "12345";
@@ -82,7 +82,7 @@ public class CcdUpdaterTest {
     }
 
     @Test
-    public void should_sent_post_to_update_ccd_and_receive_201() {
+    void should_sent_post_to_update_ccd_and_receive_201() {
 
         Value value1 = new Value("another-user-id", "email@somewhere.com");
         Value value2 = new Value(IDAM_ID_OF_USER_GETTING_ACCESS_TO_CASE, "email@somewhere.com");
@@ -121,7 +121,7 @@ public class CcdUpdaterTest {
     }
 
     @Test
-    public void should_handle_when_rest_exception_thrown() {
+    void should_handle_when_rest_exception_thrown() {
 
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
 
@@ -166,7 +166,7 @@ public class CcdUpdaterTest {
 
 
     @Test
-    public void should_throw_when_there_is_no_org_list_of_users() {
+    void should_throw_when_there_is_no_org_list_of_users() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -181,7 +181,7 @@ public class CcdUpdaterTest {
     }
 
     @Test
-    public void should_throw_when_callback_param_is_null() {
+    void should_throw_when_callback_param_is_null() {
 
         assertThatThrownBy(() -> ccdUpdater.updatePermissions(null))
             .hasMessage("callback must not be null")

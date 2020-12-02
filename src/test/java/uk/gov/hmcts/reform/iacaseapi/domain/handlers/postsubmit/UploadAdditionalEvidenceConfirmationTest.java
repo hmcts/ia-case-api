@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAdditionalEvidenceConfirmationTest {
+class UploadAdditionalEvidenceConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -29,7 +29,7 @@ public class UploadAdditionalEvidenceConfirmationTest {
         new UploadAdditionalEvidenceConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDITIONAL_EVIDENCE);
 
@@ -51,7 +51,7 @@ public class UploadAdditionalEvidenceConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -59,7 +59,7 @@ public class UploadAdditionalEvidenceConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -79,7 +79,7 @@ public class UploadAdditionalEvidenceConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

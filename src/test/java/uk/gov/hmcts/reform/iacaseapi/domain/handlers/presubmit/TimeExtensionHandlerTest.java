@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.TimeExtensionAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class TimeExtensionHandlerTest {
+class TimeExtensionHandlerTest {
 
     @Mock
     private TimeExtensionAppender timeExtensionAppender;
@@ -63,7 +63,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void should_append_new_timeExtension_to_existing_timeExtensions_for_the_case() {
+    void should_append_new_timeExtension_to_existing_timeExtensions_for_the_case() {
 
         final List<IdValue<TimeExtension>> existingTimeExtensions = new ArrayList<>();
         final List<IdValue<TimeExtension>> allTimeExtensions = new ArrayList<>();
@@ -113,7 +113,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void should_throw_when_submit_timeExtension_reason_is_not_present() {
+    void should_throw_when_submit_timeExtension_reason_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_TIME_EXTENSION);
@@ -127,7 +127,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> timeExtensionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -140,7 +140,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -167,7 +167,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> timeExtensionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

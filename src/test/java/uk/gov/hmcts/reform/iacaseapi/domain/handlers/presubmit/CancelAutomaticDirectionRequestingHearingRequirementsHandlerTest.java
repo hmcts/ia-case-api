@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CancelAutomaticDirectionRequestingHearingRequirementsHandlerTest {
+class CancelAutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     @Mock
     private DateProvider dateProvider;
@@ -79,7 +79,7 @@ public class CancelAutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_schedule_automatic_direction_100_years_from_now() {
+    void should_schedule_automatic_direction_100_years_from_now() {
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
 
         TimedEvent timedEvent = new TimedEvent(
@@ -115,7 +115,7 @@ public class CancelAutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> cancelAutomaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -130,7 +130,7 @@ public class CancelAutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

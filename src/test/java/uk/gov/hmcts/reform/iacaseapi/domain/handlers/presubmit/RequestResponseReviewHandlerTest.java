@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestResponseReviewHandlerTest {
+class RequestResponseReviewHandlerTest {
 
     private static final int DUE_IN_DAYS = 5;
 
@@ -62,7 +62,7 @@ public class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
             "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
@@ -98,7 +98,7 @@ public class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actuall_handle() {
+    void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -110,7 +110,7 @@ public class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -132,7 +132,7 @@ public class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arugments() {
+    void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestResponseReviewHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

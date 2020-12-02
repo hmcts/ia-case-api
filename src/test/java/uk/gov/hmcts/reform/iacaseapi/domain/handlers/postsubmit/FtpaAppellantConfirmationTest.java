@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaAppellantConfirmationTest {
+class FtpaAppellantConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -38,7 +38,7 @@ public class FtpaAppellantConfirmationTest {
         new FtpaAppellantConfirmation();
 
     @Test
-    public void should_return_success_confirmation() {
+    void should_return_success_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -68,7 +68,7 @@ public class FtpaAppellantConfirmationTest {
     }
 
     @Test
-    public void should_return_success_confirmation_when_flag_is_empty() {
+    void should_return_success_confirmation_when_flag_is_empty() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -97,7 +97,7 @@ public class FtpaAppellantConfirmationTest {
 
 
     @Test
-    public void should_return_out_of_time_confirmation() {
+    void should_return_out_of_time_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -129,7 +129,7 @@ public class FtpaAppellantConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaAppellantConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -137,7 +137,7 @@ public class FtpaAppellantConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -157,7 +157,7 @@ public class FtpaAppellantConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaAppellantConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.DocumentServiceRe
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class BundleRequestExecutorTest {
+class BundleRequestExecutorTest {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     private static final String ENDPOINT = "http://endpoint";
@@ -77,7 +77,7 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_invoke_endpoint_with_given_payload_and_return_200_with_no_errors() {
+    void should_invoke_endpoint_with_given_payload_and_return_200_with_no_errors() {
 
         when(restTemplate
             .exchange(
@@ -126,7 +126,7 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> bundleRequestExecutor.post(null, ENDPOINT))
             .hasMessage("payload must not be null")
@@ -138,7 +138,7 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_handle_http_server_exception_when_calling_api() {
+    void should_handle_http_server_exception_when_calling_api() {
 
         HttpServerErrorException underlyingException = mock(HttpServerErrorException.class);
 
@@ -158,7 +158,7 @@ public class BundleRequestExecutorTest {
     }
 
     @Test
-    public void should_handle_http_client_exception_when_calling_api() {
+    void should_handle_http_client_exception_when_calling_api() {
         HttpClientErrorException underlyingException = mock(HttpClientErrorException.class);
 
         when(restTemplate

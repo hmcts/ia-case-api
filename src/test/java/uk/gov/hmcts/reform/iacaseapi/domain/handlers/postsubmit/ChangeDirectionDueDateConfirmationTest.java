@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ChangeDirectionDueDateConfirmationTest {
+class ChangeDirectionDueDateConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -32,7 +32,7 @@ public class ChangeDirectionDueDateConfirmationTest {
         new ChangeDirectionDueDateConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         long caseId = 1234;
 
@@ -65,7 +65,7 @@ public class ChangeDirectionDueDateConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeDirectionDueDateConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -73,7 +73,7 @@ public class ChangeDirectionDueDateConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -93,7 +93,7 @@ public class ChangeDirectionDueDateConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeDirectionDueDateConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

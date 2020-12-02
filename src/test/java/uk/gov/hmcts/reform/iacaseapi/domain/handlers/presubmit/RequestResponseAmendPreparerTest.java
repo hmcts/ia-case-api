@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestResponseAmendPreparerTest {
+class RequestResponseAmendPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -54,7 +54,7 @@ public class RequestResponseAmendPreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains = "";
         final Parties expectedParties = Parties.RESPONDENT;
@@ -82,7 +82,7 @@ public class RequestResponseAmendPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actuall_handle() {
+    void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestResponseAmendPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -94,7 +94,7 @@ public class RequestResponseAmendPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -116,7 +116,7 @@ public class RequestResponseAmendPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arugments() {
+    void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestResponseAmendPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

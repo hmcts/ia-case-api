@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealPaymentConfirmationProviderTest {
+class AppealPaymentConfirmationProviderTest {
 
     @Mock
     private AsylumCase asylumCase;
@@ -27,7 +27,7 @@ public class AppealPaymentConfirmationProviderTest {
         new AppealPaymentConfirmationProvider();
 
     @Test
-    public void should_return_correct_value_for_payment_reference() {
+    void should_return_correct_value_for_payment_reference() {
 
         when(asylumCase.read(PAYMENT_REFERENCE, String.class)).thenReturn(Optional.of("Some account reference"));
 
@@ -36,7 +36,7 @@ public class AppealPaymentConfirmationProviderTest {
     }
 
     @Test
-    public void should_return_correct_value_for_account_number() {
+    void should_return_correct_value_for_account_number() {
 
         when(asylumCase.read(PBA_NUMBER, String.class)).thenReturn(Optional.of("Some account number"));
 
@@ -45,7 +45,7 @@ public class AppealPaymentConfirmationProviderTest {
     }
 
     @Test
-    public void should_return_correct_value_for_fee_amount_for_display() {
+    void should_return_correct_value_for_fee_amount_for_display() {
 
         when(asylumCase.read(FEE_AMOUNT_FOR_DISPLAY, String.class)).thenReturn(Optional.of("£10"));
 
@@ -53,7 +53,7 @@ public class AppealPaymentConfirmationProviderTest {
     }
 
     @Test
-    public void should_return_correct_value_for_payment_status() {
+    void should_return_correct_value_for_payment_status() {
 
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 

@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DirectionAppenderTest {
+class DirectionAppenderTest {
 
     @Mock
     private DateProvider dateProvider;
@@ -48,7 +48,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_append_new_direction_in_first_position() {
+    void should_append_new_direction_in_first_position() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -92,7 +92,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_return_new_documents_if_no_existing_documents_present() {
+    void should_return_new_documents_if_no_existing_documents_present() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
@@ -120,7 +120,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         List<IdValue<Direction>> existingDirections =
             asList(existingDirectionById1);
@@ -182,7 +182,7 @@ public class DirectionAppenderTest {
     }
 
     @Test
-    public void should_addpend_direction_with_questions() {
+    void should_addpend_direction_with_questions() {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         Direction existingDirection1 = mock(Direction.class);

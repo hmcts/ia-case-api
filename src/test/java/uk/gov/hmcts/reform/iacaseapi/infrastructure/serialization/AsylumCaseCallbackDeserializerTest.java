@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @SuppressWarnings("unchecked")
 
 @ExtendWith(MockitoExtension.class)
-public class AsylumCaseCallbackDeserializerTest {
+class AsylumCaseCallbackDeserializerTest {
 
     @Mock
     private ObjectMapper mapper;
@@ -39,7 +39,7 @@ public class AsylumCaseCallbackDeserializerTest {
     }
 
     @Test
-    public void should_deserialize_callback_source_to_asylum_case_callback() throws IOException {
+    void should_deserialize_callback_source_to_asylum_case_callback() throws IOException {
 
         String source = "callback";
 
@@ -53,7 +53,7 @@ public class AsylumCaseCallbackDeserializerTest {
     }
 
     @Test
-    public void should_convert_checked_exception_to_runtime_on_error() throws IOException {
+    void should_convert_checked_exception_to_runtime_on_error() throws IOException {
 
         String source = "callback";
 

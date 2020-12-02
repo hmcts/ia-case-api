@@ -71,7 +71,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class GenerateDocumentHandlerTest {
+class GenerateDocumentHandlerTest {
 
     @Mock
     private DocumentGenerator<AsylumCase> documentGenerator;
@@ -122,7 +122,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_generate_document_and_update_the_case() {
+    void should_generate_document_and_update_the_case() {
 
         Arrays.asList(
             SUBMIT_APPEAL,
@@ -186,7 +186,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_handle_edit_listing_with_withdrawn() {
+    void should_handle_edit_listing_with_withdrawn() {
 
         Arrays.asList(
             ApplicationType.ADJOURN,
@@ -234,12 +234,12 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_be_handled_at_latest_point() {
+    void should_be_handled_at_latest_point() {
         assertEquals(DispatchPriority.LATEST, generateDocumentHandler.getDispatchPriority());
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -252,7 +252,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -293,7 +293,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_docmosis_not_enabled() {
+    void it_cannot_handle_callback_if_docmosis_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -319,7 +319,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_generate_if_em_stitching_not_enabled() {
+    void it_cannot_handle_generate_if_em_stitching_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -373,7 +373,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> generateDocumentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

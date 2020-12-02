@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManage
 
 
 @ExtendWith(MockitoExtension.class)
-public class LaunchDarklyFeatureTogglerTest {
+class LaunchDarklyFeatureTogglerTest {
 
     @Mock
     private LDClientInterface ldClient;
@@ -40,7 +40,7 @@ public class LaunchDarklyFeatureTogglerTest {
     );
 
     @Test
-    public void should_return_default_value_when_key_does_not_exist() {
+    void should_return_default_value_when_key_does_not_exist() {
         String notExistingKey = "not-existing-key";
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(ldClient.boolVariation(
@@ -57,7 +57,7 @@ public class LaunchDarklyFeatureTogglerTest {
     }
 
     @Test
-    public void should_return_value_when_key_exists() {
+    void should_return_value_when_key_exists() {
         String existingKey = "existing-key";
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
         when(ldClient.boolVariation(
@@ -74,7 +74,7 @@ public class LaunchDarklyFeatureTogglerTest {
     }
 
     @Test
-    public void throw_exception_when_user_details_provider_unavailable() {
+    void throw_exception_when_user_details_provider_unavailable() {
         when(userDetailsProvider.getUserDetails()).thenThrow(IdentityManagerResponseException.class);
 
         assertThatThrownBy(() -> launchDarklyFeatureToggler.getValue("existing-key", true))

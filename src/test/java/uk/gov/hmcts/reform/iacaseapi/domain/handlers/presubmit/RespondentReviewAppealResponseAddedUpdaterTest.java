@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RespondentReviewAppealResponseAddedUpdaterTest {
+class RespondentReviewAppealResponseAddedUpdaterTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -57,12 +57,12 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void should_be_handled_late() {
+    void should_be_handled_late() {
         assertEquals(DispatchPriority.LATE, respondentReviewAppealResponseAddedUpdater.getDispatchPriority());
     }
 
     @Test
-    public void should_set_action_available_flag_to_yes_when_state_applies_and_appeal_response_available() {
+    void should_set_action_available_flag_to_yes_when_state_applies_and_appeal_response_available() {
 
         for (State state : State.values()) {
 
@@ -91,7 +91,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void should_set_action_available_flag_to_no_when_state_applies_and_appeal_response_not_available() {
+    void should_set_action_available_flag_to_no_when_state_applies_and_appeal_response_not_available() {
 
         List<Optional<YesOrNo>> appealResponseNotAvailableIndications =
             Arrays.asList(
@@ -120,7 +120,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> respondentReviewAppealResponseAddedUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -129,7 +129,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -152,7 +152,7 @@ public class RespondentReviewAppealResponseAddedUpdaterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> respondentReviewAppealResponseAddedUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

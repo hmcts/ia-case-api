@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ForceCaseToSubmitHearingRequirementsHandlerTest {
+class ForceCaseToSubmitHearingRequirementsHandlerTest {
 
     private final LocalDate now = LocalDate.now();
     private final String newCaseNoteSubject = "Reason for forcing the case progression to submit hearing requirements";
@@ -100,7 +100,7 @@ public class ForceCaseToSubmitHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_append_new_case_note_to_existing_case_notes() {
+    void should_append_new_case_note_to_existing_case_notes() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             forceCaseToSubmitHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -127,7 +127,7 @@ public class ForceCaseToSubmitHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_throw_when_force_case_reason_is_not_present() {
+    void should_throw_when_force_case_reason_is_not_present() {
 
         when(asylumCase.read(REASON_TO_FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS, String.class))
             .thenReturn(Optional.empty());
@@ -139,7 +139,7 @@ public class ForceCaseToSubmitHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> forceCaseToSubmitHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -154,7 +154,7 @@ public class ForceCaseToSubmitHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -178,7 +178,7 @@ public class ForceCaseToSubmitHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> forceCaseToSubmitHearingRequirementsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

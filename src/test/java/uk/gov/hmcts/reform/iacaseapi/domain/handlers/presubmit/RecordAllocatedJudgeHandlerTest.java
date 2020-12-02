@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordAllocatedJudgeHandlerTest {
+class RecordAllocatedJudgeHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,7 +59,7 @@ public class RecordAllocatedJudgeHandlerTest {
     }
 
     @Test
-    public void should_set_allocated_judge_field_first_time() {
+    void should_set_allocated_judge_field_first_time() {
 
         String allocatedJudge = "Judge nr 1";
 
@@ -80,7 +80,7 @@ public class RecordAllocatedJudgeHandlerTest {
     }
 
     @Test
-    public void should_override_allocated_judge_field_and_update_history() {
+    void should_override_allocated_judge_field_and_update_history() {
 
         String allocatedJudgeNr1 = "Judge nr 1";
         String allocatedJudgeNr2 = "Judge nr 2";
@@ -106,7 +106,7 @@ public class RecordAllocatedJudgeHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordAllocatedJudgeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -114,7 +114,7 @@ public class RecordAllocatedJudgeHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -138,7 +138,7 @@ public class RecordAllocatedJudgeHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordAllocatedJudgeHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

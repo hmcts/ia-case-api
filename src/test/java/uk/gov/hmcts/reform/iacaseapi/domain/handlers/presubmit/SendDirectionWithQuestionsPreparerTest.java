@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionWithQuestionsPreparerTest {
+class SendDirectionWithQuestionsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -45,7 +45,7 @@ public class SendDirectionWithQuestionsPreparerTest {
     }
 
     @Test
-    public void preparer_review_time_extension_fields() {
+    void preparer_review_time_extension_fields() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION_WITH_QUESTIONS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -58,7 +58,7 @@ public class SendDirectionWithQuestionsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> sendDirectionWithQuestionsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -73,7 +73,7 @@ public class SendDirectionWithQuestionsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

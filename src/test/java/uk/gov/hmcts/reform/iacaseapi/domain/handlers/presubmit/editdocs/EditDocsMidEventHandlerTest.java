@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class EditDocsMidEventHandlerTest {
+class EditDocsMidEventHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -65,7 +65,7 @@ public class EditDocsMidEventHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -89,7 +89,7 @@ public class EditDocsMidEventHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> editDocsMidEventHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -101,7 +101,7 @@ public class EditDocsMidEventHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> editDocsMidEventHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -114,7 +114,7 @@ public class EditDocsMidEventHandlerTest {
 
 
     @Test
-    public void should_successfully_validate_edit_documents() {
+    void should_successfully_validate_edit_documents() {
 
         DocumentWithMetadata validDocumentMetadata = new DocumentWithMetadata(document1, null, "22-07-2020", null);
 
@@ -137,7 +137,7 @@ public class EditDocsMidEventHandlerTest {
     }
 
     @Test
-    public void should_error_when_no_document_in_edited_list() {
+    void should_error_when_no_document_in_edited_list() {
 
         DocumentWithMetadata emptyDocumentMetadata = new DocumentWithMetadata(null, null, null, null);
         List<IdValue<DocumentWithMetadata>> legalRepDocs =
@@ -163,7 +163,7 @@ public class EditDocsMidEventHandlerTest {
     }
 
     @Test
-    public void should_error_when_no_date_uploaded_in_edited_list() {
+    void should_error_when_no_date_uploaded_in_edited_list() {
 
         DocumentWithMetadata emptyDocumentMetadata = new DocumentWithMetadata(document1, null, null, null);
         List<IdValue<DocumentWithMetadata>> legalRepDocs =

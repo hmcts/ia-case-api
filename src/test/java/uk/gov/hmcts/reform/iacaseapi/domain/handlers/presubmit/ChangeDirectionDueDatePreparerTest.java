@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ChangeDirectionDueDatePreparerTest {
+class ChangeDirectionDueDatePreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -67,7 +67,7 @@ public class ChangeDirectionDueDatePreparerTest {
     }
 
     @Test
-    public void should_prepare_editable_direction_fields() {
+    void should_prepare_editable_direction_fields() {
 
         final List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -150,7 +150,7 @@ public class ChangeDirectionDueDatePreparerTest {
 
 
     @Test
-    public void handling_should_return_error_when_direction_is_empty_list() {
+    void handling_should_return_error_when_direction_is_empty_list() {
 
         final List<IdValue<Direction>> existingDirections = emptyList();
 
@@ -169,7 +169,7 @@ public class ChangeDirectionDueDatePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> changeDirectionDueDatePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -183,7 +183,7 @@ public class ChangeDirectionDueDatePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -207,7 +207,7 @@ public class ChangeDirectionDueDatePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeDirectionDueDatePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

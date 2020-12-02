@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestCmaRequirementsHandlerTest {
+class RequestCmaRequirementsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -57,12 +57,12 @@ public class RequestCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void error_if_direction_due_date_is_today() {
+    void error_if_direction_due_date_is_today() {
         setupInvalidDirectionDueDate("2020-02-02");
     }
 
     @Test
-    public void error_if_direction_due_date_is_in_past() {
+    void error_if_direction_due_date_is_in_past() {
         setupInvalidDirectionDueDate("2020-02-01");
     }
 
@@ -83,7 +83,7 @@ public class RequestCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void adds_direction_with_questions() {
+    void adds_direction_with_questions() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CMA_REQUIREMENTS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -134,7 +134,7 @@ public class RequestCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> requestCmaRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -147,7 +147,7 @@ public class RequestCmaRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

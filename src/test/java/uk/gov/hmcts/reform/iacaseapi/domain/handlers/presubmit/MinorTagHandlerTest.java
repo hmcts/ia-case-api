@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class MinorTagHandlerTest {
+class MinorTagHandlerTest {
 
     public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
     public static final String APPELLANT_MINOR = LocalDate.now().toString();
@@ -47,7 +47,7 @@ public class MinorTagHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateCanHandleTestScenario")
-    public void it_can_handle_callback(CanHandleTestScenario scenario) {
+    void it_can_handle_callback(CanHandleTestScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -62,7 +62,7 @@ public class MinorTagHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateAppellantDobScenarios")
-    public void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
+    void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -82,7 +82,7 @@ public class MinorTagHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> minorTagHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -106,7 +106,7 @@ public class MinorTagHandlerTest {
         "ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
         "ABOUT_TO_SUBMIT, START_APPEAL"
     })
-    public void given_wrong_event_or_wrong_callback_should_throw_exception(
+    void given_wrong_event_or_wrong_callback_should_throw_exception(
         PreSubmitCallbackStage callbackStage,
         Event event) {
 

@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealSubmittedConfirmationTest {
+class AppealSubmittedConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -57,7 +57,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_standard_confirmation_when_not_out_of_time() {
+    void should_return_standard_confirmation_when_not_out_of_time() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
@@ -84,7 +84,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_out_of_time_confirmation_for_nonpayment_appeal() {
+    void should_return_out_of_time_confirmation_for_nonpayment_appeal() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
@@ -114,7 +114,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_out_of_time_confirmation_for_pay_offline_by_card_ea() {
+    void should_return_out_of_time_confirmation_for_pay_offline_by_card_ea() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -147,7 +147,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_out_of_time_confirmation_for_pay_offline_hu() {
+    void should_return_out_of_time_confirmation_for_pay_offline_hu() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -181,7 +181,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_out_of_time_confirmation_for_pay_offline_pa() {
+    void should_return_out_of_time_confirmation_for_pay_offline_pa() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -215,7 +215,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_out_of_time_confirmation_for_pay_later_pa() {
+    void should_return_out_of_time_confirmation_for_pay_later_pa() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
@@ -248,7 +248,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_offline_by_card_ea() {
+    void should_return_confirmation_for_pay_offline_by_card_ea() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -280,7 +280,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_offline_by_card_hu() {
+    void should_return_confirmation_for_pay_offline_by_card_hu() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
@@ -312,7 +312,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_offline_by_card_pa() {
+    void should_return_confirmation_for_pay_offline_by_card_pa() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -344,7 +344,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_later_by_card_pa() {
+    void should_return_confirmation_for_pay_later_by_card_pa() {
 
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -381,7 +381,7 @@ public class AppealSubmittedConfirmationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"NO", "YES"})
-    public void should_return_confirmation_for_ho_waiver_remission(String flag) {
+    void should_return_confirmation_for_ho_waiver_remission(String flag) {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -437,7 +437,7 @@ public class AppealSubmittedConfirmationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP"})
-    public void handle_should_return_default_confirmation_for_payment_feature_disabled_and_in_time(String type) {
+    void handle_should_return_default_confirmation_for_payment_feature_disabled_and_in_time(String type) {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
@@ -462,7 +462,7 @@ public class AppealSubmittedConfirmationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP"})
-    public void handle_should_return_default_confirmation_for_payment_feature_disabled_and_out_of_time(String type) {
+    void handle_should_return_default_confirmation_for_payment_feature_disabled_and_out_of_time(String type) {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
@@ -484,7 +484,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.BUILD_CASE);
 
@@ -494,7 +494,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -514,7 +514,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealSubmittedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
@@ -526,7 +526,7 @@ public class AppealSubmittedConfirmationTest {
     }
 
     @Test
-    public void should_throw_for_missing_appeal_type() {
+    void should_throw_for_missing_appeal_type() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));

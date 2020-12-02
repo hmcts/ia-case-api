@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.util.LoggerUtil;
 
 @ExtendWith(MockitoExtension.class)
-public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
+class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -42,7 +42,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void cannotSendDirectionForAipCase() {
+    void cannotSendDirectionForAipCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
@@ -55,7 +55,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void canSendDirectionForAipCaseToRespondent() {
+    void canSendDirectionForAipCaseToRespondent() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.AIP, Parties.RESPONDENT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
@@ -63,7 +63,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void cannotSendDirectionToAppellantForReppedCase() {
+    void cannotSendDirectionToAppellantForReppedCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.APPELLANT);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 
@@ -76,7 +76,7 @@ public class AsylumCaseSendDirectionEventValidForJourneyTypeCheckerTest {
     }
 
     @Test
-    public void canSendDirectionToLegalRepForReppedCase() {
+    void canSendDirectionToLegalRepForReppedCase() {
         setupCallback(Event.SEND_DIRECTION, JourneyType.REP, Parties.LEGAL_REPRESENTATIVE);
         EventValid eventValid = new AsylumCaseSendDirectionEventValidForJourneyTypeChecker().check(callback);
 

@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestCmaRequirementsPreparerTest {
+class RequestCmaRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -44,7 +44,7 @@ public class RequestCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void preparer_sets_date_in_7_days() {
+    void preparer_sets_date_in_7_days() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_CMA_REQUIREMENTS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -57,7 +57,7 @@ public class RequestCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> requestCmaRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -71,7 +71,7 @@ public class RequestCmaRequirementsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

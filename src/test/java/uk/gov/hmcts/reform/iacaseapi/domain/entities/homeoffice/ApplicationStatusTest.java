@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ApplicationStatusTest {
+class ApplicationStatusTest {
     @Mock
     CodeWithDescription mockCode;
     @Mock
@@ -40,7 +40,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void has_correct_values_for_ccd_list_and_other_values() {
+    void has_correct_values_for_ccd_list_and_other_values() {
         assertNotNull(applicationStatus.getDecisionType());
         assertEquals(mockCode, applicationStatus.getApplicationType());
         assertEquals(mockCode, applicationStatus.getClaimReasonType());
@@ -60,7 +60,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void modify_list_converts_to_valid_ccd_list_id_values() {
+    void modify_list_converts_to_valid_ccd_list_id_values() {
         List<HomeOfficeMetadata> metadataList = new ArrayList<>();
         metadataList.add(new HomeOfficeMetadata("", "", "", ""));
 

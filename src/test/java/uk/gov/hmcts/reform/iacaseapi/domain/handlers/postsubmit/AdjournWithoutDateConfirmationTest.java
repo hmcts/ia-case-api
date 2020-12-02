@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class AdjournWithoutDateConfirmationTest {
+class AdjournWithoutDateConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -34,7 +34,7 @@ public class AdjournWithoutDateConfirmationTest {
 
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
-    public void given_callback_can_handle(TestScenario scenario) {
+    void given_callback_can_handle(TestScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.event);
 
         boolean actualResult = handler.canHandle(callback);
@@ -47,7 +47,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> handler.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -58,7 +58,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
         when(callback.getEvent()).thenReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
 
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
@@ -79,7 +79,7 @@ public class AdjournWithoutDateConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> handler.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);

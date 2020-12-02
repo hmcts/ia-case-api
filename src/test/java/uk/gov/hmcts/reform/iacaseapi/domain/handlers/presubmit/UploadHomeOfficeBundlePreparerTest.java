@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundlePreparerTest {
+class UploadHomeOfficeBundlePreparerTest {
 
     private final String evidence01FileName = "Evidence01";
     private final String evidence02FileName = "Evidence02";
@@ -96,7 +96,7 @@ public class UploadHomeOfficeBundlePreparerTest {
 
 
     @Test
-    public void should_set_errors_if_upload_action_is_not_available_for_home_office_event() {
+    void should_set_errors_if_upload_action_is_not_available_for_home_office_event() {
 
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -110,7 +110,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_not_set_errors_if_upload_action_is_not_available_for_case_officer_event() {
+    void should_not_set_errors_if_upload_action_is_not_available_for_case_officer_event() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.NO));
@@ -134,7 +134,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_not_set_errors_if_upload_action_is_available_for_case_officer_event() {
+    void should_not_set_errors_if_upload_action_is_available_for_case_officer_event() {
 
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.YES));
@@ -158,7 +158,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_set_uploaded_documents() {
+    void should_set_uploaded_documents() {
 
         when(asylumCase.read(UPLOAD_HOME_OFFICE_BUNDLE_AVAILABLE)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -182,7 +182,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> uploadHomeOfficeBundlePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -196,7 +196,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -221,7 +221,7 @@ public class UploadHomeOfficeBundlePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundlePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

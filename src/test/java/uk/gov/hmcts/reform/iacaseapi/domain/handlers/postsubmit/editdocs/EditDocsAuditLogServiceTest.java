@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class EditDocsAuditLogServiceTest {
+class EditDocsAuditLogServiceTest {
 
     @Mock
     private EditDocsAuditService editDocsAuditService;
@@ -38,7 +38,7 @@ public class EditDocsAuditLogServiceTest {
     private EditDocsAuditLogService editDocsAuditLogService;
 
     @Test
-    public void shouldBuildAuditDetails() {
+    void shouldBuildAuditDetails() {
         mockUserDetailsProvider();
         mockEditDocsAuditService();
         given(asylumCase.read(eq(AsylumCaseFieldDefinition.EDIT_DOCUMENTS_REASON), eq(String.class)))

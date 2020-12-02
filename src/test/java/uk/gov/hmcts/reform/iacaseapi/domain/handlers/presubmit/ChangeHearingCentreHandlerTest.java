@@ -48,7 +48,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ChangeHearingCentreHandlerTest {
+class ChangeHearingCentreHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -94,7 +94,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
+    void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, BaseLocation.TAYLOR_HOUSE);
         when(caseManagementLocationService.getCaseManagementLocation("Taylor House"))
@@ -125,7 +125,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> changeHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -133,7 +133,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -156,7 +156,7 @@ public class ChangeHearingCentreHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> changeHearingCentreHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

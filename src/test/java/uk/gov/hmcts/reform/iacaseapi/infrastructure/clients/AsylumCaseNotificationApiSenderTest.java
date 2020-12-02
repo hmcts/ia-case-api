@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AsylumCaseNotificationApiSenderTest {
+class AsylumCaseNotificationApiSenderTest {
 
     private static final String ENDPOINT = "http://endpoint";
     private static final String ABOUT_TO_SUBMIT_PATH = "/path";
@@ -41,7 +41,7 @@ public class AsylumCaseNotificationApiSenderTest {
     }
 
     @Test
-    public void should_delegate_callback_to_downstream_api() {
+    void should_delegate_callback_to_downstream_api() {
 
         final AsylumCase notifiedAsylumCase = mock(AsylumCase.class);
 
@@ -57,7 +57,7 @@ public class AsylumCaseNotificationApiSenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> asylumCaseDocumentApiGenerator.generate(null))
             .hasMessage("callback must not be null")

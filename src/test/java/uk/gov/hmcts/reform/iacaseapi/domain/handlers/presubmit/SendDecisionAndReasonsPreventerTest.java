@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDecisionAndReasonsPreventerTest {
+class SendDecisionAndReasonsPreventerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -47,7 +47,7 @@ public class SendDecisionAndReasonsPreventerTest {
     }
 
     @Test
-    public void should_return_error_when_decision_and_reasons_not_generated() {
+    void should_return_error_when_decision_and_reasons_not_generated() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
@@ -64,7 +64,7 @@ public class SendDecisionAndReasonsPreventerTest {
     }
 
     @Test
-    public void should_throw_error_when_decision_and_reasons_available_flag_not_present() {
+    void should_throw_error_when_decision_and_reasons_available_flag_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
@@ -78,13 +78,13 @@ public class SendDecisionAndReasonsPreventerTest {
     }
 
     @Test
-    public void should_return_earliest() {
+    void should_return_earliest() {
         assertThat(sendDecisionAndReasonsPreventer.getDispatchPriority())
             .isEqualTo(EARLIEST);
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> sendDecisionAndReasonsPreventer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -97,7 +97,7 @@ public class SendDecisionAndReasonsPreventerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -121,7 +121,7 @@ public class SendDecisionAndReasonsPreventerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> sendDecisionAndReasonsPreventer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ListCmaPreparerTest {
+class ListCmaPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,7 +59,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_set_default_list_case_hearing_centre_field() {
+    void should_set_default_list_case_hearing_centre_field() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -74,7 +74,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
+    void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
 
@@ -88,7 +88,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_set_error_when_requirements_not_reviewed() {
+    void should_set_error_when_requirements_not_reviewed() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -113,7 +113,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_set_error_when_reviewed_requirements_flag_not_set() {
+    void should_set_error_when_reviewed_requirements_flag_not_set() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -138,7 +138,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_not_set_error_when_requirements_have_been_reviewed() {
+    void should_not_set_error_when_requirements_have_been_reviewed() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -161,7 +161,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_work_for_old_flow_when_requirements_not_captured() {
+    void should_work_for_old_flow_when_requirements_not_captured() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
@@ -182,7 +182,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> listCmaPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -195,7 +195,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -219,7 +219,7 @@ public class ListCmaPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> listCmaPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

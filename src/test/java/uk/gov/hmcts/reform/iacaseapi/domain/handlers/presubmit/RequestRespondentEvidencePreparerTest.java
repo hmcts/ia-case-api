@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestRespondentEvidencePreparerTest {
+class RequestRespondentEvidencePreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
 
@@ -67,7 +67,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains = "A notice of appeal has been lodged against this decision.";
         final Parties expectedParties = Parties.RESPONDENT;
@@ -103,7 +103,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -118,7 +118,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -142,7 +142,7 @@ public class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

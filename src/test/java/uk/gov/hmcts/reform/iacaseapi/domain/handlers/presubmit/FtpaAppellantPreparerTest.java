@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaAppellantPreparerTest {
+class FtpaAppellantPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -62,7 +62,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_no() {
+    void should_perform_mid_event_and_set_out_of_date_submission_state_no() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -78,7 +78,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_no_when_no_appeal_date() {
+    void should_perform_mid_event_and_set_out_of_date_submission_state_no_when_no_appeal_date() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -92,7 +92,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_perform_mid_event_and_set_out_of_date_submission_state_to_yes() {
+    void should_perform_mid_event_and_set_out_of_date_submission_state_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -108,7 +108,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_throw_error_of_appeal_is_already_submitted() {
+    void should_throw_error_of_appeal_is_already_submitted() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -130,7 +130,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_clear_existing_fields_for_ftpa_reheard_case() {
+    void should_clear_existing_fields_for_ftpa_reheard_case() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -156,7 +156,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_not_clear_existing_fields_when_not_a_ftpa_reheard() {
+    void should_not_clear_existing_fields_when_not_a_ftpa_reheard() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -176,7 +176,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_not_clear_existing_fields_when_feature_flag_disabled() {
+    void should_not_clear_existing_fields_when_feature_flag_disabled() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
@@ -195,7 +195,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -207,7 +207,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -231,7 +231,7 @@ public class FtpaAppellantPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaAppellantPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

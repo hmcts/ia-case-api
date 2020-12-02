@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordAttendeesAndDurationHandlerTest {
+class RecordAttendeesAndDurationHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -47,7 +47,7 @@ public class RecordAttendeesAndDurationHandlerTest {
     }
 
     @Test
-    public void should_write_hearing_details_recorded_flag() {
+    void should_write_hearing_details_recorded_flag() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RECORD_ATTENDEES_AND_DURATION);
@@ -62,7 +62,7 @@ public class RecordAttendeesAndDurationHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -86,7 +86,7 @@ public class RecordAttendeesAndDurationHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordAttendeesAndDurationHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
+class UploadAdditionalEvidenceHomeOfficeHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -96,7 +96,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_a_reheard_case() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_a_reheard_case() {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
@@ -129,7 +129,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
 
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(respondentDocuments));
         when(asylumCase.read(ADDITIONAL_EVIDENCE_HOME_OFFICE)).thenReturn(Optional.of(additionalEvidence));
@@ -157,7 +157,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_a_reheard_case_when_no_additional_evidence_documents_exist() {
+    void should_add_new_evidence_to_a_reheard_case_when_no_additional_evidence_documents_exist() {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
@@ -198,7 +198,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
 
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(ADDITIONAL_EVIDENCE_HOME_OFFICE)).thenReturn(Optional.of(additionalEvidence));
@@ -234,7 +234,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(asylumCase.read(ADDITIONAL_EVIDENCE_HOME_OFFICE)).thenReturn(Optional.empty());
 
@@ -245,7 +245,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> uploadAdditionalEvidenceHomeOfficeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -260,7 +260,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -284,7 +284,7 @@ public class UploadAdditionalEvidenceHomeOfficeHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAdditionalEvidenceHomeOfficeHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

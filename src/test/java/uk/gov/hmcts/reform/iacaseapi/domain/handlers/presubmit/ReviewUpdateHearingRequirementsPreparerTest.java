@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class ReviewUpdateHearingRequirementsPreparerTest {
+class ReviewUpdateHearingRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -67,7 +67,7 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_review_updated_hearing_requirements() {
+    void should_review_updated_hearing_requirements() {
 
         when(asylumCase.read(UPDATE_HEARING_REQUIREMENTS_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
@@ -101,7 +101,7 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_error_when_updated_hearing_requirements_is_not_available() {
+    void should_error_when_updated_hearing_requirements_is_not_available() {
 
         when(asylumCase.read(UPDATE_HEARING_REQUIREMENTS_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
@@ -128,7 +128,7 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
 
 
     @Test
-    public void should_error_when_updated_hearing_requirements_flag_is_not_available() {
+    void should_error_when_updated_hearing_requirements_flag_is_not_available() {
 
         when(asylumCase.read(UPDATE_HEARING_REQUIREMENTS_EXISTS, YesOrNo.class)).thenReturn(Optional.empty());
 
@@ -155,7 +155,7 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewUpdateHearingRequirementsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -168,7 +168,7 @@ public class ReviewUpdateHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewUpdateHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

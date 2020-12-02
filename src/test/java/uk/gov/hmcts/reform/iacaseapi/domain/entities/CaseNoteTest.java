@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-public class CaseNoteTest {
+class CaseNoteTest {
 
     private final String caseNoteSubject = "some-subject";
     private final String caseNoteDescription = "some-description";
@@ -30,7 +30,7 @@ public class CaseNoteTest {
     }
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertThat(caseNote.getCaseNoteSubject()).isEqualTo(caseNoteSubject);
         assertThat(caseNote.getCaseNoteDescription()).isEqualTo(caseNoteDescription);
@@ -40,7 +40,7 @@ public class CaseNoteTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new CaseNote(null, "", "", ""))
             .isExactlyInstanceOf(NullPointerException.class);

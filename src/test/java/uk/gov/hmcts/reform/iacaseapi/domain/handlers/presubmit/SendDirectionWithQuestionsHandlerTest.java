@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionWithQuestionsHandlerTest {
+class SendDirectionWithQuestionsHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,12 +59,12 @@ public class SendDirectionWithQuestionsHandlerTest {
     }
 
     @Test
-    public void error_if_direction_due_date_is_today() {
+    void error_if_direction_due_date_is_today() {
         setupInvalidDirectionDueDate("2020-02-02");
     }
 
     @Test
-    public void error_if_direction_due_date_is_in_past() {
+    void error_if_direction_due_date_is_in_past() {
         setupInvalidDirectionDueDate("2020-02-01");
     }
 
@@ -85,7 +85,7 @@ public class SendDirectionWithQuestionsHandlerTest {
     }
 
     @Test
-    public void adds_direction_with_questions() {
+    void adds_direction_with_questions() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION_WITH_QUESTIONS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -140,7 +140,7 @@ public class SendDirectionWithQuestionsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> sendDirectionWithQuestionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -155,7 +155,7 @@ public class SendDirectionWithQuestionsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

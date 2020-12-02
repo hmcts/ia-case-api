@@ -42,7 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecideAnApplicationMidEventTest {
+class DecideAnApplicationMidEventTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -70,7 +70,7 @@ public class DecideAnApplicationMidEventTest {
     }
 
     @Test
-    public void should_handle_the_mid_event() {
+    void should_handle_the_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
@@ -112,7 +112,7 @@ public class DecideAnApplicationMidEventTest {
     }
 
     @Test
-    public void should_throw_no_make_an_applications_list() {
+    void should_throw_no_make_an_applications_list() {
 
         assertThatThrownBy(() -> decideAnApplicationMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -120,7 +120,7 @@ public class DecideAnApplicationMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> decideAnApplicationMidEvent.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -128,7 +128,7 @@ public class DecideAnApplicationMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> decideAnApplicationMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -149,7 +149,7 @@ public class DecideAnApplicationMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

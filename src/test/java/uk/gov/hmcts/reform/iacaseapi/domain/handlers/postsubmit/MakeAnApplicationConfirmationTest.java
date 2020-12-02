@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationConfirmationTest {
+class MakeAnApplicationConfirmationTest {
 
     private final MakeAnApplicationConfirmation makeAnApplicationConfirmation =
         new MakeAnApplicationConfirmation();
@@ -31,7 +31,7 @@ public class MakeAnApplicationConfirmationTest {
     private CaseDetails<AsylumCase> caseCaseDetails;
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(Long.valueOf(123456789));
@@ -58,7 +58,7 @@ public class MakeAnApplicationConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> makeAnApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -66,7 +66,7 @@ public class MakeAnApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -86,7 +86,7 @@ public class MakeAnApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> makeAnApplicationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

@@ -8,10 +8,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
-public class AsylumCaseFieldDefinitionTest {
+class AsylumCaseFieldDefinitionTest {
 
     @Test
-    public void mapped_to_equivalent_field_name() {
+    void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseFieldDefinition.values())
             // filter out below variable because of CCD defs constrains to edit existing fields
             .filter(val -> val != ATTENDING_TCW)

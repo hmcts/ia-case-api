@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CaseNoteAppenderTest {
+class CaseNoteAppenderTest {
 
     @Mock
     private CaseNote newCaseNote;
@@ -43,7 +43,7 @@ public class CaseNoteAppenderTest {
     }
 
     @Test
-    public void appends_case_note_to_empty_list() {
+    void appends_case_note_to_empty_list() {
 
         List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(newCaseNote, emptyList());
 
@@ -57,7 +57,7 @@ public class CaseNoteAppenderTest {
     }
 
     @Test
-    public void appends_case_note_to_existing_case_notes() {
+    void appends_case_note_to_existing_case_notes() {
 
         List<IdValue<CaseNote>> allCaseNotes = caseNoteAppender.append(newCaseNote, oldCaseNotes);
 
@@ -71,7 +71,7 @@ public class CaseNoteAppenderTest {
     }
 
     @Test
-    public void throws_if_case_note_null() {
+    void throws_if_case_note_null() {
 
         assertThatThrownBy(() -> caseNoteAppender.append(null, oldCaseNotes))
             .isExactlyInstanceOf(NullPointerException.class);

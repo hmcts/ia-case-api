@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DocumentsAppenderTest {
+class DocumentsAppenderTest {
 
     @Mock
     private IdValue<DocumentWithMetadata> existingDocumentById1;
@@ -43,7 +43,7 @@ public class DocumentsAppenderTest {
     private DocumentsAppender documentsAppender = new DocumentsAppender();
 
     @Test
-    public void should_append_new_document_in_first_position() {
+    void should_append_new_document_in_first_position() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =
             Arrays.asList(
@@ -83,7 +83,7 @@ public class DocumentsAppenderTest {
     }
 
     @Test
-    public void should_append_new_document_in_first_position_replacing_any_existing_with_tag() {
+    void should_append_new_document_in_first_position_replacing_any_existing_with_tag() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =
             Arrays.asList(
@@ -127,7 +127,7 @@ public class DocumentsAppenderTest {
     }
 
     @Test
-    public void should_return_existing_documents_if_no_new_documents_present() {
+    void should_return_existing_documents_if_no_new_documents_present() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =
             Arrays.asList(
@@ -154,7 +154,7 @@ public class DocumentsAppenderTest {
     }
 
     @Test
-    public void should_return_new_documents_if_no_existing_documents_present() {
+    void should_return_new_documents_if_no_existing_documents_present() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments = Collections.emptyList();
 
@@ -178,7 +178,7 @@ public class DocumentsAppenderTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments = Arrays.asList(existingDocumentById1);
         List<DocumentWithMetadata> newDocuments = Arrays.asList(newDocument1);

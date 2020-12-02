@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
-public class CaseDetailsTest {
+class CaseDetailsTest {
 
     private final long id = 123L;
     private final String jurisdiction = "IA";
@@ -25,7 +25,7 @@ public class CaseDetailsTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(id, caseDetails.getId());
         assertEquals(jurisdiction, caseDetails.getJurisdiction());
@@ -35,7 +35,7 @@ public class CaseDetailsTest {
     }
 
     @Test
-    public void should_throw_required_field_missing_exception() {
+    void should_throw_required_field_missing_exception() {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,

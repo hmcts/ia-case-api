@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeApiServiceTest {
+class HomeOfficeApiServiceTest {
 
     private static final String ENDPOINT = "some-endpoint";
     private static final String ABOUT_TO_SUBMIT_PATH = "some-path";
@@ -43,7 +43,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_delegate_callback_to_downstream_api_and_get_response() {
+    void should_delegate_callback_to_downstream_api_and_get_response() {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
@@ -59,7 +59,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeApiService.call(null))
             .hasMessage("callback must not be null")
@@ -67,7 +67,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_handle_error_from_downstream_api() {
+    void should_handle_error_from_downstream_api() {
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));

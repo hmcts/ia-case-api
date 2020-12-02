@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundleHandlerTest {
+class UploadHomeOfficeBundleHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -86,7 +86,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
+    void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> respondentEvidence =
             Arrays.asList(
@@ -133,7 +133,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> respondentEvidence =
             singletonList(new IdValue<>("1", respondentEvidence1));
@@ -176,7 +176,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
@@ -191,7 +191,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -205,7 +205,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -229,7 +229,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

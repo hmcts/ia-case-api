@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ReviewTimeExtensionConfirmationTest {
+class ReviewTimeExtensionConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -37,7 +37,7 @@ public class ReviewTimeExtensionConfirmationTest {
         new ReviewTimeExtensionConfirmation();
 
     @Test
-    public void should_return_confirmation_for_granted() {
+    void should_return_confirmation_for_granted() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -66,7 +66,7 @@ public class ReviewTimeExtensionConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_refused() {
+    void should_return_confirmation_for_refused() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -95,7 +95,7 @@ public class ReviewTimeExtensionConfirmationTest {
     }
 
     @Test
-    public void should_throw_exception_if_no_decision() {
+    void should_throw_exception_if_no_decision() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_TIME_EXTENSION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -108,7 +108,7 @@ public class ReviewTimeExtensionConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewTimeExtensionConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -116,7 +116,7 @@ public class ReviewTimeExtensionConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -136,7 +136,7 @@ public class ReviewTimeExtensionConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewTimeExtensionConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

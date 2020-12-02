@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UpdateAppointmentAfterCmaHandlerTest {
+class UpdateAppointmentAfterCmaHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -50,7 +50,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
 
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> updateAppointmentAfterCmaHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -59,7 +59,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
     }
 
     @Test
-    public void should_set_update_hearing_requirements_exists() {
+    void should_set_update_hearing_requirements_exists() {
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             updateAppointmentAfterCmaHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -75,7 +75,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
 
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -99,7 +99,7 @@ public class UpdateAppointmentAfterCmaHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> updateAppointmentAfterCmaHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

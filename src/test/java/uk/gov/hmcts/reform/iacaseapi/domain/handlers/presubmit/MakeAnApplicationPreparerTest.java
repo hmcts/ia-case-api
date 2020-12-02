@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvid
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationPreparerTest {
+class MakeAnApplicationPreparerTest {
 
     @InjectMocks
     public MakeAnApplicationPreparer makeAnApplicationPreparer;
@@ -64,7 +64,7 @@ public class MakeAnApplicationPreparerTest {
     }
 
     @Test
-    public void should_return_valid_make_an_application_types() {
+    void should_return_valid_make_an_application_types() {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -90,7 +90,7 @@ public class MakeAnApplicationPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> makeAnApplicationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -98,7 +98,7 @@ public class MakeAnApplicationPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> makeAnApplicationPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -119,7 +119,7 @@ public class MakeAnApplicationPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

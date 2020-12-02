@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MarkPaymentPaidStateHandlerTest {
+class MarkPaymentPaidStateHandlerTest {
 
     private static final String paymentDate = "2020-08-31";
     @Mock
@@ -64,7 +64,7 @@ public class MarkPaymentPaidStateHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights"})
-    public void should_mark_appeal_as_paid_and_state_change_for_ea_and_hu_appeals(String appealType) {
+    void should_mark_appeal_as_paid_and_state_change_for_ea_and_hu_appeals(String appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -88,7 +88,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void should_mark_appeal_as_paid_and_no_state_change_for_pa_appeals() {
+    void should_mark_appeal_as_paid_and_no_state_change_for_pa_appeals() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -113,7 +113,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void should_throw_if_paid_date_is_not_present() {
+    void should_throw_if_paid_date_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -129,7 +129,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void should_throw_if_appeal_type_is_not_present() {
+    void should_throw_if_appeal_type_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -144,7 +144,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> markPaymentPaidStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
@@ -153,7 +153,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -178,7 +178,7 @@ public class MarkPaymentPaidStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> markPaymentPaidStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

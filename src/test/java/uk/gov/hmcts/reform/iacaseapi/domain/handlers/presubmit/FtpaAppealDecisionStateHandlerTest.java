@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaAppealDecisionStateHandlerTest {
+class FtpaAppealDecisionStateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -50,7 +50,7 @@ public class FtpaAppealDecisionStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_leadership_decision_appellant_from_ftpa_decided_state() {
+    void should_return_updated_state_for_leadership_decision_appellant_from_ftpa_decided_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -67,7 +67,7 @@ public class FtpaAppealDecisionStateHandlerTest {
     }
 
     @Test
-    public void should_return_updated_state_for_leadership_decision_appellant_from_ftpa_submitted_state() {
+    void should_return_updated_state_for_leadership_decision_appellant_from_ftpa_submitted_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -85,7 +85,7 @@ public class FtpaAppealDecisionStateHandlerTest {
 
 
     @Test
-    public void should_return_original_state_when_conditions_not_met() {
+    void should_return_original_state_when_conditions_not_met() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -103,7 +103,7 @@ public class FtpaAppealDecisionStateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler
             .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
@@ -119,7 +119,7 @@ public class FtpaAppealDecisionStateHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -143,7 +143,7 @@ public class FtpaAppealDecisionStateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaAppealDecisionStateHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

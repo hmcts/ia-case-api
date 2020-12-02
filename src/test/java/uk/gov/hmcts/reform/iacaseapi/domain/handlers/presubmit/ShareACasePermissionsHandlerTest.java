@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRet
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ShareACasePermissionsHandlerTest {
+class ShareACasePermissionsHandlerTest {
 
     @Mock
     CcdUpdater ccdUpdater;
@@ -99,7 +99,7 @@ public class ShareACasePermissionsHandlerTest {
     }
 
     @Test
-    public void should_not_invoke_ccd_updater_when_user_is_not_valid() {
+    void should_not_invoke_ccd_updater_when_user_is_not_valid() {
 
         DynamicList dynamicList = new DynamicList(
             new Value("injectedUserId", "injectedUserEmail@example.com"),
@@ -115,7 +115,7 @@ public class ShareACasePermissionsHandlerTest {
     }
 
     @Test
-    public void should_not_invoke_ccd_updater_when_user_is_non_active() {
+    void should_not_invoke_ccd_updater_when_user_is_non_active() {
 
         DynamicList dynamicList = new DynamicList(
             new Value(someUserId2, someUserEmail2),
@@ -130,7 +130,7 @@ public class ShareACasePermissionsHandlerTest {
     }
 
     @Test
-    public void should_invoke_ccd_updater_when_user_is_valid() {
+    void should_invoke_ccd_updater_when_user_is_valid() {
 
         shareACasePermissionsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -138,7 +138,7 @@ public class ShareACasePermissionsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -162,7 +162,7 @@ public class ShareACasePermissionsHandlerTest {
 
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> shareACasePermissionsHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")

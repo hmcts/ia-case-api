@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadAddendumEvidenceHandlerTest {
+class UploadAddendumEvidenceHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -91,7 +91,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
+    void should_append_new_evidence_to_existing_additional_evidence_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> additionalEvidence =
             Arrays.asList(
@@ -141,7 +141,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_additional_evidence_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> additionalEvidence =
             Arrays.asList(new IdValue<>("1", additionalEvidence1));
@@ -185,7 +185,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(asylumCase.read(ADDENDUM_EVIDENCE)).thenReturn(Optional.empty());
 
@@ -195,7 +195,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void should_throw_when_is_appellant_respondent_is_not_present() {
+    void should_throw_when_is_appellant_respondent_is_not_present() {
         List<IdValue<DocumentWithDescription>> additionalEvidence =
             Arrays.asList(new IdValue<>("1", additionalEvidence1));
 
@@ -208,7 +208,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadAddendumEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -221,7 +221,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -245,7 +245,7 @@ public class UploadAddendumEvidenceHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadAddendumEvidenceHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

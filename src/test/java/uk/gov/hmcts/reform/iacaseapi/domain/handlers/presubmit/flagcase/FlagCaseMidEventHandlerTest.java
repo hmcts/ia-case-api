@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class FlagCaseMidEventHandlerTest {
+class FlagCaseMidEventHandlerTest {
 
     private final FlagCaseMidEventHandler handler = new FlagCaseMidEventHandler();
     @Mock
@@ -44,7 +44,7 @@ public class FlagCaseMidEventHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
+    void canHandle(CanHandleScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.event);
 
         boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
@@ -68,7 +68,7 @@ public class FlagCaseMidEventHandlerTest {
         "CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, some unaccompaniedMinor additional info, UNACCOMPANIED_MINOR",
         "CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, some setAsideReheard additional info, SET_ASIDE_REHEARD"
     })
-    public void given_existing_flag_should_populate_additional_information_field(
+    void given_existing_flag_should_populate_additional_information_field(
         AsylumCaseFieldDefinition caseFlagFieldDefinition, String existingAdditionalInfo, CaseFlagType caseFlagType) {
 
         given(callback.getEvent()).willReturn(FLAG_CASE);
@@ -88,7 +88,7 @@ public class FlagCaseMidEventHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -112,7 +112,7 @@ public class FlagCaseMidEventHandlerTest {
         "FLAG_CASE, ABOUT_TO_START",
         "START_APPEAL, MID_EVENT"
     })
-    public void should_throw_illegal_state_exception(Event event, PreSubmitCallbackStage callbackStage) {
+    void should_throw_illegal_state_exception(Event event, PreSubmitCallbackStage callbackStage) {
         given(callback.getEvent()).willReturn(event);
 
         assertThatThrownBy(() -> handler.handle(callbackStage, callback))

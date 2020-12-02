@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
-public class BundleDocumentTest {
+class BundleDocumentTest {
 
     private final String name = "name";
     private final String description = "description";
@@ -17,7 +17,7 @@ public class BundleDocumentTest {
 
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(sourceDocument, bundleDocument.getSourceDocument());
         assertEquals(description, bundleDocument.getDescription());

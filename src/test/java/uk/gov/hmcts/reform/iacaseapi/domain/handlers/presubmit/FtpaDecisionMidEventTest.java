@@ -56,7 +56,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaDecisionMidEventTest {
+class FtpaDecisionMidEventTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -77,7 +77,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -101,7 +101,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaDecisionMidEvent.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -113,7 +113,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaDecisionMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -125,7 +125,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_applicant_type_missing() {
+    void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
@@ -136,7 +136,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_error_when_there_is_no_ftpa_appellant_application_to_record_decision() {
+    void should_error_when_there_is_no_ftpa_appellant_application_to_record_decision() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -154,7 +154,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_error_when_there_is_no_ftpa_respondent_application_to_record_decision() {
+    void should_error_when_there_is_no_ftpa_respondent_application_to_record_decision() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -172,7 +172,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_record_ftpa_appellant_decision() {
+    void should_successfully_record_ftpa_appellant_decision() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -188,7 +188,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_record_ftpa_respondent_decision() {
+    void should_successfully_record_ftpa_respondent_decision() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -204,7 +204,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_ftpa_appellant_decision_reasons_notes_visibility_when_granted() {
+    void should_successfully_set_ftpa_appellant_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -225,7 +225,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_ftpa_appellant_decision_reasons_notes_visibility_when_partially_granted() {
+    void should_successfully_set_ftpa_appellant_decision_reasons_notes_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -246,7 +246,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_ftpa_respondent_decision_reasons_notes_visibility_when_granted() {
+    void should_successfully_set_ftpa_respondent_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -267,7 +267,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_ftpa_respondent_decision_reasons_notes_visibility_when_partially_granted() {
+    void should_successfully_set_ftpa_respondent_decision_reasons_notes_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -288,7 +288,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_granted() {
+    void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -309,7 +309,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_partially_granted() {
+    void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -330,7 +330,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_refused() {
+    void should_successfully_set_appellant_notice_of_decision_set_aside_visibility_when_refused() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -351,7 +351,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_granted() {
+    void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -372,7 +372,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_partially_granted() {
+    void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -393,7 +393,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_refused() {
+    void should_successfully_set_respondent_notice_of_decision_set_aside_visibility_when_refused() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -415,7 +415,7 @@ public class FtpaDecisionMidEventTest {
 
 
     @Test
-    public void should_successfully_set_appellant_decision_objections_page_visibility_when_set_aside_is_yes() {
+    void should_successfully_set_appellant_decision_objections_page_visibility_when_set_aside_is_yes() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -436,7 +436,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_objections_page_visibility_when_set_aside_is_yes() {
+    void should_successfully_set_respondent_decision_objections_page_visibility_when_set_aside_is_yes() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -457,7 +457,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_decision_objections_page_visibility_when_reheard_rule35() {
+    void should_successfully_set_appellant_decision_objections_page_visibility_when_reheard_rule35() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -478,7 +478,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_objections_page_visibility_when_reheard_rule35() {
+    void should_successfully_set_respondent_decision_objections_page_visibility_when_reheard_rule35() {
 
         when(callback.getEvent()).thenReturn(Event.LEADERSHIP_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -499,7 +499,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
+    void should_successfully_set_appellant_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -520,7 +520,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_reasons_notes_visibility_when_granted() {
+    void should_successfully_set_respondent_decision_reasons_notes_visibility_when_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -541,7 +541,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_decision_reasons_notes_visibility_when_partially_granted() {
+    void should_successfully_set_appellant_decision_reasons_notes_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -562,7 +562,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_reasons_notes_visibility_when_partially_granted() {
+    void should_successfully_set_respondent_decision_reasons_notes_visibility_when_partially_granted() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -584,7 +584,7 @@ public class FtpaDecisionMidEventTest {
 
 
     @Test
-    public void should_successfully_set_appellant_decision_listing_visibility_when_reheard_rule35() {
+    void should_successfully_set_appellant_decision_listing_visibility_when_reheard_rule35() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -605,7 +605,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_listing_visibility_when_reheard_rule35() {
+    void should_successfully_set_respondent_decision_listing_visibility_when_reheard_rule35() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
@@ -626,7 +626,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_appellant_decision_listing_visibility_when_reheard_rule32() {
+    void should_successfully_set_appellant_decision_listing_visibility_when_reheard_rule32() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.APPELLANT.toString()));
@@ -647,7 +647,7 @@ public class FtpaDecisionMidEventTest {
     }
 
     @Test
-    public void should_successfully_set_respondent_decision_listing_visibility_when_reheard_rule32() {
+    void should_successfully_set_respondent_decision_listing_visibility_when_reheard_rule32() {
 
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));

@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
 @ExtendWith(MockitoExtension.class)
-public class TimedEventServiceSchedulerTest {
+class TimedEventServiceSchedulerTest {
 
     TimedEventServiceScheduler timedEventServiceScheduler;
     @Mock
@@ -40,7 +40,7 @@ public class TimedEventServiceSchedulerTest {
 
 
     @Test
-    public void should_invoke_timed_event_api() {
+    void should_invoke_timed_event_api() {
 
         TimedEvent timedEvent = new TimedEvent(
             "someId",
@@ -57,7 +57,7 @@ public class TimedEventServiceSchedulerTest {
     }
 
     @Test
-    public void should_rethrow_exception_from_api() {
+    void should_rethrow_exception_from_api() {
 
         TimedEvent timedEvent = new TimedEvent(
             "someId",

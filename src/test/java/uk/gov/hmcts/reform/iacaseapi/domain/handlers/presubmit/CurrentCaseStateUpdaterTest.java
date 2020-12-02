@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CurrentCaseStateUpdaterTest {
+class CurrentCaseStateUpdaterTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -49,7 +49,7 @@ public class CurrentCaseStateUpdaterTest {
         new CurrentCaseStateUpdater();
 
     @Test
-    public void should_set_case_building_ready_for_submission_flag_to_yes() {
+    void should_set_case_building_ready_for_submission_flag_to_yes() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -79,7 +79,7 @@ public class CurrentCaseStateUpdaterTest {
     }
 
     @Test
-    public void should_not_set_case_officer_state_when_overview_disabled() {
+    void should_not_set_case_officer_state_when_overview_disabled() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -113,7 +113,7 @@ public class CurrentCaseStateUpdaterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> currentCaseStateUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -121,7 +121,7 @@ public class CurrentCaseStateUpdaterTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -144,7 +144,7 @@ public class CurrentCaseStateUpdaterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> currentCaseStateUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

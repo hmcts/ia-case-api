@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DraftHearingRequirementsPreparerTest {
+class DraftHearingRequirementsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -51,7 +51,7 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_the_correct_min_max_date_range() {
+    void should_return_the_correct_min_max_date_range() {
 
         LocalDate localDate = LocalDate.parse("2019-11-10");
 
@@ -61,7 +61,7 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_write_date_description_field() {
+    void should_write_date_description_field() {
 
         LocalDate localDate = LocalDate.now();
 
@@ -76,7 +76,7 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> draftHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -85,7 +85,7 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -109,7 +109,7 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> draftHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CallbackControllerAdviceTest {
+class CallbackControllerAdviceTest {
 
     @Mock
     HttpServletRequest request;
@@ -35,7 +35,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_required_missing_field_exception() {
+    void should_handle_required_missing_field_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new RequiredFieldMissingException("submission out of time is a required field"));
@@ -45,7 +45,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_illegal_state_exception() {
+    void should_handle_illegal_state_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new IllegalStateException("addCaseNoteSubject is not present"));
@@ -55,7 +55,7 @@ public class CallbackControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_illegal_argument_exception() {
+    void should_handle_illegal_argument_exception() {
 
         ResponseEntity<String> responseEntity = callbackControllerAdvice
             .handleExceptions(request, new IllegalArgumentException("Hearing centre not found"));

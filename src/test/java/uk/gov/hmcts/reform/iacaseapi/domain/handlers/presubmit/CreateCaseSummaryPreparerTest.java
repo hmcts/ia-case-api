@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CreateCaseSummaryPreparerTest {
+class CreateCaseSummaryPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -50,7 +50,7 @@ public class CreateCaseSummaryPreparerTest {
     }
 
     @Test
-    public void should_not_clear_the_existing_summary_document() {
+    void should_not_clear_the_existing_summary_document() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -67,7 +67,7 @@ public class CreateCaseSummaryPreparerTest {
     }
 
     @Test
-    public void should_clear_the_existing_summary_document_for_reheard() {
+    void should_clear_the_existing_summary_document_for_reheard() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -86,7 +86,7 @@ public class CreateCaseSummaryPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> createCaseSummaryPreparer.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -98,7 +98,7 @@ public class CreateCaseSummaryPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -122,7 +122,7 @@ public class CreateCaseSummaryPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> createCaseSummaryPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

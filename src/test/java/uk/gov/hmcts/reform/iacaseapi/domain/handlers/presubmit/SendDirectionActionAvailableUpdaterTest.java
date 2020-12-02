@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDirectionActionAvailableUpdaterTest {
+class SendDirectionActionAvailableUpdaterTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -41,7 +41,7 @@ public class SendDirectionActionAvailableUpdaterTest {
         new SendDirectionActionAvailableUpdater();
 
     @Test
-    public void should_set_action_available_flag_to_yes_when_state_applies() {
+    void should_set_action_available_flag_to_yes_when_state_applies() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -81,7 +81,7 @@ public class SendDirectionActionAvailableUpdaterTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> sendDirectionActionAvailableUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -90,7 +90,7 @@ public class SendDirectionActionAvailableUpdaterTest {
     }
 
     @Test
-    public void it_can_handle_callback_for_all_events() {
+    void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
 
@@ -113,7 +113,7 @@ public class SendDirectionActionAvailableUpdaterTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> sendDirectionActionAvailableUpdater.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

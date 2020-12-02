@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DocumentReceiverTest {
+class DocumentReceiverTest {
 
     @Mock
     private DateProvider dateProvider;
@@ -43,7 +43,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_receive_document_parts_by_adding_metadata() {
+    void should_receive_document_parts_by_adding_metadata() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -66,7 +66,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_try_to_receive_document_by_adding_metadata() {
+    void should_try_to_receive_document_by_adding_metadata() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -93,7 +93,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_try_to_receive_all_documents_by_adding_metadata() {
+    void should_try_to_receive_all_documents_by_adding_metadata() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -123,7 +123,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_try_to_receive_all_documents_by_adding_metadata_with_supplied_by() {
+    void should_try_to_receive_all_documents_by_adding_metadata_with_supplied_by() {
 
         Document document = mock(Document.class);
         String description = "Description";
@@ -154,7 +154,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_not_receive_document_if_file_is_not_actually_uploaded() {
+    void should_not_receive_document_if_file_is_not_actually_uploaded() {
 
         DocumentWithDescription documentWithDescription = mock(DocumentWithDescription.class);
         DocumentTag tag = DocumentTag.RESPONDENT_EVIDENCE;
@@ -171,7 +171,7 @@ public class DocumentReceiverTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> documentReceiver.receive(null, "description", DocumentTag.CASE_ARGUMENT))
             .hasMessage("document must not be null")

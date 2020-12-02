@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class EditDocsAuditServiceTest {
+class EditDocsAuditServiceTest {
 
     private static IdValue<HasDocument> idValue1;
     private static IdValue<HasDocument> idValue2;
@@ -39,7 +39,7 @@ public class EditDocsAuditServiceTest {
 
     @ParameterizedTest
     @MethodSource({"generateNewFileAddedForNameScenarios", "generateFileUpdatedForNameScenarios", "generateDeleteFileForNameScenarios"})
-    public void getUpdatedAndDeletedDocNamesForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
+    void getUpdatedAndDeletedDocNamesForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
                                                           List<IdValue<DocumentWithMetadata>> idValuesBefore,
                                                           AsylumCaseFieldDefinition caseFieldDefinition,
                                                           List<String> expectedNames) {
@@ -102,7 +102,7 @@ public class EditDocsAuditServiceTest {
 
     @ParameterizedTest
     @MethodSource({"generateNewFileAddedScenarios", "generateFileUpdatedScenarios", "generateDeleteFileScenarios"})
-    public void getUpdatedAndDeletedDocIdsForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
+    void getUpdatedAndDeletedDocIdsForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
                                                         List<IdValue<DocumentWithMetadata>> idValuesBefore,
                                                         AsylumCaseFieldDefinition caseFieldDefinition,
                                                         List<String> expectedIds) {

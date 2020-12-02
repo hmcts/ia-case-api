@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class AdjournWithoutDateHandlerTest {
+class AdjournWithoutDateHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -49,7 +49,7 @@ public class AdjournWithoutDateHandlerTest {
 
     @ParameterizedTest
     @MethodSource("generateTestScenarios")
-    public void it_can_handle_callback(TestScenario scenario) {
+    void it_can_handle_callback(TestScenario scenario) {
         given(callback.getEvent()).willReturn(scenario.getEvent());
 
         boolean actualResult = handler.canHandle(scenario.callbackStage, callback);
@@ -62,7 +62,7 @@ public class AdjournWithoutDateHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -82,7 +82,7 @@ public class AdjournWithoutDateHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -95,7 +95,7 @@ public class AdjournWithoutDateHandlerTest {
     }
 
     @Test
-    public void sets_hearing_date_to_adjourned() {
+    void sets_hearing_date_to_adjourned() {
         given(callback.getEvent()).willReturn(Event.ADJOURN_HEARING_WITHOUT_DATE);
         given(callback.getCaseDetails()).willReturn(caseDetails);
         given(caseDetails.getCaseData()).willReturn(asylumCase);

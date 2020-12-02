@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AppealSavedConfirmationTest {
+class AppealSavedConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -39,7 +39,7 @@ public class AppealSavedConfirmationTest {
         new AppealSavedConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         long caseId = 1234;
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
@@ -76,7 +76,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_offline_by_card() {
+    void should_return_confirmation_for_pay_offline_by_card() {
 
         long caseId = 1234;
 
@@ -115,7 +115,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_now_hu() {
+    void should_return_confirmation_for_pay_now_hu() {
 
         long caseId = 1234;
 
@@ -155,7 +155,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_pay_now_pa() {
+    void should_return_confirmation_for_pay_now_pa() {
 
         long caseId = 1234;
 
@@ -195,7 +195,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_submit() {
+    void should_return_confirmation_for_submit() {
 
         long caseId = 1234;
 
@@ -234,7 +234,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_PA_pay_for() {
+    void should_return_confirmation_for_PA_pay_for() {
 
         long caseId = 1234;
 
@@ -261,7 +261,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_PA_submit() {
+    void should_return_confirmation_for_PA_submit() {
 
         long caseId = 1234;
 
@@ -288,7 +288,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_EA_submit() {
+    void should_return_confirmation_for_EA_submit() {
 
         long caseId = 1234;
 
@@ -314,7 +314,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> appealSavedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -322,7 +322,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -342,7 +342,7 @@ public class AppealSavedConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> appealSavedConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

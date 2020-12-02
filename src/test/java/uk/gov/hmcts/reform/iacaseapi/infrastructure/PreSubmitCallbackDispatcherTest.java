@@ -60,7 +60,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.CcdEventAuthorizor;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class PreSubmitCallbackDispatcherTest {
+class PreSubmitCallbackDispatcherTest {
 
     @Mock
     private CcdEventAuthorizor ccdEventAuthorizor;
@@ -112,7 +112,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_add_errors_if_events_invalid_for_journey_type() {
+    void should_add_errors_if_events_invalid_for_journey_type() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(caseData);
         when(eventValidChecker.check(any(Callback.class))).thenReturn(new EventValid("Invalid reason"));
@@ -124,7 +124,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_dispatch_callback_to_handlers_according_to_priority_collecting_any_error_messages() {
+    void should_dispatch_callback_to_handlers_according_to_priority_collecting_any_error_messages() {
 
         Set<String> expectedErrors =
             ImmutableSet.of("error1", "error2", "error3", "error4");
@@ -183,7 +183,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_only_dispatch_callback_to_handlers_that_can_handle_it() {
+    void should_only_dispatch_callback_to_handlers_that_can_handle_it() {
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -235,7 +235,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_dispatch_to_handlers_if_user_not_authorized_for_event() {
+    void should_not_dispatch_to_handlers_if_user_not_authorized_for_event() {
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -262,7 +262,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_error_if_no_handlers_are_provided() {
+    void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
             new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(), eventValidChecker,
@@ -295,7 +295,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_ccd_event_authorizor() {
+    void should_not_allow_null_ccd_event_authorizor() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, Collections.emptyList(), eventValidChecker,
             Collections.emptyList()))
@@ -304,7 +304,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_handlers() {
+    void should_not_allow_null_handlers() {
 
         assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker, null))
             .hasMessage("callbackHandlers must not be null")
@@ -312,7 +312,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -324,7 +324,7 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
-    public void should_sort_handlers_by_name() {
+    void should_sort_handlers_by_name() {
         PreSubmitCallbackHandler<AsylumCase> h1 = new AppealGroundsForDisplayFormatter();
         PreSubmitCallbackHandler<AsylumCase> h2 =
             new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));

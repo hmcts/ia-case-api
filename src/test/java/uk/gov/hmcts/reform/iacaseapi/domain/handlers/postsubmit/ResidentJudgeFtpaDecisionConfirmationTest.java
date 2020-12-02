@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ResidentJudgeFtpaDecisionConfirmationTest {
+class ResidentJudgeFtpaDecisionConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -42,7 +42,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
         new ResidentJudgeFtpaDecisionConfirmation();
 
     @Test
-    public void should_return_grant_confirmation() {
+    void should_return_grant_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -72,7 +72,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_return_partially_granted_confirmation() {
+    void should_return_partially_granted_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -103,7 +103,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_return_refused_confirmation() {
+    void should_return_refused_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -133,7 +133,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_return_reheardRule32_confirmation() {
+    void should_return_reheardRule32_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -164,7 +164,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_return_reheardRule35_confirmation() {
+    void should_return_reheardRule35_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -196,7 +196,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
 
 
     @Test
-    public void should_return_remadeRule32_confirmation() {
+    void should_return_remadeRule32_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -226,7 +226,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_throw_if_ftpa_applicant_type_missing() {
+    void should_throw_if_ftpa_applicant_type_missing() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
@@ -237,7 +237,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -251,7 +251,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -274,7 +274,7 @@ public class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> residentJudgeFtpaDecisionConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

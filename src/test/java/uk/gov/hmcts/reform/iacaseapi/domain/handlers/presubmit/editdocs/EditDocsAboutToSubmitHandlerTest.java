@@ -46,7 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
-public class EditDocsAboutToSubmitHandlerTest {
+class EditDocsAboutToSubmitHandlerTest {
 
     public static final String ID_VALUE = "0a165fa5-086b-49d6-8b7e-f00ed34d941a";
     @Mock
@@ -68,7 +68,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         "START_APPEAL, ABOUT_TO_SUBMIT, false",
         "EDIT_DOCUMENTS, ABOUT_TO_START, false"
     })
-    public void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
+    void canHandleHappyPathScenarios(Event event, PreSubmitCallbackStage callbackStage, boolean expectedResult) {
         given(callback.getEvent()).willReturn(event);
 
         boolean actualResult = editDocsAboutToSubmitHandler.canHandle(callbackStage, callback);
@@ -81,7 +81,7 @@ public class EditDocsAboutToSubmitHandlerTest {
         ", , callbackStage must not be null",
         "ABOUT_TO_SUBMIT, , callback must not be null"
     })
-    public void canHandleCornerCaseScenarios(PreSubmitCallbackStage callbackStage,
+    void canHandleCornerCaseScenarios(PreSubmitCallbackStage callbackStage,
                                              Callback<AsylumCase> callback,
                                              String expectedExceptionMessage) {
         try {
@@ -93,7 +93,7 @@ public class EditDocsAboutToSubmitHandlerTest {
 
     @ParameterizedTest
     @MethodSource({"generateNewFileAddedScenario", "generateFileUpdatedScenario", "generateDeletedFileScenario"})
-    public void handle(AsylumCase asylumCase,
+    void handle(AsylumCase asylumCase,
                        AsylumCase asylumCaseBefore,
                        AsylumCaseFieldDefinition caseFieldDefinition,
                        String expectedSuppliedBy,

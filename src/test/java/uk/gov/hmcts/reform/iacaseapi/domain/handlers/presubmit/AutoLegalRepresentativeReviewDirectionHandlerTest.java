@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AutoLegalRepresentativeReviewDirectionHandlerTest {
+class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
     private static final int REVIEW_DUE_IN_DAYS = 5;
 
@@ -72,7 +72,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     }
 
     @Test
-    public void should_append_new_direction_to_existing_directions_for_the_case() {
+    void should_append_new_direction_to_existing_directions_for_the_case() {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -114,7 +114,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     }
 
     @Test
-    public void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    void should_add_new_direction_to_the_case_when_no_directions_exist() {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -162,7 +162,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -177,7 +177,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -201,7 +201,7 @@ public class AutoLegalRepresentativeReviewDirectionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> autoLegalRepresentativeReviewDirectionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

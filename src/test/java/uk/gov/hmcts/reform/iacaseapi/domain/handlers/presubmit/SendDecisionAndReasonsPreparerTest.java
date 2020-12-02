@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class SendDecisionAndReasonsPreparerTest {
+class SendDecisionAndReasonsPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -56,7 +56,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void should_clear_existing_fields_when_set_aside_reheard_flag_exists() {
+    void should_clear_existing_fields_when_set_aside_reheard_flag_exists() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -76,7 +76,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void should_hold_on_to_previous_fields_when_set_aside_reheard_flag_does_not_exist() {
+    void should_hold_on_to_previous_fields_when_set_aside_reheard_flag_does_not_exist() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -96,7 +96,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void cannot_handle_if_feature_flag_disabled() {
+    void cannot_handle_if_feature_flag_disabled() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DECISION_AND_REASONS);
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
@@ -108,7 +108,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(
             () -> sendDecisionAndReasonsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -117,7 +117,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
@@ -138,7 +138,7 @@ public class SendDecisionAndReasonsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> sendDecisionAndReasonsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

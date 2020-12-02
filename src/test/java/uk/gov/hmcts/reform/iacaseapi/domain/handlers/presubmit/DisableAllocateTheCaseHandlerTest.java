@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DisableAllocateTheCaseHandlerTest {
+class DisableAllocateTheCaseHandlerTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -50,7 +50,7 @@ public class DisableAllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void adds_error_handled() {
+    void adds_error_handled() {
         when(callback.getEvent()).thenReturn(ALLOCATE_THE_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -61,7 +61,7 @@ public class DisableAllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
         assertThatThrownBy(() -> disableAllocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -72,7 +72,7 @@ public class DisableAllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -96,7 +96,7 @@ public class DisableAllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void cannot_handle_if_feature_Enabled() {
+    void cannot_handle_if_feature_Enabled() {
         when(callback.getEvent()).thenReturn(ALLOCATE_THE_CASE);
         when(featureToggler.getValue("allocate-a-case-feature", false)).thenReturn(true);
         boolean canHandle = disableAllocateTheCaseHandler.canHandle(ABOUT_TO_START, callback);
@@ -105,7 +105,7 @@ public class DisableAllocateTheCaseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> disableAllocateTheCaseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

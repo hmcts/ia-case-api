@@ -48,7 +48,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CreateCaseSummaryHandlerTest {
+class CreateCaseSummaryHandlerTest {
 
     @Mock
     private DocumentReceiver documentReceiver;
@@ -101,7 +101,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_append_case_summary_to_hearing_documents_for_the_case() {
+    void should_append_case_summary_to_hearing_documents_for_the_case() {
 
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
@@ -130,7 +130,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_append_case_summary_to_reheard_hearing_documents_for_the_case() {
+    void should_append_case_summary_to_reheard_hearing_documents_for_the_case() {
 
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.of(existingHearingDocuments));
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
@@ -161,7 +161,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_add_case_summary_to_the_case_when_no_hearing_documents_exist() {
+    void should_add_case_summary_to_the_case_when_no_hearing_documents_exist() {
 
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
@@ -197,7 +197,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_add_case_summary_to_the_case_when_no_reheard_hearing_documents_exist() {
+    void should_add_case_summary_to_the_case_when_no_reheard_hearing_documents_exist() {
 
         when(asylumCase.read(REHEARD_HEARING_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.of(caseSummaryDocument));
@@ -236,7 +236,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_throw_when_case_summary_document_is_not_present() {
+    void should_throw_when_case_summary_document_is_not_present() {
 
         when(asylumCase.read(CASE_SUMMARY_DOCUMENT, Document.class)).thenReturn(Optional.empty());
 
@@ -246,7 +246,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> createCaseSummaryHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -259,7 +259,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -283,7 +283,7 @@ public class CreateCaseSummaryHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> createCaseSummaryHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
