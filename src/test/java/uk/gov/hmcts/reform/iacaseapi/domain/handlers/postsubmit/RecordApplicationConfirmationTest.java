@@ -1,25 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.GRANTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationDecision.REFUSED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.CHANGE_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.TIME_EXTENSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.TRANSFER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType.WITHDRAW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TYPE;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -27,9 +31,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RecordApplicationConfirmationTest {
+class RecordApplicationConfirmationTest {
 
     public static final String YOU_VE_RECORDED_AN_APPLICATION = "# You've recorded an application";
     @Mock
@@ -54,7 +58,7 @@ public class RecordApplicationConfirmationTest {
     private long caseId = 1234;
 
     @Test
-    public void should_return_confirmation_application_refused() {
+    void should_return_confirmation_application_refused() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -70,21 +74,20 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "A notification will be sent to both parties, informing them that an application was requested and refused. The case will progress as usual.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_edit_listing() {
+    void should_return_confirmation_application_edit_listing() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -100,21 +103,20 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The application decision has been recorded and is now available in the applications tab. Contact the listing team to relist the case. Once the case has been relisted, a new hearing notice will be issued.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_date() {
+    void should_return_confirmation_application_granted_change_date() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -131,21 +133,20 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [change the direction due date](/case/IA/Asylum/" + caseId + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [change the direction due date](/case/IA/Asylum/" + caseId
+                + "/trigger/changeDirectionDueDate). You can also view the application decision in the Applications tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_granted_end_appeal() {
+    void should_return_confirmation_application_granted_end_appeal() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -162,21 +163,19 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [end the appeal](/case/IA/Asylum/" + caseId + "/trigger/endAppeal).");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_granted_update_hearing_requirements() {
+    void should_return_confirmation_application_granted_update_hearing_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -193,21 +192,21 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [update the hearing requirements](/case/IA/Asylum/" + caseId + "/trigger/updateHearingRequirements) based on the new information provided in the application. The application decision is available to view in the Application tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [update the hearing requirements](/case/IA/Asylum/" + caseId
+                + "/trigger/updateHearingRequirements) based on the new information provided in the application."
+                + " The application decision is available to view in the Application tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_granted_change_hearing_centre() {
+    void should_return_confirmation_application_granted_change_hearing_centre() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -224,21 +223,20 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("You must now [change the designated hearing centre](/case/IA/Asylum/" + caseId + "/trigger/changeHearingCentre) based on the new information provided in the application. The application decision is available to view in the Application tab.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("You must now [change the designated hearing centre](/case/IA/Asylum/" + caseId
+                + "/trigger/changeHearingCentre) based on the new information provided in the application. The application decision is available to view in the Application tab.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void should_return_confirmation_application_granted_edit_appeal_after_submit() {
+    void should_return_confirmation_application_granted_edit_appeal_after_submit() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -255,21 +253,22 @@ public class RecordApplicationConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString(YOU_VE_RECORDED_AN_APPLICATION)
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains(YOU_VE_RECORDED_AN_APPLICATION);
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("The application decision has been recorded and is available in the applications tab. You must now [edit the appeal details](/case/IA/Asylum/" + caseId +  "/trigger/editAppealAfterSubmit) based on the new information provided in the application.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "The application decision has been recorded and is available in the applications tab. You must now [edit the appeal details](/case/IA/Asylum/"
+                    + caseId
+                    + "/trigger/editAppealAfterSubmit) based on the new information provided in the application.");
 
         verify(asylumCase).clear(APPLICATION_DECISION);
         verify(asylumCase).clear(APPLICATION_TYPE);
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -277,7 +276,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -297,7 +296,7 @@ public class RecordApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordApplicationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

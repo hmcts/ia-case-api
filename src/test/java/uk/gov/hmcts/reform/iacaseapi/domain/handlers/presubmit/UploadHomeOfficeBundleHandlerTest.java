@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -20,13 +20,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -41,27 +43,40 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeBundleHandlerTest {
+class UploadHomeOfficeBundleHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithDescription respondentEvidence1;
-    @Mock private DocumentWithDescription respondentEvidence2;
-    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DocumentWithDescription respondentEvidence1;
+    @Mock
+    private DocumentWithDescription respondentEvidence2;
+    @Mock
+    private DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
 
     private UploadHomeOfficeBundleHandler uploadHomeOfficeBundleHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         uploadHomeOfficeBundleHandler =
             new UploadHomeOfficeBundleHandler(
@@ -71,7 +86,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
+    void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> respondentEvidence =
             Arrays.asList(
@@ -118,9 +133,10 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
 
-        List<IdValue<DocumentWithDescription>> respondentEvidence = singletonList(new IdValue<>("1", respondentEvidence1));
+        List<IdValue<DocumentWithDescription>> respondentEvidence =
+            singletonList(new IdValue<>("1", respondentEvidence1));
         List<DocumentWithMetadata> respondentEvidenceWithMetadata = singletonList(respondentEvidence1WithMetadata);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -145,7 +161,8 @@ public class UploadHomeOfficeBundleHandlerTest {
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
-        verify(documentsAppender, times(1)).append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
 
         List<IdValue<DocumentWithMetadata>> actualExistingRespondentDocuments =
             existingRespondentDocumentsCaptor
@@ -159,7 +176,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_BUNDLE);
@@ -174,7 +191,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -188,7 +205,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -212,7 +229,7 @@ public class UploadHomeOfficeBundleHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeBundleHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -1,17 +1,23 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -20,35 +26,46 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CcdUpdaterTest {
-
-    private CcdUpdater ccdUpdater;
+class CcdUpdaterTest {
 
     private static final String SERVICE_TOKEN = "ABCDEF";
     private static final String ACCESS_TOKEN = "12345";
     private static final String IDAM_ID_OF_USER_SHARING_CASE = "TEST_ID_SHARING_ACCESS";
     private static final String IDAM_ID_OF_USER_GETTING_ACCESS_TO_CASE = "TEST_ID_GETTING_ACCESS";
-
+    private CcdUpdater ccdUpdater;
     private String ccdUrl = "some-host";
     private String ccdPermissionsApiPath = "some-path";
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private RestTemplate restTemplate;
-    @Mock private ResponseEntity<Object> responseEntity;
+    @Mock
+    private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private RestTemplate restTemplate;
+    @Mock
+    private ResponseEntity<Object> responseEntity;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private UserDetails userDetails;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private UserDetails userDetails;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
@@ -65,7 +82,7 @@ public class CcdUpdaterTest {
     }
 
     @Test
-    public void should_sent_post_to_update_ccd_and_receive_201() {
+    void should_sent_post_to_update_ccd_and_receive_201() {
 
         Value value1 = new Value("another-user-id", "email@somewhere.com");
         Value value2 = new Value(IDAM_ID_OF_USER_GETTING_ACCESS_TO_CASE, "email@somewhere.com");
@@ -104,7 +121,7 @@ public class CcdUpdaterTest {
     }
 
     @Test
-    public void should_handle_when_rest_exception_thrown() {
+    void should_handle_when_rest_exception_thrown() {
 
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
 
@@ -133,8 +150,8 @@ public class CcdUpdaterTest {
         assertThatThrownBy(() -> ccdUpdater.updatePermissions(callback))
             .isInstanceOf(CcdDataIntegrationException.class)
             .hasMessage("Couldn't update CCD case permissions using API: "
-                        + ccdUrl
-                        + ccdPermissionsApiPath)
+                + ccdUrl
+                + ccdPermissionsApiPath)
             .hasCauseInstanceOf(RestClientResponseException.class);
 
         verify(restTemplate)
@@ -149,7 +166,7 @@ public class CcdUpdaterTest {
 
 
     @Test
-    public void should_throw_when_there_is_no_org_list_of_users() {
+    void should_throw_when_there_is_no_org_list_of_users() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -159,12 +176,12 @@ public class CcdUpdaterTest {
         assertThatThrownBy(() -> ccdUpdater.updatePermissions(callback))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS
-                        + " is empty in case data when required.");
+                + " is empty in case data when required.");
 
     }
 
     @Test
-    public void should_throw_when_callback_param_is_null() {
+    void should_throw_when_callback_param_is_null() {
 
         assertThatThrownBy(() -> ccdUpdater.updatePermissions(null))
             .hasMessage("callback must not be null")

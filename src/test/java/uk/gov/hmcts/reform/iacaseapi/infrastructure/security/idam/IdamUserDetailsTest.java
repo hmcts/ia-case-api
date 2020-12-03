@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class IdamUserDetailsTest {
+class IdamUserDetailsTest {
 
     private final String accessToken = "access-token";
     private final String id = "1234";
@@ -26,7 +26,7 @@ public class IdamUserDetailsTest {
         );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(accessToken, userDetails.getAccessToken());
         assertEquals(id, userDetails.getId());

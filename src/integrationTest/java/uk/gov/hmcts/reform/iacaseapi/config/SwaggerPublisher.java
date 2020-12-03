@@ -8,21 +8,27 @@ import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 
 /**
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
 @AutoConfigureMockMvc
-public class SwaggerPublisher extends SpringBootIntegrationTest {
+@SpringJUnitWebConfig
+@SpringBootTest
+@ActiveProfiles("integration")
+public class SwaggerPublisher {
 
     @Autowired
     private MockMvc mvc;
@@ -30,7 +36,7 @@ public class SwaggerPublisher extends SpringBootIntegrationTest {
     @Autowired
     private WebApplicationContext wac;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         WebRequestTrackingFilter filter;
         filter = new WebRequestTrackingFilter();
@@ -38,6 +44,7 @@ public class SwaggerPublisher extends SpringBootIntegrationTest {
         mvc = webAppContextSetup(wac).addFilters(filter).build();
     }
 
+    @DisplayName("Generate swagger documentation")
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void generateDocs() throws Exception {
@@ -52,4 +59,5 @@ public class SwaggerPublisher extends SpringBootIntegrationTest {
         }
 
     }
+
 }

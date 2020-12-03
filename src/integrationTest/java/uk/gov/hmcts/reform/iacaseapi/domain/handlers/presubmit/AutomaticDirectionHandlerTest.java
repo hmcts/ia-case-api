@@ -1,20 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithTimedEventServiceStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -25,7 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
-public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest {
+public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
+    WithServiceAuthStub, WithTimedEventServiceStub {
 
     @MockBean
     private RequestUserAccessTokenProvider requestTokenProvider;
@@ -33,37 +36,22 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest {
     @Autowired
     private AutomaticDirectionRequestingHearingRequirementsHandler handler;
 
-    private String expectedId = "someId";
-    private long caseId = 54321;
-
-    @Before
+    @BeforeEach
     public void setupTimedEventServiceStub() {
-
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
-
-        given.someLoggedIn(userWith()
-            .roles(newHashSet("caseworker-ia", "caseworker-ia-caseofficer"))
-            .forename("Case")
-            .surname("Officer")
-        );
-
-        stubFor(post(urlEqualTo("/timed-event-service/timed-event"))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody("{ \"id\": \"" + expectedId + "\","
-                          + " \"jurisdiction\": \"IA\","
-                          + " \"caseType\": \"Asylum\","
-                          + " \"caseId\": " + caseId + ","
-                          + " \"event\": \"requestHearingRequirementsFeature\","
-                          + " \"scheduledDateTime\": \"2020-05-13T10:00:00Z\" }")));
     }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    public void should_trigger_timed_event_service() {
+    public void should_trigger_timed_event_service(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+
+        addCaseWorkerUserDetailsStub(server);
+        addServiceAuthStub(server);
+        addTimedEventServiceStub(server);
+
         AsylumCase asylumCase = new AsylumCase();
-;
+
         Callback<AsylumCase> callback = new Callback<>(
             new CaseDetails<>(
                 caseId,
@@ -76,7 +64,8 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest {
             Event.REQUEST_RESPONSE_REVIEW
         );
 
-        PreSubmitCallbackResponse<AsylumCase> response = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        PreSubmitCallbackResponse<AsylumCase> response =
+            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         String id = response
             .getData()

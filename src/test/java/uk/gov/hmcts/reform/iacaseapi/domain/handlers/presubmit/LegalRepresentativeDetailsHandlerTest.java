@@ -1,17 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_NAME;
 
 import java.util.Arrays;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -21,19 +34,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class LegalRepresentativeDetailsHandlerTest {
+class LegalRepresentativeDetailsHandlerTest {
 
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private UserDetails userDetails;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private UserDetails userDetails;
 
     private LegalRepresentativeDetailsHandler legalRepresentativeDetailsHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         legalRepresentativeDetailsHandler =
@@ -41,7 +60,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
+    void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -74,7 +93,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
+    void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -107,7 +126,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
+    void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
@@ -128,7 +147,7 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
+    void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
 
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
 
@@ -149,20 +168,22 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(
+            () -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> legalRepresentativeDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -175,7 +196,7 @@ public class LegalRepresentativeDetailsHandlerTest {
                 if (Arrays.asList(
                     Event.SUBMIT_APPEAL,
                     Event.PAY_AND_SUBMIT_APPEAL)
-                        .contains(callback.getEvent())
+                    .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
@@ -189,13 +210,14 @@ public class LegalRepresentativeDetailsHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> legalRepresentativeDetailsHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> legalRepresentativeDetailsHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(
+            () -> legalRepresentativeDetailsHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

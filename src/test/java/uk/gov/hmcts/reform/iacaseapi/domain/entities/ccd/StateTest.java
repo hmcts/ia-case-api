@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class StateTest {
+class StateTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("appealStarted", State.APPEAL_STARTED.toString());
         assertEquals("appealSubmitted", State.APPEAL_SUBMITTED.toString());
         assertEquals("appealSubmittedOutOfTime", State.APPEAL_SUBMITTED_OUT_OF_TIME.toString());
@@ -38,7 +38,7 @@ public class StateTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(29, State.values().length);
     }
 }

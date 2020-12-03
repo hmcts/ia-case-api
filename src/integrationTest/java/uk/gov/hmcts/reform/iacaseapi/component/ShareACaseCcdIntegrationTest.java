@@ -1,18 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.component;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ORG_LIST_OF_USERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -20,23 +20,25 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHeaders;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
 @Slf4j
-public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
+public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+    WithUserDetailsStub, WithReferenceDataStub {
 
     private static final String ACTIVE_USER_ID = "6c4fd62d-9d3c-4d11-962c-57080df16871";
 
@@ -56,42 +58,33 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
     @org.springframework.beans.factory.annotation.Value("${prof.ref.data.path.org.users}")
     private String refDataPath;
 
-    protected ProfessionalUsersResponse prdSuccessResponse;
+    private String prdResponseJson;
 
-    @Before
+    @BeforeEach
     public void setupReferenceDataStub() throws IOException {
 
-        String prdResponseJson =
+        prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
 
         assertThat(prdResponseJson).isNotBlank();
-
-        prdSuccessResponse = objectMapper.readValue(prdResponseJson,
-            ProfessionalUsersResponse.class);
-
-        stubFor(get(urlEqualTo(refDataPath))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(prdResponseJson)));
     }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
+    public void should_return_success_when_user_is_valid_and_201_returned_from_ccd(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
 
         dynamicList = new DynamicList(value2, values);
 
-        String idamUserId = "idam-user-id";
+        //Userdetails stub will always return uid 1
+        String idamUserId = "1";
         long caseId = 9999L;
-        given.someLoggedIn(userWith()
-            .id(idamUserId)
-            .roles(newHashSet("caseworker-ia", "caseworker-ia-legalrep-solicitor"))
-        );
-
         URI uri = buildUri(idamUserId, String.valueOf(caseId));
-
-        prepareCcdDataStoreResponse(uri.getPath(), HttpStatus.CREATED.value());
+        addReferenceCreatedStub(server, uri.getPath());
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(SHARE_A_CASE)
@@ -108,28 +101,25 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
         assertThat(response.getErrors()).isEmpty();
         assertEquals(Optional.empty(), response.getAsylumCase().read(ORG_LIST_OF_USERS));
 
-        verify(1, RequestPatternBuilder.allRequests()
-            .withUrl("/ccd-data-store" + uri.getPath()));
-
     }
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_failure_when_user_is_invalid() {
+    public void should_return_failure_when_user_is_invalid(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
 
         // invalid user is chosen in dropdown
         dynamicList = new DynamicList(value1, values);
 
-        String idamUserId = "idam-user-id";
+        //Userdetails stub will always return uid 1
+        String idamUserId = "1";
         long caseId = 9999L;
-        given.someLoggedIn(userWith()
-            .id(idamUserId)
-            .roles(newHashSet("caseworker-ia", "caseworker-ia-legalrep-solicitor"))
-        );
-
         URI uri = buildUri(idamUserId, String.valueOf(caseId));
-
-        prepareCcdDataStoreResponse(uri.getPath(), HttpStatus.CREATED.value());
+        addReferenceCreatedStub(server, uri.getPath());
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(SHARE_A_CASE)
@@ -145,23 +135,6 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest {
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).contains("You can share a case only with Active Users in your Organization.");
         assertEquals(Optional.empty(), response.getAsylumCase().read(ORG_LIST_OF_USERS));
-
-        verify(0, RequestPatternBuilder.allRequests()
-            .withUrl("/ccd-data-store" + uri.getPath()));
-
-    }
-
-    public void prepareCcdDataStoreResponse(String path, int expectedStatus) {
-
-        String stubPrefix = "/ccd-data-store";
-        log.info("Ccd data store uri being called in test: {}", path);
-
-        stubFor(post(urlEqualTo(stubPrefix + path))
-            .willReturn(aResponse()
-                .withStatus(expectedStatus)
-                .withHeader(HttpHeaders.CONTENT_TYPE,
-                    MediaType.APPLICATION_JSON.toString()))
-        );
 
     }
 

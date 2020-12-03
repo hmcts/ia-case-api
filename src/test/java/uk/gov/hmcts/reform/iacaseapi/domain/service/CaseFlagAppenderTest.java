@@ -1,36 +1,41 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CaseFlagAppenderTest {
-
-    private CaseFlag caseFlag1;
-    private CaseFlag caseFlag2;
-    @Mock private IdValue<CaseFlag> existingCaseFlagById1;
-    @Mock private IdValue<CaseFlag> existingCaseFlagById2;
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CaseFlagAppenderTest {
 
     private final CaseFlagType newCaseFlagType = CaseFlagType.ANONYMITY;
     private final String newCaseFlagAdditionalInformation = "some additional information";
-
+    private CaseFlag caseFlag1;
+    private CaseFlag caseFlag2;
+    @Mock
+    private IdValue<CaseFlag> existingCaseFlagById1;
+    @Mock
+    private IdValue<CaseFlag> existingCaseFlagById2;
     private CaseFlagAppender caseFlagAppender;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         caseFlagAppender = new CaseFlagAppender();
         caseFlag1 = new CaseFlag(CaseFlagType.COMPLEX_CASE, "some info");
@@ -38,7 +43,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_append_new_case_flag_in_first_position() {
+    void should_append_new_case_flag_in_first_position() {
 
         when(existingCaseFlagById1.getValue()).thenReturn(caseFlag1);
         when(existingCaseFlagById2.getValue()).thenReturn(caseFlag2);
@@ -60,7 +65,8 @@ public class CaseFlagAppenderTest {
         assertEquals("1", allCaseFlags.get(2).getId());
 
         assertEquals(newCaseFlagType, allCaseFlags.get(2).getValue().getCaseFlagType());
-        assertEquals(newCaseFlagAdditionalInformation, allCaseFlags.get(2).getValue().getCaseFlagAdditionalInformation());
+        assertEquals(newCaseFlagAdditionalInformation,
+            allCaseFlags.get(2).getValue().getCaseFlagAdditionalInformation());
 
         assertEquals("2", allCaseFlags.get(1).getId());
         assertEquals(caseFlag2, allCaseFlags.get(1).getValue());
@@ -70,7 +76,7 @@ public class CaseFlagAppenderTest {
     }
 
     @Test
-    public void should_return_new_case_flags_if_no_existing_case_flags_present() {
+    void should_return_new_case_flags_if_no_existing_case_flags_present() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.emptyList();
 
         List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
@@ -84,11 +90,12 @@ public class CaseFlagAppenderTest {
 
         assertEquals("1", allCaseFlags.get(0).getId());
         assertEquals(newCaseFlagType, allCaseFlags.get(0).getValue().getCaseFlagType());
-        assertEquals(newCaseFlagAdditionalInformation, allCaseFlags.get(0).getValue().getCaseFlagAdditionalInformation());
+        assertEquals(newCaseFlagAdditionalInformation,
+            allCaseFlags.get(0).getValue().getCaseFlagAdditionalInformation());
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
         List<IdValue<CaseFlag>> existingCaseFlags = Collections.singletonList(existingCaseFlagById1);
 
         assertThatThrownBy(() ->

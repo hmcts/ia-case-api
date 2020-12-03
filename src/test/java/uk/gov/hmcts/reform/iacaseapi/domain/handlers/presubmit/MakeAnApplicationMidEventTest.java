@@ -1,22 +1,44 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_DETAILS_LABEL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_TYPES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
 
-import java.util.*;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -25,33 +47,37 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvider;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MakeAnApplicationMidEventTest {
+class MakeAnApplicationMidEventTest {
 
-    @Mock private Callback callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private FeatureToggler featureToggler;
 
-    @Mock private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
+    @Mock
+    private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
 
     @InjectMocks
     private MakeAnApplicationMidEvent makeAnApplicationMidEvent;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MAKE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @ValueSource(strings = {
         "ADJOURN",
         "EXPEDITE",
         "TIME_EXTENSION",
@@ -64,7 +90,7 @@ public class MakeAnApplicationMidEventTest {
         "WITHDRAW",
         "OTHER"
     })
-    public void should_return_valid_make_an_application_types(String type) {
+    void should_return_valid_make_an_application_types(String type) {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
@@ -112,19 +138,19 @@ public class MakeAnApplicationMidEventTest {
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Explain why you need to expedite the appeal. Include the latest date you would like the appeal to be decided "
-                        + "by and state if you are willing for the appeal to be decided without a hearing.");
+                            + "by and state if you are willing for the appeal to be decided without a hearing.");
                 break;
             case LINK_OR_UNLINK:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Explain why you want to link or unlink this appeal. You must include the appellant name and HMCTS appeal "
-                        + "reference of each appeal you want to link to or unlink from.");
+                            + "reference of each appeal you want to link to or unlink from.");
                 break;
             case JUDGE_REVIEW:
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Tell us which application decision you want to be reviewed by a Judge and explain why you think the "
-                        + "original decision was wrong.");
+                            + "original decision was wrong.");
                 break;
             case REINSTATE:
                 verify(asylumCase, times(1))
@@ -135,7 +161,7 @@ public class MakeAnApplicationMidEventTest {
                 verify(asylumCase, times(1))
                     .write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                         "Tell us which task you need more time to complete, explain why you need more time and include "
-                        + "how much more time you will need."
+                            + "how much more time you will need."
                     );
                 break;
             case TRANSFER:
@@ -169,7 +195,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> makeAnApplicationMidEvent.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -181,7 +207,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> makeAnApplicationMidEvent.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -202,7 +228,7 @@ public class MakeAnApplicationMidEventTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

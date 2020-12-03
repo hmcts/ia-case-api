@@ -1,20 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -24,26 +32,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class MarkPaymentPaidHandlerTest {
+class MarkPaymentPaidHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private MarkPaymentPaidHandler markPaymentPaidHandler =
         new MarkPaymentPaidHandler(true);
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    @Parameters({ "protection", "refusalOfEu", "refusalOfHumanRights" })
-    public void should_throw_error_if_payment_status_is_already_paid(String type) {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"protection", "refusalOfEu", "refusalOfHumanRights"})
+    void should_throw_error_if_payment_status_is_already_paid(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -58,9 +71,9 @@ public class MarkPaymentPaidHandlerTest {
         assertThat(returnedCallbackResponse.getErrors()).contains("The fee for this appeal has already been paid.");
     }
 
-    @Test
-    @Parameters({ "deprivation", "revocationOfProtection" })
-    public void should_throw_error_for_non_payment_appeal(String type) {
+    @ParameterizedTest
+    @ValueSource(strings = {"deprivation", "revocationOfProtection"})
+    void should_throw_error_for_non_payment_appeal(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -75,9 +88,9 @@ public class MarkPaymentPaidHandlerTest {
         assertThat(returnedCallbackResponse.getErrors()).contains("Payment is not required for this type of appeal.");
     }
 
-    @Test
-    @Parameters({ "protection" })
-    public void should_throw_error_for_pa_pay_later(String type) {
+    @ParameterizedTest
+    @ValueSource(strings = {"protection"})
+    void should_throw_error_for_pa_pay_later(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
@@ -94,7 +107,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> markPaymentPaidHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -103,7 +116,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -127,7 +140,7 @@ public class MarkPaymentPaidHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> markPaymentPaidHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

@@ -1,28 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RequestUserAccessTokenProviderTest {
 
-    @Mock private HttpServletRequest httpServletRequest;
+@ExtendWith(MockitoExtension.class)
+class RequestUserAccessTokenProviderTest {
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     private RequestUserAccessTokenProvider requestUserAccessTokenProvider =
         new RequestUserAccessTokenProvider();
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         RequestContextHolder.setRequestAttributes(
@@ -31,7 +35,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_access_token_from_http_request() {
+    void get_access_token_from_http_request() {
 
         String expectedAccessToken = "access-token";
 
@@ -43,7 +47,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void get_missing_access_token_from_http_request_throws_if_not_a_try_attempt() {
+    void get_missing_access_token_from_http_request_throws_if_not_a_try_attempt() {
 
         when(httpServletRequest.getHeader("Authorization")).thenReturn(null);
 
@@ -53,7 +57,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_access_token_from_http_request() {
+    void try_get_access_token_from_http_request() {
 
         String expectedAccessToken = "access-token";
 
@@ -66,7 +70,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void try_get_missing_access_token_from_http_request_returns_empty() {
+    void try_get_missing_access_token_from_http_request_returns_empty() {
 
         when(httpServletRequest.getHeader("Authorization")).thenReturn(null);
 
@@ -76,7 +80,7 @@ public class RequestUserAccessTokenProviderTest {
     }
 
     @Test
-    public void when_no_current_http_request_exists_it_throws() {
+    void when_no_current_http_request_exists_it_throws() {
 
         RequestContextHolder.resetRequestAttributes();
 

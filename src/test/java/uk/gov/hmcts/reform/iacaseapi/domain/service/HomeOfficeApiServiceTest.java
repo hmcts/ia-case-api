@@ -1,25 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class HomeOfficeApiServiceTest {
+class HomeOfficeApiServiceTest {
 
     private static final String ENDPOINT = "some-endpoint";
     private static final String ABOUT_TO_SUBMIT_PATH = "some-path";
@@ -31,7 +31,7 @@ public class HomeOfficeApiServiceTest {
 
     private HomeOfficeApiService homeOfficeApiService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         homeOfficeApiService =
@@ -43,7 +43,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_delegate_callback_to_downstream_api_and_get_response() {
+    void should_delegate_callback_to_downstream_api_and_get_response() {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
@@ -59,7 +59,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> homeOfficeApiService.call(null))
             .hasMessage("callback must not be null")
@@ -67,7 +67,7 @@ public class HomeOfficeApiServiceTest {
     }
 
     @Test
-    public void should_handle_error_from_downstream_api() {
+    void should_handle_error_from_downstream_api() {
 
         when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
             .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));

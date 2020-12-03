@@ -1,21 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -26,32 +32,40 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RequestResponseReviewHandlerTest {
+class RequestResponseReviewHandlerTest {
 
     private static final int DUE_IN_DAYS = 5;
 
-    @Mock private DateProvider dateProvider;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
-    @Captor private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
+    @Captor
+    private ArgumentCaptor<String> asylumCaseValuesArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractorCaptor;
 
     private RequestResponseReviewHandler requestResponseReviewHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         requestResponseReviewHandler =
-                new RequestResponseReviewHandler(DUE_IN_DAYS, dateProvider);
+            new RequestResponseReviewHandler(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
-    public void should_prepare_send_direction_fields() {
+    void should_prepare_send_direction_fields() {
 
-        final String expectedExplanationContains = "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
+        final String expectedExplanationContains =
+            "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2019-09-30";
 
@@ -61,7 +75,7 @@ public class RequestResponseReviewHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -72,33 +86,31 @@ public class RequestResponseReviewHandlerTest {
         List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)),
-                containsString(expectedExplanationContains)
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+            .contains(expectedExplanationContains);
 
         assertThat(
-                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)),
-                containsString(expectedDueDate)
-        );
+            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+            .contains(expectedDueDate);
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
         verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actuall_handle() {
+    void handling_should_throw_if_cannot_actuall_handle() {
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -120,21 +132,21 @@ public class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arugments() {
+    void should_not_allow_null_arugments() {
         assertThatThrownBy(() -> requestResponseReviewHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestResponseReviewHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

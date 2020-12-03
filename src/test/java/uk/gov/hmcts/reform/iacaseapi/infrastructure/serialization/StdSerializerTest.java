@@ -1,31 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.serialization;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class StdSerializerTest {
+@ExtendWith(MockitoExtension.class)
+class StdSerializerTest {
 
-    @Mock private ObjectMapper mapper;
+    @Mock
+    private ObjectMapper mapper;
 
     private StdSerializer<Integer> stdSerializer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         stdSerializer = new StdSerializer<>(mapper);
     }
 
     @Test
-    public void should_serialize_argument_to_string() throws JsonProcessingException {
+    void should_serialize_argument_to_string() throws JsonProcessingException {
 
         Integer source = 123;
         String expectedSerializedSource = "123";
@@ -40,7 +43,7 @@ public class StdSerializerTest {
     }
 
     @Test
-    public void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
+    void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
 
         Integer source = 123;
 

@@ -4,13 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -22,21 +28,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ProfessionalUsersRetrieverTest {
+class ProfessionalUsersRetrieverTest {
 
     private ProfessionalUsersRetriever professionalUsersRetriever;
 
     private String refdataUrl = "http:/some-url";
     private String refdataPath = "/some-path";
 
-    @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock private UserDetailsProvider userDetailsProvider;
-    @Mock private RestTemplate restTemplate;
-    @Mock private ResponseEntity responseEntity;
+    @Mock
+    private AuthTokenGenerator serviceAuthTokenGenerator;
+    @Mock
+    private UserDetailsProvider userDetailsProvider;
+    @Mock
+    private RestTemplate restTemplate;
+    @Mock
+    private ResponseEntity responseEntity;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         professionalUsersRetriever = new ProfessionalUsersRetriever(restTemplate,
@@ -48,7 +58,7 @@ public class ProfessionalUsersRetrieverTest {
     }
 
     @Test
-    public void should_successfully_get_prof_users_response() {
+    void should_successfully_get_prof_users_response() {
 
         final String expectedServiceToken = "ABCDEFG";
         final String expectedAccessToken = "HIJKLMN";

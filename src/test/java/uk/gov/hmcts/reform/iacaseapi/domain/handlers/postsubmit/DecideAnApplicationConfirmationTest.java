@@ -1,26 +1,32 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
@@ -33,21 +39,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(JUnitParamsRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DecideAnApplicationConfirmationTest {
+class DecideAnApplicationConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private DateProvider dateProvider;
+    @Mock
+    private DateProvider dateProvider;
 
     @InjectMocks
     private DecideAnApplicationConfirmation decideAnApplicationConfirmation =
         new DecideAnApplicationConfirmation();
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
@@ -57,8 +68,8 @@ public class DecideAnApplicationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
     }
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @ValueSource(strings = {
         "Adjourn", "Expedite", "Transfer",
         "Link/unlink appeals",
         "Judge's review of application decision",
@@ -68,7 +79,7 @@ public class DecideAnApplicationConfirmationTest {
         "Update hearing requirements",
         "Withdraw"
     })
-    public void should_return_valid_confirmation_message_for_granted(String type) {
+    void should_return_valid_confirmation_message_for_granted(String type) {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
@@ -82,7 +93,8 @@ public class DecideAnApplicationConfirmationTest {
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
         makeAnApplication.setDecision("Granted");
-        final List<IdValue<MakeAnApplication>> makeAnApplications = Arrays.asList(new IdValue<>("1", makeAnApplication));
+        final List<IdValue<MakeAnApplication>> makeAnApplications =
+            Arrays.asList(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -93,122 +105,122 @@ public class DecideAnApplicationConfirmationTest {
 
         assertNotNull(callbackResponse);
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have decided an application")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have decided an application");
 
         switch (type) {
             case "Adjourn":
             case "Expedite":
             case "Transfer":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You need to tell the listing team to relist the case. Once the case is relisted a new Notice of Hearing "
-                        + "will be sent to all parties.")
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            +
+                            "You need to tell the listing team to relist the case. Once the case is relisted a new Notice of Hearing "
+                            + "will be sent to all parties.");
                 break;
 
             case "Link/unlink appeals":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You must now [link the appeal](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                        + " or [unlink the appeal](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal).")
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You must now [link the appeal](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
+                            + " or [unlink the appeal](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal).");
                 break;
 
             case "Judge's review of application decision":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "Both parties will receive a notification detailing your decision"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "Both parties will receive a notification detailing your decision"
+                    );
                 break;
 
             case "Reinstate an ended appeal":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You now need to [reinstate the appeal](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/reinstateAppeal)"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You now need to [reinstate the appeal](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/reinstateAppeal)"
+                    );
                 break;
 
             case "Time extension":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You must now [change the direction's due date](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/changeDirectionDueDate)"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You must now [change the direction's due date](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/changeDirectionDueDate)"
+                    );
                 break;
 
             case "Update appeal details":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You must now [update the appeal details](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/editAppealAfterSubmit)"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You must now [update the appeal details](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/editAppealAfterSubmit)"
+                    );
                 break;
 
             case "Update hearing requirements":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You must now [update the hearing requirements](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/updateHearingRequirements)"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You must now [update the hearing requirements](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/updateHearingRequirements)"
+                    );
                 break;
 
             case "Withdraw":
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                        + "You must now [end the appeal](/case/IA/Asylum/"
-                        + callback.getCaseDetails().getId() + "/trigger/endAppeal)"
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                            + "You must now [end the appeal](/case/IA/Asylum/"
+                            + callback.getCaseDetails().getId() + "/trigger/endAppeal)"
+                    );
                 break;
 
             default:
                 assertThat(
-                    callbackResponse.getConfirmationBody().get(),
-                    containsString(
+                    callbackResponse.getConfirmationBody().get())
+                    .contains(
                         "#### What happens next\n\n"
-                        + "The application decision has been recorded and is now available in the applications tab. "
-                    )
-                );
+                            +
+                            "The application decision has been recorded and is now available in the applications tab. "
+                    );
 
         }
     }
 
     @Test
-    public void should_return_valid_confirmation_message_for_refused() {
+    void should_return_valid_confirmation_message_for_refused() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
         List<IdValue<Document>> evidence =
@@ -222,7 +234,8 @@ public class DecideAnApplicationConfirmationTest {
                 State.LISTING.toString());
         makeAnApplication.setApplicantRole("caseworker-ia-caseofficer");
         makeAnApplication.setDecision("Refused");
-        final List<IdValue<MakeAnApplication>> makeAnApplications = Arrays.asList(new IdValue<>("1", makeAnApplication));
+        final List<IdValue<MakeAnApplication>> makeAnApplications =
+            Arrays.asList(new IdValue<>("1", makeAnApplication));
 
         when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
@@ -231,21 +244,20 @@ public class DecideAnApplicationConfirmationTest {
 
         assertNotNull(callbackResponse);
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("You have decided an application")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have decided an application");
+
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "#### What happens next\n\n"
-                + "The application decision has been recorded and is now available in the applications tab. "
-                + "Both parties will be notified that the application was refused."
-            )
-        );
+                    + "The application decision has been recorded and is now available in the applications tab. "
+                    + "Both parties will be notified that the application was refused."
+            );
     }
 
     @Test
-    public void should_throw_on_missing_application_id() {
+    void should_throw_on_missing_application_id() {
 
         Assertions.assertThatThrownBy(() -> decideAnApplicationConfirmation.handle(callback))
             .isExactlyInstanceOf(IllegalStateException.class)
@@ -253,7 +265,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -273,7 +285,7 @@ public class DecideAnApplicationConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> decideAnApplicationConfirmation.handle(null))
             .hasMessage("callback must not be null")

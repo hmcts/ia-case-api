@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
+
 import static org.junit.Assert.assertFalse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,7 +9,11 @@ import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
@@ -28,7 +33,13 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.fixtures.Fixture;
-import uk.gov.hmcts.reform.iacaseapi.util.*;
+import uk.gov.hmcts.reform.iacaseapi.util.AuthorizationHeadersProvider;
+import uk.gov.hmcts.reform.iacaseapi.util.LaunchDarklyFunctionalTestClient;
+import uk.gov.hmcts.reform.iacaseapi.util.MapMerger;
+import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
+import uk.gov.hmcts.reform.iacaseapi.util.MapValueExpander;
+import uk.gov.hmcts.reform.iacaseapi.util.MapValueExtractor;
+import uk.gov.hmcts.reform.iacaseapi.util.StringResourceLoader;
 import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -36,16 +47,24 @@ import uk.gov.hmcts.reform.iacaseapi.verifiers.Verifier;
 @ActiveProfiles("functional")
 public class CcdScenarioRunnerTest {
 
-    @Value("${targetInstance}") private String targetInstance;
+    @Value("${targetInstance}")
+    private String targetInstance;
 
-    @Autowired private Environment environment;
-    @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
-    @Autowired private MapValueExpander mapValueExpander;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private List<Verifier> verifiers;
-    @Autowired private List<Fixture> fixtures;
+    @Autowired
+    private Environment environment;
+    @Autowired
+    private AuthorizationHeadersProvider authorizationHeadersProvider;
+    @Autowired
+    private MapValueExpander mapValueExpander;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private List<Verifier> verifiers;
+    @Autowired
+    private List<Fixture> fixtures;
 
-    @Autowired private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
+    @Autowired
+    private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
 
     @Before
     public void setUp() {
@@ -105,8 +124,8 @@ public class CcdScenarioRunnerTest {
                     String[] keys = ((String) scenarioEnabled).split(":");
 
                     scenarioEnabled = launchDarklyFunctionalTestClient
-                                          .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
-                                      && Boolean.valueOf(keys[1]);
+                        .getKey(keys[0], authorizationHeaders.getValue("Authorization"))
+                        && Boolean.valueOf(keys[1]);
                 } else {
                     scenarioEnabled = Boolean.valueOf((String) scenarioEnabled);
                 }

@@ -1,15 +1,23 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -18,17 +26,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class DraftHearingRequirementsPreparerTest {
+class DraftHearingRequirementsPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private DraftHearingRequirementsPreparer draftHearingRequirementsPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         draftHearingRequirementsPreparer =
             new DraftHearingRequirementsPreparer();
@@ -39,16 +51,17 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_the_correct_min_max_date_range() {
+    void should_return_the_correct_min_max_date_range() {
 
         LocalDate localDate = LocalDate.parse("2019-11-10");
 
-        assertEquals("Only include dates between 24 Nov 2019 and 2 Feb 2020.", draftHearingRequirementsPreparer.getDateRangeText(localDate));
+        assertEquals("Only include dates between 24 Nov 2019 and 2 Feb 2020.",
+            draftHearingRequirementsPreparer.getDateRangeText(localDate));
 
     }
 
     @Test
-    public void should_write_date_description_field() {
+    void should_write_date_description_field() {
 
         LocalDate localDate = LocalDate.now();
 
@@ -58,19 +71,21 @@ public class DraftHearingRequirementsPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.HEARING_DATE_RANGE_DESCRIPTION, draftHearingRequirementsPreparer.getDateRangeText(localDate));
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.HEARING_DATE_RANGE_DESCRIPTION,
+            draftHearingRequirementsPreparer.getDateRangeText(localDate));
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> draftHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> draftHearingRequirementsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -94,13 +109,14 @@ public class DraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> draftHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> draftHearingRequirementsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(
+            () -> draftHearingRequirementsPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

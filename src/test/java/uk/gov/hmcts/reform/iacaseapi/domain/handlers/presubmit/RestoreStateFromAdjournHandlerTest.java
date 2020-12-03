@@ -1,17 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADJOURN_HEARING_WITHOUT_DATE_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_BEFORE_ADJOURN_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STATE_BEFORE_ADJOURN_WITHOUT_DATE;
 
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,31 +31,36 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RestoreStateFromAdjournHandlerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+@ExtendWith(MockitoExtension.class)
+class RestoreStateFromAdjournHandlerTest {
 
     private final String listCaseHearingDate = "05/05/2020";
-
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     private RestoreStateFromAdjournHandler restoreStateFromAdjournHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         restoreStateFromAdjournHandler = new RestoreStateFromAdjournHandler();
     }
 
     @Test
-    public void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
+    void should_return_updated_state_for_return_state_from_adjourn_adjourned_state() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESTORE_STATE_FROM_ADJOURN);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class)).thenReturn(Optional.of(State.PREPARE_FOR_HEARING.toString()));
-        when(asylumCase.read(DATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class)).thenReturn(Optional.of(listCaseHearingDate));
+        when(asylumCase.read(STATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
+            .thenReturn(Optional.of(State.PREPARE_FOR_HEARING.toString()));
+        when(asylumCase.read(DATE_BEFORE_ADJOURN_WITHOUT_DATE, String.class))
+            .thenReturn(Optional.of(listCaseHearingDate));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
@@ -62,16 +77,17 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
+        assertThatThrownBy(() -> restoreStateFromAdjournHandler
+            .handle(PreSubmitCallbackStage.ABOUT_TO_START, callback, callbackResponse))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -95,7 +111,7 @@ public class RestoreStateFromAdjournHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> restoreStateFromAdjournHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -109,7 +125,8 @@ public class RestoreStateFromAdjournHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
+        assertThatThrownBy(
+            () -> restoreStateFromAdjournHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

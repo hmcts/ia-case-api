@@ -1,14 +1,13 @@
-
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class HearingConductionOptionsTest {
+class HearingConductionOptionsTest {
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
         assertEquals("decisionWithouHearing", HearingConductionOptions.DECISION_WITHOUT_HEARING.toString());
         assertEquals("videoWithNoParticipants", HearingConductionOptions.VIDEO_WITH_NO_PARTICIPANTS.toString());
         assertEquals("videoWithAtLeastOne", HearingConductionOptions.VIDEO_WITH_AT_LEAST_ONE.toString());
@@ -18,7 +17,7 @@ public class HearingConductionOptionsTest {
     }
 
     @Test
-    public void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
+    void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(6, HearingConductionOptions.values().length);
     }
 }

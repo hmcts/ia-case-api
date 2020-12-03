@@ -1,32 +1,35 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("unchecked")
-public class RecordAllocatedJudgeConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
+class RecordAllocatedJudgeConfirmationTest {
+
+    @Mock
+    private Callback<AsylumCase> callback;
 
     private RecordAllocatedJudgeConfirmation recordAllocatedJudgeConfirmation =
-            new RecordAllocatedJudgeConfirmation();
+        new RecordAllocatedJudgeConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_ALLOCATED_JUDGE);
 
@@ -38,26 +41,25 @@ public class RecordAllocatedJudgeConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-                callbackResponse.getConfirmationHeader().get(),
-                containsString("You've recorded which judge is dealing with the application")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded which judge is dealing with the application");
 
         assertThat(
-                callbackResponse.getConfirmationBody().get(),
-                containsString("The judge will consider the application.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("The judge will consider the application.");
+
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> recordAllocatedJudgeConfirmation.handle(callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -77,14 +79,14 @@ public class RecordAllocatedJudgeConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> recordAllocatedJudgeConfirmation.canHandle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> recordAllocatedJudgeConfirmation.handle(null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 }

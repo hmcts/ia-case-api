@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static com.google.common.base.CaseFormat.*;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AsylumCaseFieldDefinitionTest {
+class AsylumCaseFieldDefinitionTest {
 
     @Test
-    public void mapped_to_equivalent_field_name() {
+    void mapped_to_equivalent_field_name() {
         Stream.of(AsylumCaseFieldDefinition.values())
             // filter out below variable because of CCD defs constrains to edit existing fields
             .filter(val -> val != ATTENDING_TCW)

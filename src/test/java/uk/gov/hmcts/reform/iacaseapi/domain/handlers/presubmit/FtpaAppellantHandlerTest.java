@@ -3,20 +3,49 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_GROUNDS_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_OUT_OF_TIME_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_EVIDENCE_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_GROUNDS_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_DOCS_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FTPA_APPELLANT_OOT_EXPLANATION_VISIBLE_IN_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -31,30 +60,44 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class FtpaAppellantHandlerTest {
+class FtpaAppellantHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private DateProvider dateProvider;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private DateProvider dateProvider;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private List<IdValue<DocumentWithDescription>> groundsOfApplicationDocuments;
-    @Mock private List<IdValue<DocumentWithDescription>> evidenceDocuments;
-    @Mock private List<IdValue<DocumentWithDescription>> outOfTimeDocuments;
-    @Mock private DocumentWithMetadata groundsOfApplicationWithMetadata;
-    @Mock private DocumentWithMetadata evidenceWithMetadata;
-    @Mock private DocumentWithMetadata outOfTimeWithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingAppellantDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allAppellantDocuments;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private List<IdValue<DocumentWithDescription>> groundsOfApplicationDocuments;
+    @Mock
+    private List<IdValue<DocumentWithDescription>> evidenceDocuments;
+    @Mock
+    private List<IdValue<DocumentWithDescription>> outOfTimeDocuments;
+    @Mock
+    private DocumentWithMetadata groundsOfApplicationWithMetadata;
+    @Mock
+    private DocumentWithMetadata evidenceWithMetadata;
+    @Mock
+    private DocumentWithMetadata outOfTimeWithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingAppellantDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allAppellantDocuments;
 
     private FtpaAppellantHandler ftpaAppellantHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ftpaAppellantHandler =
             new FtpaAppellantHandler(
@@ -65,7 +108,7 @@ public class FtpaAppellantHandlerTest {
     }
 
     @Test
-    public void should_append_all_documents_and_set_ll_flags() {
+    void should_append_all_documents_and_set_ll_flags() {
 
         List<DocumentWithMetadata> ftpaAppellantDocumentsWithMetadata =
             Arrays.asList(
@@ -81,7 +124,8 @@ public class FtpaAppellantHandlerTest {
         when(asylumCase.read(FTPA_APPELLANT_GROUNDS_DOCUMENTS)).thenReturn(Optional.of(groundsOfApplicationDocuments));
         when(asylumCase.read(FTPA_APPELLANT_EVIDENCE_DOCUMENTS)).thenReturn(Optional.of(evidenceDocuments));
         when(asylumCase.read(FTPA_APPELLANT_DOCUMENTS)).thenReturn(Optional.of(existingAppellantDocuments));
-        when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class)).thenReturn(Optional.of("Some out of time explanation"));
+        when(asylumCase.read(FTPA_APPELLANT_OUT_OF_TIME_EXPLANATION, String.class))
+            .thenReturn(Optional.of("Some out of time explanation"));
 
         when(documentReceiver.tryReceiveAll(groundsOfApplicationDocuments, DocumentTag.FTPA_APPELLANT))
             .thenReturn(singletonList(groundsOfApplicationWithMetadata));
@@ -131,7 +175,7 @@ public class FtpaAppellantHandlerTest {
     }
 
     @Test
-    public void should_not_set_out_of_time_flag() {
+    void should_not_set_out_of_time_flag() {
 
         List<DocumentWithMetadata> ftpaAppellantDocumentsWithMetadata =
             Arrays.asList(
@@ -182,7 +226,7 @@ public class FtpaAppellantHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> ftpaAppellantHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -196,7 +240,7 @@ public class FtpaAppellantHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -220,7 +264,7 @@ public class FtpaAppellantHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> ftpaAppellantHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

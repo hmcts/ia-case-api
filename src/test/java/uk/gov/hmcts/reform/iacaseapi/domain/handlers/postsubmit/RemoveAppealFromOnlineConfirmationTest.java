@@ -1,32 +1,35 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class RemoveAppealFromOnlineConfirmationTest {
+class RemoveAppealFromOnlineConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
 
-    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation = new RemoveAppealFromOnlineConfirmation();
+    private RemoveAppealFromOnlineConfirmation removeAppealFromOnlineConfirmation =
+        new RemoveAppealFromOnlineConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_APPEAL_FROM_ONLINE);
 
@@ -38,24 +41,25 @@ public class RemoveAppealFromOnlineConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You've removed this appeal from the online service")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You've removed this appeal from the online service");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
                 "## Do this next\n"
-                + "You now need to:</br>"
-                + "1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>"
-                + "2.Save all files associated with the appeal to the shared drive.</br>"
-                + "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
-            )
-        );
+                    + "You now need to:</br>"
+                    +
+                    "1.Contact the appellant and the respondent to inform them that the case will proceed offline.</br>"
+                    + "2.Save all files associated with the appeal to the shared drive.</br>"
+                    +
+                    "3.Email a link to the saved files with the appeal reference number to: BAUArnhemHouse@justice.gov.uk"
+            );
+
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -63,7 +67,7 @@ public class RemoveAppealFromOnlineConfirmationTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -83,7 +87,7 @@ public class RemoveAppealFromOnlineConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> removeAppealFromOnlineConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

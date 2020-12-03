@@ -1,18 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_TIME_EXTENSION_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_TIME_EXTENSION_REASON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TIME_EXTENSIONS;
 
-import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.TimeExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -25,27 +37,33 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.TimeExtensionAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class TimeExtensionHandlerTest {
+class TimeExtensionHandlerTest {
 
-    @Mock private TimeExtensionAppender timeExtensionAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private TimeExtensionAppender timeExtensionAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<List<IdValue<TimeExtension>>> existingTimeExtensionsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<TimeExtension>>> existingTimeExtensionsCaptor;
 
     private TimeExtensionHandler timeExtensionHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         timeExtensionHandler =
             new TimeExtensionHandler(timeExtensionAppender);
     }
 
     @Test
-    public void should_append_new_timeExtension_to_existing_timeExtensions_for_the_case() {
+    void should_append_new_timeExtension_to_existing_timeExtensions_for_the_case() {
 
         final List<IdValue<TimeExtension>> existingTimeExtensions = new ArrayList<>();
         final List<IdValue<TimeExtension>> allTimeExtensions = new ArrayList<>();
@@ -61,7 +79,8 @@ public class TimeExtensionHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(TIME_EXTENSIONS)).thenReturn(Optional.of(existingTimeExtensions));
-        when(asylumCase.read(SUBMIT_TIME_EXTENSION_REASON, String.class)).thenReturn(Optional.of(newTimeExtensionReason));
+        when(asylumCase.read(SUBMIT_TIME_EXTENSION_REASON, String.class))
+            .thenReturn(Optional.of(newTimeExtensionReason));
         when(asylumCase.read(SUBMIT_TIME_EXTENSION_EVIDENCE)).thenReturn(Optional.of(newTimeExtensionEvidence));
 
         when(timeExtensionAppender.append(
@@ -94,7 +113,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void should_throw_when_submit_timeExtension_reason_is_not_present() {
+    void should_throw_when_submit_timeExtension_reason_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_TIME_EXTENSION);
@@ -108,7 +127,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> timeExtensionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -121,7 +140,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -148,7 +167,7 @@ public class TimeExtensionHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> timeExtensionHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

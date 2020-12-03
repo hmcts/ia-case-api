@@ -2,18 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class CodeWithDescriptionTest {
+class CodeWithDescriptionTest {
 
     private CodeWithDescription codeWithDescription;
 
     @Test
-    public void has_correct_values() {
+    void has_correct_values() {
 
         codeWithDescription = new CodeWithDescription("HMCTS", "HM Courts and Tribunal Service");
         assertEquals("HMCTS", codeWithDescription.getCode());

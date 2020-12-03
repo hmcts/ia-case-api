@@ -2,8 +2,17 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RESPONDENT_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
@@ -11,13 +20,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -32,27 +43,40 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadRespondentEvidenceHandlerTest {
+class UploadRespondentEvidenceHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DocumentWithDescription respondentEvidence1;
-    @Mock private DocumentWithDescription respondentEvidence2;
-    @Mock private DocumentWithMetadata respondentEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata respondentEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DocumentWithDescription respondentEvidence1;
+    @Mock
+    private DocumentWithDescription respondentEvidence2;
+    @Mock
+    private DocumentWithMetadata respondentEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata respondentEvidence2WithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingRespondentDocumentsCaptor;
 
     private UploadRespondentEvidenceHandler uploadRespondentEvidenceHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         uploadRespondentEvidenceHandler =
             new UploadRespondentEvidenceHandler(
@@ -62,7 +86,7 @@ public class UploadRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
+    void should_append_new_evidence_to_existing_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> respondentEvidence =
             Arrays.asList(
@@ -109,9 +133,10 @@ public class UploadRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_new_evidence_to_the_case_when_no_respondent_documents_exist() {
 
-        List<IdValue<DocumentWithDescription>> respondentEvidence = singletonList(new IdValue<>("1", respondentEvidence1));
+        List<IdValue<DocumentWithDescription>> respondentEvidence =
+            singletonList(new IdValue<>("1", respondentEvidence1));
         List<DocumentWithMetadata> respondentEvidenceWithMetadata = singletonList(respondentEvidence1WithMetadata);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -136,7 +161,8 @@ public class UploadRespondentEvidenceHandlerTest {
 
         verify(documentReceiver, times(1)).tryReceive(respondentEvidence1, DocumentTag.RESPONDENT_EVIDENCE);
 
-        verify(documentsAppender, times(1)).append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
+        verify(documentsAppender, times(1))
+            .append(existingRespondentDocumentsCaptor.capture(), eq(respondentEvidenceWithMetadata));
 
         List<IdValue<DocumentWithMetadata>> actualExistingRespondentDocuments =
             existingRespondentDocumentsCaptor
@@ -150,7 +176,7 @@ public class UploadRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_throw_when_new_evidence_is_not_present() {
+    void should_throw_when_new_evidence_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_RESPONDENT_EVIDENCE);
@@ -158,28 +184,31 @@ public class UploadRespondentEvidenceHandlerTest {
 
         when(asylumCase.read(RESPONDENT_EVIDENCE)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("respondentEvidence is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(
+            () -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(
+            () -> uploadRespondentEvidenceHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
         verify(asylumCase, never()).write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -203,13 +232,14 @@ public class UploadRespondentEvidenceHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadRespondentEvidenceHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadRespondentEvidenceHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(
+            () -> uploadRespondentEvidenceHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

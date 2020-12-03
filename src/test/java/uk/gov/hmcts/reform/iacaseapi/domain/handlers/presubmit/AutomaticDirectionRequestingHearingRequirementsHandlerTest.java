@@ -2,12 +2,19 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
+class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
 
     @Mock
@@ -49,7 +56,8 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    @Captor private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
 
     private boolean timedEventServiceEnabled = true;
     private int reviewInDays = 5;
@@ -75,7 +83,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE" })
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
     public void should_schedule_automatic_direction_5_days_from_now(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -113,7 +121,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE" })
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
     public void should_schedule_automatic_direction_in_10_minutes_for_test_user(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -157,7 +165,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE" })
+    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
     public void should_rethrow_exception_when_scheduler_failed(Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -173,7 +181,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -186,7 +194,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 

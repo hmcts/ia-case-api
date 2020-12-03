@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
@@ -9,34 +9,38 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-@RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("unchecked")
-public class DirectionPartiesResolverTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
+class DirectionPartiesResolverTest {
+
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private DirectionPartiesResolver directionPartiesResolver;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         directionPartiesResolver = new DirectionPartiesResolver();
     }
 
     @Test
-    public void should_return_parties_for_send_direction_events() {
+    void should_return_parties_for_send_direction_events() {
 
         Parties expectedDirectionParties = Parties.BOTH;
 
@@ -75,7 +79,7 @@ public class DirectionPartiesResolverTest {
     }
 
     @Test
-    public void should_throw_when_callback_is_not_for_sending_a_direction() {
+    void should_throw_when_callback_is_not_for_sending_a_direction() {
 
         when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
 
@@ -85,7 +89,7 @@ public class DirectionPartiesResolverTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> directionPartiesResolver.resolve(null))
             .hasMessage("callback must not be null")

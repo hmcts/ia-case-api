@@ -1,34 +1,35 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_FILE_UPLOADS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT;
 
 import com.launchdarkly.shaded.org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
@@ -44,11 +45,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(JUnitParamsRunner.class)
-public class UploadSensitiveDocsAboutToSubmitHandlerTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class UploadSensitiveDocsAboutToSubmitHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -68,14 +67,14 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
     private DocumentWithDescription uploadedSensitiveDoc;
     private DocumentWithMetadata someDocWithMetadata;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         handler = new UploadSensitiveDocsAboutToSubmitHandler(documentReceiver, documentsAppender);
     }
 
-    @Test
-    @Parameters(method = "generateCanHandleScenarios")
-    public void canHandle(CanHandleScenario scenario) {
+    @ParameterizedTest
+    @MethodSource("generateCanHandleScenarios")
+    void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
 
         boolean result = handler.canHandle(scenario.callbackStage, callback);
@@ -83,34 +82,12 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
         Assertions.assertThat(result).isEqualTo(scenario.canHandleExpectedResult);
     }
 
-    private List<CanHandleScenario> generateCanHandleScenarios() {
+    private static List<CanHandleScenario> generateCanHandleScenarios() {
         return CanHandleScenario.builder();
     }
 
-    @Value
-    private static class CanHandleScenario {
-        Event event;
-        PreSubmitCallbackStage callbackStage;
-        boolean canHandleExpectedResult;
-
-        public static List<CanHandleScenario> builder() {
-            List<CanHandleScenario> scenarios = new ArrayList<>();
-            for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
-                for (Event e : Event.values()) {
-                    if (Event.UPLOAD_SENSITIVE_DOCUMENTS.equals(e)
-                        && PreSubmitCallbackStage.ABOUT_TO_SUBMIT.equals(cb)) {
-                        scenarios.add(new CanHandleScenario(e, cb, true));
-                    } else {
-                        scenarios.add(new CanHandleScenario(e, cb, false));
-                    }
-                }
-            }
-            return scenarios;
-        }
-    }
-
     @Test
-    public void handle() {
+    void handle() {
         mockCallback();
         mockAsylumCase();
         mockDocumentReceiver();
@@ -178,7 +155,7 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
     }
 
     @Test
-    public void should_throw_exception() {
+    void should_throw_exception() {
 
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
@@ -201,5 +178,27 @@ public class UploadSensitiveDocsAboutToSubmitHandlerTest {
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
+    }
+
+    @Value
+    private static class CanHandleScenario {
+        Event event;
+        PreSubmitCallbackStage callbackStage;
+        boolean canHandleExpectedResult;
+
+        public static List<CanHandleScenario> builder() {
+            List<CanHandleScenario> scenarios = new ArrayList<>();
+            for (PreSubmitCallbackStage cb : PreSubmitCallbackStage.values()) {
+                for (Event e : Event.values()) {
+                    if (Event.UPLOAD_SENSITIVE_DOCUMENTS.equals(e)
+                        && PreSubmitCallbackStage.ABOUT_TO_SUBMIT.equals(cb)) {
+                        scenarios.add(new CanHandleScenario(e, cb, true));
+                    } else {
+                        scenarios.add(new CanHandleScenario(e, cb, false));
+                    }
+                }
+            }
+            return scenarios;
+        }
     }
 }

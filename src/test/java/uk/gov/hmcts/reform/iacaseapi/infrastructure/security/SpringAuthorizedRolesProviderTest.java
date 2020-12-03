@@ -1,46 +1,46 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.security;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 class SpringAuthorizedRolesProviderTest {
 
+    private final AuthorizedRolesProvider authorizedRolesProvider = new SpringAuthorizedRolesProvider();
     @Mock
     private SecurityContext securityContext;
     @Mock
     private Authentication authentication;
 
-    private final AuthorizedRolesProvider authorizedRolesProvider = new SpringAuthorizedRolesProvider();
-
-    @Before
+    @BeforeEach
     public void setUp() {
         SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
-    public void should_return_empty_list_when_authentication_is_null() {
+    void should_return_empty_list_when_authentication_is_null() {
 
         assertEquals(Collections.emptySet(), authorizedRolesProvider.getRoles());
     }
 
     @Test
-    public void should_return_empty_list_when_authorities_are_empty_null() {
+    void should_return_empty_list_when_authorities_are_empty_null() {
 
         when(securityContext.getAuthentication()).thenReturn(authentication);
         assertEquals(Collections.emptySet(), authorizedRolesProvider.getRoles());
@@ -48,16 +48,17 @@ class SpringAuthorizedRolesProviderTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void should_return_empty_list_when_authorities_return_some_roles() {
-        List grantedAuthorities = Lists.newArrayList(new SimpleGrantedAuthority("ccd-role"), new SimpleGrantedAuthority("ccd-admin"));
+    void should_return_empty_list_when_authorities_return_some_roles() {
+        List grantedAuthorities =
+            Lists.newArrayList(new SimpleGrantedAuthority("ccd-role"), new SimpleGrantedAuthority("ccd-admin"));
         when(authentication.getAuthorities()).thenReturn(grantedAuthorities);
         when(securityContext.getAuthentication()).thenReturn(authentication);
 
         assertEquals(Sets.newHashSet("ccd-role", "ccd-admin"), authorizedRolesProvider.getRoles());
     }
 
-    @After
-    public void cleanUp() {
+    @AfterAll
+    public static void cleanUp() {
         SecurityContextHolder.clearContext();
     }
 }

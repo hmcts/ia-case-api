@@ -2,15 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-public class PreviousHearingTest {
+class PreviousHearingTest {
 
     private final Optional<String> attendingJudge = Optional.of("Judge Joe");
     private final Optional<String> attendingAppellant = Optional.of("Joe Bloggs");
@@ -58,21 +59,22 @@ public class PreviousHearingTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
-        Assert.assertEquals(attendingJudge, previousHearing.getAttendingJudge());
-        Assert.assertEquals(attendingAppellant, previousHearing.getAttendingAppellant());
-        Assert.assertEquals(attendingHomeOfficeLegalRepresentative, previousHearing.getAttendingHomeOfficeLegalRepresentative());
-        Assert.assertEquals(actualCaseHearingLength, previousHearing.getActualCaseHearingLength());
-        Assert.assertEquals(ariaListingReference, previousHearing.getAriaListingReference());
-        Assert.assertEquals(listCaseHearingCentre, previousHearing.getListCaseHearingCentre());
-        Assert.assertEquals(listCaseHearingDate, previousHearing.getListCaseHearingDate());
-        Assert.assertEquals(listCaseHearingLength, previousHearing.getListCaseHearingLength());
-        Assert.assertEquals(appealDecision, previousHearing.getAppealDecision());
-        Assert.assertEquals(allFinalDecisionAndReasonsDocuments, previousHearing.getFinalDecisionAndReasonsDocuments());
+    void should_hold_onto_values() {
+        assertEquals(attendingJudge, previousHearing.getAttendingJudge());
+        assertEquals(attendingAppellant, previousHearing.getAttendingAppellant());
+        assertEquals(attendingHomeOfficeLegalRepresentative,
+            previousHearing.getAttendingHomeOfficeLegalRepresentative());
+        assertEquals(actualCaseHearingLength, previousHearing.getActualCaseHearingLength());
+        assertEquals(ariaListingReference, previousHearing.getAriaListingReference());
+        assertEquals(listCaseHearingCentre, previousHearing.getListCaseHearingCentre());
+        assertEquals(listCaseHearingDate, previousHearing.getListCaseHearingDate());
+        assertEquals(listCaseHearingLength, previousHearing.getListCaseHearingLength());
+        assertEquals(appealDecision, previousHearing.getAppealDecision());
+        assertEquals(allFinalDecisionAndReasonsDocuments, previousHearing.getFinalDecisionAndReasonsDocuments());
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new PreviousHearing(
             attendingJudge,

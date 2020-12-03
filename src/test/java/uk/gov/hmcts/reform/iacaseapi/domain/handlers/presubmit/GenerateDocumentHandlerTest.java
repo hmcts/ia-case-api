@@ -3,10 +3,40 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_LISTING_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CUSTOMISE_HEARING_BUNDLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_HEARING_BUNDLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CMA_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
 
 import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
@@ -14,13 +44,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -36,15 +68,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class GenerateDocumentHandlerTest {
+class GenerateDocumentHandlerTest {
 
-    @Mock private DocumentGenerator<AsylumCase> documentGenerator;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private DateProvider dateProvider;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private DocumentGenerator<AsylumCase> documentGenerator;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private DateProvider dateProvider;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
     private State state = State.UNKNOWN;
     private String applicationSupplier = "Legal representative";
@@ -71,20 +109,20 @@ public class GenerateDocumentHandlerTest {
 
     private GenerateDocumentHandler generateDocumentHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         generateDocumentHandler =
-                new GenerateDocumentHandler(
-                        true,
-                        true,
-                        documentGenerator,
-                        dateProvider,
-                        true);
+            new GenerateDocumentHandler(
+                true,
+                true,
+                documentGenerator,
+                dateProvider,
+                true);
     }
 
     @Test
-    public void should_generate_document_and_update_the_case() {
+    void should_generate_document_and_update_the_case() {
 
         Arrays.asList(
             SUBMIT_APPEAL,
@@ -108,12 +146,14 @@ public class GenerateDocumentHandlerTest {
             if (event.equals(EDIT_CASE_LISTING)) {
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getState()).thenReturn(state);
-                when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
+                when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class))
+                    .thenReturn(Optional.of("Yes"));
                 when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
             }
 
             if (event.equals(SEND_DECISION_AND_REASONS)) {
-                when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class)).thenReturn(Optional.of(AppealDecision.ALLOWED));
+                when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                    .thenReturn(Optional.of(AppealDecision.ALLOWED));
                 when(dateProvider.now()).thenReturn(now);
             }
 
@@ -146,7 +186,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_handle_edit_listing_with_withdrawn() {
+    void should_handle_edit_listing_with_withdrawn() {
 
         Arrays.asList(
             ApplicationType.ADJOURN,
@@ -170,7 +210,8 @@ public class GenerateDocumentHandlerTest {
             when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getState()).thenReturn(state);
-            when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
+            when(expectedUpdatedCase.read(APPLICATION_EDIT_LISTING_EXISTS, String.class))
+                .thenReturn(Optional.of("Yes"));
             when(expectedUpdatedCase.read(APPLICATION_WITHDRAW_EXISTS, String.class)).thenReturn(Optional.of("Yes"));
             when(expectedUpdatedCase.read(APPLICATIONS)).thenReturn(Optional.of(expectedApplications));
 
@@ -193,12 +234,12 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_be_handled_at_latest_point() {
+    void should_be_handled_at_latest_point() {
         assertEquals(DispatchPriority.LATEST, generateDocumentHandler.getDispatchPriority());
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -211,7 +252,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -243,7 +284,7 @@ public class GenerateDocumentHandlerTest {
 
                     assertTrue(canHandle);
                 } else {
-                    assertFalse("failed callback: " + callbackStage + ", failed event " + event, canHandle);
+                    assertFalse(canHandle, "failed callback: " + callbackStage + ", failed event " + event);
                 }
             }
 
@@ -252,7 +293,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_callback_if_docmosis_not_enabled() {
+    void it_cannot_handle_callback_if_docmosis_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -260,7 +301,7 @@ public class GenerateDocumentHandlerTest {
                 true,
                 documentGenerator,
                 dateProvider,
-                    true);
+                true);
 
         for (Event event : Event.values()) {
 
@@ -278,7 +319,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void it_cannot_handle_generate_if_em_stitching_not_enabled() {
+    void it_cannot_handle_generate_if_em_stitching_not_enabled() {
 
         generateDocumentHandler =
             new GenerateDocumentHandler(
@@ -286,7 +327,7 @@ public class GenerateDocumentHandlerTest {
                 false,
                 documentGenerator,
                 dateProvider,
-                    true);
+                true);
 
         for (Event event : Event.values()) {
 
@@ -314,13 +355,14 @@ public class GenerateDocumentHandlerTest {
                         EDIT_APPEAL_AFTER_SUBMIT
                     );
 
-                if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && (eventsThatDontRequireStitching.contains(event))) {
+                if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+                    && (eventsThatDontRequireStitching.contains(event))) {
                     assertTrue(canHandle);
                 } else if (event.equals(GENERATE_HEARING_BUNDLE)
-                        || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
+                    || event.equals(CUSTOMISE_HEARING_BUNDLE)) {
                     assertFalse(canHandle);
                 } else {
-                    assertFalse("event: " + event + ", stage: " + callbackStage, canHandle);
+                    assertFalse(canHandle, "event: " + event + ", stage: " + callbackStage);
                 }
 
             }
@@ -331,7 +373,7 @@ public class GenerateDocumentHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> generateDocumentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

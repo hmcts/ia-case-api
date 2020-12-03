@@ -2,26 +2,42 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.reset;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_OUT_OF_TIME_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_OUT_OF_TIME_EXPLANATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEW_MATTERS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -31,16 +47,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
-public class EditAppealAfterSubmitHandlerTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class EditAppealAfterSubmitHandlerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private DateProvider dateProvider;
-    @Captor private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Captor
+    private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -64,7 +86,7 @@ public class EditAppealAfterSubmitHandlerTest {
 
     private EditAppealAfterSubmitHandler editAppealAfterSubmitHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider, APPEAL_OUT_OF_TIME_DAYS);
 
@@ -77,7 +99,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
@@ -95,7 +117,8 @@ public class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
-        verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
+        verify(asylumCase)
+            .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
 
         verify(asylumCase).clear(NEW_MATTERS);
 
@@ -103,7 +126,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
@@ -119,7 +142,8 @@ public class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
         verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
-        verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
+        verify(asylumCase)
+            .write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(State.AWAITING_RESPONDENT_EVIDENCE));
 
         verify(asylumCase).clear(NEW_MATTERS);
 
@@ -127,7 +151,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_submission_out_of_time_when_out_of_time_mid_event() {
+    void should_set_submission_out_of_time_when_out_of_time_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
@@ -142,7 +166,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_set_submission_in_time_mid_event() {
+    void should_set_submission_in_time_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-04-08"));
@@ -159,7 +183,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -167,7 +191,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_missing_home_office_decision_date() {
+    void handling_should_throw_if_missing_home_office_decision_date() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
             .hasMessage("homeOfficeDecisionDate is missing")
@@ -180,7 +204,7 @@ public class EditAppealAfterSubmitHandlerTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -205,7 +229,7 @@ public class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

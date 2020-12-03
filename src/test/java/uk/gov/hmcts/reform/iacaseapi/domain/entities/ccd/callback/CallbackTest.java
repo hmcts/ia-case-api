@@ -1,32 +1,33 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Constructor;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CallbackTest {
+
+@ExtendWith(MockitoExtension.class)
+class CallbackTest {
 
     private final Event event = Event.START_APPEAL;
-    @Mock private CaseDetails<CaseData> caseDetails;
     private final Optional<CaseDetails<CaseData>> caseDetailsBefore = Optional.empty();
-
+    @Mock
+    private CaseDetails<CaseData> caseDetails;
     private Callback<CaseData> callback;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         callback = new Callback<>(
             caseDetails,
@@ -36,7 +37,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(caseDetails, callback.getCaseDetails());
         assertEquals(caseDetailsBefore, callback.getCaseDetailsBefore());
@@ -44,7 +45,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_not_allow_null_values_when_required_if_using_reflection() throws Exception {
+    void should_not_allow_null_values_when_required_if_using_reflection() throws Exception {
 
         Class<?> clazz = Class.forName(Callback.class.getName());
         Optional<Constructor<?>> constructorOpt = Stream.of(clazz.getDeclaredConstructors())
@@ -64,7 +65,7 @@ public class CallbackTest {
     }
 
     @Test
-    public void should_not_allow_null_values_in_constructor() {
+    void should_not_allow_null_values_in_constructor() {
 
         assertThatThrownBy(() -> new Callback<>(null, caseDetailsBefore, event))
             .isExactlyInstanceOf(NullPointerException.class);

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
@@ -23,13 +23,15 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
@@ -46,30 +48,45 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class UploadHomeOfficeAppealResponseHandlerTest {
+class UploadHomeOfficeAppealResponseHandlerTest {
 
-    @Mock private DocumentReceiver documentReceiver;
-    @Mock private DocumentsAppender documentsAppender;
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private Document appealResponseDocument;
+    @Mock
+    private DocumentReceiver documentReceiver;
+    @Mock
+    private DocumentsAppender documentsAppender;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private Document appealResponseDocument;
     private String appealResponseDescription = "Appeal response description";
-    @Mock private DocumentWithMetadata appealResponseWithMetadata;
-    @Mock private DocumentWithDescription appealResponseEvidence1;
-    @Mock private DocumentWithDescription appealResponseEvidence2;
-    @Mock private DocumentWithMetadata appealResponseEvidence1WithMetadata;
-    @Mock private DocumentWithMetadata appealResponseEvidence2WithMetadata;
-    @Mock private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
-    @Mock private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
+    @Mock
+    private DocumentWithMetadata appealResponseWithMetadata;
+    @Mock
+    private DocumentWithDescription appealResponseEvidence1;
+    @Mock
+    private DocumentWithDescription appealResponseEvidence2;
+    @Mock
+    private DocumentWithMetadata appealResponseEvidence1WithMetadata;
+    @Mock
+    private DocumentWithMetadata appealResponseEvidence2WithMetadata;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> existingRespondentDocuments;
+    @Mock
+    private List<IdValue<DocumentWithMetadata>> allRespondentDocuments;
 
-    @Captor private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
+    @Captor
+    private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> respondentDocumentsCaptor;
 
     private UploadHomeOfficeAppealResponseHandler uploadHomeOfficeAppealResponseHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         uploadHomeOfficeAppealResponseHandler =
             new UploadHomeOfficeAppealResponseHandler(
@@ -79,12 +96,12 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_be_handled_early() {
+    void should_be_handled_early() {
         assertEquals(DispatchPriority.EARLY, uploadHomeOfficeAppealResponseHandler.getDispatchPriority());
     }
 
     @Test
-    public void should_append_appeal_response_to_respondent_documents_for_the_case() {
+    void should_append_appeal_response_to_respondent_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -110,7 +127,8 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.of(existingRespondentDocuments));
         when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT)).thenReturn(Optional.of(appealResponseDocument));
-        when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class)).thenReturn(Optional.of(appealResponseDescription));
+        when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class))
+            .thenReturn(Optional.of(appealResponseDescription));
         when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE)).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
@@ -132,7 +150,8 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         verify(asylumCase, times(1)).read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class);
         verify(asylumCase, times(1)).read(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE);
 
-        verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
+        verify(documentReceiver, times(1))
+            .receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
         verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
 
         verify(documentsAppender, times(1))
@@ -147,7 +166,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
+    void should_add_appeal_response_to_the_case_when_no_respondent_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> appealResponseEvidence =
             Arrays.asList(
@@ -173,7 +192,8 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(RESPONDENT_DOCUMENTS)).thenReturn(Optional.empty());
         when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DOCUMENT)).thenReturn(Optional.of(appealResponseDocument));
-        when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class)).thenReturn(Optional.of(appealResponseDescription));
+        when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class))
+            .thenReturn(Optional.of(appealResponseDescription));
         when(asylumCase.read(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE)).thenReturn(Optional.of(appealResponseEvidence));
 
         when(documentReceiver.receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE))
@@ -195,7 +215,8 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
         verify(asylumCase, times(1)).read(HOME_OFFICE_APPEAL_RESPONSE_DESCRIPTION, String.class);
         verify(asylumCase, times(1)).read(HOME_OFFICE_APPEAL_RESPONSE_EVIDENCE);
 
-        verify(documentReceiver, times(1)).receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
+        verify(documentReceiver, times(1))
+            .receive(appealResponseDocument, appealResponseDescription, DocumentTag.APPEAL_RESPONSE);
         verify(documentReceiver, times(1)).tryReceiveAll(appealResponseEvidence, DocumentTag.APPEAL_RESPONSE);
 
         verify(documentsAppender, times(1))
@@ -217,7 +238,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_throw_when_appeal_response_document_is_not_present() {
+    void should_throw_when_appeal_response_document_is_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE);
@@ -231,7 +252,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
@@ -244,7 +265,7 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -268,13 +289,14 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -282,7 +304,8 @@ public class UploadHomeOfficeAppealResponseHandlerTest {
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> uploadHomeOfficeAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(
+            () -> uploadHomeOfficeAppealResponseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

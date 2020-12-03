@@ -3,29 +3,24 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import junitparams.converters.Nullable;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
 
-@RunWith(JUnitParamsRunner.class)
-public class CaseManagementLocationServiceTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+@ExtendWith(MockitoExtension.class)
+class CaseManagementLocationServiceTest {
 
     private final CaseManagementLocationService service = new CaseManagementLocationService();
 
-    @Test
-    @Parameters({
+    @ParameterizedTest
+    @CsvSource({
         "Birmingham, BIRMINGHAM",
         "Glasgow, GLASGOW",
         "Bradford, BRADFORD",
@@ -33,10 +28,10 @@ public class CaseManagementLocationServiceTest {
         "Manchester, MANCHESTER",
         "Newport, NEWPORT",
         "Taylor House, TAYLOR_HOUSE",
-        "Newcastle, null"
+        "Newcastle,"
     })
-    public void given_staffLocationName_then_return_caseManagementLocation(
-        String staffLocationName, @Nullable BaseLocation baseLocation) {
+    void given_staffLocationName_then_return_caseManagementLocation(
+        String staffLocationName, BaseLocation baseLocation) {
 
         CaseManagementLocation actual = service.getCaseManagementLocation(staffLocationName);
 

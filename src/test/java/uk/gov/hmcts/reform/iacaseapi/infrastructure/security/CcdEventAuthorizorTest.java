@@ -9,15 +9,15 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CcdEventAuthorizorTest {
+@ExtendWith(MockitoExtension.class)
+class CcdEventAuthorizorTest {
 
     @Mock
     private AuthorizedRolesProvider authorizedRolesProvider;
@@ -30,7 +30,7 @@ public class CcdEventAuthorizorTest {
     private CcdEventAuthorizor ccdEventAuthorizor;
 
     @Test
-    public void should_not_throw_exception_when_event_is_allowed() {
+    void should_not_throw_exception_when_event_is_allowed() {
 
         ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
 
@@ -40,7 +40,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void should_throw_exception_when_provider_returns_empty_list() {
+    void should_throw_exception_when_provider_returns_empty_list() {
 
         ccdEventAuthorizor = new CcdEventAuthorizor(roleEventAccess, authorizedRolesProvider);
 
@@ -54,7 +54,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void should_throw_exception_when_access_map_is_empty() {
+    void should_throw_exception_when_access_map_is_empty() {
 
         Map<String, List<Event>> roleEventAccess = new ImmutableMap.Builder<String, List<Event>>().build();
 
@@ -68,7 +68,7 @@ public class CcdEventAuthorizorTest {
     }
 
     @Test
-    public void should_throw_exception_when_access_map_for_role_is_empty() {
+    void should_throw_exception_when_access_map_for_role_is_empty() {
 
         Map<String, List<Event>> roleEventAccess = new ImmutableMap.Builder<String, List<Event>>()
             .put(role, newArrayList())

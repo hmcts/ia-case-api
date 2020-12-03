@@ -7,22 +7,23 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class ApplicationStatusTest {
+class ApplicationStatusTest {
     @Mock
     CodeWithDescription mockCode;
     @Mock
     DecisionCommunication decisionCommunication;
     private ApplicationStatus applicationStatus;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         applicationStatus = new ApplicationStatus(
             mockCode,
@@ -39,7 +40,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void has_correct_values_for_ccd_list_and_other_values() {
+    void has_correct_values_for_ccd_list_and_other_values() {
         assertNotNull(applicationStatus.getDecisionType());
         assertEquals(mockCode, applicationStatus.getApplicationType());
         assertEquals(mockCode, applicationStatus.getClaimReasonType());
@@ -59,7 +60,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void modify_list_converts_to_valid_ccd_list_id_values() {
+    void modify_list_converts_to_valid_ccd_list_id_values() {
         List<HomeOfficeMetadata> metadataList = new ArrayList<>();
         metadataList.add(new HomeOfficeMetadata("", "", "", ""));
 

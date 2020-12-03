@@ -1,19 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.INTERPRETER_LANGUAGE_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS_READONLY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.InterpreterLanguage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.WitnessDetails;
@@ -24,18 +34,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ReviewDraftHearingRequirementsPreparerTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class ReviewDraftHearingRequirementsPreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
-    @Mock private List<IdValue<WitnessDetails>> witnessDetails;
-    @Mock private List<IdValue<InterpreterLanguage>> interpreterLanguage;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private List<IdValue<WitnessDetails>> witnessDetails;
+    @Mock
+    private List<IdValue<InterpreterLanguage>> interpreterLanguage;
 
     private ReviewDraftHearingRequirementsPreparer reviewDraftHearingRequirementsPreparer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         reviewDraftHearingRequirementsPreparer =
             new ReviewDraftHearingRequirementsPreparer();
@@ -46,7 +62,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_review_hearing_requirements() {
+    void should_review_hearing_requirements() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         witnessDetails = Arrays.asList(
@@ -79,7 +95,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_error_on_review_flag_is_missing() {
+    void should_return_error_on_review_flag_is_missing() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -95,7 +111,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_return_error_on_reviewing_hearing_requirements_twice() {
+    void should_return_error_on_reviewing_hearing_requirements_twice() {
         when(asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -103,14 +119,15 @@ public class ReviewDraftHearingRequirementsPreparerTest {
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
-        assertEquals("You've made an invalid request. The hearing requirements have already been reviewed.", callbackResponse.getErrors().iterator().next());
+        assertEquals("You've made an invalid request. The hearing requirements have already been reviewed.",
+            callbackResponse.getErrors().iterator().next());
 
         verify(asylumCase, times(0)).read(WITNESS_DETAILS);
         verify(asylumCase, times(0)).read(INTERPRETER_LANGUAGE);
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> reviewDraftHearingRequirementsPreparer.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
@@ -123,7 +140,7 @@ public class ReviewDraftHearingRequirementsPreparerTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> reviewDraftHearingRequirementsPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")

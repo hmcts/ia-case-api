@@ -81,7 +81,6 @@ public class IaCaseApiClient {
 
     public PostSubmitCallbackResponseForTest ccdSubmitted(CallbackForTest.CallbackForTestBuilder callback) {
 
-
         try {
             MvcResult response = mockMvc
                 .perform(

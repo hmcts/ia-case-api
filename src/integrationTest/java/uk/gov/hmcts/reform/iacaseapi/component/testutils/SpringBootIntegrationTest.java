@@ -1,25 +1,27 @@
 package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
+import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.Application;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCallbackTransformer;
 
-@ActiveProfiles("integration")
-@RunWith(SpringRunner.class)
+
+@SpringBootTest(classes = {
+    TestConfiguration.class,
+    Application.class
+})
 @TestPropertySource(properties = {
     "S2S_URL=http://127.0.0.1:8990/serviceAuth",
     "IDAM_URL=http://127.0.0.1:8990/userAuth",
@@ -29,50 +31,35 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.wiremock.DocumentsApiCa
     "CCD_URL=http://127.0.0.1:8990/ccd-data-store",
     "IA_TIMED_EVENT_SERVICE_URL=http://127.0.0.1:8990/timed-event-service",
     "IA_DOCMOSIS_ENABLED=true"})
+@ExtendWith({
+    WiremockResolver.class
+})
 @AutoConfigureMockMvc(addFilters = false)
-@SpringBootTest(classes = {TestConfiguration.class, Application.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integration")
 public abstract class SpringBootIntegrationTest {
 
     @Autowired
     protected MockMvc mockMvc;
 
-    private DocumentsApiCallbackTransformer documentsApiCallbackTransformer = new DocumentsApiCallbackTransformer();
-
-    protected GivensBuilder given;
-    protected IaCaseApiClient iaCaseApiClient;
-    protected DocumentCaseApiVerifications then;
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(
-        wireMockConfig()
-            .port(8990)
-            .extensions(documentsApiCallbackTransformer));
-
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Before
-    public void setUpGivens() {
-        given = new GivensBuilder(documentsApiCallbackTransformer);
+    @Autowired
+    private WebApplicationContext wac;
+
+    @BeforeEach
+    void setUp() {
+        WebRequestTrackingFilter filter;
+        filter = new WebRequestTrackingFilter();
+        filter.init(new MockFilterConfig());
+        mockMvc = webAppContextSetup(wac).addFilters(filter).build();
     }
 
-    @Before
-    public void setUpVerifications() {
-        then = new DocumentCaseApiVerifications();
-    }
+    protected IaCaseApiClient iaCaseApiClient;
 
-    @Before
+    @BeforeEach
     public void setUpApiClient() {
         iaCaseApiClient = new IaCaseApiClient(objectMapper, mockMvc);
     }
 
-    @Before
-    public void setupServiceAuthStub() {
-
-        stubFor(post(urlEqualTo("/serviceAuth/lease"))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyfQ.L8i6g3PfcHlioHCCPURC9pmXT7gdJpx3kOoyAfNUwCc")));
-    }
 }

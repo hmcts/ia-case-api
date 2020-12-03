@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.editdocs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADDITIONAL_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_RECORDING_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.TRIBUNAL_DOCUMENTS;
@@ -9,10 +9,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITION
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
@@ -21,21 +23,23 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HasDocument;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@RunWith(JUnitParamsRunner.class)
-public class EditDocsAuditServiceTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class EditDocsAuditServiceTest {
 
-    private IdValue<HasDocument> idValue1;
-    private IdValue<HasDocument> idValue2;
-    private List<IdValue<HasDocument>> idValuesAfter;
-    private List<IdValue<HasDocument>> idValuesBefore;
-    private IdValue<HasDocument> idValue1WithHearingRecDoc;
-    private IdValue<HasDocument> idValueW2ithHearingRecDoc;
-    private List<IdValue<HasDocument>> idValuesWithHearingAfter;
-    private List<IdValue<HasDocument>> idValuesWithHearingBefore;
+    private static IdValue<HasDocument> idValue1;
+    private static IdValue<HasDocument> idValue2;
+    private static List<IdValue<HasDocument>> idValuesAfter;
+    private static List<IdValue<HasDocument>> idValuesBefore;
+    private static IdValue<HasDocument> idValue1WithHearingRecDoc;
+    private static IdValue<HasDocument> idValueW2ithHearingRecDoc;
+    private static List<IdValue<HasDocument>> idValuesWithHearingAfter;
+    private static List<IdValue<HasDocument>> idValuesWithHearingBefore;
 
-    @Test
-    @Parameters(method = "generateNewFileAddedForNameScenarios, generateFileUpdatedForNameScenarios, generateDeleteFileForNameScenarios")
-    public void getUpdatedAndDeletedDocNamesForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
+
+    @ParameterizedTest
+    @MethodSource({"generateNewFileAddedForNameScenarios", "generateFileUpdatedForNameScenarios", "generateDeleteFileForNameScenarios"})
+    void getUpdatedAndDeletedDocNamesForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
                                                           List<IdValue<DocumentWithMetadata>> idValuesBefore,
                                                           AsylumCaseFieldDefinition caseFieldDefinition,
                                                           List<String> expectedNames) {
@@ -53,7 +57,7 @@ public class EditDocsAuditServiceTest {
         assertEquals(docNames, expectedNames);
     }
 
-    private Object[] generateNewFileAddedForNameScenarios() {
+    private static Object[] generateNewFileAddedForNameScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
         idValuesAfter = Arrays.asList(idValue1, idValue2);
@@ -66,7 +70,7 @@ public class EditDocsAuditServiceTest {
         };
     }
 
-    private Object[] generateFileUpdatedForNameScenarios() {
+    private static Object[] generateFileUpdatedForNameScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName1").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
@@ -81,23 +85,24 @@ public class EditDocsAuditServiceTest {
         };
     }
 
-    private Object[] generateDeleteFileForNameScenarios() {
+    private static Object[] generateDeleteFileForNameScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocNameDeleted").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName2").get(0);
         idValuesAfter = Collections.singletonList(idValue2);
         idValuesBefore = Arrays.asList(idValue1, idValue2);
 
         return new Object[] {
-            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS, Collections.singletonList("someDocNameDeleted")},
-            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS, Collections.singletonList("someDocNameDeleted")}
+            new Object[] {idValuesAfter, idValuesBefore, TRIBUNAL_DOCUMENTS,
+                Collections.singletonList("someDocNameDeleted")},
+            new Object[] {idValuesAfter, idValuesBefore, ADDITIONAL_EVIDENCE_DOCUMENTS,
+                Collections.singletonList("someDocNameDeleted")}
         };
     }
 
 
-
-    @Test
-    @Parameters(method = "generateNewFileAddedScenarios, generateFileUpdatedScenarios, generateDeleteFileScenarios")
-    public void getUpdatedAndDeletedDocIdsForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
+    @ParameterizedTest
+    @MethodSource({"generateNewFileAddedScenarios", "generateFileUpdatedScenarios", "generateDeleteFileScenarios"})
+    void getUpdatedAndDeletedDocIdsForGivenField(List<IdValue<DocumentWithMetadata>> idValues,
                                                         List<IdValue<DocumentWithMetadata>> idValuesBefore,
                                                         AsylumCaseFieldDefinition caseFieldDefinition,
                                                         List<String> expectedIds) {
@@ -115,7 +120,7 @@ public class EditDocsAuditServiceTest {
         assertEquals(ids, expectedIds);
     }
 
-    private Object[] generateNewFileAddedScenarios() {
+    private static Object[] generateNewFileAddedScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         idValuesAfter = Arrays.asList(idValue1, idValue2);
@@ -138,7 +143,7 @@ public class EditDocsAuditServiceTest {
         };
     }
 
-    private Object[] generateFileUpdatedScenarios() {
+    private static Object[] generateFileUpdatedScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         IdValue<HasDocument> idValue2Updated = buildIdValue("2", "3333-4444", "desc3",
@@ -164,7 +169,7 @@ public class EditDocsAuditServiceTest {
         };
     }
 
-    private Object[] generateDeleteFileScenarios() {
+    private static Object[] generateDeleteFileScenarios() {
         idValue1 = buildIdValue("1", "1111-2222", "desc1", false, "someDocName").get(0);
         idValue2 = buildIdValue("2", "2222-3333", "desc2", false, "someDocName").get(0);
         idValuesAfter = Collections.singletonList(idValue2);
@@ -186,7 +191,7 @@ public class EditDocsAuditServiceTest {
         };
     }
 
-    private List<IdValue<HasDocument>> buildIdValue(String id, String docId, String description,
+    private static List<IdValue<HasDocument>> buildIdValue(String id, String docId, String description,
                                                     boolean hearingRecordingDocFlag, String filename) {
         Document doc = new Document(
             "http://dm-store:89/" + docId,
@@ -197,7 +202,7 @@ public class EditDocsAuditServiceTest {
         return Collections.singletonList(idValue);
     }
 
-    private HasDocument buildValue(Document doc, String desc, boolean hearingRecordingDocFlag) {
+    private static HasDocument buildValue(Document doc, String desc, boolean hearingRecordingDocFlag) {
         if (!hearingRecordingDocFlag) {
             return new DocumentWithMetadata(doc, desc, "1-1-2020", ADDITIONAL_EVIDENCE, null);
         }

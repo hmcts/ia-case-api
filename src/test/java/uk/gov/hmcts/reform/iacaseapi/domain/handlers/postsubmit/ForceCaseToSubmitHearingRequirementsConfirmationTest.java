@@ -1,31 +1,34 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ForceCaseToSubmitHearingRequirementsConfirmationTest {
+
+@ExtendWith(MockitoExtension.class)
+class ForceCaseToSubmitHearingRequirementsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
 
-    private ForceCaseToSubmitHearingRequirementsConfirmation forceCaseToSubmitHearingRequirementsConfirmation = new ForceCaseToSubmitHearingRequirementsConfirmation();
+    private ForceCaseToSubmitHearingRequirementsConfirmation forceCaseToSubmitHearingRequirementsConfirmation =
+        new ForceCaseToSubmitHearingRequirementsConfirmation();
 
     @Test
-    public void should_return_confirmation() {
+    void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.FORCE_CASE_TO_SUBMIT_HEARING_REQUIREMENTS);
 
@@ -37,23 +40,20 @@ public class ForceCaseToSubmitHearingRequirementsConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You've forced the case progression to submit hearing requirements")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You've forced the case progression to submit hearing requirements");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Respondent will be notified by email.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("Respondent will be notified by email.");
     }
 
     @Test
-    public void handling_should_throw_if_cannot_actually_handle() {
+    void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> forceCaseToSubmitHearingRequirementsConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -62,7 +62,7 @@ public class ForceCaseToSubmitHearingRequirementsConfirmationTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void it_can_handle_callback() {
+    void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
 
@@ -82,7 +82,7 @@ public class ForceCaseToSubmitHearingRequirementsConfirmationTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> forceCaseToSubmitHearingRequirementsConfirmation.canHandle(null))
             .hasMessage("callback must not be null")

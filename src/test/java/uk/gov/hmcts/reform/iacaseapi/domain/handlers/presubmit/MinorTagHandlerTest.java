@@ -14,15 +14,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.Value;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -32,24 +32,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-@RunWith(JUnitParamsRunner.class)
-public class MinorTagHandlerTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class MinorTagHandlerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+    public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
+    public static final String APPELLANT_MINOR = LocalDate.now().toString();
+    private final MinorTagHandler minorTagHandler = new MinorTagHandler();
 
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
 
-    private final MinorTagHandler minorTagHandler = new MinorTagHandler();
-    public static final String APPELLANT_ADULT = LocalDate.of(1979, 2, 1).toString();
-    public static final String APPELLANT_MINOR = LocalDate.now().toString();
-
-    @Test
-    @Parameters(method = "generateCanHandleTestScenario")
-    public void it_can_handle_callback(CanHandleTestScenario scenario) {
+    @ParameterizedTest
+    @MethodSource("generateCanHandleTestScenario")
+    void it_can_handle_callback(CanHandleTestScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
@@ -58,8 +56,70 @@ public class MinorTagHandlerTest {
         assertThat(canHandleActual).isEqualTo(scenario.canHandledExpected);
     }
 
-    private List<CanHandleTestScenario> generateCanHandleTestScenario() {
+    private static List<CanHandleTestScenario> generateCanHandleTestScenario() {
         return CanHandleTestScenario.builder();
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateAppellantDobScenarios")
+    void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
+        when(callback.getEvent()).thenReturn(scenario.event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPELLANT_DATE_OF_BIRTH, scenario.appellantDob);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> actual = minorTagHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        YesOrNo isAppellantMinor = actual.getData().read(IS_APPELLANT_MINOR, YesOrNo.class)
+            .orElse(null);
+        assertThat(isAppellantMinor).isEqualTo(scenario.isAppellantMinorExpected);
+    }
+
+    private static List<AppellantDobScenario> generateAppellantDobScenarios() {
+        return AppellantDobScenario.builder();
+    }
+
+    @Test
+    void should_not_allow_null_arguments() {
+        assertThatThrownBy(() -> minorTagHandler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> minorTagHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> minorTagHandler.handle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> minorTagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "ABOUT_TO_START, SUBMIT_APPEAL",
+        "ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
+        "ABOUT_TO_SUBMIT, START_APPEAL"
+    })
+    void given_wrong_event_or_wrong_callback_should_throw_exception(
+        PreSubmitCallbackStage callbackStage,
+        Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPELLANT_DATE_OF_BIRTH, APPELLANT_ADULT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> minorTagHandler.handle(callbackStage, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Value
@@ -71,7 +131,7 @@ public class MinorTagHandlerTest {
         private static List<CanHandleTestScenario> builder() {
             List<CanHandleTestScenario> scenarios = new ArrayList<>();
             List<Event> validEvents = Arrays.asList(SUBMIT_APPEAL,
-                            EDIT_APPEAL_AFTER_SUBMIT, PAY_AND_SUBMIT_APPEAL);
+                EDIT_APPEAL_AFTER_SUBMIT, PAY_AND_SUBMIT_APPEAL);
             for (Event event : Event.values()) {
                 if (validEvents.contains(event)) {
                     for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
@@ -92,27 +152,6 @@ public class MinorTagHandlerTest {
 
     }
 
-    @Test
-    @Parameters(method = "generateAppellantDobScenarios")
-    public void given_appellant_dob_should_tag_case_as_minor_or_not_accordingly(AppellantDobScenario scenario) {
-        when(callback.getEvent()).thenReturn(scenario.event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(APPELLANT_DATE_OF_BIRTH, scenario.appellantDob);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> actual = minorTagHandler.handle(ABOUT_TO_SUBMIT, callback);
-
-        YesOrNo isAppellantMinor = actual.getData().read(IS_APPELLANT_MINOR, YesOrNo.class)
-            .orElse(null);
-        assertThat(isAppellantMinor).isEqualTo(scenario.isAppellantMinorExpected);
-    }
-
-    private List<AppellantDobScenario> generateAppellantDobScenarios() {
-        return AppellantDobScenario.builder();
-    }
-
     @Value
     private static class AppellantDobScenario {
         String appellantDob;
@@ -128,47 +167,6 @@ public class MinorTagHandlerTest {
             return scenarios;
         }
 
-    }
-
-    @Test
-    public void should_not_allow_null_arguments() {
-        assertThatThrownBy(() -> minorTagHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> minorTagHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> minorTagHandler.handle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-
-        assertThatThrownBy(() -> minorTagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @Parameters({
-        "ABOUT_TO_START, SUBMIT_APPEAL",
-        "ABOUT_TO_START, EDIT_APPEAL_AFTER_SUBMIT",
-        "ABOUT_TO_SUBMIT, START_APPEAL"
-    })
-    public void given_wrong_event_or_wrong_callback_should_throw_exception(
-        PreSubmitCallbackStage callbackStage,
-        Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(APPELLANT_DATE_OF_BIRTH, APPELLANT_ADULT);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        assertThatThrownBy(() -> minorTagHandler.handle(callbackStage, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 }

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EditableDirectionTest {
+class EditableDirectionTest {
 
     private final String explanation = "Do the thing";
     private final Parties parties = Parties.RESPONDENT;
@@ -18,7 +18,7 @@ public class EditableDirectionTest {
     );
 
     @Test
-    public void should_hold_onto_values() {
+    void should_hold_onto_values() {
 
         assertEquals(explanation, editableDirection.getExplanation());
         assertEquals(parties, editableDirection.getParties());
@@ -26,7 +26,7 @@ public class EditableDirectionTest {
     }
 
     @Test
-    public void should_not_allow_null_arguments() {
+    void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> new EditableDirection(null, parties, dateDue))
             .isExactlyInstanceOf(NullPointerException.class);

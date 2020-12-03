@@ -1,30 +1,38 @@
 package uk.gov.hmcts.reform.iacaseapi.component;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.UserDetailsForTest.UserDetailsForTestBuilder.userWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
-import java.io.IOException;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
-public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest {
+public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
+    WithUserDetailsStub, WithReferenceDataStub {
 
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
@@ -39,7 +47,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data() throws IOException {
+    public void should_get_users_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -49,14 +58,9 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         prdSuccessResponse = objectMapper.readValue(prdResponseJson,
             ProfessionalUsersResponse.class);
 
-        stubFor(get(urlEqualTo(refDataPath))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(prdResponseJson)));
-
-        given.someLoggedIn(userWith()
-            .roles(newHashSet("caseworker-ia", "caseworker-ia-legalrep-solicitor")));
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
@@ -86,7 +90,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data_no_org_id() throws IOException {
+    public void should_get_users_from_professional_ref_data_no_org_id(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJsonNoOrgId =
             new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
@@ -96,14 +101,9 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         prdSuccessResponse = objectMapper.readValue(prdResponseJsonNoOrgId,
             ProfessionalUsersResponse.class);
 
-        stubFor(get(urlEqualTo(refDataPath))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(prdResponseJsonNoOrgId)));
-
-        given.someLoggedIn(userWith()
-            .roles(newHashSet("caseworker-ia", "caseworker-ia-legalrep-solicitor")));
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJsonNoOrgId);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
             .event(SHARE_A_CASE)
