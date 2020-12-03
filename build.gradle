@@ -322,7 +322,7 @@ dependencies {
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
 
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
