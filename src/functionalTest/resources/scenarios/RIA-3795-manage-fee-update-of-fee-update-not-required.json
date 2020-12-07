@@ -1,9 +1,9 @@
 {
-  "description": "RIA-3792 Case officer manage fee update of refund approved",
+  "description": "RIA-3795 Admin officer manage fee update of Fee update not required",
   "launchDarklyKey": "manage-fee-update-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "AdminOfficer",
     "input": {
       "eventId": "manageFeeUpdate",
       "state": "appealSubmitted",
@@ -12,7 +12,7 @@
         "replacements": {
           "newFeeAmount": "2000",
           "paymentStatus": "Paid",
-          "feeUpdateReason": "decisionTypeChanged",
+          "feeUpdateReason": "appealNotValid",
           "feeUpdateRecorded": {
             "values": [
               "feeUpdateRecorded"
@@ -20,7 +20,7 @@
           },
           "feeUpdateStatus": {
             "values": [
-              "refundApproved"
+              "feeUpdateNotRequired"
             ]
           },
           "feeUpdateCompletedStages": [
@@ -39,10 +39,10 @@
         "appealReferenceNumber": "$/(.+)/",
         "newFeeAmount": "2000",
         "paymentStatus": "Paid",
-        "feeUpdateReason": "decisionTypeChanged",
+        "feeUpdateReason": "appealNotValid",
         "feeUpdateCompletedStages": [
           "feeUpdateRecorded",
-          "refundApproved"
+          "feeUpdateNotRequired"
         ]
       }
     }

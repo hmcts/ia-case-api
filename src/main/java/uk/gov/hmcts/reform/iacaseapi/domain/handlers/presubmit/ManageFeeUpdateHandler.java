@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Component;
@@ -34,8 +39,8 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.MANAGE_FEE_UPDATE
-               && featureToggler.getValue("manage-fee-update-feature", false);
+            && callback.getEvent() == Event.MANAGE_FEE_UPDATE
+            && featureToggler.getValue("manage-fee-update-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,14 +56,27 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
                 .getCaseDetails()
                 .getCaseData();
 
-        asylumCase.clear(FEE_UPDATE_COMPLETED_STAGES);
-
+        Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
         Set<String> feeUpdateCompleteStages = new LinkedHashSet<>();
 
-        Optional<CheckValues<String>> maybeFeeUpdateRecorded = asylumCase.read(FEE_UPDATE_RECORDED);
-        maybeFeeUpdateRecorded.ifPresent(status ->
-            feeUpdateCompleteStages.addAll(status.getValues()));
+        if (completedStages.isPresent()) {
+            //Flow 2 when TCW/Admin is recording Fee update status options
+            List<String> existingCompletedStages = completedStages.get();
+            feeUpdateCompleteStages.addAll(existingCompletedStages);
 
+            Optional<CheckValues<String>> maybeFeeUpdateStatus = asylumCase.read(FEE_UPDATE_STATUS);
+            maybeFeeUpdateStatus.ifPresent(
+                statuses -> statuses.getValues().stream()
+                    .filter(feeUpdateStatus -> !existingCompletedStages.contains(feeUpdateStatus))
+                    .forEach(feeUpdateStatus -> feeUpdateCompleteStages.add(feeUpdateStatus)));
+
+        } else {
+            //Flow 1 when TCW/Admin is recording Fee update
+            Optional<CheckValues<String>> maybeFeeUpdateRecorded = asylumCase.read(FEE_UPDATE_RECORDED);
+            maybeFeeUpdateRecorded.ifPresent(status ->
+                feeUpdateCompleteStages.addAll(status.getValues()));
+            asylumCase.write(DISPLAY_FEE_UPDATE_STATUS, YES);
+        }
         asylumCase.write(
             FEE_UPDATE_COMPLETED_STAGES,
             new ArrayList<>(feeUpdateCompleteStages)
@@ -66,4 +84,5 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
+
 }

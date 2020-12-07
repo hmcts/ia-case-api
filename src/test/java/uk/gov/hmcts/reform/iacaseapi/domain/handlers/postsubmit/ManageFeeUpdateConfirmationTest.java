@@ -1,12 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +27,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 @SuppressWarnings("unchecked")
 class ManageFeeUpdateConfirmationTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseCaseDetails;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseCaseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private ManageFeeUpdateConfirmation manageFeeUpdateConfirmation;
 
@@ -33,10 +42,11 @@ class ManageFeeUpdateConfirmationTest {
         manageFeeUpdateConfirmation = new ManageFeeUpdateConfirmation();
     }
 
-    @org.junit.Test
-    public void should_return_confirmation() {
+    @Test
+    public void should_return_confirmation_for_fee_recorded() {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
 
         PostSubmitCallbackResponse callbackResponse =
@@ -47,15 +57,47 @@ class ManageFeeUpdateConfirmationTest {
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
-            callbackResponse.getConfirmationHeader().get(),
-            containsString("# You have recorded a fee update")
-        );
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have recorded a fee update");
 
         assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### What happens next\n\n"
-                           + "The appropriate team will be notified to review the fee update and take the next steps.")
-        );
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
+                + "The appropriate team will be notified to review the fee update and take the next steps.");
+    }
+
+    @Test
+    public void should_return_confirmation_for_progressing_fee_update_status() {
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded",
+                "feeUpdateAdditionalFeeRequested"
+            );
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+
+        PostSubmitCallbackResponse callbackResponse =
+            manageFeeUpdateConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have progressed a fee update");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
+                + "If you have recorded that a refund has been approved, you must now instruct the refund.\n\n"
+                + "If you have recorded that an additional fee has been requested, "
+                + "the legal representative will be instructed to pay the fee.\n\n"
+                + "If you have recorded that no fee update is required, you need to contact "
+                + "the legal representative and tell them why the fee update is no longer required.\n\n");
     }
 
 
