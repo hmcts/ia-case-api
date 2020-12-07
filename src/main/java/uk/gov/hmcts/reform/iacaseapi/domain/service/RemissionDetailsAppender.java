@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @Service
 public class RemissionDetailsAppender {
 
+    private List<IdValue<RemissionDetails>> remissions;
+
     public List<IdValue<RemissionDetails>> appendAsylumSupportRemissionDetails(
         List<IdValue<RemissionDetails>> existingRemissionDetails,
         String feeRemissionType,
@@ -102,5 +104,13 @@ public class RemissionDetailsAppender {
         }
 
         return allRemissionDetails;
+    }
+
+    public void setRemissions(List<IdValue<RemissionDetails>> remissions) {
+        this.remissions = remissions;
+    }
+
+    public List<IdValue<RemissionDetails>> getRemissions() {
+        return remissions;
     }
 }

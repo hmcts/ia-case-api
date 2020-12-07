@@ -1269,6 +1269,9 @@ public enum AsylumCaseFieldDefinition {
     REMISSION_TYPE(
         "remissionType", new TypeReference<RemissionType>(){}),
 
+    LATE_REMISSION_TYPE(
+        "lateRemissionType", new TypeReference<RemissionType>(){}),
+
     REMISSION_CLAIM(
         "remissionClaim", new TypeReference<String>(){}),
 
@@ -1410,6 +1413,15 @@ public enum AsylumCaseFieldDefinition {
         "ccdReferenceNumberForDisplay", new TypeReference<String>(){}),
     IS_REMOVE_REPRESENTATION_REQUESTED(
         "isRemoveRepresentationRequested", new TypeReference<YesOrNo>(){}),
+
+    REMISSION_DECISION_REASON(
+        "remissionDecisionReason", new TypeReference<String>(){}),
+
+    HELP_WITH_FEES_REFERENCE_NUMBER(
+        "helpWithFeesReferenceNumber", new TypeReference<String>(){}),
+
+    PREVIOUS_REMISSION_DETAILS(
+        "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
     ;
 
