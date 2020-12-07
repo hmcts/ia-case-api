@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -74,9 +75,9 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse
             = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-        if (optRemissionType.isPresent()
-            && optRemissionType.get() == RemissionType.HO_WAIVER_REMISSION
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+        if (remissionType.isPresent()
+            && Arrays.asList(HO_WAIVER_REMISSION, HELP_WITH_FEES).contains(remissionType.get())
             && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
         ) {
             asylumCasePreSubmitCallbackResponse

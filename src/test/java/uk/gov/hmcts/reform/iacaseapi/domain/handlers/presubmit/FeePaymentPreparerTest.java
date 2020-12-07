@@ -323,4 +323,25 @@ class FeePaymentPreparerTest {
             .contains("You do not have to pay for this type of appeal.");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "HO_WAIVER_REMISSION", "HELP_WITH_FEES" })
+    public void should_error_on_pay_and_submit_in_remissions(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.valueOf(type)));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Pay and submit option is not available. Select Submit your appeal to submit the appeal.");
+
+    }
+
 }
