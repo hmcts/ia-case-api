@@ -22,10 +22,13 @@ public class AppealPaymentConfirmationProvider {
             .orElse("");
     }
 
-    public String getFeeWithFormat(AsylumCase asylumCase) {
-        return asylumCase
-            .read(FEE_AMOUNT_FOR_DISPLAY, String.class)
+    public String getFee(AsylumCase asylumCase) {
+        String decisionHearingFeeOption = asylumCase.read(DECISION_HEARING_FEE_OPTION, String.class)
             .orElse("");
+
+        return decisionHearingFeeOption.equals("decisionWithHearing")
+            ? asylumCase.read(FEE_WITH_HEARING, String.class).orElse("")
+            : asylumCase.read(FEE_WITHOUT_HEARING, String.class).orElse("");
     }
 
     public Optional<PaymentStatus> getPaymentStatus(AsylumCase asylumCase) {

@@ -250,6 +250,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -265,7 +266,6 @@ class FeePaymentHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(feePayment, times(0)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Asylum support");
         verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
     }
@@ -276,6 +276,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -291,7 +292,6 @@ class FeePaymentHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(feePayment, times(0)).aboutToSubmit(callback);
         verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Legal Aid");
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
@@ -448,6 +448,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -469,11 +470,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -482,6 +483,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -504,11 +506,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
 
     }
 
@@ -518,6 +520,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -540,11 +543,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -553,6 +556,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -575,11 +579,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 
     @Test
@@ -588,6 +592,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -610,11 +615,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 
     @ParameterizedTest
@@ -624,6 +629,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -646,11 +652,11 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 
     @ParameterizedTest
@@ -660,6 +666,7 @@ class FeePaymentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
@@ -682,10 +689,10 @@ class FeePaymentHandlerTest {
         verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
 
-        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+        verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
     }
 }

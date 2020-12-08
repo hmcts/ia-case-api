@@ -257,6 +257,7 @@ security:
       - "markAppealPaid"
       - "endAppeal"
       - "reinstateAppeal"
+      - "recordRemissionDecision"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

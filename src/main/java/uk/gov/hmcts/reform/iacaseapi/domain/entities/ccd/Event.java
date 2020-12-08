@@ -98,6 +98,7 @@ public enum Event {
     DECIDE_AN_APPLICATION("decideAnApplication"),
     REQUEST_NEW_HEARING_REQUIREMENTS("requestNewHearingRequirements"),
     ALLOCATE_THE_CASE("allocateTheCase"),
+    RECORD_REMISSION_DECISION("recordRemissionDecision"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
