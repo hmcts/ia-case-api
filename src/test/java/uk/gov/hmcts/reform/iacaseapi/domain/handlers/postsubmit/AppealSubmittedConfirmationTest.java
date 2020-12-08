@@ -533,6 +533,67 @@ class AppealSubmittedConfirmationTest {
                 + "You'll get an email telling you whether your appeal can go ahead.");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"NO", "YES"})
+    void should_return_confirmation_for_exceptional_circumstances_remission(String flag) {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(
+            Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next");
+
+
+        if (flag.equals(NO.toString())) {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
+
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay."
+                );
+
+        }
+        if (flag.equals(YES.toString())) {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
+
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "![Out of time confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/outOfTimeConfirmation.png)\n"
+                        +
+                        "You have submitted an appeal with a remission application. Your remission details will be reviewed and you may be"
+                        +
+                        " asked to provide more information. Once the review is complete you will be notified if there is any fee to pay.\n"
+                        +
+                        "A Tribunal Caseworker will then review the reasons your appeal was submitted out of time and you will be notified if it can proceed."
+                );
+
+        }
+
+    }
+
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 

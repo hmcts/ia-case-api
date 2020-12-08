@@ -122,30 +122,18 @@ class FeePaymentHandlerTest {
             assertEquals(asylumCase, callbackResponse.getData());
 
             verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(asylumCase, times(1))
-                .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-            verify(asylumCase, times(1))
-                .write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
-            verify(asylumCase, times(1))
-                .clear(ASYLUM_SUPPORT_REFERENCE);
-            verify(asylumCase, times(1))
-                .clear(ASYLUM_SUPPORT_DOCUMENT);
-            verify(asylumCase, times(1))
-                .clear(LEGAL_AID_ACCOUNT_NUMBER);
-            verify(asylumCase, times(1))
-                .clear(LEGAL_AID_ACCOUNT_NUMBER);
-            verify(asylumCase, times(1))
-                .clear(SECTION17_DOCUMENT);
-            verify(asylumCase, times(1))
-                .clear(SECTION20_DOCUMENT);
-            verify(asylumCase, times(1))
-                .clear(HOME_OFFICE_WAIVER_DOCUMENT);
-            verify(asylumCase, times(1))
-                .clear(RP_DC_APPEAL_HEARING_OPTION);
-            verify(asylumCase, times(1))
-                .clear(REMISSION_CLAIM);
-            verify(asylumCase, times(1))
-                .clear(FEE_REMISSION_TYPE);
+            verify(asylumCase, times(1)).write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+            verify(asylumCase, times(1)).write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+            verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+            verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+            verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+            verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+            verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+            verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+            verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+            verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
+            verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+            verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
             reset(callback);
             reset(feePayment);
         });
@@ -650,6 +638,42 @@ class FeePaymentHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+
+        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
+        verify(asylumCase, times(1)).clear(HEARING_DECISION_SELECTED);
+        verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1)).clear(PAYMENT_STATUS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "PA" })
+    public void should_return_data_for_valid_exceptional_circumstances_remission_type(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(IS_REMISSIONS_ENABLED, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Exceptional circumstances");
         verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);

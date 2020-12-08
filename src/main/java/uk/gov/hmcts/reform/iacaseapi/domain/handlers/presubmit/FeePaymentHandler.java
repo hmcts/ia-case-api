@@ -1,9 +1,28 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_AID_ACCOUNT_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_CLAIM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -45,12 +64,12 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-               && Arrays.asList(
+            && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
             Event.PAYMENT_APPEAL
         ).contains(callback.getEvent())
-               && isfeePaymentEnabled;
+            && isfeePaymentEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -77,20 +96,23 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case HU:
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-                if (isRemissionsEnabled == YesOrNo.YES && optRemissionType.isPresent()
+
+                if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {
-
                     setFeeRemissionTypeDetails(asylumCase);
-                } else if (isRemissionsEnabled == YesOrNo.YES && optRemissionType.isPresent()
-                           && optRemissionType.get() == HELP_WITH_FEES) {
-
+                } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
+                    && optRemissionType.get() == HELP_WITH_FEES) {
                     setHelpWithFeesDetails(asylumCase);
+                } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
+                    && optRemissionType.get() == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+                    setExceptionalCircumstancesRemissionDetails(asylumCase);
                 } else {
 
                     asylumCase = feePayment.aboutToSubmit(callback);
                     setFeePaymentDetails(asylumCase, appealType);
                     clearRemissionDetails(asylumCase);
                 }
+
                 asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
                 break;
 
@@ -178,10 +200,19 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     }
 
+    private void setExceptionalCircumstancesRemissionDetails(AsylumCase asylumCase) {
+
+        asylumCase.write(FEE_REMISSION_TYPE, "Exceptional circumstances");
+        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
+        clearRemissionDetails(asylumCase);
+        clearFeeOptionDetails(asylumCase);
+
+    }
+
     private void setFeePaymentDetails(AsylumCase asylumCase, AppealType appealType) {
 
         asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
-            isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
+            isfeePaymentEnabled ? YES : YesOrNo.NO);
 
         if (!asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).isPresent()) {
             asylumCase.write(PAYMENT_STATUS, PAYMENT_PENDING);
