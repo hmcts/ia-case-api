@@ -69,7 +69,7 @@ class RequestCaseBuildingPreparerTest {
     void should_prepare_send_direction_fields() {
 
         final String expectedExplanationContains =
-            "You have 28 days after the respondent’s bundle is provided, or 42 days after the Notice of Appeal, whichever is the later, to upload your Appeal Skeleton Argument and evidence";
+            "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDueDate = "2019-10-08";
 
