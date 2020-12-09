@@ -67,7 +67,7 @@ public class RecordRemissionDecisionMidEvent implements PreSubmitCallbackHandler
                 .orElseThrow(() -> new IllegalStateException("Fee without hearing is not present"));
 
         Money feeAmountInGbp = Money.of(new BigDecimal(feeAmount), GBP);
-        asylumCase.write(FEE_AMOUNT, String.valueOf(new BigDecimal(feeAmount).multiply(new BigDecimal("100"))));
+        asylumCase.write(FEE_AMOUNT_GBP, String.valueOf(new BigDecimal(feeAmount).multiply(new BigDecimal("100"))));
 
         if (Arrays.asList(APPROVED, PARTIALLY_APPROVED).contains(remissionDecision)) {
 

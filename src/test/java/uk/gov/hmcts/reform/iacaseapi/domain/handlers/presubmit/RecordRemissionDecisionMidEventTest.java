@@ -165,9 +165,9 @@ class RecordRemissionDecisionMidEventTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
 
         if (hearingType.equals("decisionWithHearing")) {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "14000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "14000");
         } else {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "8000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "8000");
         }
     }
 
@@ -233,9 +233,9 @@ class RecordRemissionDecisionMidEventTest {
         assertThat(callbackResponse.getErrors()).contains("The Amount remitted and the amount left to pay must equal the full fee amount");
 
         if (hearingType.equals("decisionWithHearing")) {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "14000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "14000");
         } else {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "8000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "8000");
         }
     }
 
@@ -269,9 +269,9 @@ class RecordRemissionDecisionMidEventTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
 
         if (hearingType.equals("decisionWithHearing")) {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "14000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "14000");
         } else {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "8000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "8000");
         }
     }
 
@@ -307,9 +307,9 @@ class RecordRemissionDecisionMidEventTest {
             .contains("The Amount remitted and the amount left to pay must equal the full fee amount");
 
         if (hearingType.equals("decisionWithHearing")) {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "14000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "14000");
         } else {
-            verify(asylumCase, times(1)).write(FEE_AMOUNT, "8000");
+            verify(asylumCase, times(1)).write(FEE_AMOUNT_GBP, "8000");
         }
     }
 

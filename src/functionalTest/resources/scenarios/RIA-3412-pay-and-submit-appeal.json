@@ -35,7 +35,7 @@
         "appealReferenceNumber": "$/(.+)/",
         "submissionOutOfTime": "No",
         "pbaNumber": "PBA0087535",
-        "feeAmount": "80.00",
+        "feeAmountGbp": "80.00",
         "paymentStatus": "Paid",
         "paymentReference": "$/RC-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/",
         "legalRepresentativeDocuments": [
