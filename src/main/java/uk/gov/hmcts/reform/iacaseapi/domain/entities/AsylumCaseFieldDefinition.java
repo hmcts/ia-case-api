@@ -1326,6 +1326,12 @@ public enum AsylumCaseFieldDefinition {
     FEE_UPDATE_COMPLETED_STAGES(
         "feeUpdateCompletedStages", new TypeReference<List<String>>(){}),
 
+    FEE_UPDATE_REASON(
+        "feeUpdateReason", new TypeReference<FeeUpdateReason>(){}),
+
+    NEW_FEE_AMOUNT(
+        "newFeeAmount", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
