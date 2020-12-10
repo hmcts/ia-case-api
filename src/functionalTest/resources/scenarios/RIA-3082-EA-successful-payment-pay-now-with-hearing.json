@@ -34,7 +34,7 @@
         "pbaNumber": "PBA0087535",
         "feeCode": "FEE0239",
         "feeVersion": "1",
-        "feeAmount": "140.00",
+        "feeAmountGbp": "140.00",
         "feeDescription": "Appeal determined with a hearing",
         "paymentStatus": "Paid"
       }

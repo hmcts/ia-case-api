@@ -37,7 +37,7 @@
         "pbaNumber": "PBA0087535",
         "feeCode": "FEE0373",
         "feeVersion": "1",
-        "feeAmount": "80.00",
+        "feeAmountGbp": "80.00",
         "feeDescription": "Notice of Appeal - appellant consents without hearing A",
         "paymentDescription": "Appeal determined without a hearing",
         "currentCaseStateVisibleToLegalRepresentative": "listing",
