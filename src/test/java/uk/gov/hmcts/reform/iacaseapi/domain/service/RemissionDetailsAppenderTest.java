@@ -49,6 +49,7 @@ class RemissionDetailsAppenderTest {
         assertEquals(2, remissionDetails.size());
     }
 
+    @Test
     void append_legal_aid_remission_details() {
 
         String legalAidAccountNumber = "legalAidAccountNumber";
