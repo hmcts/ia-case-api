@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -21,9 +24,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
+    private final DateProvider dateProvider;
 
-    public RecordRemissionDecisionStateHandler(FeatureToggler featureToggler) {
+    public RecordRemissionDecisionStateHandler(
+        FeatureToggler featureToggler,
+        DateProvider dateProvider
+    ) {
         this.featureToggler = featureToggler;
+        this.dateProvider = dateProvider;
     }
 
     public boolean canHandle(
@@ -74,6 +82,8 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
             case PARTIALLY_APPROVED:
             case REJECTED:
                 asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+                asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+                    LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             default:

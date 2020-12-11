@@ -102,9 +102,9 @@ public class FeePaymentPreparer implements PreSubmitCallbackHandler<AsylumCase> 
         final String payAndSubmitOptionNotAvailableLabel = "The Pay and submit your appeal option is not available. "
             + "Select Submit your appeal if you want to submit the appeal now.";
 
-        YesOrNo isRemissionEnabled
+        YesOrNo isRemissionsEnabled
             = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
-        asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionEnabled);
+        asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent(type -> {
