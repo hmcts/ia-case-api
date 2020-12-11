@@ -98,4 +98,23 @@ class RemissionDetailsTest {
         assertEquals(exceptionalCircumstances, remissionDetails.getExceptionalCircumstances());
         assertEquals(remissionEcEvidenceDocuments, remissionDetails.getRemissionEcEvidenceDocuments());
     }
+
+    @Test
+    void should_set_correct_fields_in_remission_details() {
+
+        RemissionDetails remissionDetails =
+            new RemissionDetails("", "", "");
+
+        remissionDetails.setAmountLeftToPay(amountLeftToPay);
+        remissionDetails.setAmountRemitted(amountRemitted);
+        remissionDetails.setFeeAmount(feeAmount);
+        remissionDetails.setRemissionDecision(remissionDecision);
+        remissionDetails.setRemissionDecisionReason(remissionDecisionReason);
+
+        assertEquals(amountLeftToPay, remissionDetails.getAmountLeftToPay());
+        assertEquals(amountRemitted, remissionDetails.getAmountRemitted());
+        assertEquals(feeAmount, remissionDetails.getFeeAmount());
+        assertEquals(remissionDecision, remissionDetails.getRemissionDecision());
+        assertEquals(remissionDecisionReason, remissionDetails.getRemissionDecisionReason());
+    }
 }
