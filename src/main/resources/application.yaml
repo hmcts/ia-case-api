@@ -120,6 +120,7 @@ defaultHearingCentre: taylorHouse
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  aboutToStartPath: "/asylum/ccdAboutToStart"
 
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
@@ -136,9 +137,6 @@ role-assignment-service:
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-
-emBundler.url: ${EM_BUNDLER_URL:http://localhost:4623}
-emBundler.stitch.uri: ${EM_BUNDLER_STITCH_URI:/api/new-bundle}
 
 ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
 ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}

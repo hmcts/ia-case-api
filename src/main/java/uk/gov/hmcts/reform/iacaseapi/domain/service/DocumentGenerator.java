@@ -8,4 +8,8 @@ public interface DocumentGenerator<T extends CaseData> {
     T generate(
         Callback<T> callback
     );
+
+    T aboutToStart(
+        Callback<T> callback
+    );
 }
