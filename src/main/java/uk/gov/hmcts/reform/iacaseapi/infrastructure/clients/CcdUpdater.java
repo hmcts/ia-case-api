@@ -14,7 +14,6 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -29,19 +28,19 @@ public class CcdUpdater {
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
     private String ccdUrl;
     private String ccdPermissionsApiPath;
 
     public CcdUpdater(RestTemplate restTemplate,
                       AuthTokenGenerator serviceAuthTokenGenerator,
-                      UserDetailsProvider userDetailsProvider,
+                      UserDetails userDetails,
                       @Value("${core_case_data_api_url}") String ccrUrl,
                       @Value("${core_case_data_api_permissions_path}") String ccdPermissionsApiPath
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
         this.ccdUrl = ccrUrl;
         this.ccdPermissionsApiPath = ccdPermissionsApiPath;
     }
@@ -64,7 +63,6 @@ public class CcdUpdater {
         final uk.gov.hmcts.reform.iacaseapi.domain.entities.Value selectedValue = dynamicList.getValue();
 
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
-        final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 

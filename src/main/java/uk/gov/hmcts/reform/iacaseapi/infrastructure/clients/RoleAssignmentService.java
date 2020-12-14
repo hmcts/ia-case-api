@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -18,18 +17,17 @@ public class RoleAssignmentService {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final RoleAssignmentApi roleAssignmentApi;
 
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
 
     public RoleAssignmentService(AuthTokenGenerator serviceAuthTokenGenerator,
                                  RoleAssignmentApi roleAssignmentApi,
-                                 UserDetailsProvider userDetailsProvider) {
+                                 UserDetails userDetails) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.roleAssignmentApi = roleAssignmentApi;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
     }
 
     public void assignRole(CaseDetails<AsylumCase> caseDetails) {
-        UserDetails userDetails = userDetailsProvider.getUserDetails();
         String accessToken = userDetails.getAccessToken();
         String currentUserIdamId = userDetails.getId();
         String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();

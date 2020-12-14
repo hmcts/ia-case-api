@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -46,22 +46,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @SuppressWarnings("unchecked")
 class ReinstateAppealStateHandlerTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private DateProvider dateProvider;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private UserDetails userDetails;
-    @Mock
-    private FeatureToggler featureToggler;
-    @Mock
-    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private DateProvider dateProvider;
+    @Mock private UserDetails userDetails;
+    @Mock private UserDetailsHelper userDetailsDetails;
+
+    @Mock private FeatureToggler featureToggler;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     private ReinstateAppealStateHandler reinstateAppealStateHandler;
     private LocalDate date = LocalDate.now();
@@ -69,8 +62,7 @@ class ReinstateAppealStateHandlerTest {
     @BeforeEach
     public void setup() {
         when(dateProvider.now()).thenReturn(date);
-        reinstateAppealStateHandler =
-            new ReinstateAppealStateHandler(featureToggler, dateProvider, userDetailsProvider);
+        reinstateAppealStateHandler = new ReinstateAppealStateHandler(featureToggler, dateProvider, userDetails, userDetailsDetails);
         when(featureToggler.getValue("reinstate-feature", false)).thenReturn(true);
     }
 
@@ -82,7 +74,7 @@ class ReinstateAppealStateHandlerTest {
         when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
         when(asylumCase.read(STATE_BEFORE_END_APPEAL, State.class)).thenReturn(Optional.of(State.RESPONDENT_REVIEW));
         when(asylumCase.read(REINSTATE_APPEAL_REASON)).thenReturn(Optional.of("test"));
-        when(userDetailsProvider.getLoggedInUserRoleLabel()).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+        when(userDetailsDetails.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             reinstateAppealStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);

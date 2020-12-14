@@ -7,12 +7,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -26,16 +25,16 @@ public class ForceCaseProgressionToCaseUnderReviewHandler implements PreSubmitCa
 
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
 
     public ForceCaseProgressionToCaseUnderReviewHandler(
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
-        @Qualifier("requestUser") UserDetailsProvider userDetailsProvider
+        UserDetails userDetails
     ) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
     }
 
     public boolean canHandle(
@@ -87,8 +86,8 @@ public class ForceCaseProgressionToCaseUnderReviewHandler implements PreSubmitCa
     }
 
     private String buildFullName() {
-        return userDetailsProvider.getUserDetails().getForename()
+        return userDetails.getForename()
             + " "
-            + userDetailsProvider.getUserDetails().getSurname();
+            + userDetails.getSurname();
     }
 }

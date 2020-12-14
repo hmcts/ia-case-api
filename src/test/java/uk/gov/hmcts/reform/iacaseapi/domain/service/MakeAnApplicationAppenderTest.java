@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,8 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -27,14 +28,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 @SuppressWarnings("unchecked")
 class MakeAnApplicationAppenderTest {
 
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
-    @Mock
-    private DateProvider dateProvider;
-    @Mock
-    private IdValue<MakeAnApplication> makeAnApplicationById1;
-    @Mock
-    private IdValue<MakeAnApplication> makeAnApplicationById2;
+    @Mock private UserDetails userDetails;
+    @Mock private DateProvider dateProvider;
+    @Mock private IdValue<MakeAnApplication> makeAnApplicationById1;
+    @Mock private IdValue<MakeAnApplication> makeAnApplicationById2;
 
     private String newMakeAnApplicationType = "newMakeAnApplicationType";
     private String newMakeAnApplicationDesc = "newMakeAnApplicationDesc";
@@ -48,14 +45,14 @@ class MakeAnApplicationAppenderTest {
     public void setUp() {
 
         makeAnApplicationAppender =
-            new MakeAnApplicationAppender(userDetailsProvider, dateProvider);
+            new MakeAnApplicationAppender(userDetails, dateProvider);
     }
 
     @Test
     void should_append_the_new_application_in_first_position() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        when(userDetailsProvider.getLoggedInUserRole()).thenReturn(UserRole.HOME_OFFICE_APC);
+        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.HOME_OFFICE_APC.toString()));
 
         MakeAnApplication existingMakeAnApplication1 = mock(MakeAnApplication.class);
         when(makeAnApplicationById1.getValue()).thenReturn(existingMakeAnApplication1);
@@ -92,7 +89,7 @@ class MakeAnApplicationAppenderTest {
     void should_return_new_application_if_no_existing_applications() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        when(userDetailsProvider.getLoggedInUserRole()).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
+        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.LEGAL_REPRESENTATIVE.toString()));
 
         List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();
 

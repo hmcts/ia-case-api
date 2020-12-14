@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 
@@ -23,18 +22,18 @@ public class ProfessionalUsersRetriever {
 
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
-    private final UserDetailsProvider userDetailsProvider;
+    private final UserDetails userDetails;
     private final String refDataApiUrl;
     private final String refDataApiPath;
 
     public ProfessionalUsersRetriever(RestTemplate restTemplate,
                                       AuthTokenGenerator serviceAuthTokenGenerator,
-                                      UserDetailsProvider userDetailsProvider,
+                                      UserDetails userDetails,
                                       @Value("${prof.ref.data.url}") String refDataApiUrl,
                                       @Value("${prof.ref.data.path.org.users}") String refDataApiPath) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
-        this.userDetailsProvider = userDetailsProvider;
+        this.userDetails = userDetails;
         this.refDataApiUrl = refDataApiUrl;
         this.refDataApiPath = refDataApiPath;
     }
@@ -42,7 +41,6 @@ public class ProfessionalUsersRetriever {
     public ProfessionalUsersResponse retrieve() {
 
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
-        final UserDetails userDetails = userDetailsProvider.getUserDetails();
         final String accessToken = userDetails.getAccessToken();
 
         HttpHeaders headers = new HttpHeaders();
@@ -56,10 +54,6 @@ public class ProfessionalUsersRetriever {
         ProfessionalUsersResponse response;
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
-
-        //TODO Remove this (for Demo testing only
-        log.info("Authorization: {}", accessToken);
-        log.info("Service Authorization: {}", serviceAuthorizationToken);
 
         try {
             response =

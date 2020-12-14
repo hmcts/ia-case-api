@@ -9,9 +9,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
 public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     @Autowired
-    private UserDetailsProvider userDetailsProvider;
+    private UserDetails userDetails;
     @Autowired
     private DateProvider dateProvider;
 
@@ -68,6 +68,6 @@ public class RequestCaseBuildingHandler implements PreSubmitCallbackHandler<Asyl
 
     private CaseNote buildNewCaseNote(String reason) {
         return new CaseNote("Force case from Awaiting Respondent Evidence to Case Building",
-            reason, userDetailsProvider.getUserDetails().getForenameAndSurname(), dateProvider.now().toString());
+            reason, userDetails.getForenameAndSurname(), dateProvider.now().toString());
     }
 }

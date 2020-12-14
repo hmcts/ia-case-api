@@ -5,13 +5,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamUserDetails;
 
 class RoleAssignmentServiceTest {
 
@@ -31,15 +29,14 @@ class RoleAssignmentServiceTest {
         String serviceToken = "serviceToken";
         when(authTokenGenerator.generate()).thenReturn(serviceToken);
         RoleAssignmentApi roleAssignmentApi = mock(RoleAssignmentApi.class);
-        UserDetailsProvider userDetailsProvider = mock(UserDetailsProvider.class);
+        UserDetails userDetails = mock(UserDetails.class);
         String accessToken = "accessToken";
         String userId = "userId";
-        when(userDetailsProvider.getUserDetails()).thenReturn(
-            new IdamUserDetails(accessToken, userId, Collections.emptyList(), "", "", "")
-        );
+        when(userDetails.getAccessToken()).thenReturn(accessToken);
+        when(userDetails.getId()).thenReturn(userId);
 
         RoleAssignmentService roleAssignmentService =
-            new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetailsProvider);
+                new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
         @SuppressWarnings("unchecked")
         CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
         long caseId = 1234567890L;

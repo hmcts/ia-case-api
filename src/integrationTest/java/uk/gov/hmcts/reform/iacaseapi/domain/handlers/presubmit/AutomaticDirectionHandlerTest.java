@@ -2,70 +2,66 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
+import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithTimedEventServiceStub;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
-    WithServiceAuthStub, WithTimedEventServiceStub {
+    WithServiceAuthStub, WithTimedEventServiceStub, WithNotificationsApiStub {
 
     @MockBean
     private RequestUserAccessTokenProvider requestTokenProvider;
 
-    @Autowired
-    private AutomaticDirectionRequestingHearingRequirementsHandler handler;
+    private String expectedId = "someId";
+    private long caseId = 54321;
 
     @BeforeEach
     public void setupTimedEventServiceStub() {
         when(requestTokenProvider.getAccessToken()).thenReturn("Bearer token");
     }
 
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    public void should_trigger_timed_event_service(
+    void should_trigger_timed_event_service(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
 
         addCaseWorkerUserDetailsStub(server);
         addServiceAuthStub(server);
         addTimedEventServiceStub(server);
+        addNotificationsApiTransformerStub(server);
 
-        AsylumCase asylumCase = new AsylumCase();
-
-        Callback<AsylumCase> callback = new Callback<>(
-            new CaseDetails<>(
-                caseId,
-                "IA",
-                State.RESPONDENT_REVIEW,
-                asylumCase,
-                LocalDateTime.now()
-            ),
-            Optional.empty(),
-            Event.REQUEST_RESPONSE_REVIEW
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(
+            callback()
+                .event(REQUEST_RESPONSE_REVIEW)
+                .caseDetails(
+                    someCaseDetailsWith()
+                        .id(caseId)
+                        .state(RESPONDENT_REVIEW)
+                        .caseData(
+                            anAsylumCase()
+                                .with(APPELLANT_GIVEN_NAMES, "some names")
+                                .with(APPELLANT_FAMILY_NAME, "some family name")
+                                .with(SEND_DIRECTION_EXPLANATION, "some explanation")
+                                .with(SEND_DIRECTION_DATE_DUE, "2025-12-25")
+                        )
+                )
         );
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         String id = response
             .getData()

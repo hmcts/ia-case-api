@@ -29,13 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -52,26 +47,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @SuppressWarnings("unchecked")
 class DecideAnApplicationHandlerTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
 
-    @Mock
-    private DateProvider dateProvider;
-    @Mock
-    private FeatureToggler featureToggler;
-    @Mock
-    private UserDetailsProvider userDetailsProvider;
+    @Mock private DateProvider dateProvider;
+    @Mock private FeatureToggler featureToggler;
+    @Mock private UserDetails userDetails;
+    @Mock private UserDetailsHelper userDetailsHelper;
 
     private DecideAnApplicationHandler decideAnApplicationHandler;
 
     @BeforeEach
     public void setUp() {
 
-        decideAnApplicationHandler = new DecideAnApplicationHandler(dateProvider, userDetailsProvider, featureToggler);
+        decideAnApplicationHandler = new DecideAnApplicationHandler(dateProvider, userDetails, userDetailsHelper, featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
@@ -101,7 +91,8 @@ class DecideAnApplicationHandlerTest {
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
 
-        when(userDetailsProvider.getLoggedInUserRoleLabel()).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.TRIBUNAL_CASEWORKER);
+
         when(asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class))
             .thenReturn(Optional.of(makeAnApplicationsList));
         when(asylumCase.read(MAKE_AN_APPLICATION_DECISION, MakeAnApplicationDecision.class))

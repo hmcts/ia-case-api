@@ -33,8 +33,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -326,11 +326,9 @@ class PreSubmitCallbackDispatcherTest {
     @Test
     void should_sort_handlers_by_name() {
         PreSubmitCallbackHandler<AsylumCase> h1 = new AppealGroundsForDisplayFormatter();
-        PreSubmitCallbackHandler<AsylumCase> h2 =
-            new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));
-        PreSubmitCallbackHandler<AsylumCase> h3 =
-            new LegalRepresentativeDetailsHandler(mock(UserDetailsProvider.class));
         PreSubmitCallbackHandler<AsylumCase> h4 = new RequestCaseEditPreparer();
+        PreSubmitCallbackHandler<AsylumCase> h2 = new BuildCaseHandler(mock(DocumentReceiver.class), mock(DocumentsAppender.class));
+        PreSubmitCallbackHandler<AsylumCase> h3 = new LegalRepresentativeDetailsHandler(mock(UserDetails.class));
         PreSubmitCallbackHandler<AsylumCase> h5 = new RespondentReviewAppealResponseAddedUpdater();
         PreSubmitCallbackHandler<AsylumCase> h6 = new SendNotificationHandler(mock(NotificationSender.class));
 
