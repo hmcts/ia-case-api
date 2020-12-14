@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -60,41 +61,70 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .ifPresent(appealType -> {
-                switch (appealType) {
-                    case EA:
-                    case HU:
-                    case PA:
-                        Optional<PaymentStatus> optPaymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
-                        Optional<RemissionDecision> remissionDecision =
-                            asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-                        if (remissionDecision.isPresent()
-                            && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())) {
+        switch (appealType) {
+            case EA:
+            case HU:
+            case PA:
+                Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
 
-                            callbackResponse.addError("The remission decision for this appeal has already been recorded.");
-                        } else if (optPaymentStatus.isPresent() && optPaymentStatus.get() == PaymentStatus.PAID) {
+                Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+                Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
-                            callbackResponse.addError("The fee for this appeal has already been paid.");
+                Optional<RemissionDecision> remissionDecision =
+                    asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                        } else {
+                if (!isRemissionExists(remissionType) && !isRemissionExists(lateRemissionType)) {
 
-                            callbackResponse.setData(feePayment.aboutToStart(callback));
-                        }
+                    callbackResponse.addError("You cannot record a remission decision because a remission has not been requested for this appeal");
 
-                        break;
+                } else if (isRemissionAmountLeftPaid(remissionDecision, paymentStatus)) {
 
-                    case DC:
-                    case RP:
-                        callbackResponse.addError("Record remission decision is not valid for the appeal type.");
-                        break;
+                    callbackResponse.addError("The fee for this appeal has already been paid.");
 
-                    default:
-                        break;
+                } else if (remissionDecision.isPresent()
+                           && Arrays.asList(APPROVED, PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())) {
+
+                    callbackResponse.addError("The remission decision for this appeal has already been recorded.");
+
+                } else {
+
+                    callbackResponse.setData(feePayment.aboutToStart(callback));
                 }
-            });
+
+                break;
+
+            case DC:
+            case RP:
+                callbackResponse.addError("Record remission decision is not valid for the appeal type.");
+                break;
+
+            default:
+                break;
+        }
 
         return callbackResponse;
+    }
+
+    private boolean isRemissionExists(Optional<RemissionType> remissionType) {
+
+        return remissionType.isPresent() && remissionType.get() != RemissionType.NO_REMISSION;
+    }
+
+    private boolean isRemissionAmountLeftPaid(
+        Optional<RemissionDecision> remissionDecision, Optional<PaymentStatus> paymentStatus
+    ) {
+
+        if (remissionDecision.isPresent()
+            && Arrays.asList(PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())
+            && paymentStatus.isPresent()
+            && Arrays.asList(PaymentStatus.PAID).contains(paymentStatus.get())) {
+
+            return  true;
+        }
+
+        return false;
     }
 }

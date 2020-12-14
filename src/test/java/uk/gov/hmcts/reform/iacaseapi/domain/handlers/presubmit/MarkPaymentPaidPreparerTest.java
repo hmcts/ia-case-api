@@ -10,10 +10,13 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,10 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -47,7 +47,7 @@ class MarkPaymentPaidPreparerTest {
     private MarkPaymentPaidPreparer markPaymentPaidPreparer;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         MockitoAnnotations.openMocks(this);
 
@@ -111,15 +111,15 @@ class MarkPaymentPaidPreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "EA", "HU", "PA" })
-    public void handling_should_error_for_remission_decision_not_present(String type) {
+    @MethodSource("appealTypesWithRemissionTypes")
+    public void handling_should_error_for_remission_decision_not_present(AppealType type, RemissionType remissionType, AsylumCaseFieldDefinition field) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -128,23 +128,72 @@ class MarkPaymentPaidPreparerTest {
         assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because the remission decision has not been recorded.");
     }
 
+    private static Stream<Arguments> appealTypesWithRemissionTypes() {
+
+        return Stream.of(
+            Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE)
+        );
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = { "EA", "HU", "PA" })
-    public void handling_should_error_for_remission_decision_approved(String type) {
+    @MethodSource("appealTypesWithRemissionApproved")
+    void handling_should_error_for_remission_decision_approved(
+        AppealType type, RemissionType remissionType, RemissionDecision remissionDecision, AsylumCaseFieldDefinition field) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(type));
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
-        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.APPROVED));
+        when(asylumCase.read(field, RemissionType.class)).thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
 
         PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
             markPaymentPaidPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(returnedCallbackResponse);
         assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid because a full remission has been approved.");
+    }
+
+    private static Stream<Arguments> appealTypesWithRemissionApproved() {
+
+        return Stream.of(
+            Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.EA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(AppealType.PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE)
+        );
     }
 
     @Test

@@ -112,7 +112,7 @@ class RequestFeeRemissionHandlerTest {
             }
         } else if (remissionType == HELP_WITH_FEES) {
 
-            assertHelpWithFeeRemissionDetails(asylumCase);
+            assertHelpWithFees(asylumCase);
         } else if (remissionType == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
 
             assertExceptionalCircumstancesRemissionDetails(asylumCase);
@@ -202,7 +202,7 @@ class RequestFeeRemissionHandlerTest {
         verify(asylumCase, times(1)).clear(REMISSION_EC_EVIDENCE_DOCUMENTS);
     }
 
-    private void assertHelpWithFeeRemissionDetails(AsylumCase asylumCase) {
+    private void assertHelpWithFees(AsylumCase asylumCase) {
 
         verify(asylumCase, times(1)).write(FEE_REMISSION_TYPE, "Help with Fees");
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
