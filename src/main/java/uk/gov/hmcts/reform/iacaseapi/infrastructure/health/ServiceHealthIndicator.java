@@ -50,7 +50,7 @@ public class ServiceHealthIndicator implements HealthIndicator {
             }
         } catch (RestClientException ex) {
 
-            log.error("Downstream service exception {}", Health.down(ex).build().getDetails());
+            log.error("Downstream service exception {} calling URI {}", Health.down(ex).build().getDetails(), uri);
             return new Health
                 .Builder()
                 .down(ex)
