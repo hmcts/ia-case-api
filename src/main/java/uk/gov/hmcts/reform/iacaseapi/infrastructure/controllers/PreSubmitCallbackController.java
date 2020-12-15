@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 
 @Slf4j
@@ -35,16 +33,11 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PreSubmitCallbackDispatcher;
 public class PreSubmitCallbackController {
 
     private final PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
-    private final FeatureToggler featureToggler;
 
-    public PreSubmitCallbackController(
-        PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher,
-        FeatureToggler featureToggler
-    ) {
+    public PreSubmitCallbackController(PreSubmitCallbackDispatcher<AsylumCase> callbackDispatcher) {
         requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
         this.callbackDispatcher = callbackDispatcher;
-        this.featureToggler = featureToggler;
     }
 
     @ApiOperation(
@@ -171,17 +164,6 @@ public class PreSubmitCallbackController {
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-
-        // temporary feature flag to prevent database usage for particular events: PAY_AND_SUBMIT_APPEAL and SUBMIT_APPEAL
-        // remove below condition after successful migration to Postgres v11
-        if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL || callback.getEvent() == Event.SUBMIT_APPEAL)
-            && featureToggler.getValue("suspend-submit-case", false)) {
-            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(callback.getCaseDetails().getCaseData());
-            response.addError("There is planned maintenance work in progress. Your appeal has been saved and you will be able to submit it later. Please try again in few hours.");
-
-            return ok(response);
-        }
 
         log.info(
             "Asylum Case CCD `{}` event `{}` received for Case ID `{}`",
