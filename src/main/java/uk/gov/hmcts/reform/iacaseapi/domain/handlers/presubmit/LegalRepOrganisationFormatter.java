@@ -126,7 +126,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         final OrganisationPolicy organisationPolicy =
             OrganisationPolicy.builder()
                 .organisation(Organisation.builder()
-                    .organisationID("ZE2KIWO")
+                    .organisationID(organisationIdentifier)
                     .build()
                 )
                 .orgPolicyCaseAssignedRole("caseworker-ia-legalrep-solicitor")
