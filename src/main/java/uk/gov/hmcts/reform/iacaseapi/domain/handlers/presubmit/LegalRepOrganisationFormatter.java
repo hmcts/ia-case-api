@@ -134,7 +134,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         asylumCase.write(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, organisationPolicy);
 
-        log.info("organisationIdentifier ==>" + organisationIdentifier);
+        //log.info("organisationIdentifier ==>" + organisationIdentifier);
 
         /* Remove Creator role (revoke access to case) */
         //ccdCaseAssignment.revokeAccessToCase(callback);
