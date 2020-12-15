@@ -111,10 +111,10 @@ public class CcdCaseAssignment {
         final String idamUserId = userDetails.getId();
 
         Map<String, Object> caseUser = Maps.newHashMap();
-        caseUser.put("case_id", String.valueOf(caseId));
+        caseUser.put("case_id", "1606907972859898");
         caseUser.put("case_role", "caseworker-ia-legalrep-solicitor");
-        caseUser.put("organisation_id", organisationIdentifier);
-        caseUser.put("user_id", idamUserId);
+        caseUser.put("organisation_id", "ZE2KIWO");
+        caseUser.put("user_id", "835c71bd-1f73-47c1-a00d-453f954d0d56");
 
         ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
         caseUsers.add(caseUser);
