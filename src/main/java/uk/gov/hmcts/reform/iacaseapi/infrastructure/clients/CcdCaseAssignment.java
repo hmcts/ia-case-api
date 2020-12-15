@@ -111,7 +111,8 @@ public class CcdCaseAssignment {
         final String idamUserId = userDetails.getId();
 
         log.info("caseId ==> " + caseId);
-        log.info("organisationIdentifier ==>" + organisationIdentifier);
+        log.info("organisationIdentifier ==> " + organisationIdentifier);
+        log.info("idamUserId ==> " + idamUserId);
 
         Map<String, Object> caseUser = Maps.newHashMap();
         caseUser.put("case_id", String.valueOf(caseId));
