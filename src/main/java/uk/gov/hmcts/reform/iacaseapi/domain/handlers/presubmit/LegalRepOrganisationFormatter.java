@@ -126,13 +126,15 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         final OrganisationPolicy organisationPolicy =
             OrganisationPolicy.builder()
                 .organisation(Organisation.builder()
-                    .organisationID("ZE2KIWO")
+                    .organisationID(organisationIdentifier)
                     .build()
                 )
                 .orgPolicyCaseAssignedRole("caseworker-ia-legalrep-solicitor")
                 .build();
 
         asylumCase.write(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, organisationPolicy);
+
+        log.info("organisationIdentifier ==>" + organisationIdentifier);
 
         /* Remove Creator role (revoke access to case) */
         //ccdCaseAssignment.revokeAccessToCase(callback);
@@ -141,7 +143,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         //ccdCaseAssignment.getOrganisationUsers(organisationIdentifier);
 
         /* Assign Access to Case */
-        ccdCaseAssignment.assignAccessToCase(callback, organisationIdentifier);
+        //ccdCaseAssignment.assignAccessToCase(callback, organisationIdentifier);
 
     }
 }
