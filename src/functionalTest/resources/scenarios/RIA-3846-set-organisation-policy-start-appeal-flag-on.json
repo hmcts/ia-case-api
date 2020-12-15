@@ -1,5 +1,6 @@
 {
-  "description": "RIA-583 Draft appeal reference before submission",
+  "description": "RIA-3846 Set OrganisationPolicy at start appeal - feature flag on",
+  "launchDarklyKey": "share-case-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentativeOrgSuccess",
@@ -10,7 +11,7 @@
         "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "appealReferenceNumber": null
+          "localAuthorityPolicy": null
         }
       }
     }
@@ -21,8 +22,13 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealGroundsProtection": null,
-        "appealReferenceNumber": "DRAFT"
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "D1HRWLA",
+            "OrganisationName": null
+          },
+          "OrgPolicyCaseAssignedRole": "caseworker-ia-legalrep-solicitor"
+        }
       }
     }
   }

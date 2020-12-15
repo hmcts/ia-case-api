@@ -2,7 +2,7 @@
   "description": "RIA-3783 Home Office Reference CID Number zero padding - start appeal",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "eventId": "startAppeal",
       "state": "appealStarted",
