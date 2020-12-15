@@ -118,7 +118,7 @@ public class CcdCaseAssignment {
         caseUser.put("case_id", String.valueOf(caseId));
         caseUser.put("case_role", "[caseworker-ia-legalrep-solicitor]");
         caseUser.put("organisation_id", "D1HRWLA");
-        caseUser.put("user_id", "835c71bd-1f73-47c1-a00d-453f954d0d56");
+        caseUser.put("user_id", "f85e183a-afba-4d76-8766-58a4318ccbca");
 
         ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
         caseUsers.add(caseUser);
