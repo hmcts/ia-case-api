@@ -40,7 +40,7 @@ class LegalRepOrganisationFormatterTest {
 
     private LegalRepOrganisationFormatter legalRepOrganisationFormatter;
     private String companyName = "LBC";
-    private String organisationIdentifier = "ABC1234";
+    private String organisationIdentifier = "ZE2KIWO";
     private final String addressLine1 = "A";
     private final String addressLine2 = "B";
     private final String addressLine3 = "C";
