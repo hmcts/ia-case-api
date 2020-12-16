@@ -12,9 +12,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 
 @Component
 public class AppealSavedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private final CcdCaseAssignment ccdCaseAssignment;
+    private final ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+
+    public AppealSavedConfirmation(
+        CcdCaseAssignment ccdCaseAssignment,
+        ProfessionalOrganisationRetriever professionalOrganisationRetriever) {
+
+        this.ccdCaseAssignment = ccdCaseAssignment;
+        this.professionalOrganisationRetriever = professionalOrganisationRetriever;
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -70,6 +83,19 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
             + "#### Not ready to submit yet?\n"
             + "You can return to the case details to make changes."
         );
+
+
+
+        // TODO add share a case feature flag
+
+        final String organisationIdentifier =
+            professionalOrganisationRetriever
+                .retrieve()
+                .getOrganisationIdentifier();
+
+        ccdCaseAssignment.revokeAccessToCase(callback, organisationIdentifier);
+
+        ccdCaseAssignment.assignAccessToCase(callback, organisationIdentifier);
 
         return postSubmitResponse;
     }

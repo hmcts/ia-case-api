@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -35,8 +37,13 @@ class AppealSavedConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
 
+    @Mock
+    private CcdCaseAssignment ccdCaseAssignment;
+    @Mock
+    private ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+
     private AppealSavedConfirmation appealSavedConfirmation =
-        new AppealSavedConfirmation();
+        new AppealSavedConfirmation(ccdCaseAssignment, professionalOrganisationRetriever);
 
     @Test
     void should_return_confirmation() {

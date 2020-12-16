@@ -111,7 +111,7 @@ class CcdCaseAssignmentTest {
 
         when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.NO_CONTENT.value());
 
-        ccdCaseAssignment.revokeAccessToCase(callback);
+        ccdCaseAssignment.revokeAccessToCase(callback, "");
 
         verify(restTemplate)
             .exchange(
@@ -180,7 +180,7 @@ class CcdCaseAssignmentTest {
             )
         ).thenThrow(restClientResponseEx);
 
-        assertThatThrownBy(() -> ccdCaseAssignment.revokeAccessToCase(callback))
+        assertThatThrownBy(() -> ccdCaseAssignment.revokeAccessToCase(callback, ""))
             .isInstanceOf(CcdDataIntegrationException.class)
             .hasMessage("Couldn't revoke CCD case access using API: "
                         + ccdUrl

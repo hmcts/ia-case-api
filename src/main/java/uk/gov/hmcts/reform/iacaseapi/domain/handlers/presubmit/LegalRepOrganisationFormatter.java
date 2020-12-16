@@ -143,7 +143,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         //ccdCaseAssignment.getOrganisationUsers(organisationIdentifier);
 
         /* Assign Access to Case */
-        ccdCaseAssignment.assignAccessToCase(callback, organisationIdentifier);
+       // ccdCaseAssignment.assignAccessToCase(callback, organisationIdentifier);
 
     }
 }

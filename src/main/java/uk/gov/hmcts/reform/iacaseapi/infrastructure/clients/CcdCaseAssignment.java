@@ -7,9 +7,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUser;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 
 
 @Slf4j
@@ -55,7 +58,8 @@ public class CcdCaseAssignment {
     }
 
     public void revokeAccessToCase(
-        final Callback<AsylumCase> callback
+        final Callback<AsylumCase> callback,
+        final String organisationIdentifier
     ) {
         requireNonNull(callback, "callback must not be null");
 
@@ -67,21 +71,29 @@ public class CcdCaseAssignment {
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 
-        setHeaders(serviceAuthorizationToken, accessToken);
+        Map<String, Object> caseUser = Maps.newHashMap();
+        caseUser.put("case_id", String.valueOf(caseId));
+        caseUser.put("case_role", "[CREATOR]");
+        caseUser.put("organisation_id", organisationIdentifier);
+        caseUser.put("user_id", idamUserId);
 
-        URI uri = UriComponentsBuilder
-            .fromPath(ccdPermissionsRevokeApiPath)
-            //.build(idamUserId, jurisdiction, caseTypeId, caseId, idamUserId);
-            .build("835c71bd-1f73-47c1-a00d-453f954d0d56", "IA", "Asylum", "1606907972859898", "835c71bd-1f73-47c1-a00d-453f954d0d56");
+        ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
+        caseUsers.add(caseUser);
+
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("case_users", caseUsers);
 
         HttpEntity<Map<String, Object>> requestEntity =
-            new HttpEntity<>(setHeaders(serviceAuthorizationToken, accessToken));
+            new HttpEntity<>(
+                payload,
+                setHeaders(serviceAuthorizationToken, accessToken)
+            );
 
         ResponseEntity<Object> response;
         try {
             response = restTemplate
                 .exchange(
-                    ccdUrl + uri.getPath(),
+                    ccdUrl + ccdAssignmentsApiPath,
                     HttpMethod.DELETE,
                     requestEntity,
                     Object.class
@@ -89,12 +101,12 @@ public class CcdCaseAssignment {
 
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
-                "Couldn't revoke CCD case access using API: " + ccdUrl + uri.getPath(),
+                "Couldn't set initial CCD case assignment using delete API: " + ccdUrl + ccdAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Http status received from CCD API; {}. Case access revoked", response.getStatusCodeValue());
+        log.info("Http status received from CCD delete API; {}. Case access revoked", response.getStatusCodeValue());
     }
 
     public void assignAccessToCase(
@@ -117,8 +129,8 @@ public class CcdCaseAssignment {
         Map<String, Object> caseUser = Maps.newHashMap();
         caseUser.put("case_id", String.valueOf(caseId));
         caseUser.put("case_role", "[caseworker-ia-legalrep-solicitor]");
-        caseUser.put("organisation_id", "D1HRWLA");
-        caseUser.put("user_id", "f85e183a-afba-4d76-8766-58a4318ccbca");
+        caseUser.put("organisation_id", organisationIdentifier);
+        caseUser.put("user_id", idamUserId);
 
         ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
         caseUsers.add(caseUser);
@@ -144,12 +156,12 @@ public class CcdCaseAssignment {
 
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
-                "Couldn't set initial CCD case assignment using API: " + ccdUrl + ccdAssignmentsApiPath,
+                "Couldn't set initial CCD case assignment using post API: " + ccdUrl + ccdAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Http status received from CCD API; {}", response.getStatusCodeValue());
+        log.info("Http status received from CCD post API; {}", response.getStatusCodeValue());
     }
 
     public List<ProfessionalUser> getOrganisationUsers(final String organisationIdentifier) {
