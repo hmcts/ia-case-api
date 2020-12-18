@@ -69,9 +69,9 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
                     maybeDirections.orElse(emptyList()),
                 "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
                 + "# Next steps\n\n"
-                + "You have " + reviewDueInDays + " days to review the Home Office response. "
+                + "Review the Home Office response. "
                 + "If you want to respond to what they have said, you should email the Tribunal.\n\n"
-                + "If you do not respond within " + reviewDueInDays + " days, "
+                + "If you do not respond by the date indicated below, "
                 + "the case will automatically go to hearing.",
                 Parties.LEGAL_REPRESENTATIVE,
                 dateProvider
