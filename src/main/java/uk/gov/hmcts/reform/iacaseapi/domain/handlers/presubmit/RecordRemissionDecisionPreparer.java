@@ -117,14 +117,9 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
         Optional<RemissionDecision> remissionDecision, Optional<PaymentStatus> paymentStatus
     ) {
 
-        if (remissionDecision.isPresent()
-            && Arrays.asList(PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())
-            && paymentStatus.isPresent()
-            && Arrays.asList(PaymentStatus.PAID).contains(paymentStatus.get())) {
-
-            return  true;
-        }
-
-        return false;
+        return remissionDecision.isPresent()
+               && Arrays.asList(PARTIALLY_APPROVED, REJECTED).contains(remissionDecision.get())
+               && paymentStatus.isPresent()
+               && Arrays.asList(PaymentStatus.PAID).contains(paymentStatus.get());
     }
 }
