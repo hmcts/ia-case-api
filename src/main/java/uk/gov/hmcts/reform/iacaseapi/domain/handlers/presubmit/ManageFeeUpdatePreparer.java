@@ -49,6 +49,11 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
+        YesOrNo displayFeeUpdateStatus =
+            (completedStages.isPresent() && !completedStages.get().isEmpty()) ? YesOrNo.YES : YesOrNo.NO;
+        asylumCase.write(DISPLAY_FEE_UPDATE_STATUS, displayFeeUpdateStatus);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)

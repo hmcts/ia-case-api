@@ -43,7 +43,7 @@ class ManageFeeUpdateConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_fee_recorded() {
+    void should_return_confirmation_for_fee_recorded() {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
@@ -67,7 +67,7 @@ class ManageFeeUpdateConfirmationTest {
     }
 
     @Test
-    public void should_return_confirmation_for_progressing_fee_update_status() {
+    void should_return_confirmation_for_progressing_fee_update_status() {
         final List<String> completedStages =
             Arrays.asList(
                 "feeUpdateRecorded",
@@ -98,6 +98,37 @@ class ManageFeeUpdateConfirmationTest {
                 + "the legal representative will be instructed to pay the fee.\n\n"
                 + "If you have recorded that no fee update is required, you need to contact "
                 + "the legal representative and tell them why the fee update is no longer required.\n\n");
+    }
+
+    @Test
+    void should_return_confirmation_for_refund_instructed_fee_update_status() {
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded",
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed"
+            );
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+
+        PostSubmitCallbackResponse callbackResponse =
+            manageFeeUpdateConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("# You have marked the refund as instructed");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("#### What happens next\n\n"
+                + "The legal representative will be notified that the refund has been instructed.\n\n");
     }
 
 

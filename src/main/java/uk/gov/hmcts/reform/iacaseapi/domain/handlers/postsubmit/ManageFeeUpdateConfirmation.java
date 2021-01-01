@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 @Component
 public class ManageFeeUpdateConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
+    private static final String WHAT_HAPPENS_NEXT = "#### What happens next\n\n";
+
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
@@ -39,25 +41,32 @@ public class ManageFeeUpdateConfirmation implements PostSubmitCallbackHandler<As
 
         Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
 
-        if (completedStages.isPresent()) {
-            if (completedStages.get().size() > 1) {
+        if (completedStages.isPresent() && completedStages.get().size() > 1) {
+            String lastCompletedStep = completedStages.get().get(completedStages.get().size() - 1);
+
+            if (lastCompletedStep.equals("feeUpdateRefundInstructed")) {
+
+                postSubmitResponse.setConfirmationHeader("# You have marked the refund as instructed");
+                postSubmitResponse.setConfirmationBody(
+                    WHAT_HAPPENS_NEXT
+                        + "The legal representative will be notified that the refund has been instructed.\n\n");
+            } else {
                 postSubmitResponse.setConfirmationHeader("# You have progressed a fee update");
                 postSubmitResponse.setConfirmationBody(
-                    "#### What happens next\n\n"
+                    WHAT_HAPPENS_NEXT
                         + "If you have recorded that a refund has been approved, you must now instruct the refund.\n\n"
                         + "If you have recorded that an additional fee has been requested, "
                         + "the legal representative will be instructed to pay the fee.\n\n"
                         + "If you have recorded that no fee update is required, you need to contact "
                         + "the legal representative and tell them why the fee update is no longer required.\n\n"
                 );
-
-                return postSubmitResponse;
             }
+            return postSubmitResponse;
         }
 
         postSubmitResponse.setConfirmationHeader("# You have recorded a fee update");
         postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
+            WHAT_HAPPENS_NEXT
                 + "The appropriate team will be notified to review the fee update and take the next steps."
         );
 
