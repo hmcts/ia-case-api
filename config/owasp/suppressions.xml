@@ -107,4 +107,32 @@
     ]]></notes>
         <cve>CVE-2020-8908</cve>
     </suppress>
+    <suppress until="2099-06-01">
+        <notes><![CDATA[
+          It is vulnerability discovered in spring oauth2 module in transitive dependency (ignore for now)
+          more details https://nvd.nist.gov/vuln/detail/CVE-2020-29242
+    ]]></notes>
+        <cve>CVE-2020-29242</cve>
+    </suppress>
+    <suppress until="2099-06-01">
+        <notes><![CDATA[
+          It is vulnerability discovered in spring oauth2 module in transitive dependency (ignore for now)
+          more details https://nvd.nist.gov/vuln/detail/CVE-2020-29243
+    ]]></notes>
+        <cve>CVE-2020-29243</cve>
+    </suppress>
+    <suppress until="2099-06-01">
+        <notes><![CDATA[
+          It is vulnerability discovered in spring oauth2 module in transitive dependency (ignore for now)
+          more details https://nvd.nist.gov/vuln/detail/CVE-2020-29244
+    ]]></notes>
+        <cve>CVE-2020-29244</cve>
+    </suppress>
+    <suppress until="2099-06-01">
+        <notes><![CDATA[
+          It is vulnerability discovered in spring oauth2 module in transitive dependency (ignore for now)
+          more details https://nvd.nist.gov/vuln/detail/CVE-2020-29245
+    ]]></notes>
+        <cve>CVE-2020-29245</cve>
+    </suppress>
 </suppressions>
