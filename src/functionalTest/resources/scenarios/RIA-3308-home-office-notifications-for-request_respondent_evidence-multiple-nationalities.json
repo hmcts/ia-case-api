@@ -1,0 +1,59 @@
+{
+  "description": "RIA-3308 sends home office notifications for request respondent evidence - multiple nationalities",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestRespondentEvidence",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantNationalities": [
+            {
+              "id": "2",
+              "value": {
+                "code": "AU"
+              }
+            },
+            {
+              "id": "1",
+              "value": {
+                "code": "CA"
+              }
+            }],
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "appealSubmissionDate": "2020-09-22",
+          "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.\n\nYou must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have 14 days to supply the documents.\n\nYou must include:\n- the notice of decision\n- any other document provided to the appellant giving reasons for that decision\n- any statements of evidence\n- the application form\n- any record of interview with the appellant in relation to the decision being appealed\n- any other unpublished documents on which you rely\n- the notice of any other appealable decision made in relation to the appellant",
+          "sendDirectionParties": "respondent",
+          "sendDirectionDateDue": "{$TODAY+14}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantNationalities": [
+          {
+            "id": "2",
+            "value": {
+              "code": "AU"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "code": "CA"
+            }
+          }],
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeInstructStatus": "OK"
+      }
+    }
+  }
+}
