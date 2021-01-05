@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -54,20 +53,17 @@ class DecideAnApplicationPreparerTest {
 
     @Mock
     private DateProvider dateProvider;
-    @Mock
-    private FeatureToggler featureToggler;
 
     private DecideAnApplicationPreparer decideAnApplicationPreparer;
 
     @BeforeEach
     public void setUp() {
 
-        decideAnApplicationPreparer = new DecideAnApplicationPreparer(featureToggler);
+        decideAnApplicationPreparer = new DecideAnApplicationPreparer();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.DECIDE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @Test

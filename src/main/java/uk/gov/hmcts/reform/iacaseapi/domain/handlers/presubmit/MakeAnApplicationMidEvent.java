@@ -11,18 +11,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvider;
 
 @Component
 public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
-    private final FeatureToggler featureToggler;
 
-    public MakeAnApplicationMidEvent(MakeAnApplicationTypesProvider makeAnApplicationTypesProvider,
-                                     FeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
+    public MakeAnApplicationMidEvent(MakeAnApplicationTypesProvider makeAnApplicationTypesProvider) {
         this.makeAnApplicationTypesProvider = makeAnApplicationTypesProvider;
     }
 
@@ -33,8 +29,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.MAKE_AN_APPLICATION
-               && featureToggler.getValue("make-an-application-feature", false);
+               && callback.getEvent() == Event.MAKE_AN_APPLICATION;
     }
 
     @Override

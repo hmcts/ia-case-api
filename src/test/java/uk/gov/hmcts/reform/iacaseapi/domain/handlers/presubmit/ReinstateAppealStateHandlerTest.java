@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +52,6 @@ class ReinstateAppealStateHandlerTest {
     @Mock private UserDetails userDetails;
     @Mock private UserDetailsHelper userDetailsDetails;
 
-    @Mock private FeatureToggler featureToggler;
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     private ReinstateAppealStateHandler reinstateAppealStateHandler;
@@ -62,8 +60,7 @@ class ReinstateAppealStateHandlerTest {
     @BeforeEach
     public void setup() {
         when(dateProvider.now()).thenReturn(date);
-        reinstateAppealStateHandler = new ReinstateAppealStateHandler(featureToggler, dateProvider, userDetails, userDetailsDetails);
-        when(featureToggler.getValue("reinstate-feature", false)).thenReturn(true);
+        reinstateAppealStateHandler = new ReinstateAppealStateHandler(dateProvider, userDetails, userDetailsDetails);
     }
 
     @Test
@@ -87,19 +84,6 @@ class ReinstateAppealStateHandlerTest {
         verify(asylumCase).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.NO);
         assertTrue(asylumCase.read(REINSTATE_APPEAL_REASON).isPresent());
         assertEquals(RESPONDENT_REVIEW.toString(), returnedCallbackResponse.getState().toString());
-    }
-
-
-    @Test
-    void it_cannot_handle_callback_if_feature_not_enabled() {
-
-        when(callback.getEvent()).thenReturn(REINSTATE_APPEAL);
-        when(featureToggler.getValue("reinstate-feature", false)).thenReturn(false);
-
-        assertThatThrownBy(() -> reinstateAppealStateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test

@@ -1,6 +1,5 @@
 {
   "description": "RIA-3039 Reinstate appeal to the state before End appeal",
-  "launchDarklyKey": "reinstate-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
