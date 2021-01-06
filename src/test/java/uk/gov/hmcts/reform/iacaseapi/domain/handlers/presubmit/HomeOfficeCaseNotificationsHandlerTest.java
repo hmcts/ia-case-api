@@ -10,8 +10,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +48,24 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
-    public void should_call_home_office_api_and_update_the_case() {
+    public void should_call_home_office_api_and_update_the_case_for_respondent_evidence() {
 
         when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(1)).call(callback);
+    }
+
+    @Test
+    public void should_call_home_office_api_and_update_the_case_for_respondent_review() {
+
+        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_REVIEW);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -72,7 +89,10 @@ public class HomeOfficeCaseNotificationsHandlerTest {
                 boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
-                    && callback.getEvent() == REQUEST_RESPONDENT_EVIDENCE
+                    && Arrays.asList(
+                        Event.REQUEST_RESPONDENT_EVIDENCE,
+                        Event.REQUEST_RESPONDENT_REVIEW
+                    ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
                 } else {
