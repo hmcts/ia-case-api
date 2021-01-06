@@ -40,8 +40,7 @@ public class CaseSubmittedConfirmation implements PostSubmitCallbackHandler<Asyl
             "We have sent you a confirmation email\n\n"
             + "#### What happens next\n"
             + "The case officer will now review your appeal. "
-            + "If it complies with the procedure rules and practice directions, they will send it to the respondent for them to review. "
-            + "The respondent then has 14 days to respond."
+            + "If it complies with the procedure rules and practice directions, they will send it to the respondent for them to review."
         );
 
         return postSubmitResponse;
