@@ -399,7 +399,128 @@ class ManageFeeUpdateMidEventTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors()).contains(
-            "You must select refund approved before you can mark a refund as instructed");
+            "This selection is not valid. You cannot deselect an option that has already been selected");
+    }
+
+    @Test
+    void handling_throw_error_post_refund_instructed_for_value_not_selected() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded",
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed"
+            );
+        final CheckValues<String> feeUpdateRecorded =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRecorded"
+            ));
+        final CheckValues<String> feeUpdateStatus =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed"
+            ));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+            .thenReturn(Optional.of(FeeUpdateReason.DECISION_TYPE_CHANGED));
+        when(asylumCase.read(NEW_FEE_AMOUNT, String.class)).thenReturn(Optional.of("80"));
+        when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(feeUpdateRecorded));
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+        when(asylumCase.read(FEE_UPDATE_STATUS)).thenReturn(Optional.of(feeUpdateStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains(
+            "This selection is not valid. "
+                + "You must select either fee update not required or additional fee requested to continue");
+    }
+
+    @Test
+    void handling_throw_error_post_refund_instructed_for_many_value_selected() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded",
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed"
+            );
+        final CheckValues<String> feeUpdateRecorded =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRecorded"
+            ));
+        final CheckValues<String> feeUpdateStatus =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed",
+                "feeUpdateAdditionalFeeRequested",
+                "feeUpdateNotRequired"
+            ));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+            .thenReturn(Optional.of(FeeUpdateReason.DECISION_TYPE_CHANGED));
+        when(asylumCase.read(NEW_FEE_AMOUNT, String.class)).thenReturn(Optional.of("80"));
+        when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(feeUpdateRecorded));
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+        when(asylumCase.read(FEE_UPDATE_STATUS)).thenReturn(Optional.of(feeUpdateStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains(
+            "This selection is not valid. "
+                + "You must select either fee update not required or additional fee requested to continue");
+    }
+
+    @Test
+    void handling_throw_error_post_refund_instructed_for_existing_value_not_selected() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded",
+                "feeUpdateRefundApproved",
+                "feeUpdateRefundInstructed"
+            );
+        final CheckValues<String> feeUpdateRecorded =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRecorded"
+            ));
+        final CheckValues<String> feeUpdateStatus =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateRefundApproved",
+                "feeUpdateAdditionalFeeRequested"
+            ));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+            .thenReturn(Optional.of(FeeUpdateReason.DECISION_TYPE_CHANGED));
+        when(asylumCase.read(NEW_FEE_AMOUNT, String.class)).thenReturn(Optional.of("80"));
+        when(asylumCase.read(FEE_UPDATE_RECORDED)).thenReturn(Optional.of(feeUpdateRecorded));
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+        when(asylumCase.read(FEE_UPDATE_STATUS)).thenReturn(Optional.of(feeUpdateStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains(
+            "This selection is not valid. You cannot deselect an option that has already been selected");
     }
 
 
