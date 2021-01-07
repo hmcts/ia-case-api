@@ -1,0 +1,57 @@
+{
+  "description": "RIA-3316 sends ho notification for adjourn no date event for state decision",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "adjournHearingWithoutDate",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "adjournHearingWithoutDateReasons": "Court closed now",
+          "listCaseHearingCentre": "coventry",
+          "listCaseHearingLength": "60",
+          "listCaseHearingDate": "2018-12-31T12:34:56",
+          "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+          "listCaseRequirementsMultimedia": "something around Multimedia",
+          "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+          "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+          "listCaseRequirementsOther": "something around Other",
+          "uploadAdditionalEvidenceActionAvailable": "No",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "ariaListingReference": "LP/12345/2019"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "state": "pre-hearing"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "listCaseHearingCentre": "coventry",
+        "listCaseRequirementsVulnerabilities": "something around Vulnerabilities",
+        "listCaseRequirementsMultimedia": "something around Multimedia",
+        "listCaseRequirementsSingleSexCourt": "something around SingleSexCourt",
+        "listCaseRequirementsInCameraCourt": "something around InCameraCourt",
+        "listCaseRequirementsOther": "something around Other",
+        "uploadAdditionalEvidenceActionAvailable": "No",
+        "sendDirectionActionAvailable": "No",
+        "ariaListingReference": "LP/12345/2019",
+        "decisionHearingFeeOption": "decisionWithHearing",
+        "homeOfficeAdjournWithoutDateInstructStatus": "OK"
+      }
+    }
+  }
+}
