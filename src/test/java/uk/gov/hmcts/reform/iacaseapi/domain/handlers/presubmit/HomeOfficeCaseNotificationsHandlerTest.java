@@ -92,6 +92,21 @@ public class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
+    public void should_call_home_office_api_and_update_the_case_for_edit_case_listing() {
+
+        when(callback.getEvent()).thenReturn(EDIT_CASE_LISTING);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(1)).call(callback);
+    }
+
+    @Test
     public void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -106,7 +121,8 @@ public class HomeOfficeCaseNotificationsHandlerTest {
                     && Arrays.asList(
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.LIST_CASE
+                        Event.LIST_CASE,
+                        Event.EDIT_CASE_LISTING
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
