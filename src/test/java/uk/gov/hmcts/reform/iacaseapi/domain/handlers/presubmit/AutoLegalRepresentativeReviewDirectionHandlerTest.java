@@ -12,6 +12,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 
 import java.time.LocalDate;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 
@@ -43,7 +45,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 @SuppressWarnings("unchecked")
 class AutoLegalRepresentativeReviewDirectionHandlerTest {
 
-    private static final int REVIEW_DUE_IN_DAYS = 5;
+    private static final int REVIEW_DUE_IN_DAYS_UK = 5;
+    private static final int REVIEW_DUE_IN_DAYS_OOC = 14;
 
     @Mock
     private DateProvider dateProvider;
@@ -65,7 +68,8 @@ class AutoLegalRepresentativeReviewDirectionHandlerTest {
     public void setUp() {
         autoLegalRepresentativeReviewDirectionHandler =
             new AutoLegalRepresentativeReviewDirectionHandler(
-                REVIEW_DUE_IN_DAYS,
+                REVIEW_DUE_IN_DAYS_UK,
+                REVIEW_DUE_IN_DAYS_OOC,
                 dateProvider,
                 directionAppender
             );
@@ -95,6 +99,7 @@ class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedDateDue),
             eq(expectedTag)
         )).thenReturn(allDirections);
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -136,6 +141,56 @@ class AutoLegalRepresentativeReviewDirectionHandlerTest {
             eq(expectedDateDue),
             eq(expectedTag)
         )).thenReturn(allDirections);
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, times(1)).append(
+            existingDirectionsCaptor.capture(),
+            contains(expectedExplanationPart),
+            eq(expectedParties),
+            eq(expectedDateDue),
+            eq(expectedTag)
+        );
+
+        List<IdValue<Direction>> actualExistingDirections =
+            existingDirectionsCaptor
+                .getAllValues()
+                .get(0);
+
+        assertEquals(0, actualExistingDirections.size());
+
+        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
+    }
+
+    @Test
+    void should_add_new_direction_to_out_of_country_case() {
+
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+
+        final String expectedExplanationPart =
+            "The Home Office has replied to your Appeal Skeleton Argument and evidence";
+        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
+        final String expectedDateDue = "2018-12-24";
+        final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-12-10"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.ADD_APPEAL_RESPONSE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(directionAppender.append(
+            any(List.class),
+            contains(expectedExplanationPart),
+            eq(expectedParties),
+            eq(expectedDateDue),
+            eq(expectedTag)
+        )).thenReturn(allDirections);
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             autoLegalRepresentativeReviewDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
