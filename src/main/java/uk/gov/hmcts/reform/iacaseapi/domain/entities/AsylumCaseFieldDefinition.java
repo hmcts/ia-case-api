@@ -1000,6 +1000,21 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS(
+        "homeOfficeRequestReviewInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_INSTRUCT_STATUS(
+        "homeOfficeHearingInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
+        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS(
+        "homeOfficeEditListingInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
+        "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
+
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
