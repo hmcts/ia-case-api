@@ -46,40 +46,14 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
     }
 
-    @Test
-    void should_call_home_office_api_and_update_the_case_for_respondent_evidence() {
-
-        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(homeOfficeApi, times(1)).call(callback);
-    }
-
-    @Test
-    void should_call_home_office_api_and_update_the_case_for_respondent_review() {
-
-        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_REVIEW);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(homeOfficeApi, times(1)).call(callback);
-    }
-
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = { "LIST_CASE",
+    @EnumSource(value = Event.class, names = {        "REQUEST_RESPONDENT_EVIDENCE",
+        "REQUEST_RESPONDENT_REVIEW",
+        "LIST_CASE",
         "EDIT_CASE_LISTING",
-        "ADJOURN_HEARING_WITHOUT_DATE" })
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "SEND_DECISION_AND_REASONS"
+    })
     void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -111,7 +85,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.LIST_CASE,
                         Event.EDIT_CASE_LISTING,
-                        Event.ADJOURN_HEARING_WITHOUT_DATE
+                        Event.ADJOURN_HEARING_WITHOUT_DATE,
+                        Event.SEND_DECISION_AND_REASONS
                     ).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);

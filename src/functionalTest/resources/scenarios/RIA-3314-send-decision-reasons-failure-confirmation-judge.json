@@ -1,0 +1,25 @@
+{
+  "description": "RIA-3314 Send decision and reasons HO notification failure confirmation - Judge",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "sendDecisionAndReasons",
+      "state": "decision",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeAppealDecidedInstructStatus": "FAIL"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "body": "![Respondent notification failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n#### Do this next\n\nContact the respondent to tell them what has changed, including any action they need to take.\n"
+    }
+  }
+}
