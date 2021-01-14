@@ -1247,7 +1247,7 @@ public enum AsylumCaseFieldDefinition {
     REMISSION_REJECTED_DATE_PLUS_14DAYS(
         "remissionRejectedDatePlus14days", new TypeReference<String>(){}),
 
-    CASEWORKER_NAME_LIST(
+    CASE_WORKER_NAME_LIST(
             "caseWorkerNameList", new TypeReference<DynamicList>() {}),
 
     ;
