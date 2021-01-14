@@ -1,2 +1,4 @@
-logging.level.root: debug
-logging.level.org.springframework.web: debug
+logging.level:
+  root: info
+  org.springframework.web: debug
+  uk.gov.hmcts: debug
