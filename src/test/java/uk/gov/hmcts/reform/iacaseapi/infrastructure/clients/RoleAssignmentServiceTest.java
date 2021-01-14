@@ -42,7 +42,7 @@ class RoleAssignmentServiceTest {
         long caseId = 1234567890L;
         when(caseDetails.getId()).thenReturn(caseId);
 
-        roleAssignmentService.assignRole(caseDetails);
+        roleAssignmentService.assignRole(caseDetails.getId());
 
         Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", Long.toString(caseId));

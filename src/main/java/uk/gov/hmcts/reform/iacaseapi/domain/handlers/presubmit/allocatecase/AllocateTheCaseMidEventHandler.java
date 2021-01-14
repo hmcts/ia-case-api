@@ -47,9 +47,8 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
 
         List<Value> caseWorkerItemList = List.of(
                 new Value("1", "David Crespo"),
-                new Value("1", "David Crespo")
+                new Value("2", "User2 Surname2")
         );
-        Value selectedListItem = new Value("1", "David Crespo");
 
         asylumCase.write(CASE_WORKER_NAME_LIST, new DynamicList(new Value("", ""), caseWorkerItemList));
 
