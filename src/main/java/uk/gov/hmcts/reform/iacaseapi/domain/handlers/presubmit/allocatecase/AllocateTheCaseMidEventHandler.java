@@ -115,4 +115,13 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
         return List.of(PRIVATE);
     }
 
+    private List<Value> getCaseWorkerListForGivenLocation(String location) {
+        RoleAssignmentResource roleAssignments = roleAssignmentService
+            .queryRoleAssignments(QueryRequest.builder().build());
+
+        return roleAssignments.getRoleAssignmentResponse().stream()
+            .map(role -> new Value(role.getActorId(), role.getActorId()))
+            .collect(Collectors.toList());
+    }
+
 }
