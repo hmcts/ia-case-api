@@ -25,34 +25,42 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && callback.getEvent() == Event.ALLOCATE_THE_CASE
-                && featureToggler.getValue("allocate-a-case-feature", false);
+            && callback.getEvent() == Event.ALLOCATE_THE_CASE
+            && featureToggler.getValue("allocate-a-case-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        List<Value> caseWorkerItemList = List.of(
-                new Value("1", "David Crespo"),
-                new Value("2", "User2 Surname2")
+        //todo: get location selected by TCW
+
+        asylumCase.write(
+            CASE_WORKER_NAME_LIST,
+            new DynamicList(new Value("", ""), getCaseWorkerListForGivenLocation())
         );
 
-        asylumCase.write(CASE_WORKER_NAME_LIST, new DynamicList(new Value("", ""), caseWorkerItemList));
-
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private List<Value> getCaseWorkerListForGivenLocation() {
+        //todo: make role assignment call to get caseworker's names for given location
+        return List.of(
+            new Value("1", "David Crespo"),
+            new Value("2", "User2 Surname2")
+        );
     }
 
 }
