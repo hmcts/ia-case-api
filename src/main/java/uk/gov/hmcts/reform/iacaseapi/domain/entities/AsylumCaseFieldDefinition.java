@@ -1250,6 +1250,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_WORKER_NAME_LIST(
             "caseWorkerNameList", new TypeReference<DynamicList>() {}),
 
+    CASE_WORKER_LOCATION_LIST(
+            "caseWorkerLocationList", new TypeReference<String>() {}),
+
     CASE_WORKER_NAME(
             "caseWorkerName", new TypeReference<String>() {}),
 
