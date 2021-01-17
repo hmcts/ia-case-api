@@ -13,16 +13,16 @@
           "caseWorkerLocationList": "227101",
           "caseWorkerNameList": {
             "value": {
-              "code": "1",
+              "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
               "label": "Firstname Lastname"
             },
             "list_items": [
               {
-                "code": "1",
+                "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
                 "label": "Firstname Lastname"
               },
               {
-                "code": "2",
+                "code": "45d8231f-8055-4acf-89fe-a8c432b20e8b",
                 "label": "Firstname2 Lastname2"
               }
             ]
