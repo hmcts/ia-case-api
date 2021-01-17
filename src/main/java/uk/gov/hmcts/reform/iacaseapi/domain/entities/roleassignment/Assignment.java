@@ -30,7 +30,6 @@ public class Assignment {
     private final Map<Attributes, String> attributes;
 
     @JsonCreator
-
     public Assignment(@JsonProperty("id") String id,
                       @JsonProperty("created") LocalDateTime created,
                       @JsonProperty("authorisations") List<String> authorisations,

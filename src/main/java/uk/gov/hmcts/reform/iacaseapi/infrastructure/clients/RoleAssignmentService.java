@@ -34,7 +34,7 @@ public class RoleAssignmentService {
         this.userDetails = userDetails;
     }
 
-    public void assignRole(long caseDetailsId) {
+    public void assignRole(long caseDetailsId, String assigneeId) {
         String accessToken = userDetails.getAccessToken();
         String currentUserIdamId = userDetails.getId();
         String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
@@ -51,7 +51,7 @@ public class RoleAssignmentService {
             ),
             singletonList(new RequestedRoles(
                 ActorIdType.IDAM,
-                currentUserIdamId,
+                assigneeId,
                 RoleType.CASE,
                 ROLE_NAME,
                 RoleCategory.STAFF,

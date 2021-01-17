@@ -73,10 +73,11 @@ class AllocateTheCaseHandlerTest {
             .thenReturn(Optional.of(caseWorkerNameList));
         when(caseWorkerNameList.getValue()).thenReturn(caseWorkerName);
 
+
         allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase).read(CASE_WORKER_NAME_LIST, DynamicList.class);
-        verify(roleAssignmentService).assignRole(caseDetails.getId());
+        verify(roleAssignmentService).assignRole(caseDetails.getId(), caseWorkerNameList.getValue().getCode());
         verify(asylumCase).write(CASE_WORKER_NAME, caseWorkerName.getLabel());
         verify(asylumCase).clear(eq(CASE_WORKER_NAME_LIST));
     }

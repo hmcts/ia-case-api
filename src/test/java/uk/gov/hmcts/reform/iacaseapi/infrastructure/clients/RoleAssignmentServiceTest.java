@@ -42,7 +42,7 @@ class RoleAssignmentServiceTest {
         long caseId = 1234567890L;
         when(caseDetails.getId()).thenReturn(caseId);
 
-        roleAssignmentService.assignRole(caseDetails.getId());
+        roleAssignmentService.assignRole(caseDetails.getId(), "assigneeId");
 
         Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", Long.toString(caseId));
@@ -58,7 +58,7 @@ class RoleAssignmentServiceTest {
                 ),
                 singletonList(new RequestedRoles(
                     ActorIdType.IDAM,
-                    userId,
+                    "assigneeId",
                     RoleType.CASE,
                     "tribunal-caseworker",
                     RoleCategory.STAFF,
