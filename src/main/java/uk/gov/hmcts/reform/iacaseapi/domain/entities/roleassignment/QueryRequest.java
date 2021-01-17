@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @Builder
-@JsonNaming
 @JsonInclude(Include.NON_NULL)
 @ToString
 public final class QueryRequest {

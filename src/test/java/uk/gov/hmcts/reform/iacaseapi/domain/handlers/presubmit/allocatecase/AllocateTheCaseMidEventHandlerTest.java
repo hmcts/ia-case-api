@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
@@ -155,7 +156,7 @@ class AllocateTheCaseMidEventHandlerTest {
             .actorId("some actor id")
             .build();
         RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(assignment));
-        when(roleAssignmentService.queryRoleAssignments(QueryRequest.builder().build()))
+        when(roleAssignmentService.queryRoleAssignments(any(QueryRequest.class)))
             .thenReturn(roleAssignmentResource);
 
         PreSubmitCallbackResponse<AsylumCase> actualResult =

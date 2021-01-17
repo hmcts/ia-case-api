@@ -21,7 +21,8 @@ class CaseDetailsTest {
         jurisdiction,
         state,
         caseData,
-        createdDate
+        createdDate,
+        "PUBLIC"
     );
 
     @Test
@@ -39,6 +40,7 @@ class CaseDetailsTest {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,
+            null,
             null,
             null,
             null,
