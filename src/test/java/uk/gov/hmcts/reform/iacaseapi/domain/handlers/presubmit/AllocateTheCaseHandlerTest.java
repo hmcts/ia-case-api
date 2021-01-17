@@ -153,12 +153,8 @@ class AllocateTheCaseHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_WORKER_NAME_LIST, DynamicList.class)).thenReturn(Optional.empty());
 
-        RuntimeException exception = Assertions.assertThrows(
-            RuntimeException.class,
-            () -> allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback)
-        );
-
-        assertThat(exception.getMessage()).isEqualTo("caseWorkerNameList field is not present on the caseData");
-
+        assertThatThrownBy(() -> allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("caseWorkerNameList field is not present on the caseData")
+            .isExactlyInstanceOf(RuntimeException.class);
     }
 }

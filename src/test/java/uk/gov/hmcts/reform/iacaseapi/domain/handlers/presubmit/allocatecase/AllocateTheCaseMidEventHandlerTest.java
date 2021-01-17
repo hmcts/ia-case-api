@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -115,6 +116,17 @@ class AllocateTheCaseMidEventHandlerTest {
         PreSubmitCallbackStage preSubmitCallbackStage;
         boolean expectedResult;
 
+    }
+
+    @Test
+    void should_not_allow_null_arguments() {
+        assertThatThrownBy(() -> handler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> handler.handle(PreSubmitCallbackStage.MID_EVENT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
