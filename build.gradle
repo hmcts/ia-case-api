@@ -298,7 +298,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
 
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.1'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
