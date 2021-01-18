@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Class
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,6 +97,7 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
                     Attributes.JURISDICTION, List.of("IA"),
                     Attributes.PRIMARY_LOCATION, List.of(location)
                 ))
+                .validAt(LocalDateTime.now())
                 .build());
 
         return roleAssignments.getRoleAssignmentResponse().stream()
