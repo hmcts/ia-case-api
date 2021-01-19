@@ -178,7 +178,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.LEADERSHIP_JUDGE_FTPA_DECISION,
                         Event.RESIDENT_JUDGE_FTPA_DECISION,
                         Event.END_APPEAL,
-                        Event.SEND_DIRECTION
+                        Event.SEND_DIRECTION,
+                        Event.REQUEST_RESPONSE_AMEND
                     ).contains(callback.getEvent())
                     ) {
                         if (event == Event.SEND_DIRECTION
