@@ -1,8 +1,12 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 
@@ -17,6 +21,10 @@ public interface RefDataCaseWorkerApi {
         produces = "application/json",
         consumes = "application/json"
     )
-    CaseWorkerProfile fetchUsersById(@RequestBody UserIds userIds);
+    CaseWorkerProfile fetchUsersById(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @RequestBody UserIds userIds
+    );
 
 }

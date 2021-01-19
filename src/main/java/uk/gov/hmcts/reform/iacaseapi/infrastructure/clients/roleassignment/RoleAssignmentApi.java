@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;

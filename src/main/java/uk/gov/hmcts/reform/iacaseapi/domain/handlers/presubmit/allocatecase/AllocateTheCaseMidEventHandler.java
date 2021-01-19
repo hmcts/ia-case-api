@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -28,8 +30,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RefDataCaseWorkerApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 
@@ -39,14 +41,21 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
     private final FeatureToggler featureToggler;
     private final RoleAssignmentService roleAssignmentService;
     private final RefDataCaseWorkerApi refDataCaseWorkerApi;
+    private final AuthTokenGenerator serviceAuthTokenGenerator;
+    private final UserDetails userDetails;
 
     public AllocateTheCaseMidEventHandler(
         FeatureToggler featureToggler,
         RoleAssignmentService roleAssignmentService,
-        RefDataCaseWorkerApi refDataCaseWorkerApi) {
+        RefDataCaseWorkerApi refDataCaseWorkerApi,
+        AuthTokenGenerator serviceAuthTokenGenerator,
+        UserDetails userDetails
+    ) {
         this.featureToggler = featureToggler;
         this.roleAssignmentService = roleAssignmentService;
         this.refDataCaseWorkerApi = refDataCaseWorkerApi;
+        this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
+        this.userDetails = userDetails;
     }
 
     public boolean canHandle(
@@ -111,7 +120,11 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
     }
 
     private String getCaseNameForActorId(String actorId) {
-        CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(new UserIds(List.of(actorId)));
+        CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
+            userDetails.getAccessToken(),
+            serviceAuthTokenGenerator.generate(),
+            new UserIds(List.of(actorId))
+        );
         return caseWorkerProfile.getFirstName() + " " + caseWorkerProfile.getLastName();
     }
 
