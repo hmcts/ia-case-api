@@ -3,16 +3,20 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
-
 
 @Component
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -37,7 +41,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(
+               && (Arrays.asList(
                     Event.REQUEST_RESPONDENT_EVIDENCE,
                     Event.REQUEST_RESPONDENT_REVIEW,
                     Event.LIST_CASE,
@@ -50,6 +54,11 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     Event.RESIDENT_JUDGE_FTPA_DECISION,
                     Event.END_APPEAL
                 ).contains(callback.getEvent())
+               || (callback.getEvent() == Event.SEND_DIRECTION
+                   && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
+                   && getLatestNonStandardRespondentDirection(
+                        callback.getCaseDetails().getCaseData()).isPresent())
+                )
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
@@ -64,5 +73,18 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
+    }
+
+    protected Optional<Direction> getLatestNonStandardRespondentDirection(AsylumCase asylumCase) {
+
+        Optional<List<IdValue<Direction>>> maybeExistingDirections = asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS);
+
+        return maybeExistingDirections
+            .orElseThrow(() -> new IllegalStateException("directions not present"))
+            .stream()
+            .max(Comparator.comparingInt(s -> Integer.parseInt(s.getId())))
+            .filter(idValue -> idValue.getValue().getTag().equals(DirectionTag.NONE))
+            .filter(idValue -> idValue.getValue().getParties().equals(Parties.RESPONDENT))
+            .map(IdValue::getValue);
     }
 }
