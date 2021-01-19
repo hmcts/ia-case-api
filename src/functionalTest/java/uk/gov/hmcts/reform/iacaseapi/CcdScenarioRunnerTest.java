@@ -261,6 +261,8 @@ public class CcdScenarioRunnerTest {
         caseDetails.put("id", testCaseId);
         caseDetails.put("jurisdiction", MapValueExtractor.extractOrDefault(input, "jurisdiction", "IA"));
         caseDetails.put("state", MapValueExtractor.extractOrThrow(input, "state"));
+        caseDetails.put("security_classification",
+            MapValueExtractor.extractOrDefault(input, "securityClassification", "PUBLIC"));
         caseDetails.put("created_date", createdDate);
         caseDetails.put("case_data", caseData);
 

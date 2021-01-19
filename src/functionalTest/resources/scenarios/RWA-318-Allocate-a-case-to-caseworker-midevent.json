@@ -6,11 +6,12 @@
     "input": {
       "eventId": "allocateTheCase",
       "state": "appealSubmitted",
+      "securityClassification": "PUBLIC",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "allocateTheCaseTo": "caseworker",
-          "caseWorkerLocationList": "227101"
+          "caseWorkerLocationList": "765324"
         }
       }
     }
@@ -22,7 +23,19 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "allocateTheCaseTo": "caseworker",
-        "caseWorkerLocationList": "227101"
+        "caseWorkerLocationList": "765324",
+        "caseWorkerNameList": {
+          "value": {
+            "code": "",
+            "label": ""
+          },
+          "list_items": [
+            {
+              "code": "$/[\\s\\S]+/",
+              "label": "$/[\\s\\S]+/"
+            }
+          ]
+        }
       }
     }
   }

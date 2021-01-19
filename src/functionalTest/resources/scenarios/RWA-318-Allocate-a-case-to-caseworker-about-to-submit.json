@@ -1,5 +1,5 @@
 {
-  "description": "RWA-318 Allocate a case to caseworker",
+  "description": "RWA-318 Allocate a case to caseworker is disable because //fixme: RWA-337",
   "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -14,16 +14,16 @@
           "caseWorkerLocationList": "227101",
           "caseWorkerNameList": {
             "value": {
-              "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
+              "code": "6689421e-a3e7-4c0e-b713-4d836acee380",
               "label": "Firstname Lastname"
             },
             "list_items": [
               {
-                "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
+                "code": "6689421e-a3e7-4c0e-b713-4d836acee380",
                 "label": "Firstname Lastname"
               },
               {
-                "code": "45d8231f-8055-4acf-89fe-a8c432b20e8b",
+                "code": "6689421e-a3e7-4c0e-b713-4d836acee380",
                 "label": "Firstname2 Lastname2"
               }
             ]
