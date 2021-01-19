@@ -36,10 +36,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
