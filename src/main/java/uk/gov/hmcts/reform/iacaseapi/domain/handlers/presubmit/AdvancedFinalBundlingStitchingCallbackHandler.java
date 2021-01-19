@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,12 +108,16 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
-        if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
+        if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).map(
+            value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-            AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+            if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
 
-            asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
-                asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
+                AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+                asylumCaseWithHomeOfficeData.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
+                    asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
+            }
         }
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);

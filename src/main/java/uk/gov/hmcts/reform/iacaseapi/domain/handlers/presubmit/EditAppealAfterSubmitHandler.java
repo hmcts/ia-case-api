@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -66,13 +67,20 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
+
         Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
 
-        LocalDate homeOfficeDecisionDate =
-            parse(maybeHomeOfficeDecisionDate
-                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
+        LocalDate homeOfficeDecisionDate = null;
 
-        if (homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
+        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
+            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+
+            homeOfficeDecisionDate =
+                parse(maybeHomeOfficeDecisionDate
+                    .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
+        }
+
+        if (homeOfficeDecisionDate != null && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);

@@ -189,6 +189,23 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     }
 
     @Test
+    public void should_not_call_ho_api_when_ooc_appeal() {
+
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(0)).call(callback);
+    }
+
+    @Test
     void should_throw_when_case_bundle_is_not_present() {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());

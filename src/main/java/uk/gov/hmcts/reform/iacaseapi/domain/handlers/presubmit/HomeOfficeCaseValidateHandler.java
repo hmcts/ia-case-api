@@ -1,14 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
@@ -71,66 +64,74 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+        AsylumCase asylumCaseWithHomeOfficeData =
+            callback
+                .getCaseDetails()
+                .getCaseData();
 
-        asylumCaseWithHomeOfficeData.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
+            value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-        Optional<ContactPreference> contactPreference = asylumCaseWithHomeOfficeData.read(CONTACT_PREFERENCE);
-        if (contactPreference.isPresent()) {
-            asylumCaseWithHomeOfficeData.write(
-                CONTACT_PREFERENCE_DESCRIPTION, contactPreference.get().getDescription());
+            asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+            asylumCaseWithHomeOfficeData.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+
+            Optional<ContactPreference> contactPreference = asylumCaseWithHomeOfficeData.read(CONTACT_PREFERENCE);
+            if (contactPreference.isPresent()) {
+                asylumCaseWithHomeOfficeData.write(
+                    CONTACT_PREFERENCE_DESCRIPTION, contactPreference.get().getDescription());
+            }
+
+            Optional<AppealType> appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE);
+            if (appealType.isPresent()) {
+                asylumCaseWithHomeOfficeData.write(
+                    APPEAL_TYPE_DESCRIPTION, appealType.get().getDescription());
+            }
+
+            Optional<HomeOfficeCaseStatus> existingCaseStatusData =
+                asylumCaseWithHomeOfficeData.read(HOME_OFFICE_CASE_STATUS_DATA);
+            if (existingCaseStatusData.isPresent()
+                && existingCaseStatusData.get().getApplicationStatus() != null
+            ) {
+                final HomeOfficeCaseStatus homeOfficeCaseStatus = existingCaseStatusData.get();
+                final ApplicationStatus applicationStatus = homeOfficeCaseStatus.getApplicationStatus();
+                applicationStatus.modifyListDataForCcd();
+
+                HomeOfficeCaseStatus modifiedHomeOfficeCaseStatus = new HomeOfficeCaseStatus(
+                    homeOfficeCaseStatus.getPerson(),
+                    applicationStatus,
+                    homeOfficeCaseStatus.getDisplayDateOfBirth(),
+                    homeOfficeCaseStatus.getDisplayRejectionReasons(),
+                    homeOfficeCaseStatus.getDisplayDecisionDate(),
+                    homeOfficeCaseStatus.getDisplayDecisionSentDate(),
+                    homeOfficeCaseStatus.getDisplayMetadataValueBoolean(),
+                    homeOfficeCaseStatus.getDisplayMetadataValueDateTime(),
+                    "<h2>Appellant details</h2>",
+                    "<h2>Application details</h2>"
+                );
+
+                asylumCaseWithHomeOfficeData.write(HOME_OFFICE_CASE_STATUS_DATA, modifiedHomeOfficeCaseStatus);
+            }
+
+            Optional<List<IdValue<NationalityFieldValue>>> nationalities = asylumCaseWithHomeOfficeData.read(
+                APPELLANT_NATIONALITIES);
+
+            StringBuilder nationalitiesForDisplay = new StringBuilder("");
+            if (nationalities.isPresent()) {
+                nationalities.get().stream()
+                    .map(idValue -> Nationality.valueOf(idValue.getValue().getCode()).toString())
+                    .distinct()
+                    .collect(Collectors.toList())
+                    .forEach(
+                        nn -> {
+                            nationalitiesForDisplay.append(nn).append("<br />");
+                        });
+
+                nationalitiesForDisplay.delete(
+                    nationalitiesForDisplay.lastIndexOf("<br />"), nationalitiesForDisplay.length());
+            }
+            asylumCaseWithHomeOfficeData.write(APPELLANT_NATIONALITIES_DESCRIPTION, nationalitiesForDisplay.toString());
         }
-
-        Optional<AppealType> appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE);
-        if (appealType.isPresent()) {
-            asylumCaseWithHomeOfficeData.write(
-                APPEAL_TYPE_DESCRIPTION, appealType.get().getDescription());
-        }
-
-        Optional<HomeOfficeCaseStatus> existingCaseStatusData =
-            asylumCaseWithHomeOfficeData.read(HOME_OFFICE_CASE_STATUS_DATA);
-        if (existingCaseStatusData.isPresent()
-            && existingCaseStatusData.get().getApplicationStatus() != null
-        ) {
-            final HomeOfficeCaseStatus homeOfficeCaseStatus = existingCaseStatusData.get();
-            final ApplicationStatus applicationStatus = homeOfficeCaseStatus.getApplicationStatus();
-            applicationStatus.modifyListDataForCcd();
-
-            HomeOfficeCaseStatus modifiedHomeOfficeCaseStatus = new HomeOfficeCaseStatus(
-                homeOfficeCaseStatus.getPerson(),
-                applicationStatus,
-                homeOfficeCaseStatus.getDisplayDateOfBirth(),
-                homeOfficeCaseStatus.getDisplayRejectionReasons(),
-                homeOfficeCaseStatus.getDisplayDecisionDate(),
-                homeOfficeCaseStatus.getDisplayDecisionSentDate(),
-                homeOfficeCaseStatus.getDisplayMetadataValueBoolean(),
-                homeOfficeCaseStatus.getDisplayMetadataValueDateTime(),
-                "<h2>Appellant details</h2>",
-                "<h2>Application details</h2>"
-            );
-
-            asylumCaseWithHomeOfficeData.write(HOME_OFFICE_CASE_STATUS_DATA, modifiedHomeOfficeCaseStatus);
-        }
-
-        Optional<List<IdValue<NationalityFieldValue>>> nationalities = asylumCaseWithHomeOfficeData.read(
-            APPELLANT_NATIONALITIES);
-
-        StringBuilder nationalitiesForDisplay = new StringBuilder("");
-        if (nationalities.isPresent()) {
-            nationalities.get().stream()
-                .map(idValue -> Nationality.valueOf(idValue.getValue().getCode()).toString())
-                .distinct()
-                .collect(Collectors.toList())
-                .forEach(
-                    nn -> {
-                        nationalitiesForDisplay.append(nn).append("<br />");
-                    });
-
-            nationalitiesForDisplay.delete(
-                nationalitiesForDisplay.lastIndexOf("<br />"), nationalitiesForDisplay.length());
-        }
-        asylumCaseWithHomeOfficeData.write(APPELLANT_NATIONALITIES_DESCRIPTION, nationalitiesForDisplay.toString());
-
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
     }
 
