@@ -28,20 +28,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RefDataCaseWorkerApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 
 @Component
 public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
     private final RoleAssignmentService roleAssignmentService;
+    private final RefDataCaseWorkerApi refDataCaseWorkerApi;
 
     public AllocateTheCaseMidEventHandler(
         FeatureToggler featureToggler,
-        RoleAssignmentService roleAssignmentService
-    ) {
+        RoleAssignmentService roleAssignmentService,
+        RefDataCaseWorkerApi refDataCaseWorkerApi) {
         this.featureToggler = featureToggler;
         this.roleAssignmentService = roleAssignmentService;
+        this.refDataCaseWorkerApi = refDataCaseWorkerApi;
     }
 
     public boolean canHandle(
@@ -101,8 +106,13 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
                 .build());
 
         return roleAssignments.getRoleAssignmentResponse().stream()
-            .map(role -> new Value(role.getActorId(), role.getActorId()))
+            .map(role -> new Value(role.getActorId(), getCaseNameForActorId(role.getActorId())))
             .collect(Collectors.toList());
+    }
+
+    private String getCaseNameForActorId(String actorId) {
+        CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(new UserIds(List.of(actorId)));
+        return caseWorkerProfile.getFirstName() + " " + caseWorkerProfile.getLastName();
     }
 
     private List<Classification> getClassification(String securityClassification) {
