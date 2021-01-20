@@ -15,6 +15,7 @@ class CaseDetailsTest {
     private final State state = State.APPEAL_STARTED;
     private final CaseData caseData = mock(CaseData.class);
     private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
+    private final String classification = "PUBLIC";
 
     private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
         id,
@@ -22,7 +23,7 @@ class CaseDetailsTest {
         state,
         caseData,
         createdDate,
-        "PUBLIC"
+        classification
     );
 
     @Test
@@ -33,6 +34,7 @@ class CaseDetailsTest {
         assertEquals(state, caseDetails.getState());
         assertEquals(caseData, caseDetails.getCaseData());
         assertEquals(createdDate, caseDetails.getCreatedDate());
+        assertEquals(classification, caseDetails.getSecurityClassification());
     }
 
     @Test
