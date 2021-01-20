@@ -10,6 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "endAppealOutcome": "Abandoned",
+          "endAppealOutcomeReason": "some reason",
           "stateBeforeEndAppeal": "appealSubmitted"
         }
       }
@@ -22,6 +24,8 @@
       "template": "minimal-appeal-submitted.json",
       "state": "appealSubmitted",
       "replacements": {
+        "endAppealOutcome": "Abandoned",
+        "endAppealOutcomeReason": "some reason",
         "appealStatus": "Reinstated",
         "recordApplicationActionDisabled": "No",
         "stateBeforeEndAppeal": null

@@ -1,0 +1,50 @@
+{
+  "description": "RIA-3691 home office notification success send direction confirmation",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "sendDirection",
+      "state": "awaitingRespondentEvidence",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeAmendBundleInstructStatus": "FAIL",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "",
+                "parties": "respondent",
+                "dateDue": "{$TODAY+5}",
+                "dateSent": "{$TODAY}",
+                "explanation": "You have 14 days to review the appellant's argument and evidence. You must explain whether the appellant makes a valid case for overturning the original decision.\\n\\nYou must respond to the Tribunal and tell them:\\n\\n- whether you oppose all or parts of the appellant's case\\n- what your grounds are for opposing the case\\n- which of the issues are agreed or not agreed\\n- whether there are any further issues you wish to raise\\n- whether you are prepared to withdraw to grant\\n- whether the appeal can be resolved without a hearing\\n\\nNext steps\\n\\nIf you do not respond in time the Tribunal will decide how the case should proceed.",
+                "previousDates": []
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "tag": "",
+                "parties": "legalRepresentative",
+                "dateDue": "{$TODAY+5}",
+                "dateSent": "{$TODAY}",
+                "explanation": "A notice of appeal has been lodged against this decision.\n\nYou must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have 14 days to supply the documents.\n\nYou must include:\n- the notice of decision\n- any other document provided to the appellant giving reasons for that decision\n- any statements of evidence\n- the application form\n- any record of interview with the appellant in relation to the decision being appealed\n- any other unpublished documents on which you rely\n- the notice of any other appealable decision made in relation to the appellant",
+                "previousDates": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have sent a direction",
+      "body": "#### What happens next\n\nYou can see the status of the direction in the [directions tab](/case/IA/Asylum/1234#directions)"
+    }
+  }
+}

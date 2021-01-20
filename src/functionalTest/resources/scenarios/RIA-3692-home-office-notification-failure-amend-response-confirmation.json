@@ -1,0 +1,25 @@
+{
+  "description": "RIA-3692 home office notification failure amend response confirmation",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestResponseAmend",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeAmendResponseInstructStatus": "FAIL"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "body": "![Respondent notification failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n#### Do this next\n\nContact the respondent to tell them what has changed, including any action they need to take.\n"
+    }
+  }
+}

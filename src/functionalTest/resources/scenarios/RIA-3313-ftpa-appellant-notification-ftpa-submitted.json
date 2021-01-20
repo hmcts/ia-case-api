@@ -1,0 +1,116 @@
+{
+  "description": "RIA-3313 Home Office notification for FTPA appellant application - ftpaSubmitted state",
+  "launchDarklyKey": "home-office-notification-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPAAppellant",
+      "state": "ftpaSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaAppellantDocuments": [],
+          "ftpaAppellantOutOfTimeDocuments": [],
+          "ftpaAppellantGroundsDocuments": [
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+                },
+                "description": "Some FTPA appellant grounds of application"
+              }
+            }
+          ],
+          "ftpaAppellantEvidenceDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/CCC",
+                  "document_binary_url": "http://document-store/CCC/binary",
+                  "document_filename": "some-ftpa-appellant-evidence.pdf"
+                },
+                "description": "Some FTPA appellant application evidence"
+              }
+            }
+          ],
+          "ftpaAppellantSubmissionOutOfTime": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantSubmitted": "Yes",
+        "ftpaAppellantSubmissionOutOfTime": "No",
+        "ftpaAppellantApplicationDate": "{$TODAY}",
+        "ftpaAppellantDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+              },
+              "description": "Some FTPA appellant grounds of application",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          },
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-appellant-evidence.pdf"
+              },
+              "description": "Some FTPA appellant application evidence",
+              "dateUploaded": "{$TODAY}",
+              "tag": "ftpaAppellant"
+            }
+          }
+        ],
+        "ftpaAppellantOutOfTimeDocuments": [],
+        "ftpaAppellantGroundsDocuments": [
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "some-ftpa-appellant-grounds-documents.pdf"
+              },
+              "description": "Some FTPA appellant grounds of application"
+            }
+          }
+        ],
+        "ftpaAppellantEvidenceDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/CCC",
+                "document_binary_url": "http://document-store/CCC/binary",
+                "document_filename": "some-ftpa-appellant-evidence.pdf"
+              },
+              "description": "Some FTPA appellant application evidence"
+            }
+          }
+        ],
+        "sendDirectionActionAvailable": "No",
+        "homeOfficeFtpaAppellantInstructStatus": "OK"
+      }
+    }
+  }
+}

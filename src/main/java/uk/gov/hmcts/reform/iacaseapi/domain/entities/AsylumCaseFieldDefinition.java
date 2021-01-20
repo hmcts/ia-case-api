@@ -6,7 +6,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.HearingType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
@@ -999,6 +1005,48 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_INSTRUCT_STATUS(
         "homeOfficeInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_REVIEW_INSTRUCT_STATUS(
+        "homeOfficeRequestReviewInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_INSTRUCT_STATUS(
+        "homeOfficeHearingInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REQUEST_EVIDENCE_INSTRUCT_STATUS(
+        "homeOfficeRequestEvidenceInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EDIT_LISTING_INSTRUCT_STATUS(
+        "homeOfficeEditListingInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_ADJOURN_WITHOUT_DATE_INSTRUCT_STATUS(
+        "homeOfficeAdjournWithoutDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS(
+        "homeOfficeHearingBundleReadyInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeAppealDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeFtpaAppellantDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS(
+        "homeOfficeFtpaRespondentDecidedInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS(
+        "homeOfficeEndAppealInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_AMEND_BUNDLE_INSTRUCT_STATUS(
+        "homeOfficeAmendBundleInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS(
+        "homeOfficeAmendResponseInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_REVIEW_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeReviewChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_EVIDENCE_CHANGE_DIRECTION_DUE_DATE_INSTRUCT_STATUS(
+        "homeOfficeEvidenceChangeDirectionDueDateInstructStatus", new TypeReference<String>() {}),
 
     CUSTOM_LEGAL_REP_DOCUMENTS(
             "customLegalRepDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),

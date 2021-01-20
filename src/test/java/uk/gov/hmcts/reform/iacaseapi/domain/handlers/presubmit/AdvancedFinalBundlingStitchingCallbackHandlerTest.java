@@ -11,11 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUNDLES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -31,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -42,37 +39,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
-    @Mock
-    private DocumentReceiver documentReceiver;
-    @Mock
-    private DocumentsAppender documentsAppender;
-    @Mock
-    private NotificationSender<AsylumCase> notificationSender;
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-    @Mock
-    private Document stitchedDocument;
-    @Mock
-    private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
-    @Mock
-    private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
-    @Mock
-    private DocumentWithMetadata stitchedDocumentWithMetadata;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private Document stitchedDocument;
+    @Mock private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
+    @Mock private DocumentWithMetadata stitchedDocumentWithMetadata;
+    @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
+    @Mock private FeatureToggler featureToggler;
 
     private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
     private AdvancedFinalBundlingStitchingCallbackHandler advancedFinalBundlingStitchingCallbackHandler;
@@ -80,7 +66,7 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         advancedFinalBundlingStitchingCallbackHandler =
-            new AdvancedFinalBundlingStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender);
+            new AdvancedFinalBundlingStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender, featureToggler, homeOfficeApi);
 
         when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -158,6 +144,48 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
 
+    }
+
+    @Test
+    public void should_write_instruct_status_when_ho_notification_feature_on() {
+
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
+    }
+
+    @Test
+    public void should_not_write_instruct_status_when_ho_notification_feature_off() {
+
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
+    }
+
+    @Test
+    public void should_not_write_instruct_status_when_ho_notification_feature_missing() {
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            advancedFinalBundlingStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(0)).write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, "OK");
     }
 
     @Test

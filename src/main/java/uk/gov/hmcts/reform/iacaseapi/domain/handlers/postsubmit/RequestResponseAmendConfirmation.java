@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -23,20 +24,36 @@ public class RequestResponseAmendConfirmation implements PostSubmitCallbackHandl
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        final String hoAmendResponseReadyInstructStatus =
+            asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_AMEND_RESPONSE_INSTRUCT_STATUS,
+                String.class).orElse("");
+
         PostSubmitCallbackResponse postSubmitResponse =
                 new PostSubmitCallbackResponse();
 
-        String directionsTabUrl =
-            "/case/IA/Asylum/"
-            + callback.getCaseDetails().getId()
-            + "#directions";
+        if (hoAmendResponseReadyInstructStatus.equalsIgnoreCase("FAIL")) {
 
-        postSubmitResponse.setConfirmationHeader("# You have sent a direction");
-        postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "You can see the status of the direction in the "
-            + "[directions tab](" + directionsTabUrl + ")"
-        );
+            postSubmitResponse.setConfirmationBody(
+                "![Respondent notification failed confirmation]"
+                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
+                + "#### Do this next\n\n"
+                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
+            );
+        } else {
+
+            String directionsTabUrl =
+                "/case/IA/Asylum/"
+                + callback.getCaseDetails().getId()
+                + "#directions";
+
+            postSubmitResponse.setConfirmationHeader("# You have sent a direction");
+            postSubmitResponse.setConfirmationBody(
+                "#### What happens next\n\n"
+                + "You can see the status of the direction in the "
+                + "[directions tab](" + directionsTabUrl + ")"
+            );
+        }
 
         return postSubmitResponse;
     }

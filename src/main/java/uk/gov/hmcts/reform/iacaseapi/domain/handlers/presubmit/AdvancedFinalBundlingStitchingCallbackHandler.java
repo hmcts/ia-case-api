@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_HEARING_DOCUMENTS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
@@ -33,16 +38,22 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
     private final NotificationSender<AsylumCase> notificationSender;
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
-
+    private final FeatureToggler featureToggler;
+    private final HomeOfficeApi<AsylumCase> homeOfficeApi;
+    private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
     public AdvancedFinalBundlingStitchingCallbackHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender,
-        NotificationSender<AsylumCase> notificationSender
+        NotificationSender<AsylumCase> notificationSender,
+        FeatureToggler featureToggler,
+        HomeOfficeApi<AsylumCase> homeOfficeApi
     ) {
         this.documentReceiver = documentReceiver;
         this.documentsAppender = documentsAppender;
         this.notificationSender = notificationSender;
+        this.featureToggler = featureToggler;
+        this.homeOfficeApi = homeOfficeApi;
     }
 
     public boolean canHandle(
@@ -99,6 +110,14 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
+
+        if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
+
+            AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+            asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
+                asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
+        }
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
