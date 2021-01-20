@@ -46,8 +46,7 @@ public class CaseWorkerService {
         String securityClassification
     ) {
         return roleAssignmentService
-            .queryRoleAssignments(QueryRequest
-                .builder()
+            .queryRoleAssignments(QueryRequest.builder()
                 .roleType(List.of(RoleType.ORGANISATION))
                 .roleName(List.of(RoleName.TRIBUNAL_CASEWORKER, RoleName.SENIOR_TRIBUNAL_CASEWORKER))
                 .grantType(List.of(GrantType.STANDARD))
