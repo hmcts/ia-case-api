@@ -60,6 +60,13 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                    && getLatestNonStandardRespondentDirection(
                         callback.getCaseDetails().getCaseData()).isPresent())
                 )
+               || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+                   && (Arrays.asList(
+                        State.AWAITING_RESPONDENT_EVIDENCE,
+                        State.RESPONDENT_REVIEW
+                        ).contains(callback.getCaseDetails().getState()))
+                   && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
+                  )
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
@@ -87,5 +94,14 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             .filter(idValue -> idValue.getValue().getTag().equals(DirectionTag.NONE))
             .filter(idValue -> idValue.getValue().getParties().equals(Parties.RESPONDENT))
             .map(IdValue::getValue);
+    }
+
+    protected boolean isDirectionForRespondentParties(AsylumCase asylumCase) {
+
+        Parties parties = asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, Parties.class)
+            .orElseThrow(() -> new IllegalStateException("sendDirectionParties is not present"));
+
+        return parties.equals(Parties.RESPONDENT);
+
     }
 }

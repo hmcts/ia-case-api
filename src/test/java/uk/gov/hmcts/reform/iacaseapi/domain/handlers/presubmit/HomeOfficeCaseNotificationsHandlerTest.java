@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.ArrayList;
@@ -44,8 +45,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
     @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
     @Mock private Callback<AsylumCase> callback;
-    @Mock private AsylumCase asylumCase;
     @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
     @Mock private Direction nonStandardDirection;
 
@@ -113,6 +114,51 @@ class HomeOfficeCaseNotificationsHandlerTest {
         verify(homeOfficeApi, times(1)).call(callback);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "RESPONDENT_REVIEW",
+        "AWAITING_RESPONDENT_EVIDENCE"
+    })
+    void should_call_home_office_api_and_update_the_case_for_direction_due_date(State state) {
+
+        when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(1)).call(callback);
+    }
+
+    @Test
+    void should_return_true_for_respondent_direction() {
+
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+        assertTrue(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
+    }
+
+    @Test
+    void should_return_false_for_non_respondent_direction() {
+
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.LEGAL_REPRESENTATIVE));
+        assertFalse(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
+    }
+
+    @Test
+    void should_return_error_for_missing_direction() {
+
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase))
+            .hasMessage("sendDirectionParties is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
     @Test
     void should_return_right_direction_for_multiple_send_direction() {
 
@@ -149,14 +195,15 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
         for (Event event : Event.values()) {
 
-            when(callback.getEvent()).thenReturn(event);
-
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 for (State state : State.values()) {
 
-                    when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+                    when(callback.getEvent()).thenReturn(event);
+                    when(callback.getCaseDetails()).thenReturn(caseDetails);
+                    when(caseDetails.getCaseData()).thenReturn(asylumCase);
                     when(callback.getCaseDetails().getState()).thenReturn(state);
+                    when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
 
                     List<IdValue<Direction>> directionList = new ArrayList<>();
                     directionList.add(originalDirection8);
@@ -165,7 +212,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
                     boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
 
-                    if (callbackStage == ABOUT_TO_SUBMIT
+                    if ((callbackStage == ABOUT_TO_SUBMIT
                         && Arrays.asList(
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
@@ -181,6 +228,13 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         Event.SEND_DIRECTION,
                         Event.REQUEST_RESPONSE_AMEND
                     ).contains(callback.getEvent())
+                        || (event == Event.CHANGE_DIRECTION_DUE_DATE
+                            && (Arrays.asList(
+                                State.AWAITING_RESPONDENT_EVIDENCE,
+                                State.RESPONDENT_REVIEW
+                            ).contains(callback.getCaseDetails().getState()))
+                            )
+                        )
                     ) {
                         if (event == Event.SEND_DIRECTION
                             && state != State.AWAITING_RESPONDENT_EVIDENCE) {
