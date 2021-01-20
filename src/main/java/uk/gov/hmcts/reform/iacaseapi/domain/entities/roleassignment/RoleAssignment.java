@@ -7,8 +7,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class RoleAssignment {
-    private RoleRequest roleRequest;
-    private List<RequestedRoles> requestedRoles;
+    private final RoleRequest roleRequest;
+    private final List<RequestedRoles> requestedRoles;
 
     public RoleAssignment(RoleRequest roleRequest, List<RequestedRoles> requestedRoles) {
         this.roleRequest = roleRequest;

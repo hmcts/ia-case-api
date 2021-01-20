@@ -7,7 +7,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignment;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 
 @FeignClient(
         name = "role-assignment-service-api",
@@ -21,5 +23,13 @@ public interface RoleAssignmentApi {
             @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
             @RequestBody RoleAssignment body
     );
+
+    @PostMapping(value = "/am/role-assignments/query", consumes = "application/json")
+    RoleAssignmentResource queryRoleAssignments(
+        @RequestHeader(AUTHORIZATION) String userToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken,
+        @RequestBody QueryRequest queryRequest
+    );
+
 
 }

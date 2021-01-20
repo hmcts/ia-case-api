@@ -1,6 +1,5 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +15,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +29,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.AllocateTheCaseHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RoleAssignmentService;
 
@@ -73,10 +70,11 @@ class AllocateTheCaseHandlerTest {
             .thenReturn(Optional.of(caseWorkerNameList));
         when(caseWorkerNameList.getValue()).thenReturn(caseWorkerName);
 
+
         allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase).read(CASE_WORKER_NAME_LIST, DynamicList.class);
-        verify(roleAssignmentService).assignRole(caseDetails.getId());
+        verify(roleAssignmentService).assignRole(caseDetails.getId(), caseWorkerNameList.getValue().getCode());
         verify(asylumCase).write(CASE_WORKER_NAME, caseWorkerName.getLabel());
         verify(asylumCase).clear(eq(CASE_WORKER_NAME_LIST));
     }
@@ -152,12 +150,8 @@ class AllocateTheCaseHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_WORKER_NAME_LIST, DynamicList.class)).thenReturn(Optional.empty());
 
-        RuntimeException exception = Assertions.assertThrows(
-            RuntimeException.class,
-            () -> allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback)
-        );
-
-        assertThat(exception.getMessage()).isEqualTo("caseWorkerNameList field is not present on the caseData");
-
+        assertThatThrownBy(() -> allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("caseWorkerNameList field is not present on the caseData")
+            .isExactlyInstanceOf(RuntimeException.class);
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -10,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Value;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,8 +64,8 @@ class AdjournWithoutDateConfirmationTest {
         PostSubmitCallbackResponse callbackResponse = handler.handle(callback);
 
         assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+        Assertions.assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        Assertions.assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
         assertThat(
             callbackResponse.getConfirmationHeader().get())

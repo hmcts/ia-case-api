@@ -50,7 +50,7 @@ public class AllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCa
             DynamicList.class
         ).orElseThrow(() -> new RuntimeException("caseWorkerNameList field is not present on the caseData"));
 
-        roleAssignmentService.assignRole(caseDetails.getId());
+        roleAssignmentService.assignRole(caseDetails.getId(), caseWorkerNameList.getValue().getCode());
 
         caseData.write(CASE_WORKER_NAME, caseWorkerNameList.getValue().getLabel());
         caseData.clear(CASE_WORKER_NAME_LIST);
