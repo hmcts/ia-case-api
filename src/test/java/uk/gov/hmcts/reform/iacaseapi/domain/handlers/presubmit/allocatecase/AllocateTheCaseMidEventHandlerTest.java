@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
@@ -23,23 +21,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseWorkerService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +39,7 @@ class AllocateTheCaseMidEventHandlerTest {
     @Mock
     private FeatureToggler featureToggle;
     @Mock
-    private RoleAssignmentService roleAssignmentService;
-    @Mock
-    private RefDataCaseWorkerApi refDataCaseWorkerApi;
-    @Mock
-    private AuthTokenGenerator serviceAuthTokenGenerator;
-    @Mock
-    private UserDetails userDetails;
+    private CaseWorkerService caseWorkerService;
     @InjectMocks
     private AllocateTheCaseMidEventHandler handler;
     @Mock
@@ -158,40 +143,9 @@ class AllocateTheCaseMidEventHandlerTest {
         when(callback.getEvent()).thenReturn(Event.ALLOCATE_THE_CASE);
         when(featureToggle.getValue("allocate-a-case-feature", false))
             .thenReturn(true);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
 
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(CASE_WORKER_LOCATION_LIST, "some location id");
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        Assignment assignment = Assignment.builder()
-            .actorId("some actor id")
-            .build();
-        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(List.of(assignment));
-        when(roleAssignmentService.queryRoleAssignments(any(QueryRequest.class)))
-            .thenReturn(roleAssignmentResource);
-
-        String userToken = "some bearer user token";
-        when(userDetails.getAccessToken()).thenReturn(userToken);
-        String serviceToken = "some bearer service token";
-        when(serviceAuthTokenGenerator.generate()).thenReturn(serviceToken);
-
-        when(refDataCaseWorkerApi.fetchUsersById(
-            eq(userToken),
-            eq(serviceToken),
-            any(UserIds.class))
-        ).thenReturn(new CaseWorkerProfile(
-            null,
-            "some caseworker firstname",
-            "some caseworker lastname",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ));
+        mockCaseDetails();
+        mockCaseWorkerService();
 
         PreSubmitCallbackResponse<AsylumCase> actualResult =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -206,10 +160,31 @@ class AllocateTheCaseMidEventHandlerTest {
             new DynamicList(
                 new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("", ""),
                 List.of(new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(
-                    "some actor id", "some caseworker firstname some caseworker lastname"
+                    "some actor id", "some caseworker name"
                 ))
             );
         assertThat(caseWorkerNameList.get()).isEqualTo(expectedCaseWorkerNameList);
+    }
+
+    private void mockCaseWorkerService() {
+        Assignment roleAssignment = Assignment.builder()
+            .actorId("some actor id")
+            .build();
+        when(caseWorkerService.getRoleAssignmentsPerLocationAndClassification(
+            "some location id",
+            "PUBLIC")
+        ).thenReturn(List.of(roleAssignment));
+
+        when(caseWorkerService.getCaseWorkerNameForActorId("some actor id"))
+            .thenReturn("some caseworker name");
+    }
+
+    private void mockCaseDetails() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(CASE_WORKER_LOCATION_LIST, "some location id");
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getSecurityClassification()).thenReturn("PUBLIC");
     }
 
     @ParameterizedTest
