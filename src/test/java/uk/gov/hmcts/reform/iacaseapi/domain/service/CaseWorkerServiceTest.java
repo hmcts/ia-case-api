@@ -33,6 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 
@@ -110,6 +112,26 @@ class CaseWorkerServiceTest {
 
     @Test
     void getCaseWorkerNameForActorId() {
+
+        String userBearerToken = "some user bearer token";
+        when(userDetails.getAccessToken()).thenReturn(userBearerToken);
+
+        String serviceBearerToken = "some service bearer token";
+        when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);
+
+        String someActorId = "some actor id";
+        when(refDataCaseWorkerApi.fetchUsersById(
+            userBearerToken,
+            serviceBearerToken,
+            new UserIds(List.of(someActorId))
+        )).thenReturn(CaseWorkerProfile.builder()
+            .firstName("some firstname")
+            .lastName("some lastname")
+            .build());
+
+        String actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
+
+        assertThat(actualCaseWorkerName).isEqualTo("some firstname some lastname");
     }
 
 }

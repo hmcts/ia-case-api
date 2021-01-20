@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Value;
 
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class CaseWorkerProfile {
 
     String caseWorkerId;
