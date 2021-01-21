@@ -58,8 +58,8 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
         tokenRequestForm.add("client_id", idamClientId);
         tokenRequestForm.add("client_secret", idamClientSecret);
-        tokenRequestForm.add("username", System.getenv("ia.caseofficer.ccd@gmail.com"));
-        tokenRequestForm.add("password", System.getenv("AldgateT0wer"));
+        tokenRequestForm.add("username", "ia.caseofficer.ccd@gmail.com");
+        tokenRequestForm.add("password", "AldgateT0wer");
         tokenRequestForm.add("scope", userScope);
 
         String serviceToken = tokens.computeIfAbsent("ServiceAuth", user -> serviceAuthTokenGenerator.generate());
