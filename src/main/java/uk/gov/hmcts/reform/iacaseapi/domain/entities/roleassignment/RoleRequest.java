@@ -6,10 +6,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class RoleRequest {
-    private String assignerId;
-    private String process;
-    private String reference;
-    private boolean replaceExisting;
+    private final String assignerId;
+    private final String process;
+    private final String reference;
+    private final boolean replaceExisting;
 
     public RoleRequest(String assignerId, String process, String reference, boolean replaceExisting) {
         this.assignerId = assignerId;

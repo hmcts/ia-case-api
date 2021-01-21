@@ -1,0 +1,47 @@
+{
+  "description": "RWA-318 Allocate a case to caseworker",
+  "disabled": "true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "allocateTheCase",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "allocateTheCaseTo": "caseworker",
+          "caseWorkerLocationList": "227101",
+          "caseWorkerNameList": {
+            "value": {
+              "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
+              "label": "Firstname Lastname"
+            },
+            "list_items": [
+              {
+                "code": "00ac13b2-0246-4392-99b4-d0084c6b91cc",
+                "label": "Firstname Lastname"
+              },
+              {
+                "code": "45d8231f-8055-4acf-89fe-a8c432b20e8b",
+                "label": "Firstname2 Lastname2"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "allocateTheCaseTo": "caseworker",
+        "caseWorkerLocationList": "227101",
+        "caseWorkerName": "Firstname Lastname"
+      }
+    }
+  }
+}

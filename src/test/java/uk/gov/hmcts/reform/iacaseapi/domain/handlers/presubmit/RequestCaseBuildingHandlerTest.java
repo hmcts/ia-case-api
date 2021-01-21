@@ -122,7 +122,7 @@ class RequestCaseBuildingHandlerTest {
 
     private static Object[] generateExceptionScenarios() {
         CaseDetails<AsylumCase> dummyCaseDetails = new CaseDetails<>(1L, "", State.APPEAL_STARTED,
-            asylumCase, LocalDateTime.now());
+            asylumCase, LocalDateTime.now(), "PUBLIC");
         Callback<AsylumCase> dummyCallback = new Callback<>(dummyCaseDetails, Optional.empty(), Event.SEND_DIRECTION);
 
         return new Object[] {

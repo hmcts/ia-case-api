@@ -7,15 +7,15 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class RequestedRoles {
-    private ActorIdType actorIdType;
-    private String actorId;
-    private RoleType roleType;
-    private String roleName;
-    private RoleCategory roleCategory;
-    private Classification classification;
-    private GrantType grantType;
-    private Boolean readOnly;
-    private Map<String, String> attributes;
+    private final ActorIdType actorIdType;
+    private final String actorId;
+    private final RoleType roleType;
+    private final String roleName;
+    private final RoleCategory roleCategory;
+    private final Classification classification;
+    private final GrantType grantType;
+    private final Boolean readOnly;
+    private final Map<String, String> attributes;
 
     public RequestedRoles(ActorIdType actorIdType,
                           String actorId,
