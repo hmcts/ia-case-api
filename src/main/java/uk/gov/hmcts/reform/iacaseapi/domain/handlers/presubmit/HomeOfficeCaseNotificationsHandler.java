@@ -59,7 +59,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                    && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
                    && getLatestNonStandardRespondentDirection(
                         callback.getCaseDetails().getCaseData()).isPresent())
-                )
+
                || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
                    && (Arrays.asList(
                         State.AWAITING_RESPONDENT_EVIDENCE,
@@ -67,6 +67,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                         ).contains(callback.getCaseDetails().getState()))
                    && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
                   )
+               )
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 

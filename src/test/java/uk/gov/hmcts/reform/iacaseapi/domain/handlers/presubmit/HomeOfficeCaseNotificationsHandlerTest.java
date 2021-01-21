@@ -172,8 +172,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
 
         assertTrue(selectedDirection.isPresent());
-        assertTrue(selectedDirection.get().getParties().equals(Parties.RESPONDENT));
-        assertTrue(selectedDirection.get().getExplanation().equals("explanation11"));
+        assertEquals(Parties.RESPONDENT, selectedDirection.get().getParties());
+        assertEquals("explanation11", selectedDirection.get().getExplanation());
     }
 
     @Test
@@ -212,8 +212,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
                     boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
 
-                    if ((callbackStage == ABOUT_TO_SUBMIT
-                        && Arrays.asList(
+                    if (callbackStage == ABOUT_TO_SUBMIT
+                        && (Arrays.asList(
                         Event.REQUEST_RESPONDENT_EVIDENCE,
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.LIST_CASE,
