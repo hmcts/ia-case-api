@@ -32,6 +32,7 @@ public abstract class CallbackTransformer extends ResponseDefinitionTransformer 
         objectMapper.registerModule(new JavaTimeModule());
     }
 
+
     @Override
     public ResponseDefinition transform(
         Request request,
