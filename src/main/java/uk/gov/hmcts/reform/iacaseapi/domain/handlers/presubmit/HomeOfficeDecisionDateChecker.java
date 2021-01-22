@@ -66,10 +66,20 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
         Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
 
+        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
-            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+        if (maybeOutOfCountryDecisionType.isPresent()) {
 
+            OutOfCountryDecisionType outOfCountryDecisionType = maybeOutOfCountryDecisionType.get();
+
+            if (outOfCountryDecisionType == OutOfCountryDecisionType.REMOVAL_OF_CLIENT) {
+                Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+
+                homeOfficeDecisionDate =
+                    parse(maybeHomeOfficeDecisionLetterDate
+                        .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+            }
+        } else {
             homeOfficeDecisionDate = parse(maybeHomeOfficeDecisionDate
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
         }

@@ -119,6 +119,34 @@ class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_in_time_ooc() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.AWAITING_RESPONDENT_EVIDENCE);
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
     void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
@@ -144,10 +172,51 @@ class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time_ooc() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-03-08"));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.AWAITING_RESPONDENT_EVIDENCE);
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
     void should_set_submission_out_of_time_when_out_of_time_mid_event() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(HOME_OFFICE_DECISION_DATE)).thenReturn(Optional.of("2020-03-08"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+    }
+
+    @Test
+    void should_set_submission_out_of_time_when_out_of_time_mid_event_ooc() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-03-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -178,9 +247,47 @@ class EditAppealAfterSubmitHandlerTest {
     @Test
     void should_validate_home_office_decision_date_when_ooc_and_refusal_of_human_rights_is_decided() {
 
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
 
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+    }
+
+    @Test
+    void should_set_submission_in_time_mid_event_ooc() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+    }
+
+    @Test
+    void should_set_submission_in_time_mid_event_for_decision_letter_date_received() {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -199,6 +306,18 @@ class EditAppealAfterSubmitHandlerTest {
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_throw_exception_when_out_of_country_decision_letter_date_received_is_missing() {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+            .hasMessage("decisionLetterReceivedDate is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("decisionLetterReceivedDate is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test
