@@ -1,6 +1,5 @@
 {
   "description": "RIA-3451: Judge decide an application",
-  "launchDarklyKey": "make-an-application-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Judge",

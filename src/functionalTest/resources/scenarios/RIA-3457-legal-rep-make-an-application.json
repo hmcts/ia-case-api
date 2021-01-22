@@ -1,6 +1,5 @@
 {
   "description": "RIA-3457: Legal rep make an application of update appeal details",
-  "launchDarklyKey": "make-an-application-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

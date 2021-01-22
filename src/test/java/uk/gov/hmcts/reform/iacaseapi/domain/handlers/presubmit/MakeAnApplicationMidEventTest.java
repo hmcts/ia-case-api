@@ -44,7 +44,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationTypesProvider;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -60,9 +59,6 @@ class MakeAnApplicationMidEventTest {
     private AsylumCase asylumCase;
 
     @Mock
-    private FeatureToggler featureToggler;
-
-    @Mock
     private MakeAnApplicationTypesProvider makeAnApplicationTypesProvider;
 
     @InjectMocks
@@ -73,7 +69,6 @@ class MakeAnApplicationMidEventTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MAKE_AN_APPLICATION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
     }
 
     @ParameterizedTest

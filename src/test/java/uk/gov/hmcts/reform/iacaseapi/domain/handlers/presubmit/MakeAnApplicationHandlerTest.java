@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -57,9 +56,6 @@ class MakeAnApplicationHandlerTest {
     private AsylumCase asylumCase;
 
     @Mock
-    private FeatureToggler featureToggler;
-
-    @Mock
     private MakeAnApplicationAppender makeAnApplicationAppender;
 
     @InjectMocks
@@ -70,8 +66,7 @@ class MakeAnApplicationHandlerTest {
 
         MockitoAnnotations.openMocks(this);
 
-        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender, featureToggler);
-        when(featureToggler.getValue("make-an-application-feature", false)).thenReturn(true);
+        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender);
     }
 
     @Test
