@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Value;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -111,8 +110,9 @@ class CaseWorkerServiceTest {
         List<Classification> expectedClassification;
     }
 
-    @Test
-    void getCaseWorkerNameForActorId() {
+    @ParameterizedTest
+    @MethodSource("getCaseWorkerNameForActorIdScenarioProvider")
+    void getCaseWorkerNameForActorId(CaseWorkerNameScenario scenario) {
 
         String userBearerToken = "some user bearer token";
         when(userDetails.getAccessToken()).thenReturn(userBearerToken);
@@ -125,18 +125,26 @@ class CaseWorkerServiceTest {
             userBearerToken,
             serviceBearerToken,
             new UserIds(List.of(someActorId))
-        )).thenReturn(CaseWorkerProfile.builder()
-            .firstName("some firstname")
-            .lastName("some lastname")
-            .build());
+        )).thenReturn(scenario.getCaseWorkerProfile());
 
         CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
 
-        CaseWorkerName expectedCaseWorkerName = new CaseWorkerName(
-            "some actor id",
-            "some firstname some lastname"
-        );
-        assertThat(actualCaseWorkerName).isEqualTo(expectedCaseWorkerName);
+        assertThat(actualCaseWorkerName).isEqualTo(scenario.getExpectedCaseWorkerName());
     }
 
+    private static Stream<CaseWorkerNameScenario> getCaseWorkerNameForActorIdScenarioProvider() {
+
+        CaseWorkerNameScenario scenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName("some firstname").lastName("some lastname").build(),
+            new CaseWorkerName("some actor id", "some firstname some lastname")
+        );
+
+        return Stream.of(scenario);
+    }
+
+    @Value
+    private static class CaseWorkerNameScenario {
+        CaseWorkerProfile caseWorkerProfile;
+        CaseWorkerName expectedCaseWorkerName;
+    }
 }
