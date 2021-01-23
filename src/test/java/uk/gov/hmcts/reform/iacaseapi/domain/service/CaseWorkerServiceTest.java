@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
@@ -129,9 +130,13 @@ class CaseWorkerServiceTest {
             .lastName("some lastname")
             .build());
 
-        String actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
+        CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
 
-        assertThat(actualCaseWorkerName).isEqualTo("some firstname some lastname");
+        CaseWorkerName expectedCaseWorkerName = new CaseWorkerName(
+            "some actor id",
+            "some firstname some lastname"
+        );
+        assertThat(actualCaseWorkerName).isEqualTo(expectedCaseWorkerName);
     }
 
 }

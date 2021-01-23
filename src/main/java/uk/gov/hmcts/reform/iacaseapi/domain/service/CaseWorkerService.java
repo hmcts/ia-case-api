@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Class
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
@@ -70,13 +72,18 @@ public class CaseWorkerService {
         return List.of(PRIVATE);
     }
 
-    public String getCaseWorkerNameForActorId(String actorId) {
+    public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
             userDetails.getAccessToken(),
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
         );
-        return caseWorkerProfile.getFirstName() + " " + caseWorkerProfile.getLastName();
+        return new CaseWorkerName(
+            actorId,
+            StringUtils.getIfEmpty(caseWorkerProfile.getFirstName(), () -> StringUtils.EMPTY)
+                + " "
+                + StringUtils.getIfEmpty(caseWorkerProfile.getLastName(), () -> StringUtils.EMPTY)
+        );
     }
 
 }

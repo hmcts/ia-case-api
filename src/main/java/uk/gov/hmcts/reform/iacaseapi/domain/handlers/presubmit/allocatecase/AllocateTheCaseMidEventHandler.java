@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -54,23 +55,36 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         String securityClassification = callback.getCaseDetails().getSecurityClassification();
-        populateDynamicListWithCaseWorkerNamesForSelectedLocation(asylumCase, securityClassification);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return populateDynamicListWithCaseWorkerNamesForSelectedLocation(asylumCase, securityClassification);
     }
 
-    private void populateDynamicListWithCaseWorkerNamesForSelectedLocation(AsylumCase asylumCase,
-                                                                           String securityClassification) {
+    private PreSubmitCallbackResponse<AsylumCase> populateDynamicListWithCaseWorkerNamesForSelectedLocation(
+        AsylumCase asylumCase,
+        String securityClassification
+    ) {
         String selectedLocation = asylumCase.read(CASE_WORKER_LOCATION_LIST, String.class)
             .orElseThrow(() -> new RuntimeException("caseWorkerLocationList field is not present on the caseData"));
 
-        asylumCase.write(
-            CASE_WORKER_NAME_LIST,
-            new DynamicList(
-                new Value("", ""),
-                getCaseWorkerValueListForGivenLocation(selectedLocation, securityClassification)
-            )
-        );
+        return getCallbackResponse(asylumCase, getCaseWorkerValueListForGivenLocation(
+            selectedLocation,
+            securityClassification
+        ));
+    }
+
+    private PreSubmitCallbackResponse<AsylumCase> getCallbackResponse(
+        AsylumCase asylumCase,
+        List<Value> caseWorkerValueListForGivenLocation
+    ) {
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+        if (caseWorkerValueListForGivenLocation.isEmpty()) {
+            response.addError("There are no caseworkers for the selected location. Select a different location.");
+        } else {
+            asylumCase.write(
+                CASE_WORKER_NAME_LIST,
+                new DynamicList(new Value("", ""), caseWorkerValueListForGivenLocation)
+            );
+        }
+        return response;
     }
 
     private List<Value> getCaseWorkerValueListForGivenLocation(String location, String securityClassification) {
@@ -80,8 +94,9 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
         );
 
         return roleAssignments.stream()
-            .map(role ->
-                new Value(role.getActorId(), caseWorkerService.getCaseWorkerNameForActorId(role.getActorId())))
+            .map(role -> caseWorkerService.getCaseWorkerNameForActorId(role.getActorId()))
+            .filter(caseWorkerName -> StringUtils.isNotEmpty(StringUtils.trimToEmpty(caseWorkerName.getName())))
+            .map(caseWorkerName -> new Value(caseWorkerName.getId(), caseWorkerName.getName()))
             .collect(Collectors.toList());
     }
 

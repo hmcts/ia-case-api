@@ -176,7 +176,7 @@ class AllocateTheCaseMidEventHandlerTest {
         ).thenReturn(List.of(roleAssignment));
 
         when(caseWorkerService.getCaseWorkerNameForActorId("some actor id"))
-            .thenReturn("some caseworker name");
+            .thenReturn(new CaseWorkerName("some actor id", "some caseworker name"));
     }
 
     private void mockCaseDetails() {
