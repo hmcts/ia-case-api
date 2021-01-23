@@ -96,7 +96,7 @@ class RoleAssignmentServiceTest {
 
     @Test
     void queryRoleAssignmentTest() {
-    roleAssignmentService.queryRoleAssignments(QueryRequest.builder().build());
+        roleAssignmentService.queryRoleAssignments(QueryRequest.builder().build());
 
         verify(roleAssignmentApi).queryRoleAssignments(
             eq(accessToken),
