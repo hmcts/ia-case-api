@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PRIVATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
@@ -78,12 +80,12 @@ public class CaseWorkerService {
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
         );
-        return new CaseWorkerName(
-            actorId,
-            StringUtils.getIfEmpty(caseWorkerProfile.getFirstName(), () -> StringUtils.EMPTY)
-                + " "
-                + StringUtils.getIfEmpty(caseWorkerProfile.getLastName(), () -> StringUtils.EMPTY)
-        );
+
+        String caseWorkerNameFormatted = trim(String.format("%s %s",
+            defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),
+            defaultIfEmpty(caseWorkerProfile.getLastName(), EMPTY)));
+
+        return new CaseWorkerName(actorId, caseWorkerNameFormatted);
     }
 
 }

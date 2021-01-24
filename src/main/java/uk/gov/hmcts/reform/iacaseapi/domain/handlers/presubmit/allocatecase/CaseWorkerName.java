@@ -5,5 +5,5 @@ import lombok.Value;
 @Value
 public class CaseWorkerName {
     String id;
-    String name;
+    String formattedName;
 }

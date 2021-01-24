@@ -95,8 +95,8 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
 
         return roleAssignments.stream()
             .map(role -> caseWorkerService.getCaseWorkerNameForActorId(role.getActorId()))
-            .filter(caseWorkerName -> StringUtils.isNotEmpty(StringUtils.trimToEmpty(caseWorkerName.getName())))
-            .map(caseWorkerName -> new Value(caseWorkerName.getId(), caseWorkerName.getName()))
+            .filter(caseWorkerName -> StringUtils.isNotEmpty(caseWorkerName.getFormattedName()))
+            .map(caseWorkerName -> new Value(caseWorkerName.getId(), caseWorkerName.getFormattedName()))
             .collect(Collectors.toList());
     }
 

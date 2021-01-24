@@ -134,12 +134,30 @@ class CaseWorkerServiceTest {
 
     private static Stream<CaseWorkerNameScenario> getCaseWorkerNameForActorIdScenarioProvider() {
 
-        CaseWorkerNameScenario scenario = new CaseWorkerNameScenario(
+        CaseWorkerNameScenario caseWorkerProfileExistsInRefDataApiScenario = new CaseWorkerNameScenario(
             CaseWorkerProfile.builder().firstName("some firstname").lastName("some lastname").build(),
             new CaseWorkerName("some actor id", "some firstname some lastname")
         );
 
-        return Stream.of(scenario);
+        CaseWorkerNameScenario caseWorkerProfileDoesNotExistsInRefDataApiScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().build(),
+            new CaseWorkerName("some actor id", "")
+        );
+
+        CaseWorkerNameScenario caseWorkerProfileWithNullFirstnameScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName(null).lastName("some lastname").build(),
+            new CaseWorkerName("some actor id", "some lastname")
+        );
+
+        CaseWorkerNameScenario caseWorkerProfileWithNullLastnameScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName("some firstname").lastName(null).build(),
+            new CaseWorkerName("some actor id", "some firstname")
+        );
+
+        return Stream.of(caseWorkerProfileExistsInRefDataApiScenario,
+            caseWorkerProfileDoesNotExistsInRefDataApiScenario,
+            caseWorkerProfileWithNullFirstnameScenario,
+            caseWorkerProfileWithNullLastnameScenario);
     }
 
     @Value
