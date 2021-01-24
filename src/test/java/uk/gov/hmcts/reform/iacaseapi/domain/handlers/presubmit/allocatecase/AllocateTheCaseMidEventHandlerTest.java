@@ -7,11 +7,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -148,7 +150,7 @@ class AllocateTheCaseMidEventHandlerTest {
             .thenReturn(true);
 
         mockCaseDetails();
-        mockCaseWorkerService(scenario.getCaseWorkerName(), scenario.getAssignment());
+        mockCaseWorkerService(scenario.getCaseWorkerName(), scenario.getAssignments());
 
         PreSubmitCallbackResponse<AsylumCase> actualResult =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -158,35 +160,62 @@ class AllocateTheCaseMidEventHandlerTest {
             DynamicList.class
         );
 
-        assertThat(caseWorkerNameList).isPresent();
-        DynamicList expectedCaseWorkerNameList =
-            new DynamicList(
-                new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("", ""),
-                List.of(new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(someActorId, someCaseworkerName))
+        if (scenario.isCaseWorkerListPresent()) {
+            assertThat(caseWorkerNameList).isPresent();
+            DynamicList expectedCaseWorkerNameList =
+                new DynamicList(
+                    new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("", ""),
+                    List.of(new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(someActorId, someCaseworkerName))
+                );
+            assertThat(caseWorkerNameList.get()).isEqualTo(expectedCaseWorkerNameList);
+
+        } else {
+            assertThat(caseWorkerNameList).isEmpty();
+            actualResult.getErrors().forEach((error) ->
+                assertThat("There are no caseworkers for the selected location. Select a different location.")
+                    .isEqualTo(error)
             );
-        assertThat(caseWorkerNameList.get()).isEqualTo(expectedCaseWorkerNameList);
+        }
+
     }
 
     private static Stream<HandleScenario> handleScenarioProvider() {
-        HandleScenario scenario = new HandleScenario(
+        HandleScenario AssignmentAndCaseWorkerNameExistScenario = new HandleScenario(
             new CaseWorkerName("some actor id", "some caseworker name"),
-            Assignment.builder().actorId("some actor id").build()
+            List.of(Assignment.builder().actorId("some actor id").build()),
+            true
         );
-        return Stream.of(scenario);
+
+        HandleScenario AssignmentDoesNotExistScenario = new HandleScenario(
+            new CaseWorkerName("some actor id", "some caseworker name"),
+            Collections.emptyList(),
+            false
+        );
+
+        HandleScenario AssignmentExistsAndCaseWorkerNameDoesNotExistScenario = new HandleScenario(
+            new CaseWorkerName("some actor id", StringUtils.EMPTY),
+            List.of(Assignment.builder().actorId("some actor id").build()),
+            false
+        );
+
+        return Stream.of(AssignmentAndCaseWorkerNameExistScenario,
+            AssignmentDoesNotExistScenario,
+            AssignmentExistsAndCaseWorkerNameDoesNotExistScenario);
     }
 
     @Value
     private static class HandleScenario {
         CaseWorkerName caseWorkerName;
-        Assignment assignment;
+        List<Assignment> assignments;
+        boolean caseWorkerListPresent;
     }
 
-    private void mockCaseWorkerService(CaseWorkerName caseWorkerName, Assignment roleAssignment) {
+    private void mockCaseWorkerService(CaseWorkerName caseWorkerName, List<Assignment> assignments) {
 
         when(caseWorkerService.getRoleAssignmentsPerLocationAndClassification(
             "some location id",
             "PUBLIC")
-        ).thenReturn(List.of(roleAssignment));
+        ).thenReturn(assignments);
 
         when(caseWorkerService.getCaseWorkerNameForActorId(someActorId))
             .thenReturn(caseWorkerName);
