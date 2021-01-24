@@ -36,6 +36,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @ExtendWith(MockitoExtension.class)
 class AllocateTheCaseMidEventHandlerTest {
 
+    private final String someActorId = "some actor id";
+    private final String someCaseworkerName = "some caseworker name";
     @Mock
     private FeatureToggler featureToggle;
     @Mock
@@ -138,14 +140,15 @@ class AllocateTheCaseMidEventHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void handle() {
+    @ParameterizedTest
+    @MethodSource("handleScenarioProvider")
+    void handle(HandleScenario scenario) {
         when(callback.getEvent()).thenReturn(Event.ALLOCATE_THE_CASE);
         when(featureToggle.getValue("allocate-a-case-feature", false))
             .thenReturn(true);
 
         mockCaseDetails();
-        mockCaseWorkerService();
+        mockCaseWorkerService(scenario.getCaseWorkerName(), scenario.getAssignment());
 
         PreSubmitCallbackResponse<AsylumCase> actualResult =
             handler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
@@ -159,24 +162,34 @@ class AllocateTheCaseMidEventHandlerTest {
         DynamicList expectedCaseWorkerNameList =
             new DynamicList(
                 new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value("", ""),
-                List.of(new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(
-                    "some actor id", "some caseworker name"
-                ))
+                List.of(new uk.gov.hmcts.reform.iacaseapi.domain.entities.Value(someActorId, someCaseworkerName))
             );
         assertThat(caseWorkerNameList.get()).isEqualTo(expectedCaseWorkerNameList);
     }
 
-    private void mockCaseWorkerService() {
-        Assignment roleAssignment = Assignment.builder()
-            .actorId("some actor id")
-            .build();
+    private static Stream<HandleScenario> handleScenarioProvider() {
+        HandleScenario scenario = new HandleScenario(
+            new CaseWorkerName("some actor id", "some caseworker name"),
+            Assignment.builder().actorId("some actor id").build()
+        );
+        return Stream.of(scenario);
+    }
+
+    @Value
+    private static class HandleScenario {
+        CaseWorkerName caseWorkerName;
+        Assignment assignment;
+    }
+
+    private void mockCaseWorkerService(CaseWorkerName caseWorkerName, Assignment roleAssignment) {
+
         when(caseWorkerService.getRoleAssignmentsPerLocationAndClassification(
             "some location id",
             "PUBLIC")
         ).thenReturn(List.of(roleAssignment));
 
-        when(caseWorkerService.getCaseWorkerNameForActorId("some actor id"))
-            .thenReturn(new CaseWorkerName("some actor id", "some caseworker name"));
+        when(caseWorkerService.getCaseWorkerNameForActorId(someActorId))
+            .thenReturn(caseWorkerName);
     }
 
     private void mockCaseDetails() {
@@ -217,4 +230,5 @@ class AllocateTheCaseMidEventHandlerTest {
         PreSubmitCallbackStage preSubmitCallbackStage;
         Event event;
     }
+
 }
