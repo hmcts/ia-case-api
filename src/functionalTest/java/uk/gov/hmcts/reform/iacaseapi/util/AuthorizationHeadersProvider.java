@@ -58,6 +58,8 @@ public class AuthorizationHeadersProvider {
         tokenRequestForm.add("redirect_uri", idamRedirectUrl);
         tokenRequestForm.add("client_id", idamClientId);
         tokenRequestForm.add("client_secret", idamClientSecret);
+        //        tokenRequestForm.add("username", System.getenv("TEST_CASEOFFICER_USERNAME"));
+        //        tokenRequestForm.add("password", System.getenv("TEST_CASEOFFICER_PASSWORD"));
         tokenRequestForm.add("username", "ia.caseofficer.test@gmail.com");
         tokenRequestForm.add("password", "AldgateT0wer");
         tokenRequestForm.add("scope", userScope);
