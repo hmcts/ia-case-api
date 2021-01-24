@@ -180,27 +180,27 @@ class AllocateTheCaseMidEventHandlerTest {
     }
 
     private static Stream<HandleScenario> handleScenarioProvider() {
-        HandleScenario AssignmentAndCaseWorkerNameExistScenario = new HandleScenario(
+        HandleScenario assignmentAndCaseWorkerNameExistScenario = new HandleScenario(
             new CaseWorkerName("some actor id", "some caseworker name"),
             List.of(Assignment.builder().actorId("some actor id").build()),
             true
         );
 
-        HandleScenario AssignmentDoesNotExistScenario = new HandleScenario(
+        HandleScenario assignmentDoesNotExistScenario = new HandleScenario(
             new CaseWorkerName("some actor id", "some caseworker name"),
             Collections.emptyList(),
             false
         );
 
-        HandleScenario AssignmentExistsAndCaseWorkerNameDoesNotExistScenario = new HandleScenario(
+        HandleScenario assignmentExistsAndCaseWorkerNameDoesNotExistScenario = new HandleScenario(
             new CaseWorkerName("some actor id", StringUtils.EMPTY),
             List.of(Assignment.builder().actorId("some actor id").build()),
             false
         );
 
-        return Stream.of(AssignmentAndCaseWorkerNameExistScenario,
-            AssignmentDoesNotExistScenario,
-            AssignmentExistsAndCaseWorkerNameDoesNotExistScenario);
+        return Stream.of(assignmentAndCaseWorkerNameExistScenario,
+            assignmentDoesNotExistScenario,
+            assignmentExistsAndCaseWorkerNameDoesNotExistScenario);
     }
 
     @Value
