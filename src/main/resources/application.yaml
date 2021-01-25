@@ -132,7 +132,7 @@ paymentApi:
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 role-assignment-service:
-  url: ${ROLE_ASSIGNMENT_URL:http://role-assignment}
+  url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
