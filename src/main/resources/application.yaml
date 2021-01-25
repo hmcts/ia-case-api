@@ -135,7 +135,7 @@ role-assignment-service:
   url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
 ref-data-case-worker-api:
-  url: ${REF_DATA_CASE_WORKER_URL:http://wiremock}
+  url: ${REF_DATA_CASE_WORKER_URL:http://localhost:8991}
 
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}

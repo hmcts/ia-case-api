@@ -2,3 +2,6 @@ logging.level:
   root: info
   org.springframework.web: debug
   uk.gov.hmcts: debug
+
+ref-data-case-worker-api:
+  url: ${REF_DATA_CASE_WORKER_URL:http://wiremock}
