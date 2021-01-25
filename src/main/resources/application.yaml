@@ -132,7 +132,7 @@ paymentApi:
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 role-assignment-service:
-  url: ${ROLE_ASSIGNMENT_URL:http://role-assignment}
+  url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
 ref-data-case-worker-api:
   url: ${REF_DATA_CASE_WORKER_URL:http://wiremock}
