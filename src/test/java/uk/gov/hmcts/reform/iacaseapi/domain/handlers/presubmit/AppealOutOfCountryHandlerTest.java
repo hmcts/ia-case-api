@@ -10,6 +10,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -19,11 +27,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -36,6 +46,8 @@ class AppealOutOfCountryHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private AddressUk addressUk;
 
     private AppealOutOfCountryHandler appealOutOfCountryHandler = new AppealOutOfCountryHandler();
 
@@ -86,6 +98,41 @@ class AppealOutOfCountryHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
 
+    }
+
+    @Test
+    void should_return_sponsor_details_if_sponsor_chosen_yes() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SPONSOR_GIVEN_NAMES, String.class)).thenReturn(Optional.of("  test"));
+        when(asylumCase.read(SPONSOR_FAMILY_NAME, String.class)).thenReturn(Optional.of("some-name "));
+        when(asylumCase.read(SPONSOR_ADDRESS, AddressUk.class)).thenReturn(Optional.of(addressUk));
+        when(addressUk.getAddressLine1()).thenReturn(Optional.of("line1"));
+        when(addressUk.getAddressLine2()).thenReturn(Optional.of(""));
+        when(addressUk.getPostTown()).thenReturn(Optional.of("town"));
+        when(addressUk.getCounty()).thenReturn(Optional.of("county"));
+        when(addressUk.getPostCode()).thenReturn(Optional.of("TT1 TST"));
+        when(addressUk.getCountry()).thenReturn(Optional.of("UK"));
+        when(asylumCase.read(SPONSOR_CONTACT_PREFERENCE, ContactPreference.class))
+            .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
+        when(asylumCase.read(SPONSOR_EMAIL, String.class)).thenReturn(Optional.of("test@test"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(SPONSOR_NAME_FOR_DISPLAY, "test some-name");
+        String addressString = "line1\r\n"
+            + "town\r\n"
+            + "county\r\n"
+            + "TT1 TST\r\n"
+            + "UK";
+        verify(asylumCase, times(1)).write(SPONSOR_ADDRESS_FOR_DISPLAY, addressString);
     }
 
     @Test
