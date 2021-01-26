@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,13 +11,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPLICANT_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE;
 
 import java.util.Optional;
-import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -53,7 +48,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
 
         PostSubmitCallbackResponse callbackResponse =
@@ -84,7 +78,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("partiallyGranted"));
 
@@ -110,104 +103,12 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     }
 
     @Test
-    void should_return_failed_notification_confirmation_appellant() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
-
-        PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertFalse(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("![Respondent notification failed confirmation]"
-                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get()).contains("#### Do this next");
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Contact the respondent to tell them what has changed, including any action they need to take.");
-    }
-
-    @Test
-    public void should_return_failed_notification_confirmation_respondent() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("respondent"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
-
-        PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
-
-        Assert.assertNotNull(callbackResponse);
-        Assert.assertFalse(callbackResponse.getConfirmationHeader().isPresent());
-        Assert.assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        MatcherAssert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("![Respondent notification failed confirmation]"
-                           + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)")
-        );
-
-        MatcherAssert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("#### Do this next")
-        );
-        MatcherAssert.assertThat(
-            callbackResponse.getConfirmationBody().get(),
-            containsString("Contact the respondent to tell them what has changed, including any action they need to take.")
-        );
-    }
-
-    @Test
-    void should_not_return_failed_notification_confirmation_respondent() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
-        when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("partiallyGranted"));
-
-        PostSubmitCallbackResponse callbackResponse =
-            residentJudgeFtpaDecisionConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-            callbackResponse.getConfirmationHeader().get()
-            .contains("You've recorded the First-tier permission to appeal decision")
-        );
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get()).contains("#### What happens next");
-    }
-
-
-    @Test
     void should_return_refused_confirmation() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
 
         PostSubmitCallbackResponse callbackResponse =
@@ -238,7 +139,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule32"));
 
@@ -270,7 +170,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule35"));
 
@@ -303,7 +202,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.RESIDENT_JUDGE_FTPA_DECISION);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
-        when(asylumCase.read(HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS, String.class)).thenReturn(Optional.of("OK"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule32"));
 
