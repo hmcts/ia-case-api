@@ -79,7 +79,7 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
             securityClassification
         );
 
-        return roleAssignments.stream()
+        return roleAssignments.stream().parallel()
             .map(role ->
                 new Value(role.getActorId(), caseWorkerService.getCaseWorkerNameForActorId(role.getActorId())))
             .collect(Collectors.toList());
