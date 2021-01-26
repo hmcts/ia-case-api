@@ -24,7 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
@@ -45,9 +44,9 @@ class CaseWorkerServiceTest {
     @Mock
     private RefDataCaseWorkerApi refDataCaseWorkerApi;
     @Mock
-    private UserDetails userDetails;
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
+    @Mock
+    private IdamService idamService;
     @InjectMocks
     private CaseWorkerService caseWorkerService;
 
@@ -113,7 +112,7 @@ class CaseWorkerServiceTest {
     void getCaseWorkerNameForActorId() {
 
         String userBearerToken = "some user bearer token";
-        when(userDetails.getAccessToken()).thenReturn(userBearerToken);
+        when(idamService.getUserToken()).thenReturn(userBearerToken);
 
         String serviceBearerToken = "some service bearer token";
         when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);

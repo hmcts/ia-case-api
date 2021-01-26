@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
@@ -27,16 +26,18 @@ public class CaseWorkerService {
 
     private final RoleAssignmentService roleAssignmentService;
     private final RefDataCaseWorkerApi refDataCaseWorkerApi;
-    private final UserDetails userDetails;
+    private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
 
-    public CaseWorkerService(RoleAssignmentService roleAssignmentService,
-                             RefDataCaseWorkerApi refDataCaseWorkerApi,
-                             UserDetails userDetails,
-                             AuthTokenGenerator serviceAuthTokenGenerator) {
+    public CaseWorkerService(
+        RoleAssignmentService roleAssignmentService,
+        RefDataCaseWorkerApi refDataCaseWorkerApi,
+        IdamService idamService,
+        AuthTokenGenerator serviceAuthTokenGenerator
+    ) {
         this.roleAssignmentService = roleAssignmentService;
         this.refDataCaseWorkerApi = refDataCaseWorkerApi;
-        this.userDetails = userDetails;
+        this.idamService = idamService;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
     }
 
@@ -71,7 +72,7 @@ public class CaseWorkerService {
 
     public String getCaseWorkerNameForActorId(String actorId) {
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
-            userDetails.getAccessToken(),
+            idamService.getUserToken(),
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
         );
