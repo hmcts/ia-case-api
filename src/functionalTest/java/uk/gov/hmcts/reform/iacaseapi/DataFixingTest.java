@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.http.Headers;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.serenitybdd.rest.SerenityRest;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,21 @@ public class DataFixingTest {
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
+
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(10000)
+            .setConnectionRequestTimeout(10000)
+            .setSocketTimeout(10000)
+            .build();
+
+        HttpClientConfig httpClientFactory = HttpClientConfig.httpClientConfig()
+            .httpClientFactory(() -> HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .build());
+
+        RestAssured.config = RestAssured
+            .config()
+            .httpClient(httpClientFactory);
     }
 
     @Test
