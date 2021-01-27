@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
+@Slf4j
 class AllocateTheCaseMidEventHandlerTest {
 
     @Mock
@@ -50,10 +53,17 @@ class AllocateTheCaseMidEventHandlerTest {
     @ParameterizedTest
     @MethodSource("scenarioProvider")
     void canHandle(Scenario scenario) {
+        log.info("*** scenario *** \n {}", scenario);
 
         when(callback.getEvent()).thenReturn(scenario.event);
+
         when(featureToggle.getValue("allocate-a-case-feature", false))
             .thenReturn(scenario.featureToggleResponse);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(ALLOCATE_THE_CASE_TO, scenario.allocateToCaseWorkerOption);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         boolean actualResult = handler.canHandle(scenario.preSubmitCallbackStage, callback);
 
@@ -67,10 +77,19 @@ class AllocateTheCaseMidEventHandlerTest {
 
             if (Event.ALLOCATE_THE_CASE.equals(event)) {
 
-                Scenario scenarioWithMidEvent = Scenario.builder()
+                Scenario scenarioWithMidEventAndAllocateToMe = Scenario.builder()
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(true)
                     .event(event)
+                    .allocateToCaseWorkerOption("me")
+                    .expectedResult(false)
+                    .build();
+
+                Scenario scenarioWithMidEventAllocateToCaseWorker = Scenario.builder()
+                    .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
+                    .featureToggleResponse(true)
+                    .event(event)
+                    .allocateToCaseWorkerOption("caseworker")
                     .expectedResult(true)
                     .build();
 
@@ -78,6 +97,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(false)
                     .event(event)
+                    .allocateToCaseWorkerOption("caseworker")
                     .expectedResult(false)
                     .build();
 
@@ -85,6 +105,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                     .featureToggleResponse(true)
                     .event(event)
+                    .allocateToCaseWorkerOption("caseworker")
                     .expectedResult(false)
                     .build();
 
@@ -92,10 +113,12 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.ABOUT_TO_START)
                     .featureToggleResponse(true)
                     .event(event)
+                    .allocateToCaseWorkerOption("caseworker")
                     .expectedResult(false)
                     .build();
 
-                scenarios.add(scenarioWithMidEvent);
+                scenarios.add(scenarioWithMidEventAndAllocateToMe);
+                scenarios.add(scenarioWithMidEventAllocateToCaseWorker);
                 scenarios.add(scenarioWithMidEventAndFalseToggle);
                 scenarios.add(scenarioWithAboutToSubmit);
                 scenarios.add(scenarioWithAboutToStart);
@@ -105,13 +128,12 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(true)
                     .event(event)
+                    .allocateToCaseWorkerOption("caseworker")
                     .expectedResult(false)
                     .build();
 
                 scenarios.add(scenarioWithMidEvent);
-
             }
-
         });
 
         return scenarios;
@@ -123,6 +145,7 @@ class AllocateTheCaseMidEventHandlerTest {
         Event event;
         boolean featureToggleResponse;
         PreSubmitCallbackStage preSubmitCallbackStage;
+        String allocateToCaseWorkerOption;
         boolean expectedResult;
 
     }

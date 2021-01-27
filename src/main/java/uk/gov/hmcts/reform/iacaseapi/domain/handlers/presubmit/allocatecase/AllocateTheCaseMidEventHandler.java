@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -39,9 +41,16 @@ public class AllocateTheCaseMidEventHandler implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+        return isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
+            && callbackStage == PreSubmitCallbackStage.MID_EVENT
             && callback.getEvent() == Event.ALLOCATE_THE_CASE
             && featureToggler.getValue("allocate-a-case-feature", false);
+    }
+
+    private boolean isAllocateToCaseWorkerOption(AsylumCase asylumCase) {
+        String allocateTheCaseTo = asylumCase.read(ALLOCATE_THE_CASE_TO, String.class)
+            .orElse(StringUtils.EMPTY);
+        return "caseworker".equals(allocateTheCaseTo);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
