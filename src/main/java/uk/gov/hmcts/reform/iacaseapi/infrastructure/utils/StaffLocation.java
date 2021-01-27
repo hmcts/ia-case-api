@@ -32,6 +32,8 @@ public class StaffLocation {
                 return new Location("", "Newport");
             case "taylorHouse":
                 return new Location("", "Taylor House");
+            case "northShields":
+                return new Location("", "North Shields");
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }
