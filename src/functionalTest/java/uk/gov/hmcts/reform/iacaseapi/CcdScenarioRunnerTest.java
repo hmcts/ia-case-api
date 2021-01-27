@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
 import io.restassured.http.Headers;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +74,24 @@ public class CcdScenarioRunnerTest {
         MapSerializer.setObjectMapper(objectMapper);
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
+
+        RestAssured.baseURI = targetInstance;
+        RestAssured.useRelaxedHTTPSValidation();
+
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(10000)
+            .setConnectionRequestTimeout(10000)
+            .setSocketTimeout(10000)
+            .build();
+
+        HttpClientConfig httpClientFactory = HttpClientConfig.httpClientConfig()
+            .httpClientFactory(() -> HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .build());
+
+        RestAssured.config = RestAssured
+            .config()
+            .httpClient(httpClientFactory);
     }
 
     @Test
@@ -170,12 +191,14 @@ public class CcdScenarioRunnerTest {
             String actualResponseBody =
                 SerenityRest
                     .given()
+                    .log().ifValidationFails()
                     .headers(authorizationHeaders)
                     .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                     .body(requestBody)
                     .when()
                     .post(requestUri)
                     .then()
+                    .log().ifError()
                     .statusCode(expectedStatus)
                     .and()
                     .extract()

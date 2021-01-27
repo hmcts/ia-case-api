@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -82,12 +83,14 @@ public class DataFixingTest {
             String responseJson =
                 SerenityRest
                     .given()
+                    .log().ifValidationFails()
                     .headers(getAuthorizationHeaders())
                     .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                     .body(callbackBody)
                     .when()
                     .post(endpoint)
                     .then()
+                    .log().ifError()
                     .statusCode(HttpStatus.OK.value())
                     .and()
                     .extract().body().asString();
