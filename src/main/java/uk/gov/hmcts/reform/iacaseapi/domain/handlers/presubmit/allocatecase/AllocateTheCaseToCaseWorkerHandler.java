@@ -17,21 +17,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 
 @Component
-public class AllocateTheCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class AllocateTheCaseToCaseWorkerHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final RoleAssignmentService roleAssignmentService;
     private final FeatureToggler featureToggler;
+    private final AllocateTheCaseService allocateTheCaseService;
 
-    public AllocateTheCaseHandler(RoleAssignmentService roleAssignmentService, FeatureToggler featureToggler) {
+    public AllocateTheCaseToCaseWorkerHandler(
+        RoleAssignmentService roleAssignmentService,
+        FeatureToggler featureToggler,
+        AllocateTheCaseService allocateTheCaseService
+    ) {
         this.roleAssignmentService = roleAssignmentService;
         this.featureToggler = featureToggler;
+        this.allocateTheCaseService = allocateTheCaseService;
     }
 
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+        return allocateTheCaseService.isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
+            && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && callback.getEvent() == Event.ALLOCATE_THE_CASE
             && featureToggler.getValue("allocate-a-case-feature", false);
     }

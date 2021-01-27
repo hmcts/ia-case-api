@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -35,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AllocateTheCaseHandlerTest {
+class AllocateTheCaseToCaseWorkerHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -52,13 +53,20 @@ class AllocateTheCaseHandlerTest {
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private FeatureToggler featureToggler;
+    @Mock
+    private AllocateTheCaseService allocateTheCaseService;
 
-    private AllocateTheCaseHandler allocateTheCaseHandler;
+    private AllocateTheCaseToCaseWorkerHandler allocateTheCaseToCaseWorkerHandler;
 
     @BeforeEach
     public void createHandler() {
-        allocateTheCaseHandler = new AllocateTheCaseHandler(roleAssignmentService, featureToggler);
+        allocateTheCaseToCaseWorkerHandler = new AllocateTheCaseToCaseWorkerHandler(
+            roleAssignmentService,
+            featureToggler,
+            allocateTheCaseService
+        );
         when(featureToggler.getValue("allocate-a-case-feature", false)).thenReturn(true);
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class))).thenReturn(true);
     }
 
     @Test
@@ -70,8 +78,7 @@ class AllocateTheCaseHandlerTest {
             .thenReturn(Optional.of(caseWorkerNameList));
         when(caseWorkerNameList.getValue()).thenReturn(caseWorkerName);
 
-
-        allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback);
+        allocateTheCaseToCaseWorkerHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase).read(CASE_WORKER_NAME_LIST, DynamicList.class);
         verify(roleAssignmentService).assignRole(caseDetails.getId(), caseWorkerNameList.getValue().getCode());
@@ -81,25 +88,29 @@ class AllocateTheCaseHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> allocateTheCaseHandler.handle(ABOUT_TO_START, callback))
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.handle(MID_EVENT, callback))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.handle(MID_EVENT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void it_can_handle_callback() {
-
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = allocateTheCaseHandler.canHandle(callbackStage, callback);
+                boolean canHandle = allocateTheCaseToCaseWorkerHandler.canHandle(callbackStage, callback);
 
                 if (event == ALLOCATE_THE_CASE
                     && callbackStage == ABOUT_TO_SUBMIT) {
@@ -118,7 +129,10 @@ class AllocateTheCaseHandlerTest {
     void cannot_handle_if_feature_disabled() {
         when(callback.getEvent()).thenReturn(ALLOCATE_THE_CASE);
         when(featureToggler.getValue("allocate-a-case-feature", false)).thenReturn(false);
-        boolean canHandle = allocateTheCaseHandler.canHandle(ABOUT_TO_SUBMIT, callback);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        boolean canHandle = allocateTheCaseToCaseWorkerHandler.canHandle(ABOUT_TO_SUBMIT, callback);
 
         assertFalse(canHandle);
     }
@@ -126,19 +140,19 @@ class AllocateTheCaseHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.handle(null, callback))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -150,7 +164,7 @@ class AllocateTheCaseHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(CASE_WORKER_NAME_LIST, DynamicList.class)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> allocateTheCaseHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> allocateTheCaseToCaseWorkerHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("caseWorkerNameList field is not present on the caseData")
             .isExactlyInstanceOf(RuntimeException.class);
     }

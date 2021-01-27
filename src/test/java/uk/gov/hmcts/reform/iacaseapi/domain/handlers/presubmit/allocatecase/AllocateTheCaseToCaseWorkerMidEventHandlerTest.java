@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
@@ -37,18 +38,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @Slf4j
-class AllocateTheCaseMidEventHandlerTest {
+class AllocateTheCaseToCaseWorkerMidEventHandlerTest {
 
     @Mock
     private FeatureToggler featureToggle;
     @Mock
     private CaseWorkerService caseWorkerService;
+    @Mock
+    private AllocateTheCaseService allocateTheCaseService;
     @InjectMocks
-    private AllocateTheCaseMidEventHandler handler;
+    private AllocateTheCaseToCaseWorkerMidEventHandler handler;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     @ParameterizedTest
     @MethodSource("scenarioProvider")
@@ -61,9 +66,9 @@ class AllocateTheCaseMidEventHandlerTest {
             .thenReturn(scenario.featureToggleResponse);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(ALLOCATE_THE_CASE_TO, scenario.allocateToCaseWorkerOption);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class)))
+            .thenReturn(scenario.allocateToCaseWorkerOption);
 
         boolean actualResult = handler.canHandle(scenario.preSubmitCallbackStage, callback);
 
@@ -81,7 +86,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(true)
                     .event(event)
-                    .allocateToCaseWorkerOption("me")
+                    .allocateToCaseWorkerOption(false)
                     .expectedResult(false)
                     .build();
 
@@ -89,7 +94,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(true)
                     .event(event)
-                    .allocateToCaseWorkerOption("caseworker")
+                    .allocateToCaseWorkerOption(true)
                     .expectedResult(true)
                     .build();
 
@@ -97,7 +102,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(false)
                     .event(event)
-                    .allocateToCaseWorkerOption("caseworker")
+                    .allocateToCaseWorkerOption(true)
                     .expectedResult(false)
                     .build();
 
@@ -105,7 +110,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                     .featureToggleResponse(true)
                     .event(event)
-                    .allocateToCaseWorkerOption("caseworker")
+                    .allocateToCaseWorkerOption(true)
                     .expectedResult(false)
                     .build();
 
@@ -113,7 +118,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.ABOUT_TO_START)
                     .featureToggleResponse(true)
                     .event(event)
-                    .allocateToCaseWorkerOption("caseworker")
+                    .allocateToCaseWorkerOption(true)
                     .expectedResult(false)
                     .build();
 
@@ -128,7 +133,7 @@ class AllocateTheCaseMidEventHandlerTest {
                     .preSubmitCallbackStage(PreSubmitCallbackStage.MID_EVENT)
                     .featureToggleResponse(true)
                     .event(event)
-                    .allocateToCaseWorkerOption("caseworker")
+                    .allocateToCaseWorkerOption(true)
                     .expectedResult(false)
                     .build();
 
@@ -145,13 +150,16 @@ class AllocateTheCaseMidEventHandlerTest {
         Event event;
         boolean featureToggleResponse;
         PreSubmitCallbackStage preSubmitCallbackStage;
-        String allocateToCaseWorkerOption;
+        boolean allocateToCaseWorkerOption;
         boolean expectedResult;
 
     }
 
     @Test
     void should_not_allow_null_arguments() {
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class)))
+            .thenReturn(true);
+
         assertThatThrownBy(() -> handler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
@@ -165,6 +173,8 @@ class AllocateTheCaseMidEventHandlerTest {
     void handle() {
         when(callback.getEvent()).thenReturn(Event.ALLOCATE_THE_CASE);
         when(featureToggle.getValue("allocate-a-case-feature", false))
+            .thenReturn(true);
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class)))
             .thenReturn(true);
 
         mockCaseDetails();
@@ -215,11 +225,10 @@ class AllocateTheCaseMidEventHandlerTest {
     @MethodSource("exceptionHandleScenarioProvider")
     void handling_should_throw_exception_if_cannot_handle(ExceptionHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.getEvent());
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        AsylumCase asylumCase = new AsylumCase();
-        asylumCase.write(ALLOCATE_THE_CASE_TO, "caseworker");
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class)))
+            .thenReturn(true);
 
         assertThatThrownBy(() -> handler.handle(scenario.getPreSubmitCallbackStage(), callback))
             .hasMessage("Cannot handle callback")
