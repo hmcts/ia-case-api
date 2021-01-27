@@ -206,6 +206,7 @@ class AllocateTheCaseMidEventHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(CASE_WORKER_LOCATION_LIST, "some location id");
+        asylumCase.write(ALLOCATE_THE_CASE_TO, "caseworker");
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getSecurityClassification()).thenReturn("PUBLIC");
     }
@@ -214,6 +215,11 @@ class AllocateTheCaseMidEventHandlerTest {
     @MethodSource("exceptionHandleScenarioProvider")
     void handling_should_throw_exception_if_cannot_handle(ExceptionHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.getEvent());
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(ALLOCATE_THE_CASE_TO, "caseworker");
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(() -> handler.handle(scenario.getPreSubmitCallbackStage(), callback))
             .hasMessage("Cannot handle callback")
