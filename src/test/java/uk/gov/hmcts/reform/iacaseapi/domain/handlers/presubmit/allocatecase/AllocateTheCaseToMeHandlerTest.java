@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,6 +17,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,9 +70,18 @@ class AllocateTheCaseToMeHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class))).thenReturn(false);
+    }
 
+    @ParameterizedTest
+    @CsvSource({"false, true", "true, false"})
+    void when_is_allocate_to_me_path_then_it_can_handle(boolean isAllocateToCaseWorkerOption,
+                                                        boolean canHandleExpectedResult) {
+        when(allocateTheCaseService.isAllocateToCaseWorkerOption(any(AsylumCase.class)))
+            .thenReturn(isAllocateToCaseWorkerOption);
 
+        boolean actual = handler.canHandle(ABOUT_TO_SUBMIT, callback);
 
+        assertThat(actual).isEqualTo(canHandleExpectedResult);
     }
 
     @Test
