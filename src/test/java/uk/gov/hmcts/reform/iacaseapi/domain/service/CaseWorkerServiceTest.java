@@ -122,10 +122,10 @@ class CaseWorkerServiceTest {
             userBearerToken,
             serviceBearerToken,
             new UserIds(List.of(someActorId))
-        )).thenReturn(CaseWorkerProfile.builder()
+        )).thenReturn(Collections.singletonList(CaseWorkerProfile.builder()
             .firstName("some firstname")
             .lastName("some lastname")
-            .build());
+            .build()));
 
         String actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
 

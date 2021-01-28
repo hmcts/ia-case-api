@@ -75,7 +75,7 @@ public class CaseWorkerService {
             idamService.getUserToken(),
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
-        );
+        ).get(0);
         return caseWorkerProfile.getFirstName() + " " + caseWorkerProfile.getLastName();
     }
 
