@@ -5,3 +5,8 @@ logging.level:
 
 ref-data-case-worker-api:
   url: ${REF_DATA_CASE_WORKER_URL:http://wiremock}
+
+
+idam:
+  ia_system_user:
+    scope: "openid profile authorities"
