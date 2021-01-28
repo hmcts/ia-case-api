@@ -176,6 +176,7 @@ public class CcdScenarioRunnerTest {
                     .when()
                     .post(requestUri)
                     .then()
+                    .log().ifError()
                     .log().ifValidationFails()
                     .statusCode(expectedStatus)
                     .and()
