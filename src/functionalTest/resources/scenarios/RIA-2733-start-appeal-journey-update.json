@@ -2,13 +2,14 @@
   "description": "RIA-2733 Grounds of appeal for protection type appeals",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "eventId": "startAppeal",
       "state": "appealStarted",
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
+          "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
           "appealGroundsProtection": {
             "values": [
               "refugeeConvention",

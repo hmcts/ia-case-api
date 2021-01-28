@@ -443,6 +443,12 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REP_NAME(
         "legalRepName", new TypeReference<String>(){}),
 
+    LEGAL_REP_COMPANY_NAME(
+            "legalRepCompanyName", new TypeReference<String>(){}),
+
+    LEGAL_REP_COMPANY_ADDRESS(
+            "legalRepCompanyAddress", new TypeReference<AddressUk>(){}),
+
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
         "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
 

@@ -2,12 +2,13 @@
   "description": "RIA-815 Appeal saved confirmation after start",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "eventId": "startAppeal",
       "state": "appealStarted",
       "id": 1234,
       "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "template": "minimal-appeal-started.json"
       }
     }

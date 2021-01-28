@@ -98,7 +98,7 @@ public class DataFixingTest {
     private Headers getAuthorizationHeaders() {
 
         return authorizationHeadersProvider
-            .getLegalRepresentativeAuthorization();
+            .getLegalRepresentativeOrgSuccessAuthorization();
 
     }
 
