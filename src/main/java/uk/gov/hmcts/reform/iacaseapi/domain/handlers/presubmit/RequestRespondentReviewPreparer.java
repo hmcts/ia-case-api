@@ -54,7 +54,7 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
                 .getCaseData();
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
-                "You have " + requestRespondentReviewDueInDays + " days to review the appellant's argument and evidence. "
+                "You have until the date indicated below to review the appellant's argument and evidence. "
                         + "You must explain whether the appellant makes a valid case for overturning the original decision.\n"
                         + "\n"
                         + "You must respond to the Tribunal and tell them:\n"
