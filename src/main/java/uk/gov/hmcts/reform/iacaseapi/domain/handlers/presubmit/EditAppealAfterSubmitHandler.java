@@ -32,14 +32,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
-    private final int appealOutOfTimeDays;
+    private final int appealOutOfTimeDaysUk;
+    private final int appealOutOfTimeDaysOoc;
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
-        @Value("${appealOutOfTimeDays}") int appealOutOfTimeDays
+        @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
+        @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc
     ) {
         this.dateProvider = dateProvider;
-        this.appealOutOfTimeDays = appealOutOfTimeDays;
+        this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
+        this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
     }
 
     public boolean canHandle(
@@ -81,6 +84,18 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 decisionDate =
                     parse(maybeHomeOfficeDecisionLetterDate
                         .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+            } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_PROTECTION) {
+                Optional<String> maybeDateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK);
+
+                decisionDate =
+                    parse(maybeDateClientLeaveUk
+                        .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
+            } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS) {
+                Optional<String> maybeDateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
+
+                decisionDate =
+                    parse(maybeDateEntryClearanceDecision
+                        .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
             }
         } else {
             decisionDate =
@@ -89,7 +104,8 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         }
 
 
-        if (decisionDate != null && decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
+        if (decisionDate != null
+            && decisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);

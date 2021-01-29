@@ -36,7 +36,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @ExtendWith(MockitoExtension.class)
 class HomeOfficeDecisionDateCheckerTest {
 
-    private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
+    private static final int APPEAL_OUT_OF_TIME_DAYS_UK = 14;
+    private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,7 +60,8 @@ class HomeOfficeDecisionDateCheckerTest {
         homeOfficeDecisionDateChecker =
             new HomeOfficeDecisionDateChecker(
                 dateProvider,
-                APPEAL_OUT_OF_TIME_DAYS
+                APPEAL_OUT_OF_TIME_DAYS_UK,
+                APPEAL_OUT_OF_TIME_DAYS_OOC
             );
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -85,9 +87,41 @@ class HomeOfficeDecisionDateCheckerTest {
     void handles_edge_case_when_ooc_and_refusal_of_human_rights_is_decided() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
-        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2019-01-01"));
+        when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of("2019-01-01"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_edge_case_when_ooc_and_refusal_of_protection_is_decided() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
+        when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2019-01-01"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_edge_case_when_ooc_and_removal_of_client_is_decided() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2019-01-01"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -125,6 +159,7 @@ class HomeOfficeDecisionDateCheckerTest {
 
         assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
         assertThat(outOfTime.getValue()).isEqualTo(YES);
+
     }
 
     @Test
@@ -133,6 +168,16 @@ class HomeOfficeDecisionDateCheckerTest {
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("decisionLetterReceivedDate is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("dateClientLeaveUk is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("dateEntryClearanceDecision is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 

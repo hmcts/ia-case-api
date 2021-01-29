@@ -44,7 +44,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @ExtendWith(MockitoExtension.class)
 class EditAppealAfterSubmitHandlerTest {
 
-    private static final int APPEAL_OUT_OF_TIME_DAYS = 14;
+    private static final int APPEAL_OUT_OF_TIME_DAYS_UK = 14;
+    private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -81,7 +82,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider, APPEAL_OUT_OF_TIME_DAYS);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider, APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -172,11 +173,61 @@ class EditAppealAfterSubmitHandlerTest {
     }
 
     @Test
-    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_out_of_time_ooc() {
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_ooc_and_removal_of_client_is_decided() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
         when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-03-08"));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.AWAITING_RESPONDENT_EVIDENCE);
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_ooc_and_refusal_of_human_rights_is_decided() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of("2020-03-08"));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+
+        verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
+        verify(asylumCase).clear(APPLICATION_EDIT_APPEAL_AFTER_SUBMIT_EXISTS);
+        verify(asylumCase).read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class);
+        verify(asylumCase)
+            .write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, State.AWAITING_RESPONDENT_EVIDENCE);
+
+        verify(asylumCase).clear(NEW_MATTERS);
+
+        assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+    }
+
+    @Test
+    void should_set_current_case_state_visible_to_case_officer_and_clear_application_flags_when_ooc_and_refusal_of_protection_is_decided() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        when(asylumCase.read(DATE_CLIENT_LEAVE_UK)).thenReturn(Optional.of("2020-03-08"));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -248,7 +299,7 @@ class EditAppealAfterSubmitHandlerTest {
     void should_validate_home_office_decision_date_when_ooc_and_refusal_of_human_rights_is_decided() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2020-04-08"));
-        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2020-04-08"));
+        when(asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION)).thenReturn(Optional.of("2020-04-08"));
 
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
             .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
@@ -317,6 +368,30 @@ class EditAppealAfterSubmitHandlerTest {
 
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("decisionLetterReceivedDate is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @Test
+    void should_throw_exception_when_out_of_country_date_client_leave_uk_is_missing() {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_PROTECTION));
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+            .hasMessage("dateClientLeaveUk is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("dateClientLeaveUk is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @Test
+    void should_throw_exception_when_out_of_country_and_date_entry_clearance_decision_is_missing() {
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
+            .hasMessage("dateEntryClearanceDecision is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("dateEntryClearanceDecision is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
