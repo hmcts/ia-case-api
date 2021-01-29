@@ -98,7 +98,7 @@ class RequestHearingRequirementsDirectionTest {
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
         final String expectedExplanationPart =
-            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements using the Overview tab.";
+            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
@@ -139,7 +139,7 @@ class RequestHearingRequirementsDirectionTest {
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
         final String expectedExplanationPart =
-            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements using the Overview tab.";
+            "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.";
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
