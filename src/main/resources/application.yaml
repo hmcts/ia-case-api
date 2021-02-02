@@ -157,6 +157,10 @@ security:
     - "caseworker-ia"
     - "citizen"
   roleEventAccess:
+    caseworker-wa-task-configuration:
+      - "startAppeal"
+      - "editAppeal"
+      - "submitAppeal"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
       - "editAppeal"
