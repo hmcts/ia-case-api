@@ -1,5 +1,6 @@
 {
-  "description": "RWA-340 Allocate a case to caseworker when there is no caseworkers' names midEvent",
+  "description": "RWA-340 Allocate a case to caseworker when there is no caseworkers' names midEvent. //fixme: RWA-337",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",
