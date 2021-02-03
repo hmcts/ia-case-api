@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
@@ -25,23 +24,24 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.Case
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 
 @Component
 public class CaseWorkerService {
 
     private final RoleAssignmentService roleAssignmentService;
     private final RefDataCaseWorkerApi refDataCaseWorkerApi;
-    private final UserDetails userDetails;
+    private final IdamService idamService;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
 
-    public CaseWorkerService(RoleAssignmentService roleAssignmentService,
-                             RefDataCaseWorkerApi refDataCaseWorkerApi,
-                             UserDetails userDetails,
-                             AuthTokenGenerator serviceAuthTokenGenerator) {
+    public CaseWorkerService(
+        RoleAssignmentService roleAssignmentService,
+        RefDataCaseWorkerApi refDataCaseWorkerApi,
+        IdamService idamService,
+        AuthTokenGenerator serviceAuthTokenGenerator
+    ) {
         this.roleAssignmentService = roleAssignmentService;
         this.refDataCaseWorkerApi = refDataCaseWorkerApi;
-        this.userDetails = userDetails;
+        this.idamService = idamService;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
     }
 
@@ -76,10 +76,10 @@ public class CaseWorkerService {
 
     public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
-            userDetails.getAccessToken(),
+            idamService.getUserToken(),
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
-        );
+        ).get(0);
 
         String caseWorkerNameFormatted = trim(String.format("%s %s",
             defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),

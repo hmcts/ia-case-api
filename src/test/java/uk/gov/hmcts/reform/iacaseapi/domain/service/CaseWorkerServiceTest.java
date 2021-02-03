@@ -23,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
@@ -36,7 +35,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.Case
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentService;
 
 @ExtendWith(MockitoExtension.class)
 class CaseWorkerServiceTest {
@@ -46,9 +44,9 @@ class CaseWorkerServiceTest {
     @Mock
     private RefDataCaseWorkerApi refDataCaseWorkerApi;
     @Mock
-    private UserDetails userDetails;
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
+    @Mock
+    private IdamService idamService;
     @InjectMocks
     private CaseWorkerService caseWorkerService;
 
@@ -115,7 +113,7 @@ class CaseWorkerServiceTest {
     void getCaseWorkerNameForActorId(CaseWorkerNameScenario scenario) {
 
         String userBearerToken = "some user bearer token";
-        when(userDetails.getAccessToken()).thenReturn(userBearerToken);
+        when(idamService.getUserToken()).thenReturn(userBearerToken);
 
         String serviceBearerToken = "some service bearer token";
         when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);
@@ -125,7 +123,7 @@ class CaseWorkerServiceTest {
             userBearerToken,
             serviceBearerToken,
             new UserIds(List.of(someActorId))
-        )).thenReturn(scenario.getCaseWorkerProfile());
+        )).thenReturn(Collections.singletonList(scenario.getCaseWorkerProfile()));
 
         CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
 

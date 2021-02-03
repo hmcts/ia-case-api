@@ -19,21 +19,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
 
 @Component
 public class MakeAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase>  {
 
     private final MakeAnApplicationAppender makeAnApplicationAppender;
-    private final FeatureToggler featureToggler;
 
     public MakeAnApplicationHandler(
-        MakeAnApplicationAppender makeAnApplicationAppender,
-        FeatureToggler featureToggler
+        MakeAnApplicationAppender makeAnApplicationAppender
     ) {
         this.makeAnApplicationAppender = makeAnApplicationAppender;
-        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -43,8 +39,7 @@ public class MakeAnApplicationHandler implements PreSubmitCallbackHandler<Asylum
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.MAKE_AN_APPLICATION
-               && featureToggler.getValue("make-an-application-feature", false);
+               && callback.getEvent() == Event.MAKE_AN_APPLICATION;
     }
 
     @Override

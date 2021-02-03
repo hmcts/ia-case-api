@@ -17,25 +17,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
-    private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
 
-
-    private static final String REINSTATE_FEATURE = "reinstate-feature";
-
-    public ReinstateAppealStateHandler(FeatureToggler featureToggler,
-                                       DateProvider dateProvider,
+    public ReinstateAppealStateHandler(DateProvider dateProvider,
                                        UserDetails userDetails,
                                        UserDetailsHelper userDetailsHelper
     ) {
-        this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
@@ -49,8 +42,7 @@ public class ReinstateAppealStateHandler implements PreSubmitCallbackStateHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.REINSTATE_APPEAL
-               && featureToggler.getValue(REINSTATE_FEATURE, false);
+               && callback.getEvent() == Event.REINSTATE_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
