@@ -40,6 +40,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
+    private String caseType = "Asylum";
+
     private static final String ACTIVE_USER_ID = "6c4fd62d-9d3c-4d11-962c-57080df16871";
 
     private static final String CCD_ACCESS_API_PATH =
@@ -91,6 +93,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
             .caseDetails(someCaseDetailsWith()
                 .id(caseId)
                 .state(DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(ORG_LIST_OF_USERS, dynamicList)
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
@@ -126,6 +129,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
             .caseDetails(someCaseDetailsWith()
                 .id(caseId)
                 .state(DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(ORG_LIST_OF_USERS, dynamicList)
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")

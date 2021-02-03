@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
 
+    private String caseType = "Asylum";
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     public void sets_flag_to_indicate_the_hearing_details_have_been_recorded(
@@ -36,6 +38,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
             .event(Event.RECORD_ATTENDEES_AND_DURATION)
             .caseDetails(someCaseDetailsWith()
                 .state(State.DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
@@ -56,6 +59,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
             .event(Event.RECORD_ATTENDEES_AND_DURATION)
             .caseDetails(someCaseDetailsWith()
                 .state(State.DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase())));
 
         assertThat(response.getConfirmationHeader().get())

@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithDocumentApiStub {
 
+    private String caseType = "Asylum";
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void handles_generate_decision_and_reasons_event(
@@ -38,6 +40,7 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
             .event(GENERATE_DECISION_AND_REASONS)
             .caseDetails(someCaseDetailsWith()
                 .state(DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")

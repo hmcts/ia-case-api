@@ -15,6 +15,7 @@ public class CaseDetails<T extends CaseData> {
     private long id;
     private String jurisdiction;
     private State state;
+    private String caseType;
     private T caseData;
     private LocalDateTime createdDate;
     private String securityClassification;
@@ -27,6 +28,7 @@ public class CaseDetails<T extends CaseData> {
         long id,
         String jurisdiction,
         State state,
+        String caseType,
         T caseData,
         LocalDateTime createdDate,
         String securityClassification
@@ -34,6 +36,7 @@ public class CaseDetails<T extends CaseData> {
         this.id = id;
         this.jurisdiction = jurisdiction;
         this.state = state;
+        this.caseType = caseType;
         this.caseData = caseData;
         this.createdDate = createdDate;
         this.securityClassification = securityClassification;
@@ -55,6 +58,10 @@ public class CaseDetails<T extends CaseData> {
     public State getState() {
 
         return state;
+    }
+
+    public String getCaseType() {
+        return caseType;
     }
 
     public T getCaseData() {

@@ -12,15 +12,18 @@ public class CaseDetailsForTest {
     private long id;
     private String jurisdiction;
     private State state;
+    @JsonProperty("case_type")
+    private String caseType;
     @JsonProperty("case_data")
     private AsylumCase caseData;
     @JsonProperty("created_date")
     private LocalDateTime createdDate;
 
-    CaseDetailsForTest(long id, String jurisdiction, State state, AsylumCase caseData, LocalDateTime createdDate) {
+    CaseDetailsForTest(long id, String jurisdiction, State state, String caseType, AsylumCase caseData, LocalDateTime createdDate) {
         this.id = id;
         this.jurisdiction = jurisdiction;
         this.state = state;
+        this.caseType = caseType;
         this.caseData = caseData;
         this.createdDate = createdDate;
     }
@@ -34,6 +37,7 @@ public class CaseDetailsForTest {
         private long id = 1;
         private String jurisdiction = "ia";
         private State state;
+        private String caseType = "Asylum";
         private AsylumCase caseData;
         private LocalDateTime createdDate = LocalDateTime.now();
 
@@ -55,6 +59,11 @@ public class CaseDetailsForTest {
             return this;
         }
 
+        public CaseDetailsForTestBuilder caseType(String caseType) {
+            this.caseType = caseType;
+            return this;
+        }
+
         public CaseDetailsForTestBuilder caseData(AsylumCaseForTest caseData) {
             this.caseData = caseData.build();
             return this;
@@ -66,11 +75,11 @@ public class CaseDetailsForTest {
         }
 
         public CaseDetailsForTest build() {
-            return new CaseDetailsForTest(id, jurisdiction, state, caseData, createdDate);
+            return new CaseDetailsForTest(id, jurisdiction, state, caseType, caseData, createdDate);
         }
 
         public String toString() {
-            return "CaseDetailsForTest.CaseDetailsForTestBuilder(id=" + this.id + ", jurisdiction=" + this.jurisdiction + ", state=" + this.state + ", caseData=" + this.caseData + ", createdDate=" + this.createdDate + ")";
+            return "CaseDetailsForTest.CaseDetailsForTestBuilder(id=" + this.id + ", jurisdiction=" + this.jurisdiction + ", state=" + this.state + ", caseType=" + this.caseType + ", caseData=" + this.caseData + ", createdDate=" + this.createdDate + ")";
         }
     }
 }

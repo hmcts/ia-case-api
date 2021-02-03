@@ -24,7 +24,7 @@ public interface WithAcaAssignmentsStub {
                     .withHeader("Content-Type", "application/json")
                     .withBody("{ \"assignee_id\": \"" + expectedAssigneeId + "\","
                               + " \"case_id\": \"" + expectedCaseId + "\","
-                              + " \"case_type_id\": \"Asylum\" }")
+                              + " \"case_type\": \"Asylum\" }")
                     .build()));
     }
 }

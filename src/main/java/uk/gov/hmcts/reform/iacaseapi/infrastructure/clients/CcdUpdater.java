@@ -53,7 +53,7 @@ public class CcdUpdater {
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         final long caseId = callback.getCaseDetails().getId();
         final String jurisdiction = callback.getCaseDetails().getJurisdiction();
-        final String caseTypeId = "Asylum";
+        final String caseType = "Asylum";
 
         Optional<DynamicList> maybeDynamicList = asylumCase.read(AsylumCaseFieldDefinition.ORG_LIST_OF_USERS);
         DynamicList dynamicList = maybeDynamicList
@@ -79,7 +79,7 @@ public class CcdUpdater {
 
         URI uri = UriComponentsBuilder
             .fromPath(ccdPermissionsApiPath)
-            .build(idamUserId, jurisdiction, caseTypeId, caseId);
+            .build(idamUserId, jurisdiction, caseType, caseId);
 
         ResponseEntity<Object> response;
         try {

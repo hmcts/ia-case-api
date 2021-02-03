@@ -37,6 +37,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
+    private String caseType = "Asylum";
+
     @org.springframework.beans.factory.annotation.Value("classpath:prd-org-users-response.json")
     private Resource resourceFile;
 
@@ -69,6 +71,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
             .event(SHARE_A_CASE)
             .caseDetails(someCaseDetailsWith()
                 .state(DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
@@ -112,6 +115,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
             .event(SHARE_A_CASE)
             .caseDetails(someCaseDetailsWith()
                 .state(DECISION)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "no-org-id-appeal-reference-number")
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")

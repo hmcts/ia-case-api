@@ -265,6 +265,7 @@ public class CcdScenarioRunnerTest {
         caseDetails.put("state", MapValueExtractor.extractOrThrow(input, "state"));
         caseDetails.put("security_classification",
             MapValueExtractor.extractOrDefault(input, "securityClassification", "PUBLIC"));
+        caseDetails.put("case_type", MapValueExtractor.extractOrDefault(input, "caseType", "Asylum"));
         caseDetails.put("created_date", createdDate);
         caseDetails.put("case_data", caseData);
 
@@ -273,7 +274,7 @@ public class CcdScenarioRunnerTest {
         callback.put("case_details", caseDetails);
 
         if (input.containsKey("caseDataBefore")) {
-            Map<String, Object> caseDataBefore = buildCaseData(
+            final Map<String, Object> caseDataBefore = buildCaseData(
                 MapValueExtractor.extract(input, "caseDataBefore"),
                 templatesByFilename
             );
@@ -282,6 +283,7 @@ public class CcdScenarioRunnerTest {
             caseDetailsBefore.put("id", testCaseId);
             caseDetailsBefore.put("jurisdiction", MapValueExtractor.extractOrDefault(input, "jurisdiction", "IA"));
             caseDetailsBefore.put("state", MapValueExtractor.extractOrThrow(input, "state"));
+            caseDetails.put("case_type", MapValueExtractor.extractOrDefault(input, "caseType", "Asylum"));
             caseDetailsBefore.put("created_date", createdDate);
             caseDetailsBefore.put("case_data", caseDataBefore);
             callback.put("case_details_before", caseDetailsBefore);

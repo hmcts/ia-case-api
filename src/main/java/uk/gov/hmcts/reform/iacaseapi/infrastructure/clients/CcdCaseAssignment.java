@@ -118,7 +118,7 @@ public class CcdCaseAssignment {
         Map<String, Object> payload = Maps.newHashMap();
         payload.put("case_id", caseId);
         payload.put("assignee_id", idamUserId);
-        payload.put("case_type_id", "Asylum");
+        payload.put("case_type", "Asylum");
 
         HttpEntity<Map<String, Object>> requestEntity =
             new HttpEntity<>(

@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
+    private String caseType = "Asylum";
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void adds_a_case_note(
@@ -38,6 +40,7 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
             .event(ADD_CASE_NOTE)
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
+                .caseType(caseType)
                 .caseData(anAsylumCase()
                     .with(ADD_CASE_NOTE_SUBJECT, "some-subject")
                     .with(ADD_CASE_NOTE_DESCRIPTION, "some-description")

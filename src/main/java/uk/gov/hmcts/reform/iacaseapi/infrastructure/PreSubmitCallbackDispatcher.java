@@ -80,6 +80,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                         callback.getCaseDetails().getId(),
                         callback.getCaseDetails().getJurisdiction(),
                         state,
+                        callback.getCaseDetails().getCaseType(),
                         callbackResponse.getData(),
                         callback.getCaseDetails().getCreatedDate(),
                         callback.getCaseDetails().getSecurityClassification()
@@ -112,6 +113,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                     callback.getCaseDetails().getId(),
                     callback.getCaseDetails().getJurisdiction(),
                     callback.getCaseDetails().getState(),
+                    callback.getCaseDetails().getCaseType(),
                     callbackResponse.getData(),
                     callback.getCaseDetails().getCreatedDate(),
                     callback.getCaseDetails().getSecurityClassification()
@@ -153,6 +155,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                         callback.getCaseDetails().getId(),
                         callback.getCaseDetails().getJurisdiction(),
                         callback.getCaseDetails().getState(),
+                        callback.getCaseDetails().getCaseType(),
                         callbackResponse.getData(),
                         callback.getCaseDetails().getCreatedDate(),
                         callback.getCaseDetails().getSecurityClassification()
