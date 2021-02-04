@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseWorkerService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
+@Slf4j
 public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
@@ -97,6 +99,8 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
             location,
             securityClassification
         );
+
+        log.info("**** roleAssignments:{}", roleAssignments);
 
         return roleAssignments.stream()
             .map(role -> caseWorkerService.getCaseWorkerNameForActorId(role.getActorId()))
