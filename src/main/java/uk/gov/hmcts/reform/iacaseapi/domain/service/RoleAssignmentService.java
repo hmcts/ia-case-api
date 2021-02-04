@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class RoleAssignmentService {
         this.userDetails = userDetails;
     }
 
+    @HystrixProperty(name = "hystrix.command.default.execution.timeout.enabled", value = "false")
     public void assignRole(long caseDetailsId, String assigneeId) {
         String accessToken = userDetails.getAccessToken();
         String currentUserIdamId = userDetails.getId();
