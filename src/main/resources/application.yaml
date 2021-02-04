@@ -329,6 +329,9 @@ feign:
     enabled: true
   client:
     config:
+      role-assignment-service-api:
+        connectTimeout: 10000
+        readTimeout: 10000
       default:
         connectTimeout: 5000
         readTimeout: 5000
