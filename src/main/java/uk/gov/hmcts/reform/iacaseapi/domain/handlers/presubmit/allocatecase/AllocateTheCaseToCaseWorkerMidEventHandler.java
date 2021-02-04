@@ -99,9 +99,6 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
             location,
             securityClassification
         );
-
-        log.info("**** roleAssignments:{}", roleAssignments);
-
         return roleAssignments.stream()
             .map(role -> caseWorkerService.getCaseWorkerNameForActorId(role.getActorId()))
             .filter(caseWorkerName -> StringUtils.isNotEmpty(caseWorkerName.getFormattedName()))

@@ -77,16 +77,9 @@ public class CaseWorkerService {
     }
 
     public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
-        log.info("**** Fetching userId({})...", actorId);
-        log.info("**** Making call to Ref data with following authorization tokens...");
-        String userToken = idamService.getUserToken();
-        String s2sToken = serviceAuthTokenGenerator.generate();
-        log.info("*** userToken:{}", userToken);
-        log.info("*** serviceToken:{}", s2sToken);
-
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
-            userToken,
-            s2sToken,
+            idamService.getUserToken(),
+            serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
         ).get(0);
 
