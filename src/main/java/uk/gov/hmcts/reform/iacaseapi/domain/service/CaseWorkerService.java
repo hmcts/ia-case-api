@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Class
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserId
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
 @Component
+@Slf4j
 public class CaseWorkerService {
 
     private final RoleAssignmentService roleAssignmentService;
@@ -75,9 +77,16 @@ public class CaseWorkerService {
     }
 
     public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
+        log.info("**** Fetching userId({})...", actorId);
+        log.info("**** Making call to Ref data with following authorization tokens...");
+        String userToken = idamService.getUserToken();
+        String s2sToken = serviceAuthTokenGenerator.generate();
+        log.info("*** userToken:{}", userToken);
+        log.info("*** serviceToken:{}", s2sToken);
+
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
-            idamService.getUserToken(),
-            serviceAuthTokenGenerator.generate(),
+            userToken,
+            s2sToken,
             new UserIds(List.of(actorId))
         ).get(0);
 
