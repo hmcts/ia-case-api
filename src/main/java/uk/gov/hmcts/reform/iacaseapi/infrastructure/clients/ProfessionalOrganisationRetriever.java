@@ -56,10 +56,6 @@ public class ProfessionalOrganisationRetriever {
 
         log.info("Calling Ref Data endpoint: {}", refDataApiUrl + refDataApiPath);
 
-
-        log.info("Authorization: {}", accessToken);
-        log.info("Service Authorization: {}", serviceAuthorizationToken);
-
         try {
             response =
                 restTemplate
@@ -78,7 +74,5 @@ public class ProfessionalOrganisationRetriever {
         log.info("response returned: {}", response);
 
         return response;
-
-
     }
 }

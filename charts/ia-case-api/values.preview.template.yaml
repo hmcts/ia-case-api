@@ -16,7 +16,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
-    CCD_URL: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+    CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
