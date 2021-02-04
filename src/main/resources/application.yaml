@@ -329,14 +329,18 @@ feign:
     enabled: true
   client:
     config:
-      role-assignment-service-api:
-        connectTimeout: 10000
-        readTimeout: 10000
       default:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: full
 
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}

@@ -35,7 +35,6 @@ public class RoleAssignmentService {
         this.userDetails = userDetails;
     }
 
-    @HystrixProperty(name = "hystrix.command.default.execution.timeout.enabled", value = "false")
     public void assignRole(long caseDetailsId, String assigneeId) {
         String accessToken = userDetails.getAccessToken();
         String currentUserIdamId = userDetails.getId();
