@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
