@@ -106,7 +106,7 @@ class ChangeDirectionDueMidEventTest {
         assertEquals(DIRECTION_LIST, asylumExtractorCaptor.getAllValues().get(4));
 
         assertEquals("explanation-2", editableDirectionsCaptor.getAllValues().get(0));
-        assertEquals(Parties.RESPONDENT, editableDirectionsCaptor.getAllValues().get(1));
+        assertEquals(Parties.RESPONDENT.toString(), editableDirectionsCaptor.getAllValues().get(1));
         assertEquals("2020-11-01", editableDirectionsCaptor.getAllValues().get(2));
         assertEquals("2019-11-01", editableDirectionsCaptor.getAllValues().get(3));
 

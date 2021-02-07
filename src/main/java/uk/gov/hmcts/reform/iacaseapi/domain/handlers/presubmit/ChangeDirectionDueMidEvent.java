@@ -58,7 +58,7 @@ public class ChangeDirectionDueMidEvent implements PreSubmitCallbackHandler<Asyl
             .forEach(idValue -> {
 
                 asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_EXPLANATION, idValue.getValue().getExplanation());
-                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties());
+                asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties().toString());
                 asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, idValue.getValue().getDateDue());
                 asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_SENT, idValue.getValue().getDateSent());
             });

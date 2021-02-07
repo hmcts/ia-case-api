@@ -712,7 +712,7 @@ public enum AsylumCaseFieldDefinition {
         "editDocumentsReason", new TypeReference<String>(){}),
 
     DIRECTION_EDIT_PARTIES(
-        "directionEditParties", new TypeReference<Parties>(){}),
+        "directionEditParties", new TypeReference<String>(){}),
 
     DIRECTION_EDIT_DATE_DUE(
         "directionEditDateDue", new TypeReference<String>(){}),

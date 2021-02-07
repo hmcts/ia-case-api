@@ -126,7 +126,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(state);
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -140,23 +140,15 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Test
     void should_return_true_for_respondent_direction() {
 
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
         assertTrue(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
     }
 
     @Test
     void should_return_false_for_non_respondent_direction() {
 
-        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.LEGAL_REPRESENTATIVE));
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, String.class)).thenReturn(Optional.of(Parties.LEGAL_REPRESENTATIVE.toString()));
         assertFalse(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
-    }
-
-    @Test
-    void should_return_error_for_missing_direction() {
-
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase))
-            .hasMessage("sendDirectionParties is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -203,7 +195,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
                     when(callback.getCaseDetails()).thenReturn(caseDetails);
                     when(caseDetails.getCaseData()).thenReturn(asylumCase);
                     when(callback.getCaseDetails().getState()).thenReturn(state);
-                    when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+                    when(asylumCase.read(DIRECTION_EDIT_PARTIES, String.class)).thenReturn(Optional.of(Parties.RESPONDENT.toString()));
 
                     List<IdValue<Direction>> directionList = new ArrayList<>();
                     directionList.add(originalDirection8);
@@ -214,34 +206,31 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
                     if (callbackStage == ABOUT_TO_SUBMIT
                         && (Arrays.asList(
-                        Event.REQUEST_RESPONDENT_EVIDENCE,
-                        Event.REQUEST_RESPONDENT_REVIEW,
-                        Event.LIST_CASE,
-                        Event.EDIT_CASE_LISTING,
-                        Event.ADJOURN_HEARING_WITHOUT_DATE,
-                        Event.SEND_DECISION_AND_REASONS,
-                        Event.APPLY_FOR_FTPA_APPELLANT,
-                        Event.APPLY_FOR_FTPA_RESPONDENT,
-                        Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                        Event.RESIDENT_JUDGE_FTPA_DECISION,
-                        Event.END_APPEAL,
-                        Event.SEND_DIRECTION,
-                        Event.REQUEST_RESPONSE_AMEND
-                    ).contains(callback.getEvent())
-                        || (event == Event.CHANGE_DIRECTION_DUE_DATE
-                            && (Arrays.asList(
-                                State.AWAITING_RESPONDENT_EVIDENCE,
-                                State.RESPONDENT_REVIEW
-                            ).contains(callback.getCaseDetails().getState()))
+                                Event.REQUEST_RESPONDENT_EVIDENCE,
+                                Event.REQUEST_RESPONDENT_REVIEW,
+                                Event.LIST_CASE,
+                                Event.EDIT_CASE_LISTING,
+                                Event.ADJOURN_HEARING_WITHOUT_DATE,
+                                Event.SEND_DECISION_AND_REASONS,
+                                Event.APPLY_FOR_FTPA_APPELLANT,
+                                Event.APPLY_FOR_FTPA_RESPONDENT,
+                                Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                                Event.RESIDENT_JUDGE_FTPA_DECISION,
+                                Event.END_APPEAL,
+                                Event.REQUEST_RESPONSE_AMEND
+                            ).contains(callback.getEvent())
+                            || (event == Event.SEND_DIRECTION
+                                && state == State.AWAITING_RESPONDENT_EVIDENCE)
+                            || (event == Event.CHANGE_DIRECTION_DUE_DATE
+                                && (Arrays.asList(
+                                    State.AWAITING_RESPONDENT_EVIDENCE,
+                                    State.RESPONDENT_REVIEW
+                                    ).contains(callback.getCaseDetails().getState()))
+                                )
                             )
                         )
-                    ) {
-                        if (event == Event.SEND_DIRECTION
-                            && state != State.AWAITING_RESPONDENT_EVIDENCE) {
-                            assertFalse(canHandle);
-                        } else {
-                            assertTrue(canHandle);
-                        }
+                    {
+                        assertTrue(canHandle);
                     } else {
                         assertFalse(canHandle);
                     }
