@@ -13,7 +13,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,8 +85,7 @@ class LegalRepOrganisationFormatterTest {
             townCity,
             county,
             postCode,
-            country,
-            Arrays.asList("A", "B")
+            country
         );
         addresses.add(legRepAddressUk);
 
@@ -133,7 +131,6 @@ class LegalRepOrganisationFormatterTest {
     void should_respond_with_asylum_case_with_results_when_some_field_are_nulls() {
         List<LegRepAddressUk> addresses = new ArrayList<>();
         LegRepAddressUk legRepAddressUk = new LegRepAddressUk(
-            null,
             null,
             null,
             null,
