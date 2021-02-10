@@ -130,6 +130,41 @@ class LegalRepOrganisationFormatterTest {
     }
 
     @Test
+    void should_respond_with_asylum_case_with_results_when_some_field_are_nulls() {
+        List<LegRepAddressUk> addresses = new ArrayList<>();
+        LegRepAddressUk legRepAddressUk = new LegRepAddressUk(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        addresses.add(legRepAddressUk);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
+        when(organisationEntityResponse.getName()).thenReturn(companyName);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            legalRepOrganisationFormatter.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            );
+
+        verify(asylumCase, times(1)).write(LEGAL_REP_COMPANY_NAME, companyName);
+        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
+    }
+
+    @Test
     void should_not_write_to_local_authority_policy_if_organisation_entity_response_is_null() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
