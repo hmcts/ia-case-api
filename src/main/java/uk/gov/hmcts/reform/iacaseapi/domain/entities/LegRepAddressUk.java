@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LegRepAddressUk {
 
     private String addressLine1;

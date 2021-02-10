@@ -85,13 +85,13 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             if (!addresses.isEmpty()) {
                 LegRepAddressUk legRepAddressUk = addresses.get(0);
                 addressUk = new AddressUk(
-                    legRepAddressUk.getAddressLine1(),
-                    legRepAddressUk.getAddressLine2(),
-                    legRepAddressUk.getAddressLine3(),
-                    legRepAddressUk.getTownCity(),
-                    legRepAddressUk.getCounty(),
-                    legRepAddressUk.getPostCode(),
-                    legRepAddressUk.getCountry()
+                    legRepAddressUk.getAddressLine1() == null ? "" : legRepAddressUk.getAddressLine1(),
+                    legRepAddressUk.getAddressLine2() == null ? "" : legRepAddressUk.getAddressLine2(),
+                    legRepAddressUk.getAddressLine3() == null ? "" : legRepAddressUk.getAddressLine3(),
+                    legRepAddressUk.getTownCity() == null ? "" : legRepAddressUk.getTownCity(),
+                    legRepAddressUk.getCounty() == null ? "" : legRepAddressUk.getCounty(),
+                    legRepAddressUk.getPostCode() == null ? "" : legRepAddressUk.getPostCode(),
+                    legRepAddressUk.getCountry() == null ? "" : legRepAddressUk.getCountry()
                 );
             } else {
                 addressUk = new AddressUk(
