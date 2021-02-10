@@ -95,6 +95,35 @@ class ListEditCaseHandlerTest {
     }
 
     @Test
+    void should_set_hearing_centre_for_remote_hearing() {
+
+        when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(HearingCentre.REMOTE_HEARING));
+        when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
+            .thenReturn(Optional.of(HearingCentre.COVENTRY));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.TAYLOR_HOUSE);
+        verify(asylumCase, times(1)).clear(DOES_THE_CASE_NEED_TO_BE_RELISTED);
+
+        verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+        verify(asylumCase, times(1)).clear(ATTENDING_TCW);
+        verify(asylumCase, times(1)).clear(ATTENDING_JUDGE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANT);
+        verify(asylumCase, times(1)).clear(ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE);
+        verify(asylumCase, times(1)).clear(ACTUAL_CASE_HEARING_LENGTH);
+        verify(asylumCase, times(1)).clear(HEARING_CONDUCTION_OPTIONS);
+        verify(asylumCase, times(1)).clear(HEARING_RECORDING_DOCUMENTS);
+        verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+    }
+
+    @Test
     void should_set_default_if_listing_hearing_centre_is_not_active() {
 
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
