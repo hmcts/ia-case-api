@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -463,6 +464,10 @@ class AppealSavedConfirmationTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
+
         assertThatThrownBy(() -> appealSavedConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
@@ -473,13 +478,39 @@ class AppealSavedConfirmationTest {
 
         for (Event event : Event.values()) {
 
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
             boolean canHandle = appealSavedConfirmation.canHandle(callback);
 
             if (event == Event.START_APPEAL || event == Event.EDIT_APPEAL) {
 
                 assertTrue(canHandle);
+            } else {
+                assertFalse(canHandle);
+            }
+
+            reset(callback);
+        }
+    }
+
+    @Test
+    void it_can_not_handle_callback_for_aip_journey() {
+
+        for (Event event : Event.values()) {
+
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+            boolean canHandle = appealSavedConfirmation.canHandle(callback);
+
+            if (event == Event.START_APPEAL || event == Event.EDIT_APPEAL) {
+
+                assertFalse(canHandle);
             } else {
                 assertFalse(canHandle);
             }

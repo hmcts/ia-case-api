@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
@@ -230,8 +232,11 @@ class LegalRepOrganisationFormatterTest {
 
         for (Event event : Event.values()) {
 
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
 
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
@@ -244,6 +249,31 @@ class LegalRepOrganisationFormatterTest {
                     assertFalse(canHandle);
                 }
             }
+            reset(callback);
+        }
+    }
+
+    @Test
+    void it_can_not_handle_callback_for_aip_journey() {
+
+        for (Event event : Event.values()) {
+
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
+
+                if ((event == Event.START_APPEAL)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+
+                    assertFalse(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+
             reset(callback);
         }
     }

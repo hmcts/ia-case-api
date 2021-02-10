@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -42,7 +43,13 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL;
+        boolean isRepJourney = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.REP)
+            .orElse(true);
+
+        return
+            (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL) && isRepJourney;
     }
 
     public PostSubmitCallbackResponse handle(

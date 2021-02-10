@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
 
 import java.util.Optional;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -152,16 +154,43 @@ class HomeOfficeReferenceFormatterTest {
 
         for (Event event : Event.values()) {
 
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
-
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-
+                System.out.println(event + " : " + callbackStage.toString());
                 boolean canHandle = homeOfficeReferenceFormatter.canHandle(callbackStage, callback);
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+
+            reset(callback);
+        }
+    }
+
+    @Test
+    void it_can_not_handle_callback_for_aip_journey() {
+
+        for (Event event : Event.values()) {
+
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                boolean canHandle = homeOfficeReferenceFormatter.canHandle(callbackStage, callback);
+
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
+                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+
+                    assertFalse(canHandle);
                 } else {
                     assertFalse(canHandle);
                 }
