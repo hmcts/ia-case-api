@@ -154,8 +154,30 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            legalRepOrganisationFormatter.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+            );
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, times(0)).write(LOCAL_AUTHORITY_POLICY, organisationPolicy);
+    }
+
+    @Test
+    void should_not_write_to_local_authority_policy_if_org_id_is_null() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(null);
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             legalRepOrganisationFormatter.handle(

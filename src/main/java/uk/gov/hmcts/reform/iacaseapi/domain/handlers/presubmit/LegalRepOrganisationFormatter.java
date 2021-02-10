@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -54,7 +56,12 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         final OrganisationEntityResponse organisationEntityResponse =
             professionalOrganisationRetriever.retrieve();
 
+        if (organisationEntityResponse == null) {
+            log.warn("Data fetched from Professional Ref data is empty, case ID: {}", callback.getCaseDetails().getId());
+        }
+
         if (organisationEntityResponse != null
+            && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
             && featureToggler.getValue("share-case-feature", false)) {
             setupCaseCreation(callback, organisationEntityResponse.getOrganisationIdentifier());
         }
@@ -71,9 +78,11 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         AddressUk addressUk;
         String organisationName = "";
         if (organisationEntityResponse != null) {
-            organisationName = organisationEntityResponse.getName();
-            List<LegRepAddressUk> addresses = organisationEntityResponse.getContactInformation();
-            if (!organisationEntityResponse.getContactInformation().isEmpty()) {
+            organisationName = organisationEntityResponse.getName() == null
+                ? "" : organisationEntityResponse.getName();
+            List<LegRepAddressUk> addresses = organisationEntityResponse.getContactInformation() == null
+                ? Collections.emptyList() : organisationEntityResponse.getContactInformation();
+            if (!addresses.isEmpty()) {
                 LegRepAddressUk legRepAddressUk = addresses.get(0);
                 addressUk = new AddressUk(
                     legRepAddressUk.getAddressLine1(),

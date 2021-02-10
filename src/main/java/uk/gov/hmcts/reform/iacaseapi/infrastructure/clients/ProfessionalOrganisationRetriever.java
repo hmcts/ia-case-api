@@ -68,7 +68,7 @@ public class ProfessionalOrganisationRetriever {
                     ).getBody();
 
         } catch (Throwable ex) {
-            log.info("This legal-rep user does not have pui roles");
+            log.warn("Cannot fetch Professional Reference data, exception message: " + ex.getMessage(), ex);
         }
 
         log.info("response returned: {}", response);
