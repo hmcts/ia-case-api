@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LegRepAddressUk {
@@ -20,8 +19,6 @@ public class LegRepAddressUk {
 
     private String country;
 
-    private List<String> dxAddress;
-
     private LegRepAddressUk() {
         // noop -- for deserializer
     }
@@ -33,8 +30,7 @@ public class LegRepAddressUk {
         String townCity,
         String county,
         String postCode,
-        String country,
-        List<String> dxAddress
+        String country
     ) {
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
@@ -43,7 +39,6 @@ public class LegRepAddressUk {
         this.county = county;
         this.postCode = postCode;
         this.country = country;
-        this.dxAddress = dxAddress;
     }
 
     public String getAddressLine1() {
@@ -74,7 +69,4 @@ public class LegRepAddressUk {
         return country;
     }
 
-    public List<String> getDxAddress() {
-        return dxAddress;
-    }
 }
