@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ref;
 
 import static java.util.Objects.requireNonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUser;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganisationEntityResponse {
 
     private String organisationIdentifier;
