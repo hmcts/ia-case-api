@@ -39,7 +39,7 @@
           {
             "id": "2",
             "value": {
-              "explanation": "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n# Next steps\n\nVisit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements using the Overview tab.\nThe Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\nIf you do not submit the hearing requirements within 5 working days, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
+              "explanation": "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n# Next steps\n\nVisit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\nThe Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\nIf you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",

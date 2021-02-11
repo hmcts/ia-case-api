@@ -8,9 +8,11 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ORG_LIST_OF_USERS;
 
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalUsersRetriever;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +53,8 @@ class ShareACaseUserListPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
+    @Mock
+    private OrganisationPolicy organisationPolicy;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -97,6 +101,24 @@ class ShareACaseUserListPreparerTest {
         assertThat(values.get(0).getCode()).isEqualTo(userId);
         assertThat(values.get(0).getLabel()).isEqualTo(userEmail);
 
+    }
+
+    @Test
+    void should_respond_with_error_when_organisation_policy_set_up() {
+
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            shareACaseUserListPreparer.handle(
+                PreSubmitCallbackStage.ABOUT_TO_START,
+                callback
+            );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("The way to share a case has changed. Go to your case list, select the case(s) you want to share and click the Share Case button.");
+
+        verify(asylumCase).read(LOCAL_AUTHORITY_POLICY);
     }
 
     @Test

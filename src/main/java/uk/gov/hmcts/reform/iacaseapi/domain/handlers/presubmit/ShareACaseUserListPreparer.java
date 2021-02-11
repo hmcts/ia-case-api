@@ -42,6 +42,18 @@ public class ShareACaseUserListPreparer implements PreSubmitCallbackHandler<Asyl
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isPresent()) {
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError(
+                "The way to share a case has changed. Go to your case list,"
+                              + " select the case(s) you want to share and click the Share Case button."
+            );
+
+            return response;
+        }
+
         return mapToAsylumCase(callback, professionalUsersRetriever.retrieve());
 
     }

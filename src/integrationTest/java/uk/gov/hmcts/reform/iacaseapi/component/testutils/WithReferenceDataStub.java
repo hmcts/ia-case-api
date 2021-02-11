@@ -27,6 +27,21 @@ public interface WithReferenceDataStub {
         );
     }
 
+    default void addReferenceDataPrdOrganisationResponseStub(WireMockServer server, String path, String responseJson) {
+
+        server.addStubMapping(
+            new StubMapping(
+                newRequestPattern(RequestMethod.GET, urlEqualTo(path))
+                    .build(),
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(responseJson)
+                    .build()
+            )
+        );
+    }
+
     default void addReferenceCreatedStub(WireMockServer server, String path) {
 
         server.addStubMapping(

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 public enum AsylumCaseFieldDefinition {
 
@@ -442,6 +443,12 @@ public enum AsylumCaseFieldDefinition {
 
     LEGAL_REP_NAME(
         "legalRepName", new TypeReference<String>(){}),
+
+    LEGAL_REP_COMPANY_NAME(
+            "legalRepCompanyName", new TypeReference<String>(){}),
+
+    LEGAL_REP_COMPANY_ADDRESS(
+            "legalRepCompanyAddress", new TypeReference<AddressUk>(){}),
 
     LEGAL_REPRESENTATIVE_EMAIL_ADDRESS(
         "legalRepresentativeEmailAddress", new TypeReference<String>(){}),
@@ -1306,6 +1313,9 @@ public enum AsylumCaseFieldDefinition {
 
     ALLOCATE_THE_CASE_TO(
             "allocateTheCaseTo", new TypeReference<String>() {}),
+
+    LOCAL_AUTHORITY_POLICY(
+        "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 
     ;
 

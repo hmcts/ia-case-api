@@ -1,0 +1,35 @@
+{
+  "description": "RIA-3848 Share a case Org Policy validation",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgA",
+    "input": {
+      "eventId": "shareACase",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "localAuthorityPolicy": {
+            "Organisation": {
+              "OrganisationID": "SOME-ID",
+              "OrganisationName": "SOME-NAME"
+            },
+            "OrgPolicyReference": "someRef",
+            "OrgPolicyCaseAssignedRole": "someRole"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "The way to share a case has changed. Go to your case list, select the case(s) you want to share and click the Share Case button."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+      }
+    }
+  }
+}

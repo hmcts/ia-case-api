@@ -88,4 +88,11 @@ class StaffLocationTest {
         Location result = StaffLocation.getLocation(hearingCentre);
         assertEquals("Glasgow", result.getName());
     }
+
+    @Test
+    public void should_get_correct_location_of_North_Shields() {
+        HearingCentre hearingCentre = HearingCentre.NORTH_SHIELDS;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("North Shields", result.getName());
+    }
 }

@@ -91,7 +91,7 @@ class RequestRespondentEvidencePreparerTest {
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains("You have " + DUE_IN_DAYS + " days");
+            .contains("You have until the date indicated below to supply");
 
         assertThat(
             asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
