@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
+@Slf4j
 @Component
 public class AppealSavedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -98,6 +100,9 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
                 professionalOrganisationRetriever
                     .retrieve()
                     .getOrganisationIdentifier();
+
+            log.info("PRD endpoint called for caseId [{}] orgId[{}]",
+                callback.getCaseDetails().getId(), organisationIdentifier);
 
             ccdCaseAssignment.revokeAccessToCase(callback, organisationIdentifier);
             ccdCaseAssignment.assignAccessToCase(callback);
