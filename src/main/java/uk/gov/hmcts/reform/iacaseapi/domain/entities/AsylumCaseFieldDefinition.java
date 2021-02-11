@@ -1311,6 +1311,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_WORKER_NAME(
             "caseWorkerName", new TypeReference<String>() {}),
 
+    ALLOCATE_THE_CASE_TO(
+            "allocateTheCaseTo", new TypeReference<String>() {}),
+
     LOCAL_AUTHORITY_POLICY(
         "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 

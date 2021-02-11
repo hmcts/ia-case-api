@@ -141,12 +141,12 @@ paymentApi:
 role-assignment-service:
   url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
 
+ref-data-case-worker-api:
+  url: ${REF_DATA_CASE_WORKER_URL:http://localhost:8991}
+
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
-
-ia_system_user: ${IA_SYSTEM_USERNAME:system-user}
-ia_system_user_password: ${IA_SYSTEM_PASSWORD:system-password}
 
 security:
   anonymousPaths:
@@ -342,12 +342,17 @@ feign:
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
     services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+  ia_system_user:
+    username: ${IA_SYSTEM_USERNAME:system-user}
+    password: ${IA_SYSTEM_PASSWORD:system-password}
+    scope: "openid profile authorities acr roles create-user manage-user search-user"
 
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
