@@ -1,9 +1,10 @@
 {
-  "description": "RWA-318 Allocate a case to me",
+  "description": "RWA-318 Allocate a case to me - it covers the about to submit callback",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
+      "id": 1610090193760940,
       "eventId": "allocateTheCase",
       "state": "appealSubmitted",
       "caseData": {
