@@ -13,8 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -207,6 +206,22 @@ class AppealReferenceNumberHandlerTest {
     }
 
     @Test
+    void should_not_write_to_local_authority_policy_if_feature_not_enabled() {
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
+
+        verifyNoInteractions(appealReferenceNumberGenerator);
+    }
+
+    @Test
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -221,7 +236,7 @@ class AppealReferenceNumberHandlerTest {
                     Event.START_APPEAL,
                     Event.SUBMIT_APPEAL,
                     Event.PAY_AND_SUBMIT_APPEAL)
-                    .contains(callback.getEvent())
+                        .contains(callback.getEvent())
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

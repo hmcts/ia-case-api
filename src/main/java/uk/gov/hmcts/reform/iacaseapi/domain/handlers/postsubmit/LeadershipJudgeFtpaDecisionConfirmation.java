@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -46,51 +45,34 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        final String hoRequestEvidenceInstructStatus =
-            ftpaApplicantType.equals("appellant")
-                ? asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_APPELLANT_DECIDED_INSTRUCT_STATUS,
-                    String.class).orElse("")
-                : asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_FTPA_RESPONDENT_DECIDED_INSTRUCT_STATUS,
-                 String.class).orElse("");
+        postSubmitResponse.setConfirmationHeader("# You've recorded the First-tier permission to appeal decision");
 
-        if (hoRequestEvidenceInstructStatus.equalsIgnoreCase("FAIL")) {
-            postSubmitResponse.setConfirmationBody(
-                "![Respondent notification failed confirmation]"
-                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                + "#### Do this next\n\n"
-                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
-            );
-        } else {
+        switch (ftpaOutcomeType) {
 
-            postSubmitResponse.setConfirmationHeader("# You've recorded the First-tier permission to appeal decision");
+            case "granted":
+            case "partiallyGranted":
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
+                );
+                break;
 
-            switch (ftpaOutcomeType) {
+            case "refused":
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
+                );
+                break;
 
-                case "granted":
-                case "partiallyGranted":
-                    postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                        + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
-                    );
-                    break;
+            case "notAdmitted":
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"
+                );
+                break;
 
-                case "refused":
-                    postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                        + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
-                    );
-                    break;
-
-                case "notAdmitted":
-                    postSubmitResponse.setConfirmationBody(
-                        "#### What happens next\n\n"
-                        + "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"
-                    );
-                    break;
-
-                default:
-                    throw new IllegalStateException("FtpaDecisionOutcome is not present");
-            }
+            default:
+                throw new IllegalStateException("FtpaDecisionOutcome is not present");
         }
 
 

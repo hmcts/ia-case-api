@@ -84,7 +84,7 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
     ) {
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
         if (caseWorkerValueListForGivenLocation.isEmpty()) {
-            response.addError("There are no caseworkers for the selected location. Select a different location.");
+            response.addError("There are no users for the location you have selected. Choose another location to continue.");
         } else {
             asylumCase.write(
                 CASE_WORKER_NAME_LIST,

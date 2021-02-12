@@ -56,7 +56,7 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
             "A notice of appeal has been lodged against this decision.\n\n"
             + "You must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. "
-            + "You have " + requestRespondentEvidenceDueInDays + " days to supply the documents.\n\n"
+            + "You have until the date indicated below to supply the documents.\n\n"
             + "You must include:\n"
             + "- the notice of decision\n"
             + "- any other document provided to the appellant giving reasons for that decision\n"

@@ -205,7 +205,7 @@ class AllocateTheCaseToCaseWorkerMidEventHandlerTest {
         } else {
             assertThat(caseWorkerNameList).isEmpty();
             actualResult.getErrors().forEach((error) ->
-                assertThat("There are no caseworkers for the selected location. Select a different location.")
+                assertThat("There are no users for the location you have selected. Choose another location to continue.")
                     .isEqualTo(error)
             );
         }

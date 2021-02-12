@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -28,27 +27,14 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        final String hoAppealDecidedInstructStatus =
-            asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_APPEAL_DECIDED_INSTRUCT_STATUS, String.class).orElse("");
+        PostSubmitCallbackResponse postSubmitResponse =
+            new PostSubmitCallbackResponse();
 
-        PostSubmitCallbackResponse postSubmitResponse = new PostSubmitCallbackResponse();
-
-        if (hoAppealDecidedInstructStatus.equalsIgnoreCase("FAIL")) {
-            postSubmitResponse.setConfirmationBody(
-                "![Respondent notification failed confirmation]"
-                + "(https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/respondent_notification_failed.svg)\n"
-                + "#### Do this next\n\n"
-                + "Contact the respondent to tell them what has changed, including any action they need to take.\n"
-            );
-        } else {
-
-            postSubmitResponse.setConfirmationHeader("# You've uploaded the Decision and Reasons document");
-            postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab."
-            );
-        }
+        postSubmitResponse.setConfirmationHeader("# You've uploaded the Decision and Reasons document");
+        postSubmitResponse.setConfirmationBody(
+            "#### What happens next\n\n"
+            + "Both parties have been notified of the decision. They'll also be able to access the Decision and Reasons document from the Documents tab."
+        );
 
         return postSubmitResponse;
     }
