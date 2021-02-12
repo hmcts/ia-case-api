@@ -18,7 +18,7 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["There are no caseworkers for the selected location. Select a different location."],
+    "errors": ["There are no users for the location you have selected. Choose another location to continue."],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
