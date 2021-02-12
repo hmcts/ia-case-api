@@ -12,20 +12,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @Component
-public class ReviewAmendDirectionHandler extends DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
-
-    public ReviewAmendDirectionHandler(
-        DirectionAppender directionAppender,
-        DirectionPartiesResolver directionPartiesResolver,
-        DirectionTagResolver directionTagResolver
-    ) {
-        super(directionAppender, directionPartiesResolver, directionTagResolver);
-    }
+public class ReviewAmendDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -54,8 +43,6 @@ public class ReviewAmendDirectionHandler extends DirectionHandler implements Pre
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        super.handle(callbackStage, callback);
 
         if (callback.getEvent().equals(Event.REQUEST_RESPONSE_REVIEW)) {
             asylumCase.write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
