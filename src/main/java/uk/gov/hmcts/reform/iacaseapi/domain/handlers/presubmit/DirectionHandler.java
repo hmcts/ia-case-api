@@ -55,7 +55,9 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 Event.REQUEST_RESPONDENT_REVIEW,
                 Event.REQUEST_CASE_BUILDING,
                 Event.FORCE_REQUEST_CASE_BUILDING,
-                Event.REQUEST_REASONS_FOR_APPEAL
+                Event.REQUEST_REASONS_FOR_APPEAL,
+                Event.REQUEST_RESPONSE_REVIEW,
+                Event.REQUEST_RESPONSE_AMEND
             ).contains(callback.getEvent());
     }
 
