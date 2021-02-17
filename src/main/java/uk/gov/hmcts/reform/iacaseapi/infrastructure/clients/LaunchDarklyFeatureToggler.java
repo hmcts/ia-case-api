@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
-import com.launchdarkly.sdk.LDUser;
-import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
+import com.launchdarkly.client.LDClientInterface;
+import com.launchdarkly.client.LDUser;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
