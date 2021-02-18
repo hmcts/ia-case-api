@@ -11,6 +11,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "listCaseHearingCentre": "taylorHouse",
           "ftpaAppellantDocuments": [],
           "ftpaAppellantOutOfTimeDocuments": [],
           "ftpaAppellantGroundsDocuments": [
