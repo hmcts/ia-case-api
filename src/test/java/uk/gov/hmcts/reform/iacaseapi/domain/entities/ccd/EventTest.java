@@ -99,10 +99,12 @@ class EventTest {
         assertEquals("requestNewHearingRequirements", Event.REQUEST_NEW_HEARING_REQUIREMENTS.toString());
         assertEquals("allocateTheCase", Event.ALLOCATE_THE_CASE.toString());
         assertEquals("recordRemissionDecision", Event.RECORD_REMISSION_DECISION.toString());
+        assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
+
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(95, Event.values().length);
+        assertEquals(96, Event.values().length);
     }
 }

@@ -99,6 +99,7 @@ public enum Event {
     REQUEST_NEW_HEARING_REQUIREMENTS("requestNewHearingRequirements"),
     ALLOCATE_THE_CASE("allocateTheCase"),
     RECORD_REMISSION_DECISION("recordRemissionDecision"),
+    MANAGE_FEE_UPDATE("manageFeeUpdate"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
