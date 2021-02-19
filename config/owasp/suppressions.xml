@@ -30,14 +30,6 @@
    ]]></notes>
         <cve>CVE-2017-18640</cve>
     </suppress>
-    <suppress until="2021-06-01">
-        <notes><![CDATA[
-      We do not use authority component to derive host name
-      latest library version has the problem too https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-      more details https://nvd.nist.gov/vuln/detail/CVE-2020-13956
-    ]]></notes>
-        <cve>CVE-2020-13956</cve>
-    </suppress>
     <suppress until="2099-06-01">
         <notes><![CDATA[
           Only Java >7 version is affected
