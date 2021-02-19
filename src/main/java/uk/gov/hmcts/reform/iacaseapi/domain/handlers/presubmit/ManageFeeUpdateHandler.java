@@ -53,15 +53,15 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
 
         asylumCase.clear(FEE_UPDATE_COMPLETED_STAGES);
 
-        Set<String> feeUpdateStatuses = new LinkedHashSet<>();
+        Set<String> feeUpdateCompleteStages = new LinkedHashSet<>();
 
-        Optional<CheckValues<String>> maybeFeeUpdateStatus = asylumCase.read(FEE_UPDATE_STATUS);
-        maybeFeeUpdateStatus.ifPresent(status ->
-            feeUpdateStatuses.addAll(status.getValues()));
+        Optional<CheckValues<String>> maybeFeeUpdateRecorded = asylumCase.read(FEE_UPDATE_RECORDED);
+        maybeFeeUpdateRecorded.ifPresent(status ->
+            feeUpdateCompleteStages.addAll(status.getValues()));
 
         asylumCase.write(
             FEE_UPDATE_COMPLETED_STAGES,
-            new ArrayList<>(feeUpdateStatuses)
+            new ArrayList<>(feeUpdateCompleteStages)
         );
 
         return new PreSubmitCallbackResponse<>(asylumCase);

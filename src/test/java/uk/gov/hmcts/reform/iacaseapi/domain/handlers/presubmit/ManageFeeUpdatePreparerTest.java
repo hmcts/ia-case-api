@@ -63,7 +63,7 @@ class ManageFeeUpdatePreparerTest {
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).contains("Manage fee update is not valid with payment pending for the appeal.");
+        assertThat(callbackResponse.getErrors()).contains("You cannot manage a fee update for this appeal because the fee has not been paid yet");
     }
 
     @ParameterizedTest
