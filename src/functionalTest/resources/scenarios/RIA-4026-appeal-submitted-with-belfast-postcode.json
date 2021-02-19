@@ -1,0 +1,41 @@
+{
+  "description": "RIA-4026 Legal rep submits appeal with Belfast address and the hearing centre will be Glasgow",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appellantHasFixedAddress": "Yes",
+          "appellantAddress": {
+            "County": "Belfast",
+            "Country": "Northern Ireland",
+            "PostCode": "BT38 8BT",
+            "PostTown": "Carrickfergus",
+            "AddressLine1": "75",
+            "AddressLine2": "Belfast Rd"
+          },
+          "searchPostcode": "BT38 8BT"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "submissionOutOfTime": "No",
+        "appellantHasFixedAddress": "Yes",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "hearingCentre": "glasgow"
+      }
+    }
+  }
+}
