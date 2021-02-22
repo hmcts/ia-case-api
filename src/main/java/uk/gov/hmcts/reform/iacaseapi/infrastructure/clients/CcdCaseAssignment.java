@@ -1,0 +1,161 @@
+package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
+
+import static java.util.Objects.requireNonNull;
+
+import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+
+
+@Slf4j
+@Service
+public class CcdCaseAssignment {
+
+    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+
+    private final RestTemplate restTemplate;
+    private final AuthTokenGenerator serviceAuthTokenGenerator;
+    private final UserDetailsProvider userDetailsProvider;
+    private final String ccdUrl;
+    private final String aacUrl;
+    private final String ccdAssignmentsApiPath;
+    private final String aacAssignmentsApiPath;
+
+    public CcdCaseAssignment(RestTemplate restTemplate,
+                             AuthTokenGenerator serviceAuthTokenGenerator,
+                             UserDetailsProvider userDetailsProvider,
+                             @Value("${core_case_data_api_assignments_url}") String ccdUrl,
+                             @Value("${assign_case_access_api_url}") String aacUrl,
+                             @Value("${core_case_data_api_assignments_path}") String ccdAssignmentsApiPath,
+                             @Value("${assign_case_access_api_assignments_path}") String aacAssignmentsApiPath
+    ) {
+        this.restTemplate = restTemplate;
+        this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
+        this.userDetailsProvider = userDetailsProvider;
+        this.ccdUrl = ccdUrl;
+        this.aacUrl = aacUrl;
+        this.ccdAssignmentsApiPath = ccdAssignmentsApiPath;
+        this.aacAssignmentsApiPath = aacAssignmentsApiPath;
+    }
+
+    public void revokeAccessToCase(
+        final Callback<AsylumCase> callback,
+        final String organisationIdentifier
+    ) {
+        requireNonNull(callback, "callback must not be null");
+        requireNonNull(organisationIdentifier, "organisation identifier must not be null");
+
+        final long caseId = callback.getCaseDetails().getId();
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
+        final String idamUserId = userDetails.getId();
+
+        Map<String, Object> caseUser = Maps.newHashMap();
+        caseUser.put("case_id", caseId);
+        caseUser.put("case_role", "[CREATOR]");
+        caseUser.put("organisation_id", organisationIdentifier);
+        caseUser.put("user_id", idamUserId);
+
+        ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
+        caseUsers.add(caseUser);
+
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("case_users", caseUsers);
+
+        HttpEntity<Map<String, Object>> requestEntity =
+            new HttpEntity<>(
+                payload,
+                setHeaders(serviceAuthorizationToken, accessToken)
+            );
+
+        ResponseEntity<Object> response;
+        try {
+            response = restTemplate
+                .exchange(
+                    ccdUrl + ccdAssignmentsApiPath,
+                    HttpMethod.DELETE,
+                    requestEntity,
+                    Object.class
+                );
+
+        } catch (RestClientResponseException e) {
+            throw new CcdDataIntegrationException(
+                "Couldn't revoke CCD case access for case ["
+                + callback.getCaseDetails().getId()
+                + "] using API: "
+                + ccdUrl + ccdAssignmentsApiPath,
+                e
+            );
+        }
+
+        log.info("Revoke Access. Http status received from CCD API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+    }
+
+    public void assignAccessToCase(
+        final Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callback, "callback must not be null");
+
+        final long caseId = callback.getCaseDetails().getId();
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final UserDetails userDetails = userDetailsProvider.getUserDetails();
+        final String accessToken = userDetails.getAccessToken();
+        final String idamUserId = userDetails.getId();
+
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("case_id", caseId);
+        payload.put("assignee_id", idamUserId);
+        payload.put("case_type_id", "Asylum");
+
+        HttpEntity<Map<String, Object>> requestEntity =
+            new HttpEntity<>(
+                payload,
+                setHeaders(serviceAuthorizationToken, accessToken)
+            );
+
+        ResponseEntity<Object> response;
+        try {
+            response = restTemplate
+                .exchange(
+                    aacUrl + aacAssignmentsApiPath,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Object.class
+                );
+
+        } catch (RestClientResponseException e) {
+            throw new CcdDataIntegrationException(
+                "Couldn't set initial AAC case assignment for case ["
+                + callback.getCaseDetails().getId()
+                + "] using API: "
+                + aacUrl + aacAssignmentsApiPath,
+                e
+            );
+        }
+
+        log.info("Assign Access. Http status received from AAC API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId());
+    }
+
+    private HttpHeaders setHeaders(String serviceAuthorizationToken, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        headers.set(HttpHeaders.AUTHORIZATION, accessToken);
+        headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
+        return headers;
+    }
+}

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
-import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,8 +20,7 @@ public class LegRepAddressUkTest {
         townCity,
         county,
         postCode,
-        country,
-        Arrays.asList("A", "B")
+        country
     );
 
     @Test

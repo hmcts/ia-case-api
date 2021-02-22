@@ -8,6 +8,7 @@ java:
     POSTGRES_USERNAME: ia_case_api@ia-case-api-postgres-11-db-{{ .Values.global.environment }}
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
     PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    REF_DATA_CASE_WORKER_URL: "http://rd-caseworker-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
@@ -17,6 +18,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
     CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    AAC_URL: "http://aac-manage-case-assignment-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"

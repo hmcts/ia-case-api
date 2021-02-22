@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class DisableAllocateTheCaseHandlerTest {
+class DisableAllocateTheCaseToCaseWorkerHandlerTest {
     @Mock
     private Callback<AsylumCase> callback;
     @Mock

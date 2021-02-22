@@ -1,5 +1,6 @@
 {
   "description": "RIA-815 Appeal saved confirmation after start",
+  "launchDarklyKey": "share-case-feature:false",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentativeOrgSuccess",

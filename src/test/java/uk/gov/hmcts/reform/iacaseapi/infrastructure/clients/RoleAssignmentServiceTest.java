@@ -1,46 +1,68 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RequestedRoles;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class RoleAssignmentServiceTest {
 
-    @Test
-    void createsCaseRole() {
-        AuthTokenGenerator authTokenGenerator = mock(AuthTokenGenerator.class);
-        String serviceToken = "serviceToken";
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
+    @Mock
+    private RoleAssignmentApi roleAssignmentApi;
+    @InjectMocks
+    private RoleAssignmentService roleAssignmentService;
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private CaseDetails<CaseData> caseDetails;
+    private final String userId = "userId";
+    private final long caseId = 1234567890L;
+    private final String accessToken = "accessToken";
+    private final String serviceToken = "serviceToken";
+
+    @BeforeEach
+    void setUp() {
         when(authTokenGenerator.generate()).thenReturn(serviceToken);
-        RoleAssignmentApi roleAssignmentApi = mock(RoleAssignmentApi.class);
-        UserDetails userDetails = mock(UserDetails.class);
-        String accessToken = "accessToken";
-        String userId = "userId";
+
         when(userDetails.getAccessToken()).thenReturn(accessToken);
         when(userDetails.getId()).thenReturn(userId);
 
-        RoleAssignmentService roleAssignmentService =
-                new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
-        @SuppressWarnings("unchecked")
-        CaseDetails<AsylumCase> caseDetails = mock(CaseDetails.class);
-        long caseId = 1234567890L;
         when(caseDetails.getId()).thenReturn(caseId);
+    }
+
+    @Test
+    void createsCaseRole() {
 
         roleAssignmentService.assignRole(caseDetails.getId(), "assigneeId");
 
@@ -72,4 +94,15 @@ class RoleAssignmentServiceTest {
         );
     }
 
+    @Test
+    void queryRoleAssignmentTest() {
+        roleAssignmentService.queryRoleAssignments(QueryRequest.builder().build());
+
+        verify(roleAssignmentApi).queryRoleAssignments(
+            eq(accessToken),
+            eq(serviceToken),
+            any(QueryRequest.class)
+        );
+
+    }
 }

@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
@@ -128,6 +131,39 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
         assertThat(listItems.get(1).getCode()).isEqualTo(prdSuccessResponse.getUsers().get(1).getUserIdentifier());
         assertThat(listItems.get(0).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(0).getEmail());
         assertThat(listItems.get(1).getLabel()).isEqualTo(prdSuccessResponse.getUsers().get(1).getEmail());
+
+    }
+
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
+    public void should_get_organisation_identifier_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+
+        String prdResponseJson =
+            new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
+
+        assertThat(prdResponseJson).isNotBlank();
+
+        prdSuccessResponse = objectMapper.readValue(prdResponseJson,
+            ProfessionalUsersResponse.class);
+
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
+            .event(START_APPEAL)
+            .caseDetails(someCaseDetailsWith()
+                .state(APPEAL_STARTED)
+                .caseData(anAsylumCase()
+                    .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
+                    .with(APPELLANT_GIVEN_NAMES, "some-given-name")
+                    .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
+
+        AsylumCase asylumCase = response.getAsylumCase();
+
+        Optional<OrganisationPolicy> organisationPolicy = asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        assertThat(organisationPolicy.isPresent());
 
     }
 

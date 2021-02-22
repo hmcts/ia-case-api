@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
+package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Collections.singletonList;
 
@@ -17,14 +17,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
 @Component
 public class RoleAssignmentService {
     public static final String ROLE_NAME = "tribunal-caseworker";
     private final AuthTokenGenerator serviceAuthTokenGenerator;
-    private final RoleAssignmentApi roleAssignmentApi;
-
     private final UserDetails userDetails;
+    private final RoleAssignmentApi roleAssignmentApi;
 
     public RoleAssignmentService(AuthTokenGenerator serviceAuthTokenGenerator,
                                  RoleAssignmentApi roleAssignmentApi,

@@ -5,38 +5,72 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class AppealSavedConfirmationTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
+    @Mock ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+    @Mock OrganisationEntityResponse organisationEntityResponse;
+    @Mock CcdCaseAssignment ccdCaseAssignment;
+    @Mock private FeatureToggler featureToggler;
 
-    private AppealSavedConfirmation appealSavedConfirmation =
-        new AppealSavedConfirmation();
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+
+    private AppealSavedConfirmation appealSavedConfirmation;
+    private final String organisationIdentifier = "ZE2KIWO";
+    private OrganisationPolicy organisationPolicy;
+
+
+    @BeforeEach
+    public void setUp() throws Exception {
+
+        appealSavedConfirmation = new AppealSavedConfirmation(
+            professionalOrganisationRetriever,
+            ccdCaseAssignment,
+            featureToggler
+        );
+
+        organisationPolicy =
+            OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("somOrgId")
+                    .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
+
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class))
+            .thenReturn(Optional.of(organisationPolicy));
+    }
 
     @Test
     void should_return_confirmation() {
@@ -47,6 +81,10 @@ class AppealSavedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -67,12 +105,14 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Not ready to submit yet?");
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -87,6 +127,10 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -106,12 +150,14 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Not ready to submit yet?");
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -126,6 +172,10 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -145,13 +195,14 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Not ready to submit yet?");
 
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -166,6 +217,11 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -185,13 +241,14 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Not ready to submit yet?");
 
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -204,6 +261,11 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
 
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
@@ -224,13 +286,14 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("Not ready to submit yet?");
 
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -245,6 +308,11 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -256,8 +324,10 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -272,6 +342,10 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -283,8 +357,10 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test
@@ -298,6 +374,10 @@ class AppealSavedConfirmationTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(true);
+
         PostSubmitCallbackResponse callbackResponse =
             appealSavedConfirmation.handle(callback);
 
@@ -309,8 +389,75 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[submit your appeal]"
-                    + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
+
+        verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_not_assign_or_revoke_access_to_case_for_edit_appeal() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_not_assign_or_revoke_access_to_case_when_local_authority_policy_is_not_present() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(Optional.empty());
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_not_assign_or_revoke_access_to_case_when_feature_flag_disabled() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(featureToggler.getValue("share-case-feature", false)).thenReturn(false);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSavedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        verify(ccdCaseAssignment, times(0)).revokeAccessToCase(callback, organisationIdentifier);
     }
 
     @Test

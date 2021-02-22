@@ -23,6 +23,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -40,7 +42,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
-
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -74,8 +75,13 @@ class DirectionHandlerTest {
             );
     }
 
-    @Test
-    void should_append_new_direction_to_existing_directions_for_the_case() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
+    })
+    void should_append_new_direction_to_existing_directions_for_the_case(Event event) {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -84,8 +90,6 @@ class DirectionHandlerTest {
         final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedDirectionTag = DirectionTag.NONE;
-
-        final Event event = Event.SEND_DIRECTION;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -130,8 +134,13 @@ class DirectionHandlerTest {
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
-    @Test
-    void should_add_new_direction_to_the_case_when_no_directions_exist() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
+    })
+    void should_add_new_direction_to_the_case_when_no_directions_exist(Event event) {
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
@@ -139,8 +148,6 @@ class DirectionHandlerTest {
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedDirectionTag = DirectionTag.NONE;
-
-        final Event event = Event.REQUEST_RESPONDENT_REVIEW;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
@@ -192,11 +199,16 @@ class DirectionHandlerTest {
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
 
-    @Test
-    void should_throw_when_send_direction_explanation_is_not_present() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
+    })
+    void should_throw_when_send_direction_explanation_is_not_present(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_EDIT);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.empty());
@@ -206,11 +218,16 @@ class DirectionHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void should_throw_when_send_direction_date_due_is_not_present() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
+    })
+    void should_throw_when_send_direction_date_due_is_not_present(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of("Do the thing"));
@@ -254,7 +271,9 @@ class DirectionHandlerTest {
                         Event.REQUEST_RESPONDENT_REVIEW,
                         Event.REQUEST_CASE_BUILDING,
                         Event.FORCE_REQUEST_CASE_BUILDING,
-                        Event.REQUEST_REASONS_FOR_APPEAL
+                        Event.REQUEST_REASONS_FOR_APPEAL,
+                        Event.REQUEST_RESPONSE_REVIEW,
+                        Event.REQUEST_RESPONSE_AMEND
                     ).contains(event)) {
 
                     assertTrue(canHandle);
