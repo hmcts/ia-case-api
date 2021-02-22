@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DisableHystrixFeignConfiguration;
 
 @FeignClient(
-        name = "role-assignment-service-api",
-        url = "${role-assignment-service.url}"
+    name = "role-assignment-service-api",
+    url = "${role-assignment-service.url}",
+    configuration = DisableHystrixFeignConfiguration.class
 )
 public interface RoleAssignmentApi {
 
