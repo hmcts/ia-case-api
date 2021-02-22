@@ -145,7 +145,9 @@ class CcdCaseAssignmentTest {
 
         assertThatThrownBy(() -> ccdCaseAssignment.assignAccessToCase(callback))
             .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't set initial AAC case assignment using API: "
+            .hasMessage("Couldn't set initial AAC case assignment for case ["
+                        + caseDetails.getId()
+                        + "] using API: "
                         + aacUrl
                         + aacAssignmentsApiPath)
             .hasCauseInstanceOf(RestClientResponseException.class);
@@ -182,9 +184,10 @@ class CcdCaseAssignmentTest {
 
         assertThatThrownBy(() -> ccdCaseAssignment.revokeAccessToCase(callback, "some-org-identifier"))
             .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't revoke CCD case access using API: "
-                        + ccdUrl
-                        + ccdAssignmentsApiPath)
+            .hasMessage("Couldn't revoke CCD case access for case ["
+                        + caseDetails.getId()
+                        + "] using API: "
+                        + ccdUrl + ccdAssignmentsApiPath)
             .hasCauseInstanceOf(RestClientResponseException.class);
 
         verify(restTemplate)

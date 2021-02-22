@@ -41,7 +41,8 @@
             }
           ],
           "directionList": "Direction 1",
-          "directionEditDateDue": "2077-12-31"
+          "directionEditDateDue": "2077-12-31",
+          "directionEditExplanation": "Do the last thing"
         }
       }
     }

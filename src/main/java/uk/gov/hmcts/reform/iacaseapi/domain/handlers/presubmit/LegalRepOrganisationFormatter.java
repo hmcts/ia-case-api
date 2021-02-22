@@ -63,6 +63,10 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         if (organisationEntityResponse != null
             && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
             && featureToggler.getValue("share-case-feature", false)) {
+
+            log.info("PRD endpoint called for caseId [{}] orgId[{}]",
+                callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
+
             setupCaseCreation(callback, organisationEntityResponse.getOrganisationIdentifier());
         }
 

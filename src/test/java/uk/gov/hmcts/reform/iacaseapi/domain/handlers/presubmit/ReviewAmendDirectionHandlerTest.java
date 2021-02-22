@@ -5,48 +5,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AMEND_RESPONSE_ACTION_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_RESPONSE_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEW_RESPONSE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -54,62 +35,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
 class ReviewAmendDirectionHandlerTest {
 
     @Mock
-    private DirectionAppender directionAppender;
-    @Mock
-    private DirectionPartiesResolver directionPartiesResolver;
-    @Mock
-    private DirectionTagResolver directionTagResolver;
-    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
 
-    @Captor
-    private ArgumentCaptor<List<IdValue<Direction>>> existingDirectionsCaptor;
-
-    private ReviewAmendDirectionHandler reviewAmendDirectionHandler;
-
-    @BeforeEach
-    public void setUp() {
-        reviewAmendDirectionHandler =
-            new ReviewAmendDirectionHandler(
-                directionAppender,
-                directionPartiesResolver,
-                directionTagResolver
-            );
-    }
+    private ReviewAmendDirectionHandler reviewAmendDirectionHandler = new ReviewAmendDirectionHandler();
 
     @Test
     void should_append_new_direction_to_existing_directions_for_the_case() {
 
-        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
-        final List<IdValue<Direction>> allDirections = new ArrayList<>();
-
-        final String expectedExplanation = "Do the thing";
-        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
-
         final Event event = Event.REQUEST_RESPONSE_REVIEW;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
-
-        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
-        when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
-        when(directionAppender.append(
-            existingDirections,
-            expectedExplanation,
-            expectedParties,
-            expectedDateDue,
-            expectedDirectionTag
-        )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewAmendDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -117,125 +58,19 @@ class ReviewAmendDirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
-
-        verify(directionPartiesResolver, times(1)).resolve(callback);
-        verify(directionTagResolver, times(1)).resolve(event);
-        verify(directionAppender, times(1)).append(
-            existingDirections,
-            expectedExplanation,
-            expectedParties,
-            expectedDateDue,
-            expectedDirectionTag
-        );
-
-        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
         verify(asylumCase, times(1)).write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
         verify(asylumCase, times(1)).write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.YES);
-
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
     }
-
-    @Test
-    void should_add_new_direction_to_the_case_when_no_directions_exist() {
-
-        final List<IdValue<Direction>> allDirections = new ArrayList<>();
-
-        final String expectedExplanation = "Do the thing";
-        final Parties expectedParties = Parties.RESPONDENT;
-        final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
-
-        final Event event = Event.REQUEST_RESPONSE_REVIEW;
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(event);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
-
-        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
-        when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
-        when(directionAppender.append(
-            any(List.class),
-            eq(expectedExplanation),
-            eq(expectedParties),
-            eq(expectedDateDue),
-            eq(expectedDirectionTag)
-        )).thenReturn(allDirections);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            reviewAmendDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-
-        verify(directionPartiesResolver, times(1)).resolve(callback);
-        verify(directionTagResolver, times(1)).resolve(event);
-        verify(directionAppender, times(1)).append(
-            existingDirectionsCaptor.capture(),
-            eq(expectedExplanation),
-            eq(expectedParties),
-            eq(expectedDateDue),
-            eq(expectedDirectionTag)
-        );
-
-        List<IdValue<Direction>> actualExistingDirections =
-            existingDirectionsCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(0, actualExistingDirections.size());
-
-        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
-        verify(asylumCase, times(1)).write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
-        verify(asylumCase, times(1)).write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
-        verify(asylumCase, times(1)).write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.YES);
-
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
-    }
-
 
     @Test
     void should_add_new_direction_to_the_case_when_no_directions_exist_amend() {
-
-        final List<IdValue<Direction>> allDirections = new ArrayList<>();
-
-        final String expectedExplanation = "Do the thing";
-        final Parties expectedParties = Parties.RESPONDENT;
-        final String expectedDateDue = "2018-12-25";
-        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
 
         final Event event = Event.REQUEST_RESPONSE_AMEND;
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
-        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
-
-        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
-        when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
-        when(directionAppender.append(
-            any(List.class),
-            eq(expectedExplanation),
-            eq(expectedParties),
-            eq(expectedDateDue),
-            eq(expectedDirectionTag)
-        )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewAmendDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -243,65 +78,10 @@ class ReviewAmendDirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-
-        verify(directionPartiesResolver, times(1)).resolve(callback);
-        verify(directionTagResolver, times(1)).resolve(event);
-        verify(directionAppender, times(1)).append(
-            existingDirectionsCaptor.capture(),
-            eq(expectedExplanation),
-            eq(expectedParties),
-            eq(expectedDateDue),
-            eq(expectedDirectionTag)
-        );
-
-        List<IdValue<Direction>> actualExistingDirections =
-            existingDirectionsCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(0, actualExistingDirections.size());
-
-        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
         verify(asylumCase, times(1)).write(REVIEW_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);
         verify(asylumCase, times(1)).write(AMEND_RESPONSE_ACTION_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(APPEAL_RESPONSE_AVAILABLE, YesOrNo.NO);
         verify(asylumCase, times(1)).write(REVIEW_HOME_OFFICE_RESPONSE_BY_LEGAL_REP, YesOrNo.NO);
-
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
-    }
-
-    @Test
-    void should_throw_when_send_direction_explanation_is_not_present() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> reviewAmendDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("sendDirectionExplanation is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void should_throw_when_send_direction_date_due_is_not_present() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of("Do the thing"));
-        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> reviewAmendDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("sendDirectionDateDue is not present")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test

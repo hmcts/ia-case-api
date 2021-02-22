@@ -66,6 +66,10 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                     .map(idValue -> {
 
                         if (dynamicList.get().getValue().getCode().contains("Direction " + (maybeDirections.orElse(emptyList()).size() - (Integer.parseInt(idValue.getId())) + 1))) {
+
+                            // MidEvent does not pass temp fields
+                            asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties());
+
                             return new IdValue<>(
                                 idValue.getId(),
                                 new Direction(

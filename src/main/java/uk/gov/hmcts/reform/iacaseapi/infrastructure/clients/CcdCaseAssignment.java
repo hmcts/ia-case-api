@@ -92,12 +92,16 @@ public class CcdCaseAssignment {
 
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
-                "Couldn't revoke CCD case access using API: " + ccdUrl + ccdAssignmentsApiPath,
+                "Couldn't revoke CCD case access for case ["
+                + callback.getCaseDetails().getId()
+                + "] using API: "
+                + ccdUrl + ccdAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Revoke Access. Http status received from CCD API; {}", response.getStatusCodeValue());
+        log.info("Revoke Access. Http status received from CCD API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId());
     }
 
     public void assignAccessToCase(
@@ -134,12 +138,16 @@ public class CcdCaseAssignment {
 
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
-                "Couldn't set initial AAC case assignment using API: " + aacUrl + aacAssignmentsApiPath,
+                "Couldn't set initial AAC case assignment for case ["
+                + callback.getCaseDetails().getId()
+                + "] using API: "
+                + aacUrl + aacAssignmentsApiPath,
                 e
             );
         }
 
-        log.info("Assign Access. Http status received from AAC API; {}", response.getStatusCodeValue());
+        log.info("Assign Access. Http status received from AAC API; {} for case {}",
+            response.getStatusCodeValue(), callback.getCaseDetails().getId());
     }
 
     private HttpHeaders setHeaders(String serviceAuthorizationToken, String accessToken) {
