@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.DisableHystrixFeignConfiguration;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.FeignConfiguration;
 
 @FeignClient(
     name = "idam-api",
     url = "${idam.baseUrl}",
-    configuration = FeignConfiguration.class
+    configuration = {FeignConfiguration.class, DisableHystrixFeignConfiguration.class}
 )
 public interface IdamApi {
 

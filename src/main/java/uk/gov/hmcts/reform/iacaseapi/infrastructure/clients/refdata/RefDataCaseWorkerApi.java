@@ -13,7 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserId
 
 @FeignClient(
     name = "ref-data-client",
-    url = "${ref-data-case-worker-api.url}"
+    url = "${ref-data-case-worker-api.url}",
+    fallback = HystrixRefDataCaseWorkerFallback.class
 )
 public interface RefDataCaseWorkerApi {
 

@@ -334,6 +334,8 @@ idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
 feign:
+  hystrix:
+    enabled: true
   client:
     config:
       default:
@@ -341,6 +343,13 @@ feign:
         readTimeout: 5000
         loggerLevel: full
 
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
 #OpenID
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}

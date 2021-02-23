@@ -8,4 +8,6 @@ idam:
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
   scope: "openid profile roles"
 
-
+feign:
+  hystrix:
+    enabled: false

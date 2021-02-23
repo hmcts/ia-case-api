@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Value;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
@@ -108,8 +108,9 @@ class CaseWorkerServiceTest {
         List<Classification> expectedClassification;
     }
 
-    @Test
-    void getCaseWorkerNameForActorId() {
+    @ParameterizedTest
+    @MethodSource("getCaseWorkerNameForActorIdScenarioProvider")
+    void getCaseWorkerNameForActorId(CaseWorkerNameScenario scenario) {
 
         String userBearerToken = "some user bearer token";
         when(idamService.getUserToken()).thenReturn(userBearerToken);
@@ -122,14 +123,44 @@ class CaseWorkerServiceTest {
             userBearerToken,
             serviceBearerToken,
             new UserIds(List.of(someActorId))
-        )).thenReturn(Collections.singletonList(CaseWorkerProfile.builder()
-            .firstName("some firstname")
-            .lastName("some lastname")
-            .build()));
+        )).thenReturn(Collections.singletonList(scenario.getCaseWorkerProfile()));
 
-        String actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
+        CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
 
-        assertThat(actualCaseWorkerName).isEqualTo("some firstname some lastname");
+        assertThat(actualCaseWorkerName).isEqualTo(scenario.getExpectedCaseWorkerName());
     }
 
+    private static Stream<CaseWorkerNameScenario> getCaseWorkerNameForActorIdScenarioProvider() {
+
+        CaseWorkerNameScenario caseWorkerProfileExistsInRefDataApiScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName("some firstname").lastName("some lastname").build(),
+            new CaseWorkerName("some actor id", "some firstname some lastname")
+        );
+
+        CaseWorkerNameScenario caseWorkerProfileDoesNotExistsInRefDataApiScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().build(),
+            new CaseWorkerName("some actor id", "")
+        );
+
+        CaseWorkerNameScenario caseWorkerProfileWithNullFirstnameScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName(null).lastName("some lastname").build(),
+            new CaseWorkerName("some actor id", "some lastname")
+        );
+
+        CaseWorkerNameScenario caseWorkerProfileWithNullLastnameScenario = new CaseWorkerNameScenario(
+            CaseWorkerProfile.builder().firstName("some firstname").lastName(null).build(),
+            new CaseWorkerName("some actor id", "some firstname")
+        );
+
+        return Stream.of(caseWorkerProfileExistsInRefDataApiScenario,
+            caseWorkerProfileDoesNotExistsInRefDataApiScenario,
+            caseWorkerProfileWithNullFirstnameScenario,
+            caseWorkerProfileWithNullLastnameScenario);
+    }
+
+    @Value
+    private static class CaseWorkerNameScenario {
+        CaseWorkerProfile caseWorkerProfile;
+        CaseWorkerName expectedCaseWorkerName;
+    }
 }
