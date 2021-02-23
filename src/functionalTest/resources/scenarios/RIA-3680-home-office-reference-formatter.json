@@ -10,7 +10,20 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "homeOfficeReferenceNumber": "1234-4321-5678-8756"
+          "homeOfficeReferenceNumber": "1234-4321-5678-8756",
+          "uploadTheNoticeOfDecisionDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some-notice-of-decision-letter.pdf",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some notice of decision description"
+              }
+            }
+          ]
         }
       }
     }

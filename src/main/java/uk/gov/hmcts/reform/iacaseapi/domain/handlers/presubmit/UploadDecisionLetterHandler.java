@@ -4,18 +4,18 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
@@ -42,14 +42,8 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        final Optional<Document> noticeOfDecisionDocumentOptional = asylumCase
-            .read(UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT, Document.class);
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPEAL
-            && noticeOfDecisionDocumentOptional.isPresent();
+            && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -62,47 +56,33 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        List<DocumentWithMetadata> newLegalRepresentativeDocument = buildNewLegalRepDocument(asylumCase);
-        List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-            addNewLegalRepDocumentToExistingLegalRepDocuments(asylumCase, newLegalRepresentativeDocument);
+        Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
+            asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 
-        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
-        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT);
-        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
+        List<DocumentWithMetadata> noticeOfDecision =
+            maybeNoticeOfDecision
+                .orElseThrow(() -> new IllegalStateException("upload notice decision is not present"))
+                .stream()
+                .map(IdValue::getValue)
+                .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
-    }
 
-    private List<IdValue<DocumentWithMetadata>> addNewLegalRepDocumentToExistingLegalRepDocuments(
-        AsylumCase asylumCase,
-        List<DocumentWithMetadata> newLegalRepresentativeDocument) {
-
-        Optional<List<IdValue<DocumentWithMetadata>>> maybeLegalRepresentativeDocuments =
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
             asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-        final List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
-            maybeLegalRepresentativeDocuments.orElse(emptyList());
+        final List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+            maybeExistingLegalRepDocuments.orElse(emptyList());
 
-        return documentsAppender.append(legalRepresentativeDocuments, newLegalRepresentativeDocument
-        );
-    }
+        List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+            documentsAppender.append(existingLegalRepDocuments, noticeOfDecision);
 
-    private List<DocumentWithMetadata> buildNewLegalRepDocument(AsylumCase asylumCase) {
-        Document uploadTheNoticeOfDecisionDocument = asylumCase
-            .read(UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT, Document.class)
-            .orElseThrow(() -> new IllegalStateException("uploadTheNoticeOfDecisionDocument is not present"));
+        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
 
-        final String uploadTheNoticeOfDecisionExplanation = asylumCase
-            .read(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION, String.class)
-            .orElse("");
+        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 
-        return Collections.singletonList(
-            documentReceiver
-                .receive(
-                    uploadTheNoticeOfDecisionDocument,
-                    uploadTheNoticeOfDecisionExplanation,
-                    DocumentTag.HO_DECISION_LETTER
-                )
-        );
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
