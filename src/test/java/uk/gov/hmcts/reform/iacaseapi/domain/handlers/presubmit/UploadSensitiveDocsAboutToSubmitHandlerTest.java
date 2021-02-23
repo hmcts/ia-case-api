@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_FILE_UPLOADS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_SENSITIVE_DOCS_IS_APPELLANT_RESPONDENT;
 
-import com.launchdarkly.shaded.org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +19,7 @@ import java.util.Optional;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

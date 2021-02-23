@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.config;
 
-import com.launchdarkly.client.Components;
-import com.launchdarkly.client.LDClient;
-import com.launchdarkly.client.LDClientInterface;
-import com.launchdarkly.client.LDConfig;
+import com.launchdarkly.sdk.server.Components;
+import com.launchdarkly.sdk.server.LDClient;
+import com.launchdarkly.sdk.server.LDConfig;
+import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,8 @@ public class FeatureToggleConfiguration {
         return new LDConfig.Builder()
             .http(Components
                 .httpConfiguration()
-                .connectTimeoutMillis(connectionTimeout)
-                .socketTimeoutMillis(socketTimeout)
+                .connectTimeout(Duration.ofMillis(connectionTimeout))
+                .socketTimeout(Duration.ofMillis(socketTimeout))
             )
             .build();
     }
