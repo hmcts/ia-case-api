@@ -17,6 +17,7 @@ class CaseFlagTypeTest {
         assertEquals("unacceptableCustomerBehaviour", CaseFlagType.UNACCEPTABLE_CUSTOMER_BEHAVIOUR.toString());
         assertEquals("unaccompaniedMinor", CaseFlagType.UNACCOMPANIED_MINOR.toString());
         assertEquals("setAsideReheard", CaseFlagType.SET_ASIDE_REHEARD.toString());
+        assertEquals("s94bOutOfCountry", CaseFlagType.S94B_OUT_OF_COUNTRY.toString());
         assertEquals("unknown", CaseFlagType.UNKNOWN.toString());
 
         assertEquals("Anonymity", CaseFlagType.ANONYMITY.getReadableText());
@@ -27,11 +28,12 @@ class CaseFlagTypeTest {
         assertEquals("Unacceptable customer behaviour", CaseFlagType.UNACCEPTABLE_CUSTOMER_BEHAVIOUR.getReadableText());
         assertEquals("Unaccompanied minor", CaseFlagType.UNACCOMPANIED_MINOR.getReadableText());
         assertEquals("Set aside - Reheard", CaseFlagType.SET_ASIDE_REHEARD.getReadableText());
+        assertEquals("S94B Out of Country", CaseFlagType.S94B_OUT_OF_COUNTRY.getReadableText());
         assertEquals("Unknown", CaseFlagType.UNKNOWN.getReadableText());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(10, CaseFlagType.values().length);
+        assertEquals(11, CaseFlagType.values().length);
     }
 }

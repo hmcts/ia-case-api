@@ -114,6 +114,10 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, additionalInformation);
                 break;
+            case S94B_OUT_OF_COUNTRY:
+                asylumCase.write(CASE_FLAG_S94B_OUT_OF_COUNTRY_EXISTS, YesOrNo.YES);
+                asylumCase.write(CASE_FLAG_S94B_OUT_OF_COUNTRY_ADDITIONAL_INFORMATION, additionalInformation);
+                break;
             default:
                 break;
         }

@@ -14,6 +14,7 @@ public enum CaseFlagType {
     UNACCEPTABLE_CUSTOMER_BEHAVIOUR("unacceptableCustomerBehaviour", "Unacceptable customer behaviour"),
     UNACCOMPANIED_MINOR("unaccompaniedMinor", "Unaccompanied minor"),
     SET_ASIDE_REHEARD("setAsideReheard", "Set aside - Reheard"),
+    S94B_OUT_OF_COUNTRY("s94bOutOfCountry", "S94B Out of Country"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown", "Unknown");
