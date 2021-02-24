@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   build:
@@ -30,9 +27,9 @@ jobs:
           mkdir swagger-staging
             cd swagger-staging
           git init
-          git config user.email "jenkins-reform-iac@hmcts.net"
+          git config user.email "github-actions@users.noreply.github.com"
           git config user.name "IAC Case"
-          git remote add upstream https://${{ secrets.GH_TOKEN }}@github.com/hmcts/reform-api-docs.git
+          git remote add upstream "https://jenkins-reform-hmcts:${{ secrets.SWAGGER_PUBLISHER_API_TOKEN }}@github.com/hmcts/reform-api-docs.git"
           git pull upstream master
           repo=`echo "$GITHUB_REPOSITORY" | cut -f2- -d/`
           echo "$(cat /tmp/swagger-specs.json)" > "docs/specs/$repo.json"
