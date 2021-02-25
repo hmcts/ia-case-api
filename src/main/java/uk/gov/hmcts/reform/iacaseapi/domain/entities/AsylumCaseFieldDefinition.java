@@ -1332,6 +1332,15 @@ public enum AsylumCaseFieldDefinition {
     NEW_FEE_AMOUNT(
         "newFeeAmount", new TypeReference<String>(){}),
 
+    APPELLANT_IN_UK(
+        "appellantInUk", new TypeReference<YesOrNo>() {}),
+
+    APPEAL_OUT_OF_COUNTRY(
+        "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
+
+    IS_OUT_OF_COUNTRY_ENABLED(
+        "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
+
     ;
 
     private final String value;

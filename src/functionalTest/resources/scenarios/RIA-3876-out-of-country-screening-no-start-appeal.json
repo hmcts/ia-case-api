@@ -1,0 +1,29 @@
+{
+  "description": "RIA-3876 Out of country screening, living in UK for Start appeal",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInUk": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "Yes",
+        "appealOutOfCountry": "No"
+      }
+    }
+  }
+}
