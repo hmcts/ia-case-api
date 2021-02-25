@@ -1,0 +1,38 @@
+{
+  "description": "RIA-3761 Derive hearing centre from Legal Rep Company address postcode when no fixed address appellant",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "legalRepCompanyName": "legalRepCompany",
+          "legalRepCompanyAddress": {
+            "AddressLine1": "line1",
+            "AddressLine2": "",
+            "PostTown": "town",
+            "County": "county",
+            "PostCode": "NE 2AB",
+            "Country": "UK"
+          },
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "newcastle"
+      }
+    }
+  }
+}
+

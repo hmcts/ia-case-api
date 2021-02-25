@@ -49,11 +49,11 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Arrays.asList(
+               && Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL)
-            .contains(callback.getEvent());
+                   .contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -81,34 +81,30 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     private Optional<String> getAppealPostcode(
         AsylumCase asylumCase
     ) {
-        Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
-        if (optionalHasSponsor.isPresent()) {
-            if (optionalHasSponsor.get().equals(YES)) {
-                Optional<AddressUk> optionalSponsorAddress = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);
-                if (optionalSponsorAddress.isPresent()) {
-                    return optionalSponsorAddress.get().getPostCode();
-                }
-            } else {
-                Optional<AddressUk> optionalLegalRepCompanyAddress =
-                    asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class);
-                if (optionalLegalRepCompanyAddress.isPresent()) {
-                    return optionalLegalRepCompanyAddress.get().getPostCode();
-                }
+        if (asylumCase.read(HAS_SPONSOR, YesOrNo.class)
+                .orElse(NO) == YES) {
+            Optional<AddressUk> optionalSponsorAddress = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);
+
+            if (optionalSponsorAddress.isPresent()) {
+                return optionalSponsorAddress.get().getPostCode();
             }
-            return Optional.empty();
         }
 
         if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
-            .orElse(NO) == YES) {
+                .orElse(NO) == YES) {
 
             Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
             if (optionalAppellantAddress.isPresent()) {
-
                 AddressUk appellantAddress = optionalAppellantAddress.get();
-
                 return appellantAddress.getPostCode();
             }
+        }
+
+        Optional<AddressUk> optionalLegalRepCompanyAddress =
+            asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class);
+        if (optionalLegalRepCompanyAddress.isPresent()) {
+            return optionalLegalRepCompanyAddress.get().getPostCode();
         }
 
         return Optional.empty();

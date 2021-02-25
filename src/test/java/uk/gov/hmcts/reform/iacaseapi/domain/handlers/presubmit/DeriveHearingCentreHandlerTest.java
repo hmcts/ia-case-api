@@ -151,10 +151,7 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SPONSOR_ADDRESS, AddressUk.class)).thenReturn(Optional.of(sponsorOrCompanyAddressUk));
         when(sponsorOrCompanyAddressUk.getPostCode()).thenReturn(Optional.of("A456 4XY"));
@@ -205,10 +202,7 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class)).thenReturn(Optional.of(
             sponsorOrCompanyAddressUk));
@@ -256,10 +250,8 @@ class DeriveHearingCentreHandlerTest {
         when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(hearingCentre);
 
         CaseManagementLocation expectedCaseManagementLocation =
