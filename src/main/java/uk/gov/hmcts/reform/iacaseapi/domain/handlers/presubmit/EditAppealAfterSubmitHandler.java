@@ -67,26 +67,36 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-
+        LocalDate decisionDate = null;
         Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
 
-        LocalDate homeOfficeDecisionDate = null;
+        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
-            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+        if (maybeOutOfCountryDecisionType.isPresent()) {
+            OutOfCountryDecisionType decisionType = maybeOutOfCountryDecisionType.get();
 
-            homeOfficeDecisionDate =
+            if (decisionType == OutOfCountryDecisionType.REMOVAL_OF_CLIENT) {
+                Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+
+                decisionDate =
+                    parse(maybeHomeOfficeDecisionLetterDate
+                        .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+            }
+        } else {
+            decisionDate =
                 parse(maybeHomeOfficeDecisionDate
                     .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
         }
 
-        if (homeOfficeDecisionDate != null && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
+
+        if (decisionDate != null && decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
             asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
             asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
         }
+
 
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
             changeEditAppealApplicationsToCompleted(asylumCase);
@@ -96,6 +106,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
         }
+
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

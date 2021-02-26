@@ -1358,6 +1358,8 @@ public enum AsylumCaseFieldDefinition {
     OUT_OF_COUNTRY_DECISION_TYPE(
         "outOfCountryDecisionType", new TypeReference<OutOfCountryDecisionType>(){}),
 
+    DECISION_LETTER_RECEIVED_DATE(
+        "decisionLetterReceivedDate", new TypeReference<String>(){}),
     ;
 
     private final String value;
