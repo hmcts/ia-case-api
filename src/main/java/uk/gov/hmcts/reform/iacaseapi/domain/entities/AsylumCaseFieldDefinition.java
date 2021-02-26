@@ -1341,6 +1341,23 @@ public enum AsylumCaseFieldDefinition {
     IS_OUT_OF_COUNTRY_ENABLED(
         "isOutOfCountryEnabled", new TypeReference<YesOrNo>() {}),
 
+    HAS_CORRESPONDENCE_ADDRESS(
+        "hasCorrespondenceAddress", new TypeReference<YesOrNo>() {}),
+
+    APPELLANT_OUT_OF_COUNTRY_ADDRESS(
+        "appellantOutOfCountryAddress", new TypeReference<String>(){}),
+
+    HAS_SPONSOR(
+        "hasSponsor", new TypeReference<YesOrNo>(){}),
+
+    GWF_REFERENCE_NUMBER(
+        "gwfReferenceNumber", new TypeReference<String>(){}),
+    DATE_ENTRY_CLEARANCE_DECISION(
+        "dateEntryClearanceDecision", new TypeReference<String>(){}),
+
+    OUT_OF_COUNTRY_DECISION_TYPE(
+        "outOfCountryDecisionType", new TypeReference<OutOfCountryDecisionType>(){}),
+
     ;
 
     private final String value;

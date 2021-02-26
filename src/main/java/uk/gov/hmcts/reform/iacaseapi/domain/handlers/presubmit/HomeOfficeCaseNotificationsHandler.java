@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
@@ -79,7 +81,17 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+        AsylumCase asylumCaseWithHomeOfficeData =
+            callback
+                .getCaseDetails()
+                .getCaseData();
+
+
+        if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
+            value -> value.equals(YesOrNo.YES)).orElse(true)) {
+
+            asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
     }

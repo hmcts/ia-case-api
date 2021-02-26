@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -62,13 +62,19 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 .getCaseDetails()
                 .getCaseData();
 
+        LocalDate homeOfficeDecisionDate = null;
+
         Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
 
-        LocalDate homeOfficeDecisionDate =
-            parse(maybeHomeOfficeDecisionDate
-                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
 
-        if (homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
+        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
+            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+
+            homeOfficeDecisionDate = parse(maybeHomeOfficeDecisionDate
+                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
+        }
+
+        if (homeOfficeDecisionDate != null && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDays))) {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);

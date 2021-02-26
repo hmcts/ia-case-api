@@ -5,18 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NATIONALITIES_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
@@ -79,6 +70,10 @@ class HomeOfficeCaseValidateHandlerTest {
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
+
         when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA)).thenReturn(Optional.of(homeOfficeCaseStatus));
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
@@ -110,6 +105,24 @@ class HomeOfficeCaseValidateHandlerTest {
             APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
         verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
         verify(applicationStatus, times(1)).modifyListDataForCcd();
+    }
+
+    @Test
+    void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen() {
+
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseValidateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(any(),any());
     }
 
     @Test
