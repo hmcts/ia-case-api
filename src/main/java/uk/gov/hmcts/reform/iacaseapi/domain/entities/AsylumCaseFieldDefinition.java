@@ -1360,6 +1360,10 @@ public enum AsylumCaseFieldDefinition {
 
     DECISION_LETTER_RECEIVED_DATE(
         "decisionLetterReceivedDate", new TypeReference<String>(){}),
+
+    DATE_CLIENT_LEAVE_UK(
+        "dateClientLeaveUk", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
