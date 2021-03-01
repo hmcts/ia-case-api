@@ -10,12 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_GROUNDS_DOCUMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_RESPONDENT_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -28,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -58,7 +54,7 @@ class FtpaRespondentPreparerTest {
     @BeforeEach
     public void setUp() {
         ftpaRespondentPreparer =
-            new FtpaRespondentPreparer(dateProvider, 14, featureToggler);
+            new FtpaRespondentPreparer(dateProvider, 14,28, featureToggler);
 
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }
@@ -80,6 +76,24 @@ class FtpaRespondentPreparerTest {
     }
 
     @Test
+    void should_set_out_of_date_submission_state_no_for_ooc_removal_of_client_decision_type() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+        final String appealDate = dateProvider.now().minusDays(1).toString();
+        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+
+        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+
+    }
+
+    @Test
     void should_set_out_of_date_submission_state_no_when_no_appeal_date() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -90,6 +104,24 @@ class FtpaRespondentPreparerTest {
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+
+    }
+
+    @Test
+    void should_set_out_of_date_submission_state_to_yes_for_ooc_removal_of_client_decision_type() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(dateProvider.now()).thenReturn(LocalDate.now());
+        final String appealDate = dateProvider.now().minusDays(29).toString();
+        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+
+        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
 
     }
 

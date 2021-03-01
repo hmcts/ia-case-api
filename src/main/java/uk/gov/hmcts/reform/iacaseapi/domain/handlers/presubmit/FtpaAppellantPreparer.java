@@ -24,16 +24,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
-    private final int ftpaAppellantAppealOutOfTimeDays;
+    private final int ftpaAppellantAppealOutOfTimeDaysUk;
+    private final int ftpaAppellantAppealOutOfTimeDaysOoc;
     private final FeatureToggler featureToggler;
 
     public FtpaAppellantPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaAppellantAppealOutOfTimeDays}") int ftpaAppellantAppealOutOfTimeDays,
+        @Value("${ftpaAppellantAppealOutOfTimeDaysUk}") int ftpaAppellantAppealOutOfTimeDaysUk,
+        @Value("${ftpaAppellantAppealOutOfTimeDaysOoc}") int ftpaAppellantAppealOutOfTimeDaysOoc,
         FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
-        this.ftpaAppellantAppealOutOfTimeDays = ftpaAppellantAppealOutOfTimeDays;
+        this.ftpaAppellantAppealOutOfTimeDaysUk = ftpaAppellantAppealOutOfTimeDaysUk;
+        this.ftpaAppellantAppealOutOfTimeDaysOoc = ftpaAppellantAppealOutOfTimeDaysOoc;
         this.featureToggler = featureToggler;
     }
 
@@ -79,6 +82,10 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
         }
 
         final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
+
+        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+
+        final int ftpaAppellantAppealOutOfTimeDays =  maybeOutOfCountryDecisionType.isPresent() ? ftpaAppellantAppealOutOfTimeDaysOoc : ftpaAppellantAppealOutOfTimeDaysUk;
 
         if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaAppellantAppealOutOfTimeDays))).isPresent()) {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);

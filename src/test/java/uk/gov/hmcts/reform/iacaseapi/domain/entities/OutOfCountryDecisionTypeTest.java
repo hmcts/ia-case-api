@@ -30,6 +30,12 @@ class OutOfCountryDecisionTypeTest {
     }
 
     @Test
+    void should_format_type_correctly() {
+        OutOfCountryDecisionType outOfCountryDecisionType = REFUSAL_OF_HUMAN_RIGHTS;
+        assertEquals("refusalOfHumanRights: A decision to refuse a human rights claim for entry clearance",outOfCountryDecisionType.toString());
+    }
+
+    @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
         assertEquals(3, OutOfCountryDecisionType.values().length);
     }

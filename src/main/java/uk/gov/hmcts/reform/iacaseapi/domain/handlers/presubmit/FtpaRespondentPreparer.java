@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -24,16 +25,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
-    private final int ftpaRespondentAppealOutOfTimeDays;
+    private final int ftpaRespondentAppealOutOfTimeDaysUk;
+    private final int ftpaRespondentAppealOutOfTimeDaysOoc;
     private final FeatureToggler featureToggler;
 
     public FtpaRespondentPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaRespondentAppealOutOfTimeDays}") int ftpaRespondentAppealOutOfTimeDays,
+        @Value("${ftpaRespondentAppealOutOfTimeDaysUk}") int ftpaRespondentAppealOutOfTimeDaysUk,
+        @Value("${ftpaRespondentAppealOutOfTimeDaysOoc}") int ftpaRespondentAppealOutOfTimeDaysOoc,
         FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
-        this.ftpaRespondentAppealOutOfTimeDays = ftpaRespondentAppealOutOfTimeDays;
+        this.ftpaRespondentAppealOutOfTimeDaysUk = ftpaRespondentAppealOutOfTimeDaysUk;
+        this.ftpaRespondentAppealOutOfTimeDaysOoc = ftpaRespondentAppealOutOfTimeDaysOoc;
         this.featureToggler = featureToggler;
     }
 
@@ -79,6 +83,10 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
         }
 
         final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
+
+        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+
+        final int ftpaRespondentAppealOutOfTimeDays = maybeOutOfCountryDecisionType.isPresent() ? ftpaRespondentAppealOutOfTimeDaysOoc : ftpaRespondentAppealOutOfTimeDaysUk;
 
         if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaRespondentAppealOutOfTimeDays))).isPresent()) {
             asylumCase.write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YES);
