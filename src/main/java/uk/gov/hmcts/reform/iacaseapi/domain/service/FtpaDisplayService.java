@@ -33,6 +33,7 @@ public class FtpaDisplayService {
     private static final String REMADE_RULE_32 = "remadeRule32";
     private static final String APPEAL_DECISION = "appealDecision";
 
+    
     private final Map<Pair<String, String>, String> ftpaDisplayMap = new ImmutableMap.Builder<Pair<String, String>, String>()
         .put(new ImmutablePair<>(GRANTED, GRANTED), GRANTED)
         .put(new ImmutablePair<>(GRANTED, PARTIALLY_GRANTED), GRANTED)
