@@ -1,0 +1,45 @@
+{
+  "description": "RIA-3851 Derive hearing centre from Sponsor address postcode when Sponsor is selected",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "appellantInUk": "No",
+          "hasSponsor": "Yes",
+          "sponsorGivenNames": "test",
+          "sponsorFamilyName": "some-name",
+          "sponsorAddress": {
+            "AddressLine1": "line1",
+            "AddressLine2": "",
+            "PostTown": "town",
+            "County": "county",
+            "PostCode": "NE 2AB",
+            "Country": "UK"
+          },
+          "sponsorContactPreference": "wantsSms",
+          "sponsorMobileNumber": "07111111111",
+          "sponsorAuthorisation": "No",
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "newcastle"
+      }
+    }
+  }
+}
+

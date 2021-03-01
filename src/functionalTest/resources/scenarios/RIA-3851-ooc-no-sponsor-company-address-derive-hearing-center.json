@@ -1,0 +1,41 @@
+{
+  "description": "RIA-3851 Derive hearing centre from Legal Rep Company address postcode when no Sponsor",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "appellantInUk": "No",
+          "hasSponsor": "No",
+          "legalRepCompanyName": "legalRepCompany",
+          "legalRepCompanyAddress": {
+            "AddressLine1": "line1",
+            "AddressLine2": "",
+            "PostTown": "town",
+            "County": "county",
+            "PostCode": "NE 2AB",
+            "Country": "UK"
+          },
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "newcastle"
+      }
+    }
+  }
+}
+

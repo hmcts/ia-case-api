@@ -15,7 +15,10 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
 
 import java.util.Arrays;
@@ -57,6 +60,8 @@ class DeriveHearingCentreHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private AddressUk addressUk;
+    @Mock
+    private AddressUk sponsorOrCompanyAddressUk;
 
     @Mock
     private HearingCentreFinder hearingCentreFinder;
@@ -70,7 +75,6 @@ class DeriveHearingCentreHandlerTest {
         deriveHearingCentreHandler =
             new DeriveHearingCentreHandler(hearingCentreFinder, caseManagementLocationService);
     }
-
 
     @ParameterizedTest
     @CsvSource({
@@ -90,7 +94,6 @@ class DeriveHearingCentreHandlerTest {
         "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
         "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
     })
-
     void should_derive_hearing_centre_from_appellant_postcode(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
@@ -123,6 +126,114 @@ class DeriveHearingCentreHandlerTest {
         verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
+        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
+    })
+    void should_derive_hearing_centre_from_sponsor_postcode(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
+        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
+        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(SPONSOR_ADDRESS, AddressUk.class)).thenReturn(Optional.of(sponsorOrCompanyAddressUk));
+        when(sponsorOrCompanyAddressUk.getPostCode()).thenReturn(Optional.of("A456 4XY"));
+        when(hearingCentreFinder.find("A456 4XY")).thenReturn(hearingCentre);
+
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(hearingCentreFinder, times(1)).find("A456 4XY");
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+
+        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
+        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
+    })
+    void should_derive_hearing_centre_from_legal_rep_company_postcode(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
+        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
+        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class)).thenReturn(Optional.of(
+            sponsorOrCompanyAddressUk));
+        when(sponsorOrCompanyAddressUk.getPostCode()).thenReturn(Optional.of("A456 4XY"));
+        when(hearingCentreFinder.find("A456 4XY")).thenReturn(hearingCentre);
+
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(hearingCentreFinder, times(1)).find("A456 4XY");
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
 
     @ParameterizedTest
     @CsvSource({
@@ -138,7 +249,53 @@ class DeriveHearingCentreHandlerTest {
         "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
         "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
+    void should_use_default_hearing_centre_if_sponsor_present_and_no_valid_address(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
+        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
+        when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(hearingCentreFinder.getDefaultHearingCentre()).thenReturn(hearingCentre);
+
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
+        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
+
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+
+        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
+        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+    })
     void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
 

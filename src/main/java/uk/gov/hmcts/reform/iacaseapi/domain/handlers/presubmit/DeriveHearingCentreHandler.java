@@ -1,14 +1,23 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -69,9 +78,26 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private Optional<String> getAppellantPostcode(
+    private Optional<String> getAppealPostcode(
         AsylumCase asylumCase
     ) {
+        Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
+        if (optionalHasSponsor.isPresent()) {
+            if (optionalHasSponsor.get().equals(YES)) {
+                Optional<AddressUk> optionalSponsorAddress = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);
+                if (optionalSponsorAddress.isPresent()) {
+                    return optionalSponsorAddress.get().getPostCode();
+                }
+            } else {
+                Optional<AddressUk> optionalLegalRepCompanyAddress =
+                    asylumCase.read(LEGAL_REP_COMPANY_ADDRESS, AddressUk.class);
+                if (optionalLegalRepCompanyAddress.isPresent()) {
+                    return optionalLegalRepCompanyAddress.get().getPostCode();
+                }
+            }
+            return Optional.empty();
+        }
+
         if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
             .orElse(NO) == YES) {
 
@@ -91,7 +117,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     private void trySetHearingCentreFromPostcode(
         AsylumCase asylumCase
     ) {
-        Optional<String> optionalAppellantPostcode = getAppellantPostcode(asylumCase);
+        Optional<String> optionalAppellantPostcode = getAppealPostcode(asylumCase);
 
         if (optionalAppellantPostcode.isPresent()) {
             String appellantPostcode = optionalAppellantPostcode.get();
@@ -105,7 +131,8 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 caseManagementLocationService.getCaseManagementLocation(staffLocationName));
         } else {
             asylumCase.write(HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
-            asylumCase.write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
+            asylumCase
+                .write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentreFinder.getDefaultHearingCentre());
 
             String staffLocationName =
                 StaffLocation.getLocation(hearingCentreFinder.getDefaultHearingCentre()).getName();

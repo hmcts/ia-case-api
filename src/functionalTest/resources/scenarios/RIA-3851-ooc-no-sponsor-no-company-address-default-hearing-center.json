@@ -1,0 +1,36 @@
+{
+  "description": "RIA-3851 Derive default hearing centre when no Sponsor selected and no Company address",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "appellantInUk": "No",
+          "hasSponsor": "No",
+          "hearingCentre": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "taylorHouse",
+        "staffLocation": "Taylor House",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "765324"
+        }
+      }
+    }
+  }
+}

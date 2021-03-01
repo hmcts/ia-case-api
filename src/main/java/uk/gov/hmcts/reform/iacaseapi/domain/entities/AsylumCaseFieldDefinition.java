@@ -1364,6 +1364,36 @@ public enum AsylumCaseFieldDefinition {
     DATE_CLIENT_LEAVE_UK(
         "dateClientLeaveUk", new TypeReference<String>(){}),
 
+    OUT_OF_COUNTRY_MOBILE_NUMBER(
+        "outOfCountryMobileNumber", new TypeReference<String>(){}),
+
+    SPONSOR_GIVEN_NAMES(
+        "sponsorGivenNames", new TypeReference<String>(){}),
+
+    SPONSOR_FAMILY_NAME(
+        "sponsorFamilyName", new TypeReference<String>(){}),
+
+    SPONSOR_ADDRESS(
+        "sponsorAddress", new TypeReference<AddressUk>(){}),
+
+    SPONSOR_CONTACT_PREFERENCE(
+        "sponsorContactPreference", new TypeReference<ContactPreference>(){}),
+
+    SPONSOR_EMAIL(
+        "sponsorEmail", new TypeReference<String>(){}),
+
+    SPONSOR_MOBILE_NUMBER(
+        "sponsorMobileNumber", new TypeReference<String>(){}),
+
+    SPONSOR_AUTHORISATION(
+        "sponsorAuthorisation", new TypeReference<YesOrNo>(){}),
+
+    SPONSOR_NAME_FOR_DISPLAY(
+        "sponsorNameForDisplay", new TypeReference<String>(){}),
+
+    SPONSOR_ADDRESS_FOR_DISPLAY(
+        "sponsorAddressForDisplay", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
