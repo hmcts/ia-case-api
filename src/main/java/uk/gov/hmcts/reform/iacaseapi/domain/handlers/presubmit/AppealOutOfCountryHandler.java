@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final FeatureToggler featureToggler;
+
+    public AppealOutOfCountryHandler(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -35,7 +43,10 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.START_APPEAL;
+            && Arrays.asList(
+            Event.START_APPEAL,
+            Event.EDIT_APPEAL).contains(callback.getEvent())
+            && featureToggler.getValue("out-of-country-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

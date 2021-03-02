@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_EU_REFUSAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_HUMAN_RIGHTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_PROTECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_REVOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -28,8 +36,8 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.START_APPEAL
-                   || callback.getEvent() == Event.EDIT_APPEAL);
+            && (callback.getEvent() == Event.START_APPEAL
+            || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,7 +59,8 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
 
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE);
         if (appealType.isPresent() && appealType.get().equals(AppealType.DC)) {
-            Optional<CheckValues<String>> maybeAppealGroundsDeprivationHumanRights = asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
+            Optional<CheckValues<String>> maybeAppealGroundsDeprivationHumanRights =
+                asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
             maybeAppealGroundsDeprivationHumanRights.ifPresent(appealGroundsDeprivationHumanRights ->
                 appealGrounds.addAll(appealGroundsDeprivationHumanRights.getValues()));
 
@@ -80,7 +89,8 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
                 .ifPresent(appealGroundsRevocation -> appealGrounds.addAll(appealGroundsRevocation.getValues()));
 
         } else {
-            Optional<CheckValues<String>> maybeAppealGroundsHumanRightsRefusal = asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
+            Optional<CheckValues<String>> maybeAppealGroundsHumanRightsRefusal =
+                asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
             maybeAppealGroundsHumanRightsRefusal.ifPresent(appealGroundsHumanRightsRefusal ->
                 appealGrounds.addAll(appealGroundsHumanRightsRefusal.getValues()));
         }

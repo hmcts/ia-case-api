@@ -1394,6 +1394,9 @@ public enum AsylumCaseFieldDefinition {
     SPONSOR_ADDRESS_FOR_DISPLAY(
         "sponsorAddressForDisplay", new TypeReference<String>(){}),
 
+    DEPORTATION_ORDER_OPTIONS(
+        "deportationOrderOptions", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;

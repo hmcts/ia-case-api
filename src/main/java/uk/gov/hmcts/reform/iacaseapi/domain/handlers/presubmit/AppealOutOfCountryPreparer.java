@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 
 import org.springframework.stereotype.Component;
@@ -46,6 +47,10 @@ public class AppealOutOfCountryPreparer implements PreSubmitCallbackHandler<Asyl
         YesOrNo isOutOfCountryEnabled
             = featureToggler.getValue("out-of-country-feature", false) ? YesOrNo.YES : YesOrNo.NO;
         asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, isOutOfCountryEnabled);
+
+        if (isOutOfCountryEnabled.equals(YesOrNo.NO)) {
+            asylumCase.write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

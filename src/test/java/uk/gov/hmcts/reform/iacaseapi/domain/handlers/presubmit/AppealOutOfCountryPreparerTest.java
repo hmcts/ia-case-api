@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -79,6 +80,8 @@ class AppealOutOfCountryPreparerTest {
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
             IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.NO);
+        Mockito.verify(asylumCase, times(1)).write(
+            APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
     }
 
     @Test
