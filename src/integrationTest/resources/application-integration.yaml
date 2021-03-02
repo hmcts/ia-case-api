@@ -16,5 +16,3 @@ featureFlag:
 idam:
   s2s-authorised:
     services: ia
-
-ref-data-case-worker-api.url: http://localhost:8080
