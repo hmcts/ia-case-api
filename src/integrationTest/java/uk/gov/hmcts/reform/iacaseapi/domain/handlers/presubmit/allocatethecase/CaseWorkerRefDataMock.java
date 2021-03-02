@@ -9,9 +9,13 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class CaseWorkerRefDataMock {
+public final class CaseWorkerRefDataMock {
 
     private static final String URL = "/refdata/case-worker/users/fetchUsersById";
+
+    private CaseWorkerRefDataMock() {
+        // we need it for the checkstyle check
+    }
 
     public static void setup200MockResponse(WireMockServer mockService) throws IOException {
         mockService.stubFor(WireMock.post(WireMock.urlEqualTo(URL))
