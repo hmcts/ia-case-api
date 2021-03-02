@@ -112,6 +112,7 @@ core_case_data_api_assignments_path: "/case-users"
 
 assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}
 assign_case_access_api_assignments_path: "/case-assignments"
+apply_noc_access_api_assignments_path: "/noc/check-noc-approval"
 
 appealReferenceSequenceSeed: 50000
 
@@ -185,6 +186,7 @@ security:
       - "applyForFTPAAppellant"
       - "updateLegalRepresentativesDetails"
       - "makeAnApplication"
+      - "removeRepresentation"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
@@ -245,6 +247,7 @@ security:
       - "requestNewHearingRequirements"
       - "allocateTheCase"
       - "manageFeeUpdate"
+      - "removeRepresentation"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -269,6 +272,7 @@ security:
       - "reinstateAppeal"
       - "recordRemissionDecision"
       - "manageFeeUpdate"
+      - "removeRepresentation"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
