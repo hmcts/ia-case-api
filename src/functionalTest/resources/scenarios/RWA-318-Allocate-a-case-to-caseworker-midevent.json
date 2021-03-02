@@ -1,5 +1,5 @@
 {
-  "description": "RWA-318 Allocate a case to caseworker midEvent. //fixme: enable test on 340 ticket",
+  "description": "RWA-318 Allocate a case to caseworker midEvent. //fixme: RWA-337",
   "disabled": "true",
   "request": {
     "uri": "/asylum/ccdMidEvent",
