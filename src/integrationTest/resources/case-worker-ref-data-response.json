@@ -1,0 +1,73 @@
+[
+  {
+    "caseWorkerId": "string",
+    "caseWorkerLocations": [
+      {
+        "caseWorkerId": "string",
+        "caseWorkerLocationId": 0,
+        "createdDate": "2021-01-18T16:35:45.194Z",
+        "lastUpdate": "2021-01-18T16:35:45.194Z",
+        "location": "string",
+        "locationId": 0,
+        "primaryFlag": true
+      }
+    ],
+    "caseWorkerRoles": [
+      {
+        "caseWorkerId": "string",
+        "caseWorkerRoleId": 0,
+        "createdDate": "2021-01-18T16:35:45.194Z",
+        "lastUpdate": "2021-01-18T16:35:45.194Z",
+        "primaryFlag": true,
+        "roleId": 0,
+        "roleType": {
+          "caseWorkerIdamRoleAssociations": [
+            {
+              "createdDate": "2021-01-18T16:35:45.194Z",
+              "cwIdamRoleAssociationId": 0,
+              "idamRole": "string",
+              "lastUpdate": "2021-01-18T16:35:45.194Z",
+              "roleId": 0,
+              "serviceCode": "string"
+            }
+          ],
+          "caseWorkerRoles": [
+            null
+          ],
+          "createdDate": "2021-01-18T16:35:45.194Z",
+          "description": "string",
+          "lastUpdate": "2021-01-18T16:35:45.194Z",
+          "roleId": 0
+        }
+      }
+    ],
+    "caseWorkerWorkAreas": [
+      {
+        "areaOfWork": "string",
+        "caseWorkerId": "string",
+        "caseWorkerWorkAreaId": 0,
+        "createdDate": "2021-01-18T16:35:45.194Z",
+        "lastUpdate": "2021-01-18T16:35:45.194Z",
+        "serviceCode": "string"
+      }
+    ],
+    "createdDate": "2021-01-18T16:35:45.194Z",
+    "emailId": "string",
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "lastUpdate": "2021-01-18T16:35:45.194Z",
+    "region": "string",
+    "regionId": 0,
+    "suspended": true,
+    "userType": {
+      "caseWorkerProfiles": [
+        null
+      ],
+      "createdDate": "2021-01-18T16:35:45.194Z",
+      "description": "string",
+      "lastUpdate": "2021-01-18T16:35:45.194Z",
+      "userTypeId": 0
+    },
+    "userTypeId": 0
+  }
+]
