@@ -48,7 +48,6 @@ public class PostSubmitCallbackDispatcher<T extends CaseData> {
                 callbackResponseFromHandler
                     .getConfirmationBody()
                     .ifPresent(callbackResponse::setConfirmationBody);
-
             }
         }
 

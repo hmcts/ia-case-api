@@ -1,0 +1,32 @@
+{
+  "description": "RIA-3731 Remove representation - localAuthorityPolicy missing",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 1234,
+      "eventId": "removeRepresentation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealDate": "{$TODAY-20}",
+          "localAuthorityPolicy": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You must have a MyHMCTS organisation account to stop representing a client."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealDate": "{$TODAY-20}",
+        "localAuthorityPolicy": null
+      }
+    }
+  }
+}
