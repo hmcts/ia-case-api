@@ -31,7 +31,7 @@ public class CaseWorkerServiceTest {
     public static final String ACTOR_ID = "some actor id";
 
     @Test
-    void give_case_worker_ref_data_responds_with_200_then_return_case_worker_name() throws IOException {
+    void given_case_worker_ref_data_responds_with_200_then_return_case_worker_name() throws IOException {
         CaseWorkerRefDataMock.setup200MockResponse(caseWorkerRefDataServiceMock);
 
         CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(ACTOR_ID);
@@ -40,7 +40,7 @@ public class CaseWorkerServiceTest {
     }
 
     @Test
-    void give_case_worker_ref_data_responds_with_404_then_fallback_returns_empty_case_worker_name() {
+    void given_case_worker_ref_data_responds_with_404_then_fallback_returns_empty_case_worker_name() {
         CaseWorkerRefDataMock.setup404MockResponse(caseWorkerRefDataServiceMock);
 
         CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(ACTOR_ID);
