@@ -88,10 +88,12 @@
         <cve>CVE-2020-29245</cve>
     </suppress>
     <suppress>
+        <cve>CVE-2021-22112</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[
-   file name: spring-security-oauth2-client-5.3.4.RELEASE.jar
+   file name: spring-security 5.3.4.RELEASE
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-client@.*$</packageUrl>
         <cve>CVE-2021-22112</cve>
     </suppress>
 </suppressions>
