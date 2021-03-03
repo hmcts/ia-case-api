@@ -38,6 +38,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -73,12 +75,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
         appealOutOfCountryEditAppealHandler = new AppealOutOfCountryEditAppealHandler(featureToggler);
     }
 
-    @Test
-    void should_change_to_in_country_clear_out_of_country_details() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_change_to_in_country_clear_out_of_country_details(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
@@ -100,12 +105,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearSponsor(asylumCase);
     }
 
-    @Test
-    void should_change_to_out_of_country_refusal_of_hr_clear_in_country_details() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_change_to_out_of_country_refusal_of_hr_clear_in_country_details(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
@@ -133,12 +141,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     }
 
-    @Test
-    void should_change_to_out_of_country_refusal_of_protection_clear_in_country_details() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_change_to_out_of_country_refusal_of_protection_clear_in_country_details(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
@@ -162,12 +173,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     }
 
-    @Test
-    void should_change_to_out_of_country_removal_of_client_clear_in_country_details() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_change_to_out_of_country_removal_of_client_clear_in_country_details(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class)).thenReturn(
@@ -192,12 +206,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
 
     }
 
-    @Test
-    void should_clear_out_of_country_sponsor_mobile_for_change_to_email() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_clear_out_of_country_sponsor_mobile_for_change_to_email(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SPONSOR_CONTACT_PREFERENCE, ContactPreference.class))
@@ -224,12 +241,15 @@ class AppealOutOfCountryEditAppealHandlerTest {
         clearRefusalOfProtection(asylumCase);
     }
 
-    @Test
-    void should_clear_out_of_country_sponsor_email_for_change_to_phone() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_clear_out_of_country_sponsor_email_for_change_to_phone(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(HAS_SPONSOR, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(SPONSOR_CONTACT_PREFERENCE, ContactPreference.class))
@@ -282,7 +302,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
                 boolean canHandle = appealOutOfCountryEditAppealHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && event.equals(Event.EDIT_APPEAL)) {
+                    && (event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);

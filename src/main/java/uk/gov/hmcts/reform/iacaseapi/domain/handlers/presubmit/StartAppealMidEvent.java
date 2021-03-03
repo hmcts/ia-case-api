@@ -26,7 +26,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
-                || callback.getEvent() == Event.EDIT_APPEAL);
+                    || callback.getEvent() == Event.EDIT_APPEAL
+                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -42,13 +43,17 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                         .getCaseDetails()
                         .getCaseData();
 
-        String homeOfficeReferenceNumber = asylumCase
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
+            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+            String homeOfficeReferenceNumber = asylumCase
                 .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
                 .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
 
-        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-        if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
-            response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+            if (!HOME_OFFICE_REF_PATTERN.matcher(homeOfficeReferenceNumber).matches()) {
+                response.addError("Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.");
+            }
         }
 
         return response;

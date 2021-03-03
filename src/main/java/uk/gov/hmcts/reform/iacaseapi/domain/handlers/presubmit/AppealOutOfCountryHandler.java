@@ -45,7 +45,8 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && Arrays.asList(
             Event.START_APPEAL,
-            Event.EDIT_APPEAL).contains(callback.getEvent())
+            Event.EDIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
             && featureToggler.getValue("out-of-country-feature", false);
     }
 
