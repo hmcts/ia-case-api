@@ -250,7 +250,6 @@ dependencyManagement {
         dependencySet(group: 'commons-beanutils', version: '1.9.4') {
             entry 'commons-beanutils'
         }
-
     }
 }
 
