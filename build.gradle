@@ -19,7 +19,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
     id 'au.com.dius.pact' version '4.0.4'
     id "io.freefair.lombok" version "5.1.0"
 }
@@ -251,17 +251,6 @@ dependencyManagement {
             entry 'commons-beanutils'
         }
 
-        //CVE-2021-22112
-        dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
-            entry 'spring-security-config'
-            entry 'spring-security-core'
-            entry 'spring-security-crypto'
-            entry 'spring-security-web'
-            entry 'spring-security-oauth2-client'
-            entry 'spring-security-oauth2-core'
-            entry 'spring-security-oauth2-jose'
-            entry 'spring-security-oauth2-resource-server'
-        }
     }
 }
 
