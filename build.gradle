@@ -250,6 +250,14 @@ dependencyManagement {
         dependencySet(group: 'commons-beanutils', version: '1.9.4') {
             entry 'commons-beanutils'
         }
+
+        //CVE-2021-22112
+        dependencySet(group: 'org.springframework.security', version: '5.3.8.RELEASE') {
+            entry 'spring-security-config'
+            entry 'spring-security-core'
+            entry 'spring-security-crypto'
+            entry 'spring-security-web'
+        }
     }
 }
 
