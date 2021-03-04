@@ -19,7 +19,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'org.springframework.boot' version '2.3.9.RELEASE'
     id 'au.com.dius.pact' version '4.0.4'
     id "io.freefair.lombok" version "5.1.0"
 }
@@ -30,17 +30,28 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
+    junit           : '5.6.2',
+    junitPlatform   : '1.6.2',
     pitest             : '1.5.2',
     reformLogging      : '5.1.1-BETA',
     reformHealthStarter: '0.0.5',
     serenity           : '2.2.12',
-    springBoot         : '2.3.3.RELEASE',
+    springBoot         : '2.3.9.RELEASE',
     springHystrix      : '2.1.1.RELEASE',
     springfoxSwagger   : '2.9.2',
     pact_version       : '3.5.24'
 
 ]
 
+ext.libraries = [
+    junit5: [
+        "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+        "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+        "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+        "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
+        "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+    ]
+]
 mainClassName = 'uk.gov.hmcts.reform.iacaseapi.Application'
 def jarName = 'ia-case-api.jar'
 
@@ -302,16 +313,11 @@ dependencies {
 
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
-    testCompile 'pl.pragmatists:JUnitParams:1.1.1'
-    testCompile "org.junit.jupiter:junit-jupiter-params:5.4.2"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2",
-            "org.junit.jupiter:junit-jupiter-params:5.4.2",
-            "org.junit.platform:junit-platform-commons:1.6.2"
-
-    testRuntimeOnly "org.junit.platform:junit-platform-engine:1.6.2",
-            "org.junit.jupiter:junit-jupiter-engine:5.6.2",
-            "org.junit.vintage:junit-vintage-engine:5.6.2"
+    testImplementation libraries.junit5
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
     testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
