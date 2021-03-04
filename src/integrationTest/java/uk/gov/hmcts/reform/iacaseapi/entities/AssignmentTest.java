@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.ActorIdType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
