@@ -1,73 +1,41 @@
 [
   {
-    "caseWorkerId": "string",
-    "caseWorkerLocations": [
+    "id": "e7013580-ac60-40fd-9cb5-8cd968db9201",
+    "first_name": "Case",
+    "last_name": "Officer",
+    "region_id": 1,
+    "user_type": "CTSC",
+    "suspended": "false",
+    "created_time": "2021-01-28T13:24:22.132928",
+    "last_updated_time": "2021-01-28T13:24:22.132939",
+    "email_id": "ia.caseofficer.3.ccd@protonmail.com",
+    "region": null,
+    "base_location": [
       {
-        "caseWorkerId": "string",
-        "caseWorkerLocationId": 0,
-        "createdDate": "2021-01-18T16:35:45.194Z",
-        "lastUpdate": "2021-01-18T16:35:45.194Z",
-        "location": "string",
-        "locationId": 0,
-        "primaryFlag": true
+        "created_time": "2021-01-28T13:24:22.135158",
+        "last_updated_time": "2021-01-28T13:24:22.135181",
+        "location_id": 2,
+        "location": "test location",
+        "is_primary": true
       }
     ],
-    "caseWorkerRoles": [
+    "user_type_id": 1,
+    "role": [
       {
-        "caseWorkerId": "string",
-        "caseWorkerRoleId": 0,
-        "createdDate": "2021-01-18T16:35:45.194Z",
-        "lastUpdate": "2021-01-18T16:35:45.194Z",
-        "primaryFlag": true,
-        "roleId": 0,
-        "roleType": {
-          "caseWorkerIdamRoleAssociations": [
-            {
-              "createdDate": "2021-01-18T16:35:45.194Z",
-              "cwIdamRoleAssociationId": 0,
-              "idamRole": "string",
-              "lastUpdate": "2021-01-18T16:35:45.194Z",
-              "roleId": 0,
-              "serviceCode": "string"
-            }
-          ],
-          "caseWorkerRoles": [
-            null
-          ],
-          "createdDate": "2021-01-18T16:35:45.194Z",
-          "description": "string",
-          "lastUpdate": "2021-01-18T16:35:45.194Z",
-          "roleId": 0
-        }
+        "role_id": "2",
+        "created_time": "2021-01-28T13:24:22.137558",
+        "last_updated_time": "2021-01-28T13:24:22.137569",
+        "role": "Tribunal Caseworker",
+        "is_primary": true
       }
     ],
-    "caseWorkerWorkAreas": [
+    "work_area": [
       {
-        "areaOfWork": "string",
-        "caseWorkerId": "string",
-        "caseWorkerWorkAreaId": 0,
-        "createdDate": "2021-01-18T16:35:45.194Z",
-        "lastUpdate": "2021-01-18T16:35:45.194Z",
-        "serviceCode": "string"
+        "service_code": "BAA1",
+        "area_of_work": "Non-Money Claims",
+        "created_time": "2021-01-28T13:24:22.14034",
+        "last_updated_time": "2021-01-28T13:24:22.140348"
       }
-    ],
-    "createdDate": "2021-01-18T16:35:45.194Z",
-    "emailId": "string",
-    "firstName": "firstName",
-    "lastName": "lastName",
-    "lastUpdate": "2021-01-18T16:35:45.194Z",
-    "region": "string",
-    "regionId": 0,
-    "suspended": true,
-    "userType": {
-      "caseWorkerProfiles": [
-        null
-      ],
-      "createdDate": "2021-01-18T16:35:45.194Z",
-      "description": "string",
-      "lastUpdate": "2021-01-18T16:35:45.194Z",
-      "userTypeId": 0
-    },
-    "userTypeId": 0
+    ]
   }
 ]

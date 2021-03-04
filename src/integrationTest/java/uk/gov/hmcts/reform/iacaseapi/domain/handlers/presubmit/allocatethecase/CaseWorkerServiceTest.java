@@ -46,7 +46,7 @@ public class CaseWorkerServiceTest {
 
         CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(ACTOR_ID);
 
-        assertThat(actualCaseWorkerName).isEqualTo(new CaseWorkerName(ACTOR_ID, "firstName lastName"));
+        assertThat(actualCaseWorkerName).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
     }
 
     @Test
