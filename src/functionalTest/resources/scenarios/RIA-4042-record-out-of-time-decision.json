@@ -1,0 +1,50 @@
+{
+  "description": "RIA-4042 Case officer record out of time decision",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "recordOutOfTimeDecision",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "recordedOutOfTimeDecision": "No",
+          "submissionOutOfTime": "Yes",
+          "outOfTimeDecisionDocument": {
+            "document_url": "http://dm-store/documents/7f9dd004-df72-487e-9fbc-10a74a8d8d0f",
+            "document_filename": "some-out-of-time-decision.pdf",
+            "document_binary_url": "http://dm-store/documents/7f9dd004-df72-487e-9fbc-10a74a8d8d0f/binary"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "outOfTimeDecisionMaker": "Tribunal Caseworker",
+        "recordedOutOfTimeDecision": "Yes",
+        "submissionOutOfTime": "Yes",
+        "tribunalDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "tag": "recordOutOfTimeDecisionDocument",
+              "document": {
+                "document_url": "http://dm-store/documents/7f9dd004-df72-487e-9fbc-10a74a8d8d0f",
+                "document_filename": "some-out-of-time-decision.pdf",
+                "document_binary_url": "http://dm-store/documents/7f9dd004-df72-487e-9fbc-10a74a8d8d0f/binary"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

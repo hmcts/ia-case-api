@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -50,9 +50,14 @@ class HomeOfficeDecisionDateCheckerTest {
 
     private HomeOfficeDecisionDateChecker homeOfficeDecisionDateChecker;
 
-    private ArgumentCaptor<YesOrNo> outOfTime = ArgumentCaptor.forClass(YesOrNo.class);
-    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor =
-        ArgumentCaptor.forClass(AsylumCaseFieldDefinition.class);
+    @Captor
+    private ArgumentCaptor<YesOrNo> outOfTime;
+
+    @Captor
+    private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
+
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor;
 
     @BeforeEach
     public void setUp() {
@@ -155,11 +160,14 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(outOfTime.getValue()).isEqualTo(YES);
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
 
+        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
     }
 
     @Test
@@ -189,10 +197,13 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(outOfTime.getValue()).isEqualTo(YES);
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
     }
 
     @Test
@@ -212,10 +223,16 @@ class HomeOfficeDecisionDateCheckerTest {
 
         homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
-        assertThat(outOfTime.getValue()).isEqualTo(YES);
+
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
+        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
+
+        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
+
     }
 
     @Test

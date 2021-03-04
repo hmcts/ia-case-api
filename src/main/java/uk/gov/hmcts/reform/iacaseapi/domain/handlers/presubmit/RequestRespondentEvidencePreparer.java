@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -52,6 +55,23 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        YesOrNo recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class).orElse(NO);
+
+        if (recordedOutOfTimeDecision == YES) {
+
+            OutOfTimeDecisionType outOfTimeDecisionType =
+                asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class)
+                    .orElseThrow(() -> new IllegalStateException("Out of time decision type is not present"));
+
+            if (outOfTimeDecisionType == OutOfTimeDecisionType.REJECTED) {
+
+                PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+                callbackResponse.addError("Record out of time decision is rejected. The appeal must be ended.");
+                return callbackResponse;
+            }
+        }
+
 
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
             "A notice of appeal has been lodged against this decision.\n\n"

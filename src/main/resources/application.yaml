@@ -256,6 +256,7 @@ security:
       - "allocateTheCase"
       - "manageFeeUpdate"
       - "removeLegalRepresentative"
+      - "recordOutOfTimeDecision"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
