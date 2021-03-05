@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME;
 
 import org.springframework.stereotype.Component;
@@ -57,6 +58,8 @@ public class AllocateTheCaseToMeHandler implements PreSubmitCallbackHandler<Asyl
         roleAssignmentService.assignRole(caseDetails.getId(), userDetails.getId());
 
         caseData.write(CASE_WORKER_NAME, String.format("%s %s", userDetails.getForename(), userDetails.getSurname()));
+
+        caseData.clear(ALLOCATE_THE_CASE_TO);
 
         return new PreSubmitCallbackResponse<>(caseData);
     }
