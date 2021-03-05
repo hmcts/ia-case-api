@@ -136,6 +136,7 @@ documentsApi:
 notificationsApi:
   endpoint: ${IA_CASE_NOTIFICATIONS_API_URL:http://127.0.0.1:8093}
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  ccdSubmittedPath: "/asylum/ccdSubmitted"
 
 paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
@@ -167,7 +168,11 @@ security:
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
+
+
   roleEventAccess:
+    caseworker-approver:
+      - "applyNocDecision"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
       - "editAppeal"
@@ -185,6 +190,7 @@ security:
       - "applyForFTPAAppellant"
       - "updateLegalRepresentativesDetails"
       - "makeAnApplication"
+      - "applyNocDecision"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

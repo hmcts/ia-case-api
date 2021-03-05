@@ -85,7 +85,7 @@ class PostSubmitCallbackDispatcherTest {
         verify(handler2, times(1)).canHandle(callback);
         verify(handler2, times(1)).handle(callback);
 
-        verify(handler3, times(0)).canHandle(callback);
+        verify(handler3, times(1)).canHandle(callback);
         verify(handler3, times(0)).handle(callback);
     }
 

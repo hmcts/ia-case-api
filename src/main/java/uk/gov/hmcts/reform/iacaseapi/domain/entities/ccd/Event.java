@@ -100,6 +100,7 @@ public enum Event {
     ALLOCATE_THE_CASE("allocateTheCase"),
     RECORD_REMISSION_DECISION("recordRemissionDecision"),
     MANAGE_FEE_UPDATE("manageFeeUpdate"),
+    APPLY_NOC_DECISION("applyNocDecision"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

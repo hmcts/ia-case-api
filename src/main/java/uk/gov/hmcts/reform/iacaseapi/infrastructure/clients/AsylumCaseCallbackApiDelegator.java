@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.AccessTokenProvider;
 
@@ -40,17 +41,10 @@ public class AsylumCaseCallbackApiDelegator {
     ) {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
-
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         final String accessToken = accessTokenProvider.getAccessToken();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
-        headers.set(HttpHeaders.AUTHORIZATION, accessToken);
-
-        HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, headers);
+        HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
 
         try {
 
@@ -76,4 +70,49 @@ public class AsylumCaseCallbackApiDelegator {
             );
         }
     }
+
+    public PostSubmitCallbackResponse delegatePostSubmit(
+        Callback<AsylumCase> callback,
+        String endpoint
+    ) {
+        requireNonNull(callback, "callback must not be null");
+        requireNonNull(endpoint, "endpoint must not be null");
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final String accessToken = accessTokenProvider.getAccessToken();
+
+        HttpEntity<Callback<AsylumCase>> requestEntity = new HttpEntity<>(callback, setHeaders(serviceAuthorizationToken,accessToken));
+
+        try {
+
+            return Optional
+                .of(restTemplate
+                    .exchange(
+                        endpoint,
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<PostSubmitCallbackResponse>() {
+                        }
+                    )
+                )
+                .map(ResponseEntity::getBody)
+                .orElse(new PostSubmitCallbackResponse());
+
+        } catch (RestClientException e) {
+
+            throw new AsylumCaseServiceResponseException(
+                "Couldn't delegate callback to API: " + endpoint,
+                e
+            );
+        }
+    }
+
+    private HttpHeaders setHeaders(String serviceAuthorizationToken, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        headers.set(HttpHeaders.AUTHORIZATION, accessToken);
+        headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
+        return headers;
+    }
+
 }
