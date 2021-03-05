@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ALLOCATE_THE_CASE;
@@ -84,6 +86,8 @@ class AllocateTheCaseToCaseWorkerHandlerTest {
         verify(roleAssignmentService).assignRole(caseDetails.getId(), caseWorkerNameList.getValue().getCode());
         verify(asylumCase).write(CASE_WORKER_NAME, caseWorkerName.getLabel());
         verify(asylumCase).clear(eq(CASE_WORKER_NAME_LIST));
+        verify(asylumCase).clear(eq(CASE_WORKER_LOCATION_LIST));
+        verify(asylumCase).clear(eq(ALLOCATE_THE_CASE_TO));
     }
 
     @Test
