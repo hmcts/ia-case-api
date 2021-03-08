@@ -11,7 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -24,7 +27,12 @@ class RemoveRepresentationConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CcdCaseAssignment ccdCaseAssignment;
+    @Mock private RestTemplate restTemplate;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
 
+    public static final long CASE_ID = 1234567890L;
+    private final String aacUrl = "some-aac-host";
+    private final String applyNocAssignmentsApiPath = "some-path";
     private RemoveRepresentationConfirmation removeRepresentationConfirmation;
 
     @BeforeEach
@@ -56,7 +64,24 @@ class RemoveRepresentationConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains("You have been removed from this case and no longer have access to it.");
+    }
 
+    @Test
+    void should_handle_when_rest_exception_thrown_for_apply_noc() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(CASE_ID);
+
+        RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
+        doThrow(restClientResponseEx).when(ccdCaseAssignment).applyNoc(callback);
+
+        PostSubmitCallbackResponse callbackResponse =
+            removeRepresentationConfirmation.handle(callback);
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("A problem has occurred");
     }
 
     @Test
