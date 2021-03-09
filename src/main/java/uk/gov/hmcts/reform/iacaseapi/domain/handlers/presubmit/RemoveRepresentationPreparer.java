@@ -39,17 +39,25 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
-        asylumCase.write(
-            AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD,
-            new ChallengeOrganisationRequest(
-                new DynamicList(caseRole, newArrayList(caseRole)),
-                LocalDateTime.now().toString(),
-                "1"
-            )
-        );
+        if (!callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isPresent()) {
+            response.addError("You must have a MyHMCTS organisation account to stop representing a client.");
+            return response;
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        } else {
+            Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
+            asylumCase.write(
+                AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD,
+                new ChallengeOrganisationRequest(
+                    new DynamicList(caseRole, newArrayList(caseRole)),
+                    LocalDateTime.now().toString(),
+                    "1"
+                )
+            );
+
+            //return new PreSubmitCallbackResponse<>(asylumCase);
+            return response;
+        }
     }
 }

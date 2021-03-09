@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +67,26 @@ class RemoveRepresentationPreparerTest {
             () -> removeRepresentationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_respond_with_error_when_organisation_policy_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            removeRepresentationPreparer.handle(
+                PreSubmitCallbackStage.ABOUT_TO_START,
+                callback
+            );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("You must have a MyHMCTS organisation account to stop representing a client.");
+
+        verify(asylumCase).read(LOCAL_AUTHORITY_POLICY);
     }
 
     @Test
