@@ -36,7 +36,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 @PactFolder("pacts")
 @PactTestFor(providerName = "ia_caseApi", port = "8892")
 @ContextConfiguration(classes = {IdamConsumerApplication.class})
-@TestPropertySource(locations = {"classpath:application.properties"}, properties = {"logging.level.au.com.dius.pact=DEBUG"})
+@TestPropertySource(locations = {"classpath:application.properties"})
 public class IdamApiConsumerTest {
 
     @Autowired
