@@ -5,7 +5,7 @@ properties([
 ])
 
 
-@Library("Infrastructure")
+@Library("Infrastructure@TA-471_PactCanIDeploy")
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -103,8 +103,10 @@ withPipeline(type, product, component) {
 
     enableSlackNotifications('#ia-tech')
 
-    onMaster()
-    {
+    onMaster() {
        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
+    onPR() {
+        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 }
