@@ -9,11 +9,4 @@
                 ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
-    <suppress until="2099-06-01">
-        <notes><![CDATA[
-          Only Java >7 version is affected
-          more details https://nvd.nist.gov/vuln/detail/CVE-2020-8908
-    ]]></notes>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
 </suppressions>

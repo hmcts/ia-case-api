@@ -46,8 +46,8 @@ public class PostSubmitCallbackController {
         response = PostSubmitCallbackResponse.class,
         authorizations =
             {
-                @Authorization(value = "Authorization"),
-                @Authorization(value = "ServiceAuthorization")
+            @Authorization(value = "Authorization"),
+            @Authorization(value = "ServiceAuthorization")
             }
     )
     @ApiResponses({
@@ -55,27 +55,27 @@ public class PostSubmitCallbackController {
             code = 200,
             message = "Optional confirmation text for CCD UI",
             response = PostSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 400,
             message = "Bad Request",
             response = PostSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 403,
             message = "Forbidden",
             response = PostSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 415,
             message = "Unsupported Media Type",
             response = PostSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 500,
             message = "Internal Server Error",
             response = PostSubmitCallbackResponse.class
-        )
+            )
     })
     @PostMapping(path = "/ccdSubmitted")
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
