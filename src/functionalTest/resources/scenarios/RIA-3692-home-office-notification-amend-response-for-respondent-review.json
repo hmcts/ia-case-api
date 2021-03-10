@@ -11,7 +11,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "sendDirectionExplanation": "Review the case",
           "sendDirectionDateDue": "{$TODAY+28}",
           "uploadAdditionalEvidenceActionAvailable": "Yes",
@@ -38,7 +40,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "uploadAdditionalEvidenceActionAvailable": "Yes",
-        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "homeOfficeAmendResponseInstructStatus": "OK"
       }
     }

@@ -10,7 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "sendDirectionExplanation": "You have 14 days to review the appellant's argument and evidence. You must explain whether the appellant makes a valid case for overturning the original decision.\\n\\nYou must respond to the Tribunal and tell them:\\n\\n- whether you oppose all or parts of the appellant's case\\n- what your grounds are for opposing the case\\n- which of the issues are agreed or not agreed\\n- whether there are any further issues you wish to raise\\n- whether you are prepared to withdraw to grant\\n- whether the appeal can be resolved without a hearing\\n\\nNext steps\\n\\nIf you do not respond in time the Tribunal will decide how the case should proceed.",
           "sendDirectionParties": "respondent",
           "sendDirectionDateDue": "{$TODAY+14}"
@@ -24,7 +26,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "directions": [
           {
             "id": "1",

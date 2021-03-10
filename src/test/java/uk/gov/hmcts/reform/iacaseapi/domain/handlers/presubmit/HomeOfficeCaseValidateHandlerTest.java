@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.ApplicationStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 
@@ -54,6 +55,9 @@ class HomeOfficeCaseValidateHandlerTest {
     private HomeOfficeCaseStatus homeOfficeCaseStatus;
     @Mock
     private ApplicationStatus applicationStatus;
+    @Mock
+    private FeatureToggler featureToggler;
+
     private boolean isHomeOfficeIntegrationEnabled = true;
 
     private HomeOfficeCaseValidateHandler homeOfficeCaseValidateHandler;
@@ -62,7 +66,7 @@ class HomeOfficeCaseValidateHandlerTest {
     public void setUp() {
 
         homeOfficeCaseValidateHandler =
-            new HomeOfficeCaseValidateHandler(isHomeOfficeIntegrationEnabled, homeOfficeApi);
+            new HomeOfficeCaseValidateHandler(featureToggler, isHomeOfficeIntegrationEnabled, homeOfficeApi);
     }
 
     @Test
@@ -84,6 +88,7 @@ class HomeOfficeCaseValidateHandlerTest {
         nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
+        when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
 
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -104,6 +109,8 @@ class HomeOfficeCaseValidateHandlerTest {
         verify(asylumCase, times(1)).write(
             APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
         verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
+        verify(asylumCase, times(1)).write(
+            HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
         verify(applicationStatus, times(1)).modifyListDataForCcd();
     }
 
@@ -190,6 +197,7 @@ class HomeOfficeCaseValidateHandlerTest {
     void handler_throws_error_if_feature_not_enabled() {
 
         homeOfficeCaseValidateHandler = new HomeOfficeCaseValidateHandler(
+            featureToggler,
             false,
             homeOfficeApi
         );

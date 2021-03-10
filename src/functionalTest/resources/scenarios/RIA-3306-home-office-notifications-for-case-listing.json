@@ -10,7 +10,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "listCaseHearingCentre": "coventry",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
@@ -32,7 +34,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "listCaseHearingCentre": "coventry",
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2018-12-31T12:34:56",

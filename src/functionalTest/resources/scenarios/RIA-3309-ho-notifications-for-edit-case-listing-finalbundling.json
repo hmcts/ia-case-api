@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "listCaseHearingCentre": "coventry",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
@@ -21,12 +21,15 @@
           "listCaseRequirementsOther": "something around Other",
           "uploadAdditionalEvidenceActionAvailable": "No",
           "decisionHearingFeeOption": "decisionWithHearing",
-          "ariaListingReference": "LP/12345/2019"
+          "ariaListingReference": "LP/12345/2019",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes"
         }
       },
       "caseDataBefore": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "listCaseHearingCentre": "manchester",
           "listCaseHearingLength": "60",
           "listCaseHearingDate": "2018-12-31T12:34:56",
@@ -37,6 +40,8 @@
           "listCaseRequirementsOther": "something around Other",
           "uploadAdditionalEvidenceActionAvailable": "No",
           "ariaListingReference": "LP/12345/2019",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "hearingDocuments": [
             {
               "id": "1",
@@ -62,7 +67,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "1111-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "listCaseHearingCentre": "coventry",
         "listCaseHearingLength": "60",
         "listCaseHearingDate": "2018-12-31T12:34:56",
@@ -74,6 +79,8 @@
         "uploadAdditionalEvidenceActionAvailable": "No",
         "ariaListingReference": "LP/12345/2019",
         "decisionHearingFeeOption": "decisionWithHearing",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "homeOfficeEditListingInstructStatus": "OK"
       }
     }
