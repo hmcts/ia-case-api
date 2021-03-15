@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.consumer;
+package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;

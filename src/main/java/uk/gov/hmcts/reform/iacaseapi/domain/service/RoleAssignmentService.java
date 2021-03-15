@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static java.util.Collections.singletonList;
-
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -19,9 +15,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Collections.singletonList;
+
 @Component
 public class RoleAssignmentService {
-    public static final String ROLE_NAME = "tribunal-caseworker";
+    public static final String ROLE_NAME = "senior-tribunal-caseworker";
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final RoleAssignmentApi roleAssignmentApi;
@@ -38,6 +39,14 @@ public class RoleAssignmentService {
         String accessToken = userDetails.getAccessToken();
         String currentUserIdamId = userDetails.getId();
         String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+
+        RoleAssignment body =
+            getRoleAssignment(caseDetailsId, assigneeId, currentUserIdamId);
+
+        roleAssignmentApi.assignRole(accessToken, serviceAuthorizationToken, body);
+    }
+
+    public RoleAssignment getRoleAssignment(long caseDetailsId, String assigneeId, String currentUserIdamId) {
 
         Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", Long.toString(caseDetailsId));
@@ -61,9 +70,9 @@ public class RoleAssignmentService {
                 attributes
             ))
         );
-
-        roleAssignmentApi.assignRole(accessToken, serviceAuthorizationToken, body);
+        return body;
     }
+
 
     public RoleAssignmentResource queryRoleAssignments(QueryRequest queryRequest) {
         return roleAssignmentApi.queryRoleAssignments(

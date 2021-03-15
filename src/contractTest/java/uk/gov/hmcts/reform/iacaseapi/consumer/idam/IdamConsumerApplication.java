@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.consumer;
+package uk.gov.hmcts.reform.iacaseapi.consumer.idam;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.mock.mockito.MockBean;
