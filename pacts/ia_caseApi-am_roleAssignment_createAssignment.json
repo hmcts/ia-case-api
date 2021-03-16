@@ -19,22 +19,21 @@
           "roleRequest": {
             "assignerId": "3168da13-00b3-41e3-81fa-cbc71ac28a0f",
             "process": "case-allocation",
-            "reference": "1212121212121213/senior-tribunal-caseworker",
+            "reference": "1212121212121213/tribunal-caseworker",
             "replaceExisting": true
           },
           "requestedRoles": [
             {
               "actorIdType": "IDAM",
               "actorId": "14a21569-eb80-4681-b62c-6ae2ed069e5f",
-              "roleType": "ORGANISATION",
-              "roleName": "senior-tribunal-caseworker",
-              "roleCategory": "LEGAL_OPERATIONS",
-              "classification": "PRIVATE",
-              "grantType": "STANDARD",
+              "roleType": "CASE",
+              "roleName": "tribunal-caseworker",
+              "roleCategory": "STAFF",
+              "classification": "RESTRICTED",
+              "grantType": "SPECIFIC",
               "readOnly": false,
               "attributes": {
-                "primaryLocation": "500A2S",
-                "jurisdiction": "IA"
+                "caseId": "1212121212121213"
               }
             }
           ]
