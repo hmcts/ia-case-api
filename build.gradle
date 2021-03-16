@@ -191,7 +191,8 @@ task contract(type: Test) {
 }
 
 project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
+    pacticipant = 'ia_caseApi'
+    pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 jacoco {
@@ -400,7 +401,7 @@ pact {
     publish {
         pactDirectory = 'pacts'
         tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
-        version = project.pactVersion
+        version = project.pacticipantVersion
     }
 }
 
