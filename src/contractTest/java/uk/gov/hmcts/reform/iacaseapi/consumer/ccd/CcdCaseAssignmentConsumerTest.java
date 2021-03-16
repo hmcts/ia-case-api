@@ -7,8 +7,11 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import java.io.IOException;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestPropertySource;
 
 @PactTestFor(providerName = "ccdDataStoreAPI_caseAssignedUserRoles", port = "8871")
+@TestPropertySource(
+    properties = "core_case_data_api_assignments_url=http://localhost:8871")
 public class CcdCaseAssignmentConsumerTest extends CcdCaseAssignmentProviderBaseTest {
 
     @Pact(provider = "ccdDataStoreAPI_caseAssignedUserRoles", consumer = "ia_caseApi")

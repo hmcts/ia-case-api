@@ -11,8 +11,11 @@ import java.io.IOException;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestPropertySource;
 
 @PactTestFor(providerName = "acc_manageCaseAssignment", port = "8872")
+@TestPropertySource(
+    properties = "core_case_data_api_assignments_url=http://localhost:8872")
 public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseTest {
 
     @Pact(provider = "acc_manageCaseAssignment", consumer = "ia_caseApi")

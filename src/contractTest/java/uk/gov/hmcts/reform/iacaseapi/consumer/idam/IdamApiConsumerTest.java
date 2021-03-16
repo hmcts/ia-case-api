@@ -36,7 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 @PactFolder("pacts")
 @PactTestFor(providerName = "ia_caseApi", port = "8892")
 @ContextConfiguration(classes = {IdamConsumerApplication.class})
-@TestPropertySource(locations = {"classpath:application.properties"})
+@TestPropertySource(locations = {"classpath:application.properties"}, properties = {"idam.baseUrl=http://localhost:8892"})
 public class IdamApiConsumerTest {
 
     @Autowired
