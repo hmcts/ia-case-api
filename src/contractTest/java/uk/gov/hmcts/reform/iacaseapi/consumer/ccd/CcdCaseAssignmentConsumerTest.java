@@ -4,10 +4,9 @@ import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import java.io.IOException;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 
 @PactTestFor(providerName = "ccdDataStoreAPI_caseAssignedUserRoles", port = "8871")
 public class CcdCaseAssignmentConsumerTest extends CcdCaseAssignmentProviderBaseTest {

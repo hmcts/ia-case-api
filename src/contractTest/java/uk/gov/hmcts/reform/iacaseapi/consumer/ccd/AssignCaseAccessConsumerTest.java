@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.consumer.ccd;
 
+import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
+
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
+import java.io.IOException;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
-import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
 
 @PactTestFor(providerName = "acc_manageCaseAssignment", port = "8872")
 public class AssignCaseAccessConsumerTest extends CcdCaseAssignmentProviderBaseTest {

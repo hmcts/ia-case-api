@@ -346,11 +346,9 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
-
     //pact contract testing
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
