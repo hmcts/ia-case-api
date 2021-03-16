@@ -5,7 +5,7 @@ properties([
 ])
 
 
-@Library("Infrastructure@TA-471_PactCanIDeploy")
+@Library("Infrastructure")
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
