@@ -54,7 +54,6 @@ public class RoleAssignmentApiConsumerTest {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     private static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
     private static final String SERVICE_AUTH_TOKEN = "someServiceAuthorizationToken";
-
     private final String userId = "3168da13-00b3-41e3-81fa-cbc71ac28a0f";
     private final String assigneeId = "14a21569-eb80-4681-b62c-6ae2ed069e5f";
     private final long caseId = 1212121212121213L;

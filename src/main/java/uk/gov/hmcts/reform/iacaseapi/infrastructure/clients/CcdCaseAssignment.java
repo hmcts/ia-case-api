@@ -151,7 +151,7 @@ public class CcdCaseAssignment {
     public Map<String, Object> buildAssignAccessCaseUserMap(long caseId, String idamUserId) {
         Map<String, Object> payload = Maps.newHashMap();
         payload.put("case_id", caseId);
-        payload.put( "assignee_id", idamUserId);
+        payload.put("assignee_id", idamUserId);
         payload.put("case_type_id", "Asylum");
         return payload;
     }

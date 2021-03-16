@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static java.util.Collections.singletonList;
+
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -15,14 +19,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Collections.singletonList;
-
 @Component
 public class RoleAssignmentService {
-    public static final String ROLE_NAME = "senior-tribunal-caseworker";
+    public static final String ROLE_NAME = "tribunal-caseworker";
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final RoleAssignmentApi roleAssignmentApi;
