@@ -1,0 +1,71 @@
+{
+  "provider": {
+    "name": "acc_manageCaseAssignment"
+  },
+  "consumer": {
+    "name": "ia_caseApi"
+  },
+  "interactions": [
+    {
+      "description": "A request for that case to be assigned",
+      "request": {
+        "method": "POST",
+        "path": "/case-assignments",
+        "headers": {
+          "Authorization": "Bearer some-access-token",
+          "ServiceAuthorization": "someServiceAuthToken"
+        },
+        "body": {
+          "case_id": 1583841721773828,
+          "assignee_id": "0a5874a4-3f38-4bbd-ba4c",
+          "case_type_id": "Asylum"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "status_message": "Roles Role1,Role2 from the organisation policies successfully assigned to the assignee."
+        },
+        "matchingRules": {
+          "body": {
+            "$.status_message": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "Assign a user to a case"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.1.7"
+    }
+  }
+}
