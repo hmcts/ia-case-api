@@ -751,6 +751,9 @@ public enum AsylumCaseFieldDefinition {
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
+    REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE(
+        "remoteVideoCallTribunalResponse", new TypeReference<String>() {}),
+
     VULNERABILITIES_TRIBUNAL_RESPONSE(
         "vulnerabilitiesTribunalResponse", new TypeReference<String>() {}),
 

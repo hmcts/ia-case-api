@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH_VISIBLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SINGLE_SEX_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.VULNERABILITIES_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WITNESS_DETAILS;
@@ -96,6 +97,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(1)).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(1)).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(1)).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
@@ -115,6 +117,7 @@ class DraftHearingRequirementsHandlerTest {
         verify(asylumCase, times(1)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
         verify(asylumCase, times(0)).write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+        verify(asylumCase, times(0)).clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(0)).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(0)).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase, times(0)).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
