@@ -59,7 +59,7 @@ class PostSubmitCallbackDispatcherTest {
     }
 
     @Test
-    void should_dispatch_callback_to_first_eligible_handler_collecting_confirmation() {
+    void should_dispatch_callback_to_all_eligible_handlers_collecting_confirmation() {
 
         Optional<String> expectedConfirmationHeader = Optional.of("header");
         Optional<String> expectedConfirmationBody = Optional.of("body");
@@ -85,7 +85,7 @@ class PostSubmitCallbackDispatcherTest {
         verify(handler2, times(1)).canHandle(callback);
         verify(handler2, times(1)).handle(callback);
 
-        verify(handler3, times(0)).canHandle(callback);
+        verify(handler3, times(1)).canHandle(callback);
         verify(handler3, times(0)).handle(callback);
     }
 

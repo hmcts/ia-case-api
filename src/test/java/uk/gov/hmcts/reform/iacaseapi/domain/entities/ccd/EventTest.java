@@ -100,11 +100,13 @@ class EventTest {
         assertEquals("allocateTheCase", Event.ALLOCATE_THE_CASE.toString());
         assertEquals("recordRemissionDecision", Event.RECORD_REMISSION_DECISION.toString());
         assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
+        assertEquals("applyNocDecision", Event.APPLY_NOC_DECISION.toString());
+        assertEquals("removeRepresentation", Event.REMOVE_REPRESENTATION.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(96, Event.values().length);
+        assertEquals(98, Event.values().length);
     }
 }

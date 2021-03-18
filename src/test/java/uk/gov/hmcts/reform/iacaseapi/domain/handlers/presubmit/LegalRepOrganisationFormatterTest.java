@@ -9,8 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ class LegalRepOrganisationFormatterTest {
 
     private LegalRepOrganisationFormatter legalRepOrganisationFormatter;
     private String companyName = "LBC";
+    private long ccdCaseId = 12345L;
     private String organisationIdentifier = "ZE2KIWO";
     private final String addressLine1 = "A";
     private final String addressLine2 = "B";
@@ -92,6 +92,7 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
@@ -144,6 +145,7 @@ class LegalRepOrganisationFormatterTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getCaseDetails().getId()).thenReturn(ccdCaseId);
 
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
         when(organisationEntityResponse.getContactInformation()).thenReturn(addresses);
