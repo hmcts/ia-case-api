@@ -102,11 +102,12 @@ class EventTest {
         assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
         assertEquals("applyNocDecision", Event.APPLY_NOC_DECISION.toString());
         assertEquals("removeRepresentation", Event.REMOVE_REPRESENTATION.toString());
+        assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(98, Event.values().length);
+        assertEquals(99, Event.values().length);
     }
 }

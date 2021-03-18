@@ -102,6 +102,7 @@ public enum Event {
     MANAGE_FEE_UPDATE("manageFeeUpdate"),
     APPLY_NOC_DECISION("applyNocDecision"),
     REMOVE_REPRESENTATION("removeRepresentation"),
+    REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
