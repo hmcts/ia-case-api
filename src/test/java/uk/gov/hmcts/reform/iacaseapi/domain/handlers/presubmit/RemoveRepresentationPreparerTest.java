@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -60,11 +62,14 @@ class RemoveRepresentationPreparerTest {
         );
     }
 
-    @Test
-    void should_write_to_change_organisation_request_field() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+    })
+    void should_write_to_remove_representation_requested_flag_field(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
 
@@ -77,7 +82,6 @@ class RemoveRepresentationPreparerTest {
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
         verify(asylumCase, times(1)).write(IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
-        //verify(asylumCase, times(1)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
     }
 
     @Test
@@ -96,7 +100,7 @@ class RemoveRepresentationPreparerTest {
     }
 
     @Test
-    void should_respond_with_error_when_organisation_policy_not_present() {
+    void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
@@ -118,6 +122,28 @@ class RemoveRepresentationPreparerTest {
     }
 
     @Test
+    void should_respond_with_error_for_tcw_when_organisation_policy_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            removeRepresentationPreparer.handle(
+                PreSubmitCallbackStage.ABOUT_TO_START,
+                callback
+            );
+
+        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
+        assertThat(response.getErrors()).contains("You cannot remove the legal representative because they do not have a MyHMCTS organisation account.");
+
+        verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
+        verify(asylumCase, times(0)).write(IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
+        verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
+    }
+
+    @Test
     void it_can_handle_callback() {
 
         for (Event event : Event.values()) {
@@ -128,7 +154,7 @@ class RemoveRepresentationPreparerTest {
 
                 boolean canHandle = removeRepresentationPreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.REMOVE_REPRESENTATION
+                if ((event == Event.REMOVE_REPRESENTATION || event == Event.REMOVE_LEGAL_REPRESENTATIVE)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);

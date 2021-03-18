@@ -173,6 +173,7 @@ security:
     caseworker-approver:
       - "nocRequest"
       - "removeRepresentation"
+      - "removeLegalRepresentative"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
       - "editAppeal"
@@ -251,7 +252,7 @@ security:
       - "requestNewHearingRequirements"
       - "allocateTheCase"
       - "manageFeeUpdate"
-      - "removeRepresentation"
+      - "removeLegalRepresentative"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -276,7 +277,7 @@ security:
       - "reinstateAppeal"
       - "recordRemissionDecision"
       - "manageFeeUpdate"
-      - "removeRepresentation"
+      - "removeLegalRepresentative"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

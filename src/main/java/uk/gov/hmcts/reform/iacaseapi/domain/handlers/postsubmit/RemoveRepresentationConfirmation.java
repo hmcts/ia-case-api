@@ -32,7 +32,7 @@ public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandl
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
-        return callback.getEvent() == Event.REMOVE_REPRESENTATION;
+        return (callback.getEvent() == Event.REMOVE_REPRESENTATION || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
     }
 
     public PostSubmitCallbackResponse handle(
@@ -49,15 +49,25 @@ public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandl
             ccdCaseAssignment.applyNoc(callback);
             postNotificationSender.send(callback);
 
-            postSubmitResponse.setConfirmationHeader(
-                "# You have stopped representing this client"
-            );
-            postSubmitResponse.setConfirmationBody(
-                "#### What happens next\n\n"
-                + "We've sent you an email confirming you're no longer representing this client.\n"
-                + "You have been removed from this case and no longer have access to it.\n\n"
-                + "[View case list](/cases)"
-            );
+            if (callback.getEvent() == Event.REMOVE_REPRESENTATION) {
+                postSubmitResponse.setConfirmationHeader(
+                    "# You have stopped representing this client"
+                );
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "We've sent you an email confirming you're no longer representing this client.\n"
+                    + "You have been removed from this case and no longer have access to it.\n\n"
+                    + "[View case list](/cases)"
+                );
+            } else {
+                postSubmitResponse.setConfirmationHeader(
+                    "# You have removed the legal representative from this appeal"
+                );
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "All parties will be notified."
+                );
+            }
         } catch (Exception e) {
             log.error("Unable to remove representation (apply noc) for case id {} with error message: {}",
                 callback.getCaseDetails().getId(), e.getMessage());
