@@ -1010,6 +1010,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_SEARCH_STATUS(
         "homeOfficeSearchStatus", new TypeReference<String>() {}),
 
+    HOME_OFFICE_NOTIFICATIONS_ELIGIBLE(
+        "homeOfficeNotificationsEligible", new TypeReference<YesOrNo>() {}),
+
     HOME_OFFICE_SEARCH_STATUS_MESSAGE(
         "homeOfficeSearchStatusMessage", new TypeReference<String>() {}),
 

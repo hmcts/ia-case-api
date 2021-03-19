@@ -11,6 +11,10 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
+          "listCaseHearingCentre": "manchester",
           "ftpaAppellantDocuments": [],
           "ftpaAppellantOutOfTimeDocuments": [],
           "ftpaAppellantGroundsDocuments": [
@@ -50,6 +54,10 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
+        "listCaseHearingCentre": "manchester",
         "ftpaAppellantSubmitted": "Yes",
         "ftpaAppellantSubmissionOutOfTime": "No",
         "ftpaAppellantApplicationDate": "{$TODAY}",

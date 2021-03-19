@@ -11,6 +11,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "ftpaApplicantType": "respondent",
           "ftpaRespondentSubmitted": "Yes",
           "listCaseHearingCentre": "taylorHouse",
@@ -39,6 +42,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "ftpaRespondentDecisionDate": "{$TODAY}",
         "isFtpaRespondentDecided": "Yes",
         "listCaseHearingCentre": "taylorHouse",

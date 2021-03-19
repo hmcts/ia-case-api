@@ -11,7 +11,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "9999-2222-3333-4444",
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "listCaseHearingCentre": "coventry",
           "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.",
           "sendDirectionDateDue": "{$TODAY+28}",
@@ -41,7 +43,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "homeOfficeReferenceNumber": "9999-2222-3333-4444",
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "homeOfficeEvidenceChangeDirectionDueDateInstructStatus": "OK"
       }
     }

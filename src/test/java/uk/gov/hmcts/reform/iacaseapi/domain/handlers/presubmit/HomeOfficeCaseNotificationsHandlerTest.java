@@ -102,6 +102,9 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -110,6 +113,72 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(1)).call(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_RESPONDENT_EVIDENCE",
+        "REQUEST_RESPONDENT_REVIEW",
+        "LIST_CASE",
+        "EDIT_CASE_LISTING",
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "SEND_DECISION_AND_REASONS",
+        "APPLY_FOR_FTPA_APPELLANT",
+        "APPLY_FOR_FTPA_RESPONDENT",
+        "LEADERSHIP_JUDGE_FTPA_DECISION",
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "END_APPEAL"
+    })
+    void should_not_call_home_office_api_when_validation_unsuccessful(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(0)).call(callback);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_RESPONDENT_EVIDENCE",
+        "REQUEST_RESPONDENT_REVIEW",
+        "LIST_CASE",
+        "EDIT_CASE_LISTING",
+        "ADJOURN_HEARING_WITHOUT_DATE",
+        "SEND_DECISION_AND_REASONS",
+        "APPLY_FOR_FTPA_APPELLANT",
+        "APPLY_FOR_FTPA_RESPONDENT",
+        "LEADERSHIP_JUDGE_FTPA_DECISION",
+        "RESIDENT_JUDGE_FTPA_DECISION",
+        "END_APPEAL"
+    })
+    void should_not_call_home_office_api_for_in_progress_case(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(homeOfficeApi, times(0)).call(callback);
     }
 
     @Test
@@ -146,6 +215,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(callback.getCaseDetails().getState()).thenReturn(state);
         when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
