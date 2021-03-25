@@ -23,6 +23,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -60,12 +62,15 @@ class AppealOutOfCountryHandlerTest {
         appealOutOfCountryHandler = new AppealOutOfCountryHandler(featureToggler);
     }
 
-    @Test
-    void should_return_out_of_country_value() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_return_out_of_country_value(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
@@ -78,12 +83,15 @@ class AppealOutOfCountryHandlerTest {
 
     }
 
-    @Test
-    void should_return_out_of_country_value_no_for_living_in_uk() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_return_out_of_country_value_no_for_living_in_uk(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
 
@@ -96,9 +104,12 @@ class AppealOutOfCountryHandlerTest {
 
     }
 
-    @Test
-    void should_return_out_of_country_value_if_appellant_in_uk_not_present() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_return_out_of_country_value_if_appellant_in_uk_not_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
@@ -112,10 +123,13 @@ class AppealOutOfCountryHandlerTest {
 
     }
 
-    @Test
-    void should_return_sponsor_details_if_sponsor_chosen_yes() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "START_APPEAL", "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_return_sponsor_details_if_sponsor_chosen_yes(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("out-of-country-feature", false)).thenReturn(true);
@@ -175,7 +189,8 @@ class AppealOutOfCountryHandlerTest {
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     && (event.equals(Event.START_APPEAL)
-                    || event.equals(Event.EDIT_APPEAL))) {
+                    || event.equals(Event.EDIT_APPEAL)
+                    || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);

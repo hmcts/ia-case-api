@@ -59,7 +59,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.EDIT_APPEAL
+            && (callback.getEvent() == Event.EDIT_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && featureToggler.getValue("out-of-country-feature", false);
     }
 
