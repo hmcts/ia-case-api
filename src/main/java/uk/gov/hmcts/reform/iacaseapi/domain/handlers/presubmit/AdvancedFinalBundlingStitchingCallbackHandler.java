@@ -136,7 +136,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
                 AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
 
-                asylumCaseWithHomeOfficeData.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
+                asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
                     asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
             } else {
                 final long caseId = callback.getCaseDetails().getId();
