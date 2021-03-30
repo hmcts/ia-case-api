@@ -15,6 +15,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+@Slf4j
 @Component
 public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -70,8 +73,12 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         );
         asylumCase.write(APPEAL_OUT_OF_COUNTRY, outOfCountry.get());
 
+        final long caseId = callback.getCaseDetails().getId();
+        log.info("Appeal Out Of Country: {} for case ID {}", outOfCountry.get(), caseId);
+
         Optional<YesOrNo> hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
         if (hasSponsor.isPresent() && hasSponsor.get().equals(YES)) {
+            log.info("Sponsor present for Out Of Country appeal. case ID {}", caseId);
             final String sponsorGivenNames =
                 asylumCase
                     .read(SPONSOR_GIVEN_NAMES, String.class)
