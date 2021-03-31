@@ -751,6 +751,9 @@ public enum AsylumCaseFieldDefinition {
     INTERPRETER_LANGUAGE_READONLY(
         "interpreterLanguageReadonly", new TypeReference<List<IdValue<InterpreterLanguage>>>() {}),
 
+    REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE(
+        "remoteVideoCallTribunalResponse", new TypeReference<String>() {}),
+
     VULNERABILITIES_TRIBUNAL_RESPONSE(
         "vulnerabilitiesTribunalResponse", new TypeReference<String>() {}),
 
@@ -870,6 +873,12 @@ public enum AsylumCaseFieldDefinition {
 
     CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION(
         "caseFlagSetAsideReheardAdditionalInformation", new TypeReference<String>() {}),
+
+    CASE_FLAG_S94B_OUT_OF_COUNTRY_EXISTS(
+        "caseFlagS94bOutOfCountryExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_S94B_OUT_OF_COUNTRY_ADDITIONAL_INFORMATION(
+        "caseFlagS94bOutOfCountryAdditionalInformation", new TypeReference<String>() {}),
 
     IS_APPELLANT_MINOR(
         "isAppellantMinor", new TypeReference<YesOrNo>() {}),
@@ -1006,6 +1015,9 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_SEARCH_STATUS(
         "homeOfficeSearchStatus", new TypeReference<String>() {}),
+
+    HOME_OFFICE_NOTIFICATIONS_ELIGIBLE(
+        "homeOfficeNotificationsEligible", new TypeReference<YesOrNo>() {}),
 
     HOME_OFFICE_SEARCH_STATUS_MESSAGE(
         "homeOfficeSearchStatusMessage", new TypeReference<String>() {}),

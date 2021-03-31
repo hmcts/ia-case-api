@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3308 sends home office notifications for request respondent evidence - stateless",
+  "description": "RIA-4116 does not trigger home office notifications when validation is not success",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -10,20 +10,13 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appellantNationalities": [
-            {
-              "id": "1",
-              "value": {
-                "code": "ZZ"
-              }
-            }],
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
           "appealSubmissionDate": "2020-09-22",
           "sendDirectionExplanation": "A notice of appeal has been lodged against this decision.\n\nYou must now upload all documents to the Tribunal. The Tribunal will make them accessible to the other party. You have 14 days to supply the documents.\n\nYou must include:\n- the notice of decision\n- any other document provided to the appellant giving reasons for that decision\n- any statements of evidence\n- the application form\n- any record of interview with the appellant in relation to the decision being appealed\n- any other unpublished documents on which you rely\n- the notice of any other appealable decision made in relation to the appellant",
           "sendDirectionParties": "respondent",
           "sendDirectionDateDue": "{$TODAY+14}",
-          "homeOfficeSearchStatus": "SUCCESS",
-          "homeOfficeNotificationsEligible": "Yes"
+          "homeOfficeSearchStatus": "FAIL",
+          "homeOfficeNotificationsEligible": "No"
         }
       }
     }
@@ -34,17 +27,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appellantNationalities": [
-          {
-            "id": "1",
-            "value": {
-              "code": "ZZ"
-            }
-          }],
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "homeOfficeSearchStatus": "SUCCESS",
-        "homeOfficeNotificationsEligible": "Yes",
-        "homeOfficeInstructStatus": "OK"
+        "homeOfficeSearchStatus": "FAIL",
+        "homeOfficeNotificationsEligible": "No"
       }
     }
   }

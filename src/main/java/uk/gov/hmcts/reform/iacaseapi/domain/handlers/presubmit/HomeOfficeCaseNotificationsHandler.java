@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -21,8 +22,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 @Component
+@Slf4j
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String SUPPRESSION_LOG_FIELDS = "event: {}, "
+                                                         + "caseId: {}, "
+                                                         + "homeOfficeReferenceNumber: {}, "
+                                                         + "homeOfficeSearchStatus: {}, "
+                                                         + "homeOfficeNotificationsEligible: {} ";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
 
@@ -86,11 +93,45 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
+        final String homeOfficeSearchStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_SEARCH_STATUS, String.class)
+            .orElse("");
+        final YesOrNo homeOfficeNotificationsEligible
+            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
+            .orElse(YesOrNo.NO);
+        final long caseId = callback.getCaseDetails().getId();
+        final String homeOfficeReferenceNumber
+            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
 
         if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-            asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+            if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
+                && homeOfficeNotificationsEligible == YesOrNo.YES) {
+
+                log.info("Start: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                    homeOfficeNotificationsEligible);
+
+                asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+                log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
+                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                    homeOfficeNotificationsEligible);
+            } else {
+
+                log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
+                         + SUPPRESSION_LOG_FIELDS,
+                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                    homeOfficeNotificationsEligible);
+
+            }
+        } else {
+            log.info("Home Office notification was NOT invoked as Appellant is NOT in the UK - "
+                     + SUPPRESSION_LOG_FIELDS,
+                callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                homeOfficeNotificationsEligible);
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);

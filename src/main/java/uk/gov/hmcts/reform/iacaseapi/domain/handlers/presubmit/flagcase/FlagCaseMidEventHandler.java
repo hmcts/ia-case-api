@@ -1,17 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.flagcase;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_COMPLEX_CASE_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_DEPORT_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_DETAINED_IMMIGRATION_APPEAL_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_FOREIGN_NATIONAL_OFFENDER_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_ADDITIONAL_INFORMATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FLAG_CASE_TYPE_OF_FLAG;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -96,6 +86,11 @@ public class FlagCaseMidEventHandler implements PreSubmitCallbackHandler<AsylumC
                 break;
             case SET_ASIDE_REHEARD:
                 additionalInfo = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, String.class)
+                    .orElse(StringUtils.EMPTY);
+                asylumCase.write(FLAG_CASE_ADDITIONAL_INFORMATION, additionalInfo);
+                break;
+            case S94B_OUT_OF_COUNTRY:
+                additionalInfo = asylumCase.read(CASE_FLAG_S94B_OUT_OF_COUNTRY_ADDITIONAL_INFORMATION, String.class)
                     .orElse(StringUtils.EMPTY);
                 asylumCase.write(FLAG_CASE_ADDITIONAL_INFORMATION, additionalInfo);
                 break;

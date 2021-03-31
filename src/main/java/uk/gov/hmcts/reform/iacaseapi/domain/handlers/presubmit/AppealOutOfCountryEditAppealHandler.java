@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+@Slf4j
 @Component
 public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -59,7 +61,8 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.EDIT_APPEAL
+            && (callback.getEvent() == Event.EDIT_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
             && featureToggler.getValue("out-of-country-feature", false);
     }
 
@@ -83,6 +86,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
 
             //Clear all the Out of country fields
             if (appellantInUk.equals(YES)) {
+                log.info("Clearing Out Of Country fields for an In Country Appeal.");
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, NO);
                 asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 asylumCase.clear(APPELLANT_OUT_OF_COUNTRY_ADDRESS);
@@ -97,6 +101,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
 
             //Clear the In country fields
             if (appellantInUk.equals(NO)) {
+                log.info("Clearing In Country fields for Out Of Country Appeal.");
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, YES);
                 asylumCase.clear(APPELLANT_HAS_FIXED_ADDRESS);
                 asylumCase.clear(APPELLANT_ADDRESS);

@@ -78,6 +78,7 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
 
         // Clear review fields once the update happens
         asylumCase.clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        asylumCase.clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
         asylumCase.clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
         asylumCase.clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);

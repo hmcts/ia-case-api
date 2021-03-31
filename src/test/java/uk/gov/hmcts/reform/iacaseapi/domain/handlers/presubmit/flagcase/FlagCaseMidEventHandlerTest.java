@@ -66,7 +66,8 @@ class FlagCaseMidEventHandlerTest {
         "CASE_FLAG_POTENTIALLY_VIOLENT_PERSON_ADDITIONAL_INFORMATION, some potentiallyViolentPerson info, POTENTIALLY_VIOLENT_PERSON",
         "CASE_FLAG_UNACCEPTABLE_CUSTOMER_BEHAVIOUR_ADDITIONAL_INFORMATION, some unacceptable Customer Behaviour additional info, UNACCEPTABLE_CUSTOMER_BEHAVIOUR",
         "CASE_FLAG_UNACCOMPANIED_MINOR_ADDITIONAL_INFORMATION, some unaccompaniedMinor additional info, UNACCOMPANIED_MINOR",
-        "CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, some setAsideReheard additional info, SET_ASIDE_REHEARD"
+        "CASE_FLAG_SET_ASIDE_REHEARD_ADDITIONAL_INFORMATION, some setAsideReheard additional info, SET_ASIDE_REHEARD",
+        "CASE_FLAG_S94B_OUT_OF_COUNTRY_ADDITIONAL_INFORMATION, some Section 94B additional info, S94B_OUT_OF_COUNTRY"
     })
     void given_existing_flag_should_populate_additional_information_field(
         AsylumCaseFieldDefinition caseFlagFieldDefinition, String existingAdditionalInfo, CaseFlagType caseFlagType) {

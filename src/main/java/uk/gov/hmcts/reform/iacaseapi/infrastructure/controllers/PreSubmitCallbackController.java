@@ -43,11 +43,10 @@ public class PreSubmitCallbackController {
     @ApiOperation(
         value = "Handles 'AboutToStartEvent' callbacks from CCD",
         response = PreSubmitCallbackResponse.class,
-        authorizations =
-            {
-                @Authorization(value = "Authorization"),
-                @Authorization(value = "ServiceAuthorization")
-            }
+        authorizations = {
+            @Authorization(value = "Authorization"),
+            @Authorization(value = "ServiceAuthorization")
+        }
     )
 
     @ApiResponses({
@@ -55,23 +54,23 @@ public class PreSubmitCallbackController {
             code = 200,
             message = "Transformed Asylum case data, with any identified error or warning messages",
             response = PreSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 400,
             message = "Bad Request"
-        ),
+            ),
         @ApiResponse(
             code = 403,
             message = "Forbidden"
-        ),
+            ),
         @ApiResponse(
             code = 415,
             message = "Unsupported Media Type"
-        ),
+            ),
         @ApiResponse(
             code = 500,
             message = "Internal Server Error"
-        )
+            )
     })
 
     @PostMapping(path = "/ccdAboutToStart")
@@ -86,8 +85,8 @@ public class PreSubmitCallbackController {
         response = PreSubmitCallbackResponse.class,
         authorizations =
             {
-                @Authorization(value = "Authorization"),
-                @Authorization(value = "ServiceAuthorization")
+            @Authorization(value = "Authorization"),
+            @Authorization(value = "ServiceAuthorization")
             }
     )
     @ApiResponses({
@@ -95,23 +94,23 @@ public class PreSubmitCallbackController {
             code = 200,
             message = "Transformed Asylum case data, with any identified error or warning messages",
             response = PreSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 400,
             message = "Bad Request"
-        ),
+            ),
         @ApiResponse(
             code = 403,
             message = "Forbidden"
-        ),
+            ),
         @ApiResponse(
             code = 415,
             message = "Unsupported Media Type"
-        ),
+            ),
         @ApiResponse(
             code = 500,
             message = "Internal Server Error"
-        )
+            )
     })
 
     @PostMapping(path = "/ccdAboutToSubmit")
@@ -126,8 +125,8 @@ public class PreSubmitCallbackController {
         response = PreSubmitCallbackResponse.class,
         authorizations =
             {
-                @Authorization(value = "Authorization"),
-                @Authorization(value = "ServiceAuthorization")
+            @Authorization(value = "Authorization"),
+            @Authorization(value = "ServiceAuthorization")
             }
     )
     @ApiResponses({
@@ -135,23 +134,23 @@ public class PreSubmitCallbackController {
             code = 200,
             message = "Transformed Asylum case data between pages navigation , with any identified error or warning messages",
             response = PreSubmitCallbackResponse.class
-        ),
+            ),
         @ApiResponse(
             code = 400,
             message = "Bad Request"
-        ),
+            ),
         @ApiResponse(
             code = 403,
             message = "Forbidden"
-        ),
+            ),
         @ApiResponse(
             code = 415,
             message = "Unsupported Media Type"
-        ),
+            ),
         @ApiResponse(
             code = 500,
             message = "Internal Server Error"
-        )
+            )
     })
     @PostMapping(path = "/ccdMidEvent")
     public ResponseEntity<PreSubmitCallbackResponse<AsylumCase>> ccdMidEvent(

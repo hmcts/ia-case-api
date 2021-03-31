@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
 @Component
+@Slf4j
 public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final NotificationSender<AsylumCase> notificationSender;
@@ -98,7 +100,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,YesOrNo.class);
 
         boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
-                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
+                                && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
 
         if (stitchedDocument.isPresent()) {
             saveHearingBundleDocument(asylumCase, stitchedDocument,isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
@@ -111,19 +113,43 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-            if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
-
-                AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
-
-                asylumCaseWithHomeOfficeData.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
-                    asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
-            }
+            handleHomeOfficeNotification(callback, asylumCase);
         }
 
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
+    }
 
+    private void handleHomeOfficeNotification(Callback<AsylumCase> callback, AsylumCase asylumCase) {
+
+        if (featureToggler.getValue(HO_NOTIFICATION_FEATURE, false)) {
+
+            final String homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)
+                .orElse("");
+
+            final YesOrNo homeOfficeNotificationsEligible = asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
+                .orElse(YesOrNo.NO);
+
+            if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
+                && homeOfficeNotificationsEligible == YesOrNo.YES) {
+
+                AsylumCase asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+
+                asylumCase.write(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS,
+                    asylumCaseWithHomeOfficeData.read(HOME_OFFICE_HEARING_BUNDLE_READY_INSTRUCT_STATUS, String.class).orElse(""));
+            } else {
+                final long caseId = callback.getCaseDetails().getId();
+                final String homeOfficeReferenceNumber = asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
+
+                log.warn("Home Office notification was not invoked due to unsuccessful validation search - "
+                         + "caseId: {}, "
+                         + "homeOfficeReferenceNumber: {}, "
+                         + "homeOfficeSearchStatus: {}, "
+                         + "homeOfficeNotificationsEligible: {} ",
+                    caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus, homeOfficeNotificationsEligible);
+            }
+        }
     }
 
     private void saveHearingBundleDocument(AsylumCase asylumCase, Optional<Document> stitchedDocument, AsylumCaseFieldDefinition field) {

@@ -19,7 +19,8 @@ public enum HearingCentre {
     NORTH_SHIELDS("northShields"),
     NOTTINGHAM("nottingham"),
     TAYLOR_HOUSE("taylorHouse"),
-    BELFAST("belfast");
+    BELFAST("belfast"),
+    REMOTE_HEARING("remoteHearing");
 
     @JsonValue
     private final String value;

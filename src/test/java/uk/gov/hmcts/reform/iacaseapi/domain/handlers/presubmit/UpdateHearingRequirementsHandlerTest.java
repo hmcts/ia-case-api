@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IN_CAMERA_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MULTIMEDIA_TRIBUNAL_RESPONSE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SINGLE_SEX_COURT_TRIBUNAL_RESPONSE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.VULNERABILITIES_TRIBUNAL_RESPONSE;
@@ -126,6 +127,7 @@ class UpdateHearingRequirementsHandlerTest {
         // review fields should be cleared
         verify(asylumCase).clear(REVIEWED_HEARING_REQUIREMENTS);
         verify(asylumCase).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);
@@ -158,6 +160,7 @@ class UpdateHearingRequirementsHandlerTest {
         // review fields should be cleared
         verify(asylumCase).clear(REVIEWED_HEARING_REQUIREMENTS);
         verify(asylumCase).clear(VULNERABILITIES_TRIBUNAL_RESPONSE);
+        verify(asylumCase).clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
         verify(asylumCase).clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);

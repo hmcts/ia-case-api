@@ -90,6 +90,7 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.write(PREVIOUS_HEARING_REQUIREMENTS, previousHearingRequirements);
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.NO);
             asylumCase.write(LIST_CASE_HEARING_LENGTH_VISIBLE, YesOrNo.NO);
+            asylumCase.clear(REMOTE_VIDEO_CALL_TRIBUNAL_RESPONSE);
             asylumCase.clear(MULTIMEDIA_TRIBUNAL_RESPONSE);
             asylumCase.clear(SINGLE_SEX_COURT_TRIBUNAL_RESPONSE);
             asylumCase.clear(IN_CAMERA_COURT_TRIBUNAL_RESPONSE);

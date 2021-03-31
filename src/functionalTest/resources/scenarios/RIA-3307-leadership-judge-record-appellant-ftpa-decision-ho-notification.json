@@ -11,6 +11,9 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "homeOfficeNotificationsEligible": "Yes",
           "ftpaApplicantType": "appellant",
           "ftpaAppellantSubmitted": "Yes",
           "ftpaAppellantDecisionOutcomeType": "partiallyGranted",
@@ -38,6 +41,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeNotificationsEligible": "Yes",
         "ftpaAppellantDecisionDate": "{$TODAY}",
         "isFtpaAppellantDecided": "Yes",
         "allFtpaAppellantDecisionDocs": [
