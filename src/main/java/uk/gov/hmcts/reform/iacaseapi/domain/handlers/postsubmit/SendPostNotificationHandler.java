@@ -25,7 +25,7 @@ public class SendPostNotificationHandler implements PostSubmitCallbackHandler<As
      * @return list of events to be handled.
      */
     private List<Event> getEventsToHandle() {
-        return Arrays.asList(Event.APPLY_NOC_DECISION);
+        return Arrays.asList(Event.NOC_REQUEST);
     }
 
     @Override

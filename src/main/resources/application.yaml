@@ -168,11 +168,9 @@ security:
   authorisedRoles:
     - "caseworker-ia"
     - "citizen"
-
-
   roleEventAccess:
     caseworker-approver:
-      - "applyNocDecision"
+      - "nocRequest"
     caseworker-ia-legalrep-solicitor:
       - "startAppeal"
       - "editAppeal"
@@ -190,7 +188,6 @@ security:
       - "applyForFTPAAppellant"
       - "updateLegalRepresentativesDetails"
       - "makeAnApplication"
-      - "applyNocDecision"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

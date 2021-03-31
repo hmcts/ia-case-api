@@ -100,7 +100,7 @@ class EventTest {
         assertEquals("allocateTheCase", Event.ALLOCATE_THE_CASE.toString());
         assertEquals("recordRemissionDecision", Event.RECORD_REMISSION_DECISION.toString());
         assertEquals("manageFeeUpdate", Event.MANAGE_FEE_UPDATE.toString());
-        assertEquals("applyNocDecision", Event.APPLY_NOC_DECISION.toString());
+        assertEquals("nocRequest", Event.NOC_REQUEST.toString());
 
     }
 

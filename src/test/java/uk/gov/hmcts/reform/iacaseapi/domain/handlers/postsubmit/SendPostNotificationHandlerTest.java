@@ -37,7 +37,7 @@ class SendPostNotificationHandlerTest {
     @Test
     void should_notify_case_officer_that_case_is_listed() {
 
-        when(callback.getEvent()).thenReturn(Event.APPLY_NOC_DECISION);
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
 
         PostSubmitCallbackResponse expectedUpdatedCase = mock(PostSubmitCallbackResponse.class);
 
@@ -77,7 +77,7 @@ class SendPostNotificationHandlerTest {
             boolean canHandle = sendPostNotificationHandler.canHandle(callback);
 
             if (Arrays.asList(
-                    Event.APPLY_NOC_DECISION
+                    Event.NOC_REQUEST
                 ).contains(event)) {
 
                 assertTrue(canHandle);
