@@ -16,7 +16,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +32,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
@@ -63,7 +61,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
     private boolean timedEventServiceEnabled = true;
     private int reviewInDays = 5;
-    private int reviewInDaysOoc = 14;
     private LocalDate now = LocalDate.now();
     private String id = "someId";
     private long caseId = 12345;
@@ -79,7 +76,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             new AutomaticDirectionRequestingHearingRequirementsHandler(
                 timedEventServiceEnabled,
                 reviewInDays,
-                reviewInDaysOoc,
                 dateProvider,
                 scheduler,
                 featureToggler
@@ -100,45 +96,6 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             id,
             Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
             ZonedDateTime.of(now.plusDays(reviewInDays + 1), LocalTime.MIDNIGHT, ZoneId.systemDefault()),
-            jurisdiction,
-            caseType,
-            caseId
-        );
-        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertThat(asylumCase).isEqualTo(callbackResponse.getData());
-        verify(asylumCase, times(1)).write(AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, id);
-        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
-
-        TimedEvent result = timedEventArgumentCaptor.getValue();
-
-        assertEquals(timedEvent.getCaseId(), result.getCaseId());
-        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
-        assertEquals(timedEvent.getCaseType(), result.getCaseType());
-        assertEquals(timedEvent.getScheduledDateTime(), result.getScheduledDateTime());
-        assertEquals(timedEvent.getEvent(), result.getEvent());
-        assertEquals("", result.getId());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
-    void should_schedule_automatic_direction_14_days_from_now(Event event) {
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(event);
-        when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
-        when(caseDetails.getId()).thenReturn(caseId);
-        when(dateProvider.now()).thenReturn(now);
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-
-        TimedEvent timedEvent = new TimedEvent(
-            id,
-            Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-            ZonedDateTime.of(now.plusDays(reviewInDaysOoc + 1), LocalTime.MIDNIGHT, ZoneId.systemDefault()),
             jurisdiction,
             caseType,
             caseId

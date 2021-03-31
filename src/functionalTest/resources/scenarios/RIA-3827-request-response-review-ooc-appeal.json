@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "sendDirectionExplanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n# Next steps\n\nReview the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\n\nIf you do not respond by the date indicated below, the case will automatically go to hearing.",
-          "sendDirectionDateDue": "{$TODAY+14}",
+          "sendDirectionDateDue": "{$TODAY+5}",
           "notificationsSent": [],
           "uploadAdditionalEvidenceActionAvailable": "Yes",
           "appealOutOfCountry": "Yes"
@@ -31,7 +31,7 @@
             "value": {
               "explanation": "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n# Next steps\n\nReview the Home Office response. If you want to respond to what they have said, you should email the Tribunal.\n\nIf you do not respond by the date indicated below, the case will automatically go to hearing.",
               "parties": "legalRepresentative",
-              "dateDue": "{$TODAY+14}",
+              "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",
               "tag": "requestResponseReview"
             }

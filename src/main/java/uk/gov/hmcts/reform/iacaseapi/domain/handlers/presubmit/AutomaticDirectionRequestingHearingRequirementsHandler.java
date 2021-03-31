@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -19,7 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
@@ -29,23 +25,20 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 public class AutomaticDirectionRequestingHearingRequirementsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean timedEventServiceEnabled;
-    private final int reviewDueInDaysUk;
-    private final int reviewDueInDaysOoc;
+    private final int reviewDueInDays;
     private final DateProvider dateProvider;
     private final Scheduler scheduler;
     private final FeatureToggler featureToggler;
 
     public AutomaticDirectionRequestingHearingRequirementsHandler(
         @Value("${featureFlag.timedEventServiceEnabled}") boolean timedEventServiceEnabled,
-        @Value("${legalRepresentativeReview.dueInDaysUk}") int reviewDueInDaysUk,
-        @Value("${legalRepresentativeReview.dueInDaysOoc}") int reviewDueInDaysOoc,
+        @Value("${legalRepresentativeReview.dueInDays}") int reviewDueInDays,
         DateProvider dateProvider,
         Scheduler scheduler,
         FeatureToggler featureToggler
     ) {
         this.timedEventServiceEnabled = timedEventServiceEnabled;
-        this.reviewDueInDaysUk = reviewDueInDaysUk;
-        this.reviewDueInDaysOoc = reviewDueInDaysOoc;
+        this.reviewDueInDays = reviewDueInDays;
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
         this.featureToggler = featureToggler;
@@ -83,14 +76,6 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        int reviewDueInDays;
-
-        if (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO) == YES) {
-            reviewDueInDays = reviewDueInDaysOoc;
-        } else {
-            reviewDueInDays = reviewDueInDaysUk;
-        }
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.now().plusDays(reviewDueInDays + 1L), LocalTime.MIDNIGHT, ZoneId.systemDefault());
 

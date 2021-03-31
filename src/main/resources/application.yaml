@@ -96,8 +96,7 @@ featureFlag:
 legalRepresentativeBuildCase.dueInDays: 28
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
 legalRepresentativeHearingRequirements.dueInDays: 5
-legalRepresentativeReview.dueInDaysUk: 5
-legalRepresentativeReview.dueInDaysOoc: 14
+legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
 appellantReasonsForAppeal.dueInDays: 28

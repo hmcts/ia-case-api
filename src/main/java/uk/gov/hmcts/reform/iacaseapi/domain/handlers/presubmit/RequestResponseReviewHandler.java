@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,23 +12,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final int reviewDueInDaysUk;
-    private final int reviewDueInDaysOoc;
+    private final int reviewDueInDays;
     private final DateProvider dateProvider;
 
     public RequestResponseReviewHandler(
-        @Value("${legalRepresentativeReview.dueInDaysUk}") int reviewDueInDaysUk,
-        @Value("${legalRepresentativeReview.dueInDaysOoc}") int reviewDueInDaysOoc,
-            DateProvider dateProvider
+        @Value("${legalRepresentativeReview.dueInDays}") int reviewDueInDays,
+        DateProvider dateProvider
     ) {
-        this.reviewDueInDaysUk = reviewDueInDaysUk;
-        this.reviewDueInDaysOoc = reviewDueInDaysOoc;
+        this.reviewDueInDays = reviewDueInDays;
         this.dateProvider = dateProvider;
     }
 
@@ -52,14 +46,6 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
                         .getCaseDetails()
                         .getCaseData();
 
-        int legalRepresentativeReviewDueInDays;
-
-        if (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO) == YES) {
-            legalRepresentativeReviewDueInDays = reviewDueInDaysOoc;
-        } else {
-            legalRepresentativeReviewDueInDays = reviewDueInDaysUk;
-        }
-
         asylumCase.write(SEND_DIRECTION_EXPLANATION,
                 "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
                        + "# Next steps\n\n"
@@ -72,7 +58,7 @@ public class RequestResponseReviewHandler implements PreSubmitCallbackHandler<As
         asylumCase.write(SEND_DIRECTION_DATE_DUE,
                 dateProvider
                         .now()
-                        .plusDays(legalRepresentativeReviewDueInDays)
+                        .plusDays(reviewDueInDays)
                         .toString()
         );
 
