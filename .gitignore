@@ -31,3 +31,4 @@ yarn.lock
 /dist/
 /nbdist/
 /.nb-gradle/
+/pacts/

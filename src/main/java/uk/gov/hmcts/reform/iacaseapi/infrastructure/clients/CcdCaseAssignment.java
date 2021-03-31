@@ -62,17 +62,7 @@ public class CcdCaseAssignment {
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 
-        Map<String, Object> caseUser = Maps.newHashMap();
-        caseUser.put("case_id", caseId);
-        caseUser.put("case_role", "[CREATOR]");
-        caseUser.put("organisation_id", organisationIdentifier);
-        caseUser.put("user_id", idamUserId);
-
-        ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
-        caseUsers.add(caseUser);
-
-        Map<String, Object> payload = Maps.newHashMap();
-        payload.put("case_users", caseUsers);
+        Map<String, Object> payload = buildRevokeAccessPayload(organisationIdentifier, caseId, idamUserId);
 
         HttpEntity<Map<String, Object>> requestEntity =
             new HttpEntity<>(
@@ -115,10 +105,7 @@ public class CcdCaseAssignment {
         final String accessToken = userDetails.getAccessToken();
         final String idamUserId = userDetails.getId();
 
-        Map<String, Object> payload = Maps.newHashMap();
-        payload.put("case_id", caseId);
-        payload.put("assignee_id", idamUserId);
-        payload.put("case_type_id", "Asylum");
+        Map<String, Object> payload = buildAssignAccessCaseUserMap(caseId, idamUserId);
 
         HttpEntity<Map<String, Object>> requestEntity =
             new HttpEntity<>(
@@ -148,6 +135,34 @@ public class CcdCaseAssignment {
 
         log.info("Assign Access. Http status received from AAC API; {} for case {}",
             response.getStatusCodeValue(), callback.getCaseDetails().getId());
+    }
+
+    public Map<String, Object> buildRevokeAccessPayload(String organisationIdentifier, long caseId, String idamUserId) {
+        Map<String, Object> caseUser = buildRevokeAccessCaseUserMap(organisationIdentifier, caseId, idamUserId);
+
+        ArrayList<Map<String, Object>> caseUsers = new ArrayList<>();
+        caseUsers.add(caseUser);
+
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("case_users", caseUsers);
+        return payload;
+    }
+
+    public Map<String, Object> buildAssignAccessCaseUserMap(long caseId, String idamUserId) {
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("case_id", caseId);
+        payload.put("assignee_id", idamUserId);
+        payload.put("case_type_id", "Asylum");
+        return payload;
+    }
+
+    private Map<String, Object> buildRevokeAccessCaseUserMap(String organisationIdentifier, long caseId, String idamUserId) {
+        Map<String, Object> caseUser = Maps.newHashMap();
+        caseUser.put("case_id", caseId);
+        caseUser.put("case_role", "[CREATOR]");
+        caseUser.put("organisation_id", organisationIdentifier);
+        caseUser.put("user_id", idamUserId);
+        return caseUser;
     }
 
     private HttpHeaders setHeaders(String serviceAuthorizationToken, String accessToken) {

@@ -21,8 +21,8 @@ plugins {
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.9.RELEASE'
     id 'uk.gov.hmcts.java' version '0.12.5'
-    id 'au.com.dius.pact' version '4.0.4'
-    id "io.freefair.lombok" version "5.1.0"
+    id 'au.com.dius.pact' version '4.1.0'
+    id "io.freefair.lombok" version "5.3.0"
 }
 
 apply plugin: 'java'
@@ -40,7 +40,7 @@ def versions = [
     springBoot         : '2.3.9.RELEASE',
     springHystrix      : '2.1.1.RELEASE',
     springfoxSwagger   : '2.9.2',
-    pact_version       : '3.5.24'
+    pact_version       : '4.1.7'
 
 ]
 
@@ -191,7 +191,8 @@ task contract(type: Test) {
 }
 
 project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
+    pacticipant = 'ia_caseApi'
+    pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 jacoco {
@@ -346,10 +347,9 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
-
     //pact contract testing
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
@@ -395,11 +395,13 @@ task runAndPublishConsumerPactTests(type: Test) {
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 pact {
-    publish {
-        pactDirectory = 'target/pacts'
+    broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    }
+    publish {
+        pactDirectory = 'pacts'
         tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
-        version = project.pactVersion
+        version = project.pacticipantVersion
     }
 }
 

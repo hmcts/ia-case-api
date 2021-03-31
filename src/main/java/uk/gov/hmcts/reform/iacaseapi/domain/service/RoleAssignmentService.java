@@ -39,6 +39,14 @@ public class RoleAssignmentService {
         String currentUserIdamId = userDetails.getId();
         String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
 
+        RoleAssignment body =
+            getRoleAssignment(caseDetailsId, assigneeId, currentUserIdamId);
+
+        roleAssignmentApi.assignRole(accessToken, serviceAuthorizationToken, body);
+    }
+
+    public RoleAssignment getRoleAssignment(long caseDetailsId, String assigneeId, String currentUserIdamId) {
+
         Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", Long.toString(caseDetailsId));
 
@@ -61,9 +69,9 @@ public class RoleAssignmentService {
                 attributes
             ))
         );
-
-        roleAssignmentApi.assignRole(accessToken, serviceAuthorizationToken, body);
+        return body;
     }
+
 
     public RoleAssignmentResource queryRoleAssignments(QueryRequest queryRequest) {
         return roleAssignmentApi.queryRoleAssignments(
