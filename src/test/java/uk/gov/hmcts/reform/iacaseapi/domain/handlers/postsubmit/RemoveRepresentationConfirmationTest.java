@@ -43,7 +43,7 @@ class RemoveRepresentationConfirmationTest {
     }
 
     @Test
-    void should_apply_noc_and_return_confirmation() {
+    void should_apply_noc_for_remove_representation() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
 
@@ -53,6 +53,39 @@ class RemoveRepresentationConfirmationTest {
         assertNotNull(callbackResponse);
 
         verify(ccdCaseAssignment, times(1)).applyNoc(callback);
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have stopped representing this client");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "We've sent you an email confirming you're no longer representing this client.\n"
+                + "You have been removed from this case and no longer have access to it.\n\n"
+                + "[View case list](/cases)"
+            );
+    }
+
+    @Test
+    void should_apply_noc_for_remove_legal_representative() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+
+        PostSubmitCallbackResponse callbackResponse =
+            removeRepresentationConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(ccdCaseAssignment, times(1)).applyNoc(callback);
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have removed the legal representative from this appeal");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("All parties will be notified.");
     }
 
     @Test
@@ -90,7 +123,7 @@ class RemoveRepresentationConfirmationTest {
 
             boolean canHandle = removeRepresentationConfirmation.canHandle(callback);
 
-            if (event == Event.REMOVE_REPRESENTATION) {
+            if (event == Event.REMOVE_REPRESENTATION || event == Event.REMOVE_LEGAL_REPRESENTATIVE) {
 
                 assertTrue(canHandle);
             } else {

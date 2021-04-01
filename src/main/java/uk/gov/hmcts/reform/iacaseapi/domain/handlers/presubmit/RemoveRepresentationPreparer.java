@@ -28,7 +28,8 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.REMOVE_REPRESENTATION;
+               && (callback.getEvent() == Event.REMOVE_REPRESENTATION
+                   || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -42,10 +43,13 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (!callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isPresent()) {
-            response.addError("You must have a MyHMCTS organisation account to stop representing a client.");
+        if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
+            if (callback.getEvent() == Event.REMOVE_REPRESENTATION) {
+                response.addError("You must have a MyHMCTS organisation account to stop representing a client.");
+            } else {
+                response.addError("You cannot remove the legal representative because they do not have a MyHMCTS organisation account.");
+            }
             return response;
-
         } else {
             asylumCase.write(AsylumCaseFieldDefinition.IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
 
