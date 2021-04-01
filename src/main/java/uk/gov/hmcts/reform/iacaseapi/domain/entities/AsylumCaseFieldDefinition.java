@@ -1409,6 +1409,8 @@ public enum AsylumCaseFieldDefinition {
     DEPORTATION_ORDER_OPTIONS(
         "deportationOrderOptions", new TypeReference<YesOrNo>(){}),
 
+    CCD_REFERENCE_NUMBER_FOR_DISPLAY(
+        "ccdReferenceNumberForDisplay", new TypeReference<String>(){}),
     ;
 
     private final String value;
