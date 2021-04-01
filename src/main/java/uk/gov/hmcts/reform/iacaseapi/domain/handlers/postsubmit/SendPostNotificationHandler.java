@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
+import com.google.common.collect.Lists;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -22,10 +22,11 @@ public class SendPostNotificationHandler implements PostSubmitCallbackHandler<As
 
     /**
      * Add the list of events to be handled in Post submit callback.
+     *
      * @return list of events to be handled.
      */
     private List<Event> getEventsToHandle() {
-        return Arrays.asList(Event.NOC_REQUEST);
+        return Lists.newArrayList(Event.NOC_REQUEST);
     }
 
     @Override
@@ -39,7 +40,6 @@ public class SendPostNotificationHandler implements PostSubmitCallbackHandler<As
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
-        PostSubmitCallbackResponse postSubmitCallbackResponse = postNotificationSender.send(callback);
-        return postSubmitCallbackResponse;
+        return postNotificationSender.send(callback);
     }
 }

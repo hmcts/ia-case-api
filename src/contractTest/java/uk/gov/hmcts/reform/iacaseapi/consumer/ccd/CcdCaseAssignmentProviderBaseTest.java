@@ -43,6 +43,8 @@ public class CcdCaseAssignmentProviderBaseTest {
     String ccdAssignmentsApiPath;
     @Value("${assign_case_access_api_assignments_path}")
     String aacAssignmentsApiPath;
+    @Value("${apply_noc_access_api_assignments_path}")
+    String applyNocAssignmentsApiPath;
 
     CcdCaseAssignment ccdCaseAssignment;
 
@@ -64,7 +66,7 @@ public class CcdCaseAssignmentProviderBaseTest {
     public void setUpTest() {
         ccdCaseAssignment =
             new CcdCaseAssignment(new RestTemplate(), serviceAuthTokenGenerator, userDetailsProvider, ccdUrl, aacUrl, ccdAssignmentsApiPath,
-                aacAssignmentsApiPath);
+                aacAssignmentsApiPath, applyNocAssignmentsApiPath);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);

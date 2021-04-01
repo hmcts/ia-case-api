@@ -55,7 +55,7 @@ class AsylumCasePostNotificationApiSenderTest {
     }
 
     @Test
-    public void should_delegate_about_to_start_callback_to_downstream_api() {
+    void should_delegate_about_to_start_callback_to_downstream_api() {
 
         final PostSubmitCallbackResponse notifiedAsylumCase = mock(PostSubmitCallbackResponse.class);
 
