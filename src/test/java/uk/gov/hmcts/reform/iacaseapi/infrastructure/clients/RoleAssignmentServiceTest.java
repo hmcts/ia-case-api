@@ -83,7 +83,7 @@ class RoleAssignmentServiceTest {
                     "assigneeId",
                     RoleType.CASE,
                     "tribunal-caseworker",
-                    RoleCategory.STAFF,
+                    RoleCategory.LEGAL_OPERATIONS,
                     Classification.RESTRICTED,
                     GrantType.SPECIFIC,
                     false,
