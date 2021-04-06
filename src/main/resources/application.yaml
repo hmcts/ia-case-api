@@ -192,6 +192,7 @@ security:
       - "updateLegalRepresentativesDetails"
       - "makeAnApplication"
       - "removeRepresentation"
+      - "requestFeeRemission"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"
