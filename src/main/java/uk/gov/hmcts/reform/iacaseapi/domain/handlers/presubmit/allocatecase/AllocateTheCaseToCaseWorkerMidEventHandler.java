@@ -45,6 +45,7 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+        log.info("canHandle method...");
 
         return allocateTheCaseService.isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
             && callbackStage == PreSubmitCallbackStage.MID_EVENT
@@ -56,6 +57,8 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        log.info("handle method...");
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -69,6 +72,7 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         AsylumCase asylumCase,
         String securityClassification
     ) {
+        log.info("populateDynamicListWithCaseWorkerNamesForSelectedLocation method...");
         String selectedLocation = asylumCase.read(CASE_WORKER_LOCATION_LIST, String.class)
             .orElseThrow(() -> new RuntimeException("caseWorkerLocationList field is not present on the caseData"));
 
@@ -82,10 +86,14 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         AsylumCase asylumCase,
         List<Value> caseWorkerValueListForGivenLocation
     ) {
+        log.info("getCallbackResponse method...");
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
         if (caseWorkerValueListForGivenLocation.isEmpty()) {
+            log.info("caseworker list is empty...");
             response.addError("There are no users for the location you have selected. Choose another location to continue.");
         } else {
+            log.info("caseworker list has values...");
+            log.info(caseWorkerValueListForGivenLocation.toString());
             asylumCase.write(
                 CASE_WORKER_NAME_LIST,
                 new DynamicList(new Value("", ""), caseWorkerValueListForGivenLocation)
@@ -95,6 +103,7 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
     }
 
     private List<Value> getCaseWorkerValueListForGivenLocation(String location, String securityClassification) {
+        log.info("getCaseWorkerValueListForGivenLocation method...");
         List<Assignment> roleAssignments = caseWorkerService.getRoleAssignmentsPerLocationAndClassification(
             location,
             securityClassification
