@@ -1,17 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,11 +47,18 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+    @Mock
+    private PreviousRepresentationAppender previousRepresentationAppender;
+    @Mock
+    private OrganisationEntityResponse organisationEntityResponse;
+
     private LegalRepresentativeUpdateDetailsHandler legalRepresentativeUpdateDetailsHandler;
 
     @BeforeEach
     public void setUp() {
-        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler();
+        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler(professionalOrganisationRetriever, previousRepresentationAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -80,6 +93,86 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         verify(asylumCase, times(1)).write(eq(LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
 
         verify(asylumCase, times(1)).clear(eq(CHANGE_ORGANISATION_REQUEST_FIELD));
+    }
+
+    @Test
+    void should_not_write_to_previous_representations_when_change_organisation_request_is_missing() {
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            legalRepresentativeUpdateDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class)).thenReturn(Optional.empty());
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        assertTrue(asylumCase.read(PREVIOUS_REPRESENTATIONS).isEmpty());
+
+        final List<IdValue<PreviousRepresentation>> allPreviousRepresentations = new ArrayList<>();
+
+        verify(asylumCase, times(0)).write(PREVIOUS_REPRESENTATIONS, allPreviousRepresentations);
+    }
+
+    @Test
+    void should_write_to_previous_representations_when_change_organisation_request_is_present() {
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            legalRepresentativeUpdateDetailsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        final String updateCompanyName = "New Company";
+
+        final List<IdValue<PreviousRepresentation>> existingPreviousRepresentations = new ArrayList<>();
+
+        final List<IdValue<PreviousRepresentation>> allPreviousRepresentations = new ArrayList<>();
+
+        final Value caseRole =
+            new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
+
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class))
+            .thenReturn(Optional.of(
+                new ChangeOrganisationRequest(
+                    new DynamicList(caseRole, newArrayList(caseRole)),
+                    LocalDateTime.now().toString(),
+                    "1"
+                )
+            ));
+
+        when(asylumCase.read(LEGAL_REP_COMPANY, String.class)).thenReturn(Optional.of("some company name"));
+        when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("some reference number"));
+
+        legalRepresentativeUpdateDetailsHandler.writeToPreviousRepresentations(callback, updateCompanyName);
+
+        verify(previousRepresentationAppender, times(1)).append(
+            existingPreviousRepresentations,
+            new PreviousRepresentation("some company name", "some reference number")
+        );
+
+        verify(asylumCase, times(1)).write(PREVIOUS_REPRESENTATIONS, allPreviousRepresentations);
+    }
+
+    @Test
+    void should_return_company_name_when_change_organisation_entity_response_and_company_name_is_present() {
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
+        when(organisationEntityResponse.getName()).thenReturn("SomeName");
+
+        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "SomeName");
+    }
+
+    @Test
+    void should_return_company_name_as_empty_string_when_change_organisation_request_is_present_and_company_name_is_null() {
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
+        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
+        when(organisationEntityResponse.getName()).thenReturn(null);
+
+        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "");
+    }
+
+    @Test
+    void should_return_company_name_as_empty_string_when_change_organisation_request_is_null() {
+        when(professionalOrganisationRetriever.retrieve()).thenReturn(null);
+
+        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "");
     }
 
     @Test
