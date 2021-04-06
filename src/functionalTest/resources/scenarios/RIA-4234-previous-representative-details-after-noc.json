@@ -1,0 +1,57 @@
+{
+  "description": "RIA-4234 Previous representations and legal representative's details (after NoC)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "updateLegalRepDetails",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "legalRepCompany": "Amazing Law Firm",
+          "legalRepName": "{$IA_USER_PREFIX}A legal Rep",
+          "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+          "legalRepReferenceNumber": "ABC-123",
+          "updateLegalRepName": "Jane Doe",
+          "updateLegalRepEmailAddress": "jane.doe@example.com",
+          "updateLegalRepReferenceNumber": "ABC-JD-001",
+          "changeOrganisationRequestField": {
+            "CaseRoleId": null,
+            "ApprovalStatus": null,
+            "RequestTimestamp": null,
+            "OrganisationToAdd": {
+              "OrganisationID": null
+            },
+            "OrganisationToRemove": {
+              "OrganisationID": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "legalRepCompany": "Amazing Law Firm",
+        "legalRepName": "Jane Doe",
+        "legalRepresentativeEmailAddress": "jane.doe@example.com",
+        "legalRepReferenceNumber": "ABC-JD-001",
+        "changeOrganisationRequestField": null,
+        "previousRepresentations": [
+          {
+            "id": "1",
+            "value": {
+              "legalRepCompany": "Amazing Law Firm",
+              "legalRepReferenceNumber": "ABC-123"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1421,6 +1421,9 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_REMISSION_DETAILS(
         "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
+    PREVIOUS_REPRESENTATIONS(
+        "previousRepresentations", new TypeReference<List<IdValue<PreviousRepresentation>>>(){}),
+
     ;
 
     private final String value;
