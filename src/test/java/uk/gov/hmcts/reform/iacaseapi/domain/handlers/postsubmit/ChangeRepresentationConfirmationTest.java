@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class RemoveRepresentationConfirmationTest {
+class ChangeRepresentationConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CcdCaseAssignment ccdCaseAssignment;
@@ -31,12 +31,12 @@ class RemoveRepresentationConfirmationTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
 
     public static final long CASE_ID = 1234567890L;
-    private RemoveRepresentationConfirmation removeRepresentationConfirmation;
+    private ChangeRepresentationConfirmation changeRepresentationConfirmation;
 
     @BeforeEach
     public void setUp() throws Exception {
 
-        removeRepresentationConfirmation = new RemoveRepresentationConfirmation(
+        changeRepresentationConfirmation = new ChangeRepresentationConfirmation(
             ccdCaseAssignment,
             postNotificationSender
         );
@@ -48,7 +48,7 @@ class RemoveRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
 
         PostSubmitCallbackResponse callbackResponse =
-            removeRepresentationConfirmation.handle(callback);
+            changeRepresentationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
 
@@ -73,7 +73,7 @@ class RemoveRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
 
         PostSubmitCallbackResponse callbackResponse =
-            removeRepresentationConfirmation.handle(callback);
+            changeRepresentationConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
 
@@ -82,6 +82,27 @@ class RemoveRepresentationConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationHeader().get())
             .contains("You have removed the legal representative from this appeal");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("All parties will be notified.");
+    }
+
+    @Test
+    void should_apply_noc_for_change_legal_representative() {
+
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+
+        PostSubmitCallbackResponse callbackResponse =
+            changeRepresentationConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(ccdCaseAssignment, times(1)).applyNoc(callback);
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You have started representing this client");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -99,7 +120,7 @@ class RemoveRepresentationConfirmationTest {
         doThrow(restClientResponseEx).when(ccdCaseAssignment).applyNoc(callback);
 
         PostSubmitCallbackResponse callbackResponse =
-            removeRepresentationConfirmation.handle(callback);
+            changeRepresentationConfirmation.handle(callback);
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
@@ -109,7 +130,7 @@ class RemoveRepresentationConfirmationTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> removeRepresentationConfirmation.handle(callback))
+        assertThatThrownBy(() -> changeRepresentationConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -121,9 +142,11 @@ class RemoveRepresentationConfirmationTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = removeRepresentationConfirmation.canHandle(callback);
+            boolean canHandle = changeRepresentationConfirmation.canHandle(callback);
 
-            if (event == Event.REMOVE_REPRESENTATION || event == Event.REMOVE_LEGAL_REPRESENTATIVE) {
+            if (event == Event.REMOVE_REPRESENTATION
+                || event == Event.REMOVE_LEGAL_REPRESENTATIVE
+                || event == Event.NOC_REQUEST) {
 
                 assertTrue(canHandle);
             } else {
@@ -137,11 +160,11 @@ class RemoveRepresentationConfirmationTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> removeRepresentationConfirmation.canHandle(null))
+        assertThatThrownBy(() -> changeRepresentationConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> removeRepresentationConfirmation.handle(null))
+        assertThatThrownBy(() -> changeRepresentationConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

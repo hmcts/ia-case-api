@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 
 @Slf4j
 @Component
-public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final CcdCaseAssignment ccdCaseAssignment;
     private final PostNotificationSender<AsylumCase> postNotificationSender;
 
-    public RemoveRepresentationConfirmation(
+    public ChangeRepresentationConfirmation(
         CcdCaseAssignment ccdCaseAssignment,
         PostNotificationSender<AsylumCase> postNotificationSender
     ) {
@@ -32,9 +32,16 @@ public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandl
         Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
-        return (callback.getEvent() == Event.REMOVE_REPRESENTATION || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
+        return (callback.getEvent() == Event.REMOVE_REPRESENTATION
+                || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE
+                || callback.getEvent() == Event.NOC_REQUEST);
     }
 
+    /**
+     * the confirmation message and the error message are coming from ExUI and cannot be customised!
+     * @param callback
+     * @return
+     */
     public PostSubmitCallbackResponse handle(
         Callback<AsylumCase> callback
     ) {
@@ -59,6 +66,14 @@ public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandl
                     + "You have been removed from this case and no longer have access to it.\n\n"
                     + "[View case list](/cases)"
                 );
+            } else if (callback.getEvent() == Event.NOC_REQUEST) {
+                postSubmitResponse.setConfirmationHeader(
+                    "# You have started representing this client"
+                );
+                postSubmitResponse.setConfirmationBody(
+                    "#### What happens next\n\n"
+                    + "All parties will be notified."
+                );
             } else {
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this appeal"
@@ -69,7 +84,7 @@ public class RemoveRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
         } catch (Exception e) {
-            log.error("Unable to remove representation (apply noc) for case id {} with error message: {}",
+            log.error("Unable to change representation (apply noc) for case id {} with error message: {}",
                 callback.getCaseDetails().getId(), e.getMessage());
 
             postSubmitResponse.setConfirmationBody(
