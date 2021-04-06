@@ -50,7 +50,7 @@ public class RoleAssignmentService {
         Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", Long.toString(caseDetailsId));
 
-        RoleAssignment body = new RoleAssignment(
+        return new RoleAssignment(
             new RoleRequest(
                 currentUserIdamId,
                 "case-allocation",
@@ -62,14 +62,13 @@ public class RoleAssignmentService {
                 assigneeId,
                 RoleType.CASE,
                 ROLE_NAME,
-                RoleCategory.STAFF,
+                RoleCategory.LEGAL_OPERATIONS,
                 Classification.RESTRICTED,
                 GrantType.SPECIFIC,
                 false,
                 attributes
             ))
         );
-        return body;
     }
 
 
