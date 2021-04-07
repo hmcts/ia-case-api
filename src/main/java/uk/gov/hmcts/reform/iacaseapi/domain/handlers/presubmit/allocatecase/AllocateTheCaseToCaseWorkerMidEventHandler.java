@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Assignment;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseWorkerService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -47,10 +47,20 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         requireNonNull(callback, "callback must not be null");
         log.info("canHandle method...");
 
-        return allocateTheCaseService.isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
-            && callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && callback.getEvent() == Event.ALLOCATE_THE_CASE
-            && featureToggler.getValue("allocate-a-case-feature", false);
+        boolean allocateToCaseWorkerOption = allocateTheCaseService
+            .isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData());
+        log.info("allocateToCaseWorkerOption: {}", allocateToCaseWorkerOption);
+
+        boolean midEvent = callbackStage == PreSubmitCallbackStage.MID_EVENT;
+        log.info("midEvent: {}", midEvent);
+
+        boolean event = callback.getEvent() == Event.ALLOCATE_THE_CASE;
+        log.info("event: {}", event);
+
+        boolean featureTogglerValue = featureToggler.getValue("allocate-a-case-feature", false);
+        log.info("featureTogglerValue: {}", featureTogglerValue);
+
+        return allocateToCaseWorkerOption && midEvent && event && featureTogglerValue;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
