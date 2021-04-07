@@ -38,9 +38,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
     }
 
     /**
-     * the confirmation message and the error message are coming from ExUI and cannot be customised!
-     * @param callback
-     * @return
+     * the confirmation message and the error message are coming from ExUI and cannot be customised.
      */
     public PostSubmitCallbackResponse handle(
         Callback<AsylumCase> callback

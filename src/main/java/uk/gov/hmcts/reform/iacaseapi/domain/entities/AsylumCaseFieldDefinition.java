@@ -1411,8 +1411,6 @@ public enum AsylumCaseFieldDefinition {
 
     CCD_REFERENCE_NUMBER_FOR_DISPLAY(
         "ccdReferenceNumberForDisplay", new TypeReference<String>(){}),
-    IS_REMOVE_REPRESENTATION_REQUESTED(
-        "isRemoveRepresentationRequested", new TypeReference<YesOrNo>(){}),
 
     REMISSION_DECISION_REASON(
         "remissionDecisionReason", new TypeReference<String>(){}),
