@@ -51,7 +51,8 @@ public class CaseWorkerService {
         String location,
         String securityClassification
     ) {
-        return roleAssignmentService
+        log.info("getCaseWorkerValueListForGivenLocation method...");
+        List<Assignment> roleAssignmentResponse = roleAssignmentService
             .queryRoleAssignments(QueryRequest.builder()
                 .roleType(List.of(RoleType.ORGANISATION))
                 .roleName(List.of(RoleName.TRIBUNAL_CASEWORKER, RoleName.SENIOR_TRIBUNAL_CASEWORKER))
@@ -64,6 +65,8 @@ public class CaseWorkerService {
                 .validAt(LocalDateTime.now())
                 .build()
             ).getRoleAssignmentResponse();
+        log.info(roleAssignmentResponse.toString());
+        return roleAssignmentResponse;
     }
 
     private List<Classification> getClassification(String securityClassification) {
@@ -77,17 +80,22 @@ public class CaseWorkerService {
     }
 
     public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
+        log.info("getCaseWorkerNameForActorId method...");
         CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
             idamService.getUserToken(),
             serviceAuthTokenGenerator.generate(),
             new UserIds(List.of(actorId))
         ).get(0);
 
+        log.info(caseWorkerProfile.toString());
+
         String caseWorkerNameFormatted = trim(String.format("%s %s",
             defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),
             defaultIfEmpty(caseWorkerProfile.getLastName(), EMPTY)));
 
-        return new CaseWorkerName(actorId, caseWorkerNameFormatted);
+        CaseWorkerName caseWorkerName = new CaseWorkerName(actorId, caseWorkerNameFormatted);
+        log.info(caseWorkerName.toString());
+        return caseWorkerName;
     }
 
 }
