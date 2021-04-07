@@ -4,7 +4,6 @@ import static java.util.Collections.singletonList;
 
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
 @Component
-@Slf4j
 public class RoleAssignmentService {
     public static final String ROLE_NAME = "tribunal-caseworker";
     private final AuthTokenGenerator serviceAuthTokenGenerator;
@@ -75,7 +73,6 @@ public class RoleAssignmentService {
 
 
     public RoleAssignmentResource queryRoleAssignments(QueryRequest queryRequest) {
-        log.info("queryRoleAssignments method...");
         return roleAssignmentApi.queryRoleAssignments(
             userDetails.getAccessToken(),
             serviceAuthTokenGenerator.generate(),
