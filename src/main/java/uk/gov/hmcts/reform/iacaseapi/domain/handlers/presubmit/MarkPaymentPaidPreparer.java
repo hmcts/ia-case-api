@@ -61,43 +61,43 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             return callbackResponse;
         }
 
-        asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .ifPresent(appealType -> {
-                switch (appealType) {
-                    case EA:
-                    case HU:
-                    case PA:
-                        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-                        Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-                        Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        switch (appealType) {
+            case EA:
+            case HU:
+            case PA:
+                Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+                Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
-                        if (appealType == PA && remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
+                Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
-                            asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                                .filter(option -> option.equals("payLater"))
-                                .ifPresent(s ->
-                                    callbackResponse.addError("The Mark appeal as paid option is not available.")
-                                );
-                        } else if ((remissionType.isPresent() && remissionType.get() != NO_REMISSION && !remissionDecision.isPresent())
-                                   || (lateRemissionType.isPresent() && !remissionDecision.isPresent())) {
+                if (appealType == PA && remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
 
-                            callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
-                        } else if (isRemissionDecisionExistsAndApproved(remissionDecision)) {
+                    asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
+                        .filter(option -> option.equals("payLater"))
+                        .ifPresent(s ->
+                            callbackResponse.addError("The Mark appeal as paid option is not available.")
+                        );
+                } else if ((remissionType.isPresent() && remissionType.get() != NO_REMISSION && !remissionDecision.isPresent())
+                           || (lateRemissionType.isPresent() && !remissionDecision.isPresent())) {
 
-                            callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
-                        }
-                        break;
+                    callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
+                } else if (isRemissionDecisionExistsAndApproved(remissionDecision)) {
 
-                    case RP:
-                    case DC:
-                        callbackResponse.addError("Payment is not required for this type of appeal.");
-                        break;
-
-                    default:
-                        break;
+                    callbackResponse.addError("You cannot mark this appeal as paid because a full remission has been approved.");
                 }
-            });
+                break;
+
+            case RP:
+            case DC:
+                callbackResponse.addError("Payment is not required for this type of appeal.");
+                break;
+
+            default:
+                break;
+        }
 
         return callbackResponse;
     }
@@ -106,12 +106,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         Optional<RemissionDecision> remissionDecision
     ) {
 
-        if (remissionDecision.isPresent()
-            && remissionDecision.get() == APPROVED) {
-
-            return true;
-        }
-
-        return false;
+        return remissionDecision.isPresent()
+               && remissionDecision.get() == APPROVED;
     }
 }

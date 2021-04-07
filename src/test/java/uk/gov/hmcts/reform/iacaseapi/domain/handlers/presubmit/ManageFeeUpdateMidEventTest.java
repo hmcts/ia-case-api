@@ -13,10 +13,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.FeeUpdateReason;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -24,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ManageFeeUpdateMidEventTest {
@@ -61,6 +68,46 @@ class ManageFeeUpdateMidEventTest {
     }
 
     @Test
+    void handling_should_error_for_no_remission_decision() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("You cannot choose this option because the remission request has not been decided or has been rejected");
+    }
+
+    @Test
+    void handle_should_return_error_if_no_remission_exists_for_fee_remission_changed() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("You cannot choose this option because there is no remission request associated with this appeal");
+
+    }
+
+    @Test
     void handling_should_error_if_fee_update_reason_is_not_present() {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
@@ -87,6 +134,28 @@ class ManageFeeUpdateMidEventTest {
         assertThatThrownBy(() -> manageFeeUpdateMidEvent.handle(MID_EVENT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Fee update reason is not present");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionDecision.class, names = { "APPROVED", "PARTIALLY_APPROVED" })
+    void should_handle_if_the_remission_is_not_rejected(RemissionDecision remissionDecision) {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(remissionDecision));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.HELP_WITH_FEES));
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class)).thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+        when(asylumCase.read(NEW_FEE_AMOUNT, String.class)).thenReturn(Optional.of("1000"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
