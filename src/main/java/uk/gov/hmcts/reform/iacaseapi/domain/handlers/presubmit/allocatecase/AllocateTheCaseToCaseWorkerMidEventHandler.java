@@ -47,10 +47,20 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         requireNonNull(callback, "callback must not be null");
         log.info("canHandle method...");
 
-        return allocateTheCaseService.isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
-            && callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && callback.getEvent() == Event.ALLOCATE_THE_CASE
-            && featureToggler.getValue("allocate-a-case-feature", false);
+        boolean allocateToCaseWorkerOption = allocateTheCaseService
+            .isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData());
+        log.info("allocateToCaseWorkerOption: {}", allocateToCaseWorkerOption);
+
+        boolean midEvent = callbackStage == PreSubmitCallbackStage.MID_EVENT;
+        log.info("midEvent: {}", midEvent);
+
+        boolean event = callback.getEvent() == Event.ALLOCATE_THE_CASE;
+        log.info("event: {}", event);
+
+        boolean featureTogglerValue = featureToggler.getValue("allocate-a-case-feature", false);
+        log.info("featureTogglerValue: {}", featureTogglerValue);
+
+        return allocateToCaseWorkerOption && midEvent && event && featureTogglerValue;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
