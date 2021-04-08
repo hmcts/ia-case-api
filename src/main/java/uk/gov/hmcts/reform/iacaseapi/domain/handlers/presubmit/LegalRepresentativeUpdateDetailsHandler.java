@@ -50,6 +50,10 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, email);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, reference);
 
+        // remove the field which is used to suppress notifications after appeal is transferred to another Legal Rep firm
+        asylumCase.clear(AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD);
+
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
