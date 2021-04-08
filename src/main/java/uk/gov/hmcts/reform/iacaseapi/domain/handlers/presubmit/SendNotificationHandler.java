@@ -110,7 +110,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_NEW_HEARING_REQUIREMENTS,
             Event.RECORD_REMISSION_DECISION,
             Event.REQUEST_FEE_REMISSION,
-            Event.MANAGE_FEE_UPDATE
+            Event.MANAGE_FEE_UPDATE,
+            Event.REQUEST_FEE_REMISSION,
+            Event.RECORD_OUT_OF_TIME_DECISION
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
