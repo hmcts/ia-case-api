@@ -170,8 +170,9 @@ security:
     - "caseworker-ia"
     - "citizen"
   roleEventAccess:
-    caseworker-approver:
+    caseworker-caa:
       - "nocRequest"
+    caseworker-approver:
       - "removeRepresentation"
       - "removeLegalRepresentative"
     caseworker-ia-legalrep-solicitor:
@@ -193,6 +194,7 @@ security:
       - "makeAnApplication"
       - "removeRepresentation"
       - "requestFeeRemission"
+      - "nocRequest"
     caseworker-ia-caseofficer:
       - "sendDirection"
       - "changeDirectionDueDate"

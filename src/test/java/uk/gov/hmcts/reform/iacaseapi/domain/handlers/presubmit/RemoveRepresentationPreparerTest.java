@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -81,7 +80,6 @@ class RemoveRepresentationPreparerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
-        verify(asylumCase, times(1)).write(IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
     }
 
     @Test
@@ -117,7 +115,6 @@ class RemoveRepresentationPreparerTest {
         assertThat(response.getErrors()).contains("You must have a MyHMCTS organisation account to stop representing a client.");
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
-        verify(asylumCase, times(0)).write(IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
     }
 
@@ -139,7 +136,6 @@ class RemoveRepresentationPreparerTest {
         assertThat(response.getErrors()).contains("You cannot remove the legal representative because they do not have a MyHMCTS organisation account.");
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
-        verify(asylumCase, times(0)).write(IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
     }
 

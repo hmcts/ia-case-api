@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -51,7 +50,6 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
             }
             return response;
         } else {
-            asylumCase.write(AsylumCaseFieldDefinition.IS_REMOVE_REPRESENTATION_REQUESTED, YesOrNo.YES);
 
             Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
             asylumCase.write(
