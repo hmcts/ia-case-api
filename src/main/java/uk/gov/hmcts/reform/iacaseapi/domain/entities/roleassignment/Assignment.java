@@ -98,10 +98,6 @@ public class Assignment {
         return grantType;
     }
 
-    public Boolean getReadOnly() {
-        return readOnly;
-    }
-
     public Map<String, String> getAttributes() {
         return attributes;
     }
