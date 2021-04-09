@@ -1,5 +1,6 @@
 {
   "description": "RWA-318 Allocate a case to caseworker confirmation page",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",

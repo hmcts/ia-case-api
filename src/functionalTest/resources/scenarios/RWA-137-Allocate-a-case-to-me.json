@@ -1,5 +1,6 @@
 {
   "description": "RWA-137 Allocate a case to me",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
