@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -46,13 +47,15 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+    @Mock
     private PreviousRepresentationAppender previousRepresentationAppender;
 
     private LegalRepresentativeUpdateDetailsHandler legalRepresentativeUpdateDetailsHandler;
 
     @BeforeEach
     public void setUp() {
-        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler(previousRepresentationAppender);
+        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler(professionalOrganisationRetriever, previousRepresentationAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -109,6 +112,8 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        final String updateCompanyName = "New Company";
+
         final List<IdValue<PreviousRepresentation>> existingPreviousRepresentations = new ArrayList<>();
 
         final List<IdValue<PreviousRepresentation>> allPreviousRepresentations = new ArrayList<>();
@@ -128,7 +133,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         when(asylumCase.read(LEGAL_REP_COMPANY, String.class)).thenReturn(Optional.of("some company name"));
         when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("some reference number"));
 
-        legalRepresentativeUpdateDetailsHandler.writeToPreviousRepresentations(callback);
+        legalRepresentativeUpdateDetailsHandler.writeToPreviousRepresentations(callback, updateCompanyName);
 
         verify(previousRepresentationAppender, times(1)).append(
             existingPreviousRepresentations,
