@@ -196,17 +196,6 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
         return isStatusChecked.get();
     }
 
-    private boolean completedStagesHasFeeUpdateStatus(
-        Optional<List<String>> completedStages, String preRequisiteFeeUpdateStatus) {
-        AtomicBoolean preRequisiteFeeUpdateStatusExists = new AtomicBoolean(false);
-
-        completedStages.ifPresent(
-            stages -> preRequisiteFeeUpdateStatusExists.set(
-                stages.contains(preRequisiteFeeUpdateStatus)));
-
-        return preRequisiteFeeUpdateStatusExists.get();
-    }
-
     private boolean isRemissionApprovedOrPartiallyApproved(Optional<RemissionDecision> remissionDecision) {
 
         return remissionDecision.isPresent()
