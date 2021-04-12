@@ -55,6 +55,6 @@ class AssignmentTest {
         assertEquals(RoleCategory.JUDICIAL, assignment.getRoleCategory());
         assertEquals(Classification.PRIVATE, assignment.getClassification());
         assertEquals(GrantType.BASIC, assignment.getGrantType());
-        assertEquals(Collections.<Attributes, String>emptyMap(), assignment.getAttributes());
+        assertEquals(Collections.<String, String>emptyMap(), assignment.getAttributes());
     }
 }

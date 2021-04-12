@@ -29,7 +29,7 @@ public class Assignment {
     private final Classification classification;
     private final GrantType grantType;
     private final Boolean readOnly;
-    private final Map<Attributes, String> attributes;
+    private final Map<String, String> attributes;
 
     @JsonCreator
     public Assignment(@JsonProperty("id") String id,
@@ -43,7 +43,7 @@ public class Assignment {
                       @JsonProperty("classification") Classification classification,
                       @JsonProperty("grantType") GrantType grantType,
                       @JsonProperty("readOnly") Boolean readOnly,
-                      @JsonProperty("attributes") Map<Attributes, String> attributes) {
+                      @JsonProperty("attributes") Map<String, String> attributes) {
         this.id = id;
         this.created = created;
         this.authorisations = authorisations;
@@ -98,11 +98,7 @@ public class Assignment {
         return grantType;
     }
 
-    public Boolean getReadOnly() {
-        return readOnly;
-    }
-
-    public Map<Attributes, String> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 }
