@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_REASON;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LATE_REMISSION_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.NEW_FEE_AMOUNT;
@@ -33,9 +32,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @Component
 public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String FEE_UPDATE_RECORDED_UNCHECKED = "You must mark Fee update recorded "
-        + "before you can select the fee update status";
     private static final String FEE_UPDATE_STATUS_INVALID_SIZE = "You cannot select more than one option at a time";
+    private static final String REFUND_APPROVED = "feeUpdateRefundApproved";
     private final FeatureToggler featureToggler;
 
     public ManageFeeUpdateMidEvent(FeatureToggler featureToggler) {
@@ -109,66 +107,80 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
                 break;
         }
 
-        Optional<CheckValues<String>> maybeFeeUpdateRecorded = asylumCase.read(FEE_UPDATE_RECORDED);
+        /*
+            USER FLOW
+            Flow 1: Mark Fee update recorded
+            Flow 2: Select ONLY one of these - Refund approved, Additional fee requested, Fee update not required
+                    Flow 2 can be repeated many times. Select Additional fee and then Fee update not required
+                    Flow 3 is valid only for Refund approved
+            Flow 3: Refund instructed after Refund approved
+                    User can go back to Flow 2 after Flow 3 completion
+         */
         Optional<CheckValues<String>> maybeFeeUpdateStatus = asylumCase.read(FEE_UPDATE_STATUS);
         Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
 
-        if (maybeFeeUpdateStatus.isPresent() && maybeFeeUpdateStatus.get().getValues().size() > 1) {
-            callbackResponse.addError(FEE_UPDATE_STATUS_INVALID_SIZE);
-            return callbackResponse;
-        }
+        //Flow 2 and Flow 3
+        if (maybeFeeUpdateStatus.isPresent()) {
 
-        boolean isFeeUpdateRecorded = isFeeUpdateStatusChecked(maybeFeeUpdateRecorded, "feeUpdateRecorded");
-        boolean isRefundApproved = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateRefundApproved");
-        boolean isRefundInstructed = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateRefundInstructed");
-        boolean isAdditionFeeRequested =
-            isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateAdditionalFeeRequested");
-        boolean isFeeUpdateNotRequired = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateNotRequired");
-        boolean completeStagesHasFeesUpdateRecorded = completedStagesHasFeeUpdateStatus(
-            completedStages, "feeUpdateRecorded");
+            String lastCompletedStep = "";
+            if (completedStages.isPresent()) {
+                lastCompletedStep = completedStages.get().get(completedStages.get().size() - 1);
+            }
 
-        //At least one option should be chosen when Fee Update Recorded
-        if (completeStagesHasFeesUpdateRecorded
-            && isFeeUpdateRecorded
-            && !(isRefundApproved
-            || isRefundInstructed
-            || isAdditionFeeRequested
-            || isFeeUpdateNotRequired)) {
-            callbackResponse.addError(FEE_UPDATE_STATUS_INVALID_SIZE);
-            return callbackResponse;
-        }
+            //Flow 2: only one Fee update status should be checked
+            //Flow 2: At least one option should be chosen when Fee Update Recorded (Handled in CCD)
+            if (!lastCompletedStep.equals(REFUND_APPROVED)
+                && maybeFeeUpdateStatus.get().getValues().size() > 1
+            ) {
+                callbackResponse.addError(FEE_UPDATE_STATUS_INVALID_SIZE);
+                return callbackResponse;
+            }
 
-        //Fee Update Recorded should be checked for any option
-        if ((isRefundApproved
-            || isRefundInstructed
-            || isAdditionFeeRequested
-            || isFeeUpdateNotRequired)
-            && (!completeStagesHasFeesUpdateRecorded
-            || !isFeeUpdateRecorded)
-        ) {
-            callbackResponse.addError(FEE_UPDATE_RECORDED_UNCHECKED);
-            return callbackResponse;
-        }
+            boolean isAdditionFeeRequested =
+                isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateAdditionalFeeRequested");
+            //Check Decision based selection
+            switch (feeUpdateReason) {
+                case APPEAL_NOT_VALID:
+                case FEE_REMISSION_CHANGED:
+                    if (isAdditionFeeRequested) {
+                        callbackResponse
+                            .addError("You cannot select additional fee requested for this type of fee update."
+                                + " It can only be a refund.");
+                    }
+                    break;
+                default:
+                    break;
+            }
 
-        if (isRefundInstructed
-            && (!completedStagesHasFeeUpdateStatus(completedStages, "feeUpdateRefundApproved")
-            || !isRefundApproved)
-        ) {
-            callbackResponse.addError("You must select refund approved before you can mark a refund as instructed");
-            return callbackResponse;
-        }
+            //Flow 2 and 3: You cannot select Refund instructed, valid only for Flow 3
+            boolean isRefundApproved = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, REFUND_APPROVED);
+            boolean isRefundInstructed = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateRefundInstructed");
+            if (isRefundInstructed
+                && (!lastCompletedStep.equals(REFUND_APPROVED) || !isRefundApproved)
+            ) {
+                callbackResponse.addError("You must select refund approved before you can mark a refund as instructed");
+                return callbackResponse;
+            }
 
-        //Check Decision based selection
-        switch (feeUpdateReason) {
-            case APPEAL_NOT_VALID:
-            case FEE_REMISSION_CHANGED:
-                if (isAdditionFeeRequested) {
-                    callbackResponse.addError("You cannot select additional fee requested for this type of fee update."
-                        + " It can only be a refund.");
+            boolean isFeeUpdateNotRequired = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateNotRequired");
+            //Flow 3: One of the 2 valid options must be selected
+            //Flow 3: Both valid options must NOT be selected
+            //Flow 3: previous selection Refund approved should not be unchecked, covered above in Flow 2
+            if (lastCompletedStep.equals(REFUND_APPROVED)) {
+                if (!(isRefundInstructed || isFeeUpdateNotRequired)
+                    || (isRefundInstructed && isFeeUpdateNotRequired)
+                    || isAdditionFeeRequested) {
+                    callbackResponse.addError(
+                        "You cannot make this selection. "
+                            + "Select either refund instructed or fee not required to continue.");
+                    return callbackResponse;
                 }
-                break;
-            default:
-                break;
+                if (!isRefundApproved) {
+                    callbackResponse.addError(
+                        "You must select refund approved before you can mark a refund as instructed");
+                    return callbackResponse;
+                }
+            }
         }
 
         return callbackResponse;
@@ -178,23 +190,10 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
         Optional<CheckValues<String>> maybeFeeUpdateStatus, String feeUpdateStatus) {
         AtomicBoolean isStatusChecked = new AtomicBoolean(false);
         maybeFeeUpdateStatus.ifPresent(
-            statuses -> {
-                isStatusChecked.set(statuses.getValues().stream()
-                    .anyMatch(value -> value.equals(feeUpdateStatus)));
-            }
+            statuses -> isStatusChecked.set(statuses.getValues().stream()
+                .anyMatch(value -> value.equals(feeUpdateStatus)))
         );
         return isStatusChecked.get();
-    }
-
-    private boolean completedStagesHasFeeUpdateStatus(
-        Optional<List<String>> completedStages, String preRequisiteFeeUpdateStatus) {
-        AtomicBoolean preRequisiteFeeUpdateStatusExists = new AtomicBoolean(false);
-
-        completedStages.ifPresent(
-            stages -> preRequisiteFeeUpdateStatusExists.set(
-                stages.contains(preRequisiteFeeUpdateStatus)));
-
-        return preRequisiteFeeUpdateStatusExists.get();
     }
 
     private boolean isRemissionApprovedOrPartiallyApproved(Optional<RemissionDecision> remissionDecision) {

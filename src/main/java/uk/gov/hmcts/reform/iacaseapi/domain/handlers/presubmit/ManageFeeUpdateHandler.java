@@ -8,10 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CheckValues;
@@ -57,18 +55,19 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
                 .getCaseData();
 
         Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
-        Set<String> feeUpdateCompleteStages = new LinkedHashSet<>();
+        List<String> feeUpdateCompleteStages = new ArrayList<>();
 
         if (completedStages.isPresent()) {
-            //Flow 2 when TCW/Admin is recording Fee update status options
+            //Flow 2 or 3 when TCW/Admin is recording Fee update status options/Refund instructed
             List<String> existingCompletedStages = completedStages.get();
             feeUpdateCompleteStages.addAll(existingCompletedStages);
 
+            String lastCompletedStep = existingCompletedStages.get(existingCompletedStages.size() - 1);
             Optional<CheckValues<String>> maybeFeeUpdateStatus = asylumCase.read(FEE_UPDATE_STATUS);
             maybeFeeUpdateStatus.ifPresent(
                 statuses -> statuses.getValues().stream()
-                    .filter(feeUpdateStatus -> !existingCompletedStages.contains(feeUpdateStatus))
-                    .forEach(feeUpdateStatus -> feeUpdateCompleteStages.add(feeUpdateStatus)));
+                    .filter(feeUpdateStatus -> !lastCompletedStep.equals(feeUpdateStatus))
+                    .forEach(feeUpdateCompleteStages::add));
 
         } else {
             //Flow 1 when TCW/Admin is recording Fee update
@@ -77,6 +76,7 @@ public class ManageFeeUpdateHandler implements PreSubmitCallbackHandler<AsylumCa
                 feeUpdateCompleteStages.addAll(status.getValues()));
             asylumCase.write(DISPLAY_FEE_UPDATE_STATUS, YES);
         }
+
         asylumCase.write(
             FEE_UPDATE_COMPLETED_STAGES,
             new ArrayList<>(feeUpdateCompleteStages)
