@@ -1329,11 +1329,14 @@ public enum AsylumCaseFieldDefinition {
     LOCAL_AUTHORITY_POLICY(
         "localAuthorityPolicy", new TypeReference<OrganisationPolicy>(){}),
 
+    FEE_UPDATE_RECORDED(
+        "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
+
     FEE_UPDATE_STATUS(
         "feeUpdateStatus", new TypeReference<CheckValues<String>>(){}),
 
-    FEE_UPDATE_RECORDED(
-        "feeUpdateRecorded", new TypeReference<CheckValues<String>>(){}),
+    DISPLAY_FEE_UPDATE_STATUS(
+        "displayFeeUpdateStatus", new TypeReference<YesOrNo>() {}),
 
     FEE_UPDATE_COMPLETED_STAGES(
         "feeUpdateCompletedStages", new TypeReference<List<String>>(){}),

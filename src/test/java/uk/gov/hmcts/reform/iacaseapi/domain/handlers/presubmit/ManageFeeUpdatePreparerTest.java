@@ -2,13 +2,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,15 +31,20 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class ManageFeeUpdatePreparerTest {
 
-    @Mock private Callback<AsylumCase> callback;
-    @Mock private CaseDetails<AsylumCase> caseDetails;
-    @Mock private AsylumCase asylumCase;
+    @Mock
+    private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
-    @Mock private FeatureToggler featureToggler;
+    @Mock
+    private FeatureToggler featureToggler;
 
     private ManageFeeUpdatePreparer manageFeeUpdatePreparer;
 
@@ -47,7 +55,7 @@ class ManageFeeUpdatePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
     void handling_should_error_for_payment_pending(AppealType type) {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
@@ -63,11 +71,12 @@ class ManageFeeUpdatePreparerTest {
 
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).contains("You cannot manage a fee update for this appeal because the fee has not been paid yet");
+        assertThat(callbackResponse.getErrors())
+            .contains("You cannot manage a fee update for this appeal because the fee has not been paid yet");
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "PA"})
     void handling_should_error_for_no_payment_status(AppealType type) {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
@@ -82,7 +91,7 @@ class ManageFeeUpdatePreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "DC", "RP" })
+    @EnumSource(value = AppealType.class, names = {"DC", "RP"})
     void handling_should_error_for_invalid_appeal_type(AppealType type) {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);

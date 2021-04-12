@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -31,8 +32,8 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && callback.getEvent() == Event.MANAGE_FEE_UPDATE
-               && featureToggler.getValue("manage-fee-update-feature", false);
+            && callback.getEvent() == Event.MANAGE_FEE_UPDATE
+            && featureToggler.getValue("manage-fee-update-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -63,7 +64,8 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
 
                 if (paymentStatus != PaymentStatus.PAID) {
 
-                    callbackResponse.addError("You cannot manage a fee update for this appeal because the fee has not been paid yet");
+                    callbackResponse.addError(
+                        "You cannot manage a fee update for this appeal because the fee has not been paid yet");
                 } else {
                     callbackResponse.setData(asylumCase);
                 }
