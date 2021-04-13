@@ -1,0 +1,56 @@
+{
+  "description": "RIA-3813 Admin officer manage fee update of refund instructed",
+  "launchDarklyKey": "manage-fee-update-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "manageFeeUpdate",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "newFeeAmount": "2000",
+          "paymentStatus": "Paid",
+          "feeUpdateReason": "appealNotValid",
+          "feeUpdateRecorded": {
+            "values": [
+              "feeUpdateRecorded"
+            ]
+          },
+          "feeUpdateStatus": {
+            "values": [
+              "feeUpdateRefundApproved",
+              "feeUpdateRefundInstructed",
+              "feeUpdateNotRequired"
+            ]
+          },
+          "feeUpdateCompletedStages": [
+            "feeUpdateRecorded",
+            "feeUpdateRefundApproved",
+            "feeUpdateRefundInstructed"
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "newFeeAmount": "2000",
+        "paymentStatus": "Paid",
+        "feeUpdateReason": "appealNotValid",
+        "feeUpdateCompletedStages": [
+          "feeUpdateRecorded",
+          "feeUpdateRefundApproved",
+          "feeUpdateRefundInstructed",
+          "feeUpdateNotRequired"
+        ]
+      }
+    }
+  }
+}

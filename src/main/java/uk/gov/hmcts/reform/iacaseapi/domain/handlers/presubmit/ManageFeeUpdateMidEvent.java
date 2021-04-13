@@ -114,7 +114,8 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
                     Flow 2 can be repeated many times. Select Additional fee and then Fee update not required
                     Flow 3 is valid only for Refund approved
             Flow 3: Refund instructed after Refund approved
-                    User can go back to Flow 2 after Flow 3 completion
+                    User can continue after Flow 2, Flow 3 completion
+            Other flows after Flow 3 are defined
          */
         Optional<CheckValues<String>> maybeFeeUpdateStatus = asylumCase.read(FEE_UPDATE_STATUS);
         Optional<List<String>> completedStages = asylumCase.read(FEE_UPDATE_COMPLETED_STAGES);
@@ -127,9 +128,9 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
                 lastCompletedStep = completedStages.get().get(completedStages.get().size() - 1);
             }
 
-            //Flow 2: only one Fee update status should be checked
+            //Flow 2: only one Fee update status should be checked right after Fee update recorded
             //Flow 2: At least one option should be chosen when Fee Update Recorded (Handled in CCD)
-            if (!lastCompletedStep.equals(REFUND_APPROVED)
+            if (completedStages.isPresent() && completedStages.get().size() == 1
                 && maybeFeeUpdateStatus.get().getValues().size() > 1
             ) {
                 callbackResponse.addError(FEE_UPDATE_STATUS_INVALID_SIZE);
@@ -156,7 +157,7 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
             boolean isRefundApproved = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, REFUND_APPROVED);
             boolean isRefundInstructed = isFeeUpdateStatusChecked(maybeFeeUpdateStatus, "feeUpdateRefundInstructed");
             if (isRefundInstructed
-                && (!lastCompletedStep.equals(REFUND_APPROVED) || !isRefundApproved)
+                && (!completedStagesHasFeeUpdateStatus(completedStages, REFUND_APPROVED))
             ) {
                 callbackResponse.addError("You must select refund approved before you can mark a refund as instructed");
                 return callbackResponse;
@@ -177,7 +178,22 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
                 }
                 if (!isRefundApproved) {
                     callbackResponse.addError(
-                        "You must select refund approved before you can mark a refund as instructed");
+                        "This selection is not valid. You cannot deselect an option that has already been selected");
+                    return callbackResponse;
+                }
+            }
+
+            if (lastCompletedStep.equals("feeUpdateRefundInstructed")) {
+                if (!(isAdditionFeeRequested || isFeeUpdateNotRequired)
+                    || (isAdditionFeeRequested && isFeeUpdateNotRequired)) {
+                    callbackResponse.addError(
+                        "This selection is not valid. "
+                            + "You must select either fee update not required or additional fee requested to continue");
+                    return callbackResponse;
+                }
+                if (!(isRefundApproved && isRefundInstructed)) {
+                    callbackResponse.addError(
+                        "This selection is not valid. You cannot deselect an option that has already been selected");
                     return callbackResponse;
                 }
             }
@@ -208,4 +224,16 @@ public class ManageFeeUpdateMidEvent implements PreSubmitCallbackHandler<AsylumC
         return remissionType.isPresent()
             && remissionType.get() != RemissionType.NO_REMISSION;
     }
+
+    private boolean completedStagesHasFeeUpdateStatus(
+        Optional<List<String>> completedStages, String preRequisiteFeeUpdateStatus) {
+        AtomicBoolean preRequisiteFeeUpdateStatusExists = new AtomicBoolean(false);
+
+        completedStages.ifPresent(
+            stages -> preRequisiteFeeUpdateStatusExists.set(
+                stages.contains(preRequisiteFeeUpdateStatus)));
+
+        return preRequisiteFeeUpdateStatusExists.get();
+    }
+
 }
