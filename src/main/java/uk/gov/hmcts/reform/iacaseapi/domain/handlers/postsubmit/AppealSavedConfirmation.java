@@ -104,8 +104,8 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
             log.info("PRD endpoint called for caseId [{}] orgId[{}]",
                 callback.getCaseDetails().getId(), organisationIdentifier);
 
-            ccdCaseAssignment.revokeAccessToCase(callback, organisationIdentifier);
             ccdCaseAssignment.assignAccessToCase(callback);
+            ccdCaseAssignment.revokeAccessToCase(callback, organisationIdentifier);
         }
 
         return postSubmitResponse;
