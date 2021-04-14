@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ALLOCATE_THE_CASE_TO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_LOCATION_LIST;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_WORKER_NAME_LIST;
@@ -65,7 +64,6 @@ public class AllocateTheCaseToCaseWorkerHandler implements PreSubmitCallbackHand
 
         caseData.clear(CASE_WORKER_NAME_LIST);
         caseData.clear(CASE_WORKER_LOCATION_LIST);
-        caseData.clear(ALLOCATE_THE_CASE_TO);
 
         return new PreSubmitCallbackResponse<>(caseData);
     }
