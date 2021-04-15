@@ -1,0 +1,27 @@
+{
+  "description": "RWA-492 reset radio button options for the allocate the case event",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "allocateTheCase",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "allocateTheCaseTo": "caseworker"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "allocateTheCaseTo": null
+      }
+    }
+  }
+}

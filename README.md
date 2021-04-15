@@ -1,3 +1,4 @@
+
 # ia-case-api
 
 Immigration &amp; Asylum case API
@@ -172,5 +173,21 @@ Standard output will show INFOs, WARNs and ERRORs logs. There is a need to check
 Intermediate CCD definitions must be imported to Production before any ia-case-api braking code changes is merged to master. Once it is done you can re-run validation script.
 
 There is `IGNORED` array defined in `validate_case_api.js` script. If you think validation script gives you false positives, please add new entry to the array.
+
+### WA local env integration
+
+This is only for WA devs or devs who work with the WA local env and this service. 
+
+To integrate this service with the WA local env we have to set the wa-local profile.
+To set the profile pick one of the options: 
+
+1. From the terminal run: 
+```shell
+./gradlew --no-daemon assemble && java -Xmx384m -jar -Dspring.profiles.active=wa-local build/libs/ia-case-api.jar
+```
+
+2. From IntelliJ: Edit the Run/Debug configuration dialog and add the profile.
+
+
 
 
