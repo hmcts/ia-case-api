@@ -28,7 +28,7 @@ class CaseManagementLocationServiceTest {
         "Manchester, MANCHESTER",
         "Newport, NEWPORT",
         "Taylor House, TAYLOR_HOUSE",
-        "Newcastle,",
+        "Newcastle, NEWCASTLE",
         "North Shields, NORTH_SHIELDS"
     })
     void given_staffLocationName_then_return_caseManagementLocation(
