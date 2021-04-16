@@ -43,11 +43,8 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
         if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
-            if (callback.getEvent() == Event.REMOVE_REPRESENTATION) {
-                response.addError("You must have a MyHMCTS organisation account to stop representing a client.");
-            } else {
-                response.addError("You cannot remove the legal representative because they do not have a MyHMCTS organisation account.");
-            }
+            response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
+            response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
             return response;
         } else {
 
@@ -65,3 +62,5 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
         }
     }
 }
+
+
