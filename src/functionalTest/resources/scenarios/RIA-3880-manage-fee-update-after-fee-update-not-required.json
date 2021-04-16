@@ -1,0 +1,46 @@
+{
+  "description": "RIA-3880 Admin officer manage fee update not available post Fee update not required",
+  "launchDarklyKey": "manage-fee-update-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "manageFeeUpdate",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "newFeeAmount": "2000",
+          "paymentStatus": "Paid",
+          "feeUpdateReason": "feeRemissionChanged",
+          "feeUpdateRecorded": {
+            "values": [
+              "feeUpdateRecorded"
+            ]
+          },
+          "feeUpdateCompletedStages": [
+            "feeUpdateRecorded",
+            "feeUpdateNotRequired"
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You can no longer manage a fee update for this appeal because a fee update has been recorded as not required."],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "newFeeAmount": "2000",
+        "paymentStatus": "Paid",
+        "feeUpdateReason": "feeRemissionChanged",
+        "feeUpdateCompletedStages": [
+          "feeUpdateRecorded",
+          "feeUpdateNotRequired"
+        ]
+      }
+    }
+  }
+}
