@@ -108,6 +108,65 @@ class ManageFeeUpdateMidEventTest {
     }
 
     @Test
+    void handle_should_return_error_if_remission_does_not_exists() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+            .thenReturn(Optional.of(FeeUpdateReason.FEE_REMISSION_CHANGED));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.empty());
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains(
+                "You cannot choose this option because there is no remission request associated with this appeal");
+    }
+
+    @Test
+    void handle_should_return_error_on_one_or_no_completed_stages() {
+
+        when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
+
+        final CheckValues<String> feeUpdateStatus =
+            new CheckValues<>(Arrays.asList(
+                "feeUpdateAdditionalFeeRequested",
+                "feeUpdateRefundApproved"
+            ));
+        final List<String> completedStages =
+            Arrays.asList(
+                "feeUpdateRecorded"
+            );
+
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.MANAGE_FEE_UPDATE);
+        when(asylumCase.read(FEE_UPDATE_REASON, FeeUpdateReason.class))
+            .thenReturn(Optional.of(FeeUpdateReason.DECISION_TYPE_CHANGED));
+        when(asylumCase.read(FEE_UPDATE_STATUS)).thenReturn(Optional.of(feeUpdateStatus));
+        when(asylumCase.read(FEE_UPDATE_COMPLETED_STAGES)).thenReturn(Optional.of(completedStages));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            manageFeeUpdateMidEvent.handle(MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("You cannot select more than one option at a time");
+
+    }
+
+    @Test
     void handle_should_return_error_if_no_remission_exists_for_fee_remission_changed() {
 
         when(featureToggler.getValue("manage-fee-update-feature", false)).thenReturn(true);
