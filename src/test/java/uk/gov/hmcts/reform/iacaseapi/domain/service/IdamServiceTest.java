@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.Token;
 class IdamServiceTest {
 
     public static final String SOME_SYSTEM_USER = "some system user";
-    public static final String SYSTEM_USER_PASSWORD = "some system user password";
+    public static final String SYSTEM_USER_PASS = "some system user password";
     public static final String REDIRECT_URL = "some redirect url";
     public static final String SCOPE = "some scope";
     public static final String CLIENT_ID = "some client id";
@@ -33,7 +33,7 @@ class IdamServiceTest {
 
         IdamService idamService = new IdamService(
             SOME_SYSTEM_USER,
-            SYSTEM_USER_PASSWORD,
+            SYSTEM_USER_PASS,
             REDIRECT_URL,
             SCOPE,
             CLIENT_ID,
@@ -53,7 +53,7 @@ class IdamServiceTest {
         expectedIdamApiParameter.put("client_id", CLIENT_ID);
         expectedIdamApiParameter.put("client_secret", CLIENT_SECRET);
         expectedIdamApiParameter.put("username", SOME_SYSTEM_USER);
-        expectedIdamApiParameter.put("password", SYSTEM_USER_PASSWORD);
+        expectedIdamApiParameter.put("password", SYSTEM_USER_PASS);
         expectedIdamApiParameter.put("scope", SCOPE);
 
         verify(idamApi).token(eq(expectedIdamApiParameter));

@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 public class IdamService {
 
     private final String systemUserName;
-    private final String systemUserPassword;
+    private final String systemUserPass;
     private final String idamRedirectUrl;
     private final String systemUserScope;
     private final String idamClientId;
@@ -19,7 +19,7 @@ public class IdamService {
 
     public IdamService(
         @Value("${idam.ia_system_user.username}") String systemUserName,
-        @Value("${idam.ia_system_user.password}") String systemUserPassword,
+        @Value("${idam.ia_system_user.password}") String systemUserPass,
         @Value("${idam.redirectUrl}") String idamRedirectUrl,
         @Value("${idam.ia_system_user.scope}") String scope,
         @Value("${spring.security.oauth2.client.registration.oidc.client-id}") String idamClientId,
@@ -27,7 +27,7 @@ public class IdamService {
         IdamApi idamApi
     ) {
         this.systemUserName = systemUserName;
-        this.systemUserPassword = systemUserPassword;
+        this.systemUserPass = systemUserPass;
         this.idamRedirectUrl = idamRedirectUrl;
         this.systemUserScope = scope;
         this.idamClientId = idamClientId;
@@ -43,7 +43,7 @@ public class IdamService {
         idamAuthDetails.put("client_id", idamClientId);
         idamAuthDetails.put("client_secret", idamClientSecret);
         idamAuthDetails.put("username", systemUserName);
-        idamAuthDetails.put("password", systemUserPassword);
+        idamAuthDetails.put("password", systemUserPass);
         idamAuthDetails.put("scope", systemUserScope);
 
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
