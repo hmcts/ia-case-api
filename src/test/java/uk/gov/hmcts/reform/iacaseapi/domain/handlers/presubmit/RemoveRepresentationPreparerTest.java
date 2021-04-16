@@ -97,7 +97,10 @@ class RemoveRepresentationPreparerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+    })
     void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -112,28 +115,8 @@ class RemoveRepresentationPreparerTest {
             );
 
         assertThat(response.getData()).isInstanceOf(AsylumCase.class);
-        assertThat(response.getErrors()).contains("You must have a MyHMCTS organisation account to stop representing a client.");
-
-        verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
-        verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);
-    }
-
-    @Test
-    void should_respond_with_error_for_tcw_when_organisation_policy_not_present() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.empty());
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            removeRepresentationPreparer.handle(
-                PreSubmitCallbackStage.ABOUT_TO_START,
-                callback
-            );
-
-        assertThat(response.getData()).isInstanceOf(AsylumCase.class);
-        assertThat(response.getErrors()).contains("You cannot remove the legal representative because they do not have a MyHMCTS organisation account.");
+        assertThat(response.getErrors()).contains("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
+        assertThat(response.getErrors()).contains("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
 
         verify(asylumCase, times(1)).read(LOCAL_AUTHORITY_POLICY);
         verify(asylumCase, times(0)).write(CHANGE_ORGANISATION_REQUEST_FIELD, changeOrganisationRequest);

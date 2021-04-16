@@ -19,7 +19,8 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "You must have a MyHMCTS organisation account to stop representing a client."
+      "You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.",
+      "If you are a legal representative, you must contact all parties confirming you no longer represent this client."
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json",
