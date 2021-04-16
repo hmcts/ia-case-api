@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
-
-import java.util.Optional;
 
 @Service
 public class CaseManagementLocationService {
