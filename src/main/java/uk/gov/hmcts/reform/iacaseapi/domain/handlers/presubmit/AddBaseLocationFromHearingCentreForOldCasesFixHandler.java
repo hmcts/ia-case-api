@@ -59,12 +59,12 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        fixCaseManagementLocationDataIfneccessary(asylumCase);
+        fixCaseManagementLocationDataIfNecessary(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void fixCaseManagementLocationDataIfneccessary(AsylumCase asylumCase) {
+    private void fixCaseManagementLocationDataIfNecessary(AsylumCase asylumCase) {
         HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
             .orElse(HearingCentre.TAYLOR_HOUSE);
 
