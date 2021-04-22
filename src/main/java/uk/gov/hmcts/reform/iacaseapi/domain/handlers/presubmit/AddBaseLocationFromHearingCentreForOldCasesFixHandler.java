@@ -31,10 +31,7 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
     }
 
     @Override
-    public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
+    public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
@@ -62,6 +59,12 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        fixCaseManagementLocationDataIfneccessary(asylumCase);
+
+        return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void fixCaseManagementLocationDataIfneccessary(AsylumCase asylumCase) {
         HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
             .orElse(HearingCentre.TAYLOR_HOUSE);
 
@@ -72,8 +75,6 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
             || StringUtils.isBlank(caseManagementLocation.get().getBaseLocation().name())) {
             addBaseLocationAndStaffLocationFromHearingCentre(asylumCase, hearingCentre);
         }
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase, HearingCentre hearingCentre) {
