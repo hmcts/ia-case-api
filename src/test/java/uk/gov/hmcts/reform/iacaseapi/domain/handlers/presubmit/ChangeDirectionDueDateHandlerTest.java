@@ -1,24 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TIME_EXTENSION_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
@@ -75,6 +66,8 @@ class ChangeDirectionDueDateHandlerTest {
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Captor
     private ArgumentCaptor<List<IdValue<Parties>>> directionEditPartiesCaptor;
+    @Captor
+    private ArgumentCaptor<Direction> lastModifiedDirectionCaptor;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -148,7 +141,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
 
         verify(asylumCase).clear(DIRECTION_LIST);
         verify(asylumCase).clear(DISABLE_OVERVIEW_PAGE);
@@ -157,12 +150,19 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
 
-        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
+        verify(asylumCase).write(eq(LAST_MODIFIED_DIRECTION), lastModifiedDirectionCaptor.capture());
+
+        Direction lastModifiedDirection = lastModifiedDirectionCaptor.getValue();
+        assertEquals("explanation-2", lastModifiedDirection.getExplanation());
+        assertEquals(Parties.RESPONDENT, lastModifiedDirection.getParties());
+        assertEquals("2222-12-01", lastModifiedDirection.getDateDue());
+        assertEquals(dateSent.toString(), lastModifiedDirection.getDateSent());
+        assertEquals(DirectionTag.RESPONDENT_REVIEW, lastModifiedDirection.getTag());
+        assertThat(lastModifiedDirection.getPreviousDates()).isEmpty();
+
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
-
-        List<IdValue<Direction>> actualDirections =
-            asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
-
+        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
+        List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
         assertEquals(existingDirections.size(), actualDirections.size());
 
         assertEquals("1", actualDirections.get(0).getId());

@@ -70,6 +70,16 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                             // MidEvent does not pass temp fields
                             asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties());
 
+                            asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION,
+                                    new Direction(
+                                            idValue.getValue().getExplanation(),
+                                            idValue.getValue().getParties(),
+                                            asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
+                                            dateProvider.now().toString(),
+                                            idValue.getValue().getTag(),
+                                            emptyList()
+                                    ));
+
                             return new IdValue<>(
                                 idValue.getId(),
                                 new Direction(
