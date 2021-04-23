@@ -7,7 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
@@ -47,9 +47,9 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
         requireNonNull(callback, "callback must not be null");
 
         return allocateTheCaseService.isAllocateToCaseWorkerOption(callback.getCaseDetails().getCaseData())
-            && callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && callback.getEvent() == Event.ALLOCATE_THE_CASE
-            && featureToggler.getValue("allocate-a-case-feature", false);
+               && callbackStage == PreSubmitCallbackStage.MID_EVENT
+               && callback.getEvent() == Event.ALLOCATE_THE_CASE
+               && featureToggler.getValue("allocate-a-case-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -95,13 +95,19 @@ public class AllocateTheCaseToCaseWorkerMidEventHandler implements PreSubmitCall
     }
 
     private List<Value> getCaseWorkerValueListForGivenLocation(String location, String securityClassification) {
-        List<Assignment> roleAssignments = caseWorkerService.getRoleAssignmentsPerLocationAndClassification(
-            location,
-            securityClassification
-        );
-        return roleAssignments.stream()
-            .map(role -> caseWorkerService.getCaseWorkerNameForActorId(role.getActorId()))
-            .filter(caseWorkerName -> StringUtils.isNotEmpty(caseWorkerName.getFormattedName()))
+        List<String> actorIds = caseWorkerService
+            .getRoleAssignmentsPerLocationAndClassification(
+                location,
+                securityClassification
+            )
+            .stream()
+            .map(Assignment::getActorId)
+            .collect(Collectors.toList());
+
+        return caseWorkerService
+            .getCaseWorkerNameForActorIds(actorIds)
+            .stream()
+            .filter(caseWorkerName -> StringUtils.isNotBlank(caseWorkerName.getFormattedName()))
             .map(caseWorkerName -> new Value(caseWorkerName.getId(), caseWorkerName.getFormattedName()))
             .collect(Collectors.toList());
     }

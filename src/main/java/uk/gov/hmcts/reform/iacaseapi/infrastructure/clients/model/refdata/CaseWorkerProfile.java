@@ -14,6 +14,7 @@ import lombok.Value;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CaseWorkerProfile {
 
+    String caseWorkerId;
     String firstName;
     String lastName;
 

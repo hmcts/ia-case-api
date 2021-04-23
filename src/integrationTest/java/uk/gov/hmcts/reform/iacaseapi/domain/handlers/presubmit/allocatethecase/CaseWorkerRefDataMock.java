@@ -35,15 +35,4 @@ public final class CaseWorkerRefDataMock {
                 .build()
         ));
     }
-
-    public static void setup404MockResponse(WireMockServer mockService) {
-        mockService.addStubMapping(new StubMapping(
-            newRequestPattern(RequestMethod.POST, urlEqualTo(URL))
-                .build(),
-            aResponse()
-                .withStatus(HttpStatus.NOT_FOUND.value())
-                .build()
-        ));
-    }
-
 }

@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Class
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -90,4 +91,21 @@ public class CaseWorkerService {
         return new CaseWorkerName(actorId, caseWorkerNameFormatted);
     }
 
+    public List<CaseWorkerName> getCaseWorkerNameForActorIds(List<String> actorIds) {
+        return refDataCaseWorkerApi
+            .fetchUsersById(
+                idamService.getUserToken(),
+                serviceAuthTokenGenerator.generate(),
+                new UserIds(actorIds)
+            )
+            .stream()
+            .map(caseWorkerProfile -> {
+                String caseWorkerNameFormatted = trim(String.format("%s %s",
+                    defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),
+                    defaultIfEmpty(caseWorkerProfile.getLastName(), EMPTY)));
+
+                return new CaseWorkerName(caseWorkerProfile.getCaseWorkerId(), caseWorkerNameFormatted);
+            })
+            .collect(Collectors.toList());
+    }
 }
