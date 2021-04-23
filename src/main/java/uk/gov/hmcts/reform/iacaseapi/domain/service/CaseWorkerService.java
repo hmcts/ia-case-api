@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.refdata.RefDataCaseWorkerApi;
 
@@ -75,20 +74,6 @@ public class CaseWorkerService {
             return List.of(RESTRICTED, PRIVATE);
         }
         return List.of(PRIVATE);
-    }
-
-    public CaseWorkerName getCaseWorkerNameForActorId(String actorId) {
-        CaseWorkerProfile caseWorkerProfile = refDataCaseWorkerApi.fetchUsersById(
-            idamService.getUserToken(),
-            serviceAuthTokenGenerator.generate(),
-            new UserIds(List.of(actorId))
-        ).get(0);
-
-        String caseWorkerNameFormatted = trim(String.format("%s %s",
-            defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),
-            defaultIfEmpty(caseWorkerProfile.getLastName(), EMPTY)));
-
-        return new CaseWorkerName(actorId, caseWorkerNameFormatted);
     }
 
     public List<CaseWorkerName> getCaseWorkerNameForActorIds(List<String> actorIds) {

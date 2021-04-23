@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -52,6 +53,8 @@ class CaseWorkerServiceTest {
 
     @Captor
     private ArgumentCaptor<QueryRequest> captor;
+
+    private static final String ACTOR_ID = "some actor id";
 
     @ParameterizedTest
     @MethodSource("scenarioProvider")
@@ -118,38 +121,38 @@ class CaseWorkerServiceTest {
         String serviceBearerToken = "some service bearer token";
         when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);
 
-        String someActorId = "some actor id";
+        List<String> someActorIds = newArrayList(ACTOR_ID);
         when(refDataCaseWorkerApi.fetchUsersById(
             userBearerToken,
             serviceBearerToken,
-            new UserIds(List.of(someActorId))
+            new UserIds(someActorIds)
         )).thenReturn(Collections.singletonList(scenario.getCaseWorkerProfile()));
 
-        CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(someActorId);
+        List<CaseWorkerName> actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorIds(someActorIds);
 
-        assertThat(actualCaseWorkerName).isEqualTo(scenario.getExpectedCaseWorkerName());
+        assertThat(actualCaseWorkerName.get(0)).isEqualTo(scenario.getExpectedCaseWorkerName());
     }
 
     private static Stream<CaseWorkerNameScenario> getCaseWorkerNameForActorIdScenarioProvider() {
 
         CaseWorkerNameScenario caseWorkerProfileExistsInRefDataApiScenario = new CaseWorkerNameScenario(
-            CaseWorkerProfile.builder().firstName("some firstname").lastName("some lastname").build(),
-            new CaseWorkerName("some actor id", "some firstname some lastname")
+            CaseWorkerProfile.builder().caseWorkerId(ACTOR_ID).firstName("some firstname").lastName("some lastname").build(),
+            new CaseWorkerName(ACTOR_ID, "some firstname some lastname")
         );
 
         CaseWorkerNameScenario caseWorkerProfileDoesNotExistsInRefDataApiScenario = new CaseWorkerNameScenario(
-            CaseWorkerProfile.builder().build(),
-            new CaseWorkerName("some actor id", "")
+            CaseWorkerProfile.builder().caseWorkerId(ACTOR_ID).build(),
+            new CaseWorkerName(ACTOR_ID, "")
         );
 
         CaseWorkerNameScenario caseWorkerProfileWithNullFirstnameScenario = new CaseWorkerNameScenario(
-            CaseWorkerProfile.builder().firstName(null).lastName("some lastname").build(),
-            new CaseWorkerName("some actor id", "some lastname")
+            CaseWorkerProfile.builder().caseWorkerId(ACTOR_ID).firstName(null).lastName("some lastname").build(),
+            new CaseWorkerName(ACTOR_ID, "some lastname")
         );
 
         CaseWorkerNameScenario caseWorkerProfileWithNullLastnameScenario = new CaseWorkerNameScenario(
-            CaseWorkerProfile.builder().firstName("some firstname").lastName(null).build(),
-            new CaseWorkerName("some actor id", "some firstname")
+            CaseWorkerProfile.builder().caseWorkerId(ACTOR_ID).firstName("some firstname").lastName(null).build(),
+            new CaseWorkerName(ACTOR_ID, "some firstname")
         );
 
         return Stream.of(caseWorkerProfileExistsInRefDataApiScenario,
