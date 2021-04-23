@@ -1,0 +1,34 @@
+{
+  "description": "RWA-497 given hearing centre is present and baseLocation data is missed then use hearing centre",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "allocateTheCase",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "bradford",
+          "caseManagementLocation": null,
+          "staffLocation": "Taylor House"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "bradford",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "698118"
+        },
+        "staffLocation": "Bradford"
+      }
+    }
+  }
+}
