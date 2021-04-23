@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.Arrays;
 import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
@@ -72,7 +71,7 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
             asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class);
 
         if (caseManagementLocation.isEmpty()
-            || StringUtils.isBlank(caseManagementLocation.get().getBaseLocation().name())) {
+            || caseManagementLocation.get().getBaseLocation() == null) {
             addBaseLocationAndStaffLocationFromHearingCentre(asylumCase, hearingCentre);
         }
     }

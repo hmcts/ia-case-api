@@ -3,10 +3,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_MANAGEMENT_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
@@ -18,28 +23,35 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Region;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
-    @MockBean
+    @Mock
     private CaseManagementLocationService caseManagementLocationService;
     @InjectMocks
     private AddBaseLocationFromHearingCentreForOldCasesFixHandler handler;
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
 
     @ParameterizedTest
     @MethodSource("canHandleScenarioProvider")
-    void canHandle(Scenario scenario) {
+    void canHandle(CanHandleScenario scenario) {
         when(callback.getEvent()).thenReturn(scenario.getEvent());
 
         boolean actual = handler.canHandle(scenario.getPreSubmitCallbackStage(), callback);
@@ -47,16 +59,16 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         assertThat(actual).isEqualTo(scenario.isExpected());
     }
 
-    private static List<Scenario> canHandleScenarioProvider() {
+    private static List<CanHandleScenario> canHandleScenarioProvider() {
         List<Event> blackListEvents = Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL,
             Event.CHANGE_HEARING_CENTRE);
 
-        List<Scenario> canHandleIsTrueScenarios = new ArrayList<>();
-        List<Scenario> canHandleIsFalseScenarios = new ArrayList<>();
-        List<Scenario> allCanHandleScenarios = new ArrayList<>();
+        List<CanHandleScenario> canHandleIsTrueScenarios = new ArrayList<>();
+        List<CanHandleScenario> canHandleIsFalseScenarios = new ArrayList<>();
+        List<CanHandleScenario> allCanHandleScenarios = new ArrayList<>();
 
         Arrays.stream(Event.values()).forEach(e -> {
             if (!blackListEvents.contains(e)) {
@@ -75,8 +87,8 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         return allCanHandleScenarios;
     }
 
-    private static Scenario buildScenario(Event e, PreSubmitCallbackStage aboutToStart, boolean b) {
-        return Scenario.builder()
+    private static CanHandleScenario buildScenario(Event e, PreSubmitCallbackStage aboutToStart, boolean b) {
+        return CanHandleScenario.builder()
             .event(e)
             .preSubmitCallbackStage(aboutToStart)
             .expected(b)
@@ -85,7 +97,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
     @Value
     @Builder
-    private static class Scenario {
+    private static class CanHandleScenario {
         Event event;
         PreSubmitCallbackStage preSubmitCallbackStage;
         boolean expected;
@@ -107,8 +119,69 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         assertThat(handler.getDispatchPriority()).isEqualTo(DispatchPriority.EARLIEST);
     }
 
-    @Test
-    void handle() {
+    @ParameterizedTest
+    @MethodSource("handleScenarioProvider")
+    void handle(HandleScenario scenario) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(scenario.getAsylumCase());
+
+        when(caseManagementLocationService.getCaseManagementLocation(scenario.getExpectedStaffLocation()))
+            .thenReturn(new CaseManagementLocation(Region.NATIONAL, scenario.getExpectedBaseLocation()));
+
+        PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        AsylumCase actualAsylum = actual.getData();
+        Optional<CaseManagementLocation> actualCaseManagementLocation = actualAsylum.read(CASE_MANAGEMENT_LOCATION,
+            CaseManagementLocation.class);
+        assertThat(actualCaseManagementLocation.isPresent()).isTrue();
+        assertThat(actualCaseManagementLocation.get().getBaseLocation()).isEqualTo(scenario.getExpectedBaseLocation());
+
+        Optional<String> actualStaffLocation = actualAsylum.read(STAFF_LOCATION, String.class);
+        assertThat(actualStaffLocation.isPresent()).isTrue();
+        assertThat(actualStaffLocation.get()).isEqualTo(scenario.getExpectedStaffLocation());
+    }
+
+    private static Stream<HandleScenario> handleScenarioProvider() {
+        HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse =
+            HandleScenario.builder()
+                .asylumCase(new AsylumCase())
+                .expectedBaseLocation(BaseLocation.TAYLOR_HOUSE)
+                .expectedStaffLocation("Taylor House")
+                .build();
+
+        AsylumCase asylumCaseWithHearingCentreOnly = new AsylumCase();
+        asylumCaseWithHearingCentreOnly.write(HEARING_CENTRE, HearingCentre.BIRMINGHAM);
+        HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre =
+            HandleScenario.builder()
+                .asylumCase(asylumCaseWithHearingCentreOnly)
+                .expectedBaseLocation(BaseLocation.BIRMINGHAM)
+                .expectedStaffLocation("Birmingham")
+                .build();
+
+        AsylumCase asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation = new AsylumCase();
+        asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation.write(HEARING_CENTRE, HearingCentre.BRADFORD);
+        asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation.write(CASE_MANAGEMENT_LOCATION,
+            new CaseManagementLocation(Region.NATIONAL, null));
+        HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre =
+            HandleScenario.builder()
+                .asylumCase(asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation)
+                .expectedBaseLocation(BaseLocation.BRADFORD)
+                .expectedStaffLocation("Bradford")
+                .build();
+
+        return Stream.of(
+            givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse,
+            givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre,
+            givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre
+        );
+    }
+
+    @Value
+    @Builder
+    private static class HandleScenario {
+        AsylumCase asylumCase;
+        String expectedStaffLocation;
+        BaseLocation expectedBaseLocation;
     }
 
 }
