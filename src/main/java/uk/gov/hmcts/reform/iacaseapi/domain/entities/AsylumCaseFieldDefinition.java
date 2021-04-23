@@ -89,6 +89,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL(
         "appealGroundsHumanRightsRefusal", new TypeReference<CheckValues<String>>(){}),
 
+    APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL(
+        "appealGroundsDecisionHumanRightsRefusal", new TypeReference<CheckValues<String>>(){}),
+
     APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS(
         "appealGroundsDeprivationHumanRights", new TypeReference<CheckValues<String>>(){}),
 
