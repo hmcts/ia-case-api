@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
 @ExtendWith(MockitoExtension.class)
@@ -103,6 +104,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
     @Test
     void getDispatchPriority() {
+        assertThat(handler.getDispatchPriority()).isEqualTo(DispatchPriority.EARLIEST);
     }
 
     @Test
