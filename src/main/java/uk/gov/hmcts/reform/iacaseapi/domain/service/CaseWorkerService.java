@@ -89,7 +89,7 @@ public class CaseWorkerService {
                     defaultIfEmpty(caseWorkerProfile.getFirstName(), EMPTY),
                     defaultIfEmpty(caseWorkerProfile.getLastName(), EMPTY)));
 
-                return new CaseWorkerName(caseWorkerProfile.getCaseWorkerId(), caseWorkerNameFormatted);
+                return new CaseWorkerName(caseWorkerProfile.getId(), caseWorkerNameFormatted);
             })
             .collect(Collectors.toList());
     }
