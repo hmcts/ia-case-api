@@ -143,7 +143,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
     }
 
     private static Stream<HandleScenario> handleScenarioProvider() {
-        HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse =
+        final HandleScenario givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse =
             HandleScenario.builder()
                 .asylumCase(new AsylumCase())
                 .expectedBaseLocation(BaseLocation.TAYLOR_HOUSE)
@@ -152,7 +152,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
         AsylumCase asylumCaseWithHearingCentreOnly = new AsylumCase();
         asylumCaseWithHearingCentreOnly.write(HEARING_CENTRE, HearingCentre.BIRMINGHAM);
-        HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre =
+        final HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre =
             HandleScenario.builder()
                 .asylumCase(asylumCaseWithHearingCentreOnly)
                 .expectedBaseLocation(BaseLocation.BIRMINGHAM)
@@ -163,7 +163,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation.write(HEARING_CENTRE, HearingCentre.BRADFORD);
         asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation.write(CASE_MANAGEMENT_LOCATION,
             new CaseManagementLocation(Region.NATIONAL, null));
-        HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre =
+        final HandleScenario givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre =
             HandleScenario.builder()
                 .asylumCase(asylumCaseWithHearingCentreAndNotCompleteCaseBaseLocation)
                 .expectedBaseLocation(BaseLocation.BRADFORD)
