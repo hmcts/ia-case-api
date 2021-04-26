@@ -384,8 +384,8 @@ public enum AsylumCaseFieldDefinition {
     CASE_ARGUMENT_DESCRIPTION(
         "caseArgumentDescription", new TypeReference<String>(){}),
 
-    UPLOAD_THE_NOTICE_OF_DECISION_DOCUMENT(
-        "uploadTheNoticeOfDecisionDocument", new TypeReference<Document>(){}),
+    UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
+        "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
     UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION(
         "uploadTheNoticeOfDecisionExplanation", new TypeReference<String>(){}),

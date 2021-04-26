@@ -4,18 +4,25 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
-      "id": 1122,
+      "id": 1925,
       "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "uploadTheNoticeOfDecisionDocument": {
-            "document_url": "http://dm-store:4506/documents/844af09f-e54f-45a0-9d3f-78680d30dda9",
-            "document_filename": "some document.pdf",
-            "document_binary_url": "http://dm-store:4506/documents/844af09f-e54f-45a0-9d3f-78680d30dda9/binary"
-          },
-          "uploadTheNoticeOfDecisionExplanation": "some reasons"
+          "uploadTheNoticeOfDecisionDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some-notice-of-decision-letter.pdf",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some notice of decision description"
+              }
+            }
+          ]
         }
       }
     }
@@ -45,14 +52,14 @@
           {
             "id": "1",
             "value": {
-              "tag": "homeOfficeDecisionLetter",
               "document": {
                 "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "some document.pdf"
+                "document_filename": "some-notice-of-decision-letter.pdf"
               },
-              "description": "some reasons",
-              "dateUploaded": "{$TODAY}"
+              "description": "some notice of decision description",
+              "dateUploaded": "{$TODAY}",
+              "tag": "homeOfficeDecisionLetter"
             }
           }
         ]

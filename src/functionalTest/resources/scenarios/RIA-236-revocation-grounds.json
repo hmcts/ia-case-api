@@ -16,7 +16,8 @@
               "revocationHumanitarianProtection",
               "revocationRefugeeConvention"
             ]
-          }
+          },
+          "rpDcAppealHearingOption":  "decisionWithHearing"
         }
       }
     }
@@ -31,7 +32,8 @@
         "appealGroundsForDisplay": [
           "revocationHumanitarianProtection",
           "revocationRefugeeConvention"
-        ]
+        ],
+        "rpDcAppealHearingOption":  "decisionWithHearing"
       }
     }
   }
