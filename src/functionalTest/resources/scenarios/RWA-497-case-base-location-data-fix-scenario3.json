@@ -4,11 +4,14 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "eventId": "allocateTheCase",
-      "state": "appealSubmitted",
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "flagCaseTypeOfFlag": "deport",
+          "flagCaseAdditionalInformation": "some additional information",
           "hearingCentre": "bradford",
           "caseManagementLocation": {
             "region": "1"
@@ -23,6 +26,17 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "deport",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "caseFlagDeportExists": "Yes",
+        "caseFlagDeportAdditionalInformation": "some additional information",
         "hearingCentre": "bradford",
         "caseManagementLocation": {
           "region": "1",
