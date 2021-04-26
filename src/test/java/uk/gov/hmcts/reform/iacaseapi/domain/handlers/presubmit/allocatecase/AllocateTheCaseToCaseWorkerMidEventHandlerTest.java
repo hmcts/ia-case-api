@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -250,8 +251,8 @@ class AllocateTheCaseToCaseWorkerMidEventHandlerTest {
             "PUBLIC")
         ).thenReturn(assignments);
 
-        when(caseWorkerService.getCaseWorkerNameForActorId(someActorId))
-            .thenReturn(caseWorkerName);
+        when(caseWorkerService.getCaseWorkerNameForActorIds(newArrayList(someActorId)))
+            .thenReturn(newArrayList(caseWorkerName));
     }
 
     private void mockCaseDetails() {

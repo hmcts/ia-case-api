@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatethecase;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ public class CaseWorkerServiceTest {
     @Autowired
     private CaseWorkerService caseWorkerService;
 
-    public static final String ACTOR_ID = "some actor id";
+    public static final String ACTOR_ID = "e7013580-ac60-40fd-9cb5-8cd968db9201";
 
     @Test
     void given_case_worker_ref_data_responds_with_200_then_return_case_worker_name(
@@ -44,19 +46,8 @@ public class CaseWorkerServiceTest {
 
         CaseWorkerRefDataMock.setup200MockResponse(server);
 
-        CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(ACTOR_ID);
+        List<CaseWorkerName> actualCaseWorkerNames = caseWorkerService.getCaseWorkerNameForActorIds(newArrayList(ACTOR_ID));
 
-        assertThat(actualCaseWorkerName).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
-    }
-
-    @Test
-    void given_case_worker_ref_data_responds_with_404_then_fallback_returns_empty_case_worker_name(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
-        CaseWorkerRefDataMock.setup404MockResponse(server);
-
-        CaseWorkerName actualCaseWorkerName = caseWorkerService.getCaseWorkerNameForActorId(ACTOR_ID);
-
-        assertThat(actualCaseWorkerName).isEqualTo(new CaseWorkerName(ACTOR_ID, ""));
+        assertThat(actualCaseWorkerNames.get(0)).isEqualTo(new CaseWorkerName(ACTOR_ID, "Case Officer"));
     }
 }
