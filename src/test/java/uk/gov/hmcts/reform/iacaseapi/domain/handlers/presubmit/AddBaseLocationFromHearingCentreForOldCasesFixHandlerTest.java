@@ -64,7 +64,8 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL,
-            Event.CHANGE_HEARING_CENTRE);
+            Event.CHANGE_HEARING_CENTRE,
+            Event.START_APPEAL);
 
         List<CanHandleScenario> canHandleIsTrueScenarios = new ArrayList<>();
         List<CanHandleScenario> canHandleIsFalseScenarios = new ArrayList<>();
@@ -72,11 +73,11 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
 
         Arrays.stream(Event.values()).forEach(e -> {
             if (!blackListEvents.contains(e)) {
-                canHandleIsTrueScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_START, true));
+                canHandleIsTrueScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, true));
             } else {
-                canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_START, false));
+                canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, false));
             }
-            canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, false));
+            canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_START, false));
             canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.MID_EVENT, false));
 
         });
@@ -109,7 +110,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("callbackStage must not be null");
 
-        assertThatThrownBy(() -> handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> handler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("callback must not be null");
     }
@@ -128,7 +129,7 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         when(caseManagementLocationService.getCaseManagementLocation(scenario.getExpectedStaffLocation()))
             .thenReturn(new CaseManagementLocation(Region.NATIONAL, scenario.getExpectedBaseLocation()));
 
-        PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        PreSubmitCallbackResponse<AsylumCase> actual = handler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         AsylumCase actualAsylum = actual.getData();
         Optional<CaseManagementLocation> actualCaseManagementLocation = actualAsylum.read(CASE_MANAGEMENT_LOCATION,

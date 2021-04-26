@@ -1,7 +1,7 @@
 {
   "description": "RWA-497 given hearing centre and baseLocation data is missed then default to Taylor house",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "allocateTheCase",

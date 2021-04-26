@@ -34,12 +34,13 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && !Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL,
-            Event.CHANGE_HEARING_CENTRE
+            Event.CHANGE_HEARING_CENTRE,
+            Event.START_APPEAL
         ).contains(callback.getEvent());
     }
 

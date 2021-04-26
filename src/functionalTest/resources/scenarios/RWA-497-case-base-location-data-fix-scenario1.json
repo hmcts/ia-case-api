@@ -1,7 +1,7 @@
 {
   "description": "RWA-497 given hearing centre is present and baseLocation data is missed then use hearing centre",
   "request": {
-    "uri": "/asylum/ccdAboutToStart",
+    "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "allocateTheCase",
