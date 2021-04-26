@@ -1,0 +1,48 @@
+{
+  "description": "RWA-497 given hearing centre and baseLocation data is missed then default to Taylor house",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 1001,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "flagCaseTypeOfFlag": "deport",
+          "flagCaseAdditionalInformation": "some additional information",
+          "hearingCentre": null,
+          "caseManagementLocation": null,
+          "staffLocation": "Bradford"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "deport",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "caseFlagDeportExists": "Yes",
+        "caseFlagDeportAdditionalInformation": "some additional information",
+        "hearingCentre": null,
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "765324"
+        },
+        "staffLocation": "Taylor House"
+      }
+    }
+  }
+}
