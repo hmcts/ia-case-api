@@ -65,19 +65,18 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
     }
 
     private void fixCaseManagementLocationDataIfNecessary(AsylumCase asylumCase) {
-        HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
-            .orElse(HearingCentre.TAYLOR_HOUSE);
-
         Optional<CaseManagementLocation> caseManagementLocation =
             asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class);
 
         if (caseManagementLocation.isEmpty()
             || caseManagementLocation.get().getBaseLocation() == null) {
-            addBaseLocationAndStaffLocationFromHearingCentre(asylumCase, hearingCentre);
+            addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
         }
     }
 
-    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase, HearingCentre hearingCentre) {
+    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
+        HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
+            .orElse(HearingCentre.TAYLOR_HOUSE);
         String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
