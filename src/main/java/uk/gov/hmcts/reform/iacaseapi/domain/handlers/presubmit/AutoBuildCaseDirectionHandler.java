@@ -82,6 +82,7 @@ public class AutoBuildCaseDirectionHandler implements PreSubmitCallbackHandler<A
 
             List<IdValue<Direction>> allDirections =
                 directionAppender.append(
+                        asylumCase,
                     existingDirections,
                     "You must now build your case to enable the respondent to conduct a thorough review of their decision.\n\n"
                     + "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.\n\n"

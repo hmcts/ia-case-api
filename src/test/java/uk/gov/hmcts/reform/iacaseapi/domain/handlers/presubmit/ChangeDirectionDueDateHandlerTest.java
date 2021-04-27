@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -43,6 +44,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +53,8 @@ class ChangeDirectionDueDateHandlerTest {
 
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private WaFieldsPublisher waFieldsPublisher;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -66,8 +70,6 @@ class ChangeDirectionDueDateHandlerTest {
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
     @Captor
     private ArgumentCaptor<List<IdValue<Parties>>> directionEditPartiesCaptor;
-    @Captor
-    private ArgumentCaptor<Direction> lastModifiedDirectionCaptor;
 
     private String applicationSupplier = "Legal representative";
     private String applicationReason = "applicationReason";
@@ -99,7 +101,7 @@ class ChangeDirectionDueDateHandlerTest {
         when(dateProvider.now()).thenReturn(dateSent);
 
         changeDirectionDueDateHandler =
-            new ChangeDirectionDueDateHandler(dateProvider);
+            new ChangeDirectionDueDateHandler(dateProvider,waFieldsPublisher);
     }
 
     @Test
@@ -141,7 +143,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(4)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumValueCaptor.capture());
 
         verify(asylumCase).clear(DIRECTION_LIST);
         verify(asylumCase).clear(DISABLE_OVERVIEW_PAGE);
@@ -149,16 +151,8 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
-
-        verify(asylumCase).write(eq(LAST_MODIFIED_DIRECTION), lastModifiedDirectionCaptor.capture());
-
-        Direction lastModifiedDirection = lastModifiedDirectionCaptor.getValue();
-        assertEquals("explanation-2", lastModifiedDirection.getExplanation());
-        assertEquals(Parties.RESPONDENT, lastModifiedDirection.getParties());
-        assertEquals("2222-12-01", lastModifiedDirection.getDateDue());
-        assertEquals(dateSent.toString(), lastModifiedDirection.getDateSent());
-        assertEquals(DirectionTag.RESPONDENT_REVIEW, lastModifiedDirection.getTag());
-        assertThat(lastModifiedDirection.getPreviousDates()).isEmpty();
+        verify(waFieldsPublisher).addLastModifiedDirection(
+                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
 
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
         List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();

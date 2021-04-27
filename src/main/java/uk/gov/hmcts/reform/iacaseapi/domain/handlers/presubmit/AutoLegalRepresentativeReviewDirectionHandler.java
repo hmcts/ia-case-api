@@ -81,6 +81,7 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                    asylumCase,
                     maybeDirections.orElse(emptyList()),
                 "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response.\n\n"
                 + "# Next steps\n\n"

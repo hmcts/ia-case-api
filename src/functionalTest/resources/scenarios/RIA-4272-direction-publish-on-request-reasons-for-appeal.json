@@ -1,0 +1,51 @@
+{
+  "description": "RIA-4272 Last modified direction publish - Case officer can send request reasons for appeal event for a AIP case",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "requestReasonsForAppeal",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "sendDirectionParties": "appellant",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestReasonsForAppeal"
+            }
+          }
+        ],
+        "lastModifiedDirection": {
+          "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+          "parties": "appellant",
+          "dateDue": "{$TODAY+28}",
+          "dateSent": "{$TODAY}",
+          "tag": "requestReasonsForAppeal",
+          "previousDates": []
+        }
+      }
+    }
+  }
+}

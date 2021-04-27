@@ -69,6 +69,7 @@ public class LegalRepresentativeHearingRequirementsDirectionHandler implements P
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                    asylumCase,
                 existingDirections,
                 "Your appeal is going to a hearing. Login to submit your hearing requirements on the overview tab.\n\n"
                 + "Next steps\n"

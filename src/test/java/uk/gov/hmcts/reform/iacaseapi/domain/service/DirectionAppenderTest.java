@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -18,16 +19,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ClarifyingQuestion;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class DirectionAppenderTest {
 
+    @Mock
+    private AsylumCase asylumCase;
+    @Mock
+    private WaFieldsPublisher waFieldsPublisher;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -44,7 +46,7 @@ class DirectionAppenderTest {
 
     @BeforeEach
     public void setUp() {
-        directionAppender = new DirectionAppender(dateProvider);
+        directionAppender = new DirectionAppender(dateProvider, waFieldsPublisher);
     }
 
     @Test
@@ -63,6 +65,7 @@ class DirectionAppenderTest {
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -89,6 +92,7 @@ class DirectionAppenderTest {
 
         assertEquals("1", allDirections.get(2).getId());
         assertEquals(existingDirection2, allDirections.get(2).getValue());
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
     }
 
     @Test
@@ -101,6 +105,7 @@ class DirectionAppenderTest {
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -117,6 +122,7 @@ class DirectionAppenderTest {
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
         assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
     }
 
     @Test
@@ -127,6 +133,7 @@ class DirectionAppenderTest {
 
         assertThatThrownBy(() ->
             directionAppender.append(
+                asylumCase,
                 null,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -138,6 +145,7 @@ class DirectionAppenderTest {
 
         assertThatThrownBy(() ->
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 null,
                 newDirectionParties,
@@ -149,6 +157,7 @@ class DirectionAppenderTest {
 
         assertThatThrownBy(() ->
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 null,
@@ -160,6 +169,7 @@ class DirectionAppenderTest {
 
         assertThatThrownBy(() ->
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -171,6 +181,7 @@ class DirectionAppenderTest {
 
         assertThatThrownBy(() ->
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -198,6 +209,7 @@ class DirectionAppenderTest {
             asList(new IdValue<>("1", new ClarifyingQuestion("Question 1")));
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 newDirectionExplanation,
                 newDirectionParties,
@@ -226,5 +238,6 @@ class DirectionAppenderTest {
 
         assertEquals("1", allDirections.get(2).getId());
         assertEquals(existingDirection2, allDirections.get(2).getValue());
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
     }
 }

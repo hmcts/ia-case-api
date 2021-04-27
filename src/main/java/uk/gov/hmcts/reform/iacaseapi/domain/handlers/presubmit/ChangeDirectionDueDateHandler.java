@@ -19,14 +19,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
 
 @Component
 public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
+    private final WaFieldsPublisher waFieldsPublisher;
 
-    public ChangeDirectionDueDateHandler(DateProvider dateProvider) {
+    public ChangeDirectionDueDateHandler(DateProvider dateProvider, WaFieldsPublisher waFieldsPublisher) {
         this.dateProvider = dateProvider;
+        this.waFieldsPublisher = waFieldsPublisher;
     }
 
     public boolean canHandle(
@@ -70,15 +73,12 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                             // MidEvent does not pass temp fields
                             asylumCase.write(AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES, idValue.getValue().getParties());
 
-                            asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION,
-                                    new Direction(
-                                            idValue.getValue().getExplanation(),
-                                            idValue.getValue().getParties(),
-                                            asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
-                                            dateProvider.now().toString(),
-                                            idValue.getValue().getTag(),
-                                            emptyList()
-                                    ));
+                            waFieldsPublisher.addLastModifiedDirection(
+                                    asylumCase,
+                                    idValue.getValue().getExplanation(),
+                                    idValue.getValue().getParties(),
+                                    asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
+                                    idValue.getValue().getTag());
 
                             return new IdValue<>(
                                 idValue.getId(),

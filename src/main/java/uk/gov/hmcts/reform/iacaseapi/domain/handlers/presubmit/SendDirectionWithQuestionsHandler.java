@@ -66,6 +66,7 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
         Optional<List<IdValue<ClarifyingQuestion>>> questions = asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_QUESTIONS);
 
         List<IdValue<Direction>> allDirections = appender.append(
+                asylumCase,
                 directions,
                 "You need to answer some questions about your appeal.",
                 Parties.APPELLANT,

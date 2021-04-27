@@ -157,6 +157,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         when(asylumCase.read(APPEAL_DECISION, String.class)).thenReturn(Optional.of(appealDecision));
 
         when(directionAppender.append(
+            asylumCase,
             existingDirections,
             expectedExplanation,
             expectedParties,
@@ -171,6 +172,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
+            eq(asylumCase),
             eq(existingDirections),
             contains(expectedExplanation),
             eq(expectedParties),

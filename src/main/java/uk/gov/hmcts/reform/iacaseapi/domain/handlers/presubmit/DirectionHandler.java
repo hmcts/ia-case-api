@@ -18,9 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionPartiesResolver;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionTagResolver;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
 
 @Component
 public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -95,6 +93,7 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                asylumCase,
                 existingDirections,
                 sendDirectionExplanation,
                 directionParties,

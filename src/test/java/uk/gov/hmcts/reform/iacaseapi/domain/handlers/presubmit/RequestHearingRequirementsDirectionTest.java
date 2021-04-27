@@ -109,6 +109,7 @@ class RequestHearingRequirementsDirectionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
         when(directionAppender.append(
+            eq(asylumCase),
             eq(existingDirections),
             contains(expectedExplanationPart),
             eq(expectedParties),
@@ -123,6 +124,7 @@ class RequestHearingRequirementsDirectionTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
+            eq(asylumCase),
             eq(existingDirections),
             contains(expectedExplanationPart),
             eq(expectedParties),
@@ -150,6 +152,7 @@ class RequestHearingRequirementsDirectionTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
         when(directionAppender.append(
+            eq(asylumCase),
             any(List.class),
             contains(expectedExplanationPart),
             eq(expectedParties),
@@ -164,6 +167,7 @@ class RequestHearingRequirementsDirectionTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(directionAppender, times(1)).append(
+            eq(asylumCase),
             existingDirectionsCaptor.capture(),
             contains(expectedExplanationPart),
             eq(expectedParties),
