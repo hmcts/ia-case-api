@@ -17,10 +17,6 @@ public class WaFieldsPublisher {
         this.featureToggler = featureToggler;
     }
 
-    public void addPublishField(AsylumCase asylumCase, AsylumCaseFieldDefinition fieldName, Object field) {
-        asylumCase.write(fieldName, field);
-    }
-
     public void addLastModifiedDirection(
             AsylumCase asylumCase, String explanation,
             Parties parties,
@@ -40,7 +36,5 @@ public class WaFieldsPublisher {
 
             asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION, lastModifiedDirection);
         }
-
     }
-
 }
