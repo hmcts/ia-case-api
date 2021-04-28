@@ -1,0 +1,76 @@
+{
+  "description": "RIA-4272: Last modified direction publish - Case officer can ask clarifying questions",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "sendDirectionWithQuestions",
+      "state": "reasonsForAppealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionDateDue": "{$TODAY+14}",
+          "sendDirectionQuestions": [
+            {
+              "id": "1",
+              "value": {
+                "question": "Question 1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionQuestions": [
+          {
+            "id": "1",
+            "value": {
+              "question": "Question 1"
+            }
+          }
+        ],
+        "sendDirectionDateDue": "{$TODAY+14}",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You need to answer some questions about your appeal.",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestClarifyingQuestions",
+              "previousDates": [],
+              "clarifyingQuestions": [
+                {
+                  "id": "1",
+                  "value": {
+                    "question": "Question 1"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "lastModifiedDirection": {
+          "explanation": "You need to answer some questions about your appeal.",
+          "parties": "appellant",
+          "dateDue": "{$TODAY+14}",
+          "dateSent": "{$TODAY}",
+          "tag": "requestClarifyingQuestions",
+          "previousDates": []
+        },
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+
