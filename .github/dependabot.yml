@@ -1,0 +1,68 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: net.serenity-bdd:serenity-gradle-plugin
+    versions:
+    - "> 2.0.11, < 3"
+  - dependency-name: org.flywaydb.flyway
+    versions:
+    - 7.5.2
+    - 7.5.3
+    - 7.5.4
+    - 7.6.0
+    - 7.7.0
+    - 7.7.1
+    - 7.7.2
+    - 7.7.3
+    - 7.8.0
+    - 7.8.1
+  - dependency-name: com.launchdarkly:launchdarkly-java-server-sdk
+    versions:
+    - 5.2.2
+    - 5.2.3
+    - 5.3.0
+    - 5.3.1
+  - dependency-name: org.springframework.boot
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: io.freefair.lombok
+    versions:
+    - 5.3.0
+  - dependency-name: com.fasterxml.jackson.core:jackson-core
+    versions:
+    - 2.12.1
+    - 2.12.2
+  - dependency-name: com.nimbusds:nimbus-jose-jwt
+    versions:
+    - 9.4.2
+    - "9.5"
+    - "9.6"
+    - "9.7"
+  - dependency-name: org.springframework.cloud:spring-cloud-starter-openfeign
+    versions:
+    - 3.0.1
+  - dependency-name: org.mockito:mockito-core
+    versions:
+    - 3.7.7
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-websocket
+    versions:
+    - 10.0.0
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-el
+    versions:
+    - 10.0.0
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-core
+    versions:
+    - 10.0.0
+  - dependency-name: org.yaml:snakeyaml
+    versions:
+    - "1.27"
+  - dependency-name: org.apache.commons:commons-lang3
+    versions:
+    - "3.11"
