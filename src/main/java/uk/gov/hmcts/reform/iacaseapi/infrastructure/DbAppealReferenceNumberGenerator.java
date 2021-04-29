@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -47,8 +46,9 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
 
         try {
             tryInsertNewReferenceNumber(parameters);
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             // appeal reference number already exists for this case
+            log.warn("There was an issue when the system was generating appeal reference number: {} for case {}", selectAppealReferenceNumberForCase(parameters));
         }
 
         try {
