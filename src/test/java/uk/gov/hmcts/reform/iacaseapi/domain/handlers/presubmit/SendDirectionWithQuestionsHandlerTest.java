@@ -118,6 +118,7 @@ class SendDirectionWithQuestionsHandlerTest {
             )
         );
         when(directionAppender.append(
+            asylumCase,
             singletonList(originalDirection),
             "You need to answer some questions about your appeal.",
             Parties.APPELLANT,

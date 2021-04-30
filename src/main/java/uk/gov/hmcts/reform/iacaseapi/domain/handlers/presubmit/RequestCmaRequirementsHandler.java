@@ -63,6 +63,7 @@ public class RequestCmaRequirementsHandler implements PreSubmitCallbackHandler<A
                 + requirementsReasons;
 
         List<IdValue<Direction>> allDirections = directionAppender.append(
+                asylumCase,
                 asylumCase.<List<IdValue<Direction>>>read(DIRECTIONS).orElse(Collections.emptyList()),
                 explanation,
                 Parties.APPELLANT,

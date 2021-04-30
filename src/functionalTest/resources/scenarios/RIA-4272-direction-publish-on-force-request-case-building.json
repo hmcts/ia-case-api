@@ -1,0 +1,73 @@
+{
+  "description": "RIA-4272 Last modified direction publish - Force request case building direction to legal representative",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 2774,
+      "eventId": "forceRequestCaseBuilding",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\nYou must write a full skeleton argument that references:\n\n- all the evidence you have (or plan) to rely on, including witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n# Next steps\n\nOnce you have uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\nIf your case looks ready, the Tribunal case worker will send it to the respondent to review.",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "uploadHomeOfficeBundleAvailable": "Yes",
+          "reasonToForceRequestCaseBuilding": "some reasons to force the case progression"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadHomeOfficeBundleAvailable": "No",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\nYou must write a full skeleton argument that references:\n\n- all the evidence you have (or plan) to rely on, including witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n# Next steps\n\nOnce you have uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\nIf your case looks ready, the Tribunal case worker will send it to the respondent to review.",
+              "parties": "legalRepresentative",
+              "dateDue": "{$TODAY+28}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestCaseBuilding"
+            }
+          }
+        ],
+        "lastModifiedDirection": {
+          "explanation": "You must now build your case by uploading your Appeal Skeleton Argument and evidence. You have 42 days from the date you submitted the appeal, or 28 days from the date of this email, whichever occurs later.\n\nYou must write a full skeleton argument that references:\n\n- all the evidence you have (or plan) to rely on, including witness statements\n- the grounds and issues of the case\n- any new matters\n- any legal authorities you plan to rely on and why they are applicable to your case\n\nYour argument must explain why you believe the respondent's decision is wrong. You must provide all the information for the respondent to conduct a thorough review of their decision.\n\n# Next steps\n\nOnce you have uploaded your appeal argument and evidence, you should submit your case. The Tribunal case worker will review everything you've added.\n\nIf your case looks ready, the Tribunal case worker will send it to the respondent to review.",
+          "parties": "legalRepresentative",
+          "dateDue": "{$TODAY+28}",
+          "dateSent": "{$TODAY}",
+          "tag": "requestCaseBuilding",
+          "previousDates": []
+        },
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "user": "{$IA_USER_PREFIX}Case Officer",
+              "dateAdded": "{$TODAY}",
+              "caseNoteSubject": "Force case from Awaiting Respondent Evidence to Case Building",
+              "caseNoteDescription": "some reasons to force the case progression"
+            }
+          }
+        ],
+        "notificationsSent": [
+          {
+            "id": "2774_RESPONDENT_FORCE_CASE_PROGRESSION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "2774_LEGAL_REPRESENTATIVE_REQUEST_CASE_BUILDING",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

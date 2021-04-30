@@ -101,6 +101,7 @@ class DirectionHandlerTest {
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
         when(directionAppender.append(
+            asylumCase,
             existingDirections,
             expectedExplanation,
             expectedParties,
@@ -120,6 +121,7 @@ class DirectionHandlerTest {
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
         verify(directionAppender, times(1)).append(
+            asylumCase,
             existingDirections,
             expectedExplanation,
             expectedParties,
@@ -159,6 +161,7 @@ class DirectionHandlerTest {
         when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
         when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
         when(directionAppender.append(
+            eq(asylumCase),
             any(List.class),
             eq(expectedExplanation),
             eq(expectedParties),
@@ -178,6 +181,7 @@ class DirectionHandlerTest {
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
         verify(directionAppender, times(1)).append(
+            eq(asylumCase),
             existingDirectionsCaptor.capture(),
             eq(expectedExplanation),
             eq(expectedParties),

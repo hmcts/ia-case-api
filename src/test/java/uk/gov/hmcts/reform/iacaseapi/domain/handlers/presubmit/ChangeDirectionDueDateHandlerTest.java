@@ -2,23 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_TIME_EXTENSION_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EDITABLE_DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
@@ -52,6 +44,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +53,8 @@ class ChangeDirectionDueDateHandlerTest {
 
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private WaFieldsPublisher waFieldsPublisher;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -106,7 +101,7 @@ class ChangeDirectionDueDateHandlerTest {
         when(dateProvider.now()).thenReturn(dateSent);
 
         changeDirectionDueDateHandler =
-            new ChangeDirectionDueDateHandler(dateProvider);
+            new ChangeDirectionDueDateHandler(dateProvider,waFieldsPublisher);
     }
 
     @Test
@@ -156,13 +151,12 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).write(eq(APPLICATIONS), applicationsCaptor.capture());
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
+        verify(waFieldsPublisher).addLastModifiedDirection(
+                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
 
-        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
-
-        List<IdValue<Direction>> actualDirections =
-            asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
-
+        List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
+        List<IdValue<Direction>> actualDirections = asylumCaseValues.get(asylumCaseFieldDefinitions.indexOf(DIRECTIONS));
         assertEquals(existingDirections.size(), actualDirections.size());
 
         assertEquals("1", actualDirections.get(0).getId());

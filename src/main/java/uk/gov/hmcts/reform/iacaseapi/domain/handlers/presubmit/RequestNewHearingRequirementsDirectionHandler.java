@@ -86,6 +86,7 @@ public class RequestNewHearingRequirementsDirectionHandler implements PreSubmitC
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
+                    asylumCase,
                 existingDirections,
                 explanation.get(),
                 Parties.LEGAL_REPRESENTATIVE,

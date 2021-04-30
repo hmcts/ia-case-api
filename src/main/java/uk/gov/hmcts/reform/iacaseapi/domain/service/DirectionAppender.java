@@ -14,24 +14,28 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 public class DirectionAppender {
 
     private final DateProvider dateProvider;
+    private final WaFieldsPublisher waFieldsPublisher;
 
     public DirectionAppender(
-        DateProvider dateProvider
-    ) {
+            DateProvider dateProvider,
+            WaFieldsPublisher waFieldsPublisher) {
         this.dateProvider = dateProvider;
+        this.waFieldsPublisher = waFieldsPublisher;
     }
 
     public List<IdValue<Direction>> append(
+        AsylumCase asylumCase,
         List<IdValue<Direction>> existingDirections,
         String explanation,
         Parties parties,
         String dateDue,
         DirectionTag tag
     ) {
-        return append(existingDirections, explanation, parties, dateDue, tag, Collections.emptyList());
+        return append(asylumCase, existingDirections, explanation, parties, dateDue, tag, Collections.emptyList());
     }
 
     public List<IdValue<Direction>> append(
+            AsylumCase asylumCase,
             List<IdValue<Direction>> existingDirections,
             String explanation,
             Parties parties,
@@ -64,6 +68,8 @@ public class DirectionAppender {
         for (IdValue<Direction> existingDirection : existingDirections) {
             allDirections.add(new IdValue<>(String.valueOf(index--), existingDirection.getValue()));
         }
+
+        waFieldsPublisher.addLastModifiedDirection(asylumCase, explanation, parties, dateDue, tag);
 
         return allDirections;
     }

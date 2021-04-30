@@ -69,6 +69,7 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
 
         List<IdValue<Direction>> allDirections =
                 directionAppender.append(
+                        asylumCase,
                     existingDirections,
                     "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n"
                     + "# Next steps\n\n"

@@ -1,0 +1,51 @@
+{
+  "description": "RIA-4272 Last modified direction publish - amend response for respondentReview",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestResponseAmend",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Review the case",
+          "sendDirectionDateDue": "{$TODAY+28}",
+          "uploadAdditionalEvidenceActionAvailable": "Yes",
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "explanation": "You have to review the appellant's argument and evidence.",
+                "parties": "respondent",
+                "dateDue": "{$TODAY+28}",
+                "dateSent": "{$TODAY}",
+                "tag": "requestResponseAmend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "lastModifiedDirection": {
+          "explanation": "Review the case",
+          "parties": "respondent",
+          "dateDue": "{$TODAY+28}",
+          "dateSent": "{$TODAY}",
+          "tag": "requestResponseAmend",
+          "previousDates": []
+        }
+      }
+    }
+  }
+}

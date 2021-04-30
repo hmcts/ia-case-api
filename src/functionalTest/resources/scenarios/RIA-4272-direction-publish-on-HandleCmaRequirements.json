@@ -1,0 +1,54 @@
+{
+  "description": "RIA-4272: Last modified direction publish - Case officer can ask appellant to provide CMA requirements",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "requestCmaRequirements",
+      "state": "reasonsForAppealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionDateDue": "{$TODAY+14}",
+          "requestCmaRequirementsReasons": "reasons"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "requestCmaRequirementsReasons": "reasons",
+        "sendDirectionDateDue": "{$TODAY+14}",
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "You need to attend a case management appointment. This is a meeting with a Tribunal Caseworker to talk about your appeal. A Home Office representative may also be at the meeting.\n\nreasons",
+              "parties": "appellant",
+              "dateDue": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "tag": "requestCmaRequirements",
+              "previousDates": []
+            }
+          }
+        ],
+        "lastModifiedDirection": {
+          "explanation": "You need to attend a case management appointment. This is a meeting with a Tribunal Caseworker to talk about your appeal. A Home Office representative may also be at the meeting.\n\nreasons",
+          "parties": "appellant",
+          "dateDue": "{$TODAY+14}",
+          "dateSent": "{$TODAY}",
+          "tag": "requestCmaRequirements",
+          "previousDates": []
+        },
+        "sendDirectionActionAvailable": "No"
+      }
+    }
+  }
+}
+

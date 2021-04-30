@@ -519,6 +519,9 @@ public enum AsylumCaseFieldDefinition {
     DIRECTIONS(
         "directions", new TypeReference<List<IdValue<Direction>>>(){}),
 
+    LAST_MODIFIED_DIRECTION(
+        "lastModifiedDirection", new TypeReference<Direction>(){}),
+
     DECISION_AND_REASONS_AVAILABLE(
         "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
 
