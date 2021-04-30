@@ -36,7 +36,7 @@
       "replacements": {
         "submissionOutOfTime": "No",
         "homeOfficeDecisionDate": "{$TODAY-14}",
-        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5}\/[0-9]{4}/",
+        "appealReferenceNumber": "$/((?i)RP|PA|EA|HU|DC|DA|AA|IA|OA|VA)\/[0-9]{5,}\/[0-9]{4}/",
         "homeOfficeReferenceNumber": "$/([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9})/"
       }
     }
