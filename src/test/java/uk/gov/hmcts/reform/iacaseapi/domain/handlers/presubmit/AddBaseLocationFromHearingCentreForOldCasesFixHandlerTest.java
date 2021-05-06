@@ -74,12 +74,11 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         Arrays.stream(Event.values()).forEach(e -> {
             if (!blackListEvents.contains(e)) {
                 canHandleIsTrueScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, true));
+                canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_START, true));
+                canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.MID_EVENT, true));
             } else {
                 canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_SUBMIT, false));
             }
-            canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.ABOUT_TO_START, false));
-            canHandleIsFalseScenarios.add(buildScenario(e, PreSubmitCallbackStage.MID_EVENT, false));
-
         });
 
         allCanHandleScenarios.addAll(canHandleIsTrueScenarios);
@@ -170,10 +169,23 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
                 .expectedStaffLocation("Bradford")
                 .build();
 
+        AsylumCase asylumCaseWithHearingCentreAndGlasgowBaseLocation = new AsylumCase();
+        asylumCaseWithHearingCentreAndGlasgowBaseLocation.write(HEARING_CENTRE, HearingCentre.GLASGOW);
+        asylumCaseWithHearingCentreAndGlasgowBaseLocation.write(CASE_MANAGEMENT_LOCATION,
+            new CaseManagementLocation(Region.NATIONAL, BaseLocation.GLASGOW_DEPRECATED));
+
+        final HandleScenario givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated =
+            HandleScenario.builder()
+                .asylumCase(asylumCaseWithHearingCentreAndGlasgowBaseLocation)
+                .expectedBaseLocation(BaseLocation.GLASGOW)
+                .expectedStaffLocation("Glasgow")
+                .build();
+
         return Stream.of(
             givenCcdCaseDoesNotHaveHearingCentreOrCaseBaseLocationThenDefaultToTaylorHouse,
             givenCcdCaseHasHearingCentreAndDoesNotHaveCaseBaseLocationThenUseHearingCentre,
-            givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre
+            givenCcdCaseHasHearingCentreAndDoesNotHaveCompleteCaseBaseLocationThenUseHearingCentre,
+            givenCcdCaseHasHearingCentreGlasgowAndDoesHaveCompleteCaseBaseLocationButItIsDeprecated
         );
     }
 

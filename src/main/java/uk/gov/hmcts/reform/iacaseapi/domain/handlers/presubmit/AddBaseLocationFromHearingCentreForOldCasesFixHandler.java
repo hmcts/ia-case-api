@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -34,8 +35,7 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && !Arrays.asList(
+        return !Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.PAY_AND_SUBMIT_APPEAL,
@@ -69,7 +69,8 @@ public class AddBaseLocationFromHearingCentreForOldCasesFixHandler implements Pr
             asylumCase.read(CASE_MANAGEMENT_LOCATION, CaseManagementLocation.class);
 
         if (caseManagementLocation.isEmpty()
-            || caseManagementLocation.get().getBaseLocation() == null) {
+            || caseManagementLocation.get().getBaseLocation() == null
+            || BaseLocation.GLASGOW_DEPRECATED.equals(caseManagementLocation.get().getBaseLocation())) {
             addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
         }
     }
