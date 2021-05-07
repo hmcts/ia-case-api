@@ -5,18 +5,24 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum BaseLocation {
     BIRMINGHAM("231596"),
     BRADFORD("698118"),
-    GLASGOW("198444"),
+    GLASGOW_DEPRECATED("198444"),
+    GLASGOW("366559"),
     HATTON_CROSS("386417"),
     MANCHESTER("512401"),
     NEWPORT("227101"),
     TAYLOR_HOUSE("765324"),
     NORTH_SHIELDS("562808"),
-    NEWCASTLE("366796");
+    NEWCASTLE("366796"),
+    ARNHEM_HOUSE("324339");
 
     @JsonValue
     private final String id;
 
     BaseLocation(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }
