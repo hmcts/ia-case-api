@@ -26,6 +26,7 @@ public enum DocumentTag {
     FTPA_DECISION_AND_REASONS("ftpaDecisionAndReasons"),
     HO_DECISION_LETTER("homeOfficeDecisionLetter"),
     SENSITIVE_DOCUMENT("sensitiveDocument"),
+    RECORD_OUT_OF_TIME_DECISION_DOCUMENT("recordOutOfTimeDecisionDocument"),
 
     @JsonEnumDefaultValue
     NONE("");

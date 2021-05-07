@@ -1427,6 +1427,24 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_REMISSION_DETAILS(
         "previousRemissionDetails", new TypeReference<List<IdValue<RemissionDetails>>>(){}),
 
+    OUT_OF_TIME_DECISION_MAKER(
+        "outOfTimeDecisionMaker", new TypeReference<String>(){}),
+
+    RECORDED_OUT_OF_TIME_DECISION(
+        "recordedOutOfTimeDecision", new TypeReference<YesOrNo>(){}),
+
+    OUT_OF_TIME_DECISION_DOCUMENT(
+        "outOfTimeDecisionDocument", new TypeReference<Document>(){}),
+
+    OUT_OF_TIME_DECISION_DOCUMENTS(
+        "outOfTimeDecisionDocuments", new TypeReference<List<IdValue<Document>>>(){}),
+
+    PREVIOUS_OUT_OF_TIME_DECISION_DETAILS(
+        "previousOutOfTimeDecisionDetails", new TypeReference<List<IdValue<OutOfTimeDecisionDetails>>>(){}),
+
+    OUT_OF_TIME_DECISION_TYPE(
+        "outOfTimeDecisionType", new TypeReference<OutOfTimeDecisionType>(){}),
+
     ;
 
     private final String value;

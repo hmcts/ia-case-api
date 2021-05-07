@@ -29,11 +29,12 @@ class DocumentTagTest {
         assertEquals("ftpaDecisionAndReasons", DocumentTag.FTPA_DECISION_AND_REASONS.toString());
         assertEquals("homeOfficeDecisionLetter", DocumentTag.HO_DECISION_LETTER.toString());
         assertEquals("sensitiveDocument", DocumentTag.SENSITIVE_DOCUMENT.toString());
+        assertEquals("recordOutOfTimeDecisionDocument", DocumentTag.RECORD_OUT_OF_TIME_DECISION_DOCUMENT.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(22, DocumentTag.values().length);
+        assertEquals(23, DocumentTag.values().length);
     }
 }

@@ -103,12 +103,12 @@ class EventTest {
         assertEquals("nocRequest", Event.NOC_REQUEST.toString());
         assertEquals("removeRepresentation", Event.REMOVE_REPRESENTATION.toString());
         assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
-
         assertEquals("requestFeeRemission", Event.REQUEST_FEE_REMISSION.toString());
+        assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(100, Event.values().length);
+        assertEquals(101, Event.values().length);
     }
 }
