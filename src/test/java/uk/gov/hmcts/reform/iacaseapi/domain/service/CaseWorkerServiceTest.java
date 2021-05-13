@@ -82,7 +82,7 @@ class CaseWorkerServiceTest {
             ))
             .build();
         assertThat(actualQueryRequest)
-            .isEqualToIgnoringGivenFields(expectedQueryRequest, "validAt");
+            .usingRecursiveComparison().ignoringFields("validAt").isEqualTo(expectedQueryRequest);
     }
 
     private static Stream<Scenario> scenarioProvider() {
