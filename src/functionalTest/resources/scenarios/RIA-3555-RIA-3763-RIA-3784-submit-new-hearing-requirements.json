@@ -132,6 +132,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "appealOutOfCountry": "No",
         "isReheardAppealEnabled": "Yes",
         "caseFlagSetAsideReheardExists": "Yes",
         "currentHearingDetailsVisible": "No",
