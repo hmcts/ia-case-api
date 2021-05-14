@@ -1,5 +1,5 @@
 {
-  "description": "RIA-1358 Update legal representative's details",
+  "description": "RIA-4235-RIA-4234-RIA-4293 Update legal representative's details after NoC",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -13,9 +13,21 @@
           "legalRepName": "{$IA_USER_PREFIX}A legal Rep",
           "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
           "legalRepReferenceNumber": "ABC-123",
+          "updateLegalRepCompany": "Amazing Law Firm",
           "updateLegalRepName": "Jane Doe",
           "updateLegalRepEmailAddress": "jane.doe@example.com",
-          "updateLegalRepReferenceNumber": "ABC-JD-001"
+          "updateLegalRepReferenceNumber": "ABC-JD-001",
+          "changeOrganisationRequestField": {
+            "CaseRoleId": null,
+            "ApprovalStatus": null,
+            "RequestTimestamp": null,
+            "OrganisationToAdd": {
+              "OrganisationID": null
+            },
+            "OrganisationToRemove": {
+              "OrganisationID": null
+            }
+          }
         }
       }
     }

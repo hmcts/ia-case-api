@@ -1,0 +1,29 @@
+{
+  "description": "RIA-4293 pre-populated company name from ref data (will only work locally because of mock call to ref data, hence disabled)",
+  "enabled": false,
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "legalRepCompany": "Amazing Law Firm"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "legalRepCompany": "Fake Org Ltd",
+        "updateLegalRepCompany": null
+      }
+    }
+  }
+}

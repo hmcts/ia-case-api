@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,13 +37,19 @@ class AppealOutOfCountryPreparerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    CompanyNameProvider companyNameProvider;
+    @Mock
     private FeatureToggler featureToggler;
 
     private AppealOutOfCountryPreparer appealOutOfCountryPreparer;
 
     @BeforeEach
     public void setUp() {
-        appealOutOfCountryPreparer = new AppealOutOfCountryPreparer(featureToggler);
+
+        appealOutOfCountryPreparer = new AppealOutOfCountryPreparer(
+            companyNameProvider,
+            featureToggler
+        );
     }
 
     @Test
@@ -62,6 +69,8 @@ class AppealOutOfCountryPreparerTest {
         assertThat(response.getErrors()).isEmpty();
         Mockito.verify(asylumCase, times(1)).write(
             IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.YES);
+
+        Mockito.verify(companyNameProvider, times(1)).prepareCompanyName(callback);
     }
 
     @Test
@@ -82,6 +91,8 @@ class AppealOutOfCountryPreparerTest {
             IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.NO);
         Mockito.verify(asylumCase, times(1)).write(
             APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+
+        Mockito.verify(companyNameProvider, times(1)).prepareCompanyName(callback);
     }
 
     @Test

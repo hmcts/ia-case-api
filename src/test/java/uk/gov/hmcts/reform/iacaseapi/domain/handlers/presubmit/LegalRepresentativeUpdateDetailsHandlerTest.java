@@ -29,9 +29,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRepresentationAppender;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
+
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -48,17 +47,13 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    ProfessionalOrganisationRetriever professionalOrganisationRetriever;
-    @Mock
     private PreviousRepresentationAppender previousRepresentationAppender;
-    @Mock
-    private OrganisationEntityResponse organisationEntityResponse;
 
     private LegalRepresentativeUpdateDetailsHandler legalRepresentativeUpdateDetailsHandler;
 
     @BeforeEach
     public void setUp() {
-        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler(professionalOrganisationRetriever, previousRepresentationAppender);
+        legalRepresentativeUpdateDetailsHandler = new LegalRepresentativeUpdateDetailsHandler(previousRepresentationAppender);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -119,8 +114,6 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        final String updateCompanyName = "New Company";
-
         final List<IdValue<PreviousRepresentation>> existingPreviousRepresentations = new ArrayList<>();
 
         final List<IdValue<PreviousRepresentation>> allPreviousRepresentations = new ArrayList<>();
@@ -140,7 +133,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         when(asylumCase.read(LEGAL_REP_COMPANY, String.class)).thenReturn(Optional.of("some company name"));
         when(asylumCase.read(LEGAL_REP_REFERENCE_NUMBER, String.class)).thenReturn(Optional.of("some reference number"));
 
-        legalRepresentativeUpdateDetailsHandler.writeToPreviousRepresentations(callback, updateCompanyName);
+        legalRepresentativeUpdateDetailsHandler.writeToPreviousRepresentations(callback);
 
         verify(previousRepresentationAppender, times(1)).append(
             existingPreviousRepresentations,
@@ -148,31 +141,6 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         );
 
         verify(asylumCase, times(1)).write(PREVIOUS_REPRESENTATIONS, allPreviousRepresentations);
-    }
-
-    @Test
-    void should_return_company_name_when_change_organisation_entity_response_and_company_name_is_present() {
-        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
-        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
-        when(organisationEntityResponse.getName()).thenReturn("SomeName");
-
-        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "SomeName");
-    }
-
-    @Test
-    void should_return_company_name_as_empty_string_when_change_organisation_request_is_present_and_company_name_is_null() {
-        when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
-        when(organisationEntityResponse.getOrganisationIdentifier()).thenReturn("SomeId");
-        when(organisationEntityResponse.getName()).thenReturn(null);
-
-        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "");
-    }
-
-    @Test
-    void should_return_company_name_as_empty_string_when_change_organisation_request_is_null() {
-        when(professionalOrganisationRetriever.retrieve()).thenReturn(null);
-
-        assertEquals(legalRepresentativeUpdateDetailsHandler.retrieveNewCompanyName(callback, professionalOrganisationRetriever), "");
     }
 
     @Test
