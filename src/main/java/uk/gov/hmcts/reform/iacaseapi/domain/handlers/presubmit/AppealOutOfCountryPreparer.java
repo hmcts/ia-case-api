@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -12,14 +12,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
+@Slf4j
 @Component
 public class AppealOutOfCountryPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private final CompanyNameProvider companyNameProvider;
     private final FeatureToggler featureToggler;
 
-    public AppealOutOfCountryPreparer(FeatureToggler featureToggler) {
+    public AppealOutOfCountryPreparer(
+        CompanyNameProvider companyNameProvider,
+        FeatureToggler featureToggler
+    ) {
+        this.companyNameProvider = companyNameProvider;
         this.featureToggler = featureToggler;
     }
 
@@ -31,7 +38,7 @@ public class AppealOutOfCountryPreparer implements PreSubmitCallbackHandler<Asyl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.START_APPEAL;
+               && callback.getEvent() == Event.START_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,6 +58,8 @@ public class AppealOutOfCountryPreparer implements PreSubmitCallbackHandler<Asyl
         if (isOutOfCountryEnabled.equals(YesOrNo.NO)) {
             asylumCase.write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
         }
+
+        companyNameProvider.prepareCompanyName(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

@@ -33,6 +33,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
+
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +45,21 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
     private final String legalRepName = "John Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
     private final String legalRepReferenceNumber = "ABC-123";
+
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    CompanyNameProvider companyNameProvider;
+
     private LegalRepresentativeUpdateDetailsPreparer legalRepresentativeUpdateDetailsPreparer;
 
     @BeforeEach
     public void setUp() {
-        legalRepresentativeUpdateDetailsPreparer = new LegalRepresentativeUpdateDetailsPreparer();
+        legalRepresentativeUpdateDetailsPreparer = new LegalRepresentativeUpdateDetailsPreparer(companyNameProvider);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -10,9 +11,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 
+@Slf4j
 @Component
 public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final CompanyNameProvider companyNameProvider;
+
+    public LegalRepresentativeUpdateDetailsPreparer(CompanyNameProvider companyNameProvider) {
+        this.companyNameProvider = companyNameProvider;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
@@ -49,6 +58,8 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME, name);
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS, email);
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER, reference);
+
+        companyNameProvider.prepareCompanyName(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

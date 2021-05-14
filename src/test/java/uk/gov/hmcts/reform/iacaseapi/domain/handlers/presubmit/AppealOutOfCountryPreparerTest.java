@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,13 +37,19 @@ class AppealOutOfCountryPreparerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    CompanyNameProvider companyNameProvider;
+    @Mock
     private FeatureToggler featureToggler;
 
     private AppealOutOfCountryPreparer appealOutOfCountryPreparer;
 
     @BeforeEach
     public void setUp() {
-        appealOutOfCountryPreparer = new AppealOutOfCountryPreparer(featureToggler);
+
+        appealOutOfCountryPreparer = new AppealOutOfCountryPreparer(
+            companyNameProvider,
+            featureToggler
+        );
     }
 
     @Test
