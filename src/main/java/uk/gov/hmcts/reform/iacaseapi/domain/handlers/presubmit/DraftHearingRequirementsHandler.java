@@ -60,6 +60,10 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
 
         final List<WitnessDetails> witnessDetails = mayBeWitnessDetails.orElse(Collections.emptyList()).stream().map(IdValue::getValue).collect(Collectors.toList());
 
+        if (!asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).isPresent()) {
+            asylumCase.write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        }
+
         asylumCase.write(WITNESS_COUNT, witnessDetails.size());
 
         asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
