@@ -60,7 +60,8 @@ public class LegalRepresentativeUpdateDetailsHandler implements PreSubmitCallbac
             .read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class);
 
         if (changeOrganisationRequest.isPresent()) {
-            writeToPreviousRepresentations(callback, retrieveNewCompanyName(callback, professionalOrganisationRetriever));
+            writeToPreviousRepresentations(callback, asylumCase.read(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, String.class).orElse(""));
+            //writeToPreviousRepresentations(callback, retrieveNewCompanyName(callback, professionalOrganisationRetriever));
         }
 
         String name = asylumCase.read(

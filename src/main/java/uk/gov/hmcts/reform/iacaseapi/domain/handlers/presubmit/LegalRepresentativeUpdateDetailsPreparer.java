@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
 
@@ -29,7 +32,7 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-            && callback.getEvent() == Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS;
+               && callback.getEvent() == Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS;
     }
 
     @Override
@@ -41,6 +44,15 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        final Optional<ChangeOrganisationRequest> changeOrganisationRequest = asylumCase
+            .read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class);
+
+        if (changeOrganisationRequest.isPresent()) {
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+            asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
+        }
+
         String company = asylumCase.read(
             AsylumCaseFieldDefinition.LEGAL_REP_COMPANY, String.class)
             .orElse("");
@@ -51,7 +63,7 @@ public class LegalRepresentativeUpdateDetailsPreparer implements PreSubmitCallba
             AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class)
             .orElse("");
         String reference = asylumCase.read(
-            AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER,String.class)
+            AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER, String.class)
             .orElse("");
 
         asylumCase.write(AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY, company);
