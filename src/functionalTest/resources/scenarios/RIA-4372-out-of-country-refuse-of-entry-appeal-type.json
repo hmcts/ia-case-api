@@ -1,0 +1,41 @@
+{
+  "description": "RIA-4320 Out of country refusalOfEntry appeal type",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appellantInUk": "No",
+          "hasCorrespondenceAddress": "No",
+          "appellantOutOfCountryAddress": "",
+          "hasSponsor": "No",
+          "dateEntryClearanceDecision":"{$TODAY-7}",
+          "gwfReferenceNumber": "GWF1234566",
+          "outOfCountryDecisionType":"refusalOfEntry"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appellantInUk": "No",
+        "appealOutOfCountry": "Yes",
+        "hasCorrespondenceAddress": "No",
+        "appellantOutOfCountryAddress": "",
+        "hasSponsor": "No",
+        "dateEntryClearanceDecision":"{$TODAY-7}",
+        "gwfReferenceNumber": "GWF1234566",
+        "outOfCountryDecisionType":"refusalOfEntry"
+      }
+    }
+  }
+}

@@ -9,7 +9,8 @@ public enum OutOfCountryDecisionType {
 
     REFUSAL_OF_HUMAN_RIGHTS("refusalOfHumanRights", "A decision to refuse a human rights claim for entry clearance"),
     REFUSAL_OF_PROTECTION("refusalOfProtection", "A decision to refuse a human rights or protection claim, or deprive you of British citizenship, where you can only apply after your client has left the country"),
-    REMOVAL_OF_CLIENT("removalOfClient", "A decision to remove your client under the Immigration (European Economic Area) Regulations 2016");
+    REMOVAL_OF_CLIENT("removalOfClient", "A decision to remove your client under the Immigration (European Economic Area) Regulations 2016"),
+    REFUSAL_OF_ENTRY("refusalOfEntry", "A decision to refuse entry to the UK under the Immigration (European Economic Area) Regulations 2016");
 
     @JsonValue
     private String value;

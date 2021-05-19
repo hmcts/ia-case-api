@@ -51,7 +51,7 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 .getCaseData();
 
         if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
-            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
+            value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value) || OutOfCountryDecisionType.REFUSAL_OF_ENTRY.equals(value)).orElse(false)) {
 
             Optional<String> maybeHomeOfficeReferenceNumber =
                 asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER);

@@ -147,6 +147,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
             OutOfCountryDecisionType outOfCountryDecisionType = outOfCountryDecisionTypeOptional.get();
             switch (outOfCountryDecisionType) {
                 case REFUSAL_OF_HUMAN_RIGHTS:
+                case REFUSAL_OF_ENTRY:
                     clearRefusalOfProtection(asylumCase);
                     asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                     asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
