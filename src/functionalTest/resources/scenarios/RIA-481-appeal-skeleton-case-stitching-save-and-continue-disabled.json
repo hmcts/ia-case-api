@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseArgumentAvailable": null,
+          "caseArgumentAvailable": "Yes",
           "caseArgumentDocument": {
             "document_url": "{$FIXTURE_DOC3_PDF_URL}",
             "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",

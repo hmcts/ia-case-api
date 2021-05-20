@@ -1,19 +1,25 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+public class BuildCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -22,7 +28,8 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+               && callback.getEvent() == Event.BUILD_CASE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -33,27 +40,26 @@ public class CaseBuildingReadyForSubmissionUpdater implements PreSubmitCallbackH
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final State caseState =
-            callback
-                .getCaseDetails()
-                .getState();
-
         final AsylumCase asylumCase =
             callback
                 .getCaseDetails()
                 .getCaseData();
 
-        if (caseState == State.CASE_BUILDING) {
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+            asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-            if (asylumCase.read(CASE_ARGUMENT_AVAILABLE).isPresent()) {
-                asylumCase.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.YES);
-            } else {
-                asylumCase.write(CASE_BUILDING_READY_FOR_SUBMISSION, YesOrNo.NO);
-            }
+        final List<String> existingDocuments = maybeExistingLegalRepDocuments.orElse(emptyList()).stream()
+            .map(IdValue::getValue)
+            .filter(documentWithMetadata -> documentWithMetadata.getTag() == DocumentTag.CASE_ARGUMENT)
+            .map(documentWithMetadata -> documentWithMetadata.getDocument().getDocumentFilename())
+            .collect(Collectors.toList());
 
-        } else {
-            asylumCase.clear(CASE_BUILDING_READY_FOR_SUBMISSION);
+        StringBuilder sb = new StringBuilder();
+        for (String url : existingDocuments) {
+            sb.append("- ").append(url).append("\r\n");
         }
+
+        asylumCase.write(UPLOADED_LEGAL_REP_BUILD_CASE_DOCS, sb.length() != 0 ? sb.toString() : "- None");
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
