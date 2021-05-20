@@ -106,13 +106,15 @@ public class BuildCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
         List<IdValue<DocumentWithMetadata>> allLegalRepresentativeDocuments =
             documentsAppender.append(
                 legalRepresentativeDocuments,
-                caseArgumentDocuments,
-                DocumentTag.CASE_ARGUMENT
+                caseArgumentDocuments
             );
 
         asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
 
         asylumCase.write(CASE_ARGUMENT_AVAILABLE, YES);
+        asylumCase.clear(CASE_ARGUMENT_DOCUMENT);
+        asylumCase.clear(CASE_ARGUMENT_DESCRIPTION);
+        asylumCase.clear(CASE_ARGUMENT_EVIDENCE);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
