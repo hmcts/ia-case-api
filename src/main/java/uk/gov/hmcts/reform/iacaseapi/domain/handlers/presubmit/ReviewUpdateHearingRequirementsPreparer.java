@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ReviewDraftHearingRequirementsPreparer.decorateOutsideEvidenceDefaultsForOldCases;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.ReviewDraftHearingRequirementsPreparer.decorateWitnessAndInterpreterDetails;
 
 import org.springframework.stereotype.Component;
@@ -50,6 +51,8 @@ public class ReviewUpdateHearingRequirementsPreparer implements PreSubmitCallbac
         }
 
         decorateWitnessAndInterpreterDetails(asylumCase);
+
+        decorateOutsideEvidenceDefaultsForOldCases(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
