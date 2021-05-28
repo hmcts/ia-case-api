@@ -55,7 +55,6 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             return asylumCasePreSubmitCallbackResponse;
         }
 
-
         if (callback.getEvent() == Event.REVIEW_HEARING_REQUIREMENTS && reviewedHearingRequirements.get().equals(YesOrNo.YES)) {
             final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
             asylumCasePreSubmitCallbackResponse.addError("You've made an invalid request. The hearing requirements have already been reviewed.");
@@ -63,6 +62,8 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
         }
 
         decorateWitnessAndInterpreterDetails(asylumCase);
+
+        decorateOutsideEvidenceDefaultsForOldCases(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
@@ -83,5 +84,22 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
             .map(i ->
                 "Language\t\t" + i.getValue().getLanguage() + "\nDialect\t\t\t" + i.getValue().getLanguageDialect() + "\n")
             .collect(Collectors.joining("\n"))));
+    }
+
+    static void decorateOutsideEvidenceDefaultsForOldCases(AsylumCase asylumCase) {
+
+        final Optional<YesOrNo> isEvidenceFromOutsideUkOoc =
+            asylumCase.read(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC, YesOrNo.class);
+
+        final Optional<YesOrNo> isEvidenceFromOutsideUkInCountry =
+            asylumCase.read(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.class);
+
+        if (!isEvidenceFromOutsideUkOoc.isPresent()) {
+            asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC, YesOrNo.NO);
+        }
+
+        if (!isEvidenceFromOutsideUkInCountry.isPresent()) {
+            asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.NO);
+        }
     }
 }

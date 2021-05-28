@@ -1445,6 +1445,12 @@ public enum AsylumCaseFieldDefinition {
     OUT_OF_TIME_DECISION_TYPE(
         "outOfTimeDecisionType", new TypeReference<OutOfTimeDecisionType>(){}),
 
+    IS_EVIDENCE_FROM_OUTSIDE_UK_OOC(
+        "isEvidenceFromOutsideUkOoc", new TypeReference<YesOrNo>() {}),
+
+    IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY(
+        "isEvidenceFromOutsideUkInCountry", new TypeReference<YesOrNo>() {}),
+
     ;
 
     private final String value;
