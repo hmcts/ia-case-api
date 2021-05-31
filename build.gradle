@@ -277,7 +277,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
