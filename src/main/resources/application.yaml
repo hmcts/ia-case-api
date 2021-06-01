@@ -285,6 +285,8 @@ security:
       - "recordRemissionDecision"
       - "manageFeeUpdate"
       - "removeLegalRepresentative"
+      - "generateUpperTribunalBundle"
+      - "asyncStitchingComplete"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -341,6 +343,8 @@ security:
       - "uploadSensitiveDocuments"
       - "decideAnApplication"
       - "requestNewHearingRequirements"
+      - "generateUpperTribunalBundle"
+      - "asyncStitchingComplete"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"

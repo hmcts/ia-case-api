@@ -29,7 +29,8 @@ public class AdvancedFinalBundlingStateHandler implements PreSubmitCallbackState
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE;
+               && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE
+               && callback.getCaseDetails().getState() != State.FTPA_DECIDED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

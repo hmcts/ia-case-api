@@ -27,6 +27,7 @@ public enum DocumentTag {
     HO_DECISION_LETTER("homeOfficeDecisionLetter"),
     SENSITIVE_DOCUMENT("sensitiveDocument"),
     RECORD_OUT_OF_TIME_DECISION_DOCUMENT("recordOutOfTimeDecisionDocument"),
+    UPPER_TRIBUNAL_BUNDLE("upperTribunalBundle"),
 
     @JsonEnumDefaultValue
     NONE("");

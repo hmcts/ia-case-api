@@ -1,0 +1,22 @@
+{
+  "description": "RIA-4351 Generate Upper Tribunal bundle confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "generateUpperTribunalBundle",
+      "state": "ftpaDecided",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# The Upper Tribunal bundle is being generated",
+      "body": "#### What happens next\n\nYou will soon be able to view and download the bundle under Upper Tribunal documents in the [documents tab](/case/IA/Asylum/1234/#Documents).\n\n\nIf the bundle fails to generate, you will be notified and must follow the same steps to generate the bundle again."
+    }
+  }
+}

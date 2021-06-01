@@ -1,0 +1,27 @@
+{
+  "description": "RIA-4351 Generate Upper Tribunal bundle error (Respondent - Reheard Rule 35)",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 4351,
+      "eventId": "generateUpperTribunalBundle",
+      "state": "ftpaDecided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ftpaRespondentRjDecisionOutcomeType": "reheardRule35"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You cannot generate an Upper Tribunal bundle because this appeal will not be heard by the Upper Tribunal."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

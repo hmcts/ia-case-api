@@ -1,23 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_BUNDLES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,84 +16,86 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.em.Bundle;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AdvancedFinalBundlingStateHandlerTest {
+class UpperTribunalStitchingCallbackHandlerTest {
 
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    @Mock
-    private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+    @Mock private DocumentReceiver documentReceiver;
+    @Mock private DocumentsAppender documentsAppender;
+    @Mock private NotificationSender<AsylumCase> notificationSender;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private Document stitchedDocument;
+    @Mock private List<IdValue<DocumentWithMetadata>> maybeUpperTribunalDocuments;
+    @Mock private List<IdValue<DocumentWithMetadata>> allUpperTribunalDocuments;
+    @Mock private DocumentWithMetadata stitchedDocumentWithMetadata;
 
     private List<IdValue<Bundle>> caseBundles = new ArrayList<>();
-    private AdvancedFinalBundlingStateHandler advancedFinalBundlingStateHandler;
+    private UpperTribunalStitchingCallbackHandler upperTribunalStitchingCallbackHandler;
 
     @BeforeEach
     public void setUp() {
-        advancedFinalBundlingStateHandler = new AdvancedFinalBundlingStateHandler();
+
+        upperTribunalStitchingCallbackHandler =
+            new UpperTribunalStitchingCallbackHandler(documentReceiver, documentsAppender, notificationSender);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.ASYNC_STITCHING_COMPLETE);
-        when(caseDetails.getState()).thenReturn(State.FINAL_BUNDLING);
+        when(callback.getCaseDetails().getState()).thenReturn(State.FTPA_DECIDED);
 
+        when(notificationSender.send(callback)).thenReturn(asylumCase);
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.of(caseBundles));
 
-        Bundle bundle =
-            new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"), Optional.empty(),
-                YesOrNo.YES, YesOrNo.YES, "fileName");
+        Bundle bundle = new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("NEW"),
+            Optional.of(stitchedDocument), YesOrNo.YES, YesOrNo.YES, "fileName");
         caseBundles.add(new IdValue<>("1", bundle));
     }
 
     @Test
-    void should_successfully_retain_the_current_state() {
+    void should_successfully_handle_the_callback() {
 
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
+        when(asylumCase.read(UPPER_TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(maybeUpperTribunalDocuments));
+        when(documentReceiver
+            .receive(
+                stitchedDocument,
+                "",
+                DocumentTag.UPPER_TRIBUNAL_BUNDLE
+            )).thenReturn(stitchedDocumentWithMetadata);
 
-        assertNotNull(returnedCallbackResponse);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
+        when(documentsAppender.append(
+            anyList(),
+            anyList(),
+            eq(DocumentTag.UPPER_TRIBUNAL_BUNDLE)
+        )).thenReturn(allUpperTribunalDocuments);
 
-        verify(asylumCase, times(1)).read(CASE_BUNDLES);
-        verify(asylumCase, times(1)).write(STITCHING_STATUS, "NEW");
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback);
 
-        assertEquals(State.FINAL_BUNDLING, returnedCallbackResponse.getState());
-    }
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
-    @Test
-    void should_successfully_change_the_current_state_to_pre_hearing() {
-
-        Bundle finishedBundle =
-            new Bundle("id", "title", "desc", "yes", Collections.emptyList(), Optional.of("DONE"), Optional.empty(),
-                YesOrNo.YES, YesOrNo.YES, "fileName");
-        caseBundles.clear();
-        caseBundles.add(new IdValue<>("1", finishedBundle));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse);
-
-        assertNotNull(returnedCallbackResponse);
-        assertEquals(asylumCase, returnedCallbackResponse.getData());
-
-        verify(asylumCase, times(1)).read(CASE_BUNDLES);
-        verify(asylumCase, times(1)).write(STITCHING_STATUS, "DONE");
-
-        assertEquals(State.PRE_HEARING, returnedCallbackResponse.getState());
+        verify(asylumCase, times(1)).write(STITCHING_STATUS_UPPER_TRIBUNAL, "NEW");
+        verify(asylumCase, times(1)).write(UPPER_TRIBUNAL_DOCUMENTS, allUpperTribunalDocuments);
+        verify(asylumCase, times(1)).read(UPPER_TRIBUNAL_DOCUMENTS);
+        verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.UPPER_TRIBUNAL_BUNDLE);
+        verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.UPPER_TRIBUNAL_BUNDLE));
     }
 
     @Test
@@ -111,7 +103,7 @@ class AdvancedFinalBundlingStateHandlerTest {
 
         when(asylumCase.read(CASE_BUNDLES)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("caseBundle is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -121,7 +113,7 @@ class AdvancedFinalBundlingStateHandlerTest {
 
         caseBundles.clear();
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("case bundles size is not 1 and is : 0")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -129,12 +121,12 @@ class AdvancedFinalBundlingStateHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_START, callback, callbackResponse))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(ABOUT_TO_SUBMIT, callback, callbackResponse))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -152,11 +144,11 @@ class AdvancedFinalBundlingStateHandlerTest {
 
                     when(callback.getCaseDetails().getState()).thenReturn(state);
 
-                    boolean canHandle = advancedFinalBundlingStateHandler.canHandle(callbackStage, callback);
+                    boolean canHandle = upperTribunalStitchingCallbackHandler.canHandle(callbackStage, callback);
 
                     if (event == Event.ASYNC_STITCHING_COMPLETE
                         && callbackStage == ABOUT_TO_SUBMIT
-                        && state != State.FTPA_DECIDED
+                        && state == State.FTPA_DECIDED
                     ) {
                         assertTrue(canHandle);
                     } else {
@@ -172,21 +164,21 @@ class AdvancedFinalBundlingStateHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(
-            () -> advancedFinalBundlingStateHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+            () -> upperTribunalStitchingCallbackHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler.handle(null, callback, callbackResponse))
+        assertThatThrownBy(() -> upperTribunalStitchingCallbackHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> advancedFinalBundlingStateHandler
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, callbackResponse))
+        assertThatThrownBy(
+            () -> upperTribunalStitchingCallbackHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

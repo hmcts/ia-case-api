@@ -76,7 +76,8 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SUBMIT_CMA_REQUIREMENTS,
             Event.LIST_CMA,
             Event.END_APPEAL,
-            Event.EDIT_APPEAL_AFTER_SUBMIT);
+            Event.EDIT_APPEAL_AFTER_SUBMIT,
+            Event.GENERATE_UPPER_TRIBUNAL_BUNDLE);
         if (isEmStitchingEnabled) {
             allowedEvents.add(Event.SUBMIT_CASE);
             if (!isSaveAndContinueEnabled) {
