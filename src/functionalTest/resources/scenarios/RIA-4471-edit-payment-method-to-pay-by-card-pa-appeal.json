@@ -1,0 +1,33 @@
+{
+  "description": "RIA-4471 edit payment method to pay by card (PA appeal type)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 4471,
+      "eventId": "editPaymentMethod",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealType": "protection",
+          "paymentStatus": "Payment pending",
+          "paAppealTypePaymentOption": "payNow"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "protection",
+        "paymentStatus": "Payment pending",
+        "paAppealTypePaymentOption": "payOffline"
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "description": "RIA-4465 Pay only confirmation - error payment",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "LegalRepresentativeOrgDeleted",
+    "input": {
+      "eventId": "paymentAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isFeePaymentEnabled": "Yes",
+          "submissionOutOfTime": "No",
+          "appealType": "refusalOfEu",
+          "paymentStatus": "Paid",
+          "legalRepReferenceNumber": "some-ref",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "paymentAccountList": "PBA0087240"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "",
+      "body": "contains(![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png))"
+    }
+  }
+}

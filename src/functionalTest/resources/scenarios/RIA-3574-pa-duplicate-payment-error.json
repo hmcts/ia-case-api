@@ -3,7 +3,7 @@
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "id": 3574,
       "eventId": "payAndSubmitAppeal",
