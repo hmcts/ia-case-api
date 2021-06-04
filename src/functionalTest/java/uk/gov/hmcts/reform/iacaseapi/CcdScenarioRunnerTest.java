@@ -383,6 +383,12 @@ public class CcdScenarioRunnerTest {
                     .getLegalRepresentativeOrgSuccessAuthorization();
         }
 
+        if ("LegalRepresentativeOrgDeleted".equalsIgnoreCase(credentials)) {
+
+            return authorizationHeadersProvider
+                .getLegalRepresentativeOrgDeletedAuthorization();
+        }
+
         if ("Judge".equalsIgnoreCase(credentials)) {
 
             return authorizationHeadersProvider

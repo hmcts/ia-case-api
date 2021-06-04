@@ -1,0 +1,31 @@
+{
+  "description": "RIA-4437 Pay and Submit confirmation - out of time",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "payAndSubmitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isFeePaymentEnabled": "Yes",
+          "submissionOutOfTime": "Yes",
+          "appealType": "refusalOfEu",
+          "paymentStatus": "Paid",
+          "legalRepReferenceNumber": "some-ref",
+          "decisionHearingFeeOption": "decisionWithHearing",
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "paymentAccountList": "PBA0087535"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": ""
+    }
+  }
+}

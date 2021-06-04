@@ -1,6 +1,6 @@
 {
   "description": "RIA-3390 Request Home Office data and gets data successfully",
-  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -10,7 +10,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeReferenceNumber": "1212-0099-0062-8083"
+          "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+          "appellantDateOfBirth": "1995-04-04"
         }
       }
     }
@@ -22,6 +23,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
+        "appellantDateOfBirth": "1995-04-04",
         "isHomeOfficeIntegrationEnabled": "Yes",
         "contactPreferenceDescription": "Text message",
         "appealTypeDescription": "Refusal of protection claim",

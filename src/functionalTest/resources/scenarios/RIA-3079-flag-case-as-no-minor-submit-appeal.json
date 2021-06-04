@@ -11,6 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "appellantDateOfBirth": "1979-02-15",
+          "appealType": "revocationOfProtection",
           "uploadTheNoticeOfDecisionDocs": [
             {
               "id": "1",
@@ -35,8 +36,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isAppellantMinor": "No",
+        "appealType": "revocationOfProtection",
         "appellantDateOfBirth": "1979-02-15",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }
