@@ -11,10 +11,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -32,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +49,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         legalRepresentativeDetailsHandler =
             new LegalRepresentativeDetailsHandler(userDetails);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
     }
 
     @Test
@@ -64,9 +67,7 @@ class LegalRepresentativeDetailsHandlerTest {
         when(userDetails.getSurname()).thenReturn("Doe");
         when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
@@ -120,7 +121,7 @@ class LegalRepresentativeDetailsHandlerTest {
     void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
@@ -174,6 +175,10 @@ class LegalRepresentativeDetailsHandlerTest {
 
         for (Event event : Event.values()) {
 
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
@@ -181,7 +186,7 @@ class LegalRepresentativeDetailsHandlerTest {
                 boolean canHandle = legalRepresentativeDetailsHandler.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                    Event.SUBMIT_APPEAL,
+                    SUBMIT_APPEAL,
                     Event.PAY_AND_SUBMIT_APPEAL)
                     .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
@@ -194,6 +199,20 @@ class LegalRepresentativeDetailsHandlerTest {
 
             reset(callback);
         }
+    }
+
+    @Test
+    void it_cannot_handle_callback_for_aip() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+
+        boolean canHandle = legalRepresentativeDetailsHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertFalse(canHandle);
     }
 
     @Test
