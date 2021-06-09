@@ -177,6 +177,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 "![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n"
                 + "#### Do this next\n\n"
                 + "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.\n\n"
+                + "If you want to pay by card, you can [change the payment method](/case/IA/Asylum/"
+                + caseId + "/trigger/editPaymentMethod) to card. The Tribunal will then contact you with payment instructions."
                 + "\n#### Payment failed"
                 + paymentReferenceLabel
                 + appealPaymentConfirmationProvider.getPaymentReferenceNumber(asylumCase)

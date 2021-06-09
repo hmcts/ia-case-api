@@ -147,6 +147,11 @@ class PayAndSubmitConfirmationTest {
             .contains(
                 "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.");
 
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "If you want to pay by card, you can [change the payment method](/case/IA/Asylum/1234/trigger/editPaymentMethod) to card. The Tribunal will then contact you with payment instructions.");
+
         verify(scheduler).schedule(timedEventCaptor.capture());
         assertEquals(timedEventCaptor.getValue().getId(), "");
         assertEquals(timedEventCaptor.getValue().getJurisdiction(), "IA");

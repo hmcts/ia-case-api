@@ -1,0 +1,28 @@
+{
+  "description": "RIA-4471 error on edit payment method (Payment status - Paid)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 4471,
+      "eventId": "editPaymentMethod",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "paymentStatus": "Paid"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You can only change the payment method for a failed PBA payment."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}

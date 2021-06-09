@@ -107,6 +107,7 @@ public enum Event {
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
+    EDIT_PAYMENT_METHOD("editPaymentMethod"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

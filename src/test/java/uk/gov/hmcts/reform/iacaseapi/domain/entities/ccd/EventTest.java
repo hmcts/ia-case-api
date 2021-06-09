@@ -107,11 +107,11 @@ class EventTest {
         assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
         assertEquals("moveToSubmitted", Event.MOVE_TO_SUBMITTED.toString());
         assertEquals("moveToPaymentPending", Event.MOVE_TO_PAYMENT_PENDING.toString());
-
+        assertEquals("editPaymentMethod", Event.EDIT_PAYMENT_METHOD.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(103, Event.values().length);
+        assertEquals(104, Event.values().length);
     }
 }
