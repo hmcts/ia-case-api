@@ -3,7 +3,7 @@
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "id": 3025,
       "eventId": "paymentAppeal",
@@ -13,6 +13,8 @@
         "replacements": {
           "notificationsSent": [],
           "appealType": "protection",
+          "legalRepReferenceNumber": "some-ref",
+          "homeOfficeReferenceNumber": "123456789",
           "decisionHearingFeeOption": "decisionWithoutHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "paymentAccountList": "PBA0087535",
@@ -32,12 +34,14 @@
       "replacements": {
         "sendDirectionActionAvailable": "Yes",
         "appealType": "protection",
+        "legalRepReferenceNumber": "some-ref",
+        "homeOfficeReferenceNumber": "123456789",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "paymentStatus": "Paid",
         "pbaNumber": "PBA0087535",
-        "feeCode": "FEE0373",
-        "feeVersion": "1",
-        "feeAmountGbp": "80.00",
+        "feeCode": "FEE0372",
+        "feeVersion": "2",
+        "feeAmountGbp": "8000",
         "feeDescription": "Notice of Appeal - appellant consents without hearing A",
         "paymentDescription": "Appeal determined without a hearing",
         "currentCaseStateVisibleToLegalRepresentative": "listing",

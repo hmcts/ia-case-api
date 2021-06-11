@@ -1,6 +1,6 @@
 {
   "description": "RIA-3084 Legal representative submits appeal with help with fees",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

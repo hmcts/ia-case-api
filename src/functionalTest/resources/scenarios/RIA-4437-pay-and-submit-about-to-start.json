@@ -1,0 +1,33 @@
+{
+  "description": "RIA-4437 Pay and Submit about to start",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "payAndSubmitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealType": "refusalOfEu"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isFeePaymentEnabled": "Yes",
+        "appealReferenceNumber": "DRAFT",
+        "appealType": "refusalOfEu",
+        "isRemissionsEnabled": "Yes",
+        "paymentStatus": "Payment pending",
+        "submissionOutOfTime": "No"
+      }
+    }
+  }
+}

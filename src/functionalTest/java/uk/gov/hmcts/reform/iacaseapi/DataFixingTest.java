@@ -51,6 +51,7 @@ public class DataFixingTest {
     public void corrects_field_names() throws Exception {
 
         Map<String, Object> asylumCaseMap = new HashMap<>();
+        asylumCaseMap.put("appealType", "refusalOfHumanRights");
         asylumCaseMap.put("respondentsAgreedScheduleOfIssuesDescription", "some-value");
 
         String callbackBody = buildCallbackBodyWithMinimalRequired(

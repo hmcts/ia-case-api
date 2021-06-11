@@ -1,6 +1,8 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,19 +15,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
-public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class PayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final FeePayment<AsylumCase> feePayment;
     private final boolean isfeePaymentEnabled;
 
-    public FeePayAndSubmitHandler(
-        @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment
-    ) {
-        this.feePayment = feePayment;
+    public PayAndSubmitHandler(@Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled) {
         this.isfeePaymentEnabled = isfeePaymentEnabled;
     }
 
@@ -55,11 +51,15 @@ public class FeePayAndSubmitHandler implements PreSubmitCallbackHandler<AsylumCa
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCaseWithPaymentStatus = feePayment.aboutToSubmit(callback);
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCaseWithPaymentStatus.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
+        // we have to set payment success first before do the payment because later we don't have possibility to change that
+        asylumCase.write(PAYMENT_STATUS, PAID);
+
+        asylumCase.write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED,
             isfeePaymentEnabled ? YesOrNo.YES : YesOrNo.NO);
 
-        return new PreSubmitCallbackResponse<>(asylumCaseWithPaymentStatus);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
+

@@ -3,7 +3,7 @@
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "id": 3025,
       "eventId": "paymentAppeal",
@@ -13,6 +13,8 @@
         "replacements": {
           "notificationsSent": [],
           "appealType": "protection",
+          "legalRepReferenceNumber": "some-ref",
+          "homeOfficeReferenceNumber": "123456789",
           "decisionHearingFeeOption": "decisionWithHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "paymentAccountList": "PBA0087535",
@@ -32,12 +34,14 @@
       "replacements": {
         "sendDirectionActionAvailable": "Yes",
         "appealType": "protection",
+        "legalRepReferenceNumber": "some-ref",
+        "homeOfficeReferenceNumber": "123456789",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "paymentStatus": "Paid",
         "pbaNumber": "PBA0087535",
-        "feeCode": "FEE0239",
-        "feeVersion": "1",
-        "feeAmountGbp": "140.00",
+        "feeCode": "FEE0238",
+        "feeVersion": "2",
+        "feeAmountGbp": "14000",
         "feeDescription": "Appeal determined with a hearing",
         "paymentDescription": "Appeal determined with a hearing",
         "currentCaseStateVisibleToLegalRepresentative": "caseBuilding",

@@ -1,6 +1,6 @@
 {
   "description": "RIA-4116 does not trigger home office notifications when validation is not success",
-  "launchDarklyKey": "home-office-notification-feature:true",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",

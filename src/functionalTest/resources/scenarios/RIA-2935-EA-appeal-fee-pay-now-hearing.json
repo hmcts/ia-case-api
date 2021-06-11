@@ -3,7 +3,7 @@
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
       "eventId": "paymentAppeal",
       "state": "appealStarted",
@@ -11,10 +11,11 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "appealType": "refusalOfEu",
+          "legalRepReferenceNumber": "some-ref",
           "decisionHearingFeeOption": "decisionWithHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "paymentAccountList": "PBA0087535",
-          "homeOfficeReferenceNumber": "A123456",
+          "homeOfficeReferenceNumber": "123456789",
           "paymentDescription": "An IA pba test payment",
           "eaHuAppealTypePaymentOption": "payNow",
           "customerReference": "543232"
@@ -30,12 +31,14 @@
       "replacements": {
         "sendDirectionActionAvailable": "No",
         "appealType": "refusalOfEu",
+        "legalRepReferenceNumber": "some-ref",
+        "homeOfficeReferenceNumber": "123456789",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "paymentStatus":"Paid",
         "pbaNumber":"PBA0087535",
-        "feeCode":"FEE0239",
-        "feeVersion":"1",
-        "feeAmountGbp":"140.00",
+        "feeCode":"FEE0238",
+        "feeVersion":"2",
+        "feeAmountGbp":"14000",
         "feeDescription":"Appeal determined with a hearing",
         "paymentDescription":"Appeal determined with a hearing"
       }

@@ -1,6 +1,6 @@
 {
   "description": "RIA-4116 Gets Home Office data for the IA appeal reference and sets the eligible field value",
-  "enabled": "{$featureFlag.isHomeOfficeIntegrationEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -11,7 +11,7 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-          "appellantDateOfBirth": "1995-4-4",
+          "appellantDateOfBirth": "1995-04-04",
           "uploadTheNoticeOfDecisionDocs": [
             {
               "id": "1",
@@ -36,7 +36,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
-        "appellantDateOfBirth": "1995-4-4",
+        "appellantDateOfBirth": "1995-04-04",
         "isHomeOfficeIntegrationEnabled": "Yes",
         "contactPreferenceDescription": "Text message",
         "appealTypeDescription": "Refusal of protection claim",

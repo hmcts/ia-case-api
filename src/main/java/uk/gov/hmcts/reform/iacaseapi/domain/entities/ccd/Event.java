@@ -90,6 +90,8 @@ public enum Event {
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
     PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
+    MOVE_TO_PAYMENT_PENDING("moveToPaymentPending"),
+    MOVE_TO_SUBMITTED("moveToSubmitted"),
     UPLOAD_SENSITIVE_DOCUMENTS("uploadSensitiveDocuments"),
     MARK_APPEAL_PAID("markAppealPaid"),
     REQUEST_HOME_OFFICE_DATA("requestHomeOfficeData"),

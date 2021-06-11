@@ -1,6 +1,6 @@
 {
   "description": "RIA-3085 Legal representative submits appeal with Exceptional circumstances remission for fees",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

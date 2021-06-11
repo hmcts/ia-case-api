@@ -102,6 +102,7 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
+                // only for later payment, start and edit appeal is for fees
                 asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {

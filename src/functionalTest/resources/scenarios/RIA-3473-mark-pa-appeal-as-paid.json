@@ -13,8 +13,8 @@
         "replacements": {
           "paymentStatus": "Payment pending",
           "eaHuAppealTypePaymentOption": "payOffline",
-          "paidDate": "${TODAY-2}",
-          "feeAmountGbp": "80.00",
+          "paidDate": "2021-06-07",
+          "feeAmountGbp": "8000",
           "paidAmount": "8000",
           "hearingDecisionSelected": "Decision without a hearing. The fee for this type of appeal is £80",
           "decisionHearingFeeOption": "decisionWithoutHearing",
@@ -31,8 +31,9 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "submissionOutOfTime": "No",
-        "feeAmountGbp": "80.00",
-        "paymentDate": "${TODAY-2}",
+        "feeAmountGbp": "8000",
+        "paidDate": "2021-06-07",
+        "paymentDate": "7 Jun 2021",
         "paymentStatus": "Paid",
         "additionalPaymentInfo": "Payment for the appeal is now complete",
         "currentCaseStateVisibleToAdminOfficer": "caseBuilding"

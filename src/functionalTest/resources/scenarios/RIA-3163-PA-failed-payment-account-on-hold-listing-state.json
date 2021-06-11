@@ -3,7 +3,7 @@
   "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgDeleted",
     "input": {
       "eventId": "paymentAppeal",
       "state": "listing",
@@ -11,10 +11,11 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "appealType": "protection",
+          "legalRepReferenceNumber": "some-ref",
+          "homeOfficeReferenceNumber": "123456789",
           "decisionHearingFeeOption": "decisionWithoutHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
           "paymentAccountList": "PBA0087240",
-          "homeOfficeReferenceNumber": "A123456",
           "paymentDescription": "An IA pba test payment",
           "eaHuAppealTypePaymentOption": "payNow",
           "customerReference": "543232",
@@ -31,11 +32,13 @@
       "replacements": {
         "uploadAdditionalEvidenceActionAvailable": "Yes",
         "appealType": "protection",
+        "legalRepReferenceNumber": "some-ref",
+        "homeOfficeReferenceNumber": "123456789",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "pbaNumber": "PBA0087240",
-        "feeCode": "FEE0373",
-        "feeVersion": "1",
-        "feeAmountGbp": "80.00",
+        "feeCode": "FEE0372",
+        "feeVersion": "2",
+        "feeAmountGbp": "8000",
         "feeDescription": "Notice of Appeal - appellant consents without hearing A",
         "paymentStatus":"Failed",
         "paymentErrorCode":"CA-E0004",
