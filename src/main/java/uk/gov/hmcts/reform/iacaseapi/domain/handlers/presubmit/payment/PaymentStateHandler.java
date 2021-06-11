@@ -19,11 +19,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 @Component
-public class FeePaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
+public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
 
-    public FeePaymentStateHandler(
+    public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled
     ) {
         this.isfeePaymentEnabled = isfeePaymentEnabled;

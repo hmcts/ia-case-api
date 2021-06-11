@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Slf4j
 @Component
-public class MoveToPaymentPendingHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class RollbackPaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -26,7 +26,7 @@ public class MoveToPaymentPendingHandler implements PreSubmitCallbackHandler<Asy
 
         return
             callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && MOVE_TO_PAYMENT_PENDING == callback.getEvent();
+            && (MOVE_TO_PAYMENT_PENDING == callback.getEvent() || ROLLBACK_PAYMENT == callback.getEvent());
     }
 
 
@@ -49,7 +49,11 @@ public class MoveToPaymentPendingHandler implements PreSubmitCallbackHandler<Asy
 
         asylumCase.write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.FAILED);
 
-        log.info("Move appeal with case ID {} to pendingPayment state", caseId);
+        log.info(
+            "Triggering event: {} appeal with case ID {} - rollback payment status",
+            callback.getEvent().toString(),
+            caseId
+        );
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

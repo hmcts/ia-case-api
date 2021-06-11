@@ -159,6 +159,50 @@ class PayAndSubmitConfirmationTest {
     }
 
     @Test
+    void should_rollback_only_status_when_payment_appeal_event_and_payment_failed() {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(FAILED));
+        when(asylumCase.read(PAYMENT_ERROR_MESSAGE, String.class)).thenReturn(Optional.of("Your account is deleted"));
+        when(postNotificationSender.send(any(Callback.class))).thenReturn(new PostSubmitCallbackResponse());
+        when(dateProvider.nowWithTime()).thenReturn(dateTime);
+
+        PostSubmitCallbackResponse callbackResponse =
+            payAndSubmitConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.");
+
+        verify(scheduler).schedule(timedEventCaptor.capture());
+        assertEquals(timedEventCaptor.getValue().getId(), "");
+        assertEquals(timedEventCaptor.getValue().getJurisdiction(), "IA");
+        assertEquals(timedEventCaptor.getValue().getCaseType(), "Asylum");
+        assertEquals(timedEventCaptor.getValue().getEvent(), Event.ROLLBACK_PAYMENT);
+        assertEquals(timedEventCaptor.getValue().getScheduledDateTime(), dateTime.atZone(ZoneId.systemDefault()));
+        assertEquals(timedEventCaptor.getValue().getCaseId(), caseId);
+
+        verify(postNotificationSender).send(any(Callback.class));
+    }
+
+    @Test
     void should_return_payment_failed_confirmation_when_payment_timeout() {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -300,7 +344,9 @@ class PayAndSubmitConfirmationTest {
 
             boolean canHandle = payAndSubmitConfirmation.canHandle(callback);
 
-            if (event == Event.PAY_AND_SUBMIT_APPEAL) {
+            if (event == Event.PAY_AND_SUBMIT_APPEAL
+                || event == Event.PAY_FOR_APPEAL
+                || event == Event.PAYMENT_APPEAL) {
 
                 assertTrue(canHandle);
             } else {

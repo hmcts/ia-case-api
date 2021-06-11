@@ -25,7 +25,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": ""
+      "header": "",
+      "body": "contains(A Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.)"
     }
   }
 }

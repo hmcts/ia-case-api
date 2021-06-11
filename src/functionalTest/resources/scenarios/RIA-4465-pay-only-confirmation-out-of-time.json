@@ -1,23 +1,23 @@
 {
-  "description": "RIA-4437 Pay and Submit confirmation - error payment",
+  "description": "RIA-4465 Pay only confirmation - out of time",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "LegalRepresentativeOrgDeleted",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
-      "eventId": "payAndSubmitAppeal",
+      "eventId": "paymentAppeal",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "isFeePaymentEnabled": "Yes",
-          "submissionOutOfTime": "No",
+          "submissionOutOfTime": "Yes",
           "appealType": "refusalOfEu",
           "paymentStatus": "Paid",
           "legalRepReferenceNumber": "some-ref",
           "decisionHearingFeeOption": "decisionWithHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "paymentAccountList": "PBA0087240"
+          "paymentAccountList": "PBA0087535"
         }
       }
     }
@@ -26,7 +26,7 @@
     "status": 200,
     "confirmation": {
       "header": "",
-      "body": "contains(![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png))"
+      "body": "contains(A Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.)"
     }
   }
 }

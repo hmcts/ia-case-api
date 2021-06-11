@@ -48,13 +48,14 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class FeePaymentHandlerTest {
+class FeesHandlerTest {
 
     @Mock private FeePayment<AsylumCase> feePayment;
     @Mock private Callback<AsylumCase> callback;
@@ -63,40 +64,13 @@ class FeePaymentHandlerTest {
     @Mock private FeatureToggler featureToggler;
 
 
-    private FeePaymentHandler feePaymentHandler;
+    private FeesHandler feesHandler;
 
     @BeforeEach
     public void setUp() {
 
-        feePaymentHandler =
-            new FeePaymentHandler(true, feePayment, featureToggler);
-    }
-
-    @Test
-    void should_make_feePayment_and_update_the_case() {
-
-        Arrays.asList(
-            Event.PAYMENT_APPEAL
-        ).forEach(event -> {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
-            when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-                .thenReturn(Optional.of(AppealType.PA));
-
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            assertNotNull(callbackResponse);
-            assertEquals(asylumCase, callbackResponse.getData());
-
-            verify(feePayment, times(1)).aboutToSubmit(callback);
-
-            reset(callback);
-            reset(feePayment);
-        });
+        feesHandler =
+            new FeesHandler(true, feePayment, featureToggler);
     }
 
     @Test
@@ -114,7 +88,7 @@ class FeePaymentHandlerTest {
                 AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
@@ -152,7 +126,7 @@ class FeePaymentHandlerTest {
                 AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
@@ -181,7 +155,7 @@ class FeePaymentHandlerTest {
                 AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
@@ -213,7 +187,7 @@ class FeePaymentHandlerTest {
                 .thenReturn(Optional.of("decisionWithoutHearing"));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
@@ -258,7 +232,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("asylumSupport"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -283,7 +257,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("legalAid"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -304,7 +278,7 @@ class FeePaymentHandlerTest {
         when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -321,11 +295,11 @@ class FeePaymentHandlerTest {
     @Test
     void it_cannot_handle_callback_if_feepayment_not_enabled() {
 
-        FeePaymentHandler feePaymentHandlerWithDisabledPayment =
-            new FeePaymentHandler(true, feePayment, featureToggler);
+        FeesHandler fees =
+            new FeesHandler(true, feePayment, featureToggler);
 
         assertThatThrownBy(
-            () -> feePaymentHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> fees.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -333,12 +307,12 @@ class FeePaymentHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -346,7 +320,7 @@ class FeePaymentHandlerTest {
     @Test
     void it_can_handle_callback() {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        feePaymentHandler = new FeePaymentHandler(true, feePayment, featureToggler);
+        feesHandler = new FeesHandler(true, feePayment, featureToggler);
 
 
         for (Event event : Event.values()) {
@@ -355,12 +329,11 @@ class FeePaymentHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = feePaymentHandler.canHandle(callbackStage, callback);
+                boolean canHandle = feesHandler.canHandle(callbackStage, callback);
 
                 if ((callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                     && (callback.getEvent() == Event.START_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.PAYMENT_APPEAL)) {
+                    || callback.getEvent() == Event.EDIT_APPEAL)) {
 
                     assertTrue(canHandle);
                 } else {
@@ -375,14 +348,14 @@ class FeePaymentHandlerTest {
     @Test
     void it_cannot_handle_callback_if_feePayment_not_enabled() {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
-        feePaymentHandler = new FeePaymentHandler(false, feePayment, featureToggler);
+        feesHandler = new FeesHandler(false, feePayment, featureToggler);
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = feePaymentHandler.canHandle(callbackStage, callback);
+                boolean canHandle = feesHandler.canHandle(callbackStage, callback);
 
                 assertFalse(canHandle);
             }
@@ -394,27 +367,27 @@ class FeePaymentHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> feePaymentHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> feesHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> feesHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> feesHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentHandler.handle(null, callback))
+        assertThatThrownBy(() -> feesHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -431,7 +404,7 @@ class FeePaymentHandlerTest {
         when(asylumCase.read(APPEAL_TYPE,
             AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
 
-        assertThatThrownBy(() -> feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Appeal hearing option is not present");
     }
@@ -452,7 +425,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("asylumSupport"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -486,7 +459,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("legalAid"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -522,7 +495,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("section17"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -557,7 +530,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("section20"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -592,7 +565,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of("homeOfficeWaiver"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -626,7 +599,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of(RemissionType.HELP_WITH_FEES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -662,7 +635,7 @@ class FeePaymentHandlerTest {
             .thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());

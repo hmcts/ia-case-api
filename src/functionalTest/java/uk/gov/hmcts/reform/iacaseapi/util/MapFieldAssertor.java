@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
@@ -89,6 +90,17 @@ public final class MapFieldAssertor {
                         "Expected field matches regular expression (" + path + ")",
                         actualValueString,
                         matchesPattern(expectedValueString)
+                    );
+
+                    return;
+                }
+
+                if (expectedValueString.startsWith("contains(")) {
+                    assertThat(
+                        "Expected field contains (" + path + ")",
+                        String.valueOf(actualValue),
+                        // extract value from contains() wrapper
+                        containsString(expectedValueString.substring(9, expectedValueString.length() - 1))
                     );
 
                     return;

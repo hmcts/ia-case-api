@@ -22,11 +22,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.AddedValidationPreparer;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class FeePayAndSubmitPreparerTest {
+class AddedValidationPreparerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -35,11 +36,11 @@ class FeePayAndSubmitPreparerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private FeePayAndSubmitPreparer feePayAndSubmitPreparer;
+    private AddedValidationPreparer addedValidationPreparer;
 
     @BeforeEach
     public void setUp() {
-        feePayAndSubmitPreparer = new FeePayAndSubmitPreparer(true);
+        addedValidationPreparer = new AddedValidationPreparer(true);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -51,7 +52,7 @@ class FeePayAndSubmitPreparerTest {
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePayAndSubmitPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            addedValidationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals("You have already paid for this appeal.",
@@ -62,7 +63,7 @@ class FeePayAndSubmitPreparerTest {
     void should_proceed_to_make_payment_for_paymentPending_appeal() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            feePayAndSubmitPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+            addedValidationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getErrors().isEmpty());
@@ -71,19 +72,19 @@ class FeePayAndSubmitPreparerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> feePayAndSubmitPreparer.canHandle(null, callback))
+        assertThatThrownBy(() -> addedValidationPreparer.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePayAndSubmitPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> addedValidationPreparer.canHandle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePayAndSubmitPreparer.handle(null, callback))
+        assertThatThrownBy(() -> addedValidationPreparer.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> feePayAndSubmitPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
+        assertThatThrownBy(() -> addedValidationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

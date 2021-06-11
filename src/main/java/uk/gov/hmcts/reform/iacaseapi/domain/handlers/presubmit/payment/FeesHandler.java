@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
@@ -43,13 +43,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
-public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final FeePayment<AsylumCase> feePayment;
     private final boolean isfeePaymentEnabled;
     private final FeatureToggler featureToggler;
 
-    public FeePaymentHandler(
+    public FeesHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled,
         FeePayment<AsylumCase> feePayment,
         FeatureToggler featureToggler
@@ -70,8 +70,7 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
             && Arrays.asList(
             Event.START_APPEAL,
-            Event.EDIT_APPEAL,
-            Event.PAYMENT_APPEAL
+            Event.EDIT_APPEAL
         ).contains(callback.getEvent())
             && isfeePaymentEnabled;
     }
@@ -102,7 +101,6 @@ public class FeePaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-                // only for later payment, start and edit appeal is for fees
                 asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {

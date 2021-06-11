@@ -25,7 +25,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# Your appeal has been paid for and submitted"
+      "header": "# Your appeal has been paid for and submitted",
+      "body": "contains(You will receive an email confirming that this appeal has been submitted successfully.)"
     }
   }
 }

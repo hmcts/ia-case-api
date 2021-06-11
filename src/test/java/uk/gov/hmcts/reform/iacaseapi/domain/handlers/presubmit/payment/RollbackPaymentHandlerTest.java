@@ -17,11 +17,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class PayAndSubmitHandlerTest {
+class RollbackPaymentHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -30,48 +29,34 @@ class PayAndSubmitHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private PayAndSubmitHandler payAndSubmitHandler;
+    private RollbackPaymentHandler rollbackPaymentHandler;
 
     @BeforeEach
     void setUp() {
 
-        payAndSubmitHandler =
-            new PayAndSubmitHandler(true);
+        rollbackPaymentHandler = new RollbackPaymentHandler();
     }
 
     @Test
-    void should_make_payment_status_update_on_the_case() {
+    void should_setup_payment_status_as_failed() {
 
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.MOVE_TO_PAYMENT_PENDING);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            payAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            rollbackPaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.PAID);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.FAILED);
 
-    }
-
-    @Test
-    void it_cannot_handle_callback_if_fee_payment_not_enabled() {
-
-        PayAndSubmitHandler payAndSubmitHandlerWithDisabledPayment =
-            new PayAndSubmitHandler(false);
-
-        assertThatThrownBy(
-            () -> payAndSubmitHandlerWithDisabledPayment.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION);
-        assertThatThrownBy(() -> payAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> rollbackPaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -85,10 +70,10 @@ class PayAndSubmitHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = payAndSubmitHandler.canHandle(callbackStage, callback);
+                boolean canHandle = rollbackPaymentHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
+                    && (callback.getEvent() == Event.MOVE_TO_PAYMENT_PENDING || callback.getEvent() == Event.ROLLBACK_PAYMENT)) {
 
                     assertTrue(canHandle);
                 } else {
@@ -101,41 +86,21 @@ class PayAndSubmitHandlerTest {
     }
 
     @Test
-    void it_cannot_handle_callback_if_feePayment_not_enabled() {
-
-        payAndSubmitHandler =
-            new PayAndSubmitHandler(false);
-
-        for (Event event : Event.values()) {
-
-            when(callback.getEvent()).thenReturn(event);
-
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = payAndSubmitHandler.canHandle(callbackStage, callback);
-
-                assertFalse(canHandle);
-            }
-
-            reset(callback);
-        }
-    }
-
-    @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> payAndSubmitHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> rollbackPaymentHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> payAndSubmitHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> rollbackPaymentHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> payAndSubmitHandler.handle(null, callback))
+        assertThatThrownBy(() -> rollbackPaymentHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> payAndSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> rollbackPaymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

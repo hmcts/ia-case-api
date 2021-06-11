@@ -55,7 +55,9 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL;
+        return callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
+               || callback.getEvent() == Event.PAY_FOR_APPEAL
+               || callback.getEvent() == Event.PAYMENT_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -86,7 +88,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         // rollback to payment pending state
         if (asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(FAILED) != PAID) {
 
-            if (triggerRollbackToPaymentPendingState(caseId).isEmpty()) {
+            if (triggerRollbackToPaymentPendingState(caseId, callback.getEvent()).isEmpty()) {
                 // optionally we can use timed event status to send appropriate message to the Case Officer in case of rollback failure
             }
         }
@@ -104,7 +106,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         // Scenario 6 - no CcdSubmitted callback at all
     }
 
-    private Optional<TimedEvent> triggerRollbackToPaymentPendingState(long caseId) {
+    private Optional<TimedEvent> triggerRollbackToPaymentPendingState(long caseId, Event event) {
 
         try {
 
@@ -113,7 +115,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 scheduler.schedule(
                     new TimedEvent(
                         "",
-                        Event.MOVE_TO_PAYMENT_PENDING,
+                        // trigger rollbackPayment only for paymentAppeal event - no state change rollback
+                        Event.PAYMENT_APPEAL == event ? Event.ROLLBACK_PAYMENT : Event.MOVE_TO_PAYMENT_PENDING,
                         dateProvider.nowWithTime().atZone(ZoneId.systemDefault()),
                         "IA",
                         "Asylum",

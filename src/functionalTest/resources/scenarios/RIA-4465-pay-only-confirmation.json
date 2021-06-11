@@ -1,11 +1,11 @@
 {
-  "description": "RIA-4437 Pay and Submit confirmation - error payment",
+  "description": "RIA-4465 Pay only confirmation - success",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
-    "credentials": "LegalRepresentativeOrgDeleted",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
-      "eventId": "payAndSubmitAppeal",
+      "eventId": "paymentAppeal",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
@@ -17,7 +17,7 @@
           "legalRepReferenceNumber": "some-ref",
           "decisionHearingFeeOption": "decisionWithHearing",
           "homeOfficeDecisionDate": "{$TODAY-14}",
-          "paymentAccountList": "PBA0087240"
+          "paymentAccountList": "PBA0087535"
         }
       }
     }
@@ -25,8 +25,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "",
-      "body": "contains(![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png))"
+      "header": "# Your appeal has been paid for and submitted",
+      "body": "contains(You will receive an email confirming that this appeal has been submitted successfully.)"
     }
   }
 }

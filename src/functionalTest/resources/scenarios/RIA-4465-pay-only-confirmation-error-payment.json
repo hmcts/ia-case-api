@@ -1,11 +1,11 @@
 {
-  "description": "RIA-4437 Pay and Submit confirmation - error payment",
+  "description": "RIA-4465 Pay only confirmation - error payment",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentativeOrgDeleted",
     "input": {
-      "eventId": "payAndSubmitAppeal",
+      "eventId": "paymentAppeal",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",

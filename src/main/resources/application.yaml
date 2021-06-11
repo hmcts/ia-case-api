@@ -181,6 +181,7 @@ security:
       - "submitAppeal"
       - "paymentAppeal"
       - "payAndSubmitAppeal"
+      - "payForAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
@@ -342,8 +343,7 @@ security:
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
-
-
+      - "rollbackPayment"
 
 
 ### dependency configuration
