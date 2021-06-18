@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -68,7 +69,7 @@ class UploadDecisionLetterHandlerTest {
     }
 
     @Test
-    void handle() {
+    void handle_decision_document_for_legal_rep_journey() {
 
         List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
             Arrays.asList(
@@ -97,6 +98,45 @@ class UploadDecisionLetterHandlerTest {
             allLegalRepDocuments,
             noticeOfDecisionWithMetadata
         );
+        verify(asylumCase).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase, times(0)).read(APPELLANT_DOCUMENTS);
+
+    }
+
+    @Test
+    void handle_decision_document_for_appellant_journey() {
+
+        List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
+            Arrays.asList(
+                new IdValue<>("1", noticeOfDecision1)
+            );
+
+        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
+            Arrays.asList(
+                noticeOfDecision1WithMetadata
+            );
+
+        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.of(noticeOfDecisionDocument));
+        when(asylumCase.read(APPELLANT_DOCUMENTS)).thenReturn(Optional.of(allLegalRepDocuments));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
+            .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
+
+        when(documentsAppender.append(allLegalRepDocuments, noticeOfDecisionWithMetadata))
+            .thenReturn(allLegalRepDocuments);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = handler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertThat(callbackResponse).isNotNull();
+
+        verify(documentsAppender, times(1)).append(
+            allLegalRepDocuments,
+            noticeOfDecisionWithMetadata
+        );
+        verify(asylumCase).read(APPELLANT_DOCUMENTS);
+        verify(asylumCase, times(0)).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
         verify(asylumCase).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
     }
 
