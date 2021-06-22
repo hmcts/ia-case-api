@@ -1454,6 +1454,9 @@ public enum AsylumCaseFieldDefinition {
     PREVIOUS_REPRESENTATIONS(
         "previousRepresentations", new TypeReference<List<IdValue<PreviousRepresentation>>>(){}),
 
+    CASE_MANAGEMENT_CATEGORY(
+        "caseManagementCategory", new TypeReference<DynamicList>(){}),
+
     ;
 
     private final String value;

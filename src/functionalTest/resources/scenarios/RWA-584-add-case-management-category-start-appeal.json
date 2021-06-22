@@ -1,0 +1,40 @@
+{
+  "description": "RWA-584 Add Case Management Category to Case - StartAppeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 584,
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "appealType": "protection"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "appealType": "protection",
+        "caseManagementCategory": {
+          "value": {
+            "code": "protection",
+            "label": "Refusal of protection claim"
+          },
+          "list_items": [
+            {
+              "code": "protection",
+              "label": "Refusal of protection claim"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
