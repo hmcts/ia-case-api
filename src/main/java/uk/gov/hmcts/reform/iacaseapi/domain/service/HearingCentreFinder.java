@@ -76,6 +76,7 @@ public class HearingCentreFinder {
             HearingCentre.COVENTRY,
             HearingCentre.GLASGOW_TRIBUNALS_CENTRE,
             HearingCentre.NEWCASTLE,
+            HearingCentre.BELFAST,
             HearingCentre.NOTTINGHAM).contains(hearingCentre);
     }
 }
