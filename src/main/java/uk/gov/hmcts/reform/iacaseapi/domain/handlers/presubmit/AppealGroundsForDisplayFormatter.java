@@ -36,8 +36,8 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && (callback.getEvent() == Event.START_APPEAL
-            || callback.getEvent() == Event.EDIT_APPEAL);
+               && (callback.getEvent() == Event.START_APPEAL
+                   || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -61,38 +61,51 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
         if (appealType.isPresent() && appealType.get().equals(AppealType.DC)) {
             Optional<CheckValues<String>> maybeAppealGroundsDeprivationHumanRights =
                 asylumCase.read(APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS);
-            maybeAppealGroundsDeprivationHumanRights.ifPresent(appealGroundsDeprivationHumanRights ->
-                appealGrounds.addAll(appealGroundsDeprivationHumanRights.getValues()));
+            maybeAppealGroundsDeprivationHumanRights
+                .filter(appealGroundsDeprivationHumanRights -> appealGroundsDeprivationHumanRights.getValues() != null)
+                .ifPresent(appealGroundsDeprivationHumanRights ->
+                    appealGrounds.addAll(appealGroundsDeprivationHumanRights.getValues()));
 
             Optional<CheckValues<String>> maybeAppealGroundsDeprivation = asylumCase.read(APPEAL_GROUNDS_DEPRIVATION);
-            maybeAppealGroundsDeprivation.ifPresent(appealGroundsDeprivation ->
-                appealGrounds.addAll(appealGroundsDeprivation.getValues()));
+            maybeAppealGroundsDeprivation
+                .filter(appealGroundsDeprivation -> appealGroundsDeprivation.getValues() != null)
+                .ifPresent(appealGroundsDeprivation ->
+                    appealGrounds.addAll(appealGroundsDeprivation.getValues()));
 
         } else if (appealType.isPresent() && appealType.get().equals(AppealType.EA)) {
             Optional<CheckValues<String>> maybeAppealGroundsEuRefusal = asylumCase.read(APPEAL_GROUNDS_EU_REFUSAL);
-            maybeAppealGroundsEuRefusal.ifPresent(appealGroundsEuRefusal ->
-                appealGrounds.addAll(appealGroundsEuRefusal.getValues()));
+            maybeAppealGroundsEuRefusal
+                .filter(appealGroundsEuRefusal -> appealGroundsEuRefusal.getValues() != null)
+                .ifPresent(appealGroundsEuRefusal ->
+                    appealGrounds.addAll(appealGroundsEuRefusal.getValues()));
 
         } else if (appealType.isPresent() && appealType.get().equals(AppealType.PA)) {
             Optional<CheckValues<String>> maybeAppealGroundsProtection = asylumCase.read(APPEAL_GROUNDS_PROTECTION);
             maybeAppealGroundsProtection
+                .filter(appealGroundsProtection -> appealGroundsProtection.getValues() != null)
                 .ifPresent(appealGroundsProtection ->
                     appealGrounds.addAll(appealGroundsProtection.getValues()));
 
             Optional<CheckValues<String>> maybeAppealGroundsHumanRights = asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS);
-            maybeAppealGroundsHumanRights.ifPresent(appealGroundsHumanRights ->
-                appealGrounds.addAll(appealGroundsHumanRights.getValues()));
+            maybeAppealGroundsHumanRights
+                .filter(appealGroundsHumanRights -> appealGroundsHumanRights.getValues() != null)
+                .ifPresent(appealGroundsHumanRights ->
+                    appealGrounds.addAll(appealGroundsHumanRights.getValues())
+                );
 
         } else if (appealType.isPresent() && appealType.get().equals(AppealType.RP)) {
             Optional<CheckValues<String>> maybeAppealGroundsRevocation = asylumCase.read(APPEAL_GROUNDS_REVOCATION);
             maybeAppealGroundsRevocation
+                .filter(appealGroundsRevocation -> appealGroundsRevocation.getValues() != null)
                 .ifPresent(appealGroundsRevocation -> appealGrounds.addAll(appealGroundsRevocation.getValues()));
 
         } else {
             Optional<CheckValues<String>> maybeAppealGroundsHumanRightsRefusal =
                 asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL);
-            maybeAppealGroundsHumanRightsRefusal.ifPresent(appealGroundsHumanRightsRefusal ->
-                appealGrounds.addAll(appealGroundsHumanRightsRefusal.getValues()));
+            maybeAppealGroundsHumanRightsRefusal
+                .filter(appealGroundsHumanRightsRefusal -> appealGroundsHumanRightsRefusal.getValues() != null)
+                .ifPresent(appealGroundsHumanRightsRefusal ->
+                    appealGrounds.addAll(appealGroundsHumanRightsRefusal.getValues()));
         }
 
         asylumCase.write(
