@@ -183,7 +183,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
             postSubmitResponse.setConfirmationBody(
                 "![Payment failed confirmation](https://raw.githubusercontent.com/hmcts/ia-appeal-frontend/master/app/assets/images/paymentFailed.png)\n\n"
                 + "We have not been able to confirm if this payment has failed.\n\n"
-                + "Email iaexceptions@justice.gov.uk to check the status of this payment. Please include the HMCTS reference for the appeal.\n\n"
+                + "Email iapaymentexceptions@justice.gov.uk to check the status of this payment. Please include the HMCTS reference for the appeal.\n\n"
                 + "The Tribunal will reply to confirm the payment status. If you still have to pay a fee, the reply will include instructions on how to make a payment."
             );
         } else if (appealPaymentConfirmationProvider.getPaymentStatus(asylumCase).equals(Optional.of(FAILED))) {
