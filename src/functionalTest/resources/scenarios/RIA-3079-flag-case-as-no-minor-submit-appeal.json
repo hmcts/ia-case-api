@@ -38,7 +38,7 @@
         "isAppellantMinor": "No",
         "appealType": "revocationOfProtection",
         "appellantDateOfBirth": "1979-02-15",
-        "sendDirectionActionAvailable": "Yes"
+        "sendDirectionActionAvailable": "No"
       }
     }
   }

@@ -38,7 +38,7 @@
         "isAppellantMinor": "Yes",
         "appellantDateOfBirth": "{$TODAY}",
         "appealType": "revocationOfProtection",
-        "sendDirectionActionAvailable": "Yes"
+        "sendDirectionActionAvailable": "No"
       }
     }
   }
