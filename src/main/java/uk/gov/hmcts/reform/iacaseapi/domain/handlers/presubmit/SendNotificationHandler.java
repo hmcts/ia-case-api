@@ -46,7 +46,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     private List<Event> getEventsToHandle() {
         List<Event> eventsToHandle = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
-            Event.PAY_AND_SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
             Event.CHANGE_DIRECTION_DUE_DATE,
             Event.REQUEST_RESPONDENT_EVIDENCE,
@@ -102,7 +101,6 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.LEADERSHIP_JUDGE_FTPA_DECISION,
             Event.REQUEST_RESPONSE_AMEND,
             Event.RESIDENT_JUDGE_FTPA_DECISION,
-            Event.PAYMENT_APPEAL,
             Event.MARK_APPEAL_PAID,
             Event.MAKE_AN_APPLICATION,
             Event.REINSTATE_APPEAL,
@@ -112,7 +110,8 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.REQUEST_FEE_REMISSION,
             Event.MANAGE_FEE_UPDATE,
             Event.REQUEST_FEE_REMISSION,
-            Event.RECORD_OUT_OF_TIME_DECISION
+            Event.RECORD_OUT_OF_TIME_DECISION,
+            Event.EDIT_PAYMENT_METHOD
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);

@@ -105,10 +105,16 @@ class EventTest {
         assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
         assertEquals("requestFeeRemission", Event.REQUEST_FEE_REMISSION.toString());
         assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
+        assertEquals("moveToSubmitted", Event.MOVE_TO_SUBMITTED.toString());
+        assertEquals("moveToPaymentPending", Event.MOVE_TO_PAYMENT_PENDING.toString());
+        assertEquals("editPaymentMethod", Event.EDIT_PAYMENT_METHOD.toString());
+        assertEquals("payForAppeal", Event.PAY_FOR_APPEAL.toString());
+        assertEquals("rollbackPayment", Event.ROLLBACK_PAYMENT.toString());
+        assertEquals("rollbackPaymentTimeout", Event.ROLLBACK_PAYMENT_TIMEOUT.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(101, Event.values().length);
+        assertEquals(108, Event.values().length);
     }
 }

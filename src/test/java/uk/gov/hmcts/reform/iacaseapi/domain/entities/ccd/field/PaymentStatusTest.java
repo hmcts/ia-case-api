@@ -11,10 +11,11 @@ class PaymentStatusTest {
         assertEquals("Paid", PaymentStatus.PAID.toString());
         assertEquals("Failed", PaymentStatus.FAILED.toString());
         assertEquals("Payment pending", PaymentStatus.PAYMENT_PENDING.toString());
+        assertEquals("Timeout", PaymentStatus.TIMEOUT.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(3, PaymentStatus.values().length);
+        assertEquals(4, PaymentStatus.values().length);
     }
 }

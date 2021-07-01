@@ -1,6 +1,6 @@
 {
   "description": "RWA-318 Allocate a case to caseworker midEvent",
-  "disabled": "false",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "CaseOfficer",
