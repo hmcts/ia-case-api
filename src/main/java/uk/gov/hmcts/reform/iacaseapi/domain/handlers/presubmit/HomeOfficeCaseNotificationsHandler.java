@@ -113,7 +113,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
 
-                asylumCaseWithHomeOfficeData = homeOfficeApi.call(callback);
+                asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
 
                 log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,

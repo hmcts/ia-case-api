@@ -15,15 +15,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 @Component
 public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isHomeOfficeIntegrationEnabled;
+    private final FeatureToggler featureToggler;
+
+    private final HomeOfficeApi<AsylumCase> homeOfficeApi;
 
     public HomeOfficeCaseValidatePreparer(
-        @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled) {
+        @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
+        FeatureToggler featureToggler,
+        HomeOfficeApi<AsylumCase> homeOfficeApi
+    ) {
         this.isHomeOfficeIntegrationEnabled = isHomeOfficeIntegrationEnabled;
+        this.featureToggler = featureToggler;
+        this.homeOfficeApi = homeOfficeApi;
     }
 
     public boolean canHandle(
@@ -53,6 +63,9 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
 
         if (isHomeOfficeIntegrationEnabled) {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+            asylumCase =
+                    featureToggler.getValue("home-office-uan-feature", false)
+                            ? homeOfficeApi.aboutToStart(callback) : asylumCase;
         } else {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
         }

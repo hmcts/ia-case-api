@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_CASE_STATUS_DATA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -75,6 +73,27 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
         assertThat(response.getErrors()).containsExactly(HOME_OFFICE_DATA_PRESENT_MESSAGE);
         assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
 
+    }
+
+    @Test
+    void handler_should_not_error_for_no_match() {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
+                .thenReturn(Optional.of(homeOfficeCaseStatus));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class))
+                .thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_NO_MATCH, String.class)).thenReturn(Optional.of("NO_MATCH"));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test

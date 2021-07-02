@@ -151,6 +151,7 @@ ref-data-case-worker-api:
 
 homeOfficeApi:
   endpoint: ${IA_HOME_OFFICE_INTEGRATION_API_URL:http://127.0.0.1:8094}
+  aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
 
 security:

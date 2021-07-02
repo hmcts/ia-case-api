@@ -20,6 +20,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -69,11 +71,18 @@ class HomeOfficeCaseValidateHandlerTest {
             new HomeOfficeCaseValidateHandler(featureToggler, isHomeOfficeIntegrationEnabled, homeOfficeApi);
     }
 
-    @Test
-    void should_call_home_office_api_and_update_the_case() {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void should_call_home_office_api_and_update_the_case(boolean hoUanFeatureFlag) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(hoUanFeatureFlag);
 
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        if (hoUanFeatureFlag) {
+            when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+        } else {
+            when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        }
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.empty());
@@ -97,7 +106,11 @@ class HomeOfficeCaseValidateHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(1)).call(callback);
+        if (hoUanFeatureFlag) {
+            verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
+        } else {
+            verify(homeOfficeApi, times(1)).call(callback);
+        }
         verify(asylumCase, times(1)).write(
             IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).read(CONTACT_PREFERENCE);

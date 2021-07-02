@@ -9,6 +9,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
+          "homeOfficeSearchStatus": "SUCCESS",
           "sendDirectionExplanation": null,
           "sendDirectionParties": null,
           "sendDirectionDateDue": null

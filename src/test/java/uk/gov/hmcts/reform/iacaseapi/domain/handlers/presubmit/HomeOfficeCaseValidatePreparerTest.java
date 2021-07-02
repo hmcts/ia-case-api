@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
@@ -18,8 +19,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,6 +30,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -37,23 +41,34 @@ class HomeOfficeCaseValidatePreparerTest {
     private HomeOfficeCaseValidatePreparer homeOfficeCaseValidatePreparer;
 
     @Mock
+    private FeatureToggler featureToggler;
+    @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
 
+    @Mock
+    private HomeOfficeApi<AsylumCase> homeOfficeApi;
+
     @BeforeEach
     public void setUp() {
-        homeOfficeCaseValidatePreparer = new HomeOfficeCaseValidatePreparer(true);
+        homeOfficeCaseValidatePreparer =
+                new HomeOfficeCaseValidatePreparer(true, featureToggler, homeOfficeApi);
     }
 
-    @Test
-    void handler_checks_home_office_integration_enabled_returns_yes() {
+    @ParameterizedTest
+    @EnumSource(
+            value = Event.class,
+            names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID", "REQUEST_HOME_OFFICE_DATA" })
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled(Event event) {
 
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
             homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
@@ -62,15 +77,39 @@ class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        Mockito.verify(asylumCase, times(1)).write(
+        verify(asylumCase, times(1)).write(
             IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
 
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+            value = Event.class,
+            names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID", "REQUEST_HOME_OFFICE_DATA" })
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_disabled(Event event) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
+        verify(asylumCase, times(1)).write(
+                IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        verify(homeOfficeApi, times(0)).aboutToStart(callback);
     }
 
     @Test
     void handler_checks_home_office_integration_disabled_returns_no() {
 
-        homeOfficeCaseValidatePreparer = new HomeOfficeCaseValidatePreparer(false);
+        homeOfficeCaseValidatePreparer =
+                new HomeOfficeCaseValidatePreparer(false, featureToggler, homeOfficeApi);
 
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -83,7 +122,7 @@ class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        Mockito.verify(asylumCase, times(1)).write(
+        verify(asylumCase, times(1)).write(
             IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
     }
 

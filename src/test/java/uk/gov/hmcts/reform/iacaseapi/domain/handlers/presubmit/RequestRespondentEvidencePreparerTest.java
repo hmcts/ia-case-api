@@ -19,6 +19,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +47,8 @@ class RequestRespondentEvidencePreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
 
+    @Mock
+    private FeatureToggler featureToggler;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -63,7 +68,7 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, dateProvider);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, featureToggler, dateProvider);
     }
 
     @Test
@@ -77,6 +82,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -118,6 +124,24 @@ class RequestRespondentEvidencePreparerTest {
     }
 
     @Test
+    void handle_should_not_error_for_out_of_country_appeals() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
     void handle_should_return_callback_response_for_no_record_out_of_time_decision() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
@@ -125,6 +149,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -142,11 +167,32 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         assertThatThrownBy(() -> requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Out of time decision type is not present");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "FAIL", "MULTIPLE" })
+    void handle_should_throw_error_for_the_failed_home_office_response(String hoSearchStatus) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of(hoSearchStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(!callbackResponse.getErrors().isEmpty());
+        assertThat(callbackResponse.getErrors())
+                .contains("You need to match the appellant details before you can request the respondent evidence.");
     }
 
     @Test
@@ -157,6 +203,7 @@ class RequestRespondentEvidencePreparerTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(OUT_OF_TIME_DECISION_TYPE, OutOfTimeDecisionType.class))
             .thenReturn(Optional.of(REJECTED));
