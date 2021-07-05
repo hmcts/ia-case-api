@@ -164,7 +164,7 @@ public class CcdCaseAssignment {
                     requestEntity,
                     Object.class
                 );
-
+            
         } catch (RestClientResponseException e) {
             throw new CcdDataIntegrationException(
                 "Couldn't apply noc AAC case assignment for case ["

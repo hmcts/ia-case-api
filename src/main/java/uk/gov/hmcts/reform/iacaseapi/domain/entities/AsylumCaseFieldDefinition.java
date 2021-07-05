@@ -1451,6 +1451,9 @@ public enum AsylumCaseFieldDefinition {
     IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY(
         "isEvidenceFromOutsideUkInCountry", new TypeReference<YesOrNo>() {}),
 
+    PREVIOUS_REPRESENTATIONS(
+        "previousRepresentations", new TypeReference<List<IdValue<PreviousRepresentation>>>(){}),
+
     ;
 
     private final String value;
