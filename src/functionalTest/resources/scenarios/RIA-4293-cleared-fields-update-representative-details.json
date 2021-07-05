@@ -1,0 +1,44 @@
+{
+  "description": "RIA-4293 cleared legal rep fields after NoC",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "updateLegalRepDetails",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "legalRepCompany": "Amazing Law Firm",
+          "legalRepName": "{$IA_USER_PREFIX}A legal Rep",
+          "legalRepresentativeEmailAddress": "{$TEST_LAW_FIRM_A_USERNAME}",
+          "legalRepReferenceNumber": "ABC-123",
+          "changeOrganisationRequestField": {
+            "CaseRoleId": null,
+            "ApprovalStatus": null,
+            "RequestTimestamp": null,
+            "OrganisationToAdd": {
+              "OrganisationID": null
+            },
+            "OrganisationToRemove": {
+              "OrganisationID": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "legalRepCompany": "Amazing Law Firm",
+        "legalRepName": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepReferenceNumber": null
+      }
+    }
+  }
+}

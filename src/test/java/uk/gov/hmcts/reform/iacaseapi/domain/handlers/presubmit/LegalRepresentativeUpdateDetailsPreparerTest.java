@@ -10,14 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_COMPANY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPDATE_LEGAL_REP_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CompanyNameProvider;
+
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +39,23 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
     private final String legalRepName = "John Doe";
     private final String legalRepEmailAddress = "john.doe@example.com";
     private final String legalRepReferenceNumber = "ABC-123";
+
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private ChangeOrganisationRequest changeOrganisationRequest;
+    @Mock
+    CompanyNameProvider companyNameProvider;
+
     private LegalRepresentativeUpdateDetailsPreparer legalRepresentativeUpdateDetailsPreparer;
 
     @BeforeEach
     public void setUp() {
-        legalRepresentativeUpdateDetailsPreparer = new LegalRepresentativeUpdateDetailsPreparer();
+        legalRepresentativeUpdateDetailsPreparer = new LegalRepresentativeUpdateDetailsPreparer(companyNameProvider);
 
         when(callback.getEvent()).thenReturn(Event.UPDATE_LEGAL_REPRESENTATIVES_DETAILS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -75,6 +77,10 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REP_NAME));
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(0)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
+
         verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
         verify(asylumCase).read(LEGAL_REP_NAME, String.class);
         verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
@@ -84,6 +90,37 @@ class LegalRepresentativeUpdateDetailsPreparerTest {
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
+
+        verify(companyNameProvider, times(1)).prepareCompanyName(callback);
+    }
+
+    @Test
+    void clear_fields_test_when_change_organisation_request_is_present() {
+
+        when(asylumCase.read(CHANGE_ORGANISATION_REQUEST_FIELD, ChangeOrganisationRequest.class))
+            .thenReturn(Optional.of(changeOrganisationRequest));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            legalRepresentativeUpdateDetailsPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REP_NAME));
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS));
+        verify(asylumCase, times(1)).clear(eq(LEGAL_REP_REFERENCE_NUMBER));
+
+        verify(asylumCase).read(LEGAL_REP_COMPANY, String.class);
+        verify(asylumCase).read(LEGAL_REP_NAME, String.class);
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS, String.class);
+        verify(asylumCase).read(LEGAL_REP_REFERENCE_NUMBER, String.class);
+
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_COMPANY), eq(legalRepCompany));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_NAME), eq(legalRepName));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
+        verify(asylumCase, times(1)).write(eq(UPDATE_LEGAL_REP_REFERENCE_NUMBER), eq(legalRepReferenceNumber));
+
+        verify(companyNameProvider, times(1)).prepareCompanyName(callback);
     }
 
     @Test
