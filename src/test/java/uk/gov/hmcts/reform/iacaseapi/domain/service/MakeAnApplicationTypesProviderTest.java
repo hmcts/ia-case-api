@@ -108,6 +108,7 @@ class MakeAnApplicationTypesProviderTest {
         "PENDING_PAYMENT",
         "AWAITING_RESPONDENT_EVIDENCE",
         "CASE_BUILDING",
+        "AWAITING_REASONS_FOR_APPEAL",
         "CASE_UNDER_REVIEW",
         "RESPONDENT_REVIEW",
         "SUBMIT_HEARING_REQUIREMENTS"

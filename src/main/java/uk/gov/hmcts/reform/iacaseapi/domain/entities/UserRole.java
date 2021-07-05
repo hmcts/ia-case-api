@@ -13,7 +13,8 @@ public enum UserRole {
     HOME_OFFICE_APC("caseworker-ia-homeofficeapc"),
     HOME_OFFICE_LART("caseworker-ia-homeofficelart"),
     HOME_OFFICE_POU("caseworker-ia-homeofficepou"),
-    HOME_OFFICE_GENERIC("caseworker-ia-respondentofficer");
+    HOME_OFFICE_GENERIC("caseworker-ia-respondentofficer"),
+    CITIZEN("citizen");
 
     @JsonValue
     private final String id;

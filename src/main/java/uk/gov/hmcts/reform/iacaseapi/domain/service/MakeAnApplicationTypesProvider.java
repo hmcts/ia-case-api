@@ -51,6 +51,7 @@ public class MakeAnApplicationTypesProvider {
             case PENDING_PAYMENT:
             case AWAITING_RESPONDENT_EVIDENCE:
             case CASE_BUILDING:
+            case AWAITING_REASONS_FOR_APPEAL:
             case CASE_UNDER_REVIEW:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:

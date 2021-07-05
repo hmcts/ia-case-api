@@ -111,6 +111,31 @@ class MakeAnApplicationAppenderTest {
     }
 
     @Test
+    void should_return_new_application_for_appellant() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
+        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.CITIZEN.toString()));
+
+        List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();
+
+        List<IdValue<MakeAnApplication>> allMakeAnApplications = makeAnApplicationAppender.append(
+                existingMakeAnApplications, newMakeAnApplicationType,
+                newMakeAnApplicationDesc, newMakeAnApplicationEvidence, newMakeAnApplicationDecision,
+                newMakeAnApplicationState);
+
+        assertNotNull(allMakeAnApplications);
+        assertEquals(1, allMakeAnApplications.size());
+
+        assertEquals(newMakeAnApplicationType, allMakeAnApplications.get(0).getValue().getType());
+        assertEquals(newMakeAnApplicationDesc, allMakeAnApplications.get(0).getValue().getDetails());
+        assertEquals(newMakeAnApplicationEvidence, allMakeAnApplications.get(0).getValue().getEvidence());
+        assertEquals(newMakeAnApplicationDecision, allMakeAnApplications.get(0).getValue().getDecision());
+        assertEquals(newMakeAnApplicationState, allMakeAnApplications.get(0).getValue().getState());
+        assertEquals(UserRole.CITIZEN.toString(),
+                allMakeAnApplications.get(0).getValue().getApplicantRole());
+    }
+
+    @Test
     void should_not_allow_null_values() {
 
         List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();

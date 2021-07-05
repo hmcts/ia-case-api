@@ -80,6 +80,8 @@ public class MakeAnApplicationAppender {
 
             case LEGAL_REPRESENTATIVE:
                 return "Legal representative";
+            case CITIZEN:
+                return "Appellant";
 
             default:
                 throw new IllegalStateException("Unauthorized role to make an application");
