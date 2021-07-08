@@ -3,9 +3,10 @@ logging.level:
   org.springframework.web: debug
   uk.gov.hmcts: debug
 
-ref-data-case-worker-api:
-  url: ${REF_DATA_CASE_WORKER_URL:http://wiremock}
-
+ref-data-case-worker-api.url: http://wiremock
+prof.ref.data.url: http://wiremock
+prof.ref.data.path.org.users: /refdata/external/v1/organisations/users
+prof.ref.data.path.org.organisation: /refdata/external/v1/organisations
 
 idam:
   ia_system_user:
