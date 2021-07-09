@@ -9,23 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_AID_ACCOUNT_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_CLAIM;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -46,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
@@ -71,6 +56,12 @@ class FeesHandlerTest {
 
         feesHandler =
             new FeesHandler(true, feePayment, featureToggler);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+
     }
 
     @Test
@@ -81,9 +72,6 @@ class FeesHandlerTest {
         ).forEach(event -> {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
@@ -119,9 +107,6 @@ class FeesHandlerTest {
         ).forEach(event -> {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.HU));
 
@@ -148,9 +133,6 @@ class FeesHandlerTest {
         ).forEach(event -> {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.EA));
 
@@ -178,9 +160,6 @@ class FeesHandlerTest {
         ).forEach(event -> {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
             when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
@@ -220,10 +199,7 @@ class FeesHandlerTest {
     void should_return_remission_for_asylum_support() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.EA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -245,10 +221,7 @@ class FeesHandlerTest {
     void should_return_remission_for_legal_aid() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -270,12 +243,9 @@ class FeesHandlerTest {
     @Test
     void should_not_return_remission_for_remissions_not_enabled() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -305,6 +275,20 @@ class FeesHandlerTest {
     }
 
     @Test
+    void it_cannot_handle_callback_for_aip_journey() {
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        FeesHandler fees =
+            new FeesHandler(true, feePayment, featureToggler);
+
+        assertThatThrownBy(
+            () -> fees.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
@@ -322,10 +306,12 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         feesHandler = new FeesHandler(true, feePayment, featureToggler);
 
-
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -351,6 +337,9 @@ class FeesHandlerTest {
         feesHandler = new FeesHandler(false, feePayment, featureToggler);
 
         for (Event event : Event.values()) {
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             when(callback.getEvent()).thenReturn(event);
 
@@ -398,9 +387,6 @@ class FeesHandlerTest {
     void should_default_to_option_with_hearing_for_missing_appeal_hearing_option(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE,
             AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)).thenReturn(Optional.of("decisionWithHearing"));
@@ -418,10 +404,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_asylumSupport_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -452,10 +435,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_legalAid_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -488,10 +468,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_section17_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -523,10 +500,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_section20_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -558,10 +532,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_homeOfficeWaiver_remission_type() {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -594,10 +565,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_help_with_fees_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
@@ -630,10 +598,7 @@ class FeesHandlerTest {
     public void should_return_data_for_valid_exceptional_circumstances_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
