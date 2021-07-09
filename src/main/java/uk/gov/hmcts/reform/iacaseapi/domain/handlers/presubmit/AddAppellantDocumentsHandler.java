@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Stream.concat;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -66,10 +66,16 @@ public class AddAppellantDocumentsHandler implements PreSubmitCallbackHandler<As
                 getClarifyQuestionsEvidence(asylumCase)
         ).collect(Collectors.toList());
 
+        Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
+                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-        if (!appellantDocuments.isEmpty()) {
-            asylumCase.write(APPELLANT_DOCUMENTS, documentsAppender.append(Collections.emptyList(), appellantDocuments));
-        }
+        final List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+                maybeExistingLegalRepDocuments.orElse(emptyList());
+
+        List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                documentsAppender.append(existingLegalRepDocuments, appellantDocuments);
+
+        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

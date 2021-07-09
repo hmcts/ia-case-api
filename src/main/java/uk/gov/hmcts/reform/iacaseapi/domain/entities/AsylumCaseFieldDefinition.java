@@ -153,8 +153,13 @@ public enum AsylumCaseFieldDefinition {
     REHEARD_HEARING_DOCUMENTS(
         "reheardHearingDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    // This field is synonym to appellant documents and holds either appellant (AIP) or legal rep documents
+    // depending on the journey type
     LEGAL_REPRESENTATIVE_DOCUMENTS(
         "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    JOURNEY_TYPE_LABEL_PREFIX(
+        "journeyTypeLabelPrefix", new TypeReference<String>(){}),
 
     RESPONDENT_DOCUMENTS(
         "respondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
