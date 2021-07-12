@@ -1,5 +1,6 @@
 {
   "description": "RWA-584 Add Case Management Category to Case - StartAppeal - appellant",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",
