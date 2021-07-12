@@ -72,7 +72,8 @@ public class RoleAssignmentApiConsumerTest {
     }
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
-    public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
+    public RequestResponsePact generatePactFragment(PactDslWithProvider builder)
+        throws JSONException, JsonProcessingException {
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
             .uponReceiving("A request to add a role")
@@ -80,7 +81,8 @@ public class RoleAssignmentApiConsumerTest {
             .method("POST")
             .matchHeader(AUTHORIZATION, AUTH_TOKEN)
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
-            .body(new ObjectMapper().writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
+            .body(new ObjectMapper()
+                .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
             .status(201)
             .toPact();
