@@ -72,7 +72,6 @@ public class RoleAssignmentApiConsumerTest {
     }
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
-    @Disabled("Disabled until roleAssignmentService.assignRole method is fixed!")
     public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
@@ -89,7 +88,6 @@ public class RoleAssignmentApiConsumerTest {
 
 
     @Test
-    @Disabled("Disabled until roleAssignmentService.assignRole method is fixed!")
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyAssignRole() {
 
