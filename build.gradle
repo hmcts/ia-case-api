@@ -285,6 +285,9 @@ dependencies {
     // CVE-2019-17195
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
 
+    // CVE-2021-27568
+    compile group: 'net.minidev', name: 'json-smart', version: '2.3.1'
+
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
