@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @ExtendWith(MockitoExtension.class)
 class CaseManagementCategoryAppenderTest {
@@ -52,6 +53,7 @@ class CaseManagementCategoryAppenderTest {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         AppealType currentAppeal = AppealType.valueOf(appealType);
         Value currentValue = new Value(currentAppeal.getValue(),currentAppeal.getDescription());
         DynamicList currentDynamicList = new DynamicList(currentValue, Arrays.asList(currentValue));
@@ -74,6 +76,7 @@ class CaseManagementCategoryAppenderTest {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         Mockito.when(asylumCase.read(APPEAL_TYPE,AppealType.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
@@ -89,6 +92,9 @@ class CaseManagementCategoryAppenderTest {
             when(callback.getEvent()).thenReturn(event);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
                 boolean canHandle = caseManagementCategoryAppender.canHandle(callbackStage, callback);
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == START_APPEAL
@@ -125,6 +131,10 @@ class CaseManagementCategoryAppenderTest {
 
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> caseManagementCategoryAppender.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
