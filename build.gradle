@@ -283,7 +283,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
     // CVE-2019-17195
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.11.1'
 
     // CVE-2021-27568
     compile group: 'net.minidev', name: 'json-smart', version: '2.3.1'
