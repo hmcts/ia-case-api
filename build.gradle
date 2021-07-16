@@ -251,9 +251,7 @@ repositories {
 
 dependencyManagement {
     dependencies {
-        // CVE-2019-0232, CVE-2019-0199 - command line injections on windows
-        //CVE-2020-13934
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.43') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.50') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
