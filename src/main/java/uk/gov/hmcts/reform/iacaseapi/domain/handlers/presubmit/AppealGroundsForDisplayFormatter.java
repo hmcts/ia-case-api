@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION_HUMAN_RIGHTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_EU_REFUSAL;
@@ -106,6 +107,13 @@ public class AppealGroundsForDisplayFormatter implements PreSubmitCallbackHandle
                 .filter(appealGroundsHumanRightsRefusal -> appealGroundsHumanRightsRefusal.getValues() != null)
                 .ifPresent(appealGroundsHumanRightsRefusal ->
                     appealGrounds.addAll(appealGroundsHumanRightsRefusal.getValues()));
+
+            Optional<CheckValues<String>> maybeAppealGroundsDecisionHumanRightsRefusal =
+                asylumCase.read(APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL);
+            maybeAppealGroundsDecisionHumanRightsRefusal
+                .filter(appealGroundsDecisionHumanRightsRefusal -> appealGroundsDecisionHumanRightsRefusal.getValues() != null)
+                .ifPresent(appealGroundsDecisionHumanRightsRefusal ->
+                    appealGrounds.addAll(appealGroundsDecisionHumanRightsRefusal.getValues()));
         }
 
         asylumCase.write(

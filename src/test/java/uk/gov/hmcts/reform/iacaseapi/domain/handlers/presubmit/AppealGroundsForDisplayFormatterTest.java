@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_DEPRIVATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_EU_REFUSAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_GROUNDS_FOR_DISPLAY;
@@ -114,6 +115,7 @@ class AppealGroundsForDisplayFormatterTest {
 
         when(asylumCase.read(APPEAL_TYPE)).thenReturn(Optional.of(AppealType.HU));
         when(asylumCase.read(APPEAL_GROUNDS_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
+        when(asylumCase.read(APPEAL_GROUNDS_DECISION_HUMAN_RIGHTS_REFUSAL)).thenReturn(Optional.of(appealGrounds1));
         callbackResponse =
             appealGroundsForDisplayFormatter.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(callbackResponse);
