@@ -3,16 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum  JourneyType {
-    AIP("aip", "Appellant"),
-    REP("rep", "Legal representative");
+    AIP("aip"),
+    REP("rep");
 
     @JsonValue
     private final String id;
-    private final String label;
 
-    JourneyType(String id, String label) {
+    JourneyType(String id) {
         this.id = id;
-        this.label = label;
     }
 
     @Override
@@ -20,7 +18,4 @@ public enum  JourneyType {
         return id;
     }
 
-    public String getLabel() {
-        return label;
-    }
 }
