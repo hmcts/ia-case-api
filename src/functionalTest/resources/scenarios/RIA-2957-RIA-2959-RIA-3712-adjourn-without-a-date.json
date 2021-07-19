@@ -61,19 +61,19 @@
         "notificationsSent": [
           {
             "id": "1234_LEGAL_REPRESENTATIVE_ADJOURN_HEARING_WITHOUT_DATE",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           },
           {
             "id": "1234_RESPONDENT_ADJOURN_HEARING_WITHOUT_DATE",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           },
           {
             "id": "1234_CASE_OFFICER_ADJOURN_HEARING_WITHOUT_DATE",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           },
           {
             "id": "1234_ADJOURN_HEARING_WITHOUT_DATE_ADMIN_OFFICER",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           }
         ]
       }

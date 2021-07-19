@@ -47,11 +47,11 @@
         "notificationsSent": [
           {
             "id": "3333_RESPONDENT_EVIDENCE_DIRECTION",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           },
           {
             "id": "3333_EVIDENCE_DIRECTION_LEGAL_REPRESENTATIVE",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/"
           }
         ]
       }
