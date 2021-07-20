@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
@@ -48,7 +48,7 @@ public class RoleAssignmentApiConsumerTest {
     private UserDetails userDetails;
 
     @Mock
-    private CaseDetails caseDetails;
+    private CaseDetails<CaseData> caseDetails;
 
     private RoleAssignmentService roleAssignmentService;
 
@@ -72,8 +72,8 @@ public class RoleAssignmentApiConsumerTest {
     }
 
     @Pact(provider = "am_roleAssignment_createAssignment", consumer = "ia_caseApi")
-    @Disabled("Disabled until roleAssignmentService.assignRole method is fixed!")
-    public RequestResponsePact generatePactFragment(PactDslWithProvider builder) throws JSONException, JsonProcessingException {
+    public RequestResponsePact generatePactFragment(PactDslWithProvider builder)
+        throws JSONException, JsonProcessingException {
         return builder
             .given("The assignment request is valid with one requested role and replaceExisting flag as true")
             .uponReceiving("A request to add a role")
@@ -81,7 +81,8 @@ public class RoleAssignmentApiConsumerTest {
             .method("POST")
             .matchHeader(AUTHORIZATION, AUTH_TOKEN)
             .matchHeader(SERVICE_AUTHORIZATION, SERVICE_AUTH_TOKEN)
-            .body(new ObjectMapper().writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
+            .body(new ObjectMapper()
+                .writeValueAsString(roleAssignmentService.getRoleAssignment(caseId, assigneeId, userId)))
             .willRespondWith()
             .status(201)
             .toPact();
@@ -89,7 +90,6 @@ public class RoleAssignmentApiConsumerTest {
 
 
     @Test
-    @Disabled("Disabled until roleAssignmentService.assignRole method is fixed!")
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyAssignRole() {
 
