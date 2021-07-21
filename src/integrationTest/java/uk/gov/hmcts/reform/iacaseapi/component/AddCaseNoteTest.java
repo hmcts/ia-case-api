@@ -4,15 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_DESCRIPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADD_CASE_NOTE_SUBJECT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NOTES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_CASE_NOTE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -23,9 +20,19 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFacto
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseNote;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
+
+    private final Document someDoc = new Document(
+        "some url",
+        "some binary url",
+        "some filename");
+
+    private final List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
+        Arrays.asList(new IdValue<>("1", new DocumentWithDescription(someDoc, "some description")));
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
@@ -39,6 +46,7 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
             .caseDetails(someCaseDetailsWith()
                 .state(APPEAL_SUBMITTED)
                 .caseData(anAsylumCase()
+                    .with(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, noticeOfDecisionDocument)
                     .with(ADD_CASE_NOTE_SUBJECT, "some-subject")
                     .with(ADD_CASE_NOTE_DESCRIPTION, "some-description")
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")

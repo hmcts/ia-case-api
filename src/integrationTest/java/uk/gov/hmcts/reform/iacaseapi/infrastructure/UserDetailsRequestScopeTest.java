@@ -11,6 +11,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MAKE_AN_AP
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,7 +23,10 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTe
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
@@ -43,6 +48,14 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
         "Case",
         "Officer"
     );
+
+    private final Document someDoc = new Document(
+        "some url",
+        "some binary url",
+        "some filename");
+
+    private final List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
+        Arrays.asList(new IdValue<>("1", new DocumentWithDescription(someDoc, "some description")));
 
     @BeforeEach
     public void setupStubs() {
@@ -69,6 +82,7 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
                         .state(APPEAL_SUBMITTED)
                         .caseData(
                             anAsylumCase()
+                                .with(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, noticeOfDecisionDocument)
                                 .with(APPELLANT_GIVEN_NAMES, "some names")
                                 .with(APPELLANT_FAMILY_NAME, "some family name")
                                 .with(MAKE_AN_APPLICATION_TYPES, "some names")
