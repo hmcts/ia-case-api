@@ -76,12 +76,25 @@ class CaseManagementCategoryAppenderTest {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
         Mockito.when(asylumCase.read(APPEAL_TYPE,AppealType.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("AppealType is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void it_cannot_handle_callback_for_aip_journey() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        assertThatThrownBy(
+                () -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
