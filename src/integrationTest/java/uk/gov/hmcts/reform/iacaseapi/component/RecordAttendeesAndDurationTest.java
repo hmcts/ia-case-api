@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -19,22 +19,11 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFacto
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
-
-    private final Document someDoc = new Document(
-        "some url",
-        "some binary url",
-        "some filename");
-
-    private final List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
-        Arrays.asList(new IdValue<>("1", new DocumentWithDescription(someDoc, "some description")));
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
@@ -48,7 +37,6 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
             .caseDetails(someCaseDetailsWith()
                 .state(State.DECISION)
                 .caseData(anAsylumCase()
-                    .with(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, noticeOfDecisionDocument)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 

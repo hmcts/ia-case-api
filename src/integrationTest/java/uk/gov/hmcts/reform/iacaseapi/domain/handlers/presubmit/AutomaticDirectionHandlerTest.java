@@ -11,8 +11,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,9 +19,6 @@ import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
 public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest implements WithUserDetailsStub,
@@ -34,14 +29,6 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
 
     private String expectedId = "someId";
     private long caseId = 54321;
-
-    private final Document someDoc = new Document(
-        "some url",
-        "some binary url",
-        "some filename");
-
-    private final List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
-        Arrays.asList(new IdValue<>("1", new DocumentWithDescription(someDoc, "some description")));
 
     @BeforeEach
     public void setupTimedEventServiceStub() {
@@ -68,7 +55,6 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
                         .state(RESPONDENT_REVIEW)
                         .caseData(
                             anAsylumCase()
-                                .with(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, noticeOfDecisionDocument)
                                 .with(APPELLANT_GIVEN_NAMES, "some names")
                                 .with(APPELLANT_FAMILY_NAME, "some family name")
                                 .with(SEND_DIRECTION_EXPLANATION, "some explanation")

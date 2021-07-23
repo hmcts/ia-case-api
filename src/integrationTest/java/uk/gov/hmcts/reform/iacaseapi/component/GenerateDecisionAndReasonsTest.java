@@ -4,14 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_AND_REASONS_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
@@ -20,21 +21,10 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFacto
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithDocumentApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithDocumentApiStub {
-
-    private final Document someDoc = new Document(
-        "some url",
-        "some binary url",
-        "some filename");
-
-    private final List<IdValue<DocumentWithDescription>> noticeOfDecisionDocument =
-        Arrays.asList(new IdValue<>("1", new DocumentWithDescription(someDoc, "some description")));
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
@@ -49,7 +39,6 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
             .caseDetails(someCaseDetailsWith()
                 .state(DECISION)
                 .caseData(anAsylumCase()
-                    .with(UPLOAD_THE_NOTICE_OF_DECISION_DOCS, noticeOfDecisionDocument)
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));

@@ -60,6 +60,10 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
             asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 
+        if (maybeNoticeOfDecision.isEmpty()) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
+
         List<DocumentWithMetadata> noticeOfDecision =
             maybeNoticeOfDecision
                 .orElseThrow(() -> new IllegalStateException("upload notice decision is not present"))
@@ -77,7 +81,6 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
             maybeExistingLegalRepDocuments.orElse(emptyList());
 
         for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
-
             if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
                 legalRepDocumentsContainHoDecisionLetter = true;
             }

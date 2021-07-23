@@ -165,27 +165,6 @@ class UploadDecisionLetterHandlerTest {
         );
     }
 
-    @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "REQUEST_HEARING_REQUIREMENTS", "CREATE_CASE_SUMMARY"})
-    void handle_should_error_on_notice_of_decision_document_is_not_present(Event event) {
-
-        when(callback.getEvent()).thenReturn(event);
-
-        List<DocumentWithMetadata> noticeOfDecisionWithMetadata =
-            Arrays.asList(
-                noticeOfDecision1WithMetadata
-            );
-
-        when(asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS)).thenReturn(Optional.empty());
-
-        when(documentsAppender.append(allLegalRepDocuments, noticeOfDecisionWithMetadata))
-            .thenReturn(allLegalRepDocuments);
-
-        assertThatThrownBy(() -> uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback))
-            .isExactlyInstanceOf(IllegalStateException.class)
-            .hasMessage("upload notice decision is not present");
-    }
-
     @Test
     void it_can_handle_callback() {
 
