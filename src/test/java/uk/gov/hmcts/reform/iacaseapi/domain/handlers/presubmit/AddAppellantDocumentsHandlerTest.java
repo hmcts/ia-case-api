@@ -4,11 +4,14 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_DOCUMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -115,6 +118,9 @@ class AddAppellantDocumentsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS))
+                .thenReturn(Optional.empty());
+
         DocumentWithMetadata reasonsForAppealEvidence = new DocumentWithMetadata(
             new Document("documentUrl", "binaryUrl", "documentFielname"),
             "description",
@@ -137,7 +143,9 @@ class AddAppellantDocumentsHandlerTest {
 
         addAppellantDocumentsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase).write(AsylumCaseFieldDefinition.APPELLANT_DOCUMENTS, reasonsForAppealEvidenceList);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS, reasonsForAppealEvidenceList);
+        verify(asylumCase, never()).write(eq(APPELLANT_DOCUMENTS), any());
+
     }
 
     @Test
@@ -146,7 +154,8 @@ class AddAppellantDocumentsHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_REASONS_FOR_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-
+        when(asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS))
+                .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS))
             .thenReturn(Optional.empty());
         Document clarifyingQuestionEvidence = new Document("documentUrl", "binaryUrl", "documentFielname");
@@ -192,7 +201,9 @@ class AddAppellantDocumentsHandlerTest {
 
         addAppellantDocumentsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase).write(AsylumCaseFieldDefinition.APPELLANT_DOCUMENTS, appellantEvidence);
+        verify(asylumCase).write(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS, appellantEvidence);
+        verify(asylumCase, never()).write(eq(APPELLANT_DOCUMENTS), any());
+
     }
 
     @Test
@@ -202,6 +213,8 @@ class AddAppellantDocumentsHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
 
+        when(asylumCase.read(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS))
+            .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS))
             .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS))
@@ -233,6 +246,8 @@ class AddAppellantDocumentsHandlerTest {
 
         addAppellantDocumentsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, never()).write(any(), any());
+        verify(asylumCase).read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+        verify(asylumCase).write(eq(LEGAL_REPRESENTATIVE_DOCUMENTS), any());
+        verify(asylumCase, never()).write(eq(APPELLANT_DOCUMENTS), any());
     }
 }

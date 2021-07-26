@@ -17,4 +17,5 @@ public enum  JourneyType {
     public String toString() {
         return id;
     }
+
 }
