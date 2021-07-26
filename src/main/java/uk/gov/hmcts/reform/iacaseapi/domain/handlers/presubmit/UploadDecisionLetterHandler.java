@@ -60,13 +60,9 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
             asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 
-        if (maybeNoticeOfDecision.isEmpty()) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
-
         List<DocumentWithMetadata> noticeOfDecision =
             maybeNoticeOfDecision
-                .get()
+                .orElse(emptyList())
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
@@ -77,7 +73,7 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
             asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-        final List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+        List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
             maybeExistingLegalRepDocuments.orElse(emptyList());
 
         for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
@@ -92,10 +88,12 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-            documentsAppender.append(existingLegalRepDocuments, noticeOfDecision);
+        if (!noticeOfDecision.isEmpty()) {
+            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                documentsAppender.append(existingLegalRepDocuments, noticeOfDecision);
+            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        }
 
-        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
