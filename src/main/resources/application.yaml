@@ -252,7 +252,6 @@ security:
       - "editAppealAfterSubmit"
       - "linkAppeal"
       - "unlinkAppeal"
-      - "editAppealAfterSubmit"
       - "uploadSensitiveDocuments"
       - "requestHomeOfficeData"
       - "decideAnApplication"
@@ -348,6 +347,8 @@ security:
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
       - "rollbackPaymentTimeoutToPaymentPending"
+      - "editAppealAfterSubmit"
+
 
 
 ### dependency configuration
@@ -384,7 +385,7 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,wa_task_monitor}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
