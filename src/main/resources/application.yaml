@@ -347,9 +347,8 @@ security:
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
       - "rollbackPaymentTimeoutToPaymentPending"
-      - "editAppealAfterSubmit"
-
-
+    caseworker-wa-task-configuration:
+      - "adminCaseUpdate"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
@@ -385,7 +384,7 @@ idam:
     microservice: ${IA_S2S_MICROSERVICE:ia}
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac,wa_task_monitor}
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
   ia_system_user:
     username: ${IA_SYSTEM_USERNAME:system-user}
     password: ${IA_SYSTEM_PASSWORD:system-password}
