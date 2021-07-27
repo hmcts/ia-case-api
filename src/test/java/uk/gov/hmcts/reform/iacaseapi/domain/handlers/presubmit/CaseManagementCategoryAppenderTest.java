@@ -9,7 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,8 +38,6 @@ class CaseManagementCategoryAppenderTest {
     private AsylumCase asylumCase;
 
     private CaseManagementCategoryAppender caseManagementCategoryAppender;
-    private final Value value = new Value("refusalOfEu","Refusal of application under the EEA regulations");
-    private final DynamicList dynamicList = new DynamicList(value, Arrays.asList(value));
 
     @BeforeEach
     public void setUp() {
@@ -55,8 +53,8 @@ class CaseManagementCategoryAppenderTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         AppealType currentAppeal = AppealType.valueOf(appealType);
-        Value currentValue = new Value(currentAppeal.getValue(),currentAppeal.getDescription());
-        DynamicList currentDynamicList = new DynamicList(currentValue, Arrays.asList(currentValue));
+        Value currentValue = new Value(currentAppeal.getValue(), currentAppeal.getDescription());
+        DynamicList currentDynamicList = new DynamicList(currentValue, Collections.singletonList(currentValue));
         Mockito.when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -77,7 +75,7 @@ class CaseManagementCategoryAppenderTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
-        Mockito.when(asylumCase.read(APPEAL_TYPE,AppealType.class)).thenReturn(Optional.empty());
+        Mockito.when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("AppealType is not present")
@@ -92,9 +90,9 @@ class CaseManagementCategoryAppenderTest {
         Mockito.when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         assertThatThrownBy(
-                () -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            () -> caseManagementCategoryAppender.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -111,8 +109,9 @@ class CaseManagementCategoryAppenderTest {
                 boolean canHandle = caseManagementCategoryAppender.canHandle(callbackStage, callback);
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == START_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)) {
+                        || callback.getEvent() == Event.EDIT_APPEAL
+                        || callback.getEvent() == Event.ADMIN_CASE_UPDATE
+                        || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

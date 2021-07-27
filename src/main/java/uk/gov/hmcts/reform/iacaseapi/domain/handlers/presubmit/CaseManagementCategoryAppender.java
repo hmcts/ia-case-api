@@ -19,28 +19,29 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         boolean isRepJourney = callback.getCaseDetails().getCaseData()
-                .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.REP)
-                .orElse(true);
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.REP)
+            .orElse(true);
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && isRepJourney
                && Arrays.asList(
-                Event.START_APPEAL,
-                Event.EDIT_APPEAL,
-                Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+            Event.ADMIN_CASE_UPDATE,
+            Event.START_APPEAL,
+            Event.EDIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
