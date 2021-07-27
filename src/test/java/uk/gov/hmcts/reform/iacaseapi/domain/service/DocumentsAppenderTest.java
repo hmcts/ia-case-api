@@ -83,6 +83,46 @@ class DocumentsAppenderTest {
     }
 
     @Test
+    void should_prepend_new_document_in_last_position() {
+
+        List<IdValue<DocumentWithMetadata>> existingDocuments =
+            Arrays.asList(
+                existingDocumentById1,
+                existingDocumentById2
+            );
+
+        List<DocumentWithMetadata> newDocuments =
+            Arrays.asList(
+                newDocument1,
+                newDocument2
+            );
+
+        when(existingDocumentById1.getValue()).thenReturn(existingDocument1);
+        when(existingDocumentById2.getValue()).thenReturn(existingDocument2);
+
+        final List<IdValue<DocumentWithMetadata>> allDocuments =
+            documentsAppender.prepend(existingDocuments, newDocuments);
+
+        verify(existingDocumentById1, never()).getId();
+        verify(existingDocumentById2, never()).getId();
+
+        assertNotNull(allDocuments);
+        assertEquals(4, allDocuments.size());
+
+        assertEquals("4", allDocuments.get(0).getId());
+        assertEquals(existingDocument1, allDocuments.get(0).getValue());
+
+        assertEquals("3", allDocuments.get(1).getId());
+        assertEquals(existingDocument2, allDocuments.get(1).getValue());
+
+        assertEquals("2", allDocuments.get(2).getId());
+        assertEquals(newDocument1, allDocuments.get(2).getValue());
+
+        assertEquals("1", allDocuments.get(3).getId());
+        assertEquals(newDocument2, allDocuments.get(3).getValue());
+    }
+
+    @Test
     void should_append_new_document_in_first_position_replacing_any_existing_with_tag() {
 
         List<IdValue<DocumentWithMetadata>> existingDocuments =

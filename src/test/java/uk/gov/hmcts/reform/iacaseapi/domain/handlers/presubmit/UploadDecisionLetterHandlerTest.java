@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.*;
@@ -113,14 +112,14 @@ class UploadDecisionLetterHandlerTest {
         when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
             .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
 
-        when(documentsAppender.append(allLegalRepDocuments, noticeOfDecisionWithMetadata))
+        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
             .thenReturn(allLegalRepDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(callbackResponse).isNotNull();
 
-        verify(documentsAppender, times(1)).append(
+        verify(documentsAppender, times(1)).prepend(
             allLegalRepDocuments,
             noticeOfDecisionWithMetadata
         );
@@ -152,14 +151,14 @@ class UploadDecisionLetterHandlerTest {
         when(documentReceiver.tryReceive(noticeOfDecision1, HO_DECISION_LETTER))
             .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
 
-        when(documentsAppender.append(allLegalRepDocuments, noticeOfDecisionWithMetadata))
+        when(documentsAppender.prepend(allLegalRepDocuments, noticeOfDecisionWithMetadata))
             .thenReturn(allLegalRepDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertThat(callbackResponse).isNotNull();
 
-        verify(documentsAppender, times(0)).append(
+        verify(documentsAppender, times(0)).prepend(
             allLegalRepDocuments,
             noticeOfDecisionWithMetadata
         );

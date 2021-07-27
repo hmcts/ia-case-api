@@ -54,4 +54,26 @@ public class DocumentsAppender {
 
         return allDocuments;
     }
+
+    public List<IdValue<DocumentWithMetadata>> prepend(
+        List<IdValue<DocumentWithMetadata>> existingDocuments,
+        List<DocumentWithMetadata> newDocuments
+    ) {
+        requireNonNull(existingDocuments, "existingDocuments must not be null");
+        requireNonNull(newDocuments, "newDocuments must not be null");
+
+        final List<IdValue<DocumentWithMetadata>> allDocuments = new ArrayList<>();
+
+        int index = existingDocuments.size() + newDocuments.size();
+
+        for (IdValue<DocumentWithMetadata> existingDocument : existingDocuments) {
+            allDocuments.add(new IdValue<>(String.valueOf(index--), existingDocument.getValue()));
+        }
+
+        for (DocumentWithMetadata newDocument : newDocuments) {
+            allDocuments.add(new IdValue<>(String.valueOf(index--), newDocument));
+        }
+
+        return allDocuments;
+    }
 }
