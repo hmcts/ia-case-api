@@ -44,8 +44,7 @@ class AppellantNameForDisplayFormatterTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private AppellantNameForDisplayFormatter appellantNameForDisplayFormatter =
-        new AppellantNameForDisplayFormatter();
+    private final AppellantNameForDisplayFormatter appellantNameForDisplayFormatter = new AppellantNameForDisplayFormatter();
 
     @Test
     void should_format_appellant_name_for_display() {
@@ -132,7 +131,7 @@ class AppellantNameForDisplayFormatterTest {
 
                 boolean canHandle = appellantNameForDisplayFormatter.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && callback.getEvent() != Event.ADMIN_CASE_UPDATE) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);
