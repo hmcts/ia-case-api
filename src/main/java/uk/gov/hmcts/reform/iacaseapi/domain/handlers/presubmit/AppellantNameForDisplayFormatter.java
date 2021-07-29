@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -12,6 +8,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 @Component
 public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandler<AsylumCase> {
@@ -27,7 +28,7 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
         boolean isAipJourney = journeyTypeOptional.map(journeyType -> journeyType == JourneyType.AIP).orElse(false);
         Event event = callback.getEvent();
         boolean isStartOrEditAipEvent = isAipJourney && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL);
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent && event != Event.ADMIN_CASE_UPDATE;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
