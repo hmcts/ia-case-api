@@ -28,6 +28,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -94,11 +96,12 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @Test
-    void should_set_hearing_centre_for_remote_hearing() {
+    @ParameterizedTest
+    @EnumSource(value = HearingCentre.class, names = { "REMOTE_HEARING", "DECISION_WITHOUT_HEARING"})
+    void should_set_hearing_centre_for_remote_hearing(HearingCentre hearingCentre) {
 
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
-            .thenReturn(Optional.of(HearingCentre.REMOTE_HEARING));
+            .thenReturn(Optional.of(hearingCentre));
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.COVENTRY));
 
