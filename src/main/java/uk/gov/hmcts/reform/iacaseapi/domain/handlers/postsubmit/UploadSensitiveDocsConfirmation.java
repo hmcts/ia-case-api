@@ -33,7 +33,7 @@ public class UploadSensitiveDocsConfirmation implements PostSubmitCallbackHandle
         long caseId = callback.getCaseDetails().getId();
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\r\n\r\n"
-                + "You can see the documentation in the [documents tab](/cases/case-details/" + caseId + "#documents). "
+                + "You can see the documentation in the [documents tab](/cases/case-details/" + caseId + "#Documents). "
                 + "Select Edit documents from the Next step dropdown if you need to remove a document."
         );
 
