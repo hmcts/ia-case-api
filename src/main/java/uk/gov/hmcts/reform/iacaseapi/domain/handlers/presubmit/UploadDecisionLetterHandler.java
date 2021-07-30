@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -43,7 +43,7 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && callback.getCaseDetails().getState() != State.APPEAL_STARTED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -55,13 +55,14 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
         }
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        boolean legalRepDocumentsContainHoDecisionLetter = false;
 
         Optional<List<IdValue<DocumentWithDescription>>> maybeNoticeOfDecision =
             asylumCase.read(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
 
         List<DocumentWithMetadata> noticeOfDecision =
             maybeNoticeOfDecision
-                .orElseThrow(() -> new IllegalStateException("upload notice decision is not present"))
+                .orElse(emptyList())
                 .stream()
                 .map(IdValue::getValue)
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.HO_DECISION_LETTER))
@@ -69,19 +70,30 @@ public class UploadDecisionLetterHandler implements PreSubmitCallbackHandler<Asy
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingLegalRepDocuments =
             asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
 
-        final List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
+        List<IdValue<DocumentWithMetadata>> existingLegalRepDocuments =
             maybeExistingLegalRepDocuments.orElse(emptyList());
 
-        List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
-            documentsAppender.append(existingLegalRepDocuments, noticeOfDecision);
+        for (IdValue<DocumentWithMetadata> existingLegalRepDocument : existingLegalRepDocuments) {
+            if (existingLegalRepDocument.getValue().getTag() != null) {
+                if (existingLegalRepDocument.getValue().getTag().equals(DocumentTag.HO_DECISION_LETTER)) {
+                    legalRepDocumentsContainHoDecisionLetter = true;
+                }
+            }
+        }
 
-        asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        if (legalRepDocumentsContainHoDecisionLetter) {
+            return new PreSubmitCallbackResponse<>(asylumCase);
+        }
 
-        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+        if (!noticeOfDecision.isEmpty()) {
+            List<IdValue<DocumentWithMetadata>> allLegalRepDocuments =
+                documentsAppender.prepend(existingLegalRepDocuments, noticeOfDecision);
+            asylumCase.write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepDocuments);
+        }
+
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
