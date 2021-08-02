@@ -13,7 +13,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,15 +29,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class RequestResponseReviewHandlerTest {
 
-    private static final int DUE_IN_DAYS_UK = 5;
-    private static final int DUE_IN_DAYS_OOC = 14;
+    private static final int DUE_IN_DAYS = 5;
 
     @Mock
     private DateProvider dateProvider;
@@ -59,7 +55,7 @@ class RequestResponseReviewHandlerTest {
     @BeforeEach
     public void setUp() {
         requestResponseReviewHandler =
-            new RequestResponseReviewHandler(DUE_IN_DAYS_UK, DUE_IN_DAYS_OOC, dateProvider);
+            new RequestResponseReviewHandler(DUE_IN_DAYS, dateProvider);
     }
 
     @Test
@@ -74,43 +70,6 @@ class RequestResponseReviewHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
-
-        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
-        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
-            .contains(expectedExplanationContains);
-
-        assertThat(
-            asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
-            .contains(expectedDueDate);
-
-        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
-        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
-    }
-
-    @Test
-    void should_prepare_send_direction_fields_ooc_appeal() {
-
-        final String expectedExplanationContains =
-            "The Home Office has replied to your Appeal Skeleton Argument and evidence. You should review their response";
-        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
-        final String expectedDueDate = "2019-09-24";
-
-        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-09-10"));
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestResponseReviewHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -170,7 +129,7 @@ class RequestResponseReviewHandlerTest {
     }
 
     @Test
-    void should_not_allow_null_arugments() {
+    void should_not_allow_null_arguments() {
         assertThatThrownBy(() -> requestResponseReviewHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);

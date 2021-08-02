@@ -2,10 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,26 +18,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @Component
 public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final int reviewDueInDaysUk;
-    private final int reviewDueInDaysOoc;
+    private final int reviewDueInDays;
     private final DateProvider dateProvider;
     private final DirectionAppender directionAppender;
 
     public AutoLegalRepresentativeReviewDirectionHandler(
-        @Value("${legalRepresentativeReview.dueInDaysUk}") int reviewDueInDaysUk,
-        @Value("${legalRepresentativeReview.dueInDaysOoc}") int reviewDueInDaysOoc,
+        @Value("${legalRepresentativeReview.dueInDays}") int reviewDueInDays,
         DateProvider dateProvider,
         DirectionAppender directionAppender
     ) {
-        this.reviewDueInDaysUk = reviewDueInDaysUk;
-        this.reviewDueInDaysOoc = reviewDueInDaysOoc;
+        this.reviewDueInDays = reviewDueInDays;
         this.dateProvider = dateProvider;
         this.directionAppender = directionAppender;
     }
@@ -68,14 +61,6 @@ public class AutoLegalRepresentativeReviewDirectionHandler implements PreSubmitC
             callback
                 .getCaseDetails()
                 .getCaseData();
-
-        int reviewDueInDays;
-
-        if (asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO) == YES) {
-            reviewDueInDays = reviewDueInDaysOoc;
-        } else {
-            reviewDueInDays = reviewDueInDaysUk;
-        }
 
         Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
 
