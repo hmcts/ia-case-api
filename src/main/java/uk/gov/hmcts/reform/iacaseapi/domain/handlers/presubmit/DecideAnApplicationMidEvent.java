@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -91,9 +92,10 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
             .findFirst()
             .ifPresent(idValue -> {
                 MakeAnApplication makeAnApplication = idValue.getValue();
+                Optional<List<IdValue<Document>>> mayBeMakeAnApplicationsEvidence = asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE);
 
                 StringBuilder documentsLink = new StringBuilder();
-                makeAnApplication.getEvidence()
+                mayBeMakeAnApplicationsEvidence.get()
                     .stream()
                     .forEach(evidence -> {
                         String docName = evidence.getValue().getDocumentFilename();
