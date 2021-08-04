@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
@@ -12,14 +13,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -92,8 +91,14 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
             .ifPresent(idValue -> {
                 MakeAnApplication makeAnApplication = idValue.getValue();
 
+                Optional<List<IdValue<Document>>> mayBeMakeAnApplicationsEvidence = asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE);
+
+                final List<IdValue<Document>> existingMakeAnApplicationsEvidence =
+                    mayBeMakeAnApplicationsEvidence.orElse(emptyList());
+
                 StringBuilder documentsLink = new StringBuilder();
-                makeAnApplication.getEvidence()
+
+                existingMakeAnApplicationsEvidence
                     .stream()
                     .forEach(evidence -> {
                         String docName = evidence.getValue().getDocumentFilename();

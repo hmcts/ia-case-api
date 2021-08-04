@@ -9,9 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS_LIST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATION_FIELDS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -85,6 +83,7 @@ class DecideAnApplicationMidEventTest {
             Arrays.asList(new Value("1", "Legal representative : Application 1")));
 
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
+        when(asylumCase.read(MAKE_AN_APPLICATION_EVIDENCE)).thenReturn(Optional.of(evidence));
         when(asylumCase.read(MAKE_AN_APPLICATIONS_LIST, DynamicList.class))
             .thenReturn(Optional.of(makeAnApplicationsList));
 
