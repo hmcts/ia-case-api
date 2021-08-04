@@ -206,6 +206,7 @@ class FeesHandlerTest {
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
             .thenReturn(Optional.of("asylumSupport"));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
