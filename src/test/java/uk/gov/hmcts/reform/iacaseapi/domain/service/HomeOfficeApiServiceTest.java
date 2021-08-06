@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackAp
 class HomeOfficeApiServiceTest {
 
     private static final String ENDPOINT = "some-endpoint";
+    private static final String ABOUT_TO_START_PATH = "some-path";
     private static final String ABOUT_TO_SUBMIT_PATH = "some-path";
 
     @Mock
@@ -38,22 +41,42 @@ class HomeOfficeApiServiceTest {
             new HomeOfficeApiService(
                 asylumCaseCallbackApiDelegator,
                 ENDPOINT,
+                ABOUT_TO_START_PATH,
                 ABOUT_TO_SUBMIT_PATH
             );
     }
 
-    @Test
-    void should_delegate_callback_to_downstream_api_and_get_response() {
+    @ParameterizedTest
+    @ValueSource(strings = { ABOUT_TO_SUBMIT_PATH })
+    void should_delegate_callback_to_downstream_call_api_and_get_response(String path) {
 
         final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
-            .thenReturn(asylumCaseWithHomeOfficeData);
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+                .thenReturn(asylumCaseWithHomeOfficeData);
 
         final AsylumCase actualAsylumCase = homeOfficeApiService.call(callback);
 
         verify(asylumCaseCallbackApiDelegator, times(1))
-            .delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH);
+                .delegate(callback, ENDPOINT + path);
+
+        assertEquals(asylumCaseWithHomeOfficeData, actualAsylumCase);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH })
+    void should_delegate_callback_to_downstream_api_and_get_response(String path) {
+
+        final AsylumCase asylumCaseWithHomeOfficeData = mock(AsylumCase.class);
+
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
+            .thenReturn(asylumCaseWithHomeOfficeData);
+
+        final AsylumCase actualAsylumCase = path.equals(ABOUT_TO_START_PATH)
+                ? homeOfficeApiService.aboutToStart(callback) : homeOfficeApiService.aboutToSubmit(callback);
+
+        verify(asylumCaseCallbackApiDelegator, times(1))
+            .delegate(callback, ENDPOINT + path);
 
         assertEquals(asylumCaseWithHomeOfficeData, actualAsylumCase);
     }
@@ -61,18 +84,19 @@ class HomeOfficeApiServiceTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> homeOfficeApiService.call(null))
+        assertThatThrownBy(() -> homeOfficeApiService.aboutToSubmit(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void should_handle_error_from_downstream_api() {
+    @ParameterizedTest
+    @ValueSource(strings = { ABOUT_TO_START_PATH, ABOUT_TO_SUBMIT_PATH })
+    void should_handle_error_from_downstream_api(String path) {
 
-        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + ABOUT_TO_SUBMIT_PATH))
+        when(asylumCaseCallbackApiDelegator.delegate(callback, ENDPOINT + path))
             .thenThrow(new RequiredFieldMissingException("Home office reference number is a required field"));
 
-        assertThatThrownBy(() -> homeOfficeApiService.call(callback))
+        assertThatThrownBy(() -> homeOfficeApiService.aboutToSubmit(callback))
             .hasMessage("Home office reference number is a required field")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }

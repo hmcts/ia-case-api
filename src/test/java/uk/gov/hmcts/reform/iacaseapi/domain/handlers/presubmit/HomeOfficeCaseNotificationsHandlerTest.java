@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -98,7 +99,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_call_home_office_api_and_update_the_case_for_list_case(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
@@ -112,7 +113,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(1)).call(callback);
+        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
 
     @ParameterizedTest
@@ -132,7 +133,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_not_call_home_office_api_when_validation_unsuccessful(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
@@ -145,7 +146,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(0)).call(callback);
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
     }
 
     @ParameterizedTest
@@ -165,7 +166,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_not_call_home_office_api_for_in_progress_case(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
@@ -178,16 +179,23 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(0)).call(callback);
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
     }
 
-    @Test
-    void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen() {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void should_not_call_home_office_api_when_ooc_and_human_rights_decision_is_chosen(boolean hoUanfeatureFlag) {
+
+        when(featureToggler.getValue("home-office-uan-flag", false)).thenReturn(hoUanfeatureFlag);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_EVIDENCE);
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.NO));
 
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        if (hoUanfeatureFlag) {
+            when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
+        } else {
+            when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        }
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
@@ -198,7 +206,12 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(0)).call(callback);
+        if (hoUanfeatureFlag) {
+            verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+        } else {
+            verify(homeOfficeApi, times(0)).call(callback);
+
+        }
     }
 
     @ParameterizedTest
@@ -209,7 +222,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     void should_call_home_office_api_and_update_the_case_for_direction_due_date(State state) {
 
         when(callback.getEvent()).thenReturn(Event.CHANGE_DIRECTION_DUE_DATE);
-        when(homeOfficeApi.call(callback)).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getCaseDetails().getState()).thenReturn(state);
@@ -224,7 +237,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(homeOfficeApi, times(1)).call(callback);
+        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
 
     @Test

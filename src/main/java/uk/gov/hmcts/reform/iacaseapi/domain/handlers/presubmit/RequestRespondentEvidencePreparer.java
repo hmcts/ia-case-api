@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -17,18 +19,22 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final int requestRespondentEvidenceDueInDays;
+    private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
 
     public RequestRespondentEvidencePreparer(
         @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
+        FeatureToggler featureToggler,
         DateProvider dateProvider
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
+        this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
     }
 
@@ -56,6 +62,21 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
                 .getCaseDetails()
                 .getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+        if (featureToggler.getValue("home-office-uan-feature", false)) {
+
+            Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
+            YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO);
+
+            if (isAppealOutOfCountry == NO && (!homeOfficeSearchStatus.isPresent()
+                    || Arrays.asList("FAIL", "MULTIPLE").contains(homeOfficeSearchStatus.get()))) {
+
+                callbackResponse.addError("You need to match the appellant details before you can request the respondent evidence.");
+                return callbackResponse;
+            }
+        }
+
         YesOrNo recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class).orElse(NO);
 
         if (recordedOutOfTimeDecision == YES) {
@@ -66,7 +87,6 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
             if (outOfTimeDecisionType == OutOfTimeDecisionType.REJECTED) {
 
-                PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
                 callbackResponse.addError("Record out of time decision is rejected. The appeal must be ended.");
                 return callbackResponse;
             }
