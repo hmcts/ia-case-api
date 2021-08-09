@@ -36,6 +36,8 @@
         "created_time": "2021-01-28T13:24:22.14034",
         "last_updated_time": "2021-01-28T13:24:22.140348"
       }
-    ]
+    ],
+    "case_allocator": "Y",
+    "task_supervisor": "N"
   }
 ]
