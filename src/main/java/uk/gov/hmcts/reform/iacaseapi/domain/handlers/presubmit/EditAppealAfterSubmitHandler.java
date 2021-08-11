@@ -111,6 +111,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
             asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
             asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
         }
 
 

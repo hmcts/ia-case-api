@@ -24,16 +24,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.homeoffice.HomeOfficeCaseStatus;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class HomeOfficeRequestHomeOfficeDataPreparerTest {
-
-    private static final String HOME_OFFICE_DATA_PRESENT_MESSAGE = "The Home Office data "
-        + "has already been retrieved successfully "
-        + "and is available in the validation tab.";
 
     private HomeOfficeRequestHomeOfficeDataPreparer homeOfficeDataPreparer;
 
@@ -50,29 +47,6 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     public void setUp() {
         homeOfficeDataPreparer =
             new HomeOfficeRequestHomeOfficeDataPreparer(true);
-    }
-
-    @Test
-    void handler_checks_existing_home_office_data_returns_error_if_exists() {
-
-        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
-            .thenReturn(Optional.of(homeOfficeCaseStatus));
-        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class))
-            .thenReturn(Optional.of("SUCCESS"));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
-        assertThat(response.getErrors()).isNotEmpty();
-        assertThat(response.getErrors()).containsExactly(HOME_OFFICE_DATA_PRESENT_MESSAGE);
-        assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
-
     }
 
     @Test
@@ -133,6 +107,28 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
         assertTrue(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class).isPresent());
+
+    }
+
+    @Test
+    void handle_should_return_error_for_out_of_country_appeals() {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_CASE_STATUS_DATA, HomeOfficeCaseStatus.class))
+                .thenReturn(Optional.of(homeOfficeCaseStatus));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for an out of country appeal");
 
     }
 
