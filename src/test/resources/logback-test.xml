@@ -4,4 +4,6 @@
     <logger name="com.netflix.config.sources.URLConfigurationSource" level="WARN"/>
     <logger name="org.springframework.context" level="WARN"/>
     <logger name="org.springframework.web.context" level="WARN"/>
+
+    <logger name="uk.gov.hmcts.fortifyclient" level="INFO" />
 </configuration>
