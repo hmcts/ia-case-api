@@ -23,4 +23,11 @@
                 ]]></notes>
         <cve>CVE-2021-22118</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://nvd.nist.gov/vuln/detail/CVE-2021-28170
+                 Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x affected lib org.glassfish:jakarta.el:3.0.3
+                ]]></notes>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
 </suppressions>
