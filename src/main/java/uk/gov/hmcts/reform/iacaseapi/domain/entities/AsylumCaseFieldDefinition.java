@@ -1472,6 +1472,9 @@ public enum AsylumCaseFieldDefinition {
     UPPER_TRIBUNAL_DOCUMENTS(
         "upperTribunalDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    SECOND_FTPA_DECISION_EXISTS(
+        "secondFtpaDecisionExists", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;
