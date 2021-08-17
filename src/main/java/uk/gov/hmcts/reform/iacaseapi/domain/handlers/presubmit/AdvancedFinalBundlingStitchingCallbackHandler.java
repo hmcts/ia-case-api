@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -62,7 +63,8 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE;
+               && callback.getEvent() == Event.ASYNC_STITCHING_COMPLETE
+               && callback.getCaseDetails().getState() != State.FTPA_DECIDED;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -80,7 +82,7 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
                 .getCaseData();
 
 
-        Optional<List<IdValue<Bundle>>> maybeCaseBundles  = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
+        Optional<List<IdValue<Bundle>>> maybeCaseBundles = asylumCase.read(AsylumCaseFieldDefinition.CASE_BUNDLES);
 
         final List<Bundle> caseBundles = maybeCaseBundles
             .orElseThrow(() -> new IllegalStateException("caseBundle is not present"))
@@ -97,13 +99,13 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         final Optional<Document> stitchedDocument = hearingBundle.getStitchedDocument();
 
-        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS,YesOrNo.class);
+        Optional<YesOrNo> maybeCaseFlagSetAsideReheardExists = asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class);
 
         boolean isReheardCase = maybeCaseFlagSetAsideReheardExists.isPresent()
                                 && maybeCaseFlagSetAsideReheardExists.get() == YesOrNo.YES;
 
         if (stitchedDocument.isPresent()) {
-            saveHearingBundleDocument(asylumCase, stitchedDocument,isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
+            saveHearingBundleDocument(asylumCase, stitchedDocument, isReheardCase ? REHEARD_HEARING_DOCUMENTS : HEARING_DOCUMENTS);
         }
 
         final String stitchStatus = hearingBundle.getStitchStatus().orElse("");

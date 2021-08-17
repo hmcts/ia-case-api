@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -54,7 +55,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
     @Mock private Document stitchedDocument;
     @Mock private List<IdValue<DocumentWithMetadata>> maybeHearingDocuments;
     @Mock private List<IdValue<DocumentWithMetadata>> allHearingDocuments;
@@ -85,7 +85,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
     @Test
     void should_successfully_handle_the_callback() {
 
-
         when(asylumCase.read(HEARING_DOCUMENTS)).thenReturn(Optional.of(maybeHearingDocuments));
         when(documentReceiver
             .receive(
@@ -111,7 +110,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
         verify(asylumCase, times(1)).read(HEARING_DOCUMENTS);
         verify(documentReceiver).receive(stitchedDocument, "", DocumentTag.HEARING_BUNDLE);
         verify(documentsAppender).append(anyList(), anyList(), eq(DocumentTag.HEARING_BUNDLE));
-
     }
 
     @ParameterizedTest
@@ -162,7 +160,6 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
             verify(homeOfficeApi, times(1)).call(callback);
         }
         verify(notificationSender, times(1)).send(callback);
-
     }
 
     @Test
@@ -309,19 +306,25 @@ class AdvancedFinalBundlingStitchingCallbackHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = advancedFinalBundlingStitchingCallbackHandler.canHandle(callbackStage, callback);
+                for (State state : State.values()) {
 
-                if (event == Event.ASYNC_STITCHING_COMPLETE
-                    && callbackStage == ABOUT_TO_SUBMIT) {
+                    when(callback.getCaseDetails().getState()).thenReturn(state);
 
-                    assertTrue(canHandle);
-                } else {
-                    assertFalse(canHandle);
+                    boolean canHandle = advancedFinalBundlingStitchingCallbackHandler.canHandle(callbackStage, callback);
+
+                    if (event == Event.ASYNC_STITCHING_COMPLETE
+                        && callbackStage == ABOUT_TO_SUBMIT
+                        && state != State.FTPA_DECIDED
+                    ) {
+                        assertTrue(canHandle);
+                    } else {
+                        assertFalse(canHandle);
+                    }
                 }
             }
-
-            reset(callback);
         }
+
+        reset(callback);
     }
 
     @Test

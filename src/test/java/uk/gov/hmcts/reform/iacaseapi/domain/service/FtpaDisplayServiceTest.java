@@ -3,14 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAGS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FINAL_DECISION_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_FIRST_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_SECOND_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REHEARD_APPEAL_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STITCHING_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -192,6 +185,7 @@ class FtpaDisplayServiceTest {
 
         ftpaDisplayService.handleFtpaDecisions(asylumCase, "granted", "");
         verify(asylumCase, times(1)).write(FTPA_FIRST_DECISION, "granted");
+        verify(asylumCase, times(1)).write(SECOND_FTPA_DECISION_EXISTS, YesOrNo.NO);
     }
 
     @Test
@@ -200,6 +194,7 @@ class FtpaDisplayServiceTest {
         ftpaDisplayService.handleFtpaDecisions(asylumCase, "refused", "granted");
         verify(asylumCase, times(1)).write(FTPA_SECOND_DECISION, "refused");
         verify(asylumCase, times(0)).write(FTPA_FIRST_DECISION, "granted");
+        verify(asylumCase, times(1)).write(SECOND_FTPA_DECISION_EXISTS, YesOrNo.YES);
     }
 
     @Test

@@ -21,22 +21,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CUSTOMISE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.DRAFT_HEARING_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL_AFTER_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.GENERATE_HEARING_BUNDLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CMA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CASE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_CMA_REQUIREMENTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.UPDATE_HEARING_REQUIREMENTS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
@@ -139,7 +124,8 @@ class GenerateDocumentHandlerTest {
             SUBMIT_CMA_REQUIREMENTS,
             LIST_CMA,
             END_APPEAL,
-            EDIT_APPEAL_AFTER_SUBMIT
+            EDIT_APPEAL_AFTER_SUBMIT,
+            GENERATE_UPPER_TRIBUNAL_BUNDLE
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -283,7 +269,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CMA_REQUIREMENTS,
                         LIST_CMA,
                         END_APPEAL,
-                        EDIT_APPEAL_AFTER_SUBMIT
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        GENERATE_UPPER_TRIBUNAL_BUNDLE
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -358,7 +345,8 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CMA_REQUIREMENTS,
                         LIST_CMA,
                         END_APPEAL,
-                        EDIT_APPEAL_AFTER_SUBMIT
+                        EDIT_APPEAL_AFTER_SUBMIT,
+                        GENERATE_UPPER_TRIBUNAL_BUNDLE
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)

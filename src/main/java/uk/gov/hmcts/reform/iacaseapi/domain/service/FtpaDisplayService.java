@@ -111,8 +111,10 @@ public class FtpaDisplayService {
         if (!currentDecision.equals("")) {
             if (!ftpaFirstDecision.equals("")) {
                 asylumCase.write(FTPA_SECOND_DECISION, currentDecision);
+                asylumCase.write(SECOND_FTPA_DECISION_EXISTS, YesOrNo.YES);
             } else {
                 asylumCase.write(FTPA_FIRST_DECISION, currentDecision);
+                asylumCase.write(SECOND_FTPA_DECISION_EXISTS, YesOrNo.NO);
             }
         }
 

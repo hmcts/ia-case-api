@@ -26,6 +26,9 @@ public enum AsylumCaseFieldDefinition {
     STITCHING_STATUS(
         "stitchingStatus", new TypeReference<String>(){}),
 
+    STITCHING_STATUS_UPPER_TRIBUNAL(
+        "stitchingStatusUpperTribunal", new TypeReference<String>(){}),
+
     BUNDLE_FILE_NAME_PREFIX(
         "bundleFileNamePrefix", new TypeReference<String>(){}),
 
@@ -1465,6 +1468,12 @@ public enum AsylumCaseFieldDefinition {
 
     HOME_OFFICE_REFERENCE_NUMBER_BEFORE_EDIT(
             "homeOfficeReferenceNumberBeforeEdit", new TypeReference<String>(){}),
+
+    UPPER_TRIBUNAL_DOCUMENTS(
+        "upperTribunalDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+
+    SECOND_FTPA_DECISION_EXISTS(
+        "secondFtpaDecisionExists", new TypeReference<YesOrNo>(){}),
 
     ;
 
