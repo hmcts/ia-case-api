@@ -152,7 +152,7 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
         verify(waFieldsPublisher).addLastModifiedDirection(
-                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
+                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), eq(null), eq(null));
 
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
         List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();

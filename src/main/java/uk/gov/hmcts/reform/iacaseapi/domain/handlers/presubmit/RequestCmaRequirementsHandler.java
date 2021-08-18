@@ -68,7 +68,8 @@ public class RequestCmaRequirementsHandler implements PreSubmitCallbackHandler<A
                 explanation,
                 Parties.APPELLANT,
                 directionDueDate,
-                DirectionTag.REQUEST_CMA_REQUIREMENTS
+                DirectionTag.REQUEST_CMA_REQUIREMENTS,
+                callback.getEvent().toString()
         );
         asylumCase.write(DIRECTIONS, allDirections);
 

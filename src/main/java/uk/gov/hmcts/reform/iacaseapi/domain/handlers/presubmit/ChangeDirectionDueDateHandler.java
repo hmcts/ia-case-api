@@ -78,7 +78,7 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                                     idValue.getValue().getExplanation(),
                                     idValue.getValue().getParties(),
                                     asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
-                                    idValue.getValue().getTag());
+                                    idValue.getValue().getTag(), idValue.getValue().getUniqueId(), idValue.getValue().getDirectionType());
 
                             return new IdValue<>(
                                 idValue.getId(),

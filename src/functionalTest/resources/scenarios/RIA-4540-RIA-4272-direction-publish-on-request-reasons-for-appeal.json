@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4272 Last modified direction publish - Case officer can send request reasons for appeal event for a AIP case",
+  "description": "RIA-4540-RIA-4272 Last modified direction publish - Case officer can send request reasons for appeal event for a AIP case",
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -30,6 +30,8 @@
             "id": "1",
             "value": {
               "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+              "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+              "directionType": "requestReasonsForAppeal",
               "parties": "appellant",
               "dateDue": "{$TODAY+28}",
               "dateSent": "{$TODAY}",
@@ -39,6 +41,8 @@
         ],
         "lastModifiedDirection": {
           "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+          "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+          "directionType": "requestReasonsForAppeal",
           "parties": "appellant",
           "dateDue": "{$TODAY+28}",
           "dateSent": "{$TODAY}",

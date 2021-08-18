@@ -1,0 +1,61 @@
+{
+  "description": "RIA-4540 Direction Unique ID publish - Send requestRespondentEvidence direction - (AIP)",
+  "launchDarklyKey": "publish-wa-fields-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "id": 3333,
+      "eventId": "requestRespondentEvidence",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "sendDirectionExplanation": "Do the non standard thing",
+          "sendDirectionParties": "respondent",
+          "sendDirectionDateDue": "2022-01-01",
+          "notificationsSent": []
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-submitted.json",
+      "replacements": {
+        "directions": [
+          {
+            "id": "1",
+            "value": {
+              "explanation": "Do the non standard thing",
+              "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+              "directionType": "requestRespondentEvidence",
+              "parties": "respondent",
+              "dateDue": "2022-01-01",
+              "dateSent": "{$TODAY}",
+              "tag": "respondentEvidence"
+            }
+          }
+        ],
+        "lastModifiedDirection": {
+          "explanation": "Do the non standard thing",
+          "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+          "directionType": "requestRespondentEvidence",
+          "parties": "respondent",
+          "dateDue": "2022-01-01",
+          "dateSent": "{$TODAY}",
+          "tag": "respondentEvidence",
+          "previousDates": []
+        },
+        "notificationsSent": [
+          {
+            "id": "3333_RESPONDENT_EVIDENCE_DIRECTION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}

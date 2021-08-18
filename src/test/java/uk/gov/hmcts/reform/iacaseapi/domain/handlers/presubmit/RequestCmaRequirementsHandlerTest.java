@@ -10,10 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,7 +107,10 @@ class RequestCmaRequirementsHandlerTest {
                 "2020-02-16",
                 "2020-02-02",
                 DirectionTag.REQUEST_CMA_REQUIREMENTS,
-                Collections.emptyList()
+                Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    Event.REQUEST_CMA_REQUIREMENTS.toString()
             )
         );
         when(directionAppender.append(
@@ -121,7 +121,8 @@ class RequestCmaRequirementsHandlerTest {
                 + cmaRequirementsReasons,
             Parties.APPELLANT,
             "2020-02-16",
-            DirectionTag.REQUEST_CMA_REQUIREMENTS
+            DirectionTag.REQUEST_CMA_REQUIREMENTS,
+            Event.REQUEST_CMA_REQUIREMENTS.toString()
         ))
             .thenReturn(Arrays.asList(requestCmaRequirements, originalDirection));
 

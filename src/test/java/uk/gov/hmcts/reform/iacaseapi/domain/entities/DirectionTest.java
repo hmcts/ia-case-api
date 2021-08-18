@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -16,6 +17,9 @@ class DirectionTest {
     private final String dateSent = "2018-12-25";
     private DirectionTag tag = DirectionTag.LEGAL_REPRESENTATIVE_REVIEW;
     private List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
+    private List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Collections.emptyList();
+    private final String uniqueId = UUID.randomUUID().toString();
+    private final String directionType = "someEventDirectionType";
 
     private Direction direction = new Direction(
         explanation,
@@ -24,6 +28,18 @@ class DirectionTest {
         dateSent,
         tag,
         previousDates
+    );
+
+    private Direction directionWithQuestions = new Direction(
+        explanation,
+        parties,
+        dateDue,
+        dateSent,
+        tag,
+        previousDates,
+        clarifyingQuestions,
+        uniqueId,
+        directionType
     );
 
     @Test
@@ -35,6 +51,20 @@ class DirectionTest {
         assertEquals(dateSent, direction.getDateSent());
         assertEquals(tag, direction.getTag());
         assertEquals(previousDates, direction.getPreviousDates());
+    }
+
+    @Test
+    void should_hold_onto_values_for_clarifying_questions() {
+
+        assertEquals(explanation, directionWithQuestions.getExplanation());
+        assertEquals(parties, directionWithQuestions.getParties());
+        assertEquals(dateDue, directionWithQuestions.getDateDue());
+        assertEquals(dateSent, directionWithQuestions.getDateSent());
+        assertEquals(tag, directionWithQuestions.getTag());
+        assertEquals(previousDates, directionWithQuestions.getPreviousDates());
+        assertEquals(clarifyingQuestions, directionWithQuestions.getClarifyingQuestions());
+        assertEquals(uniqueId, directionWithQuestions.getUniqueId());
+        assertEquals(directionType, directionWithQuestions.getDirectionType());
     }
 
     @Test

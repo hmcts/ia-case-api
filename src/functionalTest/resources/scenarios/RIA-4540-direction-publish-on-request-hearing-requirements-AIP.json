@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4272 Last modified direction publish - Direction to legal rep to submit hearing requirements",
+  "description": "RIA-4540 Last modified direction publish - Direction to legal rep to submit hearing requirements (AIP)",
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -9,7 +9,7 @@
       "eventId": "requestHearingRequirementsFeature",
       "state": "submitHearingRequirements",
       "caseData": {
-        "template": "minimal-appeal-submitted.json",
+        "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
           "directions": [
             {
@@ -33,13 +33,15 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-submitted.json",
+      "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
         "directions": [
           {
             "id": "2",
             "value": {
               "explanation": "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n# Next steps\n\nVisit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\nThe Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\nIf you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
+              "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+              "directionType": "requestHearingRequirementsFeature",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+5}",
               "dateSent": "{$TODAY}",
@@ -59,6 +61,8 @@
         ],
         "lastModifiedDirection": {
           "explanation": "The appeal is going to a hearing and you should tell the Tribunal if the appellant has any hearing requirements.\n\n# Next steps\n\nVisit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\nThe Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\nIf you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
+          "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+          "directionType": "requestHearingRequirementsFeature",
           "parties": "legalRepresentative",
           "dateDue": "{$TODAY+5}",
           "dateSent": "{$TODAY}",
