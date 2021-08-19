@@ -37,4 +37,11 @@
                 ]]></notes>
         <cve>CVE-2021-22119</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://nvd.nist.gov/vuln/detail/CVE-2020-23171
+                 Spring Framework vulnerability, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-23171 nim-lang all versions affected https://github.com/nim-lang/zip/issues/54
+                ]]></notes>
+        <cve>CVE-2020-23171</cve>
+    </suppress>
 </suppressions>
