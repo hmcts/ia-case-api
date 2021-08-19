@@ -88,7 +88,10 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                                     asylumCase.read(AsylumCaseFieldDefinition.DIRECTION_EDIT_DATE_DUE, String.class).orElse(""),
                                     dateProvider.now().toString(),
                                     idValue.getValue().getTag(),
-                                    appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent())
+                                    appendPreviousDates(idValue.getValue().getPreviousDates(), idValue.getValue().getDateDue(), idValue.getValue().getDateSent()),
+                                    Collections.emptyList(),
+                                    idValue.getValue().getUniqueId(),
+                                    idValue.getValue().getDirectionType()
                                 )
                             );
                         } else {
@@ -140,7 +143,10 @@ public class ChangeDirectionDueDateHandler implements PreSubmitCallbackHandler<A
                                 idValue.getValue().getDateDue(),
                                 existingDirection.getDateSent(),
                                 existingDirection.getTag(),
-                                Collections.emptyList()
+                                Collections.emptyList(),
+                                existingDirection.getClarifyingQuestions(),
+                                existingDirection.getUniqueId(),
+                                existingDirection.getDirectionType()
                             )
                         );
 

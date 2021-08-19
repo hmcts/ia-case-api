@@ -15,10 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_LIST;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +74,10 @@ class ChangeDirectionDueMidEventTest {
                     "2020-12-01",
                     "2019-12-01",
                     DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                        UUID.randomUUID().toString(),
+                        "directionType1"
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
@@ -85,7 +85,10 @@ class ChangeDirectionDueMidEventTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                        Collections.emptyList(),
+                        UUID.randomUUID().toString(),
+                        "directionType2"
                 ))
             );
 

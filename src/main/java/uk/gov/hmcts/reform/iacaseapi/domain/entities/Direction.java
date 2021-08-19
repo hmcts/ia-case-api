@@ -57,30 +57,6 @@ public class Direction {
         this.directionType = directionType;
     }
 
-    public Direction(
-            String explanation,
-            Parties parties,
-            String dateDue,
-            String dateSent,
-            DirectionTag tag,
-            List<IdValue<PreviousDates>> previousDates,
-            List<IdValue<ClarifyingQuestion>> clarifyingQuestions
-
-    ) {
-        this(explanation, parties, dateDue, dateSent, tag, previousDates, clarifyingQuestions, null, null);
-    }
-
-    public Direction(
-            String explanation,
-            Parties parties,
-            String dateDue,
-            String dateSent,
-            DirectionTag tag,
-            List<IdValue<PreviousDates>> previousDates
-    ) {
-        this(explanation, parties, dateDue, dateSent, tag, previousDates, null, null, null);
-    }
-
     public String getExplanation() {
         requireNonNull(explanation);
         return explanation;

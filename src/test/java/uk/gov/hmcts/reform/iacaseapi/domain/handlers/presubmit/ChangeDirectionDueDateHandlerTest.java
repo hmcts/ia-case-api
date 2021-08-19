@@ -14,10 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,7 +112,10 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-12-01",
                     "2019-12-01",
                     DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    "directionType1"
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
@@ -123,7 +123,10 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01")))
+                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    "directionType2"
                 ))
             );
 
@@ -152,7 +155,7 @@ class ChangeDirectionDueDateHandlerTest {
         verify(asylumCase).write(eq(DIRECTION_EDIT_PARTIES), directionEditPartiesCaptor.capture());
         assertEquals("Completed", applicationsCaptor.getValue().get(0).getValue().getApplicationStatus());
         verify(waFieldsPublisher).addLastModifiedDirection(
-                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), eq(null), eq(null));
+                eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), anyString());
 
         List<List<IdValue<Direction>>> asylumCaseValues = asylumValueCaptor.getAllValues();
         List<AsylumCaseFieldDefinition> asylumCaseFieldDefinitions = asylumExtractorCaptor.getAllValues();
@@ -255,7 +258,10 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-12-01",
                     "2019-12-01",
                     DirectionTag.LEGAL_REPRESENTATIVE_REVIEW,
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    "directionType1"
                 )),
                 new IdValue<>("2", new Direction(
                     "explanation-2",
@@ -263,7 +269,10 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    "directionType2"
                 ))
             );
 

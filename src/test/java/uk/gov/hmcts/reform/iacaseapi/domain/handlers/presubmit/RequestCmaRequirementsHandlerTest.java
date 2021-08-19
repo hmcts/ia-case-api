@@ -91,7 +91,11 @@ class RequestCmaRequirementsHandlerTest {
         IdValue originalDirection = new IdValue(
             "1",
             new Direction("explanation", Parties.APPELLANT, "2020-01-02", "2020-01-01", DirectionTag.BUILD_CASE,
-                Collections.emptyList())
+                Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType1"
+            )
         );
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
             .thenReturn(Optional.of(singletonList(originalDirection)));

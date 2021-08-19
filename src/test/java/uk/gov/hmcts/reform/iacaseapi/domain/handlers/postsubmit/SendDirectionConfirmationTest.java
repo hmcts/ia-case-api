@@ -9,10 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -44,25 +41,41 @@ class SendDirectionConfirmationTest {
     private IdValue originalDirection8 = new IdValue(
         "8",
         new Direction("explanation8", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType8"
+        )
     );
 
     private IdValue originalDirection9 = new IdValue(
         "9",
         new Direction("explanation9", Parties.RESPONDENT, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType9"
+        )
     );
 
     private IdValue originalDirection10 = new IdValue(
         "10",
         new Direction("explanation10", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
-            "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList())
+            "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType10"
+        )
     );
 
     private IdValue originalDirection11 = new IdValue(
         "11",
         new Direction("explanation11", Parties.RESPONDENT, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType11"
+        )
     );
 
     @Test
