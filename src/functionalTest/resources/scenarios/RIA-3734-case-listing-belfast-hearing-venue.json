@@ -1,0 +1,99 @@
+{
+  "description": "RIA-3734 case-listing Belfast as Hearing Venue",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 36831,
+      "eventId": "listCase",
+      "state": "listing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "ariaListingReference": "LP/12345/2019",
+          "hearingCentre": "manchester",
+          "listCaseHearingCentre": "belfast",
+          "listCaseHearingLength": "300",
+          "listCaseHearingDate": "2020-10-28T10:30:00.000",
+          "listCaseRequirementsVulnerabilities": "some vulnerabilities",
+          "listCaseRequirementsMultimedia": "some multimedia",
+          "listCaseRequirementsSingleSexCourt": "some single-sex court",
+          "listCaseRequirementsInCameraCourt": "some in-camera court",
+          "listCaseRequirementsOther": "some other requirements",
+          "reviewedUpdatedHearingRequirements": "Yes",
+          "doesTheCaseNeedToBeRelisted": "Yes",
+          "haveHearingAttendeesAndDurationBeenRecorded": "Yes",
+          "attendingTcw": "some TCW",
+          "attendingJudge": "some Judge",
+          "attendingAppellant": "some Appellant",
+          "attendingHomeOfficeLegalRepresentative": "some HO",
+          "attendingAppellantsLegalRepresentative": "some legal rep",
+          "actualCaseHearingLength": {
+            "hours": "2",
+            "minutes": "30"
+          },
+          "hearingRecordingDocuments": [
+            {
+              "id": "cbe101ff-7f87-423e-93cd-f731adf7d979",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6",
+                  "document_filename": "HearingRecording.mp3",
+                  "document_binary_url": "http://dm-store:4506/documents/9f57720d-5a80-43b7-8896-359f7788a1d6/binary"
+                },
+                "description": "some description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "currentHearingDetailsVisible": "Yes",
+        "ariaListingReference": "LP/12345/2019",
+        "hearingCentre": "manchester",
+        "listCaseHearingCentre": "belfast",
+        "listCaseHearingLength": "300",
+        "listCaseHearingDate": "2020-10-28T10:30:00.000",
+        "listCaseRequirementsVulnerabilities": "some vulnerabilities",
+        "listCaseRequirementsMultimedia": "some multimedia",
+        "listCaseRequirementsSingleSexCourt": "some single-sex court",
+        "listCaseRequirementsInCameraCourt": "some in-camera court",
+        "listCaseRequirementsOther": "some other requirements",
+        "uploadAdditionalEvidenceActionAvailable": "Yes",
+        "reheardCaseListedWithoutHearingRequirements": null,
+        "reviewedUpdatedHearingRequirements": null,
+        "doesTheCaseNeedToBeRelisted": null,
+        "haveHearingAttendeesAndDurationBeenRecorded": null,
+        "attendingTcw": null,
+        "attendingJudge": null,
+        "attendingAppellant": null,
+        "attendingHomeOfficeLegalRepresentative": null,
+        "attendingAppellantsLegalRepresentative": null,
+        "actualCaseHearingLength": null,
+        "hearingConductionOptions": null,
+        "hearingRecordingDocuments": null,
+        "notificationsSent": [
+          {
+            "id": "36831_CASE_LISTED_CASE_OFFICER",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "36831_CASE_LISTED_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "36831_CASE_LISTED_HOME_OFFICE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
