@@ -80,6 +80,21 @@ class ListCasePreparerTest {
     }
 
     @Test
+    void should_set_glasgow_as_list_case_hearing_centre_field() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+                .thenReturn(Optional.of(HearingCentre.GLASGOW));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
+    }
+
+    @Test
     void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());

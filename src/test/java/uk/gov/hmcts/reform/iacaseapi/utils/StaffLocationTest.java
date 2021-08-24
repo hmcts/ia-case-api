@@ -95,4 +95,18 @@ class StaffLocationTest {
         Location result = StaffLocation.getLocation(hearingCentre);
         assertEquals("North Shields", result.getName());
     }
+
+    @Test
+    void should_get_correct_location_of_Remote_Hearing() {
+        HearingCentre hearingCentre = HearingCentre.REMOTE_HEARING;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("Remote hearing", result.getName());
+    }
+
+    @Test
+    public void should_get_correct_location_of_Decision_Without_Hearing() {
+        HearingCentre hearingCentre = HearingCentre.DECISION_WITHOUT_HEARING;
+        Location result = StaffLocation.getLocation(hearingCentre);
+        assertEquals("Decision Without Hearing", result.getName());
+    }
 }
