@@ -34,6 +34,10 @@ public class StaffLocation {
                 return new Location("", "Taylor House");
             case "northShields":
                 return new Location("", "North Shields");
+            case "remoteHearing":
+                return new Location("", "Remote hearing");
+            case "decisionWithoutHearing":
+                return new Location("", "Decision Without Hearing");
             default:
                 throw new IllegalArgumentException("no hearing centre found");
         }
