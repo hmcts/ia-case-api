@@ -169,6 +169,7 @@ class AddAppellantDocumentsHandlerTest {
                         "dateResponded",
                         "question",
                         "answer",
+                        "uniqueId-1",
                         asList(
                             new IdValue<Document>(
                                 "1",
@@ -185,6 +186,7 @@ class AddAppellantDocumentsHandlerTest {
                         "dateResponded2",
                         "question2",
                         "answer2",
+                        "uniqueId-2",
                         null
                     )
                 )
@@ -227,6 +229,7 @@ class AddAppellantDocumentsHandlerTest {
                         "dateResponded",
                         "question",
                         "answer",
+                        "uniqueId-1",
                         null
                     )
                 ),
@@ -238,6 +241,7 @@ class AddAppellantDocumentsHandlerTest {
                         "dateResponded2",
                         "question2",
                         "answer2",
+                        "uniqueId-2",
                         null
                     )
                 )

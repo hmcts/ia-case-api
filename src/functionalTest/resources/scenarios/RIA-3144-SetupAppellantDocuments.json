@@ -1,5 +1,6 @@
 {
-  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements",
+  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements (submitClarifyingQuestionAnswers)",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",
@@ -54,6 +55,7 @@
                 "dateSent": "2020-05-28",
                 "question": "A question",
                 "dateResponded": "2020-05-28",
+                "directionId": "e0e2a89a-0745-11ec-9a03-0242ac130003",
                 "supportingEvidence": [
                   {
                     "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
@@ -101,6 +103,7 @@
               "dateSent": "2020-05-28",
               "question": "A question",
               "dateResponded": "2020-05-28",
+              "directionId": "e0e2a89a-0745-11ec-9a03-0242ac130003",
               "supportingEvidence": [
                 {
                   "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
