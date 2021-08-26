@@ -68,7 +68,7 @@ class UploadSensitiveDocsConfirmationTest {
         assertThat(
             actualResponse.getConfirmationBody().get())
             .contains(
-                "You can see the documentation in the [documents tab](/cases/case-details/1593428851262042#documents). "
+                "You can see the documentation in the [documents tab](/cases/case-details/1593428851262042#Documents). "
                     + "Select Edit documents from the Next step dropdown if you need to remove a document."
             );
     }

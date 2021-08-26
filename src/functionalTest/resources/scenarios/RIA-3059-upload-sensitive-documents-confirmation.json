@@ -16,7 +16,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have uploaded sensitive documentation",
-      "body": "#### What happens next\r\n\r\nYou can see the documentation in the [documents tab](/cases/case-details/1234#documents). Select Edit documents from the Next step dropdown if you need to remove a document."
+      "body": "#### What happens next\r\n\r\nYou can see the documentation in the [documents tab](/cases/case-details/1234#Documents). Select Edit documents from the Next step dropdown if you need to remove a document."
     }
   }
 }
