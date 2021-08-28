@@ -148,7 +148,8 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
         doc = new Document(
             "http://someUrl",
             "http://someUrl/bin",
-            "some sensitive document uploaded");
+            "some sensitive document uploaded",
+            "some document hash");
         someSensitiveDocDesc = "some sensitive doc desc";
         uploadedSensitiveDoc = new DocumentWithDescription(doc, someSensitiveDocDesc);
         return new IdValue<>("1", uploadedSensitiveDoc);

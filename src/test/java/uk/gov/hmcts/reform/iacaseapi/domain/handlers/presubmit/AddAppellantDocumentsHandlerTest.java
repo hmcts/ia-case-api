@@ -122,7 +122,7 @@ class AddAppellantDocumentsHandlerTest {
                 .thenReturn(Optional.empty());
 
         DocumentWithMetadata reasonsForAppealEvidence = new DocumentWithMetadata(
-            new Document("documentUrl", "binaryUrl", "documentFielname"),
+            new Document("documentUrl", "binaryUrl", "documentFielname", "documentHash"),
             "description",
             "dateUploaded",
             DocumentTag.ADDITIONAL_EVIDENCE
@@ -158,7 +158,7 @@ class AddAppellantDocumentsHandlerTest {
                 .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS))
             .thenReturn(Optional.empty());
-        Document clarifyingQuestionEvidence = new Document("documentUrl", "binaryUrl", "documentFielname");
+        Document clarifyingQuestionEvidence = new Document("documentUrl", "binaryUrl", "documentFielname", "documentHash");
         when(asylumCase.read(AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS))
             .thenReturn(Optional.of(asList(
                 new IdValue<>(

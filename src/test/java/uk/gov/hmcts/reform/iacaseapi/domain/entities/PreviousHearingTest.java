@@ -26,13 +26,15 @@ class PreviousHearingTest {
     private final Document doc = new Document(
         "documentUrl",
         "binaryUrl",
-        "documentFilename");
+        "documentFilename",
+        "documentHash");
 
     private final DocumentWithMetadata decisionAndReasonsDocument = new DocumentWithMetadata(
         new Document(
             "documentUrl",
             "binaryUrl",
-            "documentFilename"),
+            "documentFilename",
+            "documentHash"),
         "description",
         "dateUploaded",
         DocumentTag.FINAL_DECISION_AND_REASONS_PDF

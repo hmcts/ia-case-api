@@ -78,7 +78,8 @@ class DecideAnApplicationHandlerTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    "documentHash")));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",

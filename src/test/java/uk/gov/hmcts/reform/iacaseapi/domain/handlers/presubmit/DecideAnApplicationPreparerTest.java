@@ -72,7 +72,7 @@ class DecideAnApplicationPreparerTest {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1", new Document("url", "url", "FileName")));
+            Arrays.asList(new IdValue<>("1", new Document("url", "url", "FileName", "documentHash")));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",

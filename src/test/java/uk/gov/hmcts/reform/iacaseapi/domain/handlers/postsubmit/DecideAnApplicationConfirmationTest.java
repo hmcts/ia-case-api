@@ -86,7 +86,8 @@ class DecideAnApplicationConfirmationTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    "documentHash")));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", type, "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",
@@ -227,7 +228,8 @@ class DecideAnApplicationConfirmationTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    "documentHash")));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Adjourn", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",

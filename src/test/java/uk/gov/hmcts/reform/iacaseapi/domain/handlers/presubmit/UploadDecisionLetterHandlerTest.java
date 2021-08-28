@@ -38,7 +38,8 @@ class UploadDecisionLetterHandlerTest {
     private final Document someDoc = new Document(
         "some url",
         "some binary url",
-        "some filename");
+        "some filename",
+        "some documentHash");
 
     private final DocumentWithMetadata someLegalRepDocument = new DocumentWithMetadata(
         someDoc,

@@ -281,7 +281,8 @@ class AsylumCaseTest {
                 new Document(
                     "some-doc-url",
                     "some-doc-binary-url",
-                    "some-doc-filename"),
+                    "some-doc-filename",
+                    "some-doc-hash"),
                 "some-description"));
 
         asylumCase.write(RESPONDENT_EVIDENCE, asList(idValue));

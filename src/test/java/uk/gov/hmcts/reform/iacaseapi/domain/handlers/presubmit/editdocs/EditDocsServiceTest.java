@@ -119,7 +119,7 @@ class EditDocsServiceTest {
     }
 
     private static Document buildDocumentGivenDocId() {
-        return new Document("http://dm-store/" + DOC_ID, "", "");
+        return new Document("http://dm-store/" + DOC_ID, "", "", "");
     }
 
     private static DocumentWithMetadata buildDocWithMeta() {
