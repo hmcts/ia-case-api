@@ -313,6 +313,7 @@ security:
     citizen:
       - "startAppeal"
       - "editAppeal"
+      - "editAppealAfterSubmit"
       - "submitAppeal"
       - "buildCase"
       - "submitCase"

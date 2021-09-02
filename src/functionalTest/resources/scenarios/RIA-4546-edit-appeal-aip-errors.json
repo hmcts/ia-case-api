@@ -14,7 +14,7 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["This option is not available for 'Appellant in person' appeals."],
+    "errors": [],
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json"
     }
