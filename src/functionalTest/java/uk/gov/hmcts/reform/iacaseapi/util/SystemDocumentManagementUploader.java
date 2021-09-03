@@ -75,7 +75,8 @@ public class SystemDocumentManagementUploader {
                     .binary
                     .href,
                 uploadedDocument
-                    .originalDocumentName
+                    .originalDocumentName,
+                "some document hash"
             );
 
         } catch (IOException e) {

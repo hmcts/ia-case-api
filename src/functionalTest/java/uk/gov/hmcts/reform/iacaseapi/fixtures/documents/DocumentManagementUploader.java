@@ -75,7 +75,8 @@ public class DocumentManagementUploader implements DocumentUploader {
                     .binary
                     .href,
                 uploadedDocument
-                    .originalDocumentName
+                    .originalDocumentName,
+                "some document hash"
             );
 
         } catch (IOException e) {

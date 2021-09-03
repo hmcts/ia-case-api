@@ -98,7 +98,8 @@ public class EditDocsCaseNoteServiceTest extends SpringBootIntegrationTest {
         return new Document(
             "http://dm-store:89/someId",
             "",
-            filename
+            filename,
+            "some document hash"
         );
     }
 
