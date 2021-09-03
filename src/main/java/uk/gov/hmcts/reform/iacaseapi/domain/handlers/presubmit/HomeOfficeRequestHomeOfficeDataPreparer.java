@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Slf4j
 @Component
@@ -21,9 +23,13 @@ public class HomeOfficeRequestHomeOfficeDataPreparer implements PreSubmitCallbac
 
     private final boolean isHomeOfficeIntegrationEnabled;
 
+    private final FeatureToggler featureToggler;
+
     public HomeOfficeRequestHomeOfficeDataPreparer(
-        @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled) {
+        @Value("${featureFlag.isHomeOfficeIntegrationEnabled}") boolean isHomeOfficeIntegrationEnabled,
+        FeatureToggler featureToggler) {
         this.isHomeOfficeIntegrationEnabled = isHomeOfficeIntegrationEnabled;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -53,6 +59,16 @@ public class HomeOfficeRequestHomeOfficeDataPreparer implements PreSubmitCallbac
 
         YesOrNo isAppealOutOfCountry = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY, YesOrNo.class)
                 .orElse(NO);
+
+        AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+
+        if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+
+            response.addError("You can only request Home Office data for an appeal against a Protection "
+                    + "or Revocation of Protection decision");
+            return response;
+        }
 
         if (isAppealOutOfCountry == YES) {
 

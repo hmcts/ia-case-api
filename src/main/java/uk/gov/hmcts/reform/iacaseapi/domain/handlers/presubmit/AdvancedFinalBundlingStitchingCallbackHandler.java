@@ -10,10 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -112,8 +109,13 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
-        if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).map(
-            value -> value.equals(YesOrNo.YES)).orElse(true)) {
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+
+        if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
+                .map(value -> value.equals(YesOrNo.YES))
+                .orElse(true)
+                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
             handleHomeOfficeNotification(callback, asylumCase);
         }

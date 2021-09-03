@@ -1,0 +1,80 @@
+{
+  "description": "RIA-4815 Request Home Office data for PA and RP appeal types",
+  "launchDarklyKey": "home-office-uan-pa-rp-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "requestHomeOfficeData",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeSearchResponse": "{\"messageHeader\":{\"eventDateTime\":\"2020-08-25T08:30:29.305206Z\",\"correlationId\":\"bbd96db3-090d-41c9-beda-f5c1763013b3\",\"consumer\":{\"code\":\"HMCTS\",\"description\":\"HM Courts and Tribunal Service\"}},\"messageType\":\"RESPONSE_RIGHT_OF_APPEAL_DETAILS\",\"status\":[{\"person\":{\"givenName\":null,\"familyName\":\"TestSix\",\"fullName\":\"Asylumcase TestSix\",\"gender\":{\"code\":\"F\",\"description\":\"Female\"},\"dayOfBirth\":4,\"monthOfBirth\":4,\"yearOfBirth\":1995,\"nationality\":{\"code\":\"CHL\",\"description\":\"Chile\"}},\"applicationStatus\":{\"documentReference\":\"1212-0099-0062-8083\",\"roleType\":{\"code\":\"SPOUSE\",\"description\":\"Spouse\"},\"roleSubType\":null,\"applicationType\":{\"code\":\"ASYLUM\",\"description\":\"Asylum and Protection\"},\"claimReasonType\":null,\"decisionType\":{\"code\":\"REFUSE\",\"description\":\"SD outcome\"},\"decisionDate\":\"2020-07-30T00:00:00Z\",\"decisionCommunication\":null,\"rejectionReasons\":[{\"reason\":\"Refused asylum\"}],\"metadata\":null}}]}",
+          "homeOfficeAppellantsList": {
+            "value": {
+              "code": "Asylumcase TestSix",
+              "label": "Asylumcase TestSix-040495"
+            },
+            "list_items": [
+              {
+                "code": "Asylumcase TestSix",
+                "label": "Asylumcase TestSix-040495"
+              },
+              {
+                "code": "NoMatch",
+                "label": "No Match"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "homeOfficeSearchStatus": "SUCCESS",
+        "homeOfficeCaseStatusData": {
+          "person": {
+            "gender": {
+              "code": "F",
+              "description": "Female"
+            },
+            "nationality": {
+              "code": "CHL",
+              "description": "Chile"
+            },
+            "familyName": "TestSix",
+            "fullName": "Asylumcase TestSix",
+            "dayOfBirth": 4,
+            "monthOfBirth": 4,
+            "yearOfBirth": 1995
+          },
+          "applicationStatus": {
+            "applicationType": {
+              "code": "ASYLUM",
+              "description": "Asylum and Protection"
+            },
+            "decisionDate": "2020-07-30T00:00:00Z",
+            "decisionType": {
+              "code": "REFUSE",
+              "description": "SD outcome"
+            },
+            "documentReference": "1212-0099-0062-8083",
+            "roleType": {
+              "code": "SPOUSE",
+              "description": "Spouse"
+            }
+          },
+          "displayDateOfBirth": "04 Apr 1995",
+          "displayRejectionReasons": "Refused asylum",
+          "displayDecisionDate": "30 Jul 2020"
+        }
+      }
+    }
+  }
+}
