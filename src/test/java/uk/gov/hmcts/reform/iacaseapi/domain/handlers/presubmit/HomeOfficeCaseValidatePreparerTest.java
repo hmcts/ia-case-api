@@ -8,6 +8,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
@@ -16,13 +18,20 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPE
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -33,8 +42,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class HomeOfficeCaseValidatePreparerTest {
 
@@ -58,16 +67,31 @@ class HomeOfficeCaseValidatePreparerTest {
                 new HomeOfficeCaseValidatePreparer(true, featureToggler, homeOfficeApi);
     }
 
-    @ParameterizedTest
-    @EnumSource(
-            value = Event.class,
-            names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID", "REQUEST_HOME_OFFICE_DATA" })
-    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled(Event event) {
+    @Test
+    void handle_should_return_error_if_appeal_type_not_present() {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback))
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("AppealType is not present.");
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled_pa_rp_appeal_types(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
         when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> response =
@@ -77,21 +101,113 @@ class HomeOfficeCaseValidatePreparerTest {
         assertThat(response.getData()).isNotEmpty();
         assertThat(response.getData()).isEqualTo(asylumCase);
         assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(
-            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
 
+        if (Arrays.asList(PA, RP).contains(appealType)) {
+            verify(homeOfficeApi, times(1)).aboutToStart(callback);
+            verify(asylumCase, times(1)).write(
+                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        } else {
+            verify(homeOfficeApi, times(0)).aboutToStart(callback);
+            verify(asylumCase, times(0)).write(
+                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        }
     }
 
     @ParameterizedTest
-    @EnumSource(
-            value = Event.class,
-            names = { "SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL", "MARK_APPEAL_PAID", "REQUEST_HOME_OFFICE_DATA" })
-    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_disabled(Event event) {
+    @MethodSource("eventAndAppealTypesData")
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled_dc_ea_hu_appeal_types(Event event, AppealType appealType) {
 
-        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
+
+        if (Arrays.asList(DC, EA, HU).contains(appealType)) {
+            verify(homeOfficeApi, times(1)).aboutToStart(callback);
+            verify(asylumCase, times(1)).write(
+                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        } else {
+            verify(homeOfficeApi, times(0)).aboutToStart(callback);
+            verify(asylumCase, times(0)).write(
+                    IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_enabled(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(homeOfficeApi.aboutToStart(callback)).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+                homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotEmpty();
+        assertThat(response.getData()).isEqualTo(asylumCase);
+        assertThat(response.getErrors()).isEmpty();
+
+        verify(homeOfficeApi, times(1)).aboutToStart(callback);
+        verify(asylumCase, times(1)).write(
+                IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
+    }
+
+    private static Stream<Arguments> eventAndAppealTypesData() {
+
+        return Stream.of(
+                Arguments.of(SUBMIT_APPEAL, PA),
+                Arguments.of(SUBMIT_APPEAL, RP),
+                Arguments.of(SUBMIT_APPEAL, DC),
+                Arguments.of(SUBMIT_APPEAL, EA),
+                Arguments.of(SUBMIT_APPEAL, HU),
+                Arguments.of(PAY_AND_SUBMIT_APPEAL, PA),
+                Arguments.of(PAY_AND_SUBMIT_APPEAL, RP),
+                Arguments.of(PAY_AND_SUBMIT_APPEAL, DC),
+                Arguments.of(PAY_AND_SUBMIT_APPEAL, EA),
+                Arguments.of(PAY_AND_SUBMIT_APPEAL, HU),
+                Arguments.of(MARK_APPEAL_PAID, PA),
+                Arguments.of(MARK_APPEAL_PAID, RP),
+                Arguments.of(MARK_APPEAL_PAID, DC),
+                Arguments.of(MARK_APPEAL_PAID, EA),
+                Arguments.of(MARK_APPEAL_PAID, HU),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, PA),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, RP),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, DC),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, EA),
+                Arguments.of(REQUEST_HOME_OFFICE_DATA, HU)
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_checks_home_office_integration_enabled_returns_yes_and_uan_feature_disabled(Event event, AppealType appealType) {
+
+        when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(false);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         PreSubmitCallbackResponse<AsylumCase> response =
                 homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
@@ -105,15 +221,19 @@ class HomeOfficeCaseValidatePreparerTest {
         verify(homeOfficeApi, times(0)).aboutToStart(callback);
     }
 
-    @Test
-    void handler_checks_home_office_integration_disabled_returns_no() {
+    @ParameterizedTest
+    @MethodSource("eventAndAppealTypesData")
+    void handler_checks_home_office_integration_disabled_returns_no(Event event, AppealType appealType) {
 
         homeOfficeCaseValidatePreparer =
                 new HomeOfficeCaseValidatePreparer(false, featureToggler, homeOfficeApi);
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         PreSubmitCallbackResponse<AsylumCase> response =
             homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
