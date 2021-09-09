@@ -110,7 +110,6 @@ class CaseManagementCategoryAppenderTest {
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == START_APPEAL
                         || callback.getEvent() == Event.EDIT_APPEAL
-                        || callback.getEvent() == Event.ADMIN_CASE_UPDATE
                         || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {

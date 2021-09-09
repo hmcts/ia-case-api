@@ -351,8 +351,6 @@ security:
       - "rollbackPayment"
       - "rollbackPaymentTimeout"
       - "rollbackPaymentTimeoutToPaymentPending"
-    caseworker-wa-task-configuration:
-      - "adminCaseUpdate"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
