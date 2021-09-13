@@ -1,6 +1,9 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url 'https://jitpack.io'
+        }
     }
     dependencies {
         classpath("org.yaml:snakeyaml:1.23")
@@ -302,6 +305,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+//    compile group: 'uk.gov.hmcts.reform', name: 'ccd-case-document-am-client', version: '1.7.1'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
     compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
@@ -318,6 +322,8 @@ dependencies {
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
+//    implementation 'com.github.hmcts:ccd-case-document-am-client:1.7.1'
+
     testImplementation libraries.junit5
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
         exclude group: 'junit', module: 'junit'
@@ -333,6 +339,7 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+//    testCompile group: 'uk.gov.hmcts.reform', name: 'ccd-case-document-am-client', version: '1.7.1'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
