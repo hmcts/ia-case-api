@@ -1,0 +1,34 @@
+{
+  "description": "RIA-4711-add-stateless-edit_appeal-after-submit-appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantStateless": "isStateless"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantNationalities": [
+          {
+            "id" : "1",
+            "value": {
+              "code": "ZZ"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
