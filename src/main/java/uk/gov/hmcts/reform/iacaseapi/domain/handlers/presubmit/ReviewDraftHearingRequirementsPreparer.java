@@ -88,11 +88,19 @@ public class ReviewDraftHearingRequirementsPreparer implements PreSubmitCallback
 
     static void decorateOutsideEvidenceDefaultsForOldCases(AsylumCase asylumCase) {
 
+        final Optional<YesOrNo> isAppealOutOfCountry =
+                asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class);
+
         final Optional<YesOrNo> isEvidenceFromOutsideUkOoc =
             asylumCase.read(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC, YesOrNo.class);
 
         final Optional<YesOrNo> isEvidenceFromOutsideUkInCountry =
             asylumCase.read(IS_EVIDENCE_FROM_OUTSIDE_UK_IN_COUNTRY, YesOrNo.class);
+
+
+        if (!isAppealOutOfCountry.isPresent()) {
+            asylumCase.write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
+        }
 
         if (!isEvidenceFromOutsideUkOoc.isPresent()) {
             asylumCase.write(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC, YesOrNo.NO);

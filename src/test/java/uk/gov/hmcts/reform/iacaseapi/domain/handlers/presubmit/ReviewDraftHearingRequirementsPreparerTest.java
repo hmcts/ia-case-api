@@ -104,6 +104,8 @@ class ReviewDraftHearingRequirementsPreparerTest {
         verify(asylumCase, times(1)).write(
             IS_EVIDENCE_FROM_OUTSIDE_UK_OOC,
             YesOrNo.NO);
+
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.NO);
     }
 
     @Test
