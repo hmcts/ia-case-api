@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -91,15 +95,15 @@ class RequestHearingRequirementsDirectionTest {
         assertTrue(canHandle);
     }
 
-    @Test
-    void should_append_new_direction_to_existing_directions_for_the_case() {
+    @ParameterizedTest
+    @EnumSource(value = Parties.class, names = {"LEGAL_REPRESENTATIVE", "APPELLANT"})
+    void should_append_new_direction_to_existing_directions_for_the_case(Parties party) {
 
         final List<IdValue<Direction>> existingDirections = new ArrayList<>();
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
 
         final String expectedExplanationPart =
             "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.";
-        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
         final String expectedDateDue = "2018-12-25";
         final DirectionTag expectedTag = DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS;
 
@@ -108,11 +112,15 @@ class RequestHearingRequirementsDirectionTest {
         when(callback.getEvent()).thenReturn(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+
+        JourneyType journeyType = (party == Parties.APPELLANT) ? JourneyType.AIP : JourneyType.REP;
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(journeyType));
+
         when(directionAppender.append(
             eq(asylumCase),
             eq(existingDirections),
             contains(expectedExplanationPart),
-            eq(expectedParties),
+            eq(party),
             eq(expectedDateDue),
             eq(expectedTag)
         )).thenReturn(allDirections);
@@ -127,7 +135,7 @@ class RequestHearingRequirementsDirectionTest {
             eq(asylumCase),
             eq(existingDirections),
             contains(expectedExplanationPart),
-            eq(expectedParties),
+            eq(party),
             eq(expectedDateDue),
             eq(expectedTag)
         );

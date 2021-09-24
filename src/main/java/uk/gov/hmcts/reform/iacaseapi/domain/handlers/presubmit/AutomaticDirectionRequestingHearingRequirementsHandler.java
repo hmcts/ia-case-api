@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome.DECISION_MAINTAINED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_APPEAL_RESPONSE;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -84,20 +87,31 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
         }
 
-        TimedEvent timedEvent = scheduler.schedule(
-            new TimedEvent(
-                "",
-                Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
-                // + 1 because you want to have full day on due date day for any changes and trigger event at night
-                scheduledDate,
-                "IA",
-                "Asylum",
-                callback.getCaseDetails().getId()
-            )
-        );
+        boolean isReviewOutcomeMaintained = isReviewOutcomeMaintained(callback);
 
-        asylumCase.write(AsylumCaseFieldDefinition.AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, timedEvent.getId());
-
+        if (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isReviewOutcomeMaintained) {
+            TimedEvent timedEvent = scheduler.schedule(
+                new TimedEvent(
+                    "",
+                    Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
+                    // + 1 because you want to have full day on due date day for any changes and trigger event at night
+                    scheduledDate,
+                    "IA",
+                    "Asylum",
+                    callback.getCaseDetails().getId()
+                )
+            );
+            asylumCase.write(AsylumCaseFieldDefinition.AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS, timedEvent.getId());
+        }
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isReviewOutcomeMaintained(Callback<AsylumCase> callback) {
+        final AppealReviewOutcome reviewOutcome = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal Review Outcome is mandatory"));
+
+        return callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW
+            && reviewOutcome == DECISION_MAINTAINED;
     }
 }
