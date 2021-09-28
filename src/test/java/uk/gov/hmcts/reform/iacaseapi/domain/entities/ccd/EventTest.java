@@ -111,12 +111,11 @@ class EventTest {
         assertEquals("payForAppeal", Event.PAY_FOR_APPEAL.toString());
         assertEquals("rollbackPayment", Event.ROLLBACK_PAYMENT.toString());
         assertEquals("rollbackPaymentTimeout", Event.ROLLBACK_PAYMENT_TIMEOUT.toString());
-        assertEquals("adminCaseUpdate", Event.ADMIN_CASE_UPDATE.toString());
         assertEquals("generateUpperTribunalBundle", Event.GENERATE_UPPER_TRIBUNAL_BUNDLE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(110, Event.values().length);
+        assertEquals(109, Event.values().length);
     }
 }

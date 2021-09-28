@@ -112,7 +112,6 @@ public enum Event {
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     EDIT_PAYMENT_METHOD("editPaymentMethod"),
-    ADMIN_CASE_UPDATE("adminCaseUpdate"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
 
     @JsonEnumDefaultValue

@@ -33,7 +33,6 @@ public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && isRepJourney
                && Arrays.asList(
-            Event.ADMIN_CASE_UPDATE,
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());

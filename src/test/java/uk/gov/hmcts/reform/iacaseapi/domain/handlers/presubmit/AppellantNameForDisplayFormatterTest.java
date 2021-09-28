@@ -131,7 +131,7 @@ class AppellantNameForDisplayFormatterTest {
 
                 boolean canHandle = appellantNameForDisplayFormatter.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && callback.getEvent() != Event.ADMIN_CASE_UPDATE) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);

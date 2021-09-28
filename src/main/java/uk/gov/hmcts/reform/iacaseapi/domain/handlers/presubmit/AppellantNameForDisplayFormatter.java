@@ -27,7 +27,7 @@ public class AppellantNameForDisplayFormatter implements PreSubmitCallbackHandle
         boolean isAipJourney = journeyTypeOptional.map(journeyType -> journeyType == JourneyType.AIP).orElse(false);
         Event event = callback.getEvent();
         boolean isStartOrEditAipEvent = isAipJourney && (event == Event.START_APPEAL || event == Event.EDIT_APPEAL);
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent && event != Event.ADMIN_CASE_UPDATE;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && !isStartOrEditAipEvent;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
