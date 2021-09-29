@@ -261,6 +261,7 @@ security:
       - "removeLegalRepresentative"
       - "recordOutOfTimeDecision"
       - "markEvidenceAsReviewed"
+      - "completeClarifyQuestions"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

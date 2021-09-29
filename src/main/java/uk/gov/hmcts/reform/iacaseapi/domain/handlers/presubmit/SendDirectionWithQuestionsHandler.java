@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -11,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -76,6 +80,15 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
                 callback.getEvent().toString()
         );
         asylumCase.write(DIRECTIONS, allDirections);
+
+        Optional<CaseDetails<AsylumCase>> beforeCaseDetails = callback.getCaseDetailsBefore();
+        if (beforeCaseDetails.isPresent()) {
+            State preClarifyingState = beforeCaseDetails.get().getState();
+            if (preClarifyingState != AWAITING_CLARIFYING_QUESTIONS_ANSWERS
+                && preClarifyingState != CLARIFYING_QUESTIONS_ANSWERS_SUBMITTED) {
+                asylumCase.write(AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE, preClarifyingState);
+            }
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
