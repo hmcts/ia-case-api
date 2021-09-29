@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "caseArgumentAvailable": null,
+          "caseArgumentAvailable": "Yes",
           "caseArgumentDocument": {
             "document_url": "{$FIXTURE_DOC3_PDF_URL}",
             "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
@@ -52,36 +52,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "caseArgumentAvailable": "Yes",
-        "caseArgumentDocument": {
-          "document_url": "{$FIXTURE_DOC3_PDF_URL}",
-          "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-          "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
-        },
-        "caseArgumentDescription": "Case argument",
-        "caseArgumentEvidence": [
-          {
-            "id": "1",
-            "value": {
-              "document": {
-                "document_url": "{$FIXTURE_DOC1_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
-              },
-              "description": "Some case argument evidence"
-            }
-          },
-          {
-            "id": "2",
-            "value": {
-              "document": {
-                "document_url": "{$FIXTURE_DOC2_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
-              },
-              "description": "Some more case argument evidence"
-            }
-          }
-        ],
         "legalRepresentativeDocuments": [
           {
             "id": "4",
@@ -93,16 +63,17 @@
               },
               "description": "",
               "dateUploaded": "{$TODAY}",
-              "tag": "submitCaseBundle"
+              "tag": "submitCaseBundle",
+              "suppliedBy": ""
             }
           },
           {
             "id": "3",
             "value": {
               "document": {
-                "document_url": "{$FIXTURE_DOC3_PDF_URL}",
-                "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "doc3.pdf"
               },
               "description": "Case argument",
               "dateUploaded": "{$TODAY}",
@@ -115,7 +86,7 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_filename": "doc1.pdf"
               },
               "description": "Some case argument evidence",
               "dateUploaded": "{$TODAY}",
@@ -128,7 +99,7 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC2_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_filename": "doc2.pdf"
               },
               "description": "Some more case argument evidence",
               "dateUploaded": "{$TODAY}",

@@ -11,7 +11,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_AVAILABLE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DESCRIPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_DOCUMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_ARGUMENT_EVIDENCE;
@@ -38,7 +37,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
@@ -127,7 +125,7 @@ class BuildCaseHandlerTest {
             .thenReturn(caseArgumentEvidenceWithMetadata);
 
         when(documentsAppender
-            .append(existingLegalRepresentativeDocuments, caseArgumentDocumentsWithMetadata, DocumentTag.CASE_ARGUMENT))
+            .append(existingLegalRepresentativeDocuments, caseArgumentDocumentsWithMetadata))
             .thenReturn(allLegalRepresentativeDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -147,12 +145,14 @@ class BuildCaseHandlerTest {
         verify(documentsAppender, times(1))
             .append(
                 existingLegalRepresentativeDocuments,
-                caseArgumentDocumentsWithMetadata,
-                DocumentTag.CASE_ARGUMENT
+                caseArgumentDocumentsWithMetadata
             );
 
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
-        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
+
+        verify(asylumCase, times(1)).clear(CASE_ARGUMENT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(CASE_ARGUMENT_DESCRIPTION);
+        verify(asylumCase, times(1)).clear(CASE_ARGUMENT_EVIDENCE);
     }
 
     @Test
@@ -192,7 +192,7 @@ class BuildCaseHandlerTest {
             .thenReturn(caseArgumentEvidenceWithMetadata);
 
         when(documentsAppender
-            .append(any(List.class), eq(caseArgumentDocumentsWithMetadata), eq(DocumentTag.CASE_ARGUMENT)))
+            .append(any(List.class), eq(caseArgumentDocumentsWithMetadata)))
             .thenReturn(allLegalRepresentativeDocuments);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -212,8 +212,7 @@ class BuildCaseHandlerTest {
         verify(documentsAppender, times(1))
             .append(
                 legalRepresentativeDocumentsCaptor.capture(),
-                eq(caseArgumentDocumentsWithMetadata),
-                eq(DocumentTag.CASE_ARGUMENT)
+                eq(caseArgumentDocumentsWithMetadata)
             );
 
         List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments =
@@ -224,7 +223,6 @@ class BuildCaseHandlerTest {
         assertEquals(0, legalRepresentativeDocuments.size());
 
         verify(asylumCase, times(1)).write(LEGAL_REPRESENTATIVE_DOCUMENTS, allLegalRepresentativeDocuments);
-        verify(asylumCase, times(1)).write(CASE_ARGUMENT_AVAILABLE, YesOrNo.YES);
     }
 
     @Test

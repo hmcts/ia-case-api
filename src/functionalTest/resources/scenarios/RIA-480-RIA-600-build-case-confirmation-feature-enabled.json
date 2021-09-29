@@ -16,8 +16,8 @@
   "expectation": {
     "status": 200,
     "confirmation": {
-      "header": "# Upload saved\nYou still need to submit your case",
-      "body": "#### What happens next?\n\nIf you're ready for your case to be reviewed, [submit your case](/case/IA/Asylum/1234/trigger/submitCase).\n\nIf you're not yet ready for your case to be reviewed, continue to [build your case](/case/IA/Asylum/1234/trigger/buildCase)."
+      "header": "# You have submitted your case",
+      "body": "We have sent you a confirmation email\n\n#### What happens next\nThe case officer will now review your appeal. If it complies with the procedure rules and practice directions, they will send it to the respondent for them to review."
     }
   }
 }

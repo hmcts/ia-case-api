@@ -159,6 +159,9 @@ public enum AsylumCaseFieldDefinition {
     LEGAL_REPRESENTATIVE_DOCUMENTS(
         "legalRepresentativeDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
+    UPLOADED_LEGAL_REP_BUILD_CASE_DOCS(
+        "uploadedLegalRepBuildCaseDocs", new TypeReference<String>(){}),
+
     RESPONDENT_DOCUMENTS(
         "respondentDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
 
