@@ -260,6 +260,7 @@ security:
       - "manageFeeUpdate"
       - "removeLegalRepresentative"
       - "recordOutOfTimeDecision"
+      - "markEvidenceAsReviewed"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"

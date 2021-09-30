@@ -113,6 +113,7 @@ public enum Event {
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
     EDIT_PAYMENT_METHOD("editPaymentMethod"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
+    MARK_EVIDENCE_AS_REVIEWED("markEvidenceAsReviewed"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
