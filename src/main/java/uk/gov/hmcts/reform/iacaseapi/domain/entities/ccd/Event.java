@@ -114,6 +114,7 @@ public enum Event {
     EDIT_PAYMENT_METHOD("editPaymentMethod"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
     MARK_EVIDENCE_AS_REVIEWED("markEvidenceAsReviewed"),
+    UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
