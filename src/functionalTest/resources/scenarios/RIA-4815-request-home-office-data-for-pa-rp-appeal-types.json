@@ -10,16 +10,24 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "homeOfficeSearchResponse": "{\"messageHeader\":{\"eventDateTime\":\"2020-08-25T08:30:29.305206Z\",\"correlationId\":\"bbd96db3-090d-41c9-beda-f5c1763013b3\",\"consumer\":{\"code\":\"HMCTS\",\"description\":\"HM Courts and Tribunal Service\"}},\"messageType\":\"RESPONSE_RIGHT_OF_APPEAL_DETAILS\",\"status\":[{\"person\":{\"givenName\":null,\"familyName\":\"TestSix\",\"fullName\":\"Asylumcase TestSix\",\"gender\":{\"code\":\"F\",\"description\":\"Female\"},\"dayOfBirth\":4,\"monthOfBirth\":4,\"yearOfBirth\":1995,\"nationality\":{\"code\":\"CHL\",\"description\":\"Chile\"}},\"applicationStatus\":{\"documentReference\":\"1212-0099-0062-8083\",\"roleType\":{\"code\":\"SPOUSE\",\"description\":\"Spouse\"},\"roleSubType\":null,\"applicationType\":{\"code\":\"ASYLUM\",\"description\":\"Asylum and Protection\"},\"claimReasonType\":null,\"decisionType\":{\"code\":\"REFUSE\",\"description\":\"SD outcome\"},\"decisionDate\":\"2020-07-30T00:00:00Z\",\"decisionCommunication\":null,\"rejectionReasons\":[{\"reason\":\"Refused asylum\"}],\"metadata\":null}}]}",
+          "homeOfficeSearchResponse": "{\"messageHeader\":{\"consumer\":{\"code\":\"HMCTS\",\"description\":\"HM Courts and Tribunal Service\"},\"correlationId\":\"57c75a6a-2a33-45f3-a783-c7e86d1b003a\",\"eventDateTime\":\"2021-07-30T11:54:40+01:00\"},\"messageType\":\"RESPONSE_RIGHT_OF_APPEAL_DETAILS\",\"status\":[{\"person\":{\"gender\":{\"code\":\"F\",\"description\":\"Female\"},\"nationality\":{\"code\":\"IND\",\"description\":\"India\"},\"givenName\":\"PbsDepPartnerTest\",\"familyName\":\"EndtoEndPhaseTwo\",\"fullName\":\"PbsDepPartnerTest EndtoEndPhaseTwo\",\"dayOfBirth\":1,\"monthOfBirth\":1,\"yearOfBirth\":1986},\"applicationStatus\":{\"applicationType\":{\"code\":\"PBS_LTR_DEP_JOINER_APP_STAN\",\"description\":\"PBS - LTR Dependant Joiner - Standard\"},\"claimReasonType\":null,\"decisionCommunication\":{\"description\":\"Validation Rejection IC_email_only\",\"dispatchDate\":\"2021-07-27T15:07:02.892\",\"sentDate\":\"2021-07-27T03:06:57+0100\",\"type\":\"EMAIL\"},\"decisionDate\":\"2021-07-27T15:05:45Z\",\"decisionType\":{\"code\":\"REFUSE\",\"description\":\"Decision on the application\"},\"documentReference\":\"1212-0007-0002-6108/00\",\"roleSubType\":{\"code\":\"SPOUSE\",\"description\":\"Spouse\"},\"roleType\":{\"code\":\"APPLICANT\",\"description\":\"Applicant\"},\"rejectionReasons\":[{\"reason\":\"REFUSE\"}],\"ccdHomeOfficeMetadata\":null,\"ccdRejectionReasons\":null,\"metadata\":null},\"displayDateOfBirth\":null,\"displayRejectionReasons\":null,\"displayDecisionDate\":null,\"displayDecisionSentDate\":null,\"displayMetadataValueBoolean\":null,\"displayMetadataValueDateTime\":null,\"displayAppellantDetailsTitle\":null,\"displayApplicationDetailsTitle\":null},{\"person\":{\"gender\":{\"code\":\"M\",\"description\":\"Male\"},\"nationality\":{\"code\":\"IND\",\"description\":\"India\"},\"givenName\":\"PbsDepChildTest\",\"familyName\":\"EndtoEndPhaseTwo\",\"fullName\":\"PbsDepChildTest EndtoEndPhaseTwo\",\"dayOfBirth\":1,\"monthOfBirth\":1,\"yearOfBirth\":2016},\"applicationStatus\":{\"applicationType\":{\"code\":\"PBS_LTR_DEP_JOINER_APP_STAN\",\"description\":\"PBS - LTR Dependant Joiner - Standard\"},\"claimReasonType\":null,\"decisionCommunication\":{\"description\":\"Validation Rejection IC_email_only\",\"dispatchDate\":\"2021-07-27T15:07:03.044\",\"sentDate\":\"2021-07-27T03:06:58+0100\",\"type\":\"EMAIL\"},\"decisionDate\":\"2021-07-27T15:05:45Z\",\"decisionType\":{\"code\":\"REFUSE\",\"description\":\"Decision on the application\"},\"documentReference\":\"1212-0007-0002-6108/01\",\"roleSubType\":{\"code\":\"CHILD_UNDER_18\",\"description\":\"Child Under 18\"},\"roleType\":{\"code\":\"DEPENDANT\",\"description\":\"Dependant\"},\"rejectionReasons\":[{\"reason\":\"REFUSE\"}],\"ccdHomeOfficeMetadata\":null,\"ccdRejectionReasons\":null,\"metadata\":null},\"displayDateOfBirth\":null,\"displayRejectionReasons\":null,\"displayDecisionDate\":null,\"displayDecisionSentDate\":null,\"displayMetadataValueBoolean\":null,\"displayMetadataValueDateTime\":null,\"displayAppellantDetailsTitle\":null,\"displayApplicationDetailsTitle\":null},{\"person\":{\"gender\":{\"code\":\"M\",\"description\":\"Male\"},\"nationality\":{\"code\":\"NGA\",\"description\":\"Nigeria\"},\"givenName\":\"TierOneInv\",\"familyName\":\"HMCTSONE\",\"fullName\":\"TierOneInv HMCTSONE\",\"dayOfBirth\":9,\"monthOfBirth\":6,\"yearOfBirth\":1990},\"applicationStatus\":{\"applicationType\":{\"code\":\"PBS_LTR_DEP_JOINER_APP_STAN\",\"description\":\"PBS - LTR Dependant Joiner - Standard\"},\"claimReasonType\":null,\"decisionCommunication\":null,\"decisionDate\":null,\"decisionType\":null,\"documentReference\":null,\"roleSubType\":{\"code\":\"PERSON\",\"description\":\"Person\"},\"roleType\":{\"code\":\"SPONSOR\",\"description\":\"Sponsor\"},\"rejectionReasons\":null,\"ccdHomeOfficeMetadata\":null,\"ccdRejectionReasons\":null,\"metadata\":null},\"displayDateOfBirth\":null,\"displayRejectionReasons\":null,\"displayDecisionDate\":null,\"displayDecisionSentDate\":null,\"displayMetadataValueBoolean\":null,\"displayMetadataValueDateTime\":null,\"displayAppellantDetailsTitle\":null,\"displayApplicationDetailsTitle\":null}],\"errorDetail\":null}",
           "homeOfficeAppellantsList": {
             "value": {
-              "code": "Asylumcase TestSix",
-              "label": "Asylumcase TestSix-040495"
+              "code": "PbsDepChildTest EndtoEndPhaseTwo",
+              "label": "PbsDepChildTest EndtoEndPhaseTwo-010116"
             },
             "list_items": [
               {
-                "code": "Asylumcase TestSix",
-                "label": "Asylumcase TestSix-040495"
+                "code": "PbsDepPartnerTest EndtoEndPhaseTwo",
+                "label": "PbsDepPartnerTest EndtoEndPhaseTwo-010186"
+              },
+              {
+                "code": "PbsDepChildTest EndtoEndPhaseTwo",
+                "label": "PbsDepChildTest EndtoEndPhaseTwo-010116"
+              },
+              {
+                "code": "TierOneInv HMCTSONE",
+                "label": "TierOneInv HMCTSONE-090690"
               },
               {
                 "code": "NoMatch",
@@ -41,38 +49,78 @@
         "homeOfficeCaseStatusData": {
           "person": {
             "gender": {
-              "code": "F",
-              "description": "Female"
+              "code": "M",
+              "description": "Male"
             },
             "nationality": {
-              "code": "CHL",
-              "description": "Chile"
+              "code": "IND",
+              "description": "India"
             },
-            "familyName": "TestSix",
-            "fullName": "Asylumcase TestSix",
-            "dayOfBirth": 4,
-            "monthOfBirth": 4,
-            "yearOfBirth": 1995
+            "givenName": "PbsDepChildTest",
+            "familyName": "EndtoEndPhaseTwo",
+            "fullName": "PbsDepChildTest EndtoEndPhaseTwo",
+            "dayOfBirth": 1,
+            "monthOfBirth": 1,
+            "yearOfBirth": 2016
           },
           "applicationStatus": {
             "applicationType": {
-              "code": "ASYLUM",
-              "description": "Asylum and Protection"
+              "code": "PBS_LTR_DEP_JOINER_APP_STAN",
+              "description": "PBS - LTR Dependant Joiner - Standard"
             },
-            "decisionDate": "2020-07-30T00:00:00Z",
+            "decisionCommunication": {
+              "description": "Validation Rejection IC_email_only",
+              "dispatchDate": "2021-07-27T15:07:03.044",
+              "sentDate": "2021-07-27T03:06:58+0100",
+              "type": "EMAIL"
+            },
+            "decisionDate": "2021-07-27T15:05:45Z",
             "decisionType": {
               "code": "REFUSE",
-              "description": "SD outcome"
+              "description": "Decision on the application"
             },
-            "documentReference": "1212-0099-0062-8083",
+            "documentReference": "1212-0007-0002-6108/01",
+            "roleSubType": {
+              "code": "CHILD_UNDER_18",
+              "description": "Child Under 18"
+            },
             "roleType": {
-              "code": "SPOUSE",
-              "description": "Spouse"
-            }
+              "code": "DEPENDANT",
+              "description": "Dependant"
+            },
+            "rejectionReasons": [
+              {
+                "reason": "REFUSE"
+              }
+            ]
           },
-          "displayDateOfBirth": "04 Apr 1995",
-          "displayRejectionReasons": "Refused asylum",
-          "displayDecisionDate": "30 Jul 2020"
+          "displayDateOfBirth": "01 Jan 2016",
+          "displayRejectionReasons": "REFUSE",
+          "displayDecisionDate": "27 Jul 2021"
+        },
+        "homeOfficeAppellantsList": {
+          "value": {
+            "code": "PbsDepChildTest EndtoEndPhaseTwo",
+            "label": "PbsDepChildTest EndtoEndPhaseTwo-010116"
+          },
+          "list_items": [
+            {
+              "code": "PbsDepPartnerTest EndtoEndPhaseTwo",
+              "label": "PbsDepPartnerTest EndtoEndPhaseTwo-010186"
+            },
+            {
+              "code": "PbsDepChildTest EndtoEndPhaseTwo",
+              "label": "PbsDepChildTest EndtoEndPhaseTwo-010116"
+            },
+            {
+              "code": "TierOneInv HMCTSONE",
+              "label": "TierOneInv HMCTSONE-090690"
+            },
+            {
+              "code": "NoMatch",
+              "label": "No Match"
+            }
+          ]
         }
       }
     }
