@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
@@ -64,7 +65,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (featureToggler.getValue("home-office-uan-feature", false)) {
+        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+
+        if (featureToggler.getValue("home-office-uan-feature", false)
+                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
             Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
             YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO);
