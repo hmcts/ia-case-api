@@ -11,7 +11,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "paymentStatus": "Payment pending"
+          "paymentStatus": "Payment pending",
+          "paAppealTypePaymentOption": "payOffline"
         }
       }
     }
@@ -19,7 +20,7 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "You can only change the payment method to card following a failed payment using Payment by Account."
+      "You cannot change the payment method to card because you have already selected to pay by card."
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
