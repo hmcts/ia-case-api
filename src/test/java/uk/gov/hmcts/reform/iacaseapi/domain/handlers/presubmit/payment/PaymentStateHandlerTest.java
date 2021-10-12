@@ -205,6 +205,32 @@ class PaymentStateHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"EA", "HU", "PA"})
+    void should_return_valid_state_on_having_remissions_for_given_appeal_types_payment_failed(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.FAILED));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.valueOf(type)));
+        asylumCase.write(REMISSION_TYPE, RemissionType.HO_WAIVER_REMISSION);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+
+        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        } else {
+            Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"EA", "HU", "PA"})
     void should_return_valid_state_on_help_with_fees_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -334,7 +360,7 @@ class PaymentStateHandlerTest {
 
                 boolean canHandle = paymentStateHandler.canHandle(callbackStage, callback);
 
-                if (Event.SUBMIT_APPEAL == event
+                if ((Event.SUBMIT_APPEAL == event || Event.PAYMENT_APPEAL == event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);
