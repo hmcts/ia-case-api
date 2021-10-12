@@ -1490,6 +1490,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_REVIEW_OUTCOME(
         "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),
 
+    MARK_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
+            "markEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;
