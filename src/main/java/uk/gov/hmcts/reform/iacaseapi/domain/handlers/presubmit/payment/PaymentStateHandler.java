@@ -37,7 +37,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL
+               && (callback.getEvent() == Event.SUBMIT_APPEAL || callback.getEvent() == Event.PAYMENT_APPEAL)
                && isfeePaymentEnabled;
     }
 
@@ -66,8 +66,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         switch (appealType) {
             case EA:
             case HU:
-                if ((paymentStatus.isPresent() && paymentStatus.get() == PAYMENT_PENDING)
-                    || (remissionType.isPresent())) {
+                if ((paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                    || (remissionType.isPresent()))) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);

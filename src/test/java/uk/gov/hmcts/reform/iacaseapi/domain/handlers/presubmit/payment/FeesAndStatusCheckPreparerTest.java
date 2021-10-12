@@ -10,13 +10,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -180,6 +175,55 @@ class FeesAndStatusCheckPreparerTest {
 
         assertEquals(1, callbackResponse.getErrors().size());
         assertTrue(callbackResponse.getErrors().contains("You cannot make a payment for this appeal using Payment by Account"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
+    })
+    void should_return_not_available_error_for_ea_remission_appeals_remission_is_not_rejected(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.PARTIALLY_APPROVED));
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+
+        assertEquals(1, callbackResponse.getErrors().size());
+        assertTrue(callbackResponse.getErrors().contains("You cannot make a payment for this appeal using Payment by Account"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL"
+    })
+    void should_not_return_not_available_error_for_ea_remission_appeals_remission_is_rejected(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToStart(callback)).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, AppealType.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.REJECTED));
+
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
