@@ -15,6 +15,7 @@ public enum CaseFlagType {
     UNACCOMPANIED_MINOR("unaccompaniedMinor", "Unaccompanied minor"),
     SET_ASIDE_REHEARD("setAsideReheard", "Set aside - Reheard"),
     S94B_OUT_OF_COUNTRY("s94bOutOfCountry", "S94B Out of Country"),
+    APPEAL_ON_HOLD("appealOnHold", "Appeal on hold"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown", "Unknown");
