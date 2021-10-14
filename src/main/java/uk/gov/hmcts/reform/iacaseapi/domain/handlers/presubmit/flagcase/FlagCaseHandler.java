@@ -77,6 +77,10 @@ public class FlagCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.write(CASE_FLAGS, allCaseFlags);
 
         switch (flagType) {
+            case APPEAL_ON_HOLD:
+                asylumCase.write(CASE_FLAG_APPEAL_ON_HOLD_EXISTS, YesOrNo.YES);
+                asylumCase.write(CASE_FLAG_APPEAL_ON_HOLD_ADDITIONAL_INFORMATION, additionalInformation);
+                break;
             case ANONYMITY:
                 asylumCase.write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
                 asylumCase.write(CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION, additionalInformation);

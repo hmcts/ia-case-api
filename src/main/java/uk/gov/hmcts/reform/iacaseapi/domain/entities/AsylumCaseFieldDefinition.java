@@ -889,6 +889,12 @@ public enum AsylumCaseFieldDefinition {
     CASE_FLAG_S94B_OUT_OF_COUNTRY_ADDITIONAL_INFORMATION(
         "caseFlagS94bOutOfCountryAdditionalInformation", new TypeReference<String>() {}),
 
+    CASE_FLAG_APPEAL_ON_HOLD_EXISTS(
+            "caseFlagAppealOnHoldExists", new TypeReference<YesOrNo>() {}),
+
+    CASE_FLAG_APPEAL_ON_HOLD_ADDITIONAL_INFORMATION(
+            "caseFlagAppealOnHoldAdditionalInformation", new TypeReference<String>() {}),
+
     IS_APPELLANT_MINOR(
         "isAppellantMinor", new TypeReference<YesOrNo>() {}),
     APPELLANT_DATE_OF_BIRTH(

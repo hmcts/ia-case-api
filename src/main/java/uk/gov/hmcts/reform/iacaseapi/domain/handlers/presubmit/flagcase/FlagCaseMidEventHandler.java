@@ -44,6 +44,11 @@ public class FlagCaseMidEventHandler implements PreSubmitCallbackHandler<AsylumC
 
         String additionalInfo;
         switch (flagType) {
+            case APPEAL_ON_HOLD:
+                additionalInfo = asylumCase.read(CASE_FLAG_APPEAL_ON_HOLD_ADDITIONAL_INFORMATION, String.class)
+                        .orElse(StringUtils.EMPTY);
+                asylumCase.write(FLAG_CASE_ADDITIONAL_INFORMATION, additionalInfo);
+                break;
             case ANONYMITY:
                 additionalInfo = asylumCase.read(CASE_FLAG_ANONYMITY_ADDITIONAL_INFORMATION, String.class)
                     .orElse(StringUtils.EMPTY);
