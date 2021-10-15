@@ -1,26 +1,25 @@
 {
-  "description": "RIA-4471 error on edit payment method (Payment status - Payment pending)",
+  "description": "RIA-4911 No error on edit payment method (Payment status: failed - Inflight appeals without remissions)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
     "input": {
-      "id": 4471,
+      "id": 4911,
       "eventId": "editPaymentMethod",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "paymentStatus": "Payment pending"
+          "paymentStatus": "Failed",
+          "appealType": "protection"
         }
       }
     }
   },
   "expectation": {
     "status": 200,
-    "errors": [
-      "You can only change the payment method to card following a failed payment using Payment by Account."
-    ],
+    "errors": [],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
     }

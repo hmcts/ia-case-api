@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4471 error on edit payment method (Payment status - Paid)",
+  "description": "RIA-4471-RIA-4911 error on edit payment method (Payment status - Payment pending)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
@@ -11,7 +11,8 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "paymentStatus": "Paid"
+          "paymentStatus": "Payment pending",
+          "remissionType": "noRemission"
         }
       }
     }

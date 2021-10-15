@@ -1,0 +1,29 @@
+{
+  "description": "RIA-4471-RIA-4911 error on edit payment method (Payment status - Paid)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 4471,
+      "eventId": "editPaymentMethod",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "paymentStatus": "Paid",
+          "remissionType": "noRemission"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You can only change the payment method to card following a failed payment using Payment by Account."
+    ],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}
