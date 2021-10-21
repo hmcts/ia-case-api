@@ -1478,6 +1478,9 @@ public enum AsylumCaseFieldDefinition {
     SECOND_FTPA_DECISION_EXISTS(
         "secondFtpaDecisionExists", new TypeReference<YesOrNo>(){}),
 
+    CASE_NAME(
+        "caseName", new TypeReference<String>() {}),
+
     ;
 
     private final String value;
