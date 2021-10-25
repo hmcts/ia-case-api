@@ -28,7 +28,8 @@
                     "value": {
                       "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                       "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                      "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}",
+                      "document_hash": "{$FIXTURE_DOC1_PDF_HASH}"
                     }
                   }
                 ],
@@ -67,7 +68,8 @@
                   "value": {
                     "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                     "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                    "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}",
+                    "document_hash": "{$FIXTURE_DOC1_PDF_HASH}"
                   }
                 }
               ],

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.Value;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
@@ -148,7 +149,8 @@ class UploadSensitiveDocsAboutToSubmitHandlerTest {
         doc = new Document(
             "http://someUrl",
             "http://someUrl/bin",
-            "some sensitive document uploaded");
+            "some sensitive document uploaded",
+            UUID.randomUUID().toString());
         someSensitiveDocDesc = "some sensitive doc desc";
         uploadedSensitiveDoc = new DocumentWithDescription(doc, someSensitiveDocDesc);
         return new IdValue<>("1", uploadedSensitiveDoc);

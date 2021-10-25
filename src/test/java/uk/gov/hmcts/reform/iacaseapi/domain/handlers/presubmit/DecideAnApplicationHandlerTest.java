@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,7 +79,8 @@ class DecideAnApplicationHandlerTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    UUID.randomUUID().toString())));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",

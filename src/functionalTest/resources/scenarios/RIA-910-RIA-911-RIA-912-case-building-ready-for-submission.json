@@ -12,7 +12,8 @@
           "caseArgumentDocument": {
             "document_url": "{$FIXTURE_DOC3_PDF_URL}",
             "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}",
+            "document_hash": "{$FIXTURE_DOC3_PDF_HASH}"
           },
           "caseBuildingReadyForSubmission": "No"
         }
@@ -32,7 +33,8 @@
               "document": {
                 "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "PA 12345 2018-Awan-appeal-skeleton-argument.PDF"
+                "document_filename": "PA 12345 2018-Awan-appeal-skeleton-argument.PDF",
+                "document_hash" : "$/[0-9a-f]+/"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",
@@ -46,7 +48,8 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC3_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}",
+                "document_hash": "{$FIXTURE_DOC3_PDF_HASH}"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",

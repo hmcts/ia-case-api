@@ -14,7 +14,8 @@
           "caseArgumentDocument": {
             "document_url": "{$FIXTURE_DOC3_PDF_URL}",
             "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+            "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}",
+            "document_hash": "{$FIXTURE_DOC3_PDF_HASH}"
           },
           "caseArgumentDescription": "Case argument",
           "caseArgumentEvidence": [
@@ -24,7 +25,8 @@
                 "document": {
                   "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                   "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                  "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}",
+                  "document_hash": "{$FIXTURE_DOC1_PDF_HASH}"
                 },
                 "description": "Some case argument evidence"
               }
@@ -35,7 +37,8 @@
                 "document": {
                   "document_url": "{$FIXTURE_DOC2_PDF_URL}",
                   "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                  "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}",
+                  "document_hash": "{$FIXTURE_DOC2_PDF_HASH}"
                 },
                 "description": "Some more case argument evidence"
               }
@@ -59,7 +62,8 @@
               "document": {
                 "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
                 "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
-                "document_filename": "PA 12345 2018-Awan-appeal-skeleton-argument.PDF"
+                "document_filename": "PA 12345 2018-Awan-appeal-skeleton-argument.PDF",
+                "document_hash" : "$/[0-9a-f]+/"
               },
               "description": "",
               "dateUploaded": "{$TODAY}",
@@ -72,7 +76,8 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC3_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC3_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}"
+                "document_filename": "{$FIXTURE_DOC3_PDF_FILENAME}",
+                "document_hash": "{$FIXTURE_DOC3_PDF_HASH}"
               },
               "description": "Case argument",
               "dateUploaded": "{$TODAY}",
@@ -85,7 +90,8 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC1_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC1_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}"
+                "document_filename": "{$FIXTURE_DOC1_PDF_FILENAME}",
+                "document_hash": "{$FIXTURE_DOC1_PDF_HASH}"
               },
               "description": "Some case argument evidence",
               "dateUploaded": "{$TODAY}",
@@ -98,7 +104,8 @@
               "document": {
                 "document_url": "{$FIXTURE_DOC2_PDF_URL}",
                 "document_binary_url": "{$FIXTURE_DOC2_PDF_URL_BINARY}",
-                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}"
+                "document_filename": "{$FIXTURE_DOC2_PDF_FILENAME}",
+                "document_hash": "{$FIXTURE_DOC2_PDF_HASH}"
               },
               "description": "Some more case argument evidence",
               "dateUploaded": "{$TODAY}",

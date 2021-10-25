@@ -6,22 +6,24 @@ import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
-import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
 
 @Service
 public class SystemDocumentManagementUploader {
 
-    private final DocumentUploadClientApi documentUploadClientApi;
+    private final CaseDocumentClientApi caseDocumentClientApi;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
     public SystemDocumentManagementUploader(
-        DocumentUploadClientApi documentUploadClientApi,
+        CaseDocumentClientApi caseDocumentClientApi,
         AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
-        this.documentUploadClientApi = documentUploadClientApi;
+        this.caseDocumentClientApi = caseDocumentClientApi;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
@@ -39,10 +41,7 @@ public class SystemDocumentManagementUploader {
                 .getLegalRepresentativeAuthorization()
                 .getValue("Authorization");
 
-        final String userId = "1";
-
         try {
-
             MultipartFile file = new InMemoryMultipartFile(
                 resource.getFilename(),
                 resource.getFilename(),
@@ -50,18 +49,15 @@ public class SystemDocumentManagementUploader {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            UploadResponse uploadResponse =
-                documentUploadClientApi
-                    .upload(
-                        accessToken,
-                        serviceAuthorizationToken,
-                        userId,
-                        Collections.singletonList(file)
-                    );
+            DocumentUploadRequest uploadRequest = new DocumentUploadRequest(Classification.PUBLIC.name(),
+                "Asylum", "IA", Collections.singletonList(file));
 
-            uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
+
+            final UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(accessToken, serviceAuthorizationToken, uploadRequest);
+
+
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
                 uploadResponse
-                    .getEmbedded()
                     .getDocuments()
                     .get(0);
 
@@ -75,7 +71,9 @@ public class SystemDocumentManagementUploader {
                     .binary
                     .href,
                 uploadedDocument
-                    .originalDocumentName
+                    .originalDocumentName,
+                uploadedDocument
+                    .hashToken
             );
 
         } catch (IOException e) {

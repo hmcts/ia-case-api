@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +73,7 @@ class DecideAnApplicationPreparerTest {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         List<IdValue<Document>> evidence =
-            Arrays.asList(new IdValue<>("1", new Document("url", "url", "FileName")));
+            Arrays.asList(new IdValue<>("1", new Document("url", "url", "FileName", UUID.randomUUID().toString())));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Update appeal details", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",
