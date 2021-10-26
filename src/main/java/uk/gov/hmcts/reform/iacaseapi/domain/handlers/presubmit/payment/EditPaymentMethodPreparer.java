@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -51,14 +49,6 @@ public class EditPaymentMethodPreparer implements PreSubmitCallbackHandler<Asylu
 
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse
             = new PreSubmitCallbackResponse<>(asylumCase);
-
-        final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
-            .orElse(PaymentStatus.PAYMENT_PENDING);
-
-        if (!paymentStatus.equals(PaymentStatus.FAILED)) {
-            asylumCasePreSubmitCallbackResponse.addError("You can only change the payment method to card following a failed payment using Payment by Account.");
-            return asylumCasePreSubmitCallbackResponse;
-        }
 
         return asylumCasePreSubmitCallbackResponse;
     }

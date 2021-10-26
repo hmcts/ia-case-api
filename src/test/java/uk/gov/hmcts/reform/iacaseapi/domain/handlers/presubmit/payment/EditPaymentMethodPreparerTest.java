@@ -10,8 +10,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -45,22 +43,6 @@ class EditPaymentMethodPreparerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.EDIT_PAYMENT_METHOD);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = PaymentStatus.class, names = {
-        "PAID", "PAYMENT_PENDING"
-    })
-    void should_throw_error_on_edit_payment_method_for_non_failed_appeal_payments(PaymentStatus paymentStatus) {
-
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(paymentStatus));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("You can only change the payment method to card following a failed payment using Payment by Account."));
     }
 
     @Test
