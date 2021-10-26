@@ -19,7 +19,7 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "You can only change the payment method to card following a failed payment using Payment by Account."
+      "You cannot change the payment method because you have already paid the fee for this appeal."
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"

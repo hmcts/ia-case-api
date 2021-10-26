@@ -12,13 +12,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -55,8 +57,9 @@ class LegalRepresentativeDetailsHandlerTest {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
     }
 
-    @Test
-    void should_set_legal_representative_details_into_the_case_for_submit_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    void should_set_legal_representative_details_into_the_case_for_submit_appeal(Event event) {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -67,7 +70,7 @@ class LegalRepresentativeDetailsHandlerTest {
         when(userDetails.getSurname()).thenReturn("Doe");
         when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
 
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.empty());
@@ -85,8 +88,9 @@ class LegalRepresentativeDetailsHandlerTest {
         verify(asylumCase, times(1)).write(LEGAL_REP_NAME, expectedLegalRepName);
     }
 
-    @Test
-    void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    void should_set_legal_representative_details_into_the_case_for_pay_and_submit_appeal(Event event) {
 
         final String expectedLegalRepresentativeName = "John Doe";
         final String expectedLegalRepresentativeEmailAddress = "john.doe@example.com";
@@ -98,7 +102,7 @@ class LegalRepresentativeDetailsHandlerTest {
         when(userDetails.getEmailAddress()).thenReturn(expectedLegalRepresentativeEmailAddress);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.empty());
@@ -117,11 +121,12 @@ class LegalRepresentativeDetailsHandlerTest {
         verify(asylumCase, times(1)).write(LEGAL_REP_NAME, expectedLegalRepName);
     }
 
-    @Test
-    void should_not_overwrite_existing_legal_representative_details_for_submit_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    void should_not_overwrite_existing_legal_representative_details_for_submit_appeal(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
@@ -136,11 +141,12 @@ class LegalRepresentativeDetailsHandlerTest {
         verify(asylumCase, never()).write(any(), any());
     }
 
-    @Test
-    void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "SUBMIT_APPEAL", "EDIT_PAYMENT_METHOD", "PAY_AND_SUBMIT_APPEAL" })
+    void should_not_overwrite_existing_legal_representative_details_for_pay_and_submit_appeal(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(LEGAL_REPRESENTATIVE_NAME)).thenReturn(Optional.of("existing"));
         when(asylumCase.read(LEGAL_REPRESENTATIVE_EMAIL_ADDRESS)).thenReturn(Optional.of("existing"));
@@ -187,7 +193,8 @@ class LegalRepresentativeDetailsHandlerTest {
 
                 if (Arrays.asList(
                     SUBMIT_APPEAL,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                    EDIT_PAYMENT_METHOD,
+                    PAY_AND_SUBMIT_APPEAL)
                     .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 

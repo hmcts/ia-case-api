@@ -7,7 +7,7 @@
     "input": {
       "id": 4471,
       "eventId": "editPaymentMethod",
-      "state": "appealSubmitted",
+      "state": "caseBuilding",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
