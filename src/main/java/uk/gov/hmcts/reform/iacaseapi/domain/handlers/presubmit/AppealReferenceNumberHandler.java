@@ -91,7 +91,6 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                     appealType
                 );
 
-
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
 
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
