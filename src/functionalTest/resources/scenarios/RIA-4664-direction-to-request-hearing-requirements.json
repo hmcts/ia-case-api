@@ -11,18 +11,6 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
-          "subscriptions": [
-            {
-              "id": "1",
-              "value": {
-                "subscriber": "appellant",
-                "email": "{$TEST_CITIZEN_USERNAME}",
-                "wantsEmail": "Yes",
-                "mobileNumber": "{$TEST_CITIZEN_MOBILE}",
-                "wantsSms": "Yes"
-              }
-            }
-          ],
           "directions": [
             {
               "id": "1",
@@ -67,16 +55,6 @@
               "dateSent": "2018-12-25",
               "tag": ""
             }
-          }
-        ],
-        "notificationsSent": [
-          {
-            "id": "4664_REQUEST_HEARING_REQUIREMENTS_DIRECTION_AIP_EMAIL",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
-          },
-          {
-            "id": "4664_REQUEST_HEARING_REQUIREMENTS_DIRECTION_AIP_SMS",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ],
         "uploadAdditionalEvidenceActionAvailable": "Yes"
