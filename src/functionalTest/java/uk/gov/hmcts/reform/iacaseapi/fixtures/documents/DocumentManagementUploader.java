@@ -59,6 +59,7 @@ public class DocumentManagementUploader implements DocumentUploader {
                         Collections.singletonList(file)
                     );
 
+            //just for triggering the build
             uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
                 uploadResponse
                     .getEmbedded()
