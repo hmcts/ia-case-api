@@ -1,6 +1,6 @@
 {
   "description": "RIA-4664 Direction to Appellant to submit hearing requirements",
-  "enabled": false,
+  "enabled": "{$featureFlag.isSubmitHearingRequirementsEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
