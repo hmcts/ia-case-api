@@ -17,15 +17,20 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealReviewOutcome;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -34,6 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
@@ -41,36 +47,41 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
+@MockitoSettings(strictness = Strictness.LENIENT)
 class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
 
 
+    private final boolean timedEventServiceEnabled = true;
+    private final int reviewInDays = 5;
+    private final LocalDate now = LocalDate.now();
+    private final String id = "someId";
+    private final long caseId = 12345;
+    private final String jurisdiction = "IA";
+    private final String caseType = "Asylum";
     @Mock
     private DateProvider dateProvider;
     @Mock
     private Scheduler scheduler;
     @Mock
     private FeatureToggler featureToggler;
-
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
     @Captor
     private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
-
-    private final boolean timedEventServiceEnabled = true;
-    private final int reviewInDays = 5;
-    private final LocalDate now = LocalDate.now();
-
-    private final String id = "someId";
-    private final long caseId = 12345;
-    private final String jurisdiction = "IA";
-    private final String caseType = "Asylum";
-
     private AutomaticDirectionRequestingHearingRequirementsHandler automaticDirectionHandler;
+
+    private static Stream<Arguments> provideParameterValues() {
+        return Stream.of(
+            Arguments.of(JourneyType.AIP, Event.REQUEST_RESPONSE_REVIEW),
+            Arguments.of(JourneyType.AIP, Event.ADD_APPEAL_RESPONSE),
+            Arguments.of(JourneyType.REP, Event.REQUEST_RESPONSE_REVIEW),
+            Arguments.of(JourneyType.REP, Event.ADD_APPEAL_RESPONSE)
+        );
+    }
 
     @BeforeEach
     void setUp() {
@@ -86,14 +97,16 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
-    void should_schedule_automatic_direction_5_days_from_now(Event event) {
+    @MethodSource("provideParameterValues")
+    void should_schedule_automatic_direction_5_days_from_now(JourneyType journeyType, Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(event);
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(caseDetails.getId()).thenReturn(caseId);
         when(dateProvider.now()).thenReturn(now);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(journeyType));
 
         when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
             .thenReturn(Optional.of(AppealReviewOutcome.DECISION_MAINTAINED));
@@ -127,14 +140,17 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
-    void should_schedule_automatic_direction_in_10_minutes_for_test_user(Event event) {
+    @MethodSource("provideParameterValues")
+    void should_schedule_automatic_direction_in_10_minutes_for_test_user(JourneyType journeyType, Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(event);
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(caseDetails.getId()).thenReturn(caseId);
         when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(journeyType));
 
         when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
             .thenReturn(Optional.of(AppealReviewOutcome.DECISION_MAINTAINED));
@@ -174,14 +190,17 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"REQUEST_RESPONSE_REVIEW", "ADD_APPEAL_RESPONSE"})
-    void should_rethrow_exception_when_scheduler_failed(Event event) {
+    @MethodSource("provideParameterValues")
+    void should_rethrow_exception_when_scheduler_failed(JourneyType journeyType, Event event) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(event);
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(caseDetails.getId()).thenReturn(caseId);
         when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(journeyType));
 
         when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
             .thenReturn(Optional.of(AppealReviewOutcome.DECISION_MAINTAINED));
@@ -192,13 +211,17 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
-    @Test
-    void should_skip_timed_event_when_review_outcome_is_to_withdraw() {
+    @ParameterizedTest
+    @EnumSource(value = JourneyType.class, names = {"AIP", "REP"})
+    void should_skip_timed_event_when_review_outcome_is_to_withdraw(JourneyType journeyType) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(dateProvider.now()).thenReturn(now);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(journeyType));
 
         when(asylumCase.read(APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class))
             .thenReturn(Optional.of(AppealReviewOutcome.DECISION_WITHDRAWN));
@@ -217,13 +240,14 @@ class AutomaticDirectionRequestingHearingRequirementsHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONSE_REVIEW);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class))
+            .thenReturn(Optional.of(JourneyType.AIP));
         when(featureToggler.getValue("timed-event-short-delay", false)).thenReturn(false);
         when(dateProvider.now()).thenReturn(now);
         assertThatThrownBy(() -> automaticDirectionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Appeal Review Outcome is mandatory")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
-
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
