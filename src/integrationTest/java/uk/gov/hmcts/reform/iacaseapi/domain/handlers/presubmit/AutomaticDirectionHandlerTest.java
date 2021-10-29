@@ -59,6 +59,7 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
                                 .with(APPELLANT_FAMILY_NAME, "some family name")
                                 .with(SEND_DIRECTION_EXPLANATION, "some explanation")
                                 .with(SEND_DIRECTION_DATE_DUE, "2025-12-25")
+                                .with(APPEAL_REVIEW_OUTCOME, "decisionMaintained")
                         )
                 )
         );

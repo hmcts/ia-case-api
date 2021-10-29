@@ -1481,6 +1481,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_NAME(
         "caseName", new TypeReference<String>() {}),
 
+    APPEAL_REVIEW_OUTCOME(
+        "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),
+
     ;
 
     private final String value;
