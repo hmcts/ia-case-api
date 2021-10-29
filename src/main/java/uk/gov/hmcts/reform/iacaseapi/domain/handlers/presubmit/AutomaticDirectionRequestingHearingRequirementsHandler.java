@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
@@ -87,9 +89,7 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
             scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
         }
 
-        boolean isReviewOutcomeMaintained = isReviewOutcomeMaintained(callback);
-
-        if (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isReviewOutcomeMaintained) {
+        if (callback.getEvent().equals(ADD_APPEAL_RESPONSE) || isEligibleForAutomaticDirection(callback)) {
             TimedEvent timedEvent = scheduler.schedule(
                 new TimedEvent(
                     "",
@@ -106,12 +106,24 @@ public class AutomaticDirectionRequestingHearingRequirementsHandler implements P
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isReviewOutcomeMaintained(Callback<AsylumCase> callback) {
-        final AppealReviewOutcome reviewOutcome = callback.getCaseDetails().getCaseData()
-            .read(AsylumCaseFieldDefinition.APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class)
-            .orElseThrow(() -> new IllegalStateException("Appeal Review Outcome is mandatory"));
 
+    private boolean isEligibleForAutomaticDirection(Callback<AsylumCase> callback) {
+        final JourneyType journeyType = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .orElse(JourneyType.REP);
+
+        final Optional<AppealReviewOutcome> reviewOutcome = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.APPEAL_REVIEW_OUTCOME, AppealReviewOutcome.class);
+
+        //Support the in-flight cases, where the homeoffice decision is not available
+        if (!reviewOutcome.isPresent()) {
+            if (journeyType == JourneyType.REP) {
+                return true;
+            } else {
+                throw new IllegalStateException("Appeal Review Outcome is mandatory");
+            }
+        }
         return callback.getEvent() == Event.REQUEST_RESPONSE_REVIEW
-            && reviewOutcome == DECISION_MAINTAINED;
+            && reviewOutcome.get() == DECISION_MAINTAINED;
     }
 }
