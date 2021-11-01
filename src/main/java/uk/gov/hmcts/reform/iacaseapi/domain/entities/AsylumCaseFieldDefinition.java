@@ -531,6 +531,9 @@ public enum AsylumCaseFieldDefinition {
     LAST_MODIFIED_DIRECTION(
         "lastModifiedDirection", new TypeReference<Direction>(){}),
 
+    LAST_MODIFIED_APPLICATION(
+            "lastModifiedApplication", new TypeReference<MakeAnApplication>(){}),
+
     DECISION_AND_REASONS_AVAILABLE(
         "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
 

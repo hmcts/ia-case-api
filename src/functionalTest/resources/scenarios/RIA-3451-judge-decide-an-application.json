@@ -100,6 +100,25 @@
             }
           }
         ],
+        "lastModifiedApplication": {
+          "type": "Judge's review of application decision",
+          "details": "A reason for Judge's review",
+          "evidence": [
+            {
+              "id": "1",
+              "value": {
+                "document_url": "http://document-store/AAA",
+                "document_filename": "Annexure-E.pdf",
+                "document_binary_url": "http://document-store/AAA/binary"
+              }
+            }
+          ],
+          "applicant": "Respondent",
+          "date": "2020-10-07",
+          "decision": "Refused",
+          "state": "listing",
+          "applicantRole": "caseworker-ia-homeofficeapc"
+        },
         "hasApplicationsToDecide": "No",
         "decideAnApplicationId": "1",
         "makeAnApplicationsList": null,

@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import java.util.Collections;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
-
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class WaFieldsPublisher {
@@ -23,7 +25,6 @@ public class WaFieldsPublisher {
             String dateDue,
             DirectionTag tag) {
 
-
         if (featureToggler.getValue("publish-wa-fields-feature", false)) {
 
             final Direction lastModifiedDirection = new Direction(
@@ -35,6 +36,29 @@ public class WaFieldsPublisher {
                     Collections.emptyList());
 
             asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION, lastModifiedDirection);
+        }
+    }
+
+    public void addLastModifiedApplication(
+            AsylumCase asylumCase,
+            String applicant,
+            String type,
+            String details,
+            List<IdValue<Document>> evidence,
+            String decision,
+            String state,
+            String applicantRole) {
+
+        if (featureToggler.getValue("publish-wa-fields-feature", false)) {
+
+            final MakeAnApplication lastModifiedApplication = new MakeAnApplication(
+                    applicant, type, details,
+                    evidence, dateProvider.now().toString(), decision,
+                    state);
+
+            lastModifiedApplication.setApplicantRole(applicantRole);
+
+            asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, lastModifiedApplication);
         }
     }
 }

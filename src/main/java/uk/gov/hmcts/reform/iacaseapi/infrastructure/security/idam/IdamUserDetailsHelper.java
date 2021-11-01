@@ -42,6 +42,8 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
             case JUDICIARY:
             case JUDGE:
                 return UserRoleLabel.JUDGE;
+            case CITIZEN:
+                return UserRoleLabel.CITIZEN;
             case SYSTEM:
                 return UserRoleLabel.SYSTEM;
 

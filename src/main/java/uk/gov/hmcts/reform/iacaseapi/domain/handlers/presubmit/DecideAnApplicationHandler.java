@@ -78,6 +78,7 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                 makeAnApplication.setDecisionDate(dateProvider.now().toString());
                 makeAnApplication.setDecisionMaker(decisionMakerRole);
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.NO);
+                asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
             });
 
         mayBeMakeAnApplications

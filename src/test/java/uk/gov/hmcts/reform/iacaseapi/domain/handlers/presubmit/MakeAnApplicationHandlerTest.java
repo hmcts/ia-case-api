@@ -30,9 +30,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -42,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.MakeAnApplicationAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.WaFieldsPublisher;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +58,12 @@ class MakeAnApplicationHandlerTest {
     @Mock
     private MakeAnApplicationAppender makeAnApplicationAppender;
 
+    @Mock
+    private UserDetails userDetails;
+    @Mock
+    private UserDetailsHelper userDetailsHelper;
+    @Mock
+    private WaFieldsPublisher waFieldsPublisher;
     @InjectMocks
     private MakeAnApplicationHandler makeAnApplicationHandler;
 
@@ -66,7 +72,7 @@ class MakeAnApplicationHandlerTest {
 
         MockitoAnnotations.openMocks(this);
 
-        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender);
+        makeAnApplicationHandler = new MakeAnApplicationHandler(makeAnApplicationAppender, userDetails, userDetailsHelper, waFieldsPublisher);
     }
 
     @Test
@@ -103,6 +109,9 @@ class MakeAnApplicationHandlerTest {
             newMakeAnApplicationEvidence,
             newMakeAnApplicationStatus,
             currentState)).thenReturn(newMakeAnApplications);
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             makeAnApplicationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
