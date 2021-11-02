@@ -67,7 +67,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
             case EA:
             case HU:
                 if ((paymentStatus.isPresent() && paymentStatus.get() == PAYMENT_PENDING)
-                    || (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)) {
+                    || (remissionType.isPresent())) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
