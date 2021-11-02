@@ -60,7 +60,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         if (optPaymentStatus.isPresent() && optPaymentStatus.get() == PaymentStatus.PAID) {
 
             callbackResponse.addError("The fee for this appeal has already been paid.");
-            return callbackResponse;
         }
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
@@ -76,17 +75,21 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
 
                 Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-                if (appealType == PA && paPaymentType.isEmpty()) {
+                Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
+                Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+                // old cases
+                if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
+                        || ((appealType == EA || appealType == HU) && remissionType.isEmpty()
+                        && eaHuPaymentType.isEmpty())) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
-
-                Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-                if ((appealType == EA || appealType == HU) && eaHuPaymentType.isEmpty()) {
+                if ((appealType == EA || appealType == HU) && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+                        && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
+                        && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
 
                 if (appealType == PA && remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
-
                     paPaymentType
                         .filter(option -> option.equals("payLater"))
                         .ifPresent(s ->
