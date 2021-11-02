@@ -12,7 +12,7 @@
     <suppress until="2030-01-01">
       <notes><![CDATA[
            https://nvd.nist.gov/vuln/detail/CVE-2021-22112
-           Temporary suppression until upgrade to Spring Boot 2.4.x 
+           Temporary suppression until upgrade to Spring Boot 2.4.x
           ]]></notes>
       <cve>CVE-2021-22112</cve>
     </suppress>
@@ -47,7 +47,7 @@
     <suppress until="2030-01-01">
         <notes><![CDATA[
                  https://nvd.nist.gov/vuln/detail/CVE-2021-22096#range-7096083
-                 https://cwe.mitre.org/data/definitions/117.html
+                 Temporary suppression until upgrade to Spring Boot 2.4.x https://cwe.mitre.org/data/definitions/117.html
                 ]]></notes>
         <cve>CVE-2021-22096</cve>
     </suppress>
