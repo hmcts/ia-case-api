@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4471 error on edit payment method (Payment status - Paid)",
+  "description": "RIA-4471-RIA-4911 error on edit payment method (Payment status - Paid)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",

@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -85,9 +88,49 @@ class EditPaymentMethodPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void should_throw_error_for_paid_payment_status_with_remission_journey_enabled(AppealType appealType) {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+                .contains("You cannot change the payment method because you have already paid the "
+                        + "fee for this appeal.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
     void should_not_throw_error_on_edit_payment_method_for_failed_appeal_payment(AppealType appealType) {
 
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        if (Arrays.asList(EA, HU).contains(appealType)) {
+
+            when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        } else {
+
+            when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+        }
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(0, callbackResponse.getErrors().size());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void should_not_throw_error_on_edit_payment_method_for_failed_appeal_payment_with_remission_journey_enabled(AppealType appealType) {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
 
         if (Arrays.asList(EA, HU).contains(appealType)) {
 
@@ -121,6 +164,115 @@ class EditPaymentMethodPreparerTest {
         assertThat(callbackResponse.getErrors())
                 .contains("You cannot change the payment method to card because you have "
                         + "already selected to pay by card.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
+    void handler_should_throw_error_if_the_payment_method_is_already_pay_by_card_with_remission_journey_enabled(AppealType appealType) {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+                .contains("You cannot change the payment method to card because you have "
+                        + "already selected to pay by card.");
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {
+        "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"
+    })
+    void should_throw_error_on_approved_remissions(RemissionType remissionType) {
+
+        List<AppealType> appealTypes = Arrays.asList(HU, EA, PA);
+        appealTypes.forEach(appealType -> {
+            when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.APPROVED));
+            when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                    editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(1, callbackResponse.getErrors().size());
+            assertTrue(callbackResponse.getErrors().contains("You can only change the payment method to card following a failed payment using Payment by Account."));
+
+        });
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {
+        "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"
+    })
+    void should_throw_error_on_partially_approved_remissions(RemissionType remissionType) {
+
+        List<AppealType> appealTypes = Arrays.asList(HU, EA, PA);
+        appealTypes.forEach(appealType -> {
+            when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.PARTIALLY_APPROVED));
+            when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                    editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(1, callbackResponse.getErrors().size());
+            assertTrue(callbackResponse.getErrors().contains("You can only change the payment method to card following a failed payment using Payment by Account."));
+        });
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {
+        "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"
+    })
+    void should_not_throw_error_on_edit_payment_method_for_rejected_remissions(RemissionType remissionType) {
+
+        List<AppealType> appealTypes = Arrays.asList(HU, EA, PA);
+        appealTypes.forEach(appealType -> {
+            when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(RemissionDecision.REJECTED));
+            when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                    editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(0, callbackResponse.getErrors().size());
+        });
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {
+        "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION"
+    })
+    void should_throw_error_on_edit_payment_method_for_remissions_pending_remission_decision(RemissionType remissionType) {
+
+        List<AppealType> appealTypes = Arrays.asList(HU, EA, PA);
+        appealTypes.forEach(appealType -> {
+            when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+            when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+            when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.empty());
+            when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(remissionType));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                    editPaymentMethodPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+            assertNotNull(callbackResponse);
+            assertEquals(1, callbackResponse.getErrors().size());
+            assertTrue(callbackResponse.getErrors().contains("You can only change the payment method to card following a failed payment using Payment by Account."));
+        });
     }
 
     @Test

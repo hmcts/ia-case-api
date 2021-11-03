@@ -1,19 +1,19 @@
 {
-  "description": "RIA-4471 edit payment method to pay by card (EA appeal type)",
+  "description": "RIA-4911 No error on edit payment method (Payment status: failed - Inflight appeals without remissions)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
     "input": {
-      "id": 4471,
+      "id": 4911,
       "eventId": "editPaymentMethod",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealType": "refusalOfEu",
-          "paymentStatus": "Payment pending",
-          "eaHuAppealTypePaymentOption": "payNow"
+          "paymentStatus": "Failed",
+          "appealType": "protection",
+          "paAppealTypePaymentOption": "payNow"
         }
       }
     }
@@ -24,9 +24,9 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "appealType": "refusalOfEu",
-        "paymentStatus": "Payment pending",
-        "eaHuAppealTypePaymentOption": "payOffline"
+        "paymentStatus": "Failed",
+        "appealType": "protection",
+        "paAppealTypePaymentOption": "payNow"
       }
     }
   }

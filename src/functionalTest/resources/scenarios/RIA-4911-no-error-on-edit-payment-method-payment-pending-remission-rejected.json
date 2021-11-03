@@ -1,0 +1,30 @@
+{
+  "description": "RIA-4911 No error on edit payment method (Payment status - Payment pending, remission - rejected)",
+  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 4911,
+      "eventId": "editPaymentMethod",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "paymentStatus": "Payment pending",
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "remissionType": "exceptionalCircumstancesRemission",
+          "remissionDecision": "rejected"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json"
+    }
+  }
+}
