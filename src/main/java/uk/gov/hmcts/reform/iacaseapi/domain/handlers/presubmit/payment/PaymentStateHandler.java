@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
+@Slf4j
 @Component
 public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
@@ -62,6 +64,9 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
+                appealType, remissionType, callback.getCaseDetails().getId());
 
         switch (appealType) {
             case EA:
