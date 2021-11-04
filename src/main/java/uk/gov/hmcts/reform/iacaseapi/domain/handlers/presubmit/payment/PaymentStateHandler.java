@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
+@Slf4j
 @Component
 public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
@@ -37,7 +39,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL
+               && (callback.getEvent() == Event.SUBMIT_APPEAL || callback.getEvent() == Event.PAYMENT_APPEAL)
                && isfeePaymentEnabled;
     }
 
@@ -63,11 +65,14 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
+                appealType, remissionType, callback.getCaseDetails().getId());
+
         switch (appealType) {
             case EA:
             case HU:
-                if ((paymentStatus.isPresent() && paymentStatus.get() == PAYMENT_PENDING)
-                    || (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)) {
+                if ((paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                    || (remissionType.isPresent()))) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);

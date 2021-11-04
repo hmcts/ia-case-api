@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import java.util.Optional;
@@ -12,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -57,7 +57,10 @@ public class RollbackPaymentPreparer implements PreSubmitCallbackHandler<AsylumC
         }
 
         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-        if ((appealType == EA || appealType == HU) && eaHuPaymentType.isEmpty()) {
+        Optional<RemissionDecision> optionalRemissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+        // remisssion is present and remissionDecision is not rejected
+        if ((appealType == EA || appealType == HU) && (eaHuPaymentType.isEmpty()
+                && optionalRemissionDecision.isPresent() && optionalRemissionDecision.get() != RemissionDecision.REJECTED)) {
             asylumCasePreSubmitCallbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 

@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4471 edit payment method to pay by card (PA appeal type)",
+  "description": "RIA-4471-RIA-4911 edit payment method to pay by card (PA appeal type)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",

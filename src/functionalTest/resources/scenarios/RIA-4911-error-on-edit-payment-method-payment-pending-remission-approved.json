@@ -1,18 +1,21 @@
 {
-  "description": "RIA-4471 error on edit payment method (Payment status - Payment pending)",
+  "description": "RIA-4911 error on edit payment method (Payment status - Payment pending, remission - approved)",
   "enabled": "{$featureFlag.isfeePaymentEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
     "input": {
-      "id": 4471,
+      "id": 4911,
       "eventId": "editPaymentMethod",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "paymentStatus": "Payment pending",
-          "paAppealTypePaymentOption": "payOffline"
+          "appealType": "protection",
+          "isRemissionsEnabled": "Yes",
+          "remissionType": "exceptionalCircumstancesRemission",
+          "remissionDecision": "approved"
         }
       }
     }
@@ -20,7 +23,7 @@
   "expectation": {
     "status": 200,
     "errors": [
-      "You cannot change the payment method to card because you have already selected to pay by card."
+      "You can only change the payment method to card following a failed payment using Payment by Account."
     ],
     "caseData": {
       "template": "minimal-appeal-submitted.json"
