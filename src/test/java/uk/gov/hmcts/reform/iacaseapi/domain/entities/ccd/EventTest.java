@@ -115,6 +115,7 @@ class EventTest {
         assertEquals("completeClarifyQuestions", Event.COMPLETE_CLARIFY_QUESTIONS.toString());
         assertEquals("markEvidenceAsReviewed", Event.MARK_EVIDENCE_AS_REVIEWED.toString());
         assertEquals("updatePaymentStatus", Event.UPDATE_PAYMENT_STATUS.toString());
+        assertEquals("markAddendumEvidenceAsReviewed", Event.MARK_ADDENDUM_EVIDENCE_AS_REVIEWED.toString());
     }
 
     @Test

@@ -1527,6 +1527,9 @@ public enum AsylumCaseFieldDefinition {
     OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION(
         "outsideUkWhenApplicationMadePreviousSelection", new TypeReference<YesOrNo>() {}),
 
+    MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
+            "markAddendumEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;
