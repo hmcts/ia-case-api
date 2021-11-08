@@ -106,7 +106,8 @@
             }
           }
         ],
-        "uploadAddendumEvidenceLegalRepActionAvailable": "Yes"
+        "uploadAddendumEvidenceLegalRepActionAvailable": "Yes",
+        "markAddendumEvidenceAsReviewedActionAvailable": "Yes"
       }
     }
   }
