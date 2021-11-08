@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
@@ -60,7 +59,6 @@ class FeesHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
     }
 
@@ -206,7 +204,6 @@ class FeesHandlerTest {
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
             .thenReturn(Optional.of("asylumSupport"));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -279,7 +276,6 @@ class FeesHandlerTest {
     void it_cannot_handle_callback_for_aip_journey() {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         FeesHandler fees =
             new FeesHandler(true, feePayment, featureToggler);
 
@@ -310,7 +306,6 @@ class FeesHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
@@ -338,7 +333,6 @@ class FeesHandlerTest {
         feesHandler = new FeesHandler(false, feePayment, featureToggler);
 
         for (Event event : Event.values()) {
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
 

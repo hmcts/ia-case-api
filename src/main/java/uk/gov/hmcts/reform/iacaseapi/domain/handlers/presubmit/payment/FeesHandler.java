@@ -1,23 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_AID_ACCOUNT_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_CLAIM;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
@@ -64,22 +48,15 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
-
-        boolean isRepJourney = callback.getCaseDetails().getCaseData()
-                .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.REP)
-                .orElse(true);
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
             && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL
         ).contains(callback.getEvent())
-            && isfeePaymentEnabled
-            && isRepJourney;
+            && isfeePaymentEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -94,6 +71,14 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
+                .map(journeyType -> journeyType == JourneyType.AIP)
+                .orElse(false);
+
+        if (isAipJourney) {
+            return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
+        }
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
