@@ -44,7 +44,7 @@ public class AsylumCaseDataConfiguration {
     public DataFixer caseNameAppender() {
         return new AsylumFieldCaseNameFixer(
             AsylumCaseFieldDefinition.CASE_NAME,
-            AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER,
+            AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
             AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME);
     }
 }
