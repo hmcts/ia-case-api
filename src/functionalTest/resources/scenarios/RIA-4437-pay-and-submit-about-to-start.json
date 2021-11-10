@@ -1,6 +1,6 @@
 {
   "description": "RIA-4437 Pay and Submit about to start",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentativeOrgSuccess",
