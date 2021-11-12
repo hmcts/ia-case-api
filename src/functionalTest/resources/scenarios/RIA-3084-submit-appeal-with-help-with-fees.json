@@ -3,8 +3,9 @@
   "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "LegalRepresentativeOrgSuccess",
     "input": {
+      "id": 3084,
       "eventId": "startAppeal",
       "state": "appealStarted",
       "caseData": {
@@ -24,7 +25,6 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "appealReferenceNumber": "$/(.+)/",
         "homeOfficeDecisionDate": "{$TODAY-14}",
         "remissionType": "helpWithFees",
         "feeRemissionType": "Help with Fees",
