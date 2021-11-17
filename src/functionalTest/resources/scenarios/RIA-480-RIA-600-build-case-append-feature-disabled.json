@@ -1,12 +1,13 @@
 {
   "description": "RIA-480 & RIA-600 Build case -- case argument append previous (save and continue disabled)",
-  "disabled": true,
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "buildCase",
       "state": "caseBuilding",
+      "id": 5678,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
