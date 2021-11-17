@@ -1,6 +1,6 @@
 {
   "description": "RIA-480 & RIA-600 Build case -- case argument initial upload (save and continue disabled)",
-  "disabled": true,
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
