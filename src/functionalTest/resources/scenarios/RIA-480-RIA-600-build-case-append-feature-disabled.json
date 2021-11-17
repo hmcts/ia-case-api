@@ -7,7 +7,7 @@
     "input": {
       "eventId": "buildCase",
       "state": "caseBuilding",
-      "id": 5678,
+      "id": 9999,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
