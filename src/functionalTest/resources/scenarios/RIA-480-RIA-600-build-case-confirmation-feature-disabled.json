@@ -1,13 +1,13 @@
 {
   "description": "RIA-480 & RIA-600 Build case confirmation (feature disable)",
-  "disabled": true,
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "buildCase",
       "state": "caseBuilding",
-      "id": 1234,
+      "id": 7890,
       "caseData": {
         "template": "minimal-appeal-submitted.json"
       }

@@ -1,12 +1,13 @@
 {
   "description": "RIA-481 appeal skeleton (save and continue disabled)",
-  "disabled": true,
+  "disabled": "{$featureFlag.isSaveAndContinueEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
       "eventId": "buildCase",
       "state": "caseUnderReview",
+      "id": 2345,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
