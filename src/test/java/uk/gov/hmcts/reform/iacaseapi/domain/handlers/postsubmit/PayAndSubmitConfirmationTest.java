@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment.PayAndSubmitConfirmation;
@@ -114,6 +115,22 @@ class PayAndSubmitConfirmationTest {
         assertThat(
             equalCallbackResponse.getConfirmationBody().get())
             .contains("You will receive an email confirming that this appeal has been submitted successfully.");
+    }
+
+    @Test
+    void should_not_return_content_for_aip() {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(postNotificationSender.send(any(Callback.class))).thenReturn(new PostSubmitCallbackResponse());
+
+        PostSubmitCallbackResponse equalCallbackResponse =
+                payAndSubmitConfirmation.handle(callback);
+
+        assertNotNull(equalCallbackResponse);
+        assertFalse(equalCallbackResponse.getConfirmationHeader().isPresent());
+        assertFalse(equalCallbackResponse.getConfirmationBody().isPresent());
     }
 
     @Test
