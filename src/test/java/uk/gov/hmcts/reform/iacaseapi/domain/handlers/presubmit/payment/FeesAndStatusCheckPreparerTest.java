@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -128,6 +131,10 @@ class FeesAndStatusCheckPreparerTest {
 
         verify(asylumCase, times(1)).write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(IS_REMISSIONS_ENABLED, YesOrNo.YES);
+
+        if (Arrays.asList(Event.PAY_AND_SUBMIT_APPEAL, Event.PAYMENT_APPEAL, Event.PAY_FOR_APPEAL).contains(event)) {
+            verify(asylumCase, times(1)).write(IS_FEE_LOOKUP_FAILED, YesOrNo.NO);
+        }
     }
 
     @ParameterizedTest
@@ -338,6 +345,28 @@ class FeesAndStatusCheckPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("The Make a payment option is not available.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "PAY_AND_SUBMIT_APPEAL", "PAYMENT_APPEAL", "PAY_FOR_APPEAL" })
+    void should_throw_when_fees_register_is_down(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(feePayment.aboutToStart(callback))
+            .thenThrow(new AsylumCaseServiceResponseException(
+                "Cannot retrieve the fee from fees-register.", new RestClientException("")));
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors()).contains("Cannot retrieve the fee from fees-register.");
+
+        verify(asylumCase, times(1)).write(IS_FEE_LOOKUP_FAILED, YesOrNo.YES);
     }
 
     @ParameterizedTest

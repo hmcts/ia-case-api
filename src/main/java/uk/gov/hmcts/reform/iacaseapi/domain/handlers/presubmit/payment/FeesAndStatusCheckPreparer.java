@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_W
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Component
 public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -202,7 +204,16 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
             Event.PAY_AND_SUBMIT_APPEAL).contains(callback.getEvent())
         ) {
 
-            asylumCasePreSubmitCallbackResponse.setData(feePayment.aboutToStart(callback));
+            try {
+
+                asylumCasePreSubmitCallbackResponse.setData(feePayment.aboutToStart(callback));
+                asylumCase.write(IS_FEE_LOOKUP_FAILED, YesOrNo.NO);
+            } catch (AsylumCaseServiceResponseException ex) {
+
+                asylumCase.write(IS_FEE_LOOKUP_FAILED, YesOrNo.YES);
+                asylumCasePreSubmitCallbackResponse
+                        .addErrors(Collections.singleton("Cannot retrieve the fee from fees-register."));
+            }
         }
 
         return asylumCasePreSubmitCallbackResponse;

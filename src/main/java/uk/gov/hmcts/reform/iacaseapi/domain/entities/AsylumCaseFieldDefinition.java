@@ -960,6 +960,8 @@ public enum AsylumCaseFieldDefinition {
         "hearingDecisionSelected", new TypeReference<String>(){}),
     IS_FEE_PAYMENT_ENABLED(
             "isFeePaymentEnabled", new TypeReference<YesOrNo>() {}),
+    IS_FEE_LOOKUP_FAILED(
+            "isFeeLookupFailed", new TypeReference<YesOrNo>() {}),
 
     PA_APPEAL_TYPE_PAYMENT_OPTION(
         "paAppealTypePaymentOption", new TypeReference<String>() {}),

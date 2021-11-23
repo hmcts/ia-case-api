@@ -17,11 +17,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
@@ -30,11 +32,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +83,6 @@ class FeesHandlerTest {
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(asylumCase, times(1)).write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
             verify(asylumCase, times(1)).write(IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
             verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
@@ -114,7 +117,6 @@ class FeesHandlerTest {
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(asylumCase, times(1))
                 .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
             verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
@@ -140,7 +142,6 @@ class FeesHandlerTest {
             assertNotNull(callbackResponse);
             assertEquals(asylumCase, callbackResponse.getData());
 
-            verify(feePayment, times(1)).aboutToSubmit(callback);
             verify(asylumCase, times(1))
                 .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
             verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
@@ -251,13 +252,51 @@ class FeesHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(feePayment, times(1)).aboutToSubmit(callback);
         verify(asylumCase, times(0)).write(FEE_REMISSION_TYPE, "Legal Aid");
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(0)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
         verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_throw_when_fees_register_is_down(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(feePayment.aboutToSubmit(callback))
+                .thenThrow(new AsylumCaseServiceResponseException(
+                        "Cannot retrieve the fee from fees-register.", new RestClientException("")));
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(asylumCase, times(1)).write(IS_FEE_LOOKUP_FAILED, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = { "START_APPEAL", "EDIT_APPEAL" })
+    void should_return_correct_fee_for_aip(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        verify(asylumCase, times(1)).write(IS_FEE_LOOKUP_FAILED, YesOrNo.NO);
     }
 
     @Test
