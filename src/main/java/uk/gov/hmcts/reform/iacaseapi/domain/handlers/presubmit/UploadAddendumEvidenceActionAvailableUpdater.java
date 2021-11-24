@@ -13,9 +13,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class UploadAddendumEvidenceActionAvailableUpdater implements PreSubmitCallbackHandler<AsylumCase> {
+
+    private final FeatureToggler featureToggler;
+
+    public UploadAddendumEvidenceActionAvailableUpdater(FeatureToggler featureToggler) {
+        this.featureToggler = featureToggler;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -50,7 +57,12 @@ public class UploadAddendumEvidenceActionAvailableUpdater implements PreSubmitCa
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.YES);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.YES);
-            asylumCase.write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.YES);
+
+            if (featureToggler.getValue("wa-R2-feature", false)) {
+                asylumCase.write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.YES);
+            } else {
+                asylumCase.write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.NO);
+            }
         } else {
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE, YesOrNo.NO);
@@ -58,7 +70,6 @@ public class UploadAddendumEvidenceActionAvailableUpdater implements PreSubmitCa
             asylumCase.write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.NO);
             asylumCase.write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.NO);
         }
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
