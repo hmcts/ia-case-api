@@ -5,16 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_ADDENDUM_EVIDENCE_LEGAL_REP_ACTION_AVAILABLE;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Arrays;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -27,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -39,15 +34,23 @@ class UploadAddendumEvidenceActionAvailableUpdaterTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private FeatureToggler featureToggler;
 
-    private UploadAddendumEvidenceActionAvailableUpdater uploadAddendumEvidenceActionAvailableUpdater =
-        new UploadAddendumEvidenceActionAvailableUpdater();
+    private UploadAddendumEvidenceActionAvailableUpdater uploadAddendumEvidenceActionAvailableUpdater;
+
+    @BeforeEach
+    void setUp() {
+        uploadAddendumEvidenceActionAvailableUpdater =
+                new UploadAddendumEvidenceActionAvailableUpdater(featureToggler);
+    }
 
     @Test
     void should_set_action_available_flag_to_yes_when_state_applies() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         for (State state : State.values()) {
 
@@ -77,11 +80,24 @@ class UploadAddendumEvidenceActionAvailableUpdaterTest {
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE_ACTION_AVAILABLE, YesOrNo.NO);
                 verify(asylumCase).write(UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER_ACTION_AVAILABLE, YesOrNo.NO);
                 verify(asylumCase).write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.NO);
-
             }
 
             reset(asylumCase);
         }
+    }
+
+    @Test
+    void should_set_action_available_flag_to_no_when_feature_disabled() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getState()).thenReturn(State.DECISION);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                uploadAddendumEvidenceActionAvailableUpdater
+                        .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase).write(MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.NO);
     }
 
     @Test
