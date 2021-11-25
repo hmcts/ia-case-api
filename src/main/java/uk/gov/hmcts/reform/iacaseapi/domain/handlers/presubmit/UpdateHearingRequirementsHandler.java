@@ -99,8 +99,7 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
             .map(application -> {
                 String applicationType = application.getValue().getApplicationType();
                 if (ApplicationType.UPDATE_HEARING_REQUIREMENTS.toString().equals(applicationType)) {
-
-                    return new IdValue<>(application.getId(), new Application(
+                    Application completedApplication = new Application(
                         application.getValue().getApplicationDocuments(),
                         application.getValue().getApplicationSupplier(),
                         applicationType,
@@ -110,9 +109,10 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
                         application.getValue().getApplicationDecisionReason(),
                         application.getValue().getApplicationDateOfDecision(),
                         "Completed"
-                    ));
+                    );
+                    asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, completedApplication);
+                    return new IdValue<>(application.getId(), completedApplication);
                 }
-
                 return application;
             })
             .collect(Collectors.toList())
