@@ -315,6 +315,7 @@ security:
       - "startAppeal"
       - "editAppeal"
       - "submitAppeal"
+      - "paymentAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
