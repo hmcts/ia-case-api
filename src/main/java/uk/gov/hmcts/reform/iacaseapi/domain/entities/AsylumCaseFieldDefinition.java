@@ -1499,6 +1499,9 @@ public enum AsylumCaseFieldDefinition {
     PRE_CLARIFYING_STATE(
         "preClarifyingState", new TypeReference<State>(){}),
 
+    HMCTS_CASE_CATEGORY(
+        "hmctsCaseCategory", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
