@@ -29,7 +29,8 @@ class IdamUserDetailsHelperTest {
             "caseworker-ia-iacjudge",
             "caseworker-ia-judiciary",
             "caseworker-ia-legalrep-solicitor",
-            "caseworker-ia-system"
+            "caseworker-ia-system",
+            "citizen"
         ).forEach(roleName -> {
             List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
@@ -53,6 +54,10 @@ class IdamUserDetailsHelperTest {
 
                 case "caseworker-ia-legalrep-solicitor":
                     assertEquals("Legal representative", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+                    break;
+
+                case "citizen":
+                    assertEquals("Appellant", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
                     break;
 
                 default:
