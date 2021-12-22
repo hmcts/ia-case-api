@@ -32,11 +32,12 @@ class DocumentTagTest {
         assertEquals("recordOutOfTimeDecisionDocument", DocumentTag.RECORD_OUT_OF_TIME_DECISION_DOCUMENT.toString());
         assertEquals("upperTribunalBundle", DocumentTag.UPPER_TRIBUNAL_BUNDLE.toString());
         assertEquals("appealReasons", DocumentTag.APPEAL_REASONS.toString());
+        assertEquals("clarifyingQuestions", DocumentTag.CLARIFYING_QUESTIONS.toString());
         assertEquals("", DocumentTag.NONE.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(25, DocumentTag.values().length);
+        assertEquals(26, DocumentTag.values().length);
     }
 }
