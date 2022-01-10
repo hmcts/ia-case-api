@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress until="2030-01-01">
+    <notes><![CDATA[
+     Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
+   ]]></notes>
+    <gav regex="true">^org\.springframework\.security:spring-security-crypto:5.4.[0-5]</gav>
+    <cpe>cpe:/a:pivotal_software:spring_security</cpe>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+        CVE is a json vulnerability for Node projects. False positive reported at https://github.com/jeremylong/DependencyCheck/issues/2794
+    ]]></notes>
+    <cve>CVE-2020-10663</cve>
+    <cve>CVE-2020-7712</cve>
+   </suppress>
+</suppressions>
