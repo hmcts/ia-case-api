@@ -9,7 +9,6 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "hearingCentre": "taylorHouse",
           "listCaseHearingCentre": "decisionWithoutHearing",
           "listCaseHearingLength": null,
           "listCaseHearingDate": null,
