@@ -327,6 +327,7 @@ security:
       - "editCmaRequirements"
       - "submitCmaRequirements"
       - "makeAnApplication"
+      - "draftHearingRequirements"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
