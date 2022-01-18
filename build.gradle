@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.5.6'
+  id 'org.springframework.boot' version '2.3.9.RELEASE'
   id 'org.owasp.dependencycheck' version '6.5.2.1'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.3'
@@ -170,6 +170,7 @@ dependencies {
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
+  implementation 'junit:junit:4.13.1'
 
   testImplementation(platform('org.junit:junit-bom:5.8.2'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
