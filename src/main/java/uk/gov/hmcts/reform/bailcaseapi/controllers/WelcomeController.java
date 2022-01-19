@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.http.ResponseEntity.ok;
 
 @Api(
     value = "/",
@@ -38,7 +37,7 @@ public class WelcomeController {
             code = 200,
             message = "Welcome message",
             response = String.class
-        )
+            )
     })
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
