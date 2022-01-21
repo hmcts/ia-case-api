@@ -169,8 +169,9 @@ jacoco {
   toolVersion = "0.8.4"
 }
 
+//TODO: include integration in parameter along with test once integration tests are added.
 jacocoTestReport {
-  executionData(test, integration)
+  executionData(test)
   reports {
     xml.enabled = true
     csv.enabled = false
@@ -196,14 +197,23 @@ project.tasks['pitest'].group = "Verification"
 
 sonarqube {
   properties {
-    property "sonar.projectName", "BAIL :: Bail case api"
-    property "sonar.projectKey", "BAILCASEAPI"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.pitest.mode", "reuseReport"
-    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/bailcaseapi/infrastructure/config/**," +
-      "src/main/java/uk/gov/hmcts/reform/bailcaseapi/infrastructure/SystemDateProvider.java," +
-      "src/main/java/uk/gov/hmcts/reform/bailcaseapi/Application.java"
+
+    property "sonar.projectName", "IA :: Immigration & Asylum Bail Case API"
+    property "sonar.projectKey", "IABAILCASEAPI"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+  }
+}
+
+// before committing a change, make sure task still works
+dependencyUpdates {
+  def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { qualifier -> version.toUpperCase().contains(qualifier) }
+    def regex = /^[0-9,.v-]+$/
+    return !stableKeyword && !(version ==~ regex)
+  }
+  rejectVersionIf { selection -> // <---- notice how the closure argument is named
+    return isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)
+
   }
 }
 
@@ -328,6 +338,7 @@ dependencyUpdates.resolutionStrategy = {
 def getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
+
 
 gradle.startParameter.continueOnFailure = true
 

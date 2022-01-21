@@ -1,0 +1,16 @@
+#!groovy
+
+properties([
+  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-bail-case-api.git'],
+  pipelineTriggers([[$class: 'GitHubPushTrigger']])
+])
+
+@Library("Infrastructure")
+
+def type = "java"
+def product = "ia"
+def component = "bail-case-api"
+
+withPipeline(type, product, component) {
+  enableSlackNotifications('#ia-tech')
+}
