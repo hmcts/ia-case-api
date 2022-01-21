@@ -1,17 +1,9 @@
-FROM hmcts/cnp-java-base:1.1
+ARG APP_INSIGHTS_AGENT_VERSION=2.5.1-BETA
+FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.4
 
-# Mandatory!
-ENV APP ia-bail-case-api.jar
-ENV APPLICATION_TOTAL_MEMORY 512M
-ENV APPLICATION_SIZE_ON_DISK_IN_MB 48
-
-# Optional
-ENV JAVA_OPTS ""
-
-COPY build/libs/$APP /opt/app/
-
-WORKDIR /opt/app
-
-HEALTHCHECK --interval=10s --timeout=10s --retries=12 CMD http_proxy="" wget -q --spider http://localhost:4550/health || exit 1
+COPY lib/AI-Agent.xml /opt/app/
+COPY build/libs/ia-bail-case-api.jar /opt/app/
 
 EXPOSE 4550
+
+CMD [ "ia-bail-case-api.jar" ]
