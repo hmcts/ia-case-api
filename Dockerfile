@@ -1,11 +1,17 @@
-ARG APP_INSIGHTS_AGENT_VERSION=2.5.1
+FROM hmcts/cnp-java-base:1.1
 
-# Application image
+# Mandatory!
+ENV APP ia-bail-case-api.jar
+ENV APPLICATION_TOTAL_MEMORY 512M
+ENV APPLICATION_SIZE_ON_DISK_IN_MB 48
 
-FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.2
+# Optional
+ENV JAVA_OPTS ""
 
-COPY lib/AI-Agent.xml /opt/app/
-COPY build/libs/spring-boot-template.jar /opt/app/
+COPY build/libs/$APP /opt/app/
+
+WORKDIR /opt/app
+
+HEALTHCHECK --interval=10s --timeout=10s --retries=12 CMD http_proxy="" wget -q --spider http://localhost:4550/health || exit 1
 
 EXPOSE 4550
-CMD [ "spring-boot-template.jar" ]
