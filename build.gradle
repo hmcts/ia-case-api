@@ -34,7 +34,8 @@ def versions = [
   junit           : '5.6.2',
   junitPlatform   : '1.6.2',
   springBoot         : '2.3.9.RELEASE',
-  serenity           : '2.2.12'
+  serenity           : '2.2.12',
+  springfoxSwagger   : '2.9.2'
 ]
 
 ext.libraries = [
@@ -169,9 +170,8 @@ jacoco {
   toolVersion = "0.8.4"
 }
 
-//TODO: include integration in parameter along with test once integration tests are added.
 jacocoTestReport {
-  executionData(test)
+  executionData(test, integration)
   reports {
     xml.enabled = true
     csv.enabled = false
@@ -197,10 +197,14 @@ project.tasks['pitest'].group = "Verification"
 
 sonarqube {
   properties {
-
-    property "sonar.projectName", "IA :: Immigration & Asylum Bail Case API"
-    property "sonar.projectKey", "IABAILCASEAPI"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.projectName", "BAIL :: Bail case api"
+    property "sonar.projectKey", "BAILCASEAPI"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    property "sonar.pitest.mode", "reuseReport"
+    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/bailcaseapi/infrastructure/config/**," +
+                                 "src/main/java/uk/gov/hmcts/reform/bailcaseapi/infrastructure/SystemDateProvider.java," +
+                                 "src/main/java/uk/gov/hmcts/reform/bailcaseapi/Application.java"
   }
 }
 
@@ -235,11 +239,15 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.1.RELEASE'
   compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
 
-  compile group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
+  compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
 //  compile group: 'com.github.hmcts.java-logging', name: 'logging', version: reformLoggingVersion
 //  compile group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: reformLoggingVersion
@@ -325,7 +333,6 @@ dependencyUpdates.resolutionStrategy = {
 def getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
-
 
 gradle.startParameter.continueOnFailure = true
 
