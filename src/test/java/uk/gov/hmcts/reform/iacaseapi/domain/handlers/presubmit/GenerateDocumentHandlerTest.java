@@ -125,7 +125,8 @@ class GenerateDocumentHandlerTest {
             LIST_CMA,
             END_APPEAL,
             EDIT_APPEAL_AFTER_SUBMIT,
-            GENERATE_UPPER_TRIBUNAL_BUNDLE
+            GENERATE_UPPER_TRIBUNAL_BUNDLE,
+            SUBMIT_REASONS_FOR_APPEAL
         ).forEach(event -> {
 
             AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
@@ -270,7 +271,8 @@ class GenerateDocumentHandlerTest {
                         LIST_CMA,
                         END_APPEAL,
                         EDIT_APPEAL_AFTER_SUBMIT,
-                        GENERATE_UPPER_TRIBUNAL_BUNDLE
+                        GENERATE_UPPER_TRIBUNAL_BUNDLE,
+                        SUBMIT_REASONS_FOR_APPEAL
                     ).contains(event)) {
 
                     assertTrue(canHandle);
@@ -346,7 +348,8 @@ class GenerateDocumentHandlerTest {
                         LIST_CMA,
                         END_APPEAL,
                         EDIT_APPEAL_AFTER_SUBMIT,
-                        GENERATE_UPPER_TRIBUNAL_BUNDLE
+                        GENERATE_UPPER_TRIBUNAL_BUNDLE,
+                        SUBMIT_REASONS_FOR_APPEAL
                     );
 
                 if (callbackStage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
