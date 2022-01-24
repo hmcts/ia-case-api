@@ -13,7 +13,7 @@ import org.springframework.retry.annotation.EnableRetry;
     {
     "uk.gov.hmcts.reform.auth",
     "uk.gov.hmcts.reform.authorisation",
-    "uk.gov.hmcts.reform.iacaseapi",
+    "uk.gov.hmcts.reform.bailcaseapi",
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
