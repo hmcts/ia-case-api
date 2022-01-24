@@ -198,8 +198,8 @@ project.tasks['pitest'].group = "Verification"
 
 sonarqube {
   properties {
-    property "sonar.projectName", "BAIL :: Bail case api"
-    property "sonar.projectKey", "BAILCASEAPI"
+    property "sonar.projectName", "IA :: Immigration & Asylum Bail Case API"
+    property "sonar.projectKey", "IABAILCASEAPI"
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
