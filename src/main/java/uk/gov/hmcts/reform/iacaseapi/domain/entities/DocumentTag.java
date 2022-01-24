@@ -28,6 +28,8 @@ public enum DocumentTag {
     SENSITIVE_DOCUMENT("sensitiveDocument"),
     RECORD_OUT_OF_TIME_DECISION_DOCUMENT("recordOutOfTimeDecisionDocument"),
     UPPER_TRIBUNAL_BUNDLE("upperTribunalBundle"),
+    APPEAL_REASONS("appealReasons"),
+    CLARIFYING_QUESTIONS("clarifyingQuestions"),
 
     @JsonEnumDefaultValue
     NONE("");
