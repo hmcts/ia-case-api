@@ -21,6 +21,6 @@ public class WelcomeControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertThat(
             responseEntity.getBody())
-            .contains("Welcome to Bail case API");
+            .contains("Welcome to the Bail case API");
     }
 }
