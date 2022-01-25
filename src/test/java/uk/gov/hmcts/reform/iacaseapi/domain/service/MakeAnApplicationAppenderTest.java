@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,9 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRole;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 class MakeAnApplicationAppenderTest {
 
     @Mock private UserDetails userDetails;
+    @Mock private UserDetailsHelper userDetailsHelper;
     @Mock private DateProvider dateProvider;
     @Mock private IdValue<MakeAnApplication> makeAnApplicationById1;
     @Mock private IdValue<MakeAnApplication> makeAnApplicationById2;
@@ -45,14 +47,16 @@ class MakeAnApplicationAppenderTest {
     public void setUp() {
 
         makeAnApplicationAppender =
-            new MakeAnApplicationAppender(userDetails, dateProvider);
+            new MakeAnApplicationAppender(userDetails, userDetailsHelper, dateProvider);
+
     }
 
     @Test
     void should_append_the_new_application_in_first_position() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.HOME_OFFICE_APC.toString()));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.HOME_OFFICE_APC);
 
         MakeAnApplication existingMakeAnApplication1 = mock(MakeAnApplication.class);
         when(makeAnApplicationById1.getValue()).thenReturn(existingMakeAnApplication1);
@@ -89,7 +93,8 @@ class MakeAnApplicationAppenderTest {
     void should_return_new_application_if_no_existing_applications() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.LEGAL_REPRESENTATIVE.toString()));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.LEGAL_REPRESENTATIVE);
 
         List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();
 
@@ -114,7 +119,8 @@ class MakeAnApplicationAppenderTest {
     void should_return_new_application_for_appellant() {
 
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
-        when(userDetails.getRoles()).thenReturn(newArrayList(UserRole.CITIZEN.toString()));
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.CITIZEN);
+        when(userDetailsHelper.getLoggedInUserRole(userDetails)).thenReturn(UserRole.CITIZEN);
 
         List<IdValue<MakeAnApplication>> existingMakeAnApplications = Collections.emptyList();
 

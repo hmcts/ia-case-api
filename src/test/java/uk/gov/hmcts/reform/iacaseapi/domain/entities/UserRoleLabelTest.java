@@ -14,10 +14,11 @@ class UserRoleLabelTest {
         assertEquals("Respondent", UserRoleLabel.HOME_OFFICE_GENERIC.toString());
         assertEquals("Legal representative", UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
         assertEquals("System", UserRoleLabel.SYSTEM.toString());
+        assertEquals("Appellant", UserRoleLabel.CITIZEN.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(6, UserRoleLabel.values().length);
+        assertEquals(7, UserRoleLabel.values().length);
     }
 }

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -24,14 +25,17 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
+    private final FeatureToggler featureToggler;
 
     public DecideAnApplicationHandler(
         DateProvider dateProvider,
         UserDetails userDetails,
-        UserDetailsHelper userDetailsHelper) {
+        UserDetailsHelper userDetailsHelper,
+        FeatureToggler featureToggler) {
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -78,6 +82,9 @@ public class DecideAnApplicationHandler implements PreSubmitCallbackHandler<Asyl
                 makeAnApplication.setDecisionDate(dateProvider.now().toString());
                 makeAnApplication.setDecisionMaker(decisionMakerRole);
                 asylumCase.write(HAS_APPLICATIONS_TO_DECIDE, YesOrNo.NO);
+                if (featureToggler.getValue("wa-R2-feature", false)) {
+                    asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_APPLICATION, makeAnApplication);
+                }
             });
 
         mayBeMakeAnApplications

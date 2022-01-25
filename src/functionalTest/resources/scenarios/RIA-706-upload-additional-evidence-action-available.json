@@ -1,9 +1,11 @@
 {
   "description": "RIA-706 Upload additional evidence action becomes available in appropriate state",
+  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
+      "id": 706,
       "eventId": "submitCase",
       "state": "caseUnderReview",
       "caseData": {
