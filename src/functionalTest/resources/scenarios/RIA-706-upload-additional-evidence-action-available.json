@@ -4,6 +4,7 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
     "input": {
+      "id": 706,
       "eventId": "submitCase",
       "state": "caseUnderReview",
       "caseData": {
