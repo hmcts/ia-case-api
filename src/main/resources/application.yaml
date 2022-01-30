@@ -290,6 +290,7 @@ security:
       - "removeLegalRepresentative"
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
+      - "markPaymentRequestSent"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

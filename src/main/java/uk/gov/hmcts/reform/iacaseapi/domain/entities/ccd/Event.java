@@ -117,6 +117,7 @@ public enum Event {
     MARK_EVIDENCE_AS_REVIEWED("markEvidenceAsReviewed"),
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
+    MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
