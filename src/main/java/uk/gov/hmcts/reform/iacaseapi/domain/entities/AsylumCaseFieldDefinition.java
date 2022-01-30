@@ -1499,6 +1499,15 @@ public enum AsylumCaseFieldDefinition {
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
             "markAddendumEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    PAYMENT_REQUEST_SENT_DATE(
+            "paymentRequestSentDate", new TypeReference<String>(){}),
+
+    PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION(
+            "paymentRequestSentNoteDescription", new TypeReference<String>(){}),
+
+    PAYMENT_REQUEST_SENT_DOCUMENT(
+            "paymentRequestSentDocument", new TypeReference<Document>(){}),
+
     ;
 
     private final String value;

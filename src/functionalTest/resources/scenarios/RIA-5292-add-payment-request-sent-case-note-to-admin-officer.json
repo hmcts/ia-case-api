@@ -1,0 +1,49 @@
+{
+  "description": "RIA-5292-add-payment-request-sent-case-note-admin-officer",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "markPaymentRequestSent",
+      "state": "pendingPayment",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseNotes": [],
+          "paymentRequestSentDate": "22-Jan-2022",
+          "paymentRequestSentNoteDescription": "some case note description",
+          "paymentRequestSentDocument": {
+            "document_url": "http://document-store/AAA",
+            "document_binary_url": "http://document-store/AAA/binary",
+            "document_filename": "appeal-response.pdf"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "sendDirectionActionAvailable": "No",
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "22-Jan-2022",
+              "caseNoteDescription": "some case note description",
+              "caseNoteDocument": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "appeal-response.pdf"
+              },
+              "user": "{$IA_USER_PREFIX}Admin Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
