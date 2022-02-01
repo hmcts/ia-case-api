@@ -52,7 +52,7 @@ public class WaFieldsPublisher {
             String state,
             String applicantRole) {
 
-        System.out.println("Evaluate wa-R2-feature: " + featureToggler.getValue("wa-R2-feature", false));
+        //System.out.println("Evaluate wa-R2-feature: " + featureToggler.getValue("wa-R2-feature", false));
 
         if (featureToggler.getValue("wa-R2-feature", false)) {
 
@@ -61,7 +61,7 @@ public class WaFieldsPublisher {
                     evidence, dateProvider.now().toString(), decision,
                     state);
 
-            System.out.println("lastModifiedApplication type: " + lastModifiedApplication.getType());
+            //System.out.println("lastModifiedApplication type: " + lastModifiedApplication.getType());
 
             lastModifiedApplication.setApplicantRole(applicantRole);
 
