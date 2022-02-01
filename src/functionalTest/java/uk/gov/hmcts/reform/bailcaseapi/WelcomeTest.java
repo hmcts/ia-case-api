@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.bailcaseapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.Test;
@@ -8,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("functional")

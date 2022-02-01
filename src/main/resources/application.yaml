@@ -5,11 +5,35 @@ management:
   endpoint:
     health:
       show-details: "always"
+      status:
+        http-mapping:
+          UP: 200
+          DOWN: 503
   endpoints:
     web:
-      base-path: /
-      exposure:
-        include: health, info, prometheus
+      base-path: "/"
+  health:
+    probes:
+      enabled: true
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
 
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
@@ -17,6 +41,8 @@ spring:
     import: "optional:configtree:/mnt/secrets/"
   application:
     name: Spring Boot Template
+  main:
+    allow-bean-definition-overriding: true
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
@@ -42,3 +68,5 @@ spring:
 azure:
   application-insights:
     instrumentation-key: ${rpe.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
+idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
