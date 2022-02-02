@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -11,8 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,7 +93,7 @@ class DirectionAppenderTest {
 
         assertEquals("1", allDirections.get(2).getId());
         assertEquals(existingDirection2, allDirections.get(2).getValue());
-        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), eq(null));
     }
 
     @Test
@@ -101,7 +102,7 @@ class DirectionAppenderTest {
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         List<IdValue<Direction>> existingDirections =
-            Collections.emptyList();
+            emptyList();
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(
@@ -122,7 +123,7 @@ class DirectionAppenderTest {
         assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
         assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
-        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), eq(null));
     }
 
     @Test
@@ -193,7 +194,61 @@ class DirectionAppenderTest {
     }
 
     @Test
+    void should_append_direction_with_dirction_type() {
+        String directionType = "someEventDirectionType";
+        when(dateProvider.now()).thenReturn(LocalDate.MAX);
+
+        Direction existingDirection1 = mock(Direction.class);
+        when(existingDirectionById1.getValue()).thenReturn(existingDirection1);
+
+        Direction existingDirection2 = mock(Direction.class);
+        when(existingDirectionById2.getValue()).thenReturn(existingDirection2);
+
+        List<IdValue<Direction>> existingDirections =
+                asList(existingDirectionById1, existingDirectionById2);
+
+        List<IdValue<ClarifyingQuestion>> newQuestions =
+                asList(new IdValue<>("1", new ClarifyingQuestion("Question 1")));
+        List<IdValue<Direction>> allDirections =
+                directionAppender.append(
+                        asylumCase,
+                        existingDirections,
+                        newDirectionExplanation,
+                        newDirectionParties,
+                        newDirectionDateDue,
+                        expectedTag,
+                        directionType
+                );
+
+        verify(existingDirectionById1, never()).getId();
+        verify(existingDirectionById2, never()).getId();
+
+        assertNotNull(allDirections);
+        assertEquals(3, allDirections.size());
+
+        assertEquals("3", allDirections.get(0).getId());
+        assertEquals(newDirectionExplanation, allDirections.get(0).getValue().getExplanation());
+        assertEquals(newDirectionParties, allDirections.get(0).getValue().getParties());
+        assertEquals(newDirectionDateDue, allDirections.get(0).getValue().getDateDue());
+        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
+        assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
+        assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
+        assertEquals(emptyList(), allDirections.get(0).getValue().getClarifyingQuestions());
+        assertNotNull(allDirections.get(0).getValue().getUniqueId());
+        assertThat(UUID.fromString(allDirections.get(0).getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
+        assertEquals(directionType, allDirections.get(0).getValue().getDirectionType());
+
+        assertEquals("2", allDirections.get(1).getId());
+        assertEquals(existingDirection1, allDirections.get(1).getValue());
+
+        assertEquals("1", allDirections.get(2).getId());
+        assertEquals(existingDirection2, allDirections.get(2).getValue());
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), eq(directionType));
+    }
+
+    @Test
     void should_addpend_direction_with_questions() {
+        String directionType = "someEventDirectionType";
         when(dateProvider.now()).thenReturn(LocalDate.MAX);
 
         Direction existingDirection1 = mock(Direction.class);
@@ -215,7 +270,8 @@ class DirectionAppenderTest {
                 newDirectionParties,
                 newDirectionDateDue,
                 expectedTag,
-                newQuestions
+                newQuestions,
+                directionType
             );
 
         verify(existingDirectionById1, never()).getId();
@@ -232,12 +288,15 @@ class DirectionAppenderTest {
         assertEquals(expectedDateSent, allDirections.get(0).getValue().getDateSent());
         assertEquals(expectedTag, allDirections.get(0).getValue().getTag());
         assertEquals(newQuestions, allDirections.get(0).getValue().getClarifyingQuestions());
+        assertNotNull(allDirections.get(0).getValue().getUniqueId());
+        assertThat(UUID.fromString(allDirections.get(0).getValue().getUniqueId())).isExactlyInstanceOf(UUID.class);
+        assertEquals(directionType, allDirections.get(0).getValue().getDirectionType());
 
         assertEquals("2", allDirections.get(1).getId());
         assertEquals(existingDirection1, allDirections.get(1).getValue());
 
         assertEquals("1", allDirections.get(2).getId());
         assertEquals(existingDirection2, allDirections.get(2).getValue());
-        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class));
+        verify(waFieldsPublisher).addLastModifiedDirection(eq(asylumCase), anyString(), any(Parties.class), anyString(), any(DirectionTag.class), anyString(), eq(directionType));
     }
 }

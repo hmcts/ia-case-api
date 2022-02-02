@@ -72,7 +72,8 @@ public class SendDirectionWithQuestionsHandler implements PreSubmitCallbackHandl
                 Parties.APPELLANT,
                 directionDueDate,
                 DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
-                questions.orElse(Collections.emptyList())
+                questions.orElse(Collections.emptyList()),
+                callback.getEvent().toString()
         );
         asylumCase.write(DIRECTIONS, allDirections);
 

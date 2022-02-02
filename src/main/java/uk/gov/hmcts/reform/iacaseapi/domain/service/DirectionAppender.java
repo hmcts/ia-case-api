@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
@@ -31,7 +32,19 @@ public class DirectionAppender {
         String dateDue,
         DirectionTag tag
     ) {
-        return append(asylumCase, existingDirections, explanation, parties, dateDue, tag, Collections.emptyList());
+        return append(asylumCase, existingDirections, explanation, parties, dateDue, tag, Collections.emptyList(), null);
+    }
+
+    public List<IdValue<Direction>> append(
+        AsylumCase asylumCase,
+        List<IdValue<Direction>> existingDirections,
+        String explanation,
+        Parties parties,
+        String dateDue,
+        DirectionTag tag,
+        String directionType
+    ) {
+        return append(asylumCase, existingDirections, explanation, parties, dateDue, tag, Collections.emptyList(), directionType);
     }
 
     public List<IdValue<Direction>> append(
@@ -41,7 +54,8 @@ public class DirectionAppender {
             Parties parties,
             String dateDue,
             DirectionTag tag,
-            List<IdValue<ClarifyingQuestion>> questions
+            List<IdValue<ClarifyingQuestion>> questions,
+            String directionType
     ) {
         requireNonNull(existingDirections, "existingDirections must not be null");
         requireNonNull(explanation, "explanation must not be null");
@@ -49,6 +63,7 @@ public class DirectionAppender {
         requireNonNull(dateDue, "dateDue must not be null");
         requireNonNull(tag, "tag must not be null");
 
+        String uniqueId = UUID.randomUUID().toString();
         final Direction newDirection = new Direction(
                 explanation,
                 parties,
@@ -56,7 +71,9 @@ public class DirectionAppender {
                 dateProvider.now().toString(),
                 tag,
                 Collections.emptyList(),
-                questions
+                questions,
+                uniqueId,
+                directionType
         );
 
         final List<IdValue<Direction>> allDirections = new ArrayList<>();
@@ -69,7 +86,7 @@ public class DirectionAppender {
             allDirections.add(new IdValue<>(String.valueOf(index--), existingDirection.getValue()));
         }
 
-        waFieldsPublisher.addLastModifiedDirection(asylumCase, explanation, parties, dateDue, tag);
+        waFieldsPublisher.addLastModifiedDirection(asylumCase, explanation, parties, dateDue, tag, uniqueId, directionType);
 
         return allDirections;
     }

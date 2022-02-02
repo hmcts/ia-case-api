@@ -13,11 +13,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,32 +48,47 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
-    @Mock private Direction nonStandardDirection;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
     private IdValue originalDirection8 = new IdValue(
         "8",
         new Direction("explanation8", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType8"
+        )
     );
 
     private IdValue originalDirection9 = new IdValue(
         "9",
         new Direction("explanation9", Parties.RESPONDENT, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType9"
+        )
     );
 
     private IdValue originalDirection10 = new IdValue(
         "10",
         new Direction("explanation10", Parties.LEGAL_REPRESENTATIVE, "2020-01-02",
-            "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList())
+            "2020-01-01", DirectionTag.RESPONDENT_REVIEW, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType10"
+        )
     );
 
     private IdValue originalDirection11 = new IdValue(
         "11",
         new Direction("explanation11", Parties.RESPONDENT, "2020-01-02",
-            "2020-01-01", DirectionTag.NONE, Collections.emptyList())
+            "2020-01-01", DirectionTag.NONE, Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType11"
+        )
     );
 
     @BeforeEach

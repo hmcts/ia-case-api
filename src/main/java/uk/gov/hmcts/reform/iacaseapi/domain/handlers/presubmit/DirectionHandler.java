@@ -91,15 +91,37 @@ public class DirectionHandler implements PreSubmitCallbackHandler<AsylumCase> {
         final List<IdValue<Direction>> existingDirections =
                 maybeExistingDirections.orElse(emptyList());
 
-        List<IdValue<Direction>> allDirections =
-            directionAppender.append(
-                asylumCase,
-                existingDirections,
-                sendDirectionExplanation,
-                directionParties,
-                sendDirectionDateDue,
-                directionTag
-            );
+        List<IdValue<Direction>> allDirections;
+        if (Arrays.asList(
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_CASE_BUILDING,
+                Event.REQUEST_REASONS_FOR_APPEAL,
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.SEND_DIRECTION
+        ).contains(callback.getEvent())) {
+            allDirections =
+                    directionAppender.append(
+                            asylumCase,
+                            existingDirections,
+                            sendDirectionExplanation,
+                            directionParties,
+                            sendDirectionDateDue,
+                            directionTag,
+                            callback.getEvent().toString()
+                    );
+
+        } else {
+
+            allDirections =
+                    directionAppender.append(
+                            asylumCase,
+                            existingDirections,
+                            sendDirectionExplanation,
+                            directionParties,
+                            sendDirectionDateDue,
+                            directionTag
+                    );
+        }
 
         asylumCase.write(DIRECTIONS, allDirections);
 

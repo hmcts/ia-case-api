@@ -86,7 +86,8 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
                         .now()
                         .plusDays(hearingRequirementsDueInDays)
                         .toString(),
-                    DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS
+                    DirectionTag.LEGAL_REPRESENTATIVE_HEARING_REQUIREMENTS,
+                        callback.getEvent().toString()
                 );
 
         asylumCase.write(DIRECTIONS, allDirections);
