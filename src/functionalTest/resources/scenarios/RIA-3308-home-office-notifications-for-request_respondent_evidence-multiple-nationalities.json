@@ -1,5 +1,6 @@
 {
   "description": "RIA-3308 sends home office notifications for request respondent evidence - multiple nationalities",
+  "enabled": false,
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
