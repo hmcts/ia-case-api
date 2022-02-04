@@ -114,10 +114,11 @@ class EventTest {
         assertEquals("generateUpperTribunalBundle", Event.GENERATE_UPPER_TRIBUNAL_BUNDLE.toString());
         assertEquals("markEvidenceAsReviewed", Event.MARK_EVIDENCE_AS_REVIEWED.toString());
         assertEquals("updatePaymentStatus", Event.UPDATE_PAYMENT_STATUS.toString());
+        assertEquals("markAddendumEvidenceAsReviewed", Event.MARK_ADDENDUM_EVIDENCE_AS_REVIEWED.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(111, Event.values().length);
+        assertEquals(112, Event.values().length);
     }
 }

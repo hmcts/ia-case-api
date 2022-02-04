@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.component;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
@@ -12,6 +13,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
@@ -19,11 +22,23 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFacto
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
+import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest implements WithServiceAuthStub {
+
+    @MockBean
+    UserDetailsProvider userDetailsProvider;
+
+    @Mock
+    private FeatureToggler featureToggler;
+
+    @Mock
+    private UserDetails userDetails;
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
@@ -31,6 +46,8 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
 
         addServiceAuthStub(server);
+        when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
             .event(Event.RECORD_ATTENDEES_AND_DURATION)
