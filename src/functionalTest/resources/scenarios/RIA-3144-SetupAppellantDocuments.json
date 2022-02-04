@@ -1,6 +1,5 @@
 {
   "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements (submitClarifyingQuestionAnswers)",
-  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",
