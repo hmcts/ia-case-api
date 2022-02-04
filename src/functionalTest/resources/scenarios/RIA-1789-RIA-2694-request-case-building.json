@@ -1,6 +1,5 @@
 {
   "description": "RIA-1789-RIA-2694 Request case building direction to legal representative",
-  "enabled": false,
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
