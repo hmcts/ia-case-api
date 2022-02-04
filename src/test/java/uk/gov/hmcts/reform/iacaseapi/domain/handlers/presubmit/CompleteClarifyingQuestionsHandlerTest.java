@@ -79,7 +79,9 @@ class CompleteClarifyingQuestionsHandlerTest {
                 "2020-02-02",
                 DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
                 Collections.emptyList(),
-                clarifyingQuestions
+                clarifyingQuestions,
+                "uniqueId",
+                "directionType"
             )
         );
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(

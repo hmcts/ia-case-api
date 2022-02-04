@@ -76,7 +76,8 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
     private IdValue<ClarifyingQuestionAnswer> mapDefaultAnswer(IdValue<ClarifyingQuestion> clarifyingQuestion, Direction direction) {
         ClarifyingQuestionAnswer answer = new ClarifyingQuestionAnswer(direction.getDateSent(), direction.getDateDue(),
             null, clarifyingQuestion.getValue().getQuestion(),
-            "No answer submitted because the question was marked as complete by the Tribunal", Collections.emptyList());
+            "No answer submitted because the question was marked as complete by the Tribunal",
+            direction.getUniqueId(), Collections.emptyList());
         return new IdValue<>(clarifyingQuestion.getId(), answer);
     }
 
