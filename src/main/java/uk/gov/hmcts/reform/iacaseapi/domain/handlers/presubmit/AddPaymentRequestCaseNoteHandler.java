@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
 public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -27,17 +28,20 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
     private final Appender<CaseNote> caseNoteAppender;
     private final DateProvider dateProvider;
     private final UserDetails userDetails;
+    private final FeatureToggler featureToggler;
 
     private static final String PAYMENT_REQUEST_SENT_ON = "Payment request sent on ";
 
     public AddPaymentRequestCaseNoteHandler(
         Appender<CaseNote> caseNoteAppender,
         DateProvider dateProvider,
-        UserDetails userDetails
+        UserDetails userDetails,
+        FeatureToggler featureToggler
     ) {
         this.caseNoteAppender = caseNoteAppender;
         this.dateProvider = dateProvider;
         this.userDetails = userDetails;
+        this.featureToggler = featureToggler;
     }
 
     public boolean canHandle(
@@ -47,7 +51,10 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage.equals(ABOUT_TO_SUBMIT) && callback.getEvent().equals(MARK_PAYMENT_REQUEST_SENT);
+        return callbackStage.equals(ABOUT_TO_SUBMIT)
+               && callback.getEvent().equals(MARK_PAYMENT_REQUEST_SENT)
+               && featureToggler.getValue("wa-R2-feature", false
+        );
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -64,28 +71,25 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
                 .getCaseData();
 
         String paymentRequestSentDate = asylumCase
-                .read(PAYMENT_REQUEST_SENT_DATE, String.class)
-                .orElseThrow(() -> new IllegalStateException("paymentRequestSentDate is not present"));
+            .read(PAYMENT_REQUEST_SENT_DATE, String.class)
+            .orElseThrow(() -> new IllegalStateException("paymentRequestSentDate is not present"));
 
-        String caseNoteDescription = asylumCase
-                .read(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION, String.class)
-                .orElseThrow(() -> new IllegalStateException("paymentRequestSentNoteDescription is not present"));
+        String paymentRequestSentNoteDescription = asylumCase
+            .read(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION, String.class)
+            .orElseThrow(() -> new IllegalStateException("paymentRequestSentNoteDescription is not present"));
 
         Document paymentRequestSentDocument = asylumCase
-                .read(PAYMENT_REQUEST_SENT_DOCUMENT, Document.class)
-                .orElseThrow(() -> new IllegalStateException("paymentRequestSentDocument is not present"));
+            .read(PAYMENT_REQUEST_SENT_DOCUMENT, Document.class)
+            .orElseThrow(() -> new IllegalStateException("paymentRequestSentDocument is not present"));
 
         Optional<List<IdValue<CaseNote>>> maybeExistingCaseNotes =
             asylumCase.read(CASE_NOTES);
 
-        Optional<String> paymentRequestSentNoteDescription =
-            asylumCase.read(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION, String.class);
-
         final CaseNote newCaseNote = new CaseNote(
-                PAYMENT_REQUEST_SENT_ON + paymentRequestSentDate,
-                caseNoteDescription,
-                buildFullName(),
-                dateProvider.now().toString()
+            PAYMENT_REQUEST_SENT_ON + paymentRequestSentDate,
+            paymentRequestSentNoteDescription,
+            buildFullName(),
+            dateProvider.now().toString()
         );
 
         newCaseNote.setCaseNoteDocument(paymentRequestSentDocument);
@@ -95,6 +99,7 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
 
         asylumCase.write(CASE_NOTES, allCaseNotes);
 
+        asylumCase.clear(PAYMENT_REQUEST_SENT_DATE);
         asylumCase.clear(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION);
         asylumCase.clear(PAYMENT_REQUEST_SENT_DOCUMENT);
 
@@ -103,7 +108,7 @@ public class AddPaymentRequestCaseNoteHandler implements PreSubmitCallbackHandle
 
     private String buildFullName() {
         return userDetails.getForename()
-            + " "
-            + userDetails.getSurname();
+               + " "
+               + userDetails.getSurname();
     }
 }
