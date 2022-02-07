@@ -82,7 +82,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
 
         boolean isException = false;
         try {
-            //asylumCase = feePayment.aboutToSubmit(callback);
+            asylumCase = feePayment.aboutToSubmit(callback);
 
         } catch (Exception e) {
             isException = true;
