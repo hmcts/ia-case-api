@@ -122,7 +122,8 @@ class RequestHearingRequirementsDirectionTest {
             contains(expectedExplanationPart),
             eq(party),
             eq(expectedDateDue),
-            eq(expectedTag)
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -137,7 +138,8 @@ class RequestHearingRequirementsDirectionTest {
             contains(expectedExplanationPart),
             eq(party),
             eq(expectedDateDue),
-            eq(expectedTag)
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
         );
 
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
@@ -165,7 +167,8 @@ class RequestHearingRequirementsDirectionTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedTag)
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
         )).thenReturn(allDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -180,7 +183,8 @@ class RequestHearingRequirementsDirectionTest {
             contains(expectedExplanationPart),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedTag)
+            eq(expectedTag),
+            eq(Event.REQUEST_HEARING_REQUIREMENTS_FEATURE.toString())
         );
 
         List<IdValue<Direction>> actualExistingDirections =

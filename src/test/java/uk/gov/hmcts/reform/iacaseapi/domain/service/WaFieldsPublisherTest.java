@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ class WaFieldsPublisherTest {
     private FeatureToggler featureToggler;
 
     private WaFieldsPublisher waFieldsPublisher;
+    private String uniqueId = UUID.randomUUID().toString();
+    private String directionType = "someEventDirectionType";
 
     @BeforeEach
     public void setup() {
@@ -42,7 +45,7 @@ class WaFieldsPublisherTest {
         when(featureToggler.getValue("publish-wa-fields-feature", false)).thenReturn(true);
         when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW);
+        waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW, uniqueId, directionType);
         verify(asylumCase).write(eq(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION), any());
         waFieldsPublisher.addLastModifiedApplication(asylumCase, "Legal representative", "Adjourn",
                 "Some application text", Collections.emptyList(), "Pending", "LISTING", "caseworker-ia-legalrep-solicitor");
@@ -54,7 +57,7 @@ class WaFieldsPublisherTest {
 
         when(featureToggler.getValue("publish-wa-fields-feature", false)).thenReturn(false);
         when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(false);
-        waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW);
+        waFieldsPublisher.addLastModifiedDirection(asylumCase, "explanation", Parties.APPELLANT, "22-05-2022", DirectionTag.REQUEST_RESPONSE_REVIEW, uniqueId, directionType);
         waFieldsPublisher.addLastModifiedApplication(asylumCase, "Legal representative", "Adjourn",
                 "Some application text", Collections.emptyList(), "Pending", "LISTING", "caseworker-ia-legalrep-solicitor");
         verifyNoInteractions(asylumCase);

@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4272 Last modified direction publish - Request case building direction to legal representative",
+  "description": "RIA-4540-RIA-4272 Last modified direction publish - Request case building direction to legal representative",
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -29,6 +29,8 @@
             "id": "1",
             "value": {
               "explanation": "You must now build your case to enable the respondent to conduct a thorough review of their decision.\n\n You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.\n\nYour Appeal Skeleton Argument must be set out in three distinct parts to include:\n\n- a concise summary of the appellant’s case\n- a schedule of issues\n- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n# Next steps\n\nOnce you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Tribunal Caseworker will review everything you've added.\n\nIf your case looks ready, the Tribunal will send it to the respondent to review.",
+              "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+              "directionType": "requestCaseBuilding",
               "parties": "legalRepresentative",
               "dateDue": "{$TODAY+28}",
               "dateSent": "{$TODAY}",
@@ -38,6 +40,8 @@
         ],
         "lastModifiedDirection": {
           "explanation": "You must now build your case to enable the respondent to conduct a thorough review of their decision.\n\n You have until the date indicated below to upload your Appeal Skeleton Argument and evidence.\n\nYour Appeal Skeleton Argument must be set out in three distinct parts to include:\n\n- a concise summary of the appellant’s case\n- a schedule of issues\n- why those issues should be resolved in the appellant’s favour, by reference to the evidence you have (or plan to have) and any legal authorities you rely upon\n\n# Next steps\n\nOnce you've uploaded your Appeal Skeleton Argument and evidence, you should submit your case. The Tribunal Caseworker will review everything you've added.\n\nIf your case looks ready, the Tribunal will send it to the respondent to review.",
+          "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+          "directionType": "requestCaseBuilding",
           "parties": "legalRepresentative",
           "dateDue": "{$TODAY+28}",
           "dateSent": "{$TODAY}",

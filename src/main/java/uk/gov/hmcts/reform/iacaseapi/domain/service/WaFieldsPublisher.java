@@ -23,7 +23,7 @@ public class WaFieldsPublisher {
             AsylumCase asylumCase, String explanation,
             Parties parties,
             String dateDue,
-            DirectionTag tag) {
+            DirectionTag tag, String uniqueId, String directionType) {
 
         if (featureToggler.getValue("publish-wa-fields-feature", false)) {
 
@@ -33,7 +33,10 @@ public class WaFieldsPublisher {
                     dateDue,
                     dateProvider.now().toString(),
                     tag,
-                    Collections.emptyList());
+                    Collections.emptyList(),
+                    null,
+                    uniqueId,
+                    directionType);
 
             asylumCase.write(AsylumCaseFieldDefinition.LAST_MODIFIED_DIRECTION, lastModifiedDirection);
         }
@@ -49,16 +52,12 @@ public class WaFieldsPublisher {
             String state,
             String applicantRole) {
 
-        //System.out.println("Evaluate wa-R2-feature: " + featureToggler.getValue("wa-R2-feature", false));
-
         if (featureToggler.getValue("wa-R2-feature", false)) {
 
             final MakeAnApplication lastModifiedApplication = new MakeAnApplication(
                     applicant, type, details,
                     evidence, dateProvider.now().toString(), decision,
                     state);
-
-            //System.out.println("lastModifiedApplication type: " + lastModifiedApplication.getType());
 
             lastModifiedApplication.setApplicantRole(applicantRole);
 

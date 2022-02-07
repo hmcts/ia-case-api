@@ -77,8 +77,7 @@ class DirectionHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
-        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "REQUEST_CASE_EDIT", "FORCE_REQUEST_CASE_BUILDING",
         "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
     })
     void should_append_new_direction_to_existing_directions_for_the_case(Event event) {
@@ -115,22 +114,23 @@ class DirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
+        verify(directionAppender, times(1)).append(
+                asylumCase,
+                existingDirections,
+                expectedExplanation,
+                expectedParties,
+                expectedDateDue,
+                expectedDirectionTag
+        );
+        verifyCaseAfterHandling(event, allDirections);
+    }
 
+    private void verifyCaseAfterHandling(Event event, List<IdValue<Direction>> allDirections) {
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
+        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
         verify(directionPartiesResolver, times(1)).resolve(callback);
         verify(directionTagResolver, times(1)).resolve(event);
-        verify(directionAppender, times(1)).append(
-            asylumCase,
-            existingDirections,
-            expectedExplanation,
-            expectedParties,
-            expectedDateDue,
-            expectedDirectionTag
-        );
-
         verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
         verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
@@ -138,8 +138,59 @@ class DirectionHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "SEND_DIRECTION", "REQUEST_CASE_EDIT", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
-        "REQUEST_CASE_BUILDING", "FORCE_REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL",
+        "SEND_DIRECTION", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL"
+    })
+    void should_append_new_direction_with_direction_type_to_existing_directions_for_the_case(Event event) {
+
+        final List<IdValue<Direction>> existingDirections = new ArrayList<>();
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+
+        final String expectedExplanation = "Do the thing";
+        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
+        final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.of(existingDirections));
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
+
+        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
+        when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
+        when(directionAppender.append(
+            asylumCase,
+            existingDirections,
+            expectedExplanation,
+            expectedParties,
+            expectedDateDue,
+            expectedDirectionTag,
+            event.toString()
+        )).thenReturn(allDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, times(1)).append(
+                asylumCase,
+                existingDirections,
+                expectedExplanation,
+                expectedParties,
+                expectedDateDue,
+                expectedDirectionTag,
+                event.toString()
+        );
+        verifyCaseAfterHandling(event, allDirections);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "REQUEST_CASE_EDIT", "FORCE_REQUEST_CASE_BUILDING",
         "REQUEST_RESPONSE_REVIEW", "REQUEST_RESPONSE_AMEND"
     })
     void should_add_new_direction_to_the_case_when_no_directions_exist(Event event) {
@@ -175,32 +226,80 @@ class DirectionHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_DATE_DUE, String.class);
-        verify(asylumCase, times(1)).read(SEND_DIRECTION_EXPLANATION, String.class);
-
-        verify(directionPartiesResolver, times(1)).resolve(callback);
-        verify(directionTagResolver, times(1)).resolve(event);
         verify(directionAppender, times(1)).append(
+                eq(asylumCase),
+                existingDirectionsCaptor.capture(),
+                eq(expectedExplanation),
+                eq(expectedParties),
+                eq(expectedDateDue),
+                eq(expectedDirectionTag)
+        );
+        List<IdValue<Direction>> actualExistingDirections =
+                existingDirectionsCaptor
+                        .getAllValues()
+                        .get(0);
+
+        assertEquals(0, actualExistingDirections.size());
+        verifyCaseAfterHandling(event, allDirections);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "SEND_DIRECTION", "REQUEST_RESPONDENT_EVIDENCE", "REQUEST_RESPONDENT_REVIEW",
+        "REQUEST_CASE_BUILDING", "REQUEST_REASONS_FOR_APPEAL"
+    })
+    void should_add_new_direction_with_direction_type_to_the_case_when_no_directions_exist(Event event) {
+
+        final List<IdValue<Direction>> allDirections = new ArrayList<>();
+
+        final String expectedExplanation = "Do the thing";
+        final Parties expectedParties = Parties.RESPONDENT;
+        final String expectedDateDue = "2018-12-25";
+        final DirectionTag expectedDirectionTag = DirectionTag.NONE;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(asylumCase.read(SEND_DIRECTION_EXPLANATION, String.class)).thenReturn(Optional.of(expectedExplanation));
+        when(asylumCase.read(SEND_DIRECTION_DATE_DUE, String.class)).thenReturn(Optional.of(expectedDateDue));
+
+        when(directionPartiesResolver.resolve(callback)).thenReturn(expectedParties);
+        when(directionTagResolver.resolve(event)).thenReturn(expectedDirectionTag);
+
+        when(directionAppender.append(
             eq(asylumCase),
-            existingDirectionsCaptor.capture(),
+            any(List.class),
             eq(expectedExplanation),
             eq(expectedParties),
             eq(expectedDateDue),
-            eq(expectedDirectionTag)
+            eq(expectedDirectionTag),
+            eq(event.toString())
+        )).thenReturn(allDirections);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            directionHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(directionAppender, times(1)).append(
+                eq(asylumCase),
+                existingDirectionsCaptor.capture(),
+                eq(expectedExplanation),
+                eq(expectedParties),
+                eq(expectedDateDue),
+                eq(expectedDirectionTag),
+                eq(event.toString())
         );
 
         List<IdValue<Direction>> actualExistingDirections =
-            existingDirectionsCaptor
-                .getAllValues()
-                .get(0);
-
+                existingDirectionsCaptor
+                        .getAllValues()
+                        .get(0);
         assertEquals(0, actualExistingDirections.size());
 
-        verify(asylumCase, times(1)).write(DIRECTIONS, allDirections);
-
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_EXPLANATION);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_PARTIES);
-        verify(asylumCase, times(1)).clear(SEND_DIRECTION_DATE_DUE);
+        verifyCaseAfterHandling(event, allDirections);
     }
 
     @ParameterizedTest

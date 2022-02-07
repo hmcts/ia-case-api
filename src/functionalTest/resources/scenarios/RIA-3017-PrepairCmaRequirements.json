@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements",
+  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements (prepare)",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",

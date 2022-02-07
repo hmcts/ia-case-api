@@ -14,17 +14,19 @@ public class ClarifyingQuestionAnswer {
     private String dateResponded;
     private String question;
     private String answer;
+    private String directionId;
     private List<IdValue<Document>> supportingEvidence;
 
     private ClarifyingQuestionAnswer() {
     }
 
-    public ClarifyingQuestionAnswer(String dateSent, String dueDate, String dateResponded, String question, String answer, List<IdValue<Document>> supportingEvidence) {
+    public ClarifyingQuestionAnswer(String dateSent, String dueDate, String dateResponded, String question, String answer, String directionId, List<IdValue<Document>> supportingEvidence) {
         this.dateSent = dateSent;
         this.dueDate = dueDate;
         this.dateResponded = dateResponded;
         this.question = question;
         this.answer = answer;
+        this.directionId = directionId;
         this.supportingEvidence = supportingEvidence;
     }
 
@@ -46,6 +48,10 @@ public class ClarifyingQuestionAnswer {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public String getDirectionId() {
+        return directionId;
     }
 
     public List<IdValue<Document>> getSupportingEvidence() {

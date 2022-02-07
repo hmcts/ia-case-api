@@ -1,11 +1,11 @@
 {
-  "description": "RIA-2829: [Clarifying questions] - Case officer can review a time extension request",
+  "description": "RIA-4722: [Complete Clarifying Questions] - Reinstate preClarifyingState when case officer Completes Clarifying Questions",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 1122,
-      "eventId": "reviewTimeExtension",
+      "id": 4722,
+      "eventId": "completeClarifyQuestions",
       "state": "awaitingClarifyingQuestionsAnswers",
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
@@ -31,22 +31,7 @@
               }
             }
           ],
-          "timeExtensions": [
-            {
-              "id": "1",
-              "value": {
-                "requestDate": "{$TODAY}",
-                "reason": "time extension reason",
-                "state": "awaitingClarifyingQuestionsAnswers",
-                "status": "submitted",
-                "evidence": []
-              }
-            }
-          ],
-          "reviewTimeExtensionRequired": "Yes",
-          "reviewTimeExtensionDecision": "granted",
-          "reviewTimeExtensionDecisionReason": "decision reason",
-          "reviewTimeExtensionDueDate": "{$TODAY+14}"
+          "preClarifyingState": "appealSubmitted"
         }
       }
     }
@@ -56,6 +41,7 @@
     "errors": [],
     "caseData": {
       "template": "minimal-aip-appeal-submitted.json",
+      "state": "appealSubmitted",
       "replacements": {
         "directions": [
           {
@@ -78,25 +64,19 @@
             }
           }
         ],
-        "timeExtensions": [
+        "clarifyingQuestionsAnswers": [
           {
             "id": "1",
             "value": {
-              "requestDate": "{$TODAY}",
-              "reason": "time extension reason",
-              "state": "awaitingClarifyingQuestionsAnswers",
-              "status": "granted",
-              "decision": "granted",
-              "decisionReason": "decision reason",
-              "evidence": [],
-              "decisionOutcomeDate": "{$TODAY+14}"
+              "answer": "No answer submitted because the question was marked as complete by the Tribunal",
+              "dueDate": "{$TODAY+14}",
+              "dateSent": "{$TODAY}",
+              "question": "Question 1"
             }
           }
         ],
-        "reviewTimeExtensionRequired": "No",
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes"
       }
     }
   }
 }
-

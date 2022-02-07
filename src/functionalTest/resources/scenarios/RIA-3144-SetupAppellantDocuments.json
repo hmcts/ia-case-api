@@ -1,5 +1,5 @@
 {
-  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements",
+  "description": "RIA-3017: Case officer can ask appellant to provide CMA requirements (submitClarifyingQuestionAnswers)",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",
@@ -10,6 +10,26 @@
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
+          "directions": [
+            {
+              "id": "1",
+              "value": {
+                "tag": "requestClarifyingQuestions",
+                "parties": "appellant",
+                "dateDue": "{$TODAY}",
+                "dateSent": "{$TODAY}",
+                "explanation": "You must now tell us why you think the Home Office decision to refuse your claim is wrong.",
+                "previousDates": [],
+                "clarifyingQuestions": [
+                  {
+                    "id": "608e6eba-a8d6-4c3a-b95f-53e1cd7e7407",
+                    "value": {
+                      "question": "A question"
+                    }
+                  }]
+              }
+            }
+          ],
           "reasonsForAppealDocuments": [
             {
               "id": "1",
@@ -34,6 +54,7 @@
                 "dateSent": "2020-05-28",
                 "question": "A question",
                 "dateResponded": "2020-05-28",
+                "directionId": "e0e2a89a-0745-11ec-9a03-0242ac130003",
                 "supportingEvidence": [
                   {
                     "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
@@ -81,6 +102,7 @@
               "dateSent": "2020-05-28",
               "question": "A question",
               "dateResponded": "2020-05-28",
+              "directionId": "e0e2a89a-0745-11ec-9a03-0242ac130003",
               "supportingEvidence": [
                 {
                   "id": "8d6c15e0-37e1-4af9-ac4f-cbe9349c7c39",
@@ -95,6 +117,20 @@
           }
         ],
         "legalRepresentativeDocuments": [
+          {
+            "id": "3",
+            "value": {
+              "document": {
+                "document_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                "document_binary_url": "$/http.+\/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                "document_filename": "PA 12345 2018-Awan-Tribunal-questions-and-answers.PDF"
+              },
+              "description": "",
+              "dateUploaded": "{$TODAY}",
+              "tag": "clarifyingQuestions",
+              "suppliedBy": ""
+            }
+          },
           {
             "id": "2",
             "value": {

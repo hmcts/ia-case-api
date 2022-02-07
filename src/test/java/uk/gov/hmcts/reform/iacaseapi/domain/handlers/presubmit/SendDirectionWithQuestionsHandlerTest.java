@@ -8,13 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION_WITH_QUESTIONS;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +67,7 @@ class SendDirectionWithQuestionsHandlerTest {
 
     private void setupInvalidDirectionDueDate(String directionDueDate) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION_WITH_QUESTIONS);
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION_WITH_QUESTIONS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE, String.class))
             .thenReturn(Optional.of(directionDueDate));
@@ -87,14 +84,18 @@ class SendDirectionWithQuestionsHandlerTest {
     @Test
     void adds_direction_with_questions() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.SEND_DIRECTION_WITH_QUESTIONS);
+        when(callback.getEvent()).thenReturn(SEND_DIRECTION_WITH_QUESTIONS);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE, String.class))
             .thenReturn(Optional.of("2020-02-16"));
         IdValue originalDirection = new IdValue(
             "1",
             new Direction("explanation", Parties.LEGAL_REPRESENTATIVE, "2020-01-02", "2020-01-01",
-                DirectionTag.BUILD_CASE, Collections.emptyList())
+                DirectionTag.BUILD_CASE, Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    "directionType1"
+            )
         );
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
             .thenReturn(Optional.of(singletonList(originalDirection)));
@@ -105,6 +106,8 @@ class SendDirectionWithQuestionsHandlerTest {
             new IdValue<>("1", new ClarifyingQuestion("question 1")),
             new IdValue<>("2", new ClarifyingQuestion("question 2"))
         );
+        String uniqueId = UUID.randomUUID().toString();
+        String eventDirectionType = SEND_DIRECTION_WITH_QUESTIONS.toString();
         IdValue directionWithQuestions = new IdValue(
             "2",
             new Direction(
@@ -114,7 +117,9 @@ class SendDirectionWithQuestionsHandlerTest {
                 "2020-02-02",
                 DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
                 Collections.emptyList(),
-                clarifyingQuestions
+                clarifyingQuestions,
+                uniqueId,
+                eventDirectionType
             )
         );
         when(directionAppender.append(
@@ -124,7 +129,8 @@ class SendDirectionWithQuestionsHandlerTest {
             Parties.APPELLANT,
             "2020-02-16",
             DirectionTag.REQUEST_CLARIFYING_QUESTIONS,
-            clarifyingQuestions
+            clarifyingQuestions,
+            eventDirectionType
         ))
             .thenReturn(Arrays.asList(directionWithQuestions, originalDirection));
 
@@ -166,7 +172,7 @@ class SendDirectionWithQuestionsHandlerTest {
 
                 boolean canHandle = sendDirectionWithQuestionsHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.SEND_DIRECTION_WITH_QUESTIONS
+                if (event == SEND_DIRECTION_WITH_QUESTIONS
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

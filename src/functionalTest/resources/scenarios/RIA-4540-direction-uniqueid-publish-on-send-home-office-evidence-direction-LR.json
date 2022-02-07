@@ -1,18 +1,18 @@
 {
-  "description": "RIA-4272 Last modified direction publish - Send respondent non standard direction",
+  "description": "RIA-4540 Direction Unique ID publish - Send requestRespondentEvidence direction - (LR)",
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "id": 3333,
-      "eventId": "sendDirection",
-      "state": "appealSubmitted",
+      "eventId": "requestRespondentEvidence",
+      "state": "awaitingRespondentEvidence",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "sendDirectionExplanation": "Do the non standard thing",
-          "sendDirectionParties": "respondent",
+          "homeOfficeSearchStatus": "SUCCESS",
+          "sendDirectionExplanation": "Send your evidence",
           "sendDirectionDateDue": "2022-01-01",
           "notificationsSent": []
         }
@@ -29,25 +29,33 @@
           {
             "id": "1",
             "value": {
-              "explanation": "Do the non standard thing",
+              "explanation": "Send your evidence",
+              "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+              "directionType": "requestRespondentEvidence",
               "parties": "respondent",
               "dateDue": "2022-01-01",
               "dateSent": "{$TODAY}",
-              "tag": ""
+              "tag": "respondentEvidence"
             }
           }
         ],
         "lastModifiedDirection": {
-          "explanation": "Do the non standard thing",
+          "explanation": "Send your evidence",
+          "uniqueId": "$/([a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8})/",
+          "directionType": "requestRespondentEvidence",
           "parties": "respondent",
           "dateDue": "2022-01-01",
           "dateSent": "{$TODAY}",
-          "tag": "",
+          "tag": "respondentEvidence",
           "previousDates": []
         },
         "notificationsSent": [
           {
-            "id": "3333_RESPONDENT_NON_STANDARD_DIRECTION",
+            "id": "3333_RESPONDENT_EVIDENCE_DIRECTION",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "3333_EVIDENCE_DIRECTION_LEGAL_REPRESENTATIVE",
             "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
           }
         ]

@@ -10,10 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,7 +91,11 @@ class RequestCmaRequirementsHandlerTest {
         IdValue originalDirection = new IdValue(
             "1",
             new Direction("explanation", Parties.APPELLANT, "2020-01-02", "2020-01-01", DirectionTag.BUILD_CASE,
-                Collections.emptyList())
+                Collections.emptyList(),
+                Collections.emptyList(),
+                UUID.randomUUID().toString(),
+                "directionType1"
+            )
         );
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS))
             .thenReturn(Optional.of(singletonList(originalDirection)));
@@ -110,7 +111,10 @@ class RequestCmaRequirementsHandlerTest {
                 "2020-02-16",
                 "2020-02-02",
                 DirectionTag.REQUEST_CMA_REQUIREMENTS,
-                Collections.emptyList()
+                Collections.emptyList(),
+                    Collections.emptyList(),
+                    UUID.randomUUID().toString(),
+                    Event.REQUEST_CMA_REQUIREMENTS.toString()
             )
         );
         when(directionAppender.append(
@@ -121,7 +125,8 @@ class RequestCmaRequirementsHandlerTest {
                 + cmaRequirementsReasons,
             Parties.APPELLANT,
             "2020-02-16",
-            DirectionTag.REQUEST_CMA_REQUIREMENTS
+            DirectionTag.REQUEST_CMA_REQUIREMENTS,
+            Event.REQUEST_CMA_REQUIREMENTS.toString()
         ))
             .thenReturn(Arrays.asList(requestCmaRequirements, originalDirection));
 

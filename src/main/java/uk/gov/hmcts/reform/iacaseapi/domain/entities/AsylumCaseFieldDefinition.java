@@ -1496,6 +1496,9 @@ public enum AsylumCaseFieldDefinition {
     MARK_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
             "markEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
 
+    PRE_CLARIFYING_STATE(
+        "preClarifyingState", new TypeReference<State>(){}),
+
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
             "markAddendumEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
 

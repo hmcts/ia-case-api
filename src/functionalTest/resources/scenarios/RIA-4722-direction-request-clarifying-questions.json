@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4272: Last modified direction publish - Case officer can ask clarifying questions",
+  "description": "RIA-4722: SendDirectionWithQuestions - When clarifying questsions were asked, should store preClarifyingState",
   "launchDarklyKey": "publish-wa-fields-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -7,7 +7,7 @@
     "input": {
       "id": 1122,
       "eventId": "sendDirectionWithQuestions",
-      "state": "reasonsForAppealSubmitted",
+      "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
@@ -19,7 +19,14 @@
                 "question": "Question 1"
               }
             }
-          ]
+          ],
+          "state" : "appealSubmitted"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-aip-appeal-submitted.json",
+        "replacements": {
+          "state": "appealSubmitted"
         }
       }
     }
@@ -60,15 +67,8 @@
             }
           }
         ],
-        "lastModifiedDirection": {
-          "explanation": "You need to answer some questions about your appeal.",
-          "parties": "appellant",
-          "dateDue": "{$TODAY+14}",
-          "dateSent": "{$TODAY}",
-          "tag": "requestClarifyingQuestions",
-          "previousDates": []
-        },
-        "sendDirectionActionAvailable": "No"
+        "sendDirectionActionAvailable": "Yes",
+        "preClarifyingState": "appealSubmitted"
       }
     }
   }
