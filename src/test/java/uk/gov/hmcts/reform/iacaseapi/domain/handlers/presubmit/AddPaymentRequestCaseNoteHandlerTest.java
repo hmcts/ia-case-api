@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Appender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +52,7 @@ class AddPaymentRequestCaseNoteHandlerTest {
     @Mock private List allAppendedCaseNotes;
     @Mock private UserDetails userDetails;
     @Mock private Document newCaseNoteDocument;
+    @Mock private FeatureToggler featureToggler;
 
     @Captor private ArgumentCaptor<List<IdValue<CaseNote>>> existingCaseNotesCaptor;
     @Captor private ArgumentCaptor<CaseNote> newCaseNoteCaptor;
@@ -70,6 +72,7 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.MARK_PAYMENT_REQUEST_SENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(featureToggler.getValue("wa-R2-feature", false)).thenReturn(true);
 
         when(userDetails.getForename()).thenReturn(forename);
         when(userDetails.getSurname()).thenReturn(surname);
@@ -81,14 +84,15 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(asylumCase.read(ADD_CASE_NOTE_DESCRIPTION, String.class)).thenReturn(Optional.of(newCaseNoteDescription));
 
         when(caseNoteAppender.append(any(CaseNote.class), anyList()))
-                .thenReturn(allAppendedCaseNotes);
+            .thenReturn(allAppendedCaseNotes);
 
         addPaymentRequestCaseNoteHandler =
-                new AddPaymentRequestCaseNoteHandler(
-                        caseNoteAppender,
-                        dateProvider,
-                        userDetails
-                );
+            new AddPaymentRequestCaseNoteHandler(
+                caseNoteAppender,
+                dateProvider,
+                userDetails,
+                featureToggler
+            );
     }
 
     @Test
@@ -98,11 +102,11 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(asylumCase.read(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION, String.class)).thenReturn(Optional.of(newCaseNoteDescription));
         when(asylumCase.read(PAYMENT_REQUEST_SENT_DOCUMENT, Document.class)).thenReturn(Optional.of(newCaseNoteDocument));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(caseNoteAppender, times(1)).append(
-                newCaseNoteCaptor.capture(),
-                existingCaseNotesCaptor.capture());
+            newCaseNoteCaptor.capture(),
+            existingCaseNotesCaptor.capture());
 
         CaseNote capturedCaseNote = newCaseNoteCaptor.getValue();
 
@@ -126,8 +130,8 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(asylumCase.read(PAYMENT_REQUEST_SENT_DATE, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("paymentRequestSentDate is not present")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("paymentRequestSentDate is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -138,8 +142,8 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(asylumCase.read(PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("paymentRequestSentNoteDescription is not present")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("paymentRequestSentNoteDescription is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -150,21 +154,21 @@ class AddPaymentRequestCaseNoteHandlerTest {
         when(asylumCase.read(PAYMENT_REQUEST_SENT_DOCUMENT, String.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("paymentRequestSentDocument is not present")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("paymentRequestSentDocument is not present")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
+            .hasMessage("Cannot handle callback")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -194,20 +198,20 @@ class AddPaymentRequestCaseNoteHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> addPaymentRequestCaseNoteHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
 }
