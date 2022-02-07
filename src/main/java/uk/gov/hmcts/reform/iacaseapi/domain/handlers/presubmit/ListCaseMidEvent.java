@@ -38,7 +38,7 @@ public class ListCaseMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
                         .getCaseData();
 
         HearingCentre listCaseHearingCentre =
-                asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.TAYLOR_HOUSE);
+                asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class).orElse(HearingCentre.NEWPORT);
 
         if (listCaseHearingCentre.equals(HearingCentre.DECISION_WITHOUT_HEARING)) {
             PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
