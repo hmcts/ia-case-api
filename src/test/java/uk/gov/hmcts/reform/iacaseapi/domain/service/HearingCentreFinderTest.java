@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 @SuppressWarnings("unchecked")
 class HearingCentreFinderTest {
 
-    private final HearingCentre defaultHearingCentre = HearingCentre.NEWPORT;
+    private final HearingCentre defaultHearingCentre = HearingCentre.TAYLOR_HOUSE;
 
     private final Map<HearingCentre, List<String>> hearingCentreCatchmentAreas =
         ImmutableMap
