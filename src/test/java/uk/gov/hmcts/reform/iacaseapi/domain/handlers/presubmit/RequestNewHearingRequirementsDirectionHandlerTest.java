@@ -129,7 +129,7 @@ class RequestNewHearingRequirementsDirectionHandlerTest {
         final String attendingHomeOfficeLegalRepresentative = "Jim Smith";
         final HoursAndMinutes actualCaseHearingLength = new HoursAndMinutes("5", "30");
         final String ariaListingReference = "LP/12345/2020";
-        final HearingCentre listCaseHearingCentre = HearingCentre.NEWPORT;
+        final HearingCentre listCaseHearingCentre = HearingCentre.TAYLOR_HOUSE;
         final String listCaseHearingDate = "13/10/2020";
         final String listCaseHearingLength = "6 hours";
         final String appealDecision = "Dismissed";

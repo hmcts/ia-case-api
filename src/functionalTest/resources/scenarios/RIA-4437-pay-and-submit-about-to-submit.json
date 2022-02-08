@@ -25,7 +25,8 @@
       "replacements": {
         "uploadAddendumEvidenceLegalRepActionAvailable": "No",
         "isFeePaymentEnabled": "Yes",
-        "applicationChangeDesignatedHearingCentre": "newport",
+        "hearingCentre": "taylorHouse",
+        "applicationChangeDesignatedHearingCentre": "taylorHouse",
         "submissionOutOfTime": "No",
         "homeOfficeReferenceNumber": "1212-0099-0062-8083",
         "currentCaseStateVisibleToLegalRepresentative": "appealSubmitted",
