@@ -1539,6 +1539,9 @@ public enum AsylumCaseFieldDefinition {
     PAYMENT_REQUEST_SENT_DOCUMENT(
             "paymentRequestSentDocument", new TypeReference<Document>(){}),
 
+    HMCTS_CASE_CATEGORY(
+        "hmctsCaseCategory", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
