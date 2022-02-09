@@ -22,7 +22,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hmctsCaseCategory": "Refusal of protection claim",
+        "hmctsCaseCategory": "Protection",
         "caseFlags": [
           {
             "id": "1",

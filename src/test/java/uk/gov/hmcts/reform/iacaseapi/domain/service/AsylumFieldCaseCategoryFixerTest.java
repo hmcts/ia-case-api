@@ -25,7 +25,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_rp_asylum_hmcts_case_category() {
 
-        final String expectedCaseCategory = "Revocation of a protection status";
+        final String expectedCaseCategory = "Revocation";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.RP));
 
         asylumFieldCaseCategoryFixer.fix(asylumCase);
@@ -37,7 +37,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_pa_asylum_hmcts_case_category() {
 
-        final String expectedCaseCategory = "Refusal of protection claim";
+        final String expectedCaseCategory = "Protection";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
 
         asylumFieldCaseCategoryFixer.fix(asylumCase);
@@ -49,7 +49,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_ea_asylum_hmcts_case_category() {
 
-        final String expectedCaseCategory = "Refusal of application under the EEA regulations";
+        final String expectedCaseCategory = "EEA";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EA));
 
         asylumFieldCaseCategoryFixer.fix(asylumCase);
@@ -61,7 +61,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_hu_asylum_hmcts_case_category() {
 
-        final String expectedCaseCategory = "Refusal of a human rights claim";
+        final String expectedCaseCategory = "Human rights";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
 
         asylumFieldCaseCategoryFixer.fix(asylumCase);
@@ -73,7 +73,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_dc_asylum_hmcts_case_category() {
 
-        final String expectedCaseCategory = "Deprivation of citizenship";
+        final String expectedCaseCategory = "DoC";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.DC));
 
         asylumFieldCaseCategoryFixer.fix(asylumCase);
@@ -85,7 +85,7 @@ class AsylumFieldCaseCategoryFixerTest {
     @Test
     void transposes_and_format_asylum_hmcts_case_category_if_already_exists_and_is_incorrect() {
 
-        final String expectedCaseCategory = "Refusal of a human rights claim";
+        final String expectedCaseCategory = "Human rights";
         asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.HU));
         asylumCase.write(HMCTS_CASE_CATEGORY, "Incorrect-CaseCategory");
 

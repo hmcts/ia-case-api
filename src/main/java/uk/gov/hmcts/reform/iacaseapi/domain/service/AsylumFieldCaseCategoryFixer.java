@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -26,14 +28,46 @@ public class AsylumFieldCaseCategoryFixer implements DataFixer {
 
         if (hmctsCaseCategoryToBeTransitioned.isPresent() && appealTypeToBeCopied.isPresent()) {
             if (hmctsCaseCategoryToBeTransitioned.get() != appealTypeToBeCopied.get()) {
-                asylumCase.write(hmctsCaseCategory, ((AppealType) appealTypeToBeCopied.get()).getDescription());
+                mapToWaDescriptions(asylumCase);
             }
         }
 
         if (hmctsCaseCategoryToBeTransitioned.isEmpty()) {
             if (appealTypeToBeCopied.isPresent()) {
-                asylumCase.write(hmctsCaseCategory, ((AppealType) appealTypeToBeCopied.get()).getDescription());
+                mapToWaDescriptions(asylumCase);
             }
+        }
+    }
+
+    public void mapToWaDescriptions(AsylumCase asylumCase) {
+
+        AppealType caseAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        switch (caseAppealType) {
+
+            case RP:
+                asylumCase.write(hmctsCaseCategory, ("Revocation"));
+                break;
+
+            case PA:
+                asylumCase.write(hmctsCaseCategory, ("Protection"));
+                break;
+
+            case EA:
+                asylumCase.write(hmctsCaseCategory, ("EEA"));
+                break;
+
+            case HU:
+                asylumCase.write(hmctsCaseCategory, ("Human rights"));
+                break;
+
+            case DC:
+                asylumCase.write(hmctsCaseCategory, ("DoC"));
+                break;
+
+            default:
+                break;
         }
     }
 }
