@@ -5,9 +5,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAVE_HEARING_ATTENDEES_AND_DURATION_BEEN_RECORDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -23,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PostSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -54,6 +53,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
             .caseDetails(someCaseDetailsWith()
                 .state(State.DECISION)
                 .caseData(anAsylumCase()
+                    .with(APPEAL_TYPE, AppealType.PA)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
