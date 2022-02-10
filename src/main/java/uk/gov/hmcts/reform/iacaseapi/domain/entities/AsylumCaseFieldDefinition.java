@@ -1487,8 +1487,8 @@ public enum AsylumCaseFieldDefinition {
     SECOND_FTPA_DECISION_EXISTS(
         "secondFtpaDecisionExists", new TypeReference<YesOrNo>(){}),
 
-    CASE_NAME(
-        "caseName", new TypeReference<String>() {}),
+    HMCTS_CASE_NAME_INTERNAL(
+        "hmctsCaseNameInternal", new TypeReference<String>() {}),
 
     APPEAL_REVIEW_OUTCOME(
         "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),

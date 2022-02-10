@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4973 set caseName for an event where previous caseName is incorrect",
+  "description": "RIA-4973-RIA-5303 set hmctsCaseNameInternal for an event where previous caseName is incorrect",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -12,7 +12,7 @@
         "replacements": {
           "flagCaseTypeOfFlag": "s94bOutOfCountry",
           "flagCaseAdditionalInformation": "some additional information",
-          "caseName": "incorrect-casename"
+          "hmctsCaseNameInternal": "incorrect-casename"
         }
       }
     }
@@ -23,7 +23,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseName": "Talha Awan",
+        "hmctsCaseNameInternal": "Talha Awan",
         "caseFlags": [
           {
             "id": "1",

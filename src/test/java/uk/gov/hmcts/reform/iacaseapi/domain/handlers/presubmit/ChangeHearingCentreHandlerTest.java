@@ -96,8 +96,8 @@ class ChangeHearingCentreHandlerTest {
     @Test
     void should_set_hearing_centre_and_current_case_state_visible_to_case_officer_flags() {
         CaseManagementLocation expectedCaseManagementLocation =
-            new CaseManagementLocation(Region.NATIONAL, BaseLocation.TAYLOR_HOUSE);
-        when(caseManagementLocationService.getCaseManagementLocation("Taylor House"))
+            new CaseManagementLocation(Region.NATIONAL, BaseLocation.NEWPORT);
+        when(caseManagementLocationService.getCaseManagementLocation("Newport"))
             .thenReturn(expectedCaseManagementLocation);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -113,7 +113,7 @@ class ChangeHearingCentreHandlerTest {
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
 
         verify(asylumCase).write(eq(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER), eq(maybePreviousState));
-        verify(asylumCase).write(eq(HEARING_CENTRE), eq(HearingCentre.TAYLOR_HOUSE));
+        verify(asylumCase).write(eq(HEARING_CENTRE), eq(HearingCentre.NEWPORT));
 
 
         verify(asylumCase).write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
