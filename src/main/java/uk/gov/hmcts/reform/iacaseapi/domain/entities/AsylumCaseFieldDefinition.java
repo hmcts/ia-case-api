@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 
 public enum AsylumCaseFieldDefinition {
 
+    WA_DUMMY_POSTCODE("waDummyPostcode", new TypeReference<String>(){}),
 
     CHANGE_ORGANISATION_REQUEST_FIELD(
         "changeOrganisationRequestField", new TypeReference<ChangeOrganisationRequest>(){}),
