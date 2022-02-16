@@ -120,7 +120,7 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 );
 
                 clearOutOfCountryDecision(asylumCase);
-                asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+                // asylumCase.clear(HOME_OFFICE_DECISION_DATE);
             }
 
         }
