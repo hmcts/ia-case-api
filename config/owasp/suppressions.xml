@@ -1,54 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2018-1258
-                 False positive &#45;&#45; we do not use Spring Framework 5.0.5.RELEASE (5.0.8.RELEASE at the time of writing)
-                 Additionally, we do not use Spring method security annotations which are the specific vulnerability
-                ]]></notes>
-    <cve>CVE-2018-1258</cve>
+  <suppress>
+    <notes><![CDATA[file name: jakarta.el-3.0.3.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.glassfish/jakarta\.el@.*$</packageUrl>
+    <cpe>cpe:/a:eclipse:jakarta_expression_language</cpe>
   </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-           https://nvd.nist.gov/vuln/detail/CVE-2021-22112
-           Temporary suppression until upgrade to Spring Boot 2.4.x
-          ]]></notes>
-    <cve>CVE-2021-22112</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-22118
-                 Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x
-                ]]></notes>
-    <cve>CVE-2021-22118</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-28170
-                 Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x affected lib org.glassfish:jakarta.el:3.0.3
-                ]]></notes>
-    <cve>CVE-2021-28170</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-22119
-                 Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x affected lib Spring Security and related to DoS attack
-                ]]></notes>
+  <suppress>
+    <notes><![CDATA[file name: spring-security-crypto-5.3.9.RELEASE.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
     <cve>CVE-2021-22119</cve>
   </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2020-23171
-                 Spring Framework vulnerability, https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-23171 nim-lang all versions affected https://github.com/nim-lang/zip/issues/54
-                ]]></notes>
-    <cve>CVE-2020-23171</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-22096#range-7096083
-                 Temporary suppression until upgrade to Spring Boot 2.4.x https://cwe.mitre.org/data/definitions/117.html
-                ]]></notes>
-    <cve>CVE-2021-22096</cve>
+  <suppress>
+    <notes><![CDATA[file name: tomcat-embed-core-9.0.54.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+    <cve>CVE-2022-23181</cve>
   </suppress>
 </suppressions>
