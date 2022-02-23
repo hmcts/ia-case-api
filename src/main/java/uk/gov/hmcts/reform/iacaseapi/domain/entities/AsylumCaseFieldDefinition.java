@@ -77,6 +77,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
+    APPEAL_TYPE_PREVIOUS_SELECTION(
+        "appealTypePreviousSelection", new TypeReference<AppealType>(){}),
+
     APPEAL_TYPE_DESCRIPTION(
         "appealTypeDescription", new TypeReference<String>(){}),
 
@@ -1371,6 +1374,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_IN_UK(
         "appellantInUk", new TypeReference<YesOrNo>() {}),
 
+    APPELLANT_IN_UK_PREVIOUS_SELECTION(
+        "appellantInUkPreviousSelection", new TypeReference<YesOrNo>() {}),
+
     APPEAL_OUT_OF_COUNTRY(
         "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
@@ -1498,6 +1504,9 @@ public enum AsylumCaseFieldDefinition {
 
     PRE_CLARIFYING_STATE(
         "preClarifyingState", new TypeReference<State>(){}),
+
+    SUBSCRIPTIONS(
+        "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
 
     ;
 
