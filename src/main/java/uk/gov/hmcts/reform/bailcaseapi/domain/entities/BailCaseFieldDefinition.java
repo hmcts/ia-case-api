@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public enum BailCaseFieldDefinition {
-    //Example
-    APPELLANT_GIVEN_NAMES(
-        "appellantGivenNames", new TypeReference<String>() {})
+    IS_ADMIN(
+        "isAdmin", new TypeReference<String>() {})
     ;
-
 
     private final String value;
     private final TypeReference typeReference;

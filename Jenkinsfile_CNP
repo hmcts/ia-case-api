@@ -11,6 +11,23 @@ def type = "java"
 def product = "ia"
 def component = "bail-case-api"
 
+def secrets = [
+  'ia-${env}': [
+    secret('idam-client-id', 'IA_IDAM_CLIENT_ID'),
+    secret('idam-secret', 'IA_IDAM_SECRET'),
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
 withPipeline(type, product, component) {
   enableSlackNotifications('#ia-tech')
+  loadVaultSecrets(secrets)
 }

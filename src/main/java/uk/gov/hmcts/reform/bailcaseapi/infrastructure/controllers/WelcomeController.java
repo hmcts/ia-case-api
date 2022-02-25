@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bailcaseapi.controllers;
+package uk.gov.hmcts.reform.bailcaseapi.infrastructure.controllers;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

@@ -1,5 +1,5 @@
 server:
-  port: 4550
+  port: ${PORT:4550}
 
 management:
   endpoint:
@@ -15,6 +15,10 @@ management:
   health:
     probes:
       enabled: true
+  services:
+    idam:
+      uri: ${IDAM_URL:http://127.0.0.1:4501}/health
+      response: '"status":"UP"'
 
 feign:
   hystrix:
@@ -37,12 +41,23 @@ hystrix:
 
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
-  config:
-    import: "optional:configtree:/mnt/secrets/"
   application:
-    name: Spring Boot Template
+    name: Immigration & Asylum bail case API
   main:
     allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID  _IDAM_URL:http://127.0.0.1:5000}/o
+        registration:
+          oidc:
+            client-id: ${IA_IDAM_CLIENT_ID:ia}
+            client-secret: ${IA_IDAM_SECRET:something}
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o/jwks
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
@@ -65,8 +80,13 @@ spring:
 #            # silence the 'wall-of-text' - unnecessary exception throw about blob types
 #            non_contextual_creation: true
 
+#OpenID
+idam:
+  baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
 azure:
   application-insights:
     instrumentation-key: ${rpe.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
 
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}

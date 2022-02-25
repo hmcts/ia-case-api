@@ -1,8 +1,15 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
 
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@ToString
+@EqualsAndHashCode
 public class CaseDetails<T extends CaseData> {
 
     private long id;

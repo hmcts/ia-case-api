@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 
 public class BailCaseTest {
 
@@ -16,12 +17,12 @@ public class BailCaseTest {
     @Test
     void reads_string() throws IOException {
 
-        String caseData = "{\"appellantGivenNames\":\"John Smith\"}";
+        String caseData = "{\"isAdmin\":\"Yes\"}";
 
         BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
-        Optional<String> readApplicantName = bailCase.read(BailCaseFieldDefinition.APPELLANT_GIVEN_NAMES);
+        Optional<String> readApplicantName = bailCase.read(BailCaseFieldDefinition.IS_ADMIN);
 
-        assertThat(readApplicantName.get()).isEqualTo("John Smith");
+        assertThat(readApplicantName.get()).isEqualTo("Yes");
     }
 
     @Test
@@ -29,20 +30,20 @@ public class BailCaseTest {
 
         BailCase bailCase = new BailCase();
 
-        bailCase.write(BailCaseFieldDefinition.APPELLANT_GIVEN_NAMES, "test-name");
+        bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.YES);
 
-        assertThat(bailCase.read(BailCaseFieldDefinition.APPELLANT_GIVEN_NAMES, String.class).get())
-            .isEqualTo("test-name");
+        assertThat(bailCase.read(BailCaseFieldDefinition.IS_ADMIN, String.class).get())
+            .isEqualTo("Yes");
     }
 
     @Test
     void clears_value() throws IOException {
 
-        String caseData = "{\"appellantGivenNames\":\"John Smith\"}";
+        String caseData = "{\"isAdmin\":\"Yes\"}";
         BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
 
-        bailCase.clear(BailCaseFieldDefinition.APPELLANT_GIVEN_NAMES);
+        bailCase.clear(BailCaseFieldDefinition.IS_ADMIN);
 
-        assertThat(bailCase.read(BailCaseFieldDefinition.APPELLANT_GIVEN_NAMES, String.class)).isEmpty();
+        assertThat(bailCase.read(BailCaseFieldDefinition.IS_ADMIN, String.class)).isEmpty();
     }
 }

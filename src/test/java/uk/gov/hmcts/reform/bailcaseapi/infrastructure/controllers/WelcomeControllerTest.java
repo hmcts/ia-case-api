@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.bailcaseapi.controllers.WelcomeController;
 
 public class WelcomeControllerTest {
 
