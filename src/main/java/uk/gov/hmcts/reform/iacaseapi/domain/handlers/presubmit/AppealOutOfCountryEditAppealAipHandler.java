@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_EMAIL_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_PREVIOUS_SELECTION;
@@ -17,26 +19,41 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_STATELESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_WITHOUT_HEARING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEARCH_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_AUTHORISATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_CONTACT_PREFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_EMAIL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_MOBILE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_NAME_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBSCRIPTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_DOCS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -87,6 +104,8 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
                 .getCaseDetails()
                 .getCaseData();
 
+        asylumCase.write(IS_OUT_OF_COUNTRY_ENABLED, YES);
+
         final long caseId = callback.getCaseDetails().getId();
         boolean holdFieldsForInUkChange = true;
         boolean holdFieldsForAppealTypeChange = true;
@@ -130,6 +149,14 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             caseId
         );
 
+        Optional<YesOrNo> optionalHasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
+
+        if (optionalHasSponsor.isPresent() && optionalHasSponsor.get().equals(NO)) {
+            clearSponsor(asylumCase);
+        } else {
+            writeSponsorContactDetails(asylumCase);
+        }
+
         if (optionalAppealType.isPresent() && !holdFieldsForAppealTypeChange) {
             log.info("Clearing fields for Appeal Type change for AIP case Id [{}]", caseId);
             clearAipFieldsForAppealType(asylumCase, false);
@@ -164,6 +191,7 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
             if (appellantInUk.equals(YES)) {
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, NO);
+                asylumCase.clear(HAS_CORRESPONDENCE_ADDRESS);
                 if (!holdFieldsForInUkChange) {
                     log.info("Clearing Out Of Country fields for an In Country AIP Appeal with case Id [{}]", caseId);
                     clearAipFieldsForAppealType(asylumCase, true);
@@ -172,10 +200,32 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
             if (appellantInUk.equals(NO)) {
                 asylumCase.write(APPEAL_OUT_OF_COUNTRY, YES);
+                asylumCase.write(HAS_CORRESPONDENCE_ADDRESS, YES);
                 if (!holdFieldsForInUkChange) {
                     log.info("Clearing In Country fields for Out Of Country AIP Appeal with case Id [{}]", caseId);
                     clearAipFieldsForAppealType(asylumCase, true);
                 }
+            }
+        }
+    }
+
+    private void writeSponsorContactDetails(AsylumCase asylumCase) {
+        Optional<List<IdValue<Subscriber>>> maybeSponsorSubscriptions =
+            asylumCase.read(SPONSOR_SUBSCRIPTIONS);
+
+        final List<IdValue<Subscriber>> existingSponsorSubscriptions =
+            maybeSponsorSubscriptions.orElse(Collections.emptyList());
+
+        if (!existingSponsorSubscriptions.isEmpty()) {
+            final IdValue<Subscriber> sponsorMobileNumber = existingSponsorSubscriptions.get(0);
+            final IdValue<Subscriber> sponsorEmail = existingSponsorSubscriptions.get(0);
+
+            if (existingSponsorSubscriptions.get(0).getValue().getEmail() != null
+                && existingSponsorSubscriptions.get(0).getValue().getMobileNumber() != null) {
+                asylumCase.write(SPONSOR_EMAIL, sponsorEmail.getValue().getEmail());
+                asylumCase.write(AIP_SPONSOR_EMAIL_FOR_DISPLAY, sponsorEmail.getValue().getEmail());
+                asylumCase.write(SPONSOR_MOBILE_NUMBER, sponsorMobileNumber.getValue().getMobileNumber());
+                asylumCase.write(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY, sponsorMobileNumber.getValue().getMobileNumber());
             }
         }
     }
@@ -216,6 +266,23 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
     private void clearAipContactDetails(AsylumCase asylumCase) {
         asylumCase.clear(SUBSCRIPTIONS);
+        asylumCase.clear(HAS_SPONSOR);
+        clearSponsor(asylumCase);
+    }
+
+    private void clearSponsor(AsylumCase asylumCase) {
+        asylumCase.clear(SPONSOR_GIVEN_NAMES);
+        asylumCase.clear(SPONSOR_FAMILY_NAME);
+        asylumCase.clear(SPONSOR_ADDRESS);
+        asylumCase.clear(SPONSOR_CONTACT_PREFERENCE);
+        asylumCase.clear(SPONSOR_SUBSCRIPTIONS);
+        asylumCase.clear(SPONSOR_EMAIL);
+        asylumCase.clear(AIP_SPONSOR_EMAIL_FOR_DISPLAY);
+        asylumCase.clear(SPONSOR_MOBILE_NUMBER);
+        asylumCase.clear(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY);
+        asylumCase.clear(SPONSOR_AUTHORISATION);
+        asylumCase.clear(SPONSOR_NAME_FOR_DISPLAY);
+        asylumCase.clear(SPONSOR_ADDRESS_FOR_DISPLAY);
     }
 
     private void clearAipDecisionType(AsylumCase asylumCase) {

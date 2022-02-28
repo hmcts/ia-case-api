@@ -1509,6 +1509,15 @@ public enum AsylumCaseFieldDefinition {
     SUBSCRIPTIONS(
         "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
 
+    SPONSOR_SUBSCRIPTIONS(
+        "sponsorSubscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
+
+    AIP_SPONSOR_EMAIL_FOR_DISPLAY(
+        "aipSponsorEmailForDisplay", new TypeReference<String>(){}),
+
+    AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY(
+        "aipSponsorMobileNumberForDisplay", new TypeReference<String>(){}),
+
     ;
 
     private final String value;
