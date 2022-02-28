@@ -1500,6 +1500,21 @@ public enum AsylumCaseFieldDefinition {
     PRE_CLARIFYING_STATE(
         "preClarifyingState", new TypeReference<State>(){}),
 
+    MARK_ADDENDUM_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE(
+            "markAddendumEvidenceAsReviewedActionAvailable", new TypeReference<YesOrNo>(){}),
+
+    PAYMENT_REQUEST_SENT_DATE(
+            "paymentRequestSentDate", new TypeReference<String>(){}),
+
+    PAYMENT_REQUEST_SENT_NOTE_DESCRIPTION(
+            "paymentRequestSentNoteDescription", new TypeReference<String>(){}),
+
+    PAYMENT_REQUEST_SENT_DOCUMENT(
+            "paymentRequestSentDocument", new TypeReference<Document>(){}),
+
+    HMCTS_CASE_CATEGORY(
+        "hmctsCaseCategory", new TypeReference<String>(){}),
+
     ;
 
     private final String value;

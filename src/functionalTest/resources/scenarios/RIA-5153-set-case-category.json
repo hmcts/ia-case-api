@@ -1,0 +1,41 @@
+{
+  "description": "RIA-5153 set hmctsCaseCategory for an event",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "flagCase",
+      "state": "awaitingRespondentEvidence",
+      "id": 5153,
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "flagCaseTypeOfFlag": "s94bOutOfCountry",
+          "flagCaseAdditionalInformation": "some additional information"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hmctsCaseCategory": "Protection",
+        "caseFlags": [
+          {
+            "id": "1",
+            "value": {
+              "caseFlagType": "s94bOutOfCountry",
+              "caseFlagAdditionalInformation": "some additional information"
+            }
+          }
+        ],
+        "caseFlagS94bOutOfCountryExists": "Yes",
+        "caseFlagS94bOutOfCountryAdditionalInformation": "some additional information"
+      }
+    }
+  }
+}
+
