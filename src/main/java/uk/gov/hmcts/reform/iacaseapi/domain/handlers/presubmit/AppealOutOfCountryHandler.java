@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_FAMILY_NAME;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
@@ -45,11 +47,11 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Arrays.asList(
+               && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())
-            && featureToggler.getValue("out-of-country-feature", false);
+               && featureToggler.getValue("out-of-country-feature", false);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -65,6 +67,9 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
                 .getCaseDetails()
                 .getCaseData();
 
+        Optional<JourneyType> journeyTypeOptional = callback.getCaseDetails().getCaseData().read(JOURNEY_TYPE);
+        boolean isAipJourney = journeyTypeOptional.map(journeyType -> journeyType == JourneyType.AIP).orElse(false);
+
         //Default consider appellant living in UK
         AtomicReference<YesOrNo> outOfCountry = new AtomicReference<>(NO);
         asylumCase.read(APPELLANT_IN_UK, YesOrNo.class).ifPresent(
@@ -78,22 +83,33 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
         Optional<YesOrNo> hasSponsor = asylumCase.read(HAS_SPONSOR, YesOrNo.class);
         if (hasSponsor.isPresent() && hasSponsor.get().equals(YES)) {
             log.info("Sponsor present for Out Of Country appeal. case ID {}", caseId);
-            final String sponsorGivenNames =
-                asylumCase
-                    .read(SPONSOR_GIVEN_NAMES, String.class)
-                    .orElseThrow(() -> new IllegalStateException("sponsorGivenNames is not present"));
 
-            final String sponsorFamilyName =
-                asylumCase
-                    .read(SPONSOR_FAMILY_NAME, String.class)
-                    .orElseThrow(() -> new IllegalStateException("sponsorFamilyName is not present"));
+            String sponsorNameForDisplay = null;
 
-            String sponsorNameForDisplay = sponsorGivenNames + " " + sponsorFamilyName;
+            if (!isAipJourney) {
+                final String sponsorGivenNames =
+                    asylumCase
+                        .read(SPONSOR_GIVEN_NAMES, String.class)
+                        .orElseThrow(() -> new IllegalStateException("sponsorGivenNames is not present"));
 
-            asylumCase.write(
-                SPONSOR_NAME_FOR_DISPLAY,
-                sponsorNameForDisplay.replaceAll("\\s+", " ").trim()
-            );
+                final String sponsorFamilyName =
+                    asylumCase
+                        .read(SPONSOR_FAMILY_NAME, String.class)
+                        .orElseThrow(() -> new IllegalStateException("sponsorFamilyName is not present"));
+
+                sponsorNameForDisplay = sponsorGivenNames + " " + sponsorFamilyName;
+                writeSponsorNameForDisplay(asylumCase, sponsorNameForDisplay);
+            }
+
+            if (isAipJourney && featureToggler.getValue("aip-ooc-feature", false)) {
+                Optional<String> sponsorGivenNames = asylumCase.read(SPONSOR_GIVEN_NAMES, String.class);
+                Optional<String> sponsorFamilyName = asylumCase.read(SPONSOR_FAMILY_NAME, String.class);
+
+                if (sponsorGivenNames.isPresent() && sponsorFamilyName.isPresent()) {
+                    sponsorNameForDisplay = sponsorGivenNames.get() + " " + sponsorFamilyName.get();
+                    writeSponsorNameForDisplay(asylumCase, sponsorNameForDisplay);
+                }
+            }
 
             Optional<AddressUk> optionalAddressUk = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);
             if (optionalAddressUk.isPresent()) {
@@ -114,10 +130,15 @@ public class AppealOutOfCountryHandler implements PreSubmitCallbackHandler<Asylu
                 );
                 asylumCase.write(SPONSOR_ADDRESS_FOR_DISPLAY, sponsorAddress.toString());
             }
-
         }
-
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void writeSponsorNameForDisplay(AsylumCase asylumCase, String sponsorNameForDisplay) {
+        asylumCase.write(
+            SPONSOR_NAME_FOR_DISPLAY,
+            sponsorNameForDisplay.replaceAll("\\s+", " ").trim()
+        );
     }
 
     private void addAddressLine(final Optional<String> addressLine, StringBuilder sponsorDetails) {
