@@ -222,6 +222,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
+        verify(asylumCase, times(0)).clear(GWF_REFERENCE_NUMBER);
         verify(asylumCase, times(0)).clear(APPELLANT_GIVEN_NAMES);
         verify(asylumCase, times(0)).clear(APPELLANT_FAMILY_NAME);
         verify(asylumCase, times(0)).clear(APPELLANT_DATE_OF_BIRTH);
@@ -414,10 +415,13 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     }
 
     private void verifyClearedFields(AsylumCase asylumCase) {
+        verify(asylumCase, times(1)).clear(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC);
+        verify(asylumCase, times(1)).clear(DATE_CLIENT_LEAVE_UK);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
         verify(asylumCase, times(1)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(1)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
+        verify(asylumCase, times(1)).clear(GWF_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(APPELLANT_GIVEN_NAMES);
         verify(asylumCase, times(1)).clear(APPELLANT_FAMILY_NAME);
         verify(asylumCase, times(1)).clear(APPELLANT_DATE_OF_BIRTH);
@@ -453,10 +457,13 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     private void verifyUnclearedFields(AsylumCase asylumCase) {
         verify(asylumCase, times(0)).clear(APPEAL_TYPE);
+        verify(asylumCase, times(0)).clear(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC);
+        verify(asylumCase, times(0)).clear(DATE_CLIENT_LEAVE_UK);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
+        verify(asylumCase, times(0)).clear(GWF_REFERENCE_NUMBER);
         verify(asylumCase, times(0)).clear(APPELLANT_GIVEN_NAMES);
         verify(asylumCase, times(0)).clear(APPELLANT_FAMILY_NAME);
         verify(asylumCase, times(0)).clear(APPELLANT_DATE_OF_BIRTH);
