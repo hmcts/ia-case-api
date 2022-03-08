@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AppealReferenceNumberCcdHandlerHandlerTest {
+class AppealReferenceNumberCcdHandlerTest {
 
     @Mock
     private Callback<AsylumCase> callback;
