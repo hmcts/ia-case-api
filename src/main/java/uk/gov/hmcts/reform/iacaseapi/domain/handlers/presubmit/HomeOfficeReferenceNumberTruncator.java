@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -32,8 +34,8 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-                    Event.SUBMIT_APPEAL,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                Event.SUBMIT_APPEAL,
+                Event.PAY_AND_SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
@@ -50,11 +52,19 @@ public class HomeOfficeReferenceNumberTruncator implements PreSubmitCallbackHand
                 .getCaseDetails()
                 .getCaseData();
 
+        final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
+            .map(j -> j == JourneyType.AIP)
+            .orElse(false);
+
         if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
             value -> OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)).orElse(false)) {
 
             Optional<String> maybeHomeOfficeReferenceNumber =
                 asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER);
+
+            if (maybeHomeOfficeReferenceNumber.isEmpty() && isAipJourney) {
+                return new PreSubmitCallbackResponse<>(asylumCase);
+            }
 
             String homeOfficeReferenceNumber =
                 maybeHomeOfficeReferenceNumber.orElseThrow(() -> new RequiredFieldMissingException("homeOfficeReferenceNumber is not present"));
