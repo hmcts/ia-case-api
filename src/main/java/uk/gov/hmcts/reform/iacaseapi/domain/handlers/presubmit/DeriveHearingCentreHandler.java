@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WA_DUMMY_POSTCODE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -81,6 +82,10 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
     private Optional<String> getAppealPostcode(
         AsylumCase asylumCase
     ) {
+        Optional<String> optionalWaDummyPostcode = asylumCase.read(WA_DUMMY_POSTCODE, String.class);
+        if (optionalWaDummyPostcode.isPresent()) {
+            return optionalWaDummyPostcode;
+        }
         if (asylumCase.read(HAS_SPONSOR, YesOrNo.class)
                 .orElse(NO) == YES) {
             Optional<AddressUk> optionalSponsorAddress = asylumCase.read(SPONSOR_ADDRESS, AddressUk.class);

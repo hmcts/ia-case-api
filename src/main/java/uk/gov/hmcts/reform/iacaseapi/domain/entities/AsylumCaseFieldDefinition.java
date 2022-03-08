@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisati
 
 public enum AsylumCaseFieldDefinition {
 
+    WA_DUMMY_POSTCODE("waDummyPostcode", new TypeReference<String>(){}),
 
     CHANGE_ORGANISATION_REQUEST_FIELD(
         "changeOrganisationRequestField", new TypeReference<ChangeOrganisationRequest>(){}),
@@ -76,6 +77,9 @@ public enum AsylumCaseFieldDefinition {
 
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
+
+    APPEAL_TYPE_PREVIOUS_SELECTION(
+        "appealTypePreviousSelection", new TypeReference<AppealType>(){}),
 
     APPEAL_TYPE_DESCRIPTION(
         "appealTypeDescription", new TypeReference<String>(){}),
@@ -1371,6 +1375,9 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_IN_UK(
         "appellantInUk", new TypeReference<YesOrNo>() {}),
 
+    APPELLANT_IN_UK_PREVIOUS_SELECTION(
+        "appellantInUkPreviousSelection", new TypeReference<YesOrNo>() {}),
+
     APPEAL_OUT_OF_COUNTRY(
         "appealOutOfCountry", new TypeReference<YesOrNo>() {}),
 
@@ -1501,6 +1508,18 @@ public enum AsylumCaseFieldDefinition {
 
     IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
+
+    SUBSCRIPTIONS(
+        "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
+
+    SPONSOR_SUBSCRIPTIONS(
+        "sponsorSubscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
+
+    AIP_SPONSOR_EMAIL_FOR_DISPLAY(
+        "aipSponsorEmailForDisplay", new TypeReference<String>(){}),
+
+    AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY(
+        "aipSponsorMobileNumberForDisplay", new TypeReference<String>(){}),
 
     ;
 

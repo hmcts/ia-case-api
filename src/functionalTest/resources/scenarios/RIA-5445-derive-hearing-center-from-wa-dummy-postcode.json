@@ -1,0 +1,48 @@
+{
+  "description": "RIA-5445 Derive hearing centre from dummy postcode for Work Allocation team's functional tests",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "No",
+          "hearingCentre": null,
+          "waDummyPostcode": "M1 2AB",
+          "uploadTheNoticeOfDecisionDocs": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906",
+                  "document_filename": "some-notice-of-decision-letter.pdf",
+                  "document_binary_url": "http://dm-store/documents/c78071ff-a011-42c1-99a2-17b0adb9b906/binary"
+                },
+                "description": "some notice of decision description"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appellantHasFixedAddress": "No",
+        "hearingCentre": "manchester",
+        "staffLocation": "Manchester",
+        "caseManagementLocation": {
+          "region": "1",
+          "baseLocation": "512401"
+        }
+      }
+    }
+  }
+}
