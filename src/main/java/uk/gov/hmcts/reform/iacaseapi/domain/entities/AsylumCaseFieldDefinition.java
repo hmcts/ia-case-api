@@ -1506,6 +1506,9 @@ public enum AsylumCaseFieldDefinition {
     PRE_CLARIFYING_STATE(
         "preClarifyingState", new TypeReference<State>(){}),
 
+    IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
+        "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
+
     SUBSCRIPTIONS(
         "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
 
