@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.STAFF_LOCATION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.WA_DUMMY_POSTCODE;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -308,6 +309,43 @@ class DeriveHearingCentreHandlerTest {
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
+
+        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
+        verify(asylumCase, times(1))
+            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
+
+        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE"
+    })
+    void should_derive_hearing_centre_from_wa_dummy_postcode_if_available(
+        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(event);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(WA_DUMMY_POSTCODE, String.class)).thenReturn(Optional.of("SE10 9EQ"));
+        when(hearingCentreFinder.find("SE10 9EQ")).thenReturn(hearingCentre);
+
+        CaseManagementLocation expectedCaseManagementLocation =
+            new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
+            .thenReturn(expectedCaseManagementLocation);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(hearingCentreFinder, times(1)).find("SE10 9EQ");
         verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
 
         verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);

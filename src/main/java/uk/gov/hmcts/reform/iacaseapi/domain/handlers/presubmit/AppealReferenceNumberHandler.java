@@ -47,9 +47,9 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-            Event.START_APPEAL,
-            Event.SUBMIT_APPEAL,
-            Event.PAY_AND_SUBMIT_APPEAL)
+                Event.START_APPEAL,
+                Event.SUBMIT_APPEAL,
+                Event.PAY_AND_SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
