@@ -18,16 +18,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_STATELESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_WITHOUT_HEARING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_WITH_HEARING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.GWF_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SPONSOR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_DECISION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_EVIDENCE_FROM_OUTSIDE_UK_OOC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_OUT_OF_COUNTRY_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEARCH_POSTCODE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SPONSOR_ADDRESS;
@@ -112,12 +113,16 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         final long caseId = callback.getCaseDetails().getId();
         boolean holdFieldsForInUkChange = true;
         boolean holdFieldsForAppealTypeChange = true;
+        boolean holdFieldsForOutsideUkWhenApplicationMadeChange = true;
 
         Optional<YesOrNo> optionalAppellantInUk =
             asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
 
         Optional<AppealType> optionalAppealType =
             asylumCase.read(APPEAL_TYPE, AppealType.class);
+
+        Optional<YesOrNo> optionalOutsideUkWhenApplicationMade =
+            asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class);
 
         if (optionalAppellantInUk.isPresent()) {
             Optional<YesOrNo> optionalAppellantInUkPreviousSelection = Optional.of(
@@ -137,12 +142,23 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             holdFieldsForAppealTypeChange = optionalAppealType.get().equals(optionalAppealTypePreviousSelection.get());
         }
 
-        updatePreviousInUkAndAppealTypeSelections(
+        if (optionalOutsideUkWhenApplicationMade.isPresent()) {
+            Optional<YesOrNo> optionalOutsideUkWhenApplicationMadePreviousSelection = Optional.of(
+                asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)
+                    .orElse(optionalOutsideUkWhenApplicationMade.get()));
+
+            asylumCase.write(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, optionalOutsideUkWhenApplicationMadePreviousSelection);
+            holdFieldsForOutsideUkWhenApplicationMadeChange = optionalOutsideUkWhenApplicationMade.get().equals(optionalOutsideUkWhenApplicationMadePreviousSelection.get());
+        }
+
+        updatePreviousSelections(
             asylumCase,
             holdFieldsForInUkChange,
             holdFieldsForAppealTypeChange,
+            holdFieldsForOutsideUkWhenApplicationMadeChange,
             optionalAppellantInUk,
-            optionalAppealType
+            optionalAppealType,
+            optionalOutsideUkWhenApplicationMade
         );
 
         verifyInUkChange(
@@ -165,21 +181,31 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
             clearAipFieldsForAppealType(asylumCase, false);
         }
 
+        if (optionalOutsideUkWhenApplicationMade.isPresent() && !holdFieldsForOutsideUkWhenApplicationMadeChange) {
+            log.info("Clearing fields for Outside UK When Application Made change for AIP case Id [{}]", caseId);
+            clearAipFieldsForOutsideUkWhenApplicationMade(asylumCase);
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void updatePreviousInUkAndAppealTypeSelections(
+    private void updatePreviousSelections(
         AsylumCase asylumCase,
         boolean holdFieldsForInUkChange,
         boolean holdFieldsForAppealTypeChange,
+        boolean holdFieldsForOutsideUkWhenApplicationMadeChange,
         Optional<YesOrNo> optionalAppellantInUk,
-        Optional<AppealType> optionalAppealType
+        Optional<AppealType> optionalAppealType,
+        Optional<YesOrNo> optionalOutsideUkWhenApplicationMade
     ) {
         if (!holdFieldsForInUkChange) {
             asylumCase.write(APPELLANT_IN_UK_PREVIOUS_SELECTION, optionalAppellantInUk);
         }
         if (!holdFieldsForAppealTypeChange) {
             asylumCase.write(APPEAL_TYPE_PREVIOUS_SELECTION, optionalAppealType);
+        }
+        if (!holdFieldsForOutsideUkWhenApplicationMadeChange) {
+            asylumCase.write(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, optionalOutsideUkWhenApplicationMade);
         }
     }
 
@@ -243,6 +269,19 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
         clearAipDecisionType(asylumCase);
     }
 
+    private void clearAipFieldsForOutsideUkWhenApplicationMade(AsylumCase asylumCase) {
+        asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+        asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+        asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
+        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
+        asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
+        asylumCase.clear(GWF_REFERENCE_NUMBER);
+        asylumCase.clear(DATE_CLIENT_LEAVE_UK);
+        clearAipPersonalDetails(asylumCase);
+        clearAipContactDetails(asylumCase);
+        clearAipDecisionType(asylumCase);
+    }
+
     private void clearAipAppealTypeDetails(AsylumCase asylumCase) {
         asylumCase.clear(APPEAL_TYPE);
     }
@@ -250,11 +289,12 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
     private void clearAipHomeOfficeDetails(AsylumCase asylumCase) {
         asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
         asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+        asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
         asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         asylumCase.clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
         asylumCase.clear(GWF_REFERENCE_NUMBER);
-        asylumCase.clear(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC);
         asylumCase.clear(DATE_CLIENT_LEAVE_UK);
+        asylumCase.clear(OUTSIDE_UK_WHEN_APPLICATION_MADE);
     }
 
     private void clearAipPersonalDetails(AsylumCase asylumCase) {
@@ -293,7 +333,6 @@ public class AppealOutOfCountryEditAppealAipHandler implements PreSubmitCallback
 
     private void clearAipDecisionType(AsylumCase asylumCase) {
         asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
-        asylumCase.clear(DECISION_WITH_HEARING);
-        asylumCase.clear(DECISION_WITHOUT_HEARING);
+        asylumCase.clear(DECISION_HEARING_FEE_OPTION);
     }
 }
