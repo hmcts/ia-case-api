@@ -1521,12 +1521,6 @@ public enum AsylumCaseFieldDefinition {
     AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY(
         "aipSponsorMobileNumberForDisplay", new TypeReference<String>(){}),
 
-    OUTSIDE_UK_WHEN_APPLICATION_MADE(
-        "outsideUkWhenApplicationMade", new TypeReference<YesOrNo>() {}),
-
-    OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION(
-        "outsideUkWhenApplicationMadePreviousSelection", new TypeReference<YesOrNo>() {}),
-
     ;
 
     private final String value;
