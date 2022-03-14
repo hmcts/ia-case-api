@@ -45,7 +45,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     private final String sponsorEmail = "sponsor@email.com";
     private final String sponsorMobilePhone = "07123456789";
-
     private AppealOutOfCountryEditAppealAipHandler appealOutOfCountryEditAppealAipHandler;
 
     @BeforeEach
@@ -196,6 +195,68 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     @EnumSource(value = Event.class, names = {
         "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
+    void should_clear_aip_fields_for_an_outside_uk_when_application_made_change(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).read(APPELLANT_IN_UK, YesOrNo.class);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.YES);
+        verify(asylumCase, times(0)).clear(APPELLANT_IN_UK);
+        verify(asylumCase, times(0)).clear(APPEAL_TYPE);
+        verify(asylumCase, times(0)).clear(OUTSIDE_UK_WHEN_APPLICATION_MADE);
+        verifyClearedFields(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
+    void should_not_clear_aip_fields_when_no_change_to_appellant_in_uk_and_appeal_type_and_outside_uk_when_application_made_change_fields(Event event) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_UK_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(APPEAL_TYPE_PREVIOUS_SELECTION, AppealType.class)).thenReturn(Optional.of(AppealType.DC));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(OUTSIDE_UK_WHEN_APPLICATION_MADE_PREVIOUS_SELECTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(featureToggler.getValue("aip-ooc-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            appealOutOfCountryEditAppealAipHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).read(APPELLANT_IN_UK, YesOrNo.class);
+        verify(asylumCase, times(1)).write(APPEAL_OUT_OF_COUNTRY, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.YES);
+        verifyUnclearedFields(asylumCase);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+        "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
+    })
     void should_clear_sponsor_fields_for_when_has_sponsor_changed_to_no(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -220,9 +281,11 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(1)).write(HAS_CORRESPONDENCE_ADDRESS, YesOrNo.YES);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, times(0)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
         verify(asylumCase, times(0)).clear(GWF_REFERENCE_NUMBER);
+        verify(asylumCase, times(0)).clear(OUTSIDE_UK_WHEN_APPLICATION_MADE);
         verify(asylumCase, times(0)).clear(APPELLANT_GIVEN_NAMES);
         verify(asylumCase, times(0)).clear(APPELLANT_FAMILY_NAME);
         verify(asylumCase, times(0)).clear(APPELLANT_DATE_OF_BIRTH);
@@ -236,8 +299,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(0)).clear(SUBSCRIPTIONS);
         verify(asylumCase, times(0)).clear(HAS_SPONSOR);
         verify(asylumCase, times(0)).clear(RP_DC_APPEAL_HEARING_OPTION);
-        verify(asylumCase, times(0)).clear(DECISION_WITH_HEARING);
-        verify(asylumCase, times(0)).clear(DECISION_WITHOUT_HEARING);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
         verifyClearedSponsorFields(asylumCase);
     }
 
@@ -415,10 +477,10 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
     }
 
     private void verifyClearedFields(AsylumCase asylumCase) {
-        verify(asylumCase, times(1)).clear(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC);
         verify(asylumCase, times(1)).clear(DATE_CLIENT_LEAVE_UK);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, times(1)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(1)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(1)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
         verify(asylumCase, times(1)).clear(GWF_REFERENCE_NUMBER);
@@ -435,8 +497,7 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
         verify(asylumCase, times(1)).clear(HAS_SPONSOR);
         verify(asylumCase, times(1)).clear(RP_DC_APPEAL_HEARING_OPTION);
-        verify(asylumCase, times(1)).clear(DECISION_WITH_HEARING);
-        verify(asylumCase, times(1)).clear(DECISION_WITHOUT_HEARING);
+        verify(asylumCase, times(1)).clear(DECISION_HEARING_FEE_OPTION);
         verifyClearedSponsorFields(asylumCase);
     }
 
@@ -457,13 +518,14 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
 
     private void verifyUnclearedFields(AsylumCase asylumCase) {
         verify(asylumCase, times(0)).clear(APPEAL_TYPE);
-        verify(asylumCase, times(0)).clear(IS_EVIDENCE_FROM_OUTSIDE_UK_OOC);
         verify(asylumCase, times(0)).clear(DATE_CLIENT_LEAVE_UK);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_REFERENCE_NUMBER);
         verify(asylumCase, times(0)).clear(HOME_OFFICE_DECISION_DATE);
+        verify(asylumCase, times(0)).clear(DECISION_LETTER_RECEIVED_DATE);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_DOCS);
         verify(asylumCase, times(0)).clear(UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION);
         verify(asylumCase, times(0)).clear(GWF_REFERENCE_NUMBER);
+        verify(asylumCase, times(0)).clear(OUTSIDE_UK_WHEN_APPLICATION_MADE);
         verify(asylumCase, times(0)).clear(APPELLANT_GIVEN_NAMES);
         verify(asylumCase, times(0)).clear(APPELLANT_FAMILY_NAME);
         verify(asylumCase, times(0)).clear(APPELLANT_DATE_OF_BIRTH);
@@ -489,7 +551,6 @@ class AppealOutOfCountryEditAppealAipHandlerTest {
         verify(asylumCase, times(0)).clear(AIP_SPONSOR_MOBILE_NUMBER_FOR_DISPLAY);
         verify(asylumCase, times(0)).clear(SPONSOR_AUTHORISATION);
         verify(asylumCase, times(0)).clear(RP_DC_APPEAL_HEARING_OPTION);
-        verify(asylumCase, times(0)).clear(DECISION_WITH_HEARING);
-        verify(asylumCase, times(0)).clear(DECISION_WITHOUT_HEARING);
+        verify(asylumCase, times(0)).clear(DECISION_HEARING_FEE_OPTION);
     }
 }

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -47,8 +48,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                && Arrays.asList(
-                    Event.SUBMIT_APPEAL,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                Event.SUBMIT_APPEAL,
+                Event.PAY_AND_SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 
@@ -99,12 +100,18 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
         }
 
-        if (homeOfficeDecisionDate != null
-            && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-            asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
-        } else {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+        final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
+            .map(j -> j == JourneyType.AIP)
+            .orElse(false);
+
+        if (!isAipJourney) {
+            if (homeOfficeDecisionDate != null
+                && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+                asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
+            } else {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
