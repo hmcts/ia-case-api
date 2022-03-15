@@ -115,9 +115,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("Icelandic")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("Canadian")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VaticanCitizen")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -137,7 +137,7 @@ class HomeOfficeCaseValidateHandlerTest {
         verify(asylumCase, times(1)).write(
             APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
         verify(asylumCase, times(1)).write(
-            APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+            APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
         verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
         verify(asylumCase, times(1)).write(
             HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -162,9 +162,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("Icelandic")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("Canadian")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VaticanCitizen")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -186,7 +186,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(1)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(1)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(1)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -203,7 +203,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(0)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(0)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(0)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -229,9 +229,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("Icelandic")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("Canadian")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VaticanCitizen")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -253,7 +253,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(1)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(1)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(1)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(1)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
@@ -270,7 +270,7 @@ class HomeOfficeCaseValidateHandlerTest {
             verify(asylumCase, times(0)).write(
                     APPEAL_TYPE_DESCRIPTION, appealType.getDescription());
             verify(asylumCase, times(0)).write(
-                    APPELLANT_NATIONALITIES_DESCRIPTION, "Iceland<br />Canada<br />Holy See (Vatican City State)");
+                    APPELLANT_NATIONALITIES_DESCRIPTION, "Icelandic<br />Canadian<br />Vatican citizen");
             verify(asylumCase, times(0)).read(HOME_OFFICE_CASE_STATUS_DATA);
             verify(asylumCase, times(0)).write(
                     HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.YES);
