@@ -289,8 +289,9 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
-//  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
   compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
@@ -317,6 +318,14 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+
+  //pact contract testing
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+
+  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
+  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
 
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
 
@@ -358,7 +367,7 @@ runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 pact {
   broker {
-    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:9292'
   }
   publish {
     pactDirectory = 'pacts'

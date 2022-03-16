@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 
 class IdamUserDetailsTest {
 
+    private final String accessToken = "access-token";
     private final String id = "1234";
     private final List<String> roles = Arrays.asList("role-1", "role-2");
 
     private IdamUserDetails userDetails =
         new IdamUserDetails(
+            accessToken,
             id,
             roles
         );
@@ -20,6 +22,7 @@ class IdamUserDetailsTest {
     @Test
     void should_hold_onto_values() {
 
+        assertEquals(accessToken, userDetails.getAccessToken());
         assertEquals(id, userDetails.getId());
         assertEquals(roles, userDetails.getRoles());
     }
