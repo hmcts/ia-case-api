@@ -1,5 +1,5 @@
 {
-  "description": "RIA-4973 set caseName for an event",
+  "description": "RIA-4973-RIA-5303 set hmctsCaseNameInternal for an event",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
@@ -22,7 +22,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "caseName": "Talha Awan",
+        "hmctsCaseNameInternal": "Talha Awan",
         "caseFlags": [
           {
             "id": "1",
