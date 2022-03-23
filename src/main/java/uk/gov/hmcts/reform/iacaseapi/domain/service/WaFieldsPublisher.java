@@ -2,14 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import java.util.Collections;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
-@Slf4j
 @Service
 public class WaFieldsPublisher {
 
@@ -54,16 +52,12 @@ public class WaFieldsPublisher {
             String state,
             String applicantRole) {
 
-        log.info("Evaluate wa-R2-feature: " + featureToggler.getValue("wa-R2-feature", false));
-
         if (featureToggler.getValue("wa-R2-feature", false)) {
 
             final MakeAnApplication lastModifiedApplication = new MakeAnApplication(
                     applicant, type, details,
                     evidence, dateProvider.now().toString(), decision,
                     state);
-
-            log.info("lastModifiedApplication type: " + lastModifiedApplication.getType());
 
             lastModifiedApplication.setApplicantRole(applicantRole);
 

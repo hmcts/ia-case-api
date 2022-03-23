@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTe
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithNotificationsApiStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.idam.UserInfo;
@@ -70,7 +69,6 @@ class UserDetailsRequestScopeTest extends SpringBootIntegrationTest implements W
                         .state(APPEAL_SUBMITTED)
                         .caseData(
                             anAsylumCase()
-                                .with(APPEAL_TYPE, AppealType.PA)
                                 .with(APPELLANT_GIVEN_NAMES, "some names")
                                 .with(APPELLANT_FAMILY_NAME, "some family name")
                                 .with(MAKE_AN_APPLICATION_TYPES, "some names")

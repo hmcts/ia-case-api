@@ -1,18 +1,18 @@
 {
-  "description": "RIA-5153 set hmctsCaseCategory for an event where previous hmctsCaseCategory is incorrect",
+  "description": "RIA-4973 set caseName for an event where previous caseName is incorrect",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
       "eventId": "flagCase",
       "state": "awaitingRespondentEvidence",
-      "id": 5153,
+      "id": 4973,
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "flagCaseTypeOfFlag": "s94bOutOfCountry",
           "flagCaseAdditionalInformation": "some additional information",
-          "hmctsCaseCategory": "incorrect-case-category"
+          "caseName": "incorrect-casename"
         }
       }
     }
@@ -23,7 +23,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hmctsCaseCategory": "Protection",
+        "caseName": "Talha Awan",
         "caseFlags": [
           {
             "id": "1",

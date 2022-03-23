@@ -18,7 +18,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.*;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.RequestUserAccessTokenProvider;
 
@@ -56,7 +55,6 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
                         .state(RESPONDENT_REVIEW)
                         .caseData(
                             anAsylumCase()
-                                .with(APPEAL_TYPE, AppealType.PA)
                                 .with(APPELLANT_GIVEN_NAMES, "some names")
                                 .with(APPELLANT_FAMILY_NAME, "some family name")
                                 .with(SEND_DIRECTION_EXPLANATION, "some explanation")
