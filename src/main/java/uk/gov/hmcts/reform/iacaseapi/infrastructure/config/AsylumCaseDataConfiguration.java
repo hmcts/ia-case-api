@@ -40,7 +40,7 @@ public class AsylumCaseDataConfiguration {
     @Bean
     public DataFixer caseNameAppender() {
         return new AsylumFieldCaseNameFixer(
-            AsylumCaseFieldDefinition.CASE_NAME,
+            AsylumCaseFieldDefinition.HMCTS_CASE_NAME_INTERNAL,
             AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
             AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME);
     }
