@@ -31,6 +31,7 @@ public class FlagCaseMidEventHandler implements PreSubmitCallbackHandler<AsylumC
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        System.out.println("inside Flagcase mid event handler ");
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }

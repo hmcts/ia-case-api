@@ -20,6 +20,7 @@ class CaseFlagTypeTest {
         assertEquals("s94bOutOfCountry", CaseFlagType.S94B_OUT_OF_COUNTRY.toString());
         assertEquals("appealOnHold", CaseFlagType.APPEAL_ON_HOLD.toString());
         assertEquals("unknown", CaseFlagType.UNKNOWN.toString());
+        assertEquals("pilotCase", CaseFlagType.PILOT_CASE.toString());
 
         assertEquals("Anonymity", CaseFlagType.ANONYMITY.getReadableText());
         assertEquals("Complex case", CaseFlagType.COMPLEX_CASE.getReadableText());
@@ -32,10 +33,11 @@ class CaseFlagTypeTest {
         assertEquals("S94B Out of Country", CaseFlagType.S94B_OUT_OF_COUNTRY.getReadableText());
         assertEquals("Appeal on hold", CaseFlagType.APPEAL_ON_HOLD.getReadableText());
         assertEquals("Unknown", CaseFlagType.UNKNOWN.getReadableText());
+        assertEquals("PilotCase", CaseFlagType.PILOT_CASE.getReadableText());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(12, CaseFlagType.values().length);
+        assertEquals(13, CaseFlagType.values().length);
     }
 }

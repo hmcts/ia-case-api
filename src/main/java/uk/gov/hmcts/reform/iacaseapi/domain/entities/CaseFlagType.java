@@ -16,6 +16,7 @@ public enum CaseFlagType {
     SET_ASIDE_REHEARD("setAsideReheard", "Set aside - Reheard"),
     S94B_OUT_OF_COUNTRY("s94bOutOfCountry", "S94B Out of Country"),
     APPEAL_ON_HOLD("appealOnHold", "Appeal on hold"),
+    PILOT_CASE("pilotCase", "Pilot case"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown", "Unknown");
