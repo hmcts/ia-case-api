@@ -1,0 +1,43 @@
+{
+  "description": "RIA-5303 Set hmctsCaseNameInternal field for Add Case Note event (TCW)",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "addCaseNote",
+      "state": "decision",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "caseName": "Talha Awan",
+          "hmctsCaseNameInternal": "1644488732773442",
+          "caseNotes": [],
+          "addCaseNoteSubject": "some case note subject",
+          "addCaseNoteDescription": "some case note description"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hmctsCaseNameInternal": "Talha Awan",
+        "sendDirectionActionAvailable": "No",
+        "caseNotes": [
+          {
+            "id": "1",
+            "value": {
+              "caseNoteSubject": "some case note subject",
+              "caseNoteDescription": "some case note description",
+              "user": "{$IA_USER_PREFIX}Case Officer",
+              "dateAdded": "{$TODAY}"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

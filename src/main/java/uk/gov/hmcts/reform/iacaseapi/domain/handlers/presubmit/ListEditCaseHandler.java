@@ -13,15 +13,18 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
 
 @Component
 public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final HearingCentreFinder hearingCentreFinder;
+    private final CaseManagementLocationService caseManagementLocationService;
 
-    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder) {
+    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder, CaseManagementLocationService caseManagementLocationService) {
         this.hearingCentreFinder = hearingCentreFinder;
+        this.caseManagementLocationService = caseManagementLocationService;
     }
 
     public boolean canHandle(
@@ -83,7 +86,17 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.clear(HEARING_CONDUCTION_OPTIONS);
         asylumCase.clear(HEARING_RECORDING_DOCUMENTS);
         asylumCase.clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
+        addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private void addBaseLocationAndStaffLocationFromHearingCentre(AsylumCase asylumCase) {
+        HearingCentre hearingCentre = asylumCase.read(HEARING_CENTRE, HearingCentre.class)
+            .orElse(HearingCentre.TAYLOR_HOUSE);
+        String staffLocationName = StaffLocation.getLocation(hearingCentre).getName();
+        asylumCase.write(STAFF_LOCATION, staffLocationName);
+        asylumCase.write(CASE_MANAGEMENT_LOCATION,
+            caseManagementLocationService.getCaseManagementLocation(staffLocationName));
     }
 }
