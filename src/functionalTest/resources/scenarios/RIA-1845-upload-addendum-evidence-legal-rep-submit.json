@@ -1,6 +1,5 @@
 {
   "description": "RIA-1845 Upload addendum evidence Legal Rep",
-  "launchDarklyKey": "wa-R2-feature:false",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
@@ -107,8 +106,7 @@
             }
           }
         ],
-        "uploadAddendumEvidenceLegalRepActionAvailable": "Yes",
-        "markAddendumEvidenceAsReviewedActionAvailable": "No"
+        "uploadAddendumEvidenceLegalRepActionAvailable": "Yes"
       }
     }
   }

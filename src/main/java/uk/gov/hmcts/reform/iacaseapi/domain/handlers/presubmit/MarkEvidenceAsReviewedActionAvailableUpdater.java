@@ -47,8 +47,7 @@ public class MarkEvidenceAsReviewedActionAvailableUpdater implements PreSubmitCa
             State.SUBMIT_HEARING_REQUIREMENTS,
             State.LISTING,
             State.PREPARE_FOR_HEARING,
-            State.FINAL_BUNDLING,
-            State.CASE_BUILDING
+            State.FINAL_BUNDLING
         ).contains(caseDetails.getState())) {
             asylumCase.write(MARK_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.YES);
         } else {

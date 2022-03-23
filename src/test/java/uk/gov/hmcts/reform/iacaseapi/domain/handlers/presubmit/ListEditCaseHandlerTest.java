@@ -55,8 +55,6 @@ class ListEditCaseHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private HearingCentreFinder hearingCentreFinder;
-    @Mock
-    private CaseManagementLocationService caseManagementLocationService;
 
     private ListEditCaseHandler listEditCaseHandler;
 
@@ -64,7 +62,7 @@ class ListEditCaseHandlerTest {
     public void setUp() {
 
         listEditCaseHandler =
-            new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService);
+            new ListEditCaseHandler(hearingCentreFinder);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
