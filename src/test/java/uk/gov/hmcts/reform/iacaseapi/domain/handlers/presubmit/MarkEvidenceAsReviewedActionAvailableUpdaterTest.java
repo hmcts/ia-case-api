@@ -62,7 +62,8 @@ class MarkEvidenceAsReviewedActionAvailableUpdaterTest {
                     State.SUBMIT_HEARING_REQUIREMENTS,
                     State.LISTING,
                     State.PREPARE_FOR_HEARING,
-                    State.FINAL_BUNDLING
+                    State.FINAL_BUNDLING,
+                    State.CASE_BUILDING
             ).contains(state)) {
                 verify(asylumCase, times(1)).write(MARK_EVIDENCE_AS_REVIEWED_ACTION_AVAILABLE, YesOrNo.YES);
             } else {

@@ -4,10 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCaseValueInitializerFixer;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumFieldCaseNameFixer;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumFieldNameFixer;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.DataFixer;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.*;
 
 @Configuration
 public class AsylumCaseDataConfiguration {
@@ -43,8 +40,15 @@ public class AsylumCaseDataConfiguration {
     @Bean
     public DataFixer caseNameAppender() {
         return new AsylumFieldCaseNameFixer(
-            AsylumCaseFieldDefinition.CASE_NAME,
+            AsylumCaseFieldDefinition.HMCTS_CASE_NAME_INTERNAL,
             AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
             AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME);
+    }
+
+    @Bean
+    public DataFixer hmctsCaseCategoryAppender() {
+        return new AsylumFieldCaseCategoryFixer(
+            AsylumCaseFieldDefinition.HMCTS_CASE_CATEGORY,
+            AsylumCaseFieldDefinition.APPEAL_TYPE);
     }
 }
