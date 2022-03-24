@@ -115,9 +115,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("ICELANDIC")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CANADIAN")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VATICAN_CITIZEN")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -162,9 +162,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("ICELANDIC")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CANADIAN")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VATICAN_CITIZEN")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
@@ -229,9 +229,9 @@ class HomeOfficeCaseValidateHandlerTest {
         when(homeOfficeCaseStatus.getApplicationStatus()).thenReturn(applicationStatus);
         when(asylumCase.read(CONTACT_PREFERENCE)).thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
         List<IdValue<NationalityFieldValue>> nlist = new ArrayList<>();
-        nlist.add(new IdValue<>("0", new NationalityFieldValue("ICELANDIC")));
-        nlist.add(new IdValue<>("1", new NationalityFieldValue("CANADIAN")));
-        nlist.add(new IdValue<>("2", new NationalityFieldValue("VATICAN_CITIZEN")));
+        nlist.add(new IdValue<>("0", new NationalityFieldValue("IS")));
+        nlist.add(new IdValue<>("1", new NationalityFieldValue("CA")));
+        nlist.add(new IdValue<>("2", new NationalityFieldValue("VA")));
 
         when(asylumCase.read(APPELLANT_NATIONALITIES)).thenReturn(Optional.of(nlist));
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
