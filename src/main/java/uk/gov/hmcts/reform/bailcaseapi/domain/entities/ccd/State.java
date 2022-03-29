@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum State {
     APPLICATION_STARTED("applicationStarted"),
     APPLICATION_ENDED("applicationEnded"),
+    APPLICATION_SUBMITTED("applicationSubmitted"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

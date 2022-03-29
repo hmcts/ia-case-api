@@ -11,8 +11,8 @@ class UserRoleLabelTest {
         assertEquals("Judge", UserRoleLabel.JUDGE.toString());
         assertEquals("Tribunal Caseworker", UserRoleLabel.TRIBUNAL_CASEWORKER.toString());
         assertEquals("Admin Officer", UserRoleLabel.ADMIN_OFFICER.toString());
-        assertEquals("Respondent", UserRoleLabel.HOME_OFFICE_GENERIC.toString());
-        assertEquals("Legal representative", UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
+        assertEquals("Home Office", UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+        assertEquals("Legal Representative", UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
         assertEquals("System", UserRoleLabel.SYSTEM.toString());
     }
 

@@ -7,8 +7,8 @@ public enum UserRoleLabel {
     JUDGE("Judge"),
     TRIBUNAL_CASEWORKER("Tribunal Caseworker"),
     ADMIN_OFFICER("Admin Officer"),
-    HOME_OFFICE_GENERIC("Respondent"),
-    LEGAL_REPRESENTATIVE("Legal representative"),
+    HOME_OFFICE_GENERIC("Home Office"),
+    LEGAL_REPRESENTATIVE("Legal Representative"),
     SYSTEM("System");
 
     @JsonValue

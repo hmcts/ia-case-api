@@ -17,17 +17,17 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class BailApplicationSavedConfirmationTest {
+public class BailApplicationSubmittedConfirmationTest {
 
     @Mock private Callback<BailCase> callback;
 
     @Mock private CaseDetails<BailCase> caseDetails;
-    private BailApplicationSavedConfirmation bailApplicationSavedConfirmation;
+    private BailApplicationSubmittedConfirmation bailApplicationSubmittedConfirmation;
 
     @BeforeEach
     public void setUp() {
-        bailApplicationSavedConfirmation = new BailApplicationSavedConfirmation();
-        when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+        bailApplicationSubmittedConfirmation = new BailApplicationSubmittedConfirmation();
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
     }
 
     @Test
@@ -35,18 +35,18 @@ public class BailApplicationSavedConfirmationTest {
         long caseId = 1234L;
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
-        PostSubmitCallbackResponse response = bailApplicationSavedConfirmation.handle(callback);
+        PostSubmitCallbackResponse response = bailApplicationSubmittedConfirmation.handle(callback);
 
         assertNotNull(response.getConfirmationBody(), "Confirmation Body is null");
-        assertThat(response.getConfirmationBody().get()).contains("# Do this next");
+        assertThat(response.getConfirmationBody().get()).contains("### What happens next");
 
         assertNotNull(response.getConfirmationHeader(), "Confirmation Header is null");
-        assertThat(response.getConfirmationHeader().get()).isEqualTo("# You have saved this application");
+        assertThat(response.getConfirmationHeader().get()).isEqualTo("# You have submitted this application");
     }
 
     @Test
     void should_not_allow_null_args() {
-        assertThatThrownBy(() -> bailApplicationSavedConfirmation.handle(null))
+        assertThatThrownBy(() -> bailApplicationSubmittedConfirmation.handle(null))
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
@@ -54,25 +54,7 @@ public class BailApplicationSavedConfirmationTest {
     void should_not_handle_invalid_callback() {
         when(callback.getEvent()).thenReturn(Event.END_APPLICATION); //Invalid event for this handler
 
-        assertThatThrownBy(() -> bailApplicationSavedConfirmation.handle(callback)).isExactlyInstanceOf(
+        assertThatThrownBy(() -> bailApplicationSubmittedConfirmation.handle(callback)).isExactlyInstanceOf(
             IllegalStateException.class);
-    }
-
-    @Test
-    void should_return_confirmation_on_Bail_Save() {
-        long caseId = 1234L;
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getId()).thenReturn(caseId);
-
-        PostSubmitCallbackResponse response = bailApplicationSavedConfirmation.handle(callback);
-
-        assertNotNull(response);
-        assertThat(response.getConfirmationBody().isPresent());
-        assertThat(response.getConfirmationHeader().isPresent());
-
-        assertThat(response.getConfirmationBody().get()).contains(
-            "Review and edit the application if necessary. [Submit the application](/case/IA/Bail/"
-                + caseId
-                + "/trigger/submitApplication) when you’re ready.");
     }
 }

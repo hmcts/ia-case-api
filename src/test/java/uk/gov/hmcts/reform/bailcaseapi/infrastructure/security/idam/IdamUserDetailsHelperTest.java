@@ -55,7 +55,7 @@ class IdamUserDetailsHelperTest {
                     break;
 
                 case "caseworker-ia-legalrep-solicitor":
-                    assertEquals("Legal representative",
+                    assertEquals("Legal Representative",
                         idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
                     break;
 
@@ -82,17 +82,14 @@ class IdamUserDetailsHelperTest {
     public void should_get_logged_in_user_role_home_office_generic() {
 
         Stream.of(
-            "caseworker-ia-respondentofficer",
-            "caseworker-ia-homeofficeapc",
-            "caseworker-ia-homeofficelart",
-            "caseworker-ia-homeofficepou"
+            "caseworker-ia-respondentofficer"
         ).forEach(roleName -> {
             List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
             when(userDetails.getRoles()).thenReturn(expectedRoles);
 
             assertEquals(roleName, idamUserDetailsHelper.getLoggedInUserRole(userDetails).toString());
-            assertEquals("Respondent", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
+            assertEquals("Home Office", idamUserDetailsHelper.getLoggedInUserRoleLabel(userDetails).toString());
         });
 
     }

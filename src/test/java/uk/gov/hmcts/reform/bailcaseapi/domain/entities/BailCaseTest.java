@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -20,9 +21,9 @@ public class BailCaseTest {
         String caseData = "{\"isAdmin\":\"Yes\"}";
 
         BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
-        Optional<String> readApplicantName = bailCase.read(BailCaseFieldDefinition.IS_ADMIN);
+        Optional<YesOrNo> readApplicantName = bailCase.read(BailCaseFieldDefinition.IS_ADMIN);
 
-        assertThat(readApplicantName.get()).isEqualTo("Yes");
+        assertThat(readApplicantName.get()).isEqualTo(YES);
     }
 
     @Test
@@ -30,10 +31,10 @@ public class BailCaseTest {
 
         BailCase bailCase = new BailCase();
 
-        bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.YES);
+        bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YES);
 
-        assertThat(bailCase.read(BailCaseFieldDefinition.IS_ADMIN, String.class).get())
-            .isEqualTo("Yes");
+        assertThat(bailCase.read(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.class).get())
+            .isEqualTo(YES);
     }
 
     @Test

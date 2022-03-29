@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCa
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandler<BailCase> {
+public class BailApplicationSubmittedConfirmation implements PostSubmitCallbackHandler<BailCase> {
 
     @Override
     public boolean canHandle(Callback<BailCase> callback) {
-        return (callback.getEvent() == Event.START_APPLICATION);
+        return (callback.getEvent() == Event.SUBMIT_APPLICATION);
     }
 
     @Override
@@ -25,13 +25,11 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationBody(
-            "### Do this next\n\n"
-                    + "Review and edit the application if necessary. [Submit the application](/case/IA/Bail/"
-                + callback.getCaseDetails().getId()
-                + "/trigger/submitApplication) when you’re ready."
+            "### What happens next\n\n"
+            + "All parties will be notified that the application has been submitted."
         );
 
-        postSubmitResponse.setConfirmationHeader("# You have saved this application");
+        postSubmitResponse.setConfirmationHeader("# You have submitted this application");
 
         return postSubmitResponse;
     }
