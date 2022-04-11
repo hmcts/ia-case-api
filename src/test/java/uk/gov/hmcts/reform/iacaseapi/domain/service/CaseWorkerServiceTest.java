@@ -58,6 +58,7 @@ class CaseWorkerServiceTest {
 
     @ParameterizedTest
     @MethodSource("scenarioProvider")
+    @SuppressWarnings("deprecation")
     void getRoleAssignmentsPerLocationAndClassification(Scenario scenario) {
 
         when(roleAssignmentService.queryRoleAssignments(any(QueryRequest.class)))

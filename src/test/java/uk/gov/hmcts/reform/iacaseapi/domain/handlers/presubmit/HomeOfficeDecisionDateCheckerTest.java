@@ -152,6 +152,7 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void handles_out_of_country_decision_letter_date_received_when_easily_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2021-01-25"));
@@ -190,6 +191,7 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void handles_edge_case_when_easily_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
@@ -216,6 +218,7 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void handles_edge_case_when_out_of_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-16"));
