@@ -202,8 +202,10 @@ public enum BailCaseFieldDefinition {
         "groundsForBailReasons", new TypeReference<String>(){}),
     GROUNDS_FOR_BAIL_PROVIDE_EVIDENCE_OPTION(
         "groundsForBailProvideEvidenceOption", new TypeReference<YesOrNo>(){}),
-    UPLOAD_BAIL_EVIDENCE_DOCUMENTS(
-        "uploadTheBailEvidenceDocs", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    BAIL_EVIDENCE(
+        "uploadTheBailEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+    BAIL_EVIDENCE_WITH_METADATA(
+        "uploadTheBailEvidenceMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     TRANSFER_BAIL_MANAGEMENT_OPTION(
         "transferBailManagementYesOrNo", new TypeReference<YesOrNo>(){}),
     NO_TRANSFER_BAIL_MANAGEMENT_REASONS(
@@ -218,6 +220,10 @@ public enum BailCaseFieldDefinition {
         "isLegallyRepresentedForFlag", new TypeReference<YesOrNo>() {}),
     HAS_LEGAL_REP(
         "hasLegalRep", new TypeReference<YesOrNo>(){}),
+    HEARING_CENTRE(
+        "hearingCentre", new TypeReference<HearingCentre>(){}),
+    DETENTION_FACILITY(
+        "detentionFacility", new TypeReference<String>(){}),
     ;
 
     private final String value;

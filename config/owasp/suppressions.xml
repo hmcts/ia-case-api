@@ -20,4 +20,7 @@
     https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-36518]]></notes>
     <cve>CVE-2020-36518</cve>
   </suppress>
+  <suppress until="2030-01-01">
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>

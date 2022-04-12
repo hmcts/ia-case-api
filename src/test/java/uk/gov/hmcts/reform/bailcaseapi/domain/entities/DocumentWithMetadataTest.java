@@ -11,7 +11,7 @@ class DocumentWithMetadataTest {
     private final Document document = mock(Document.class);
     private final String description = "Some evidence";
     private final String dateUploaded = "2021-12-25";
-    private final DocumentTag tag = DocumentTag.GROUNDS_FOR_BAIL_EVIDENCE;
+    private final DocumentTag tag = DocumentTag.BAIL_EVIDENCE;
 
     private DocumentWithMetadata documentWithMetadata =
         new DocumentWithMetadata(
