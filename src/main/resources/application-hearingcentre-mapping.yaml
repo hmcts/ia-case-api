@@ -1,5 +1,5 @@
 hearingCentreMappings:
-  Birmingham:
+  birmingham:
     - "Ashwell"
     - "Aylesbury"
     - "Bedford"
@@ -40,7 +40,7 @@ hearingCentreMappings:
     - "Whatton"
     - "Whitemoor"
     - "Woodhill"
-  Bradford:
+  bradford:
     - "Acklington"
     - "Askham Grange"
     - "Castington"
@@ -66,7 +66,7 @@ hearingCentreMappings:
     - "Wealstun"
     - "Wetherby"
     - "Wolds"
-  Glasgow:
+  glasgow:
     - "Addiewell"
     - "Barlinnie"
     - "Castle Huntly"
@@ -87,7 +87,7 @@ hearingCentreMappings:
     - "Perth"
     - "Polmont"
     - "Shotts"
-  Hatton Cross:
+  hattonCross:
     - "Albany"
     - "Brixton"
     - "Bronzefield"
@@ -109,7 +109,7 @@ hearingCentreMappings:
     - "Wandsworth"
     - "Winchester"
     - "Wormwood Scrubs"
-  Manchester:
+  manchester:
     - "Altcourse"
     - "Buckley Hall"
     - "Dovegate"
@@ -130,7 +130,7 @@ hearingCentreMappings:
     - "Thorn Cross"
     - "Werrington"
     - "Wymott"
-  Newport:
+  newport:
     - "Ashfield"
     - "Bristol"
     - "Cardiff"
@@ -147,7 +147,7 @@ hearingCentreMappings:
     - "Swansea"
     - "The Weare"
     - "Usk"
-  Taylor House:
+  taylorHouse:
     - "Belmarsh"
     - "Blantyre House"
     - "Blundeston"
@@ -172,7 +172,7 @@ hearingCentreMappings:
     - "Tinsley House"
     - "Warren Hill"
     - "Wayland"
-  Yarlswood:
+  yarlswood:
     - "Yarlswood"
 
 

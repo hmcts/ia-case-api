@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
@@ -16,6 +17,14 @@ public enum BailCaseFieldDefinition {
         "isLegalRep", new TypeReference<YesOrNo>() {}),
     IS_HOME_OFFICE(
         "isHomeOffice", new TypeReference<YesOrNo>() {}),
+    CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE(
+        "currentCaseStateVisibleToLegalRepresentative", new TypeReference<State>(){}),
+    CURRENT_CASE_STATE_VISIBLE_TO_JUDGE(
+        "currentCaseStateVisibleToJudge", new TypeReference<State>(){}),
+    CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
+        "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
+    CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE(
+        "currentCaseStateVisibleToHomeOffice", new TypeReference<State>(){}),
     APPLICANT_GIVEN_NAMES(
         "applicantGivenNames", new TypeReference<String>() {}),
     APPLICANT_FAMILY_NAME(
@@ -194,10 +203,28 @@ public enum BailCaseFieldDefinition {
         "supporter4Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES(
         "financialAmountSupporter4Undertakes", new TypeReference<String>(){}),
+    INTERPRETER_YESNO(
+        "interpreterYesNo", new TypeReference<YesOrNo>(){}),
+    INTERPRETER_LANGUAGES(
+        "interpreterLanguages", new TypeReference<List<IdValue<InterpreterLanguage>>>(){}),
+    DISABILITY_YESNO(
+        "applicantDisability1", new TypeReference<YesOrNo>(){}),
+    APPLICANT_DISABILITY_DETAILS(
+        "applicantDisabilityDetails", new TypeReference<String>(){}),
+    VIDEO_HEARING_YESNO(
+        "videoHearing1", new TypeReference<YesOrNo>(){}),
+    VIDEO_HEARING_DETAILS(
+        "videoHearingDetails", new TypeReference<String>(){}),
     LEGAL_REP_COMPANY(
         "legalRepCompany", new TypeReference<String>(){}),
     LEGAL_REP_EMAIL_ADDRESS(
         "legalRepEmail", new TypeReference<String>(){}),
+    LEGAL_REP_NAME(
+        "legalRepName", new TypeReference<String>(){}),
+    LEGAL_REP_PHONE(
+        "legalRepPhone", new TypeReference<String>(){}),
+    LEGAL_REP_REFERENCE(
+        "legalRepReference", new TypeReference<String>(){}),
     GROUNDS_FOR_BAIL_REASONS(
         "groundsForBailReasons", new TypeReference<String>(){}),
     GROUNDS_FOR_BAIL_PROVIDE_EVIDENCE_OPTION(
@@ -224,7 +251,12 @@ public enum BailCaseFieldDefinition {
         "hearingCentre", new TypeReference<HearingCentre>(){}),
     DETENTION_FACILITY(
         "detentionFacility", new TypeReference<String>(){}),
-    ;
+    APPLICATION_SUBMISSION_DOCUMENT(
+        "applicationSubmissionDocument", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    UPLOAD_BAIL_SUMMARY_DOCS(
+        "uploadBailSummaryDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+    UPLOAD_BAIL_SUMMARY_METADATA(
+        "uploadBailSummaryMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){});
 
     private final String value;
     private final TypeReference typeReference;

@@ -7,6 +7,8 @@ public enum State {
     APPLICATION_STARTED("applicationStarted"),
     APPLICATION_ENDED("applicationEnded"),
     APPLICATION_SUBMITTED("applicationSubmitted"),
+    BAIL_SUMMARY_UPLOADED("bailSummaryUploaded"),
+    RECORD_THE_DECISION("recordTheDecision"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

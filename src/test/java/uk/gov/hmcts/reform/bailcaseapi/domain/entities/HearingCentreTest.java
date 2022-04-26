@@ -8,26 +8,26 @@ class HearingCentreTest {
 
     @Test
     void has_correct_values() {
-        assertEquals("Birmingham", HearingCentre.BIRMINGHAM.toString());
-        assertEquals("Bradford", HearingCentre.BRADFORD.toString());
-        assertEquals("Glasgow", HearingCentre.GLASGOW.toString());
-        assertEquals("Hatton Cross", HearingCentre.HATTON_CROSS.toString());
-        assertEquals("Manchester", HearingCentre.MANCHESTER.toString());
-        assertEquals("Newport", HearingCentre.NEWPORT.toString());
-        assertEquals("Taylor House", HearingCentre.TAYLOR_HOUSE.toString());
-        assertEquals("Yarlswood", HearingCentre.YARLSWOOD.toString());
+        assertEquals("birmingham", HearingCentre.BIRMINGHAM.toString());
+        assertEquals("bradford", HearingCentre.BRADFORD.toString());
+        assertEquals("glasgow", HearingCentre.GLASGOW.toString());
+        assertEquals("hattonCross", HearingCentre.HATTON_CROSS.toString());
+        assertEquals("manchester", HearingCentre.MANCHESTER.toString());
+        assertEquals("newport", HearingCentre.NEWPORT.toString());
+        assertEquals("taylorHouse", HearingCentre.TAYLOR_HOUSE.toString());
+        assertEquals("yarlswood", HearingCentre.YARLSWOOD.toString());
     }
 
     @Test
     void can_be_created_from() {
-        assertEquals(HearingCentre.BIRMINGHAM, HearingCentre.from("Birmingham").get());
-        assertEquals(HearingCentre.BRADFORD, HearingCentre.from("Bradford").get());
-        assertEquals(HearingCentre.GLASGOW, HearingCentre.from("Glasgow").get());
-        assertEquals(HearingCentre.HATTON_CROSS, HearingCentre.from("Hatton Cross").get());
-        assertEquals(HearingCentre.MANCHESTER, HearingCentre.from("Manchester").get());
-        assertEquals(HearingCentre.NEWPORT, HearingCentre.from("Newport").get());
-        assertEquals(HearingCentre.TAYLOR_HOUSE, HearingCentre.from("Taylor House").get());
-        assertEquals(HearingCentre.YARLSWOOD, HearingCentre.from("Yarlswood").get());
+        assertEquals(HearingCentre.BIRMINGHAM, HearingCentre.from("birmingham").get());
+        assertEquals(HearingCentre.BRADFORD, HearingCentre.from("bradford").get());
+        assertEquals(HearingCentre.GLASGOW, HearingCentre.from("glasgow").get());
+        assertEquals(HearingCentre.HATTON_CROSS, HearingCentre.from("hattonCross").get());
+        assertEquals(HearingCentre.MANCHESTER, HearingCentre.from("manchester").get());
+        assertEquals(HearingCentre.NEWPORT, HearingCentre.from("newport").get());
+        assertEquals(HearingCentre.TAYLOR_HOUSE, HearingCentre.from("taylorHouse").get());
+        assertEquals(HearingCentre.YARLSWOOD, HearingCentre.from("yarlswood").get());
     }
 
     @Test
