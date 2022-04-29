@@ -15,9 +15,10 @@ import uk.gov.hmcts.reform.iacaseapi.util.SystemDocumentManagementUploader;
 public class DocumentManagementFilesFixture implements Fixture {
 
 
-    private static Map<String, String> metadata = new HashMap<>();
+    private static final Map<String, String> metadata = new HashMap<>();
 
-    @Autowired private SystemDocumentManagementUploader documentManagementUploader;
+    @Autowired
+    private SystemDocumentManagementUploader documentManagementUploader;
 
     public void prepare() throws IOException {
 
@@ -49,17 +50,13 @@ public class DocumentManagementFilesFixture implements Fixture {
                     throw new RuntimeException("Missing content type mapping for document: " + filename);
                 }
 
-                Document docStoreDocumentMetadata =
-                    documentManagementUploader.upload(
-                        documentResource,
-                        contentType
-                    );
-
+                Document docStoreDocumentMetadata = documentManagementUploader.upload(documentResource, contentType);
                 String placeholder = filename.replace(".", "_");
 
                 metadata.put("FIXTURE_" + placeholder + "_URL", docStoreDocumentMetadata.getDocumentUrl());
                 metadata.put("FIXTURE_" + placeholder + "_URL_BINARY", docStoreDocumentMetadata.getDocumentBinaryUrl());
                 metadata.put("FIXTURE_" + placeholder + "_FILENAME", docStoreDocumentMetadata.getDocumentFilename());
+                metadata.put("FIXTURE_" + placeholder + "_HASH", docStoreDocumentMetadata.getDocumentHash());
             });
     }
 

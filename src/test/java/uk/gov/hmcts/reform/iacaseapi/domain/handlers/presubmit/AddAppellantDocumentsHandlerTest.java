@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,7 +123,7 @@ class AddAppellantDocumentsHandlerTest {
                 .thenReturn(Optional.empty());
 
         DocumentWithMetadata reasonsForAppealEvidence = new DocumentWithMetadata(
-            new Document("documentUrl", "binaryUrl", "documentFielname"),
+            new Document("documentUrl", "binaryUrl", "documentFielname", UUID.randomUUID().toString()),
             "description",
             "dateUploaded",
             DocumentTag.ADDITIONAL_EVIDENCE
@@ -158,7 +159,7 @@ class AddAppellantDocumentsHandlerTest {
                 .thenReturn(Optional.empty());
         when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS))
             .thenReturn(Optional.empty());
-        Document clarifyingQuestionEvidence = new Document("documentUrl", "binaryUrl", "documentFielname");
+        Document clarifyingQuestionEvidence = new Document("documentUrl", "binaryUrl", "documentFielname",UUID.randomUUID().toString());
         when(asylumCase.read(AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS))
             .thenReturn(Optional.of(asList(
                 new IdValue<>(

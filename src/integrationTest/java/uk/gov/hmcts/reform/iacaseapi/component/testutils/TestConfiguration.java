@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.component.testutils;
 
 import static uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdamAuthoritiesConverter.REGISTRATION_ID;
 
+import feign.Retryer;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,11 @@ public class TestConfiguration {
                 return OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).get(REGISTRATION_ID);
             }
         };
+    }
+
+    @Bean
+    public Retryer retryer() {
+        return new Retryer.Default(1000L, 1000L, 3);
     }
 
 }

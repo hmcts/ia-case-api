@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,7 +87,8 @@ class DecideAnApplicationConfirmationTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    UUID.randomUUID().toString())));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", type, "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",
@@ -227,7 +229,8 @@ class DecideAnApplicationConfirmationTest {
             Arrays.asList(new IdValue<>("1",
                 new Document("http://localhost/documents/123456",
                     "http://localhost/documents/123456",
-                    "DocumentName.pdf")));
+                    "DocumentName.pdf",
+                    UUID.randomUUID().toString())));
         MakeAnApplication makeAnApplication =
             new MakeAnApplication("Legal representative", "Adjourn", "A reason to update appeal details",
                 evidence, dateProvider.now().toString(), "Pending",

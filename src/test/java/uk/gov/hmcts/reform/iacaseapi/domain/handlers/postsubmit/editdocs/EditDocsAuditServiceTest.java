@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.ADDITION
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -196,7 +197,8 @@ class EditDocsAuditServiceTest {
         Document doc = new Document(
             "http://dm-store:89/" + docId,
             "",
-            filename
+            filename,
+            UUID.randomUUID().toString()
         );
         IdValue<HasDocument> idValue = new IdValue<>(id, buildValue(doc, description, hearingRecordingDocFlag));
         return Collections.singletonList(idValue);

@@ -119,7 +119,7 @@ class EditDocsServiceTest {
     }
 
     private static Document buildDocumentGivenDocId() {
-        return new Document("http://dm-store/" + DOC_ID, "", "");
+        return new Document("http://dm-store/" + DOC_ID, "", "", "HashTOken");
     }
 
     private static DocumentWithMetadata buildDocWithMeta() {

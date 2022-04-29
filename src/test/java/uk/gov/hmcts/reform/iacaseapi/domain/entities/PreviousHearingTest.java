@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.HoursAndMinutes;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -26,13 +27,15 @@ class PreviousHearingTest {
     private final Document doc = new Document(
         "documentUrl",
         "binaryUrl",
-        "documentFilename");
+        "documentFilename",
+        UUID.randomUUID().toString());
 
     private final DocumentWithMetadata decisionAndReasonsDocument = new DocumentWithMetadata(
         new Document(
             "documentUrl",
             "binaryUrl",
-            "documentFilename"),
+            "documentFilename",
+            UUID.randomUUID().toString()),
         "description",
         "dateUploaded",
         DocumentTag.FINAL_DECISION_AND_REASONS_PDF

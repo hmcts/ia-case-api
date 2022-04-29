@@ -2,6 +2,9 @@ targetInstance: ${TEST_URL:http://localhost:8090}
 
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
+
 spring.flyway.enabled: false
 
 idam:

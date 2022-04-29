@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -108,7 +109,7 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "1",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl", "binaryUrl", "documentFilename", UUID.randomUUID().toString()),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -117,7 +118,7 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "2",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl", "binaryUrl", "documentFilename",UUID.randomUUID().toString()),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -129,7 +130,7 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "1",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl", "binaryUrl", "documentFilename",UUID.randomUUID().toString()),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -138,7 +139,7 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "2",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl", "binaryUrl", "documentFilename",UUID.randomUUID().toString()),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS

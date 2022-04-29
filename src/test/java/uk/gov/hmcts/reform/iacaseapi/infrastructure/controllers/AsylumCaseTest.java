@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -281,7 +282,8 @@ class AsylumCaseTest {
                 new Document(
                     "some-doc-url",
                     "some-doc-binary-url",
-                    "some-doc-filename"),
+                    "some-doc-filename",
+                    UUID.randomUUID().toString()),
                 "some-description"));
 
         asylumCase.write(RESPONDENT_EVIDENCE, asList(idValue));
