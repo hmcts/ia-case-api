@@ -3,12 +3,13 @@ package uk.gov.hmcts.reform.bailcaseapi.infrastructure.controllers;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCa
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.PostSubmitCallbackDispatcher;
 
 @Slf4j
-@Api(
-    value = "/bail",
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+@Tag(name = "Bail service")
 @RequestMapping(
     value = "/bail",
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -45,40 +42,32 @@ public class PostSubmitCallbackController {
         this.callbackDispatcher = callbackDispatcher;
     }
 
-    @ApiOperation(
-        value = "Handles 'SubmittedEvent' callbacks from CCD",
-        response = PostSubmitCallbackResponse.class,
-        authorizations =
-            {
-                @Authorization(value = "Authorization"),
-                @Authorization(value = "ServiceAuthorization")
-            }
+    @Operation(
+        summary = "Handles 'SubmittedEvent' callbacks from CCD",
+        security = {
+                @SecurityRequirement(name = "Authorization"),
+                @SecurityRequirement(name = "ServiceAuthorization")},
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Optional confirmation text for CCD UI",
+                content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Bad Request",
+                content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error",
+                content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))}
     )
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Optional confirmation text for CCD UI",
-            response = PostSubmitCallbackResponse.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = PostSubmitCallbackResponse.class
-        ),
-        @ApiResponse(
-            code = 403,
-            message = "Forbidden",
-            response = PostSubmitCallbackResponse.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = PostSubmitCallbackResponse.class
-        )
-    })
     @PostMapping(path = "/ccdSubmitted")
     public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
-        @ApiParam(value = "Bail case data", required = true) @RequestBody Callback<BailCase> callback
+        @Parameter(name = "Bail case data", required = true) @RequestBody Callback<BailCase> callback
     ) {
         log.info(
             "Bail Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",

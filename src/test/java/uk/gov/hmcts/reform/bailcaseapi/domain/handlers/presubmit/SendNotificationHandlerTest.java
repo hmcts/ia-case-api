@@ -48,7 +48,8 @@ class SendNotificationHandlerTest {
     void should_send_notification_and_update_the_case() {
 
         Arrays.asList(
-            Event.SUBMIT_APPLICATION
+            Event.SUBMIT_APPLICATION,
+            Event.UPLOAD_BAIL_SUMMARY
         ).forEach(event -> {
 
             BailCase expectedUpdatedCase = mock(BailCase.class);
@@ -101,7 +102,8 @@ class SendNotificationHandlerTest {
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     &&
                     Arrays.asList(
-                        Event.SUBMIT_APPLICATION
+                        Event.SUBMIT_APPLICATION,
+                        Event.UPLOAD_BAIL_SUMMARY
                     ).contains(event)) {
 
                     assertTrue(canHandle);

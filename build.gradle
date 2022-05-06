@@ -17,7 +17,7 @@ plugins {
   id 'org.flywaydb.flyway' version '5.2.4'
   id 'org.owasp.dependencycheck' version '6.5.3'
   id 'org.sonarqube' version '3.0'
-  id 'org.springframework.boot' version '2.3.11.RELEASE'
+  id 'org.springframework.boot' version '2.6.7'
   id 'pmd'
   id 'uk.gov.hmcts.java' version '0.12.5'
 }
@@ -28,15 +28,18 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
+  jackson            : '2.13.2',
+  jacksonAnnotation  : '2.13.2',
+  jacksonDatabind    : '2.13.2.2',
   junit              : '5.6.2',
   junitPlatform      : '1.6.2',
   pitest             : '1.5.2',
   reformLogging      : '5.1.7',
   reformHealthStarter: '0.0.5',
-  serenity           : '2.2.12',
-  springBoot         : '2.3.9.RELEASE',
+  serenity           : '3.1.20',
+  springBoot         : '2.6.7',
+  springDoc          : '1.6.8',
   springHystrix      : '2.2.10.RELEASE',
-  springfoxSwagger   : '2.9.2',
   pact_version       : '4.1.7'
 
 ]
@@ -252,8 +255,8 @@ dependencyManagement {
       entry 'logback-core'
     }
 
-  //CVE-2021-22060
-    dependencySet(group: 'org.springframework', version: '5.2.19.RELEASE') {
+    //CVE-2021-22060
+    dependencySet(group: 'org.springframework', version: '5.3.19') {
       entry 'spring-aop'
       entry 'spring-beans'
       entry 'spring-context'
@@ -263,6 +266,11 @@ dependencyManagement {
       entry 'spring-jcl'
       entry 'spring-web'
       entry 'spring-webmvc'
+    }
+
+    dependencySet(group: 'org.springframework.security', version: '5.6.3') {
+      entry 'spring-security-crypto'
+      entry 'spring-security-core'
     }
   }
 }
@@ -279,15 +287,12 @@ dependencies {
 //  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.10.RELEASE'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
-  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+  compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
@@ -303,6 +308,11 @@ dependencies {
 //  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
 //  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jacksonAnnotation
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonDatabind
+
   testCompile (group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1')
   testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity

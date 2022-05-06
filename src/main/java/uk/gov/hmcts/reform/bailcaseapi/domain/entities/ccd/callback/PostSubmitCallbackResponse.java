@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Optional;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostSubmitCallbackResponse {
 
     private Optional<String> confirmationHeader = Optional.empty();

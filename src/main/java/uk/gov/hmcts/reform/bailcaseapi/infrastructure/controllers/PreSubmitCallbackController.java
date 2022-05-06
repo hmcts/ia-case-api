@@ -3,14 +3,15 @@ package uk.gov.hmcts.reform.bailcaseapi.infrastructure.controllers;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.ResponseEntity.ok;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
-
 import javax.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.PreSubmitCallbackDispatcher;
 
 @Slf4j
-@Api(
-    value = "/bail",
-    consumes = MediaType.APPLICATION_JSON_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+@Tag(name = "Bail service")
 @RequestMapping(
     path = "/bail",
     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -45,81 +42,63 @@ public class PreSubmitCallbackController {
         this.callbackDispatcher = callbackDispatcher;
     }
 
-    @ApiOperation(
-        value = "Handles 'AboutToStartEvent' callbacks from CCD",
-        response = PreSubmitCallbackResponse.class,
-        authorizations = {
-            @Authorization(value = "Authorization"),
-            @Authorization(value = "ServiceAuthorization")
-        }
+    @Operation(
+        summary = "Handles 'AboutToStartEvent' callbacks from CCD",
+        security = {
+            @SecurityRequirement(name = "Authorization"),
+            @SecurityRequirement(name = "ServiceAuthorization")},
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Transformed Bail case data, with any identified error or warning messages",
+                content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Bad Request"),
+            @ApiResponse(
+                responseCode = "403",
+                description = "Forbidden"),
+            @ApiResponse(
+                responseCode = "415",
+                description = "Unsupported Media Type"),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error")}
     )
-
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Transformed Bail case data, with any identified error or warning messages",
-            response = PreSubmitCallbackResponse.class
-            ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request"
-            ),
-        @ApiResponse(
-            code = 403,
-            message = "Forbidden"
-            ),
-        @ApiResponse(
-            code = 415,
-            message = "Unsupported Media Type"
-            ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error"
-            )
-    })
 
     @PostMapping(path = "/ccdAboutToStart")
     public ResponseEntity<PreSubmitCallbackResponse<BailCase>> ccdAboutToStart(
-        @ApiParam(value = "Bail case data", required = true) @NotNull @RequestBody Callback<BailCase> callback
+        @Parameter(name = "Bail case data", required = true) @NotNull @RequestBody Callback<BailCase> callback
     ) {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_START, callback);
     }
 
-    @ApiOperation(
-        value = "Handles 'AboutToSubmitEvent' callbacks from CCD",
-        response = PreSubmitCallbackResponse.class,
-        authorizations = {
-            @Authorization(value = "Authorization"),
-            @Authorization(value = "ServiceAuthorization")
-        }
+    @Operation(
+        summary = "Handles 'AboutToSubmitEvent' callbacks from CCD",
+        security = {
+            @SecurityRequirement(name = "Authorization"),
+            @SecurityRequirement(name = "ServiceAuthorization")},
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Transformed Bail case data, with any identified error or warning messages",
+                content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Bad Request"),
+            @ApiResponse(
+                responseCode = "403",
+                description = "Forbidden"),
+            @ApiResponse(
+                responseCode = "415",
+                description = "Unsupported Media Type"),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error")}
     )
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Transformed Bail case data, with any identified error or warning messages",
-            response = PreSubmitCallbackResponse.class
-            ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request"
-            ),
-        @ApiResponse(
-            code = 403,
-            message = "Forbidden"
-            ),
-        @ApiResponse(
-            code = 415,
-            message = "Unsupported Media Type"
-            ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error"
-            )
-    })
-
     @PostMapping(path = "/ccdAboutToSubmit")
     public ResponseEntity<PreSubmitCallbackResponse<BailCase>> ccdAboutToSubmit(
-        @ApiParam(value = "Bail case data", required = true) @NotNull @RequestBody Callback<BailCase> callback
+        @Parameter(name = "Bail case data", required = true) @NotNull @RequestBody Callback<BailCase> callback
     ) {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Optional;
 import uk.gov.hmcts.reform.bailcaseapi.domain.RequiredFieldMissingException;
@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Callback<T extends CaseData> {
 
     @JsonProperty("event_id")

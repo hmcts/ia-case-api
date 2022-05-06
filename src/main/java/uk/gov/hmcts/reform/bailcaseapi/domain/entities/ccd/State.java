@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum State {
     APPLICATION_STARTED("applicationStarted"),
+    APPLICATION_STARTED_BY_LR("applicationStartedByLR"),
+    APPLICATION_STARTED_BY_HO("applicationStartedByHO"),
     APPLICATION_ENDED("applicationEnded"),
     APPLICATION_SUBMITTED("applicationSubmitted"),
     BAIL_SUMMARY_UPLOADED("bailSummaryUploaded"),

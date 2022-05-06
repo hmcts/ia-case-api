@@ -9,6 +9,8 @@ public class StateTest {
     @Test
     void has_correct_values() {
         assertEquals("applicationStarted", State.APPLICATION_STARTED.toString());
+        assertEquals("applicationStartedByLR", State.APPLICATION_STARTED_BY_LR.toString());
+        assertEquals("applicationStartedByHO", State.APPLICATION_STARTED_BY_HO.toString());
         assertEquals("applicationEnded", State.APPLICATION_ENDED.toString());
         assertEquals("applicationSubmitted", State.APPLICATION_SUBMITTED.toString());
         assertEquals("bailSummaryUploaded", State.BAIL_SUMMARY_UPLOADED.toString());
@@ -19,7 +21,7 @@ public class StateTest {
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(6, State.values().length);
+        assertEquals(8, State.values().length);
     }
 
 }
