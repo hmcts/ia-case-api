@@ -6,14 +6,10 @@ import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.codec.Decoder;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import feign.jackson.JacksonDecoder; //import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
-import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,9 +34,10 @@ public interface TimedEventServiceApi {
 
         @Bean
         public Decoder decoder(ObjectMapper objectMapper) {
-            HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+            //  HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
 
-            return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter)));
+            //return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter)));
+            return new JacksonDecoder(objectMapper);
         }
 
         @Bean
