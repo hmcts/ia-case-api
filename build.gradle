@@ -36,6 +36,7 @@ def versions = [
     reformLogging      : '5.1.7',
     reformHealthStarter: '0.0.5',
     serenity           : '2.6.0',
+    springBoot         : '2.6.3',
     springHystrix      : '2.2.10.RELEASE',
     springfoxSwagger   : '2.9.2',
     pact_version       : '4.1.7',
@@ -275,26 +276,26 @@ dependencyManagement {
         }
 
         imports {
-            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.4'
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.5'
         }
     }
 }
 
 dependencies {
 
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
     // CVE-2019-17195
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'

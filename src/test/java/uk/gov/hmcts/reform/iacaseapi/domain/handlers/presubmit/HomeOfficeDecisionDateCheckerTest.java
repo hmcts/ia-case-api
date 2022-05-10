@@ -163,7 +163,7 @@ class HomeOfficeDecisionDateCheckerTest {
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
         //Indu commented this
-        // assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
+        //assertThat(asylumExtractor.getValue()).usingRecursiveComparison(SUBMISSION_OUT_OF_TIME);
         // assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
 
         //assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
