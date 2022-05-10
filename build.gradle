@@ -354,12 +354,12 @@ dependencies {
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
 
-    //testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
+    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
