@@ -275,9 +275,9 @@ dependencyManagement {
             entry 'log4j-to-slf4j'
         }
 
-        imports {
-            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.5'
-        }
+       // imports {
+         //   mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.5'
+        //}
     }
 }
 
