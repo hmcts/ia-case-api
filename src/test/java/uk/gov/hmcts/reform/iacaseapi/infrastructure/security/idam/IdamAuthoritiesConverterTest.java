@@ -41,7 +41,7 @@ class IdamAuthoritiesConverterTest {
 
     @Test
     void should_return_correct_granted_authority_collection() {
-        //Indu commented this
+
         when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);
@@ -78,7 +78,7 @@ class IdamAuthoritiesConverterTest {
         when(idamApi.userInfo("Bearer " + tokenValue)).thenReturn(userInfo);
 
         idamAuthoritiesConverter = new IdamAuthoritiesConverter(idamApi);
-        //Indu commented this
+
         when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);
@@ -90,7 +90,7 @@ class IdamAuthoritiesConverterTest {
     void should_throw_exception_when_auth_service_unavailable() {
 
         when(idamApi.userInfo("Bearer " + tokenValue)).thenThrow(FeignException.class);
-        //Indu commented this
+
         when(jwt.hasClaim(TOKEN_NAME)).thenReturn(true);
         when(jwt.getClaim(TOKEN_NAME)).thenReturn(ACCESS_TOKEN);
         when(jwt.getTokenValue()).thenReturn(tokenValue);

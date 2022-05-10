@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-//import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -228,10 +228,13 @@ class HomeOfficeDecisionDateCheckerTest {
 
         //Indu commented this
         // assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
-        // assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
+        // assertThat(asylumExtractor.getValue()).usingRecursiveComparison().isEqualTo(SUBMISSION_OUT_OF_TIME);
 
-        // assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
-        // assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
+        // assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
+        //assertThat(asylumExtractor.getValue()).usingRecursiveComparison().isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+
+        //assertThat(outOfTime.getValue()).usingRecursiveComparison().isEqualTo(YES);
+        //assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().isEqualTo(NO);
 
     }
 
