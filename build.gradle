@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath("org.yaml:snakeyaml:1.23")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.6.0")
     }
 }
 plugins {
@@ -35,7 +35,7 @@ def versions = [
     pitest             : '1.5.2',
     reformLogging      : '5.1.7',
     reformHealthStarter: '0.0.5',
-    serenity           : '2.4.48',
+    serenity           : '2.6.0',
     springBoot         : '2.6.3',
     springHystrix      : '2.2.10.RELEASE',
     springfoxSwagger   : '2.9.2',
