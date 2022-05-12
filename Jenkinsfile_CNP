@@ -20,7 +20,11 @@ def secrets = [
     secret('idam-secret', 'IA_IDAM_SECRET'),
     secret('s2s-secret', 'IA_S2S_SECRET'),
     secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
-    secret('prof-ref-data-url', 'PROF_REF_DATA_URL')
+    secret('prof-ref-data-url', 'PROF_REF_DATA_URL'),
+    secret('docmosis-enabled', 'IA_DOCMOSIS_ENABLED'),
+    secret('em-stitching-enabled', 'IA_EM_STITCHING_ENABLED'),
+    secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
+    secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY')
 
   ]
 ]
@@ -36,15 +40,33 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
 
-  enableAksStagingDeployment()
-  enableSlackNotifications('#ia-tech')
-  loadVaultSecrets(secrets)
+  env.IA_CASE_DOCUMENTS_API_URL = "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_NOTIFICATIONS_API_URL = "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
+  env.IA_TIMED_EVENT_SERVICE_URL = "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
+  env.IA_CASE_PAYMENTS_API_URL = "http://ia-case-payments-api-aat.service.core-compute-aat.internal/"
+  env.IA_HOME_OFFICE_INTEGRATION_API_URL = "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
+  env.IA_IDAM_REDIRECT_URI = "https://ia-bail-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+  env.CCD_URL = "http://ccd-data-store-api-aat.service.core-compute-aat.internal"
+  env.CCD_GW_URL = "http://dm-store-aat.service.core-compute-aat.internal"
 
-  env.IA_IDAM_REDIRECT_URI = "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
   env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
   env.OPEN_ID_IDAM_URL = "https://idam-web-public.aat.platform.hmcts.net"
   env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
+
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+  loadVaultSecrets(secrets)
+
+  after('functionalTest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
+  after('functionalTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
+  enableSlackNotifications('#ia-tech')
 
   onMaster() {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
