@@ -171,7 +171,7 @@ public class CcdScenarioRunnerTest {
                 SerenityRest
                     .given()
                     .headers(authorizationHeaders)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(requestBody)
                     .when()
                     .post(requestUri)

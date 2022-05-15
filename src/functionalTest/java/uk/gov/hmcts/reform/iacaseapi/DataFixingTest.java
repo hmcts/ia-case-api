@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.util.MapSerializer;
 @SpringBootTest
 @ActiveProfiles("functional")
 @SuppressWarnings("Unchecked")
-public class DataFixingTest {
+public class DataFixingTest  {
 
     @Value("${targetInstance}")
     private String targetInstance;
@@ -66,7 +66,7 @@ public class DataFixingTest {
                 SerenityRest
                     .given()
                     .headers(getAuthorizationHeaders())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(callbackBody)
                     .when()
                     .post(endpoint)
