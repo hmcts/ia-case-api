@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCa
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class BailDecisionRecordedConfirmation implements PostSubmitCallbackHandler<BailCase> {
+public class SignedDecisionNoticeUploadedConfirmation implements PostSubmitCallbackHandler<BailCase> {
 
     @Override
     public boolean canHandle(Callback<BailCase> callback) {
-        return (callback.getEvent() == Event.RECORD_THE_DECISION);
+        return (callback.getEvent() == Event.UPLOAD_SIGNED_DECISION_NOTICE);
     }
 
     @Override
@@ -25,16 +25,13 @@ public class BailDecisionRecordedConfirmation implements PostSubmitCallbackHandl
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationBody(
-            "### Do this next\n\n"
-            + "This application has been decided. Download the decision notice from the "
-            + "documents tab and distribute to anyone who needs to sign it. [Upload the "
-            + "signed decision notice](/cases/case-details/"
+            "### What happens next\n\n"
+            + "The signed decision notice is available to view in the [documents tab](/cases/case-details/"
             + callback.getCaseDetails().getId()
-            + "/trigger/uploadSignedDecisionNotice/uploadSignedDecisionNoticesignedDecisionNoticeUpload) "
-            + "when it is ready."
+            + "#Documents)."
         );
 
-        postSubmitResponse.setConfirmationHeader("# You have recorded the decision");
+        postSubmitResponse.setConfirmationHeader("# You uploaded the signed decision notice");
 
         return postSubmitResponse;
     }

@@ -5,9 +5,12 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_JUDGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.DECISION_CONDITIONAL_BAIL;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.DecisionType;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -41,6 +44,11 @@ public class CurrentCaseStateUpdater implements PreSubmitCallbackHandler<BailCas
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        if (bailCase.read(RECORD_DECISION_TYPE, String.class).orElse("")
+                .equals(DecisionType.CONDITIONAL_GRANT.toString())) {
+            currentCaseState = DECISION_CONDITIONAL_BAIL;
+        }
 
         bailCase.write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, currentCaseState);
         bailCase.write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, currentCaseState);

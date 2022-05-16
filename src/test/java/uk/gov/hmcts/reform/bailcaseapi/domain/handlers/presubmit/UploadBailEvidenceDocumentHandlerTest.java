@@ -10,7 +10,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_EVIDENCE_WITH_METADATA;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_EVIDENCE;
 
 import java.util.Arrays;
@@ -98,7 +98,7 @@ class UploadBailEvidenceDocumentHandlerTest {
                 groundsForBailEvidence2WithMetadata
             );
 
-        when(bailCase.read(BAIL_EVIDENCE_WITH_METADATA)).thenReturn(Optional.of(existingEvidenceDocuments));
+        when(bailCase.read(APPLICANT_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(existingEvidenceDocuments));
         when(bailCase.read(BAIL_EVIDENCE)).thenReturn(Optional.of(evidenceWithDescriptionList));
 
         when(documentReceiver.tryReceive(groundsForBailEvidence1, DocumentTag.BAIL_EVIDENCE))
@@ -123,7 +123,7 @@ class UploadBailEvidenceDocumentHandlerTest {
 
         verify(documentsAppender, times(1)).append(existingEvidenceDocuments, evidenceList);
 
-        verify(bailCase, times(1)).write(BAIL_EVIDENCE_WITH_METADATA, allEvidenceDocuments);
+        verify(bailCase, times(1)).write(APPLICANT_DOCUMENTS_WITH_METADATA, allEvidenceDocuments);
     }
 
     @Test
@@ -133,7 +133,7 @@ class UploadBailEvidenceDocumentHandlerTest {
             singletonList(new IdValue<>("1", groundsForBailEvidence1));
         List<DocumentWithMetadata> evidenceList = singletonList(groundsForBailEvidence1WithMetadata);
 
-        when(bailCase.read(BAIL_EVIDENCE_WITH_METADATA)).thenReturn(Optional.empty());
+        when(bailCase.read(APPLICANT_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.empty());
         when(bailCase.read(BAIL_EVIDENCE)).thenReturn(Optional.of(evidenceWithDescriptionList));
 
         when(documentReceiver.tryReceive(groundsForBailEvidence1, DocumentTag.BAIL_EVIDENCE))
@@ -162,7 +162,7 @@ class UploadBailEvidenceDocumentHandlerTest {
 
         assertEquals(0, actualexistingEvidenceDocuments.size());
 
-        verify(bailCase, times(1)).write(BAIL_EVIDENCE_WITH_METADATA, allEvidenceDocuments);
+        verify(bailCase, times(1)).write(APPLICANT_DOCUMENTS_WITH_METADATA, allEvidenceDocuments);
     }
 
     @Test

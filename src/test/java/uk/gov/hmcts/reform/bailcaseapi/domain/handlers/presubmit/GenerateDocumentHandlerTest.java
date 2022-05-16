@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCal
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentGenerator;
 
+import java.util.Arrays;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
@@ -44,7 +46,7 @@ public class GenerateDocumentHandlerTest {
         generateDocumentHandler = new GenerateDocumentHandler(
             documentGenerator
         );
-        ReflectionTestUtils.setField(generateDocumentHandler, "isDocumentGenerationEnambled", true);
+        ReflectionTestUtils.setField(generateDocumentHandler, "isDocumentGenerationEnabled", true);
     }
 
     @Test
@@ -53,7 +55,10 @@ public class GenerateDocumentHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage stage: PreSubmitCallbackStage.values()) {
                 boolean canHandle = generateDocumentHandler.canHandle(stage, callback);
-                if (stage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && event.equals(Event.SUBMIT_APPLICATION)) {
+                if (stage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && Arrays.asList(
+                    Event.SUBMIT_APPLICATION,
+                    Event.RECORD_THE_DECISION
+                ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -114,6 +119,22 @@ public class GenerateDocumentHandlerTest {
     public void should_handle_generate_document_update_bailcase() {
         BailCase expectedBailCase = mock(BailCase.class);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
+        when(documentGenerator.generate(callback)).thenReturn(expectedBailCase);
+
+        PreSubmitCallbackResponse response = generateDocumentHandler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        assertNotNull(response);
+        assertEquals(expectedBailCase, response.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+    }
+
+    @Test
+    public void should_handle_generate_document_signed_decision_notice_upload() {
+        BailCase expectedBailCase = mock(BailCase.class);
+        when(callback.getEvent()).thenReturn(Event.RECORD_THE_DECISION);
         when(documentGenerator.generate(callback)).thenReturn(expectedBailCase);
 
         PreSubmitCallbackResponse response = generateDocumentHandler.handle(

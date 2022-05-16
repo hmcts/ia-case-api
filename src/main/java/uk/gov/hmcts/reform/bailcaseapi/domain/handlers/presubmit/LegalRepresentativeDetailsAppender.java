@@ -51,7 +51,7 @@ public class LegalRepresentativeDetailsAppender implements PreSubmitCallbackHand
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 
-        String email = userDetails.getId();
+        String email = userDetails.getEmailAddress();
 
         UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
 

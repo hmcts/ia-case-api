@@ -63,7 +63,7 @@ class LegalRepresentativeDetailsAppenderTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(userDetails.getId()).thenReturn(legalRepEmailAddress);
+        when(userDetails.getEmailAddress()).thenReturn(legalRepEmailAddress);
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(organisationResponse.getName()).thenReturn(organisationName);
 
@@ -87,7 +87,7 @@ class LegalRepresentativeDetailsAppenderTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(userDetails.getId()).thenReturn(legalRepEmailAddress);
+        when(userDetails.getEmailAddress()).thenReturn(legalRepEmailAddress);
         when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
 

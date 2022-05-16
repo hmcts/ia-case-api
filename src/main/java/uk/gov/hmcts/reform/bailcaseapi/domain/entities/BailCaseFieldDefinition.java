@@ -5,6 +5,7 @@ import java.util.List;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 
@@ -231,8 +232,8 @@ public enum BailCaseFieldDefinition {
         "groundsForBailProvideEvidenceOption", new TypeReference<YesOrNo>(){}),
     BAIL_EVIDENCE(
         "uploadTheBailEvidenceDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
-    BAIL_EVIDENCE_WITH_METADATA(
-        "uploadTheBailEvidenceMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    APPLICANT_DOCUMENTS_WITH_METADATA(
+        "applicantDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     TRANSFER_BAIL_MANAGEMENT_OPTION(
         "transferBailManagementYesOrNo", new TypeReference<YesOrNo>(){}),
     NO_TRANSFER_BAIL_MANAGEMENT_REASONS(
@@ -251,12 +252,12 @@ public enum BailCaseFieldDefinition {
         "hearingCentre", new TypeReference<HearingCentre>(){}),
     DETENTION_FACILITY(
         "detentionFacility", new TypeReference<String>(){}),
-    APPLICATION_SUBMISSION_DOCUMENT(
-        "applicationSubmissionDocument", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     UPLOAD_BAIL_SUMMARY_DOCS(
         "uploadBailSummaryDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
     UPLOAD_BAIL_SUMMARY_METADATA(
         "uploadBailSummaryMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    CONDITION_FOR_BAIL(
+        "conditionsForBail", new TypeReference<List<String>>(){}),
     CONDITION_APPEARANCE(
         "conditionsForBailAppearance", new TypeReference<String>(){}),
     CONDITION_ACTIVITIES(
@@ -270,7 +271,61 @@ public enum BailCaseFieldDefinition {
     BAIL_TRANSFER_DIRECTIONS(
         "bailTransferDirections", new TypeReference<String>(){}),
     SECRETARY_OF_STATE_REFUSAL_REASONS(
-        "secretaryOfStateRefusalReasons", new TypeReference<String>(){});
+        "secretaryOfStateRefusalReasons", new TypeReference<String>(){}),
+    UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT(
+        "uploadSignedDecisionNoticeDocument", new TypeReference<Document>(){}),
+    SIGNED_DECISION_NOTICE_METADATA(
+        "signedDecisionNoticeMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    DECISION_GRANTED_OR_REFUSED(
+        "decisionGrantedOrRefused", new TypeReference<String>(){}),
+    RECORD_THE_DECISION_LIST(
+        "recordTheDecisionList", new TypeReference<String>(){}),
+    RELEASE_STATUS_YES_OR_NO(
+        "releaseStatusYesOrNo", new TypeReference<YesOrNo>(){}),
+    SS_CONSENT_DECISION(
+        "ssConsentDecision", new TypeReference<YesOrNo>(){}),
+    RECORD_DECISION_TYPE(
+        "recordDecisionType", new TypeReference<String>(){}),
+    SECRETARY_OF_STATE_YES_OR_NO(
+        "secretaryOfStateConsentYesOrNo", new TypeReference<YesOrNo>(){}),
+    DECISION_DETAILS_DATE(
+        "decisionDetailsDate", new TypeReference<String>(){}),
+    ADD_CASE_NOTE_SUBJECT(
+        "addCaseNoteSubject", new TypeReference<String>(){}),
+    ADD_CASE_NOTE_DESCRIPTION(
+        "addCaseNoteDescription", new TypeReference<String>(){}),
+    ADD_CASE_NOTE_DOCUMENT(
+        "addCaseNoteDocument", new TypeReference<Document>(){}),
+    CASE_NOTES(
+        "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
+    REASON_FOR_REFUSAL_DETAILS(
+        "reasonForRefusalDetails", new TypeReference<String>(){}),
+    TRIBUNAL_REFUSAL_REASON(
+        "tribunalRefusalReason ", new TypeReference<String>(){}),
+    REASON_JUDGE_IS_MINDED_DETAILS(
+        "reasonsJudgeIsMindedDetails", new TypeReference<String>(){}),
+    JUDGE_DETAILS_NAME(
+        "judgeDetailsName", new TypeReference<String>(){}),
+    CONDITION_OTHER(
+        "conditionsForBailOther", new TypeReference<String>(){}),
+    BAIL_TRANSFER_YES_OR_NO(
+        "bailTransferYesOrNo", new TypeReference<YesOrNo>(){}),
+    JUDGE_HAS_AGREED_TO_SUPPORTER1(
+        "judgeHasAgreedToSupporter1", new TypeReference<YesOrNo>(){}),
+    JUDGE_HAS_AGREED_TO_SUPPORTER2(
+        "judgeHasAgreedToSupporter2", new TypeReference<YesOrNo>(){}),
+    JUDGE_HAS_AGREED_TO_SUPPORTER3(
+        "judgeHasAgreedToSupporter3", new TypeReference<YesOrNo>(){}),
+    JUDGE_HAS_AGREED_TO_SUPPORTER4(
+        "judgeHasAgreedToSupporter4", new TypeReference<YesOrNo>(){}),
+    RECORD_FINANCIAL_CONDITION_YES_OR_NO(
+        "recordFinancialConditionYesOrNo", new TypeReference<YesOrNo>(){}),
+    DECISION_UNSIGNED_DOCUMENT(
+        "decisionUnsignedDocument", new TypeReference<Document>(){}),
+    TRIBUNAL_DOCUMENTS_WITH_METADATA(
+        "tribunalDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){})
+    ;
+
 
     private final String value;
     private final TypeReference typeReference;

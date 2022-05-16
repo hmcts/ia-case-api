@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.idam;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -33,6 +33,14 @@ class IdamUserDetailsProviderTest {
 
     private IdamUserDetailsProvider idamUserDetailsProvider;
 
+    String expectedAccessToken = "ABCDEFG";
+    String expectedId = "1234";
+    List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+    String expectedEmail = "john.smith@example.com";
+    String expectedForename = "John";
+    String expectedSurname = "Smith";
+    String expectedName = expectedForename + " " + expectedSurname;
+
     @BeforeEach
     public void setUp() {
 
@@ -46,12 +54,14 @@ class IdamUserDetailsProviderTest {
 
     @Test
     void should_call_idam_api_to_get_user_details() {
-        String expectedAccessToken = "ABCDEFG";
-        String expectedId = "1234";
-        List<String> expectedRoles = Arrays.asList("role-1", "role-2");
+
         UserInfo userInfo = new UserInfo(
+            expectedEmail,
             expectedId,
-            expectedRoles
+            expectedRoles,
+            expectedName,
+            expectedForename,
+            expectedSurname
         );
         when(accessTokenProvider.getAccessToken()).thenReturn(expectedAccessToken);
 
@@ -70,8 +80,12 @@ class IdamUserDetailsProviderTest {
         String accessToken = "ABCDEFG";
 
         UserInfo userInfo = new UserInfo(
+            expectedEmail,
             null,
-            Arrays.asList("role")
+            expectedRoles,
+            expectedName,
+            expectedForename,
+            expectedSurname
         );
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);
@@ -89,8 +103,12 @@ class IdamUserDetailsProviderTest {
         String accessToken = "ABCDEFG";
 
         UserInfo userInfo = new UserInfo(
-            "some-id",
-            null
+            expectedEmail,
+            expectedId,
+            null,
+            expectedName,
+            expectedForename,
+            expectedSurname
         );
 
         when(accessTokenProvider.getAccessToken()).thenReturn(accessToken);

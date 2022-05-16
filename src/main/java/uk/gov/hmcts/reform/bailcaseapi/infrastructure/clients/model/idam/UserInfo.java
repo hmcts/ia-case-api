@@ -18,6 +18,10 @@ import lombok.NoArgsConstructor;
 public class UserInfo {
 
     @JsonProperty("sub")
+    private String email;
     private String uid;
     private List<String> roles;
+    private String name;
+    private String givenName;
+    private String familyName;
 }

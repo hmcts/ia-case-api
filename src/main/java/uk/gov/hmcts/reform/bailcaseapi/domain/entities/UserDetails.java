@@ -9,4 +9,12 @@ public interface UserDetails {
     String getId();
 
     List<String> getRoles();
+
+    String getEmailAddress();
+
+    String getForename();
+
+    String getSurname();
+
+    String getForenameAndSurname();
 }

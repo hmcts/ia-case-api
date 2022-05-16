@@ -11,19 +11,31 @@ public class IdamUserDetails implements UserDetails {
     private final String accessToken;
     private final String id;
     private final List<String> roles;
-
+    private final String emailAddress;
+    private final String forename;
+    private final String surname;
 
     public IdamUserDetails(
-        String accessToken, String id,
-        List<String> roles
-
+        String accessToken,
+        String id,
+        List<String> roles,
+        String emailAddress,
+        String forename,
+        String surname
     ) {
-        this.accessToken = accessToken;
+        requireNonNull(accessToken);
         requireNonNull(id);
         requireNonNull(roles);
+        requireNonNull(emailAddress);
+        requireNonNull(forename);
+        requireNonNull(surname);
 
+        this.accessToken = accessToken;
         this.id = id;
         this.roles = roles;
+        this.emailAddress = emailAddress;
+        this.forename = forename;
+        this.surname = surname;
     }
 
     @Override
@@ -39,6 +51,26 @@ public class IdamUserDetails implements UserDetails {
     @Override
     public List<String> getRoles() {
         return Collections.unmodifiableList(roles);
+    }
+
+    @Override
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    @Override
+    public String getForename() {
+        return forename;
+    }
+
+    @Override
+    public String getSurname() {
+        return surname;
+    }
+
+    @Override
+    public String getForenameAndSurname() {
+        return forename + " " + surname;
     }
 
 }
