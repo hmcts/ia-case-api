@@ -104,7 +104,8 @@ class SendNotificationHandlerTest {
                     Arrays.asList(
                         Event.SUBMIT_APPLICATION,
                         Event.UPLOAD_BAIL_SUMMARY,
-                        Event.UPLOAD_SIGNED_DECISION_NOTICE
+                        Event.UPLOAD_SIGNED_DECISION_NOTICE,
+                        Event.END_APPLICATION
                     ).contains(event)) {
 
                     assertTrue(canHandle);

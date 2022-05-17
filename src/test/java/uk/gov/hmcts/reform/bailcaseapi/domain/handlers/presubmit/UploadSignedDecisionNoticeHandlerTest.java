@@ -3,14 +3,16 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_NOTICE_METADATA;
+
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +60,8 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Mock
     private List<IdValue<DocumentWithMetadata>> newSignedDecisionNotice;
 
+    private List<IdValue<DocumentWithMetadata>> existingTribunalDocumentsWithMetadata = new ArrayList<>();
+
     @Captor
     private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingDecisionNoticeDocumentsCaptor;
 
@@ -78,15 +82,23 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Test
     void should_add_new_document_to_the_case() {
 
+        List<IdValue<DocumentWithMetadata>> allTribunalDocs =
+            List.of(
+                new IdValue<>("1", signedDecisionNoticeMetadata1)
+            );
+
         when(bailCase.read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class)).thenReturn(
             Optional.of(signedDecisionNotice1));
+
+        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(
+            Optional.empty());
 
         when(documentReceiver.tryReceive(new DocumentWithDescription(signedDecisionNotice1, ""),
                                          DocumentTag.SIGNED_DECISION_NOTICE))
             .thenReturn(Optional.of(signedDecisionNoticeMetadata1));
 
-        when(documentsAppender.append(any(List.class), eq(List.of(signedDecisionNoticeMetadata1))))
-            .thenReturn(newSignedDecisionNotice);
+        when(documentsAppender.append(eq(new ArrayList<>()), eq(List.of(signedDecisionNoticeMetadata1))))
+            .thenReturn(allTribunalDocs);
 
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -110,9 +122,8 @@ public class UploadSignedDecisionNoticeHandlerTest {
 
         assertEquals(0, actualExistingDecisionNoticeDocuments.size());
 
-        verify(bailCase, times(1)).clear(SIGNED_DECISION_NOTICE_METADATA);
+        verify(bailCase, times(1)).write(TRIBUNAL_DOCUMENTS_WITH_METADATA, allTribunalDocs);
 
-        verify(bailCase, times(1)).write(SIGNED_DECISION_NOTICE_METADATA, newSignedDecisionNotice);
     }
 
     @Test

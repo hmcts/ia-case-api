@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_ALL_USERS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_JUDGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
@@ -45,10 +46,11 @@ class CurrentCaseStateUpdaterTest {
         new CurrentCaseStateUpdater();
 
     @Test
-    void should_set_case_building_ready_for_submission_flag_to_yes() {
+    void should_set_variables_to_appropriate_states() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
 
         for (State state : State.values()) {
 
@@ -61,10 +63,10 @@ class CurrentCaseStateUpdaterTest {
             assertNotNull(callbackResponse);
             assertEquals(bailCase, callbackResponse.getData());
 
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state);
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state);
+            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state.toString());
+            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state.toString());
+            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state.toString());
+            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state.toString());
             reset(bailCase);
         }
     }
@@ -122,21 +124,24 @@ class CurrentCaseStateUpdaterTest {
 
     @Test
     void should_update_state_to_conditionalGrant_based_on_decision_type() {
+        State state = DECISION_CONDITIONAL_BAIL;
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(caseDetails.getState()).thenReturn(state);
         when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of("conditionalGrant"));
+        when(callback.getEvent()).thenReturn(Event.RECORD_THE_DECISION);
 
         PreSubmitCallbackResponse<BailCase> response = currentCaseStateUpdater
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        State state = DECISION_CONDITIONAL_BAIL;
         assertNotNull(response);
         assertEquals(bailCase, response.getData());
 
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state);
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state);
+        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state.toString());
+        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state.toString());
+        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state.toString());
+        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state.toString());
+        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ALL_USERS, state.toString());
         reset(bailCase);
     }
 }

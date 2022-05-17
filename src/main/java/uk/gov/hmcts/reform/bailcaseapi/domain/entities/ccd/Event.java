@@ -12,6 +12,8 @@ public enum Event {
     RECORD_THE_DECISION("recordTheDecision"),
     UPLOAD_SIGNED_DECISION_NOTICE("uploadSignedDecisionNotice"),
     ADD_CASE_NOTE("addCaseNote"),
+    MOVE_APPLICATION_TO_DECIDED("moveApplicationToDecided"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

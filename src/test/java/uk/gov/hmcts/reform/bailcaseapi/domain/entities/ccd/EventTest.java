@@ -15,11 +15,12 @@ public class EventTest {
         assertEquals("recordTheDecision", Event.RECORD_THE_DECISION.toString());
         assertEquals("uploadSignedDecisionNotice", Event.UPLOAD_SIGNED_DECISION_NOTICE.toString());
         assertEquals("addCaseNote", Event.ADD_CASE_NOTE.toString());
+        assertEquals("moveApplicationToDecided", Event.MOVE_APPLICATION_TO_DECIDED.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(8, Event.values().length);
+        assertEquals(9, Event.values().length);
     }
 }
