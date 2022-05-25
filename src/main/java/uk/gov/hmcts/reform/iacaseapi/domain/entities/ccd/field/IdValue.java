@@ -2,12 +2,13 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Enumeration;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-public class IdValue<T> {
+public class IdValue<T> implements Enumeration<T> {
 
     private String id = "";
     private T value;
@@ -35,5 +36,15 @@ public class IdValue<T> {
     public T getValue() {
         requireNonNull(value);
         return value;
+    }
+
+    @Override
+    public boolean hasMoreElements() {
+        return false;
+    }
+
+    @Override
+    public T nextElement() {
+        return null;
     }
 }

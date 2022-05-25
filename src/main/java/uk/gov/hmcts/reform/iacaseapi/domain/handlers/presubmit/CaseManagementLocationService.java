@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.BaseLocation;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseManagementLocation;
@@ -19,7 +19,7 @@ public class CaseManagementLocationService {
 
     private Optional<BaseLocation> getBaseLocation(String staffLocationName) {
         String fromStaffLocationNameToBaseLocationEnumName =
-            StringUtils.upperCase(staffLocationName).replace(" ", "_");
+                StringUtils.upperCase(staffLocationName).replace(" ", "_");
         BaseLocation baseLocation = BaseLocation.valueOf(fromStaffLocationNameToBaseLocationEnumName);
         return Optional.of(baseLocation);
 
