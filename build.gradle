@@ -5,23 +5,22 @@ buildscript {
     dependencies {
         classpath("org.yaml:snakeyaml:1.23")
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
-    }
-}
+    }}
 
 plugins {
     id 'application'
     id 'checkstyle'
     id 'jacoco'
     id 'pmd'
-    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'com.github.ben-manes.versions' version '0.42.0'
     id "info.solidsoft.pitest" version '1.5.1'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.flywaydb.flyway' version '5.2.4'
-    id 'org.owasp.dependencycheck' version '6.0.2'
+    id 'org.owasp.dependencycheck' version '6.5.3'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.3.9.RELEASE'
+    id 'org.springframework.boot' version '2.7.0'
     id 'uk.gov.hmcts.java' version '0.12.5'
-    id 'au.com.dius.pact' version '4.1.0'
+    id 'au.com.dius.pact' version '4.1.7'
     id "io.freefair.lombok" version "5.3.0"
 }
 
@@ -31,17 +30,19 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-    junit           : '5.6.2',
-    junitPlatform   : '1.6.2',
+    junit           : '5.8.2',
+    junitPlatform   : '1.7.2',
     pitest             : '1.5.2',
     reformLogging      : '5.1.7',
     reformHealthStarter: '0.0.5',
-    serenity           : '2.2.12',
-    springBoot         : '2.6.3',
-    springHystrix      : '2.1.1.RELEASE',
-    springfoxSwagger   : '2.9.2',
+    serenity           : '3.1.20',
+    springBoot         : '2.7.0',
     pact_version       : '4.1.7',
-    jackson            : '2.11.2'
+    springHystrix      : '2.2.10.RELEASE',
+    springDoc          : '1.6.8',
+    springSecurity     : '5.7.1',
+    springCloud        : '3.1.1',
+    jackson            : '2.13.3'
 
 ]
 
@@ -154,7 +155,7 @@ checkstyle {
 }
 
 pmd {
-    toolVersion = '6.12.0'
+    toolVersion = '6.41.0'
     ignoreFailures = true
     sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
@@ -250,22 +251,34 @@ repositories {
 dependencyManagement {
     dependencies {
         // CVE-2022-23181
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.58') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.63') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
         }
 
-        // CVE-2019-10086
-        dependencySet(group: 'commons-beanutils', version: '1.9.4') {
-            entry 'commons-beanutils'
-        }
+        // CVE-2019-10086 Indu commented
+        //dependencySet(group: 'commons-beanutils', version: '1.9.4') {
+        //    entry 'commons-beanutils'
+        //}
 
         // CVE-2021-22060
-        dependency(group: 'org.springframework', name: 'spring-core', version: '5.3.15')
+        // dependency(group: 'org.springframework', name: 'spring-core', version: '5.3.15')
+        dependencySet(group: 'org.springframework', version: '5.3.20') {
+            entry 'spring-core'
+            entry 'spring-aop'
+            entry 'spring-beans'
+            entry 'spring-context'
+            entry 'spring-expression'
+            entry 'spring-jcl'
+            entry 'spring-web'
+            entry 'spring-jdbc'
+            entry 'spring-security-test'
+
+        }
 
         //CVE-2021-22119
-        dependency group: 'org.springframework.security', name: 'spring-security-core',  version: '5.6.1'
+        dependency group: 'org.springframework.security', name: 'spring-security-core',  version: versions.springSecurity
 
         //CVE-2021-42550
         dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
@@ -278,6 +291,15 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
+
+        //imports {
+          //  mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.4'
+        //}
+
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-starter-openfeign'
+            entry 'spring-cloud-openfeign-core'
+        }
     }
 }
 
@@ -289,29 +311,45 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
+    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+    //compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springCloud
+
+    compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
+    compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
+    compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
+    compile group: 'org.springframework.security', name: 'spring-security-test', version: versions.springSecurity
+
+    //compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
+    implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurity
+
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
-    compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
+    //compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
     // CVE-2019-17195
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.22'
 
     // CVE-2021-27568
-    compile group: 'net.minidev', name: 'json-smart', version: '2.3.1'
+    compile group: 'net.minidev', name: 'json-smart', version: '2.4.7'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '5.3.20'
 
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.5.6'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: versions.jackson
 
-    compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
+
+    // compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    //compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
@@ -330,36 +368,40 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
 
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1'
 
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    testImplementation libraries.junit5
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
-        exclude group: 'junit', module: 'junit'
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    //testImplementation libraries.junit5
+    //testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
+    //  exclude group: 'junit', module: 'junit'
+    // exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    //}
+
+    testCompile 'com.github.tomakehurst:wiremock:2.23.2'
 
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
     testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
     testImplementation group: 'ru.lanwen.wiremock', name: 'wiremock-junit5', version: '1.3.1'
 
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile "com.github.tomakehurst:wiremock:2.23.2"
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    //testCompile "com.github.tomakehurst:wiremock:2.19.0"
 
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
-    testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    // testCompile group: 'org.springframework.security', name: 'spring-security-test'
+
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
 
-    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
+    //testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
