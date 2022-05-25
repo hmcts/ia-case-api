@@ -8,20 +8,54 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
+    networks:
+      - compose_default
     image: hmcts/ia-bail-case-api
     container_name: ia-bail-case-api
     environment:
+      JAVA_OPTS:
       # these environment variables are used by java-logging library
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE
-      - REFORM_SERVICE_NAME
-      - REFORM_TEAM
-      - REFORM_ENVIRONMENT
-      - LOGBACK_DATE_FORMAT
-      - LOGBACK_REQUIRE_THREAD
-      - LOGBACK_REQUIRE_ALERT_LEVEL=false
-      - LOGBACK_REQUIRE_ERROR_CODE=false
+      JSON_CONSOLE_PRETTY_PRINT:
+      ROOT_APPENDER:
+      ROOT_LOGGING_LEVEL:
+      REFORM_SERVICE_TYPE:
+      REFORM_SERVICE_NAME:
+      REFORM_TEAM:
+      REFORM_ENVIRONMENT:
+      LOGBACK_DATE_FORMAT:
+      LOGBACK_REQUIRE_THREAD:
+      LOGBACK_REQUIRE_ALERT_LEVEL: "false"
+      LOGBACK_REQUIRE_ERROR_CODE: "false"
+      # Application environment variables
+      CCD_GW_URL: http://ccd-api-gateway-web:3453
+      IDAM_URL: http://idam-api:8080
+      IA_IDAM_REDIRECT_URI: http://idam-api
+      S2S_URL: http://service-auth-provider-api:8080
+      CCD_URL: http://ccd-data-store-api:4452
+      DM_URL: http://dm-store:8080
+      IA_CASE_DOCUMENTS_API_URL: http://ia-case-documents-api:8092
+      IA_CASE_NOTIFICATIONS_API_URL: http://ia-case-notifications-api:8093
+      IA_IDAM_CLIENT_ID:
+      IA_IDAM_SECRET:
+      IA_S2S_MICROSERVICE:
+      IA_S2S_SECRET:
+      IA_SYSTEM_USERNAME:
+      IA_SYSTEM_PASSWORD:
+      IA_EM_STITCHING_ENABLED:
+      IA_DOCMOSIS_ENABLED:
+    external_links:
+      - idam-api
+      - dm-store
+      - ccd-shared-database
+      - ccd-api-gateway-web
+      - ccd-data-store-api
+      - service-auth-provider-api
+      - stitching-api
+      - ia-case-documents-api
+      - ia-case-notifications-api
     ports:
-      - $SERVER_PORT:$SERVER_PORT
+      - ${SERVER_PORT:-8099}:${SERVER_PORT:-8099}
+networks:
+  compose_default:
+    external: true
+

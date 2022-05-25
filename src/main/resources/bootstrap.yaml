@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    propertiesvolume:
+      prefixed: false
+      paths: /mnt/secrets/ia
+      aliases:
+        case-documents-api-url: IA_CASE_DOCUMENTS_API_URL
+        case-notifications-api-url: IA_CASE_NOTIFICATIONS_API_URL
+        docmosis-enabled: IA_DOCMOSIS_ENABLED
+        em-stitching-enabled: IA_EM_STITCHING_ENABLED
+        system-username: IA_SYSTEM_USERNAME
+        system-password: IA_SYSTEM_PASSWORD
+        idam-client-id: IA_IDAM_CLIENT_ID
+        idam-secret: IA_IDAM_SECRET
+        idam-redirect-uri: IA_IDAM_REDIRECT_URI
+        s2s-secret: idam.s2s-auth.totp_secret
+        s2s-microservice: IA_S2S_MICROSERVICE
+        ccd-url: CCD_URL
+        ccd-gw-url: CCD_GW_URL
+        dm-url: DM_URL
+        idam-url: IDAM_URL
+        s2s-url: S2S_URL
+        prof-ref-data-url: PROF_REF_DATA_URL
+        launch-darkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key

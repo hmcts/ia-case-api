@@ -1,0 +1,8 @@
+logging.level:
+  root: info
+  org.springframework.web: debug
+  uk.gov.hmcts: debug
+
+idam:
+  ia_system_user:
+    scope: "openid profile authorities"

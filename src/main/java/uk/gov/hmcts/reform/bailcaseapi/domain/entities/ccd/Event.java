@@ -13,6 +13,8 @@ public enum Event {
     UPLOAD_SIGNED_DECISION_NOTICE("uploadSignedDecisionNotice"),
     ADD_CASE_NOTE("addCaseNote"),
     MOVE_APPLICATION_TO_DECIDED("moveApplicationToDecided"),
+    UPLOAD_DOCUMENTS("uploadDocuments"),
+    EDIT_DOCUMENTS("editDocuments"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

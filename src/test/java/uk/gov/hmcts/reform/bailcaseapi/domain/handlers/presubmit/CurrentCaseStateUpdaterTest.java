@@ -14,10 +14,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_JUDGE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State.DECISION_CONDITIONAL_BAIL;
 
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -30,7 +27,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
-
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class CurrentCaseStateUpdaterTest {
@@ -42,15 +38,13 @@ class CurrentCaseStateUpdaterTest {
     @Mock
     private BailCase bailCase;
 
-    private CurrentCaseStateUpdater currentCaseStateUpdater =
-        new CurrentCaseStateUpdater();
+    private CurrentCaseStateUpdater currentCaseStateUpdater = new CurrentCaseStateUpdater();
 
     @Test
     void should_set_variables_to_appropriate_states() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
 
         for (State state : State.values()) {
 
@@ -63,10 +57,16 @@ class CurrentCaseStateUpdaterTest {
             assertNotNull(callbackResponse);
             assertEquals(bailCase, callbackResponse.getData());
 
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state.toString());
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state.toString());
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state.toString());
-            verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state.toString());
+            verify(bailCase, times(1))
+                .write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state);
+            verify(bailCase, times(1))
+                .write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state);
+            verify(bailCase, times(1))
+                .write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state);
+            verify(bailCase, times(1))
+                .write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state);
+            verify(bailCase, times(1))
+                .write(CURRENT_CASE_STATE_VISIBLE_TO_ALL_USERS, state);
             reset(bailCase);
         }
     }
@@ -120,28 +120,5 @@ class CurrentCaseStateUpdaterTest {
         assertThatThrownBy(() -> currentCaseStateUpdater.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void should_update_state_to_conditionalGrant_based_on_decision_type() {
-        State state = DECISION_CONDITIONAL_BAIL;
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(caseDetails.getState()).thenReturn(state);
-        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of("conditionalGrant"));
-        when(callback.getEvent()).thenReturn(Event.RECORD_THE_DECISION);
-
-        PreSubmitCallbackResponse<BailCase> response = currentCaseStateUpdater
-            .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(response);
-        assertEquals(bailCase, response.getData());
-
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_LEGAL_REPRESENTATIVE, state.toString());
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER, state.toString());
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE, state.toString());
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_JUDGE, state.toString());
-        verify(bailCase, times(1)).write(CURRENT_CASE_STATE_VISIBLE_TO_ALL_USERS, state.toString());
-        reset(bailCase);
     }
 }

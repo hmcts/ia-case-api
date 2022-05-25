@@ -99,7 +99,7 @@ public class UploadSignedDecisionNoticeHandlerTest {
 
         when(documentsAppender.append(eq(new ArrayList<>()), eq(List.of(signedDecisionNoticeMetadata1))))
             .thenReturn(allTribunalDocs);
-
+        
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 

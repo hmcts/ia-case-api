@@ -12,17 +12,15 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<BailCase> {
+public class CurrentUserRoleAppender implements PreSubmitCallbackHandler<BailCase> {
 
     private final UserDetails userDetails;
     private final UserDetailsHelper userDetailsHelper;
 
-
-    public ApplicationUserRoleAppender(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
+    public CurrentUserRoleAppender(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
         this.userDetails = userDetails;
         this.userDetailsHelper = userDetailsHelper;
     }
@@ -35,7 +33,7 @@ public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<Bai
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && (callback.getEvent() == Event.START_APPLICATION);
+               && (callback.getEvent() == Event.UPLOAD_DOCUMENTS);
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(
@@ -50,19 +48,20 @@ public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<Bai
 
         UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
         if (userRoleLabel.equals(UserRoleLabel.ADMIN_OFFICER)) {
-            bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.YES);
-        } else {
-            bailCase.write(BailCaseFieldDefinition.IS_ADMIN, YesOrNo.NO);
+            bailCase.write(BailCaseFieldDefinition.CURRENT_USER,
+                           UserRoleLabel.ADMIN_OFFICER.toString());
         }
         if (userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE)) {
-            bailCase.write(BailCaseFieldDefinition.IS_LEGAL_REP, YesOrNo.YES);
-        } else {
-            bailCase.write(BailCaseFieldDefinition.IS_LEGAL_REP, YesOrNo.NO);
+            bailCase.write(BailCaseFieldDefinition.CURRENT_USER,
+                           UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
         }
         if (userRoleLabel.equals(UserRoleLabel.HOME_OFFICE_GENERIC)) {
-            bailCase.write(BailCaseFieldDefinition.IS_HOME_OFFICE, YesOrNo.YES);
-        } else {
-            bailCase.write(BailCaseFieldDefinition.IS_HOME_OFFICE, YesOrNo.NO);
+            bailCase.write(BailCaseFieldDefinition.CURRENT_USER,
+                           UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+        }
+        if (userRoleLabel.equals(UserRoleLabel.JUDGE)) {
+            bailCase.write(BailCaseFieldDefinition.CURRENT_USER,
+                           UserRoleLabel.JUDGE.toString());
         }
 
         return new PreSubmitCallbackResponse<>(bailCase);

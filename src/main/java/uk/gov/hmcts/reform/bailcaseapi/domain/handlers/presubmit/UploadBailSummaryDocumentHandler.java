@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_DOCS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_METADATA;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,16 +73,16 @@ public class UploadBailSummaryDocumentHandler implements PreSubmitCallbackHandle
                     .map(Optional::get)
                     .collect(Collectors.toList());
 
-            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingBailSummaryDocuments =
-                bailCase.read(UPLOAD_BAIL_SUMMARY_METADATA);
+            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingHomeOfficeDocuments =
+                bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA);
 
-            final List<IdValue<DocumentWithMetadata>> existingExistingBailSummaryDocuments =
-                maybeExistingBailSummaryDocuments.orElse(Collections.emptyList());
+            final List<IdValue<DocumentWithMetadata>> existingHomeOfficeDocuments =
+                maybeExistingHomeOfficeDocuments.orElse(Collections.emptyList());
 
             List<IdValue<DocumentWithMetadata>> allBailSummaryDocuments =
-                documentsAppender.append(existingExistingBailSummaryDocuments, bailSummary);
+                documentsAppender.append(existingHomeOfficeDocuments, bailSummary);
 
-            bailCase.write(UPLOAD_BAIL_SUMMARY_METADATA, allBailSummaryDocuments);
+            bailCase.write(HOME_OFFICE_DOCUMENTS_WITH_METADATA, allBailSummaryDocuments);
         }
         return new PreSubmitCallbackResponse<>(bailCase);
     }

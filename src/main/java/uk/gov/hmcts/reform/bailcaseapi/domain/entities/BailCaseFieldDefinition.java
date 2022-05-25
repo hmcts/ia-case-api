@@ -255,8 +255,8 @@ public enum BailCaseFieldDefinition {
         "detentionFacility", new TypeReference<String>(){}),
     UPLOAD_BAIL_SUMMARY_DOCS(
         "uploadBailSummaryDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
-    UPLOAD_BAIL_SUMMARY_METADATA(
-        "uploadBailSummaryMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    HOME_OFFICE_DOCUMENTS_WITH_METADATA(
+        "homeOfficeDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     CONDITION_FOR_BAIL(
         "conditionsForBail", new TypeReference<List<String>>(){}),
     CONDITION_APPEARANCE(
@@ -324,8 +324,17 @@ public enum BailCaseFieldDefinition {
     TRIBUNAL_DOCUMENTS_WITH_METADATA(
         "tribunalDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     END_APPLICATION_DATE(
-        "endApplicationDate", new TypeReference<String>(){})
-    ;
+        "endApplicationDate", new TypeReference<String>(){}),
+    END_APPLICATION_OUTCOME(
+        "endApplicationOutcome", new TypeReference<String>(){}),
+    END_APPLICATION_REASONS(
+        "endApplicationReasons", new TypeReference<String>(){}),
+    UPLOAD_DOCUMENTS(
+        "uploadDocuments", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+    UPLOAD_DOCUMENTS_SUPPLIED_BY(
+        "uploadDocumentsSuppliedBy", new TypeReference<String>(){}),
+    CURRENT_USER(
+        "currentUser", new TypeReference<String>(){});
 
 
     private final String value;

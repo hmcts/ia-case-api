@@ -14,6 +14,7 @@ public class StateTest {
         assertEquals("applicationEnded", State.APPLICATION_ENDED.toString());
         assertEquals("applicationSubmitted", State.APPLICATION_SUBMITTED.toString());
         assertEquals("bailSummaryUploaded", State.BAIL_SUMMARY_UPLOADED.toString());
+        assertEquals("decisionRecorded", State.DECISION_RECORDED.toString());
         assertEquals("decisionDecided", State.DECISION_DECIDED.toString());
         assertEquals("decisionConditionalBail", State.DECISION_CONDITIONAL_BAIL.toString());
         assertEquals("unknown", State.UNKNOWN.toString());
@@ -21,7 +22,7 @@ public class StateTest {
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(9, State.values().length);
+        assertEquals(10, State.values().length);
     }
 
 }

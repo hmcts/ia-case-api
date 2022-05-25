@@ -10,6 +10,7 @@ public enum State {
     APPLICATION_ENDED("applicationEnded"),
     APPLICATION_SUBMITTED("applicationSubmitted"),
     BAIL_SUMMARY_UPLOADED("bailSummaryUploaded"),
+    DECISION_RECORDED("decisionRecorded"),
     DECISION_DECIDED("decisionDecided"),
     DECISION_CONDITIONAL_BAIL("decisionConditionalBail"),
     @JsonEnumDefaultValue

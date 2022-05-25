@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:4550}
+  port: ${PORT:8099}
 
 management:
   endpoint:
@@ -59,7 +59,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID  _IDAM_URL:http://127.0.0.1:5000}/o
+            issuer-uri: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}/o
         registration:
           oidc:
             client-id: ${IA_IDAM_CLIENT_ID:ia}
@@ -70,27 +70,7 @@ spring:
   profiles:
     include:
       - hearingcentre-mapping
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_OPTIONS:}
-#    username: ${DB_USER_NAME}
-#    password: ${DB_PASSWORD}
-#    properties:
-#      charSet: UTF-8
-#    hikari:
-#      minimumIdle: 2
-#      maximumPoolSize: 10
-#      idleTimeout: 10000
-#      poolName: {to-be-defined}HikariCP
-#      maxLifetime: 7200000
-#      connectionTimeout: 30000
-#  jpa:
-#    properties:
-#      hibernate:
-#        jdbc:
-#          lob:
-#            # silence the 'wall-of-text' - unnecessary exception throw about blob types
-#            non_contextual_creation: true
+
 
 #OpenID
 idam:
@@ -102,9 +82,15 @@ idam:
     url: ${S2S_URL:http://127.0.0.1:4502}
   s2s-authorised:
     services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+  ia_system_user:
+    username: ${IA_SYSTEM_USERNAME:system-user}
+    password: ${IA_SYSTEM_PASSWORD:system-password}
+    scope: "openid profile authorities acr roles create-user manage-user search-user"
+
 azure:
   application-insights:
     instrumentation-key: ${rpe.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToSubmitPath: "/bail/ccdAboutToSubmit"
@@ -116,6 +102,9 @@ notificationsApi:
   ccdSubmittedPath: "/bail/ccdSubmitted"
 
 ### dependency configuration
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
@@ -126,3 +115,8 @@ prof.ref.data.path.org.organisation: ${PROF_REF_DATA_ORG_ORGANISATION_PATH:/refd
 
 featureFlag:
   isDocumentGenerationEnabled: ${IA_DOCUMENT_GENERATION_ENABLED:false}
+
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5000
+  socketTimeout: 5000

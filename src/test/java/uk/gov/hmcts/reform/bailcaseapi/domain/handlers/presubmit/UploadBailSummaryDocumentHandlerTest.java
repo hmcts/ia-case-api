@@ -10,8 +10,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HOME_OFFICE_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_DOCS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_BAIL_SUMMARY_METADATA;
 
 import java.util.Arrays;
 import java.util.List;
@@ -98,7 +98,7 @@ public class UploadBailSummaryDocumentHandlerTest {
                 bailSummary2WithMetadata
             );
 
-        when(bailCase.read(UPLOAD_BAIL_SUMMARY_METADATA)).thenReturn(Optional.of(existingBailSummaryDocuments));
+        when(bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(existingBailSummaryDocuments));
         when(bailCase.read(UPLOAD_BAIL_SUMMARY_DOCS)).thenReturn(Optional.of(summaryWithDescriptionList));
 
         when(documentReceiver.tryReceive(bailSummary1, DocumentTag.BAIL_SUMMARY))
@@ -123,7 +123,7 @@ public class UploadBailSummaryDocumentHandlerTest {
 
         verify(documentsAppender, times(1)).append(existingBailSummaryDocuments, summaryList);
 
-        verify(bailCase, times(1)).write(UPLOAD_BAIL_SUMMARY_METADATA, allBailSummaryDocuments);
+        verify(bailCase, times(1)).write(HOME_OFFICE_DOCUMENTS_WITH_METADATA, allBailSummaryDocuments);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class UploadBailSummaryDocumentHandlerTest {
             singletonList(new IdValue<>("1", bailSummary1));
         List<DocumentWithMetadata> summaryList = singletonList(bailSummary1WithMetadata);
 
-        when(bailCase.read(UPLOAD_BAIL_SUMMARY_METADATA)).thenReturn(Optional.empty());
+        when(bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.empty());
         when(bailCase.read(UPLOAD_BAIL_SUMMARY_DOCS)).thenReturn(Optional.of(summaryWithDescriptionList));
 
         when(documentReceiver.tryReceive(bailSummary1, DocumentTag.BAIL_SUMMARY))
@@ -162,7 +162,7 @@ public class UploadBailSummaryDocumentHandlerTest {
 
         assertEquals(0, actualExistingSummaryDocuments.size());
 
-        verify(bailCase, times(1)).write(UPLOAD_BAIL_SUMMARY_METADATA, allBailSummaryDocuments);
+        verify(bailCase, times(1)).write(HOME_OFFICE_DOCUMENTS_WITH_METADATA, allBailSummaryDocuments);
     }
 
     @Test
