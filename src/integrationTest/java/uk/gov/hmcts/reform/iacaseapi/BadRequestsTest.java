@@ -38,7 +38,6 @@ public class BadRequestsTest extends SpringBootIntegrationTest {
         );
     }
 
-    /*  Indu Commented
     @Test
     public void shouldMakeBadRequestsToServerAndReceiveHttp4xx() throws Exception {
 
@@ -55,7 +54,7 @@ public class BadRequestsTest extends SpringBootIntegrationTest {
             "{  \"foo\": \"bar\"}",
             HttpStatus.BAD_REQUEST.value()
         );
-    }*/
+    }
 
     private void runClientRequest(
         final String path,
