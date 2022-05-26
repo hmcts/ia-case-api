@@ -27,18 +27,17 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.SpringAuthorizedRol
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfiguration  {
+public class SecurityConfiguration {
 
     private final List<String> anonymousPaths = new ArrayList<>();
+    private final Map<String, List<Event>> roleEventAccess = new HashMap<>();
 
-    private final Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter;
+    private final Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter;
     private final ServiceAuthFilter serviceAuthFiler;
 
-    public SecurityConfiguration(
-            Converter<Jwt, Collection<GrantedAuthority>> authoritiesConverter,
-            ServiceAuthFilter serviceAuthFiler
-    ) {
-        this.authoritiesConverter = authoritiesConverter;
+    public SecurityConfiguration(Converter<Jwt, Collection<GrantedAuthority>> idamAuthoritiesConverter,
+                                 ServiceAuthFilter serviceAuthFiler) {
+        this.idamAuthoritiesConverter = idamAuthoritiesConverter;
         this.serviceAuthFiler = serviceAuthFiler;
     }
 
@@ -59,9 +58,8 @@ public class SecurityConfiguration  {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        //jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(idamAuthoritiesConverter);
 
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
 
         http
             .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
@@ -93,13 +91,13 @@ public class SecurityConfiguration  {
     public CcdEventAuthorizor getCcdEventAuthorizor(AuthorizedRolesProvider authorizedRolesProvider) {
 
         return new CcdEventAuthorizor(
-            ImmutableMap.copyOf(getRoleEventAccess()),
+            ImmutableMap.copyOf(roleEventAccess),
             authorizedRolesProvider
         );
     }
 
     public Map<String, List<Event>> getRoleEventAccess() {
-        return getRoleEventAccess();
+        return roleEventAccess;
     }
 
 }
