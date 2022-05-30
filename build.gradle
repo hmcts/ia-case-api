@@ -5,7 +5,8 @@ buildscript {
     dependencies {
         classpath("org.yaml:snakeyaml:1.23")
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
-    }}
+    }
+}
 
 plugins {
     id 'application'
@@ -293,10 +294,6 @@ dependencyManagement {
             entry 'log4j-to-slf4j'
         }
 
-        //imports {
-          //  mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.4'
-        //}
-
         dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
             entry 'spring-cloud-starter-openfeign'
             entry 'spring-cloud-openfeign-core'
@@ -312,11 +309,8 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
-    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
-    //compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springCloud
 
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springCloud
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
@@ -328,7 +322,6 @@ dependencies {
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springCloud
-    //compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
     // CVE-2019-17195
@@ -348,9 +341,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: versions.jackson
 
     compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
-
-    // compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-    //compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
@@ -374,12 +364,6 @@ dependencies {
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    //testImplementation libraries.junit5
-    //testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot, {
-    //  exclude group: 'junit', module: 'junit'
-    // exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    //}
-
     testCompile 'com.github.tomakehurst:wiremock:2.23.2'
 
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
@@ -391,18 +375,14 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-    //testCompile "com.github.tomakehurst:wiremock:2.19.0"
-
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
-    // testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
 
-    //testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
