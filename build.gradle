@@ -245,6 +245,10 @@ repositories {
     mavenLocal()
     jcenter()
     mavenCentral()
+
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencyManagement {
@@ -350,6 +354,9 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+
+    implementation 'com.github.hmcts:ccd-case-document-am-client:1.7.3'
+
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'

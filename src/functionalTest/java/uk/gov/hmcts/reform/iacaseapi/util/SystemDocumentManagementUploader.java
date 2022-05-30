@@ -7,15 +7,21 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
+//import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document
 
 @Service
 public class SystemDocumentManagementUploader {
 
     private final DocumentUploadClientApi documentUploadClientApi;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
+
+    CaseDocumentClient caseDocumentClient;
 
     public SystemDocumentManagementUploader(
         DocumentUploadClientApi documentUploadClientApi,
@@ -25,7 +31,7 @@ public class SystemDocumentManagementUploader {
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
-    public Document upload(
+    public UploadResponse upload(
         Resource resource,
         String contentType
     ) {
@@ -50,33 +56,41 @@ public class SystemDocumentManagementUploader {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            UploadResponse uploadResponse =
-                documentUploadClientApi
+            UploadResponse uploadResponse = caseDocumentClient.uploadDocuments( accessToken,
+                    serviceAuthorizationToken,
+                    "Asylum",
+                    "IA",
+                    Collections.singletonList(file)
+                    );
+
+              return uploadResponse;
+               /* documentUploadClientApi
                     .upload(
                         accessToken,
                         serviceAuthorizationToken,
                         userId,
                         Collections.singletonList(file)
-                    );
+                    ); */
 
-            uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
-                uploadResponse
+
+             /*uk.gov.hmcts.reform.document.domain.Document uploadedDoc =
+                uploadResponse1
                     .getEmbedded()
                     .getDocuments()
                     .get(0);
 
             return new Document(
-                uploadedDocument
+                    uploadedDoc
                     .links
                     .self
                     .href,
-                uploadedDocument
+                    uploadedDoc
                     .links
                     .binary
                     .href,
-                uploadedDocument
+                    uploadedDoc
                     .originalDocumentName
-            );
+            );*/
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
