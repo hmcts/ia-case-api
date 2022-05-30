@@ -18,11 +18,12 @@ public class EventTest {
         assertEquals("moveApplicationToDecided", Event.MOVE_APPLICATION_TO_DECIDED.toString());
         assertEquals("uploadDocuments", Event.UPLOAD_DOCUMENTS.toString());
         assertEquals("editDocuments", Event.EDIT_DOCUMENTS.toString());
+        assertEquals("sendBailDirection", Event.SEND_BAIL_DIRECTION.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(11, Event.values().length);
+        assertEquals(12, Event.values().length);
     }
 }

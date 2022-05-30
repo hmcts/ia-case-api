@@ -81,7 +81,7 @@ public class UploadDocumentsHandler implements PreSubmitCallbackHandler<BailCase
                     .orElseThrow(() -> new IllegalStateException("document is not present"))
                     .stream()
                     .map(IdValue::getValue)
-                    .map(doc -> documentReceiver.tryReceive(doc, DocumentTag.UPLOAD_DOCUMENT, suppliedBy))
+                    .map(doc -> documentReceiver.tryReceive(doc, DocumentTag.UPLOAD_DOCUMENT))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());

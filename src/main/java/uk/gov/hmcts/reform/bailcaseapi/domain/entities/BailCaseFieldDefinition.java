@@ -255,6 +255,8 @@ public enum BailCaseFieldDefinition {
         "detentionFacility", new TypeReference<String>(){}),
     UPLOAD_BAIL_SUMMARY_DOCS(
         "uploadBailSummaryDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+    UPLOAD_B1_FORM_DOCS(
+        "uploadB1FormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
     HOME_OFFICE_DOCUMENTS_WITH_METADATA(
         "homeOfficeDocumentsWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     CONDITION_FOR_BAIL(
@@ -297,6 +299,14 @@ public enum BailCaseFieldDefinition {
         "addCaseNoteDocument", new TypeReference<Document>(){}),
     CASE_NOTES(
         "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
+    SEND_DIRECTION_DESCRIPTION(
+        "sendDirectionDescription", new TypeReference<String>(){}),
+    SEND_DIRECTION_LIST(
+        "sendDirectionList", new TypeReference<String>(){}),
+    DATE_OF_COMPLIANCE(
+        "dateOfCompliance", new TypeReference<String>(){}),
+    DIRECTIONS(
+        "directions", new TypeReference<List<IdValue<Direction>>>(){}),
     REASON_FOR_REFUSAL_DETAILS(
         "reasonForRefusalDetails", new TypeReference<String>(){}),
     TRIBUNAL_REFUSAL_REASON(

@@ -84,7 +84,7 @@ public class UploadBailSummaryDocumentHandlerTest {
     }
 
     @Test
-    void should_append_new_summaries_to_existing_summary_documents_for_the_case() {
+    void should_append_new_summaries_to_existing_applicant_documents_for_the_case() {
 
         List<IdValue<DocumentWithDescription>> summaryWithDescriptionList =
             Arrays.asList(
@@ -127,7 +127,7 @@ public class UploadBailSummaryDocumentHandlerTest {
     }
 
     @Test
-    void should_add_new_summary_to_the_case_when_no_evidence_documents_exist() {
+    void should_add_new_summary_to_the_case_when_no_applicant_documents_exist() {
 
         List<IdValue<DocumentWithDescription>> summaryWithDescriptionList =
             singletonList(new IdValue<>("1", bailSummary1));
@@ -166,7 +166,7 @@ public class UploadBailSummaryDocumentHandlerTest {
     }
 
     @Test
-    void should_not_change_bail_summary_new_summary_is_not_present() {
+    void should_not_change_applicantDocuments_new_summary_is_not_present() {
 
         when(bailCase.read(UPLOAD_BAIL_SUMMARY_DOCS)).thenReturn(Optional.empty());
         when(callback.getCaseDetails().getCaseData()).thenReturn(bailCase);

@@ -12,6 +12,7 @@ public enum Event {
     RECORD_THE_DECISION("recordTheDecision"),
     UPLOAD_SIGNED_DECISION_NOTICE("uploadSignedDecisionNotice"),
     ADD_CASE_NOTE("addCaseNote"),
+    SEND_BAIL_DIRECTION("sendBailDirection"),
     MOVE_APPLICATION_TO_DECIDED("moveApplicationToDecided"),
     UPLOAD_DOCUMENTS("uploadDocuments"),
     EDIT_DOCUMENTS("editDocuments"),

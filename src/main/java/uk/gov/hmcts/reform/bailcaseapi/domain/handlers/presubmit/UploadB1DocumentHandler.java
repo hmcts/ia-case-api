@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_DOCUMENTS_WITH_METADATA;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_EVIDENCE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentTag;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -23,12 +23,12 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentsAppender;
 
 @Component
-public class UploadBailEvidenceDocumentHandler implements PreSubmitCallbackHandler<BailCase> {
+public class UploadB1DocumentHandler implements PreSubmitCallbackHandler<BailCase> {
 
     private final DocumentReceiver documentReceiver;
     private final DocumentsAppender documentsAppender;
 
-    public UploadBailEvidenceDocumentHandler(
+    public UploadB1DocumentHandler(
         DocumentReceiver documentReceiver,
         DocumentsAppender documentsAppender
     ) {
@@ -60,29 +60,29 @@ public class UploadBailEvidenceDocumentHandler implements PreSubmitCallbackHandl
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<List<IdValue<DocumentWithDescription>>> maybeBailEvidence = bailCase.read(BAIL_EVIDENCE);
+        Optional<List<IdValue<DocumentWithDescription>>> maybeB1Document = bailCase.read(UPLOAD_B1_FORM_DOCS);
 
-        if (maybeBailEvidence.isPresent()) {
-            List<DocumentWithMetadata> bailEvidence =
-                maybeBailEvidence
-                    .orElseThrow(() -> new IllegalStateException("bailEvidence is not present"))
+        if (maybeB1Document.isPresent()) {
+            List<DocumentWithMetadata> b1DocumentWithMetadataList =
+                maybeB1Document
+                    .orElseThrow(() -> new IllegalStateException("B1 Document is not present"))
                     .stream()
                     .map(IdValue::getValue)
-                    .map(document -> documentReceiver.tryReceive(document, DocumentTag.BAIL_EVIDENCE))
+                    .map(document -> documentReceiver.tryReceive(document, DocumentTag.B1_DOCUMENT))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
 
-            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingGroundsForBailDocuments =
+            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingApplicantDocuments =
                 bailCase.read(APPLICANT_DOCUMENTS_WITH_METADATA);
 
-            final List<IdValue<DocumentWithMetadata>> existingExistingGroundsForBailDocuments =
-                maybeExistingGroundsForBailDocuments.orElse(Collections.emptyList());
+            final List<IdValue<DocumentWithMetadata>> existingApplicantDocuments =
+                maybeExistingApplicantDocuments.orElse(Collections.emptyList());
 
-            List<IdValue<DocumentWithMetadata>> allGroundsForBailDocuments =
-                documentsAppender.append(existingExistingGroundsForBailDocuments, bailEvidence);
+            List<IdValue<DocumentWithMetadata>> allApplicantDocuments =
+                documentsAppender.append(existingApplicantDocuments, b1DocumentWithMetadataList);
 
-            bailCase.write(APPLICANT_DOCUMENTS_WITH_METADATA, allGroundsForBailDocuments);
+            bailCase.write(APPLICANT_DOCUMENTS_WITH_METADATA, allApplicantDocuments);
         }
         return new PreSubmitCallbackResponse<>(bailCase);
     }
