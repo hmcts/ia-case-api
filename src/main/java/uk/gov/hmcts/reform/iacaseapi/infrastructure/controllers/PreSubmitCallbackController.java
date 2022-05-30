@@ -55,23 +55,23 @@ public class PreSubmitCallbackController {
                 @ApiResponse(
                      responseCode = "200",
                      description = "Optional confirmation text for CCD UI",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "400",
                      description = "Bad Request",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "403",
                      description = "Forbidden",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "415",
                      description = "Unsupported Media Type",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "500",
                      description = "Internal Server Error",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class)))
             }
     )
 
@@ -94,23 +94,23 @@ public class PreSubmitCallbackController {
                 @ApiResponse(
                      responseCode = "200",
                      description = "Optional confirmation text for CCD UI",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "400",
                      description = "Bad Request",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "403",
                      description = "Forbidden",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "415",
                      description = "Unsupported Media Type",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "500",
                      description = "Internal Server Error",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class)))
                 }
     )
 
@@ -136,23 +136,23 @@ public class PreSubmitCallbackController {
                 @ApiResponse(
                      responseCode = "200",
                      description = "Optional confirmation text for CCD UI",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "400",
                      description = "Bad Request",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "403",
                      description = "Forbidden",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "415",
                      description = "Unsupported Media Type",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
                 @ApiResponse(
                      responseCode = "500",
                      description = "Internal Server Error",
-                     content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))
+                     content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class)))
                 }
     )
 
