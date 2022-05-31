@@ -10,4 +10,5 @@ public interface UserDetailsHelper {
 
     UserRoleLabel getLoggedInUserRoleLabel(UserDetails userDetails);
 
+    String getIdamUserName(UserDetails userDetails);
 }

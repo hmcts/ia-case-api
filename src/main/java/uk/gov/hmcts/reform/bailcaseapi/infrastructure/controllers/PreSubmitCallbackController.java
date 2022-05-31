@@ -103,6 +103,36 @@ public class PreSubmitCallbackController {
         return performStageRequest(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
     }
 
+    @Operation(
+        summary = "Handles 'MidEventEvent' callbacks from CCD",
+        security = {
+            @SecurityRequirement(name = "Authorization"),
+            @SecurityRequirement(name = "ServiceAuthorization")},
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Transformed Bail case data, with any identified error or warning messages",
+                content = @Content(schema = @Schema(implementation = PreSubmitCallbackResponse.class))),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Bad Request"),
+            @ApiResponse(
+                responseCode = "403",
+                description = "Forbidden"),
+            @ApiResponse(
+                responseCode = "415",
+                description = "Unsupported Media Type"),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Internal Server Error")}
+    )
+
+    @PostMapping(path = "/ccdMidEvent")
+    public ResponseEntity<PreSubmitCallbackResponse<BailCase>> ccdMidEvent(
+        @Parameter(name = "Bail case data", required = true) @NotNull @RequestBody Callback<BailCase> callback
+    ) {
+        return performStageRequest(PreSubmitCallbackStage.MID_EVENT, callback);
+    }
 
     private ResponseEntity<PreSubmitCallbackResponse<BailCase>> performStageRequest(
         PreSubmitCallbackStage callbackStage,
@@ -138,6 +168,5 @@ public class PreSubmitCallbackController {
 
         return ok(callbackResponse);
     }
-
 
 }

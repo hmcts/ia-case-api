@@ -385,7 +385,6 @@ public class UploadDocumentsHandlerTest {
 
         when(bailCase.read(UPLOAD_DOCUMENTS)).thenReturn(Optional.of(homeOfficeDocumentsWithDescriptionList));
 
-
         when(documentReceiver.tryReceive(homeOfficeDocumentBeingUploaded1, DocumentTag.UPLOAD_DOCUMENT))
             .thenReturn(Optional.of(homeOfficeDocumentBeingUploaded1WithMetadata));
 

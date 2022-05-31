@@ -15,7 +15,7 @@ public enum Event {
     SEND_BAIL_DIRECTION("sendBailDirection"),
     MOVE_APPLICATION_TO_DECIDED("moveApplicationToDecided"),
     UPLOAD_DOCUMENTS("uploadDocuments"),
-    EDIT_DOCUMENTS("editDocuments"),
+    EDIT_BAIL_DOCUMENTS("editBailDocuments"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

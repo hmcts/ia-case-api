@@ -17,8 +17,8 @@ public class EventTest {
         assertEquals("addCaseNote", Event.ADD_CASE_NOTE.toString());
         assertEquals("moveApplicationToDecided", Event.MOVE_APPLICATION_TO_DECIDED.toString());
         assertEquals("uploadDocuments", Event.UPLOAD_DOCUMENTS.toString());
-        assertEquals("editDocuments", Event.EDIT_DOCUMENTS.toString());
         assertEquals("sendBailDirection", Event.SEND_BAIL_DIRECTION.toString());
+        assertEquals("editBailDocuments", Event.EDIT_BAIL_DOCUMENTS.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 

@@ -94,4 +94,12 @@ class IdamUserDetailsHelperTest {
 
     }
 
+    @Test
+    public void should_get_idam_username() {
+
+        when(userDetails.getForename()).thenReturn("First name");
+        when(userDetails.getSurname()).thenReturn("Surname");
+
+        assertEquals("First name" + " " + "Surname", idamUserDetailsHelper.getIdamUserName(userDetails));
+    }
 }

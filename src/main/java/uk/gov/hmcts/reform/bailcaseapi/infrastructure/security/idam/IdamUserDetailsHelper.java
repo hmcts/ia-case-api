@@ -43,4 +43,9 @@ public class IdamUserDetailsHelper implements UserDetailsHelper {
                 throw new IllegalStateException("Unauthorized role to make an application");
         }
     }
+
+    @Override
+    public String getIdamUserName(UserDetails userDetails) {
+        return userDetails.getForename() + " " + userDetails.getSurname();
+    }
 }
