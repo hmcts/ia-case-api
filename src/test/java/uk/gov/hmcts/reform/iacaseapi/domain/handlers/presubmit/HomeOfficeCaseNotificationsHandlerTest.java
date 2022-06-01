@@ -624,4 +624,11 @@ class HomeOfficeCaseNotificationsHandlerTest {
             .isExactlyInstanceOf(IllegalStateException.class);
 
     }
+
+    @Test
+    void should_not_send_request_respondent_evidence_notifications_if_state_already_awaiting_respondent_evidence() {
+        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
+        when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class)).thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
+        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+    }
 }

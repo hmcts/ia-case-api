@@ -113,7 +113,15 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-
+            if (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE
+                && asylumCaseWithHomeOfficeData.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).map(
+                    value -> value.equals(State.AWAITING_RESPONDENT_EVIDENCE)).orElse(false)) {
+                log.info("Home Office notification already invoked: awaiting Respondent Evidence - "
+                         + SUPPRESSION_LOG_FIELDS,
+                        callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                        homeOfficeNotificationsEligible);
+                return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
+            }
             if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
                 && homeOfficeNotificationsEligible == YesOrNo.YES) {
 

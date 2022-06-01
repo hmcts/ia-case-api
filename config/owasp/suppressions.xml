@@ -30,28 +30,97 @@
                 ]]></notes>
         <cve>CVE-2020-36518</cve>
     </suppress>
-    <suppress until="2022-05-31">
+    <suppress until="2022-06-30">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
         work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
         work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22950</cve>
     </suppress>
-    <suppress until="2022-05-31">
+    <suppress until="2022-06-30">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22965</cve>
     </suppress >
-    <suppress until="2022-05-31">
+    <suppress until="2022-06-30">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress until="2022-05-31">
+    <suppress until="2022-06-30">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22968</cve>
     </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2021-31684 --- High </notes>
+        <cve>CVE-2020-0187</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679</notes>
+        <cve>CVE-2021-31684</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-25647 --- High </notes>
+        <cve>CVE-2022-25647</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-22971 - Medium </notes>
+        <cve>CVE-2021-22044</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679</notes>
+        <cve>CVE-2022-22971</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-22976</notes>
+        <cve>CVE-2022-22976</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2021-22119 --- High </notes>
+        <cve>CVE-2021-22119</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-22978</notes>
+        <cve>CVE-2022-22978</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2021-22118 --- high </notes>
+        <cve>CVE-2021-22118</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2021-22060 --- Medium </notes>
+        <cve>CVE-2021-22060</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-29885 --- HIGH  </notes>
+        <cve>CVE-2022-29885</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2021-22096 --- Medium </notes>
+        <cve>CVE-2021-22096</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2020-5408 --- Medium </notes>
+        <cve>CVE-2020-5408</cve>
+    </suppress>
+    <suppress until="2022-06-30">
+        <notes>Ticket to Fix these: https://tools.hmcts.net/jira/browse/RIA-5679
+            https://nvd.nist.gov/vuln/detail/CVE-2022-22970 --- HIGH</notes>
+        <cve>CVE-2022-22970</cve>
+    </suppress>
+
 </suppressions>
