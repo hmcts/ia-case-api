@@ -87,10 +87,6 @@ idam:
     password: ${IA_SYSTEM_PASSWORD:system-password}
     scope: "openid profile authorities acr roles create-user manage-user search-user"
 
-azure:
-  application-insights:
-    instrumentation-key: ${rpe.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
-
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
   aboutToSubmitPath: "/bail/ccdAboutToSubmit"

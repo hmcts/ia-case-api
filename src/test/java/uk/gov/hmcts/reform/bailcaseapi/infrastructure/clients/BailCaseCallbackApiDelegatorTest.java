@@ -54,11 +54,21 @@ public class BailCaseCallbackApiDelegatorTest {
 
     @Mock private PostSubmitCallbackResponse postSubmitCallbackResponse;
 
+    private final String secret = "s2s-secret";
+    private final String microService = "micro-service";
+    private final String authUrl = "http://127.0.0.1:4502";
+
+    public BailCaseCallbackApiDelegatorTest() {
+    }
+
     @BeforeEach
     public void setUp() {
         bailCaseCallbackApiDelegator = new BailCaseCallbackApiDelegator(serviceAuthTokenGenerator,
                                                                         accessTokenProvider,
-                                                                        restTemplate
+                                                                        restTemplate,
+                                                                        secret,
+                                                                        microService,
+                                                                        authUrl
         );
     }
 

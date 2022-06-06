@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,19 +25,29 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.AccessTokenProvid
 @Service
 public class BailCaseCallbackApiDelegator {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    private static final Logger LOG = getLogger(BailCaseCallbackApiDelegator.class);
 
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final AccessTokenProvider accessTokenProvider;
     private final RestTemplate restTemplate;
+    private final String secret;
+    private final String microService;
+    private final String authUrl;
 
     public BailCaseCallbackApiDelegator(
         AuthTokenGenerator serviceAuthTokenGenerator,
         AccessTokenProvider accessTokenProvider,
-        RestTemplate restTemplate
+        RestTemplate restTemplate,
+        @Value("${idam.s2s-auth.totp_secret}") String secret,
+        @Value("${idam.s2s-auth.microservice}") String microService,
+        @Value("${idam.s2s-auth.url}") String authUrl
     ) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.accessTokenProvider = accessTokenProvider;
         this.restTemplate = restTemplate;
+        this.secret = secret;
+        this.microService = microService;
+        this.authUrl = authUrl;
     }
 
     public BailCase delegate(
@@ -43,6 +56,7 @@ public class BailCaseCallbackApiDelegator {
     ) {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
+        LOG.info("Secret value: {}, Micro-service: {}, Auth-URL: {} ", secret, microService, authUrl);
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         final String accessToken = accessTokenProvider.getAccessToken();
 
