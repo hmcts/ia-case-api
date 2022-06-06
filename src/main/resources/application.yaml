@@ -29,25 +29,6 @@ management:
       uri: ${S2S_URL:http://127.0.0.1:4502}/health
       response: '"status":"UP"'
 
-feign:
-  hystrix:
-    enabled: true
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
-        loggerLevel: full
-
-
-hystrix:
-  command:
-    default:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 5000
-
 #If you use a database then uncomment below lines and update db properties accordingly
 spring:
   application:
@@ -71,21 +52,14 @@ spring:
     include:
       - hearingcentre-mapping
 
+### dependency configuration
+ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
+core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
+document_management.url: ${DM_URL:http://127.0.0.1:4506}
+idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:BXFBY3ZPZ6HCP4MQ}
+idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:iac}
+idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
-#OpenID
-idam:
-  baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
-  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
-  s2s-auth:
-    totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
-    microservice: ${IA_S2S_MICROSERVICE:ia}
-    url: ${S2S_URL:http://127.0.0.1:4502}
-  s2s-authorised:
-    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
-  ia_system_user:
-    username: ${IA_SYSTEM_USERNAME:system-user}
-    password: ${IA_SYSTEM_PASSWORD:system-password}
-    scope: "openid profile authorities acr roles create-user manage-user search-user"
 
 documentsApi:
   endpoint: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}
@@ -97,13 +71,42 @@ notificationsApi:
   aboutToSubmitPath: "/bail/ccdAboutToSubmit"
   ccdSubmittedPath: "/bail/ccdSubmitted"
 
-### dependency configuration
-ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
-core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}
-document_management.url: ${DM_URL:http://127.0.0.1:4506}
-idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
-idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
-idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+
+
+#OpenID
+idam:
+  baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
+  redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
+  s2s-auth:
+    totp_secret: ${IA_S2S_SECRET:BXFBY3ZPZ6HCP4MQ}
+    microservice: ${IA_S2S_MICROSERVICE:iac}
+    url: ${S2S_URL:http://127.0.0.1:4502}
+  s2s-authorised:
+    services: ${IA_S2S_AUTHORIZED_SERVICES:ccd,ccd_data,ccd_gw,ccd_ps,iac}
+  ia_system_user:
+    username: ${IA_SYSTEM_USERNAME:system-user}
+    password: ${IA_SYSTEM_PASSWORD:system-password}
+    scope: "openid profile authorities acr roles create-user manage-user search-user"
+
 
 prof.ref.data.url: ${PROF_REF_DATA_URL:http://localhost:8991}
 prof.ref.data.path.org.users: ${PROF_REF_DATA_ORG_USERS_PATH:/refdata/external/v1/organisations/users}
