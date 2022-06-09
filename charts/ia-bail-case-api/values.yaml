@@ -1,8 +1,9 @@
 java:
-  applicationPort: 8099
   image: 'hmctspublic.azurecr.io/ia/bail-case-api:latest'
-  ingressHost: ia-bail-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  applicationPort: 8099
+  readinessPath: '/health/readiness'
   aadIdentityName: ia
+  ingressHost: ia-bail-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   environment:
     CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -17,16 +18,25 @@ java:
   keyVaults:
     ia:
       secrets:
-        - docmosis-enabled
-        - em-stitching-enabled
-        - system-username
-        - system-password
-        - idam-client-id
-        - idam-secret
-        - s2s-secret
-        - s2s-microservice
-        - prof-ref-data-url
-        - launch-darkly-sdk-key
-        - AppInsightsInstrumentationKey
-
-
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
