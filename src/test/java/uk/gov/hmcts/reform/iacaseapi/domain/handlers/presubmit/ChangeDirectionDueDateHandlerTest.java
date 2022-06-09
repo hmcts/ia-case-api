@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-//import static com.beust.jcommander.internal.Lists.newArrayList;
+import static com.beust.jcommander.internal.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.ArgumentMatchers.anyString;
-//import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,10 +31,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
-//import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.EditableDirection;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
-//import uk.gov.hmcts.reform.iacaseapi.domain.entities.PreviousDates;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.PreviousDates;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -101,7 +101,7 @@ class ChangeDirectionDueDateHandlerTest {
             new ChangeDirectionDueDateHandler(dateProvider,waFieldsPublisher);
     }
 
-    /*@Test
+    @Test
     void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
 
         List<IdValue<Direction>> existingDirections =
@@ -125,8 +125,7 @@ class ChangeDirectionDueDateHandlerTest {
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    new ArrayList<>(),
-                    //    new ArrayList<IdValue<PreviousDates>>((Collection<? extends IdValue<PreviousDates>>) new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                        newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
                     Collections.emptyList(),
                     UUID.randomUUID().toString(),
                     "directionType2"
@@ -191,7 +190,7 @@ class ChangeDirectionDueDateHandlerTest {
         assertEquals("2018-03-01",
             actualDirections.get(1).getValue().getPreviousDates().get(1).getValue().getDateSent());
     }
-*/
+
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 

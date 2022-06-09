@@ -18,6 +18,21 @@
         <cve>CVE-2021-28170</cve>
      </suppress>
     <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://tanzu.vmware.com/security/cve-2022-22976
+                 When using the BCrypt class with the maximum work factor (31), the encoder does not perform any salt rounds, due to an integer overflow error
+                 The default settings are not affected by this CVE.
+                ]]></notes>
+        <cve>CVE-2022-22976</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22970
+                 Latest Version of spring-retry, still has the CVE
+                ]]></notes>
+        <cve>CVE-2022-22970</cve>
+    </suppress>
+    <suppress until="2030-01-01">
         <cve>CVE-2022-23305</cve>
         <cve>CVE-2022-23302</cve>
         <cve>CVE-2022-22968</cve>
