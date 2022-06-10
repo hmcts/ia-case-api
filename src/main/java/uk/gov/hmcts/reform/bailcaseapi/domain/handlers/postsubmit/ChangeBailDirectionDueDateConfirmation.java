@@ -7,12 +7,15 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
-public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandler<BailCase> {
+public class ChangeBailDirectionDueDateConfirmation implements PostSubmitCallbackHandler<BailCase> {
 
     @Override
     public boolean canHandle(Callback<BailCase> callback) {
-        return (callback.getEvent() == Event.START_APPLICATION);
+        requireNonNull(callback, "callback must not be null");
+        return (callback.getEvent() == Event.CHANGE_BAIL_DIRECTION_DUE_DATE);
     }
 
     @Override
@@ -25,15 +28,14 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
             new PostSubmitCallbackResponse();
 
         postSubmitResponse.setConfirmationBody(
-            "### Do this next\n\n"
-                    + "Review and [edit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/editBailApplication) if necessary. [Submit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/submitApplication) when you’re ready."
+            "### What happens next\n\n"
+                + "All parties will be notified that the direction due date has changed. "
+                + "You can see the status of the direction in the [directions tab](/case/IA/Bail/"
+                + callback.getCaseDetails().getId()
+                + "#Direction)."
         );
 
-        postSubmitResponse.setConfirmationHeader("# You have saved this application");
+        postSubmitResponse.setConfirmationHeader("# You have changed the direction due date");
 
         return postSubmitResponse;
     }

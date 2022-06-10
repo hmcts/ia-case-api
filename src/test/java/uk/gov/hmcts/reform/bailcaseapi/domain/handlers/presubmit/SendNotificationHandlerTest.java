@@ -108,7 +108,8 @@ class SendNotificationHandlerTest {
                         Event.END_APPLICATION,
                         Event.UPLOAD_DOCUMENTS,
                         Event.SEND_BAIL_DIRECTION,
-                        Event.EDIT_BAIL_DOCUMENTS
+                        Event.EDIT_BAIL_DOCUMENTS,
+                        Event.CHANGE_BAIL_DIRECTION_DUE_DATE
                     ).contains(event)) {
 
                     assertTrue(canHandle);

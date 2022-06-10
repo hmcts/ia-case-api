@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCa
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandler<BailCase> {
+public class EditBailApplicationConfirmation implements PostSubmitCallbackHandler<BailCase> {
 
     @Override
     public boolean canHandle(Callback<BailCase> callback) {
-        return (callback.getEvent() == Event.START_APPLICATION);
+        return (callback.getEvent() == Event.EDIT_BAIL_APPLICATION);
     }
 
     @Override
@@ -26,15 +26,17 @@ public class BailApplicationSavedConfirmation implements PostSubmitCallbackHandl
 
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-                    + "Review and [edit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/editBailApplication) if necessary. [Submit the application](/case/IA/Bail/"
-                    + callback.getCaseDetails().getId()
-                    + "/trigger/submitApplication) when you’re ready."
+            + "You still need to [submit the application](/case/IA/Bail/"
+            + callback.getCaseDetails().getId()
+            + "/trigger/submitApplication). If you need to make further changes you can [edit the application]"
+            + "(/case/IA/Bail/"
+            + callback.getCaseDetails().getId()
+            + "/trigger/editBailApplication)."
         );
 
-        postSubmitResponse.setConfirmationHeader("# You have saved this application");
+        postSubmitResponse.setConfirmationHeader("# Your application details have been updated");
 
         return postSubmitResponse;
     }
+
 }

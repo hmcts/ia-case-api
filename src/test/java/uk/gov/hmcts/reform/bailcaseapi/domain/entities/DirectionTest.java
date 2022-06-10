@@ -7,6 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
+
+import java.util.Collections;
+import java.util.List;
+
+
 class DirectionTest {
 
     private final String sendDirectionDescription = "some-description";
@@ -15,6 +21,8 @@ class DirectionTest {
     private final String sendDirectionList = "Applicant";
     private final String dateTimeDirectionCreated = "2022-05-25T10:00:00Z";
     private final String dateTimeDirectionModified = "2022-05-25T15:00:00Z";
+    private List<IdValue<PreviousDates>> previousDates = Collections.emptyList();
+
 
     private Direction direction;
 
@@ -26,7 +34,8 @@ class DirectionTest {
             dateOfCompliance,
             dateSent,
             dateTimeDirectionCreated,
-            dateTimeDirectionModified
+            dateTimeDirectionModified,
+            previousDates
         );
     }
 
@@ -39,27 +48,32 @@ class DirectionTest {
         assertThat(direction.getDateSent()).isEqualTo(dateSent);
         assertThat(direction.getDateTimeDirectionCreated()).isEqualTo(dateTimeDirectionCreated);
         assertThat(direction.getDateTimeDirectionModified()).isEqualTo(dateTimeDirectionModified);
+        assertThat(direction.getPreviousDates()).isEqualTo(previousDates);
+
     }
 
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> new Direction(null, "", "", "", "", ""))
+        assertThatThrownBy(() -> new Direction(null, "", "", "", "", "", previousDates))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction("", null, "", "", "", ""))
+        assertThatThrownBy(() -> new Direction("", null, "", "", "", "", previousDates))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction("", "", null, "", "", ""))
+        assertThatThrownBy(() -> new Direction("", "", null, "", "", "", previousDates))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction("", "", "", null, "", ""))
+        assertThatThrownBy(() -> new Direction("", "", "", null, "", "", previousDates))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> new Direction("", "", "", "", null, ""))
+        assertThatThrownBy(() -> new Direction("", "", "", "", null, "", previousDates))
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertDoesNotThrow(() -> new Direction("", "", "", "", "", null));
+        assertDoesNotThrow(() -> new Direction("", "", "", "", "", null, previousDates));
+
+        assertThatThrownBy(() -> new Direction("", "", "", "", "", "", null))
+            .isExactlyInstanceOf(NullPointerException.class);
     }
 
 }

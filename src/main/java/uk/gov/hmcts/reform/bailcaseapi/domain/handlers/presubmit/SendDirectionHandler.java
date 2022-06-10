@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event.SEND_BAIL_DIRECTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -84,8 +85,9 @@ public class SendDirectionHandler implements PreSubmitCallbackHandler<BailCase> 
             dateOfCompliance,
             now.toString(),
             dateProvider.nowWithTime().toString(),
-            null
-        );
+            null,
+            Collections.emptyList()
+            );
 
         List<IdValue<Direction>> allDirections =
             directionAppender.append(newDirection, maybeExistingDirections.orElse(emptyList()));
