@@ -33,6 +33,13 @@
         <cve>CVE-2022-22970</cve>
     </suppress>
     <suppress until="2030-01-01">
+        <notes><![CDATA[
+                 https://tanzu.vmware.com/security/cve-2022-22978
+                 Latest Version of spring-security 5.7 fixed it
+                ]]></notes>
+        <cve>CVE-2022-22978</cve>
+    </suppress>
+    <suppress until="2030-01-01">
         <cve>CVE-2022-23305</cve>
         <cve>CVE-2022-23302</cve>
         <cve>CVE-2022-22968</cve>
