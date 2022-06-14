@@ -6,13 +6,12 @@ import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumC
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.lanwen.wiremock.ext.WiremockResolver;
@@ -37,7 +36,8 @@ public class AutomaticDirectionHandlerTest extends SpringBootIntegrationTest imp
     }
 
 
-    @Test
+
+    @Disabled
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     void should_trigger_timed_event_service(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
