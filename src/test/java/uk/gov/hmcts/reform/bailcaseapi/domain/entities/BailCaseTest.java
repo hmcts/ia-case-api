@@ -47,4 +47,26 @@ public class BailCaseTest {
 
         assertThat(bailCase.read(BailCaseFieldDefinition.IS_ADMIN, String.class)).isEmpty();
     }
+
+    @Test
+    void remove_entry_by_bail_case_def() throws IOException {
+
+        String caseData = "{\"applicantFamilyName\":\"Doe\"}";
+        BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
+
+        bailCase.remove(BailCaseFieldDefinition.APPLICANT_FAMILY_NAME);
+
+        assertThat(bailCase.read(BailCaseFieldDefinition.APPLICANT_FAMILY_NAME, String.class)).isEmpty();
+    }
+
+    @Test
+    void remove_entry_by_key_string() throws IOException {
+
+        String caseData = "{\"applicantMobileNumber\":\"01234567891\"}";
+        BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
+
+        bailCase.removeByString("applicantMobileNumber");
+
+        assertThat(bailCase.read(BailCaseFieldDefinition.APPLICANT_MOBILE_NUMBER, String.class)).isEmpty();
+    }
 }

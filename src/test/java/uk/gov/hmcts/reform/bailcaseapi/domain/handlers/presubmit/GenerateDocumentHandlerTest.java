@@ -58,7 +58,8 @@ public class GenerateDocumentHandlerTest {
                 if (stage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && Arrays.asList(
                     Event.SUBMIT_APPLICATION,
                     Event.RECORD_THE_DECISION,
-                    Event.END_APPLICATION
+                    Event.END_APPLICATION,
+                    Event.MAKE_NEW_APPLICATION
                 ).contains(event)) {
                     assertTrue(canHandle);
                 } else {
@@ -152,6 +153,22 @@ public class GenerateDocumentHandlerTest {
     public void should_handle_generate_document_end_application() {
         BailCase expectedBailCase = mock(BailCase.class);
         when(callback.getEvent()).thenReturn(Event.END_APPLICATION);
+        when(documentGenerator.generate(callback)).thenReturn(expectedBailCase);
+
+        PreSubmitCallbackResponse response = generateDocumentHandler.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        assertNotNull(response);
+        assertEquals(expectedBailCase, response.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+    }
+
+    @Test
+    public void should_handle_generate_document_make_new_application() {
+        BailCase expectedBailCase = mock(BailCase.class);
+        when(callback.getEvent()).thenReturn(Event.MAKE_NEW_APPLICATION);
         when(documentGenerator.generate(callback)).thenReturn(expectedBailCase);
 
         PreSubmitCallbackResponse response = generateDocumentHandler.handle(

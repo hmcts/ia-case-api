@@ -5,14 +5,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IRC_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -60,9 +59,13 @@ class DeriveHearingCentreHandlerTest {
     }
 
     @Test
+    void set_to_latest() {
+        assertThat(deriveHearingCentreHandler.getDispatchPriority()).isEqualTo(LATEST);
+    }
+
+    @Test
     void should_derive_hearing_centre_from_detention_facility_name_from_prison() {
 
-        when(bailCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
         when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.of("Garth"));
         when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.empty());
         when(hearingCentreFinder.find("Garth")).thenReturn(HearingCentre.MANCHESTER);
@@ -81,7 +84,6 @@ class DeriveHearingCentreHandlerTest {
     @Test
     void should_derive_hearing_centre_from_detention_facility_name_from_irc() {
 
-        when(bailCase.read(HEARING_CENTRE, HearingCentre.class)).thenReturn(Optional.empty());
         when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
         when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
         when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
@@ -98,9 +100,11 @@ class DeriveHearingCentreHandlerTest {
     }
 
     @Test
-    void should_not_set_hearing_centre_if_already_assigned_value() {
+    void should_set_hearing_centre_if_already_assigned_value() {
         final HearingCentre existingHearingCentre = HearingCentre.TAYLOR_HOUSE;
 
+        when(bailCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
+        when(bailCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
         when(bailCase.read(HEARING_CENTRE)).thenReturn(Optional.of(existingHearingCentre));
         when(hearingCentreFinder.find("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
 
@@ -110,7 +114,7 @@ class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getData()).isNotEmpty();
         assertThat(callbackResponse.getData()).isEqualTo(bailCase);
-        verify(bailCase, never()).write(any(), any());
+        verify(bailCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
     }
 
     @Test
@@ -132,7 +136,11 @@ class DeriveHearingCentreHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = deriveHearingCentreHandler.canHandle(callbackStage, callback);
-                if (callbackStage == ABOUT_TO_SUBMIT && (callback.getEvent() == Event.START_APPLICATION)) {
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && (callback.getEvent() == Event.START_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+                        || callback.getEvent() == Event.MAKE_NEW_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

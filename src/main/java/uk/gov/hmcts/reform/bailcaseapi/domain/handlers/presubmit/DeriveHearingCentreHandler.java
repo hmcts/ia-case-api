@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -25,12 +26,20 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Bail
         this.hearingCentreFinder = hearingCentreFinder;
     }
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
+    }
+
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<BailCase> callback) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPLICATION;
+               && (callback.getEvent() == Event.START_APPLICATION
+                   || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+                   || callback.getEvent() == Event.MAKE_NEW_APPLICATION
+                   || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT);
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(PreSubmitCallbackStage callbackStage,
@@ -41,10 +50,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Bail
 
         final BailCase bailCase = callback.getCaseDetails().getCaseData();
 
-        if (bailCase.read(HEARING_CENTRE).isEmpty()) {
-
-            setHearingCentreFromDetentionFacilityName(bailCase);
-        }
+        setHearingCentreFromDetentionFacilityName(bailCase);
 
         return new PreSubmitCallbackResponse<>(bailCase);
     }

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 import java.util.Collections;
 import java.util.List;
 
-
 class DirectionTest {
 
     private final String sendDirectionDescription = "some-description";

@@ -13,11 +13,9 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_BAIL_APPLICATION_NUMBER;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_DONE_VIA_ARIA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_DONE_VIA_CCD;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE;
 
 import java.util.Optional;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -43,11 +41,6 @@ public class CaseInferenceByBailNumberHandlerTest {
 
     private CaseInferenceByBailNumberHandler caseInferenceByBailNumberHandler = new CaseInferenceByBailNumberHandler();
 
-    @BeforeEach
-    void setup() {
-
-    }
-
     @Test
     void should_infer_bail_case_from_application_number() {
         String bailCaseReferenceNumber = "1111222233334444";
@@ -55,6 +48,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
             .thenReturn(Optional.of("yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
@@ -63,7 +57,6 @@ public class CaseInferenceByBailNumberHandlerTest {
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             caseInferenceByBailNumberHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(bailCase, times(1)).write(PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE, bailCaseReferenceNumber);
         verify(bailCase, times(1)).write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.YES);
         verify(bailCase, times(1)).write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.NO);
 
@@ -77,6 +70,8 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
+
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
             .thenReturn(Optional.of("yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
@@ -85,7 +80,6 @@ public class CaseInferenceByBailNumberHandlerTest {
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             caseInferenceByBailNumberHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(bailCase, never()).write(PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE, ariaCaseReferenceNumber);
         verify(bailCase, times(1)).write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.NO);
         verify(bailCase, times(1)).write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.YES);
 
@@ -99,6 +93,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
             .thenReturn(Optional.of("yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
@@ -107,7 +102,6 @@ public class CaseInferenceByBailNumberHandlerTest {
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             caseInferenceByBailNumberHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
-        verify(bailCase, never()).write(PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE, wrongCaseReferenceNumber);
         verify(bailCase, never()).write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.NO);
         verify(bailCase,  never()).write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.YES);
 
@@ -133,6 +127,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
 
         caseInferenceByBailNumberHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
@@ -146,13 +141,16 @@ public class CaseInferenceByBailNumberHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = caseInferenceByBailNumberHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT
-                    && callback.getEvent() == Event.START_APPLICATION) {
+                    && (callback.getEvent() == Event.START_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION)
+                    && callback.getPageId().equals(HAS_PREVIOUS_BAIL_APPLICATION.value())) {
 
                     assertTrue(canHandle);
                 } else {

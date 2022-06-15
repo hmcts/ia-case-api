@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.Arrays;
 import java.util.List;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
@@ -17,8 +19,8 @@ public enum BailCaseFieldDefinition {
         "previousApplicationDoneViaAria", new TypeReference<YesOrNo>() {}),
     PREVIOUS_APPLICATION_DONE_VIA_CCD(
         "previousApplicationDoneViaCcd", new TypeReference<YesOrNo>() {}),
-    PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE(
-        "previousApplicationScanCaseReference", new TypeReference<String>() {}),
+    REDIRECT_TO_PREVIOUS_APPLICATION_OR_NOC(
+        "redirectToPreviousApplicationOrNoc", new TypeReference<String>() {}),
     APPLICATION_SENT_BY(
         "sentByChecklist", new TypeReference<String>() {}),
     IS_ADMIN(
@@ -88,7 +90,7 @@ public enum BailCaseFieldDefinition {
     FINANCIAL_COND_AMOUNT(
         "financialCondAmount", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER(
-        "hasFinancialCondSupporter", new TypeReference<String>(){}),
+        "hasFinancialCondSupporter", new TypeReference<YesOrNo>(){}),
     SUPPORTER_GIVEN_NAMES(
         "supporterGivenNames", new TypeReference<String>(){}),
     SUPPORTER_FAMILY_NAMES(
@@ -120,7 +122,7 @@ public enum BailCaseFieldDefinition {
     FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES(
         "financialAmountSupporterUndertakes", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_2(
-        "hasFinancialCondSupporter2", new TypeReference<String>(){}),
+        "hasFinancialCondSupporter2", new TypeReference<YesOrNo>(){}),
     SUPPORTER_2_GIVEN_NAMES(
         "supporter2GivenNames", new TypeReference<String>(){}),
     SUPPORTER_2_FAMILY_NAMES(
@@ -152,7 +154,7 @@ public enum BailCaseFieldDefinition {
     FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES(
         "financialAmountSupporter2Undertakes", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_3(
-        "hasFinancialCondSupporter3", new TypeReference<String>(){}),
+        "hasFinancialCondSupporter3", new TypeReference<YesOrNo>(){}),
     SUPPORTER_3_GIVEN_NAMES(
         "supporter3GivenNames", new TypeReference<String>(){}),
     SUPPORTER_3_FAMILY_NAMES(
@@ -162,7 +164,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_3_CONTACT_DETAILS(
         "supporter3ContactDetails", new TypeReference<String>(){}),
     SUPPORTER_3_TELEPHONE_NUMBER(
-        "supporter2TelephoneNumber", new TypeReference<String>(){}),
+        "supporter3TelephoneNumber", new TypeReference<String>(){}),
     SUPPORTER_3_MOBILE_NUMBER(
         "supporter3MobileNumber", new TypeReference<String>(){}),
     SUPPORTER_3_EMAIL_ADDRESS(
@@ -184,7 +186,7 @@ public enum BailCaseFieldDefinition {
     FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES(
         "financialAmountSupporter3Undertakes", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_4(
-        "hasFinancialCondSupporter4", new TypeReference<String>(){}),
+        "hasFinancialCondSupporter4", new TypeReference<YesOrNo>(){}),
     SUPPORTER_4_GIVEN_NAMES(
         "supporter4GivenNames", new TypeReference<String>(){}),
     SUPPORTER_4_FAMILY_NAMES(
@@ -334,7 +336,7 @@ public enum BailCaseFieldDefinition {
     REASON_FOR_REFUSAL_DETAILS(
         "reasonForRefusalDetails", new TypeReference<String>(){}),
     TRIBUNAL_REFUSAL_REASON(
-        "tribunalRefusalReason ", new TypeReference<String>(){}),
+        "tribunalRefusalReason", new TypeReference<String>(){}),
     REASON_JUDGE_IS_MINDED_DETAILS(
         "reasonsJudgeIsMindedDetails", new TypeReference<String>(){}),
     JUDGE_DETAILS_NAME(
@@ -371,6 +373,18 @@ public enum BailCaseFieldDefinition {
         "currentUser", new TypeReference<String>(){}),
     EDIT_DOCUMENTS_REASON(
         "editDocumentsReason", new TypeReference<String>(){}),
+    OUTCOME_STATE(
+        "outcomeState", new TypeReference<String>(){}),
+    OUTCOME_DATE(
+        "outcomeDate", new TypeReference<String>(){}),
+    PRIOR_APPLICATIONS(
+        "priorApplications1", new TypeReference<List<IdValue<PriorApplication>>>(){}),
+    NOTIFICATIONS_SENT(
+        "notificationsSent", new TypeReference<List<IdValue<String>>>() {}),
+    DECLARATION_ON_SUBMIT(
+        "declarationOnSubmit", new TypeReference<List<String>>(){}),
+    SUBMIT_NOTIFICATION_STATUS(
+        "submitNotificationStatus", new TypeReference<String>() {}),
     ;
 
 
@@ -388,5 +402,14 @@ public enum BailCaseFieldDefinition {
 
     public TypeReference getTypeReference() {
         return typeReference;
+    }
+
+    public static BailCaseFieldDefinition getEnumFromString(String stringToGet) {
+
+        return Arrays.stream(BailCaseFieldDefinition.values())
+            .filter(ccd -> ccd.value.equals(stringToGet))
+            .findFirst().orElseThrow(
+                () -> new IllegalArgumentException("No BailCaseFieldDefinition found with the value: " + stringToGet)
+            );
     }
 }

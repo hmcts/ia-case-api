@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +35,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
@@ -81,6 +85,11 @@ class UploadBailEvidenceDocumentHandlerTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+    }
+
+    @Test
+    void should_be_handled_at_latest_point() {
+        assertEquals(DispatchPriority.LATEST, uploadBailEvidenceDocumentHandler.getDispatchPriority());
     }
 
     @Test
@@ -177,6 +186,26 @@ class UploadBailEvidenceDocumentHandlerTest {
             .handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertEquals(bailCase, response.getData());
+    }
+
+    @Test
+    public void should_only_handle_valid_event_state() {
+        for (Event event: Event.values()) {
+            when(callback.getEvent()).thenReturn(event);
+            for (PreSubmitCallbackStage stage: PreSubmitCallbackStage.values()) {
+                boolean canHandle = uploadBailEvidenceDocumentHandler.canHandle(stage, callback);
+                if (stage.equals(PreSubmitCallbackStage.ABOUT_TO_SUBMIT) && Arrays.asList(
+                    Event.SUBMIT_APPLICATION,
+                    Event.MAKE_NEW_APPLICATION,
+                    Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
+                ).contains(event)) {
+                    assertTrue(canHandle);
+                } else {
+                    assertFalse(canHandle);
+                }
+            }
+            reset(callback);
+        }
     }
 
     @Test

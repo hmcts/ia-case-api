@@ -5,7 +5,6 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_DONE_VIA_ARIA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_DONE_VIA_CCD;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_PREVIOUS_BAIL_APPLICATION;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -33,7 +32,9 @@ public class CaseInferenceByBailNumberHandler implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.START_APPLICATION;
+               && (callback.getEvent() == Event.START_APPLICATION
+               || callback.getEvent() == Event.EDIT_BAIL_APPLICATION)
+               && callback.getPageId().equals(HAS_PREVIOUS_BAIL_APPLICATION.value());
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(
@@ -58,7 +59,6 @@ public class CaseInferenceByBailNumberHandler implements PreSubmitCallbackHandle
             if (bailReferenceNumber.matches("[0-9]{16}")) {
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.YES);
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.NO);
-                bailCase.write(PREVIOUS_APPLICATION_SCAN_CASE_REFERENCE, bailReferenceNumber);
             } else if (bailReferenceNumber.matches("[a-zA-Z]{2}\\/[0-9]{5}")) {
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.NO);
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.YES);

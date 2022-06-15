@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -46,10 +48,11 @@ class CompanyNameProviderTest {
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationResponse);
     }
 
-    @Test
-    void should_write_to_bail_case_field_for_start_application_event() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"START_APPLICATION", "MAKE_NEW_APPLICATION"})
+    void should_write_to_bail_case_field_for_start_application_event(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+        when(callback.getEvent()).thenReturn(event);
         when(organisationResponse.getOrganisationIdentifier()).thenReturn(organisationIdentifier);
         when(organisationResponse.getName()).thenReturn(organisationName);
 

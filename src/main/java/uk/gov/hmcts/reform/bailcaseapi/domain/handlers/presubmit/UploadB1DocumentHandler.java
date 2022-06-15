@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
@@ -36,6 +37,11 @@ public class UploadB1DocumentHandler implements PreSubmitCallbackHandler<BailCas
         this.documentsAppender = documentsAppender;
     }
 
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
+    }
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<BailCase> callback
@@ -44,7 +50,9 @@ public class UploadB1DocumentHandler implements PreSubmitCallbackHandler<BailCas
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.SUBMIT_APPLICATION;
+            && (callback.getEvent() == Event.SUBMIT_APPLICATION
+            || callback.getEvent() == Event.MAKE_NEW_APPLICATION
+            || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT);
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(

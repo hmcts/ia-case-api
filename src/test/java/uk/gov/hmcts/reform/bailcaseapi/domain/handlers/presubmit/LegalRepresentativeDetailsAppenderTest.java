@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -113,7 +114,10 @@ class LegalRepresentativeDetailsAppenderTest {
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = legalRepresentativeDetailsAppender.canHandle(callbackStage, callback);
                 if (callbackStage == ABOUT_TO_START
-                    && (callback.getEvent() == Event.START_APPLICATION)) {
+                        && (callback.getEvent() == Event.START_APPLICATION
+                            || callback.getEvent() == Event.MAKE_NEW_APPLICATION)
+                    || callbackStage == ABOUT_TO_SUBMIT
+                        && callback.getEvent() == Event.MAKE_NEW_APPLICATION) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

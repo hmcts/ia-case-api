@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_NATIONALITIES;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_NATIONALITY;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,8 +75,11 @@ public class StatelessHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = statelessHandler.canHandle(callbackStage, callback);
-
-                if (event == Event.START_APPLICATION && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && (callback.getEvent() == Event.START_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+                        || callback.getEvent() == Event.MAKE_NEW_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

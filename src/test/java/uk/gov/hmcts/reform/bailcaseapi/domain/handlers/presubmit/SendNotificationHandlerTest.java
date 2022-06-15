@@ -49,7 +49,8 @@ class SendNotificationHandlerTest {
 
         Arrays.asList(
             Event.SUBMIT_APPLICATION,
-            Event.UPLOAD_BAIL_SUMMARY
+            Event.UPLOAD_BAIL_SUMMARY,
+            Event.MAKE_NEW_APPLICATION
         ).forEach(event -> {
 
             BailCase expectedUpdatedCase = mock(BailCase.class);
@@ -109,7 +110,9 @@ class SendNotificationHandlerTest {
                         Event.UPLOAD_DOCUMENTS,
                         Event.SEND_BAIL_DIRECTION,
                         Event.EDIT_BAIL_DOCUMENTS,
-                        Event.CHANGE_BAIL_DIRECTION_DUE_DATE
+                        Event.CHANGE_BAIL_DIRECTION_DUE_DATE,
+                        Event.MAKE_NEW_APPLICATION,
+                        Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
                     ).contains(event)) {
 
                     assertTrue(canHandle);

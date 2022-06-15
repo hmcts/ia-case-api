@@ -43,7 +43,7 @@ public class CompanyNameProvider {
             String organisationName = organisationEntityResponse.getName() == null
                 ? "" : organisationEntityResponse.getName();
 
-            if (callback.getEvent() == Event.START_APPLICATION) {
+            if (callback.getEvent() == Event.START_APPLICATION || callback.getEvent() == Event.MAKE_NEW_APPLICATION) {
                 bailCase.write(LEGAL_REP_COMPANY, organisationName);
             }
         }
