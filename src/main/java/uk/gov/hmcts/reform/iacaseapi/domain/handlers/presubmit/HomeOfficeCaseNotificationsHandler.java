@@ -32,6 +32,9 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                                                          + "homeOfficeNotificationsEligible: {} ";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
+    private Boolean notificationSent = false;
+    private int retryCounter = 0;
+    private Long caseIdNotified;
 
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
@@ -40,6 +43,13 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
         this.featureToggler = featureToggler;
         this.homeOfficeApi = homeOfficeApi;
+    }
+
+    public void resetRetry(){
+        if (retryCounter == 3) {
+            retryCounter = 0;
+            notificationSent = false;
+        }
     }
 
     public boolean canHandle(
@@ -84,6 +94,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+        retryCounter = retryCounter + 1;
+        resetRetry();
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -113,9 +125,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-            if (callback.getEvent() == Event.REQUEST_RESPONDENT_EVIDENCE
-                && asylumCaseWithHomeOfficeData.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).map(
-                    value -> value.equals(State.AWAITING_RESPONDENT_EVIDENCE)).orElse(false)) {
+            if (Boolean.TRUE.equals(notificationSent) && caseIdNotified == caseId) {
                 log.info("Home Office notification already invoked: awaiting Respondent Evidence - "
                          + SUPPRESSION_LOG_FIELDS,
                         callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
@@ -134,6 +144,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
+                caseIdNotified = caseId;
+                notificationSent = true;
             } else {
 
                 log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
