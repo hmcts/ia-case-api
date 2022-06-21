@@ -6,13 +6,13 @@ buildscript {
 }
 
 plugins {
-  id 'au.com.dius.pact' version '4.1.0'
+  id 'au.com.dius.pact' version '4.1.7'
   id 'application'
   id 'checkstyle'
   id 'com.github.ben-manes.versions' version '0.42.0'
-  id "info.solidsoft.pitest" version '1.5.1'
+  id "info.solidsoft.pitest" version '1.5.2'
   id "io.freefair.lombok" version "5.3.0"
-  id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'jacoco'
   id 'org.flywaydb.flyway' version '5.2.4'
   id 'org.owasp.dependencycheck' version '6.5.3'
@@ -28,16 +28,17 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-  jackson            : '2.13.2',
-  jacksonAnnotation  : '2.13.2',
-  jacksonDatabind    : '2.13.2.2',
-  junit              : '5.6.2',
-  junitPlatform      : '1.6.2',
+  jackson            : '2.13.3',
+  jacksonAnnotation  : '2.13.3',
+  jacksonDatabind    : '2.13.3',
+  junit              : '5.7.0',
+  junitPlatform      : '1.7.2',
   pitest             : '1.5.2',
   reformLogging      : '5.1.7',
   reformHealthStarter: '0.0.5',
   serenity           : '3.1.20',
-  springBoot         : '2.6.7',
+  springBoot         : '2.7.0',
+  springSecurity     : '5.7.1',
   springDoc          : '1.6.8',
   springHystrix      : '2.2.10.RELEASE',
   pact_version       : '4.1.7'
@@ -119,6 +120,7 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
+
 configurations {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
@@ -172,6 +174,14 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+task contract(type: Test, description: 'Runs the pact contract tests.', group: 'Verification') {
+  description = "Runs the consumer Pact tests"
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+
 }
 
 project.ext {
@@ -235,7 +245,7 @@ dependencyManagement {
   dependencies {
     // CVE-2019-0232, CVE-2019-0199 - command line injections on windows
     //CVE-2020-13934
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.58') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.63') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -256,7 +266,7 @@ dependencyManagement {
     }
 
     //CVE-2021-22060
-    dependencySet(group: 'org.springframework', version: '5.3.19') {
+    dependencySet(group: 'org.springframework', version: '5.3.20') {
       entry 'spring-aop'
       entry 'spring-beans'
       entry 'spring-context'
@@ -268,45 +278,33 @@ dependencyManagement {
       entry 'spring-webmvc'
     }
 
-    dependencySet(group: 'org.springframework.security', version: '5.6.3') {
-      entry 'spring-security-crypto'
+    dependencySet(group: 'org.springframework.security', version: '5.7.1') {
       entry 'spring-security-core'
+      entry 'spring-security-crypto'
     }
   }
 }
 
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
-//  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
-//  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
-//  compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
-
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-//  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
-//  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
 
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
   compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
   compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.9.0'
 
-//  compile group: 'com.github.hmcts.java-logging', name: 'logging', version: reformLoggingVersion
-//  compile group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: reformLoggingVersion
-
-//  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4JVersion
-//  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
   compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -332,11 +330,11 @@ dependencies {
   contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
-  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
-  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
+  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
+  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
-  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
@@ -363,6 +361,9 @@ dependencies {
 
   smokeTestCompile sourceSets.main.runtimeClasspath
   smokeTestCompile sourceSets.test.runtimeClasspath
+
+  contractTestCompile sourceSets.main.runtimeClasspath
+  contractTestCompile sourceSets.test.runtimeClasspath
 }
 
 task runAndPublishConsumerPactTests(type: Test) {
@@ -373,6 +374,7 @@ task runAndPublishConsumerPactTests(type: Test) {
 }
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 
 pact {
   broker {
