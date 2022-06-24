@@ -150,8 +150,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                "[pay for and submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
 
         assertThat(
@@ -286,8 +286,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                "[pay for and submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
 
         assertThat(
@@ -389,8 +389,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
+                "[pay for and submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
