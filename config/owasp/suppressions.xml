@@ -12,51 +12,46 @@
     </suppress>
     <suppress until="2030-01-01">
         <notes><![CDATA[
-                 https://nvd.nist.gov/vuln/detail/CVE-2021-28170
-                 Spring Framework vulnerability, subject to review after Spring Boot upgrade to 2.4.x affected lib org.glassfish:jakarta.el:3.0.3
-                ]]></notes>
-        <cve>CVE-2021-28170</cve>
-     </suppress>
+                incorrectly tagging spring-security-crypto, Affects versions prior to 5.3.2
+                ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.+?$</packageUrl>
+        <cve>CVE-2020-5408</cve>
+    </suppress>
     <suppress until="2030-01-01">
         <notes><![CDATA[
-                 https://tanzu.vmware.com/security/cve-2022-22976
-                 When using the BCrypt class with the maximum work factor (31), the encoder does not perform any salt rounds, due to an integer overflow error
-                 The default settings are not affected by this CVE.
-                ]]></notes>
+                incorrectly tagging spring-security-rsa as spring-security
+                ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.+$</packageUrl>
         <cve>CVE-2022-22976</cve>
-    </suppress>
-    <suppress until="2030-01-01">
-        <notes><![CDATA[
-                 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22970
-                 Latest Version of spring-retry, still has the CVE
-                ]]></notes>
-        <cve>CVE-2022-22970</cve>
-    </suppress>
-    <suppress until="2030-01-01">
-        <notes><![CDATA[
-                 https://tanzu.vmware.com/security/cve-2022-22978
-                 Latest Version of spring-security 5.7 fixed it
-                ]]></notes>
         <cve>CVE-2022-22978</cve>
     </suppress>
     <suppress until="2030-01-01">
-        <cve>CVE-2022-23305</cve>
-        <cve>CVE-2022-23302</cve>
-        <cve>CVE-2022-22968</cve>
-        <cve>CVE-2022-22965</cve>
-        <cve>CVE-2021-4104</cve>
-        <cve>CVE-2019-17571</cve>
-        <cve>CVE-2020-5408</cve>
+        <notes><![CDATA[
+            incorrectly tagging spring-boot-starter-security as spring-security
+            ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-security@.+$</packageUrl>
+        <cve>CVE-2022-22976</cve>
+        <cve>CVE-2022-22978</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+            All related to spring retry, most of the them has base score as NA
+            ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.retry/spring\-retry@.+$</packageUrl>
         <cve>CVE-2013-4152</cve>
         <cve>CVE-2013-7315</cve>
         <cve>CVE-2014-0054</cve>
-    </suppress>
-
-    <suppress>
         <cve>CVE-2018-11039</cve>
         <cve>CVE-2018-11040</cve>
         <cve>CVE-2018-1257</cve>
         <cve>CVE-2020-5421</cve>
         <cve>CVE-2022-22950</cve>
+        <cve>CVE-2022-22965</cve>
+        <cve>CVE-2022-22968</cve>
+        <cve>CVE-2022-22970</cve>
     </suppress>
 </suppressions>
