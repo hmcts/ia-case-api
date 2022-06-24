@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.serenitybdd.rest.SerenityRest;
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,8 +47,7 @@ public class DataFixingTest {
         RestAssured.useRelaxedHTTPSValidation();
     }
 
-    //@Test
-    @Disabled
+    @Test
     public void corrects_field_names() throws Exception {
 
         Map<String, Object> asylumCaseMap = new HashMap<>();
