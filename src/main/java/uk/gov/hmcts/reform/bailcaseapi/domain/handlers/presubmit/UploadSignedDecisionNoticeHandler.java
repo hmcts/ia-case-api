@@ -5,11 +5,10 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.ArrayList;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -52,7 +51,7 @@ public class UploadSignedDecisionNoticeHandler implements PreSubmitCallbackHandl
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.UPLOAD_SIGNED_DECISION_NOTICE;
+            && callback.getEvent() == Event.UPLOAD_SIGNED_DECISION_NOTICE;
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(
@@ -84,7 +83,10 @@ public class UploadSignedDecisionNoticeHandler implements PreSubmitCallbackHandl
             .ifPresent(signedDecisionNoticeDocumentWithMetadata ->
                            allTribunalDocuments.addAll(documentsAppender.append(
                                existingTribunalDocuments, List.of(signedDecisionNoticeDocumentWithMetadata)
-            )));
+                           )));
+
+        allTribunalDocuments
+            .removeIf(document -> document.getValue().getTag().equals(DocumentTag.BAIL_DECISION_UNSIGNED));
 
         bailCase.write(TRIBUNAL_DOCUMENTS_WITH_METADATA, allTribunalDocuments);
         bailCase.write(OUTCOME_DATE, dateProvider.nowWithTime().toString());

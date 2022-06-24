@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_USER;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRIOR_APPLICATIONS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
@@ -9,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -21,13 +31,6 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.PriorApplication;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.CURRENT_USER;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRIOR_APPLICATIONS;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +69,7 @@ class MakeNewApplicationServiceTest {
     @Test
     void should_append_prior_application_to_empty_list() {
 
-        Mockito.when(priorApplicationAppender.append(Mockito.any(PriorApplication.class), Mockito.anyList()))
+        when(priorApplicationAppender.append(Mockito.any(PriorApplication.class), Mockito.anyList()))
             .thenReturn(allAppendedPriorApplications);
 
         makeNewApplicationService.appendPriorApplication(bailCase, bailCaseBefore);
@@ -80,14 +83,26 @@ class MakeNewApplicationServiceTest {
 
 
     @Test
-    void should_remove_fields_not_in_list() {
+    void should_remove_fields_not_in_list_about_to_start() {
         BailCase bailCase = new BailCase();
         bailCase.write(CURRENT_USER, "current_user");
         bailCase.write(OUTCOME_STATE, "applicationEnded");
 
-        Mockito.when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
-        makeNewApplicationService.clearUnrelatedFields(bailCase);
+        makeNewApplicationService.clearFieldsAboutToStart(bailCase);
+        assertThat(bailCase).isEmpty();
+    }
+
+    @Test
+    void should_remove_fields_not_in_list_about_to_submit() {
+        BailCase bailCase = new BailCase();
+        bailCase.write(CURRENT_USER, "current_user");
+        bailCase.write(OUTCOME_STATE, "applicationEnded");
+
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+
+        makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
         assertThat(bailCase).isEmpty();
     }
 
@@ -97,9 +112,9 @@ class MakeNewApplicationServiceTest {
         bailCase.write(CURRENT_USER, null);
         bailCase.write(OUTCOME_STATE, null);
 
-        Mockito.when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
-        makeNewApplicationService.clearUnrelatedFields(bailCase);
+        makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
         assertThat(bailCase).isEmpty();
     }
 
@@ -113,9 +128,9 @@ class MakeNewApplicationServiceTest {
 
         bailCase.write(UPLOAD_B1_FORM_DOCS, b1DocumentList);
 
-        Mockito.when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(userRoleLabel);
 
-        makeNewApplicationService.clearUnrelatedFields(bailCase);
+        makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
         Mockito.verify(bailCase, Mockito.times(1)).remove(UPLOAD_B1_FORM_DOCS);
     }
 
@@ -128,9 +143,9 @@ class MakeNewApplicationServiceTest {
 
         bailCase.write(UPLOAD_B1_FORM_DOCS, b1DocumentList);
 
-        Mockito.when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.ADMIN_OFFICER);
 
-        makeNewApplicationService.clearUnrelatedFields(bailCase);
+        makeNewApplicationService.clearFieldsAboutToSubmit(bailCase);
         Mockito.verify(bailCase, Mockito.times(0)).clear(UPLOAD_B1_FORM_DOCS);
     }
 
@@ -143,6 +158,24 @@ class MakeNewApplicationServiceTest {
 
         assertThatThrownBy(() -> makeNewApplicationService.appendPriorApplication(bailCase, bailCaseBefore))
             .hasMessage("Could not serialize data")
+            .isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void should_convert_string_to_bail_case() throws JsonProcessingException {
+        String caseDataJson = "{\"endApplicationOutcome\":\"Bail dismissed without a hearing\","
+            + "\"applicantGivenNames\":\"John\",\"applicantFamilyName\":\"Smith\","
+            + "\"outcomeState\":\"applicationEnded\",\"endApplicationDate\":\"2022-06-20\"}";
+        when(mapper.readValue(caseDataJson, BailCase.class)).thenReturn(bailCase);
+        BailCase bailCase = makeNewApplicationService.getBailCaseFromString(caseDataJson);
+        assertNotNull(bailCase);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void should_throw_exception_for_empty_null_json(String json) {
+        assertThatThrownBy(() -> makeNewApplicationService.getBailCaseFromString(json))
+            .hasMessage("CaseData (json) is missing")
             .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

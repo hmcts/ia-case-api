@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
@@ -23,6 +24,11 @@ public class ApplicationSubmittedByAppender implements PreSubmitCallbackHandler<
                && (callback.getEvent() == Event.START_APPLICATION
                    || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
                    || callback.getEvent() == Event.MAKE_NEW_APPLICATION);
+    }
+
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(PreSubmitCallbackStage callbackStage,

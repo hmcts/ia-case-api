@@ -33,7 +33,8 @@ public class CaseInferenceByBailNumberHandler implements PreSubmitCallbackHandle
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && (callback.getEvent() == Event.START_APPLICATION
-               || callback.getEvent() == Event.EDIT_BAIL_APPLICATION)
+               || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+               || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT)
                && callback.getPageId().equals(HAS_PREVIOUS_BAIL_APPLICATION.value());
     }
 
@@ -55,7 +56,7 @@ public class CaseInferenceByBailNumberHandler implements PreSubmitCallbackHandle
         String bailReferenceNumber = bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class).orElse("");
         String hasPreviousBailApplication = bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class).orElse("");
 
-        if (hasPreviousBailApplication.equals("yes")) {
+        if (hasPreviousBailApplication.equals("Yes")) {
             if (bailReferenceNumber.matches("[0-9]{16}")) {
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_CCD, YesOrNo.YES);
                 bailCase.write(PREVIOUS_APPLICATION_DONE_VIA_ARIA, YesOrNo.NO);

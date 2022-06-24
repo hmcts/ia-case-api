@@ -49,9 +49,9 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<BailCas
         List<Event> eventsToHandle = Lists.newArrayList(
             Event.SUBMIT_APPLICATION,
             Event.RECORD_THE_DECISION,
-
             Event.END_APPLICATION,
-            Event.MAKE_NEW_APPLICATION
+            Event.MAKE_NEW_APPLICATION,
+            Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
         );
         return eventsToHandle;
     }

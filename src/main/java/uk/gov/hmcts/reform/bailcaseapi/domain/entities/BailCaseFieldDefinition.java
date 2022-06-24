@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.NationalityFieldValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
@@ -385,7 +386,12 @@ public enum BailCaseFieldDefinition {
         "declarationOnSubmit", new TypeReference<List<String>>(){}),
     SUBMIT_NOTIFICATION_STATUS(
         "submitNotificationStatus", new TypeReference<String>() {}),
-    ;
+    PREVIOUS_APPLICATION_LIST(
+        "previousApplicationList", new TypeReference<DynamicList>() {}),
+    LOCAL_AUTHORITY_POLICY(
+        "localAuthorityPolicy", new TypeReference<OrganisationPolicy>() {}),
+    CHANGE_ORGANISATION_REQUEST_FIELD(
+        "changeOrganisationRequestField", new TypeReference<ChangeOrganisationRequest>() {});
 
 
     private final String value;

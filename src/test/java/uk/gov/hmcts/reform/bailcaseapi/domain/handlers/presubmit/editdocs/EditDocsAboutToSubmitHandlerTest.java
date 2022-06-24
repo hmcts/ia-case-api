@@ -224,7 +224,8 @@ class EditDocsAboutToSubmitHandlerTest {
     private static DocumentWithMetadata buildValueWithNoTag(DocumentTag documentTag, String suppliedBy) {
         Document doc = new Document("http://dm-store:4506/documents/80e2af54-7a93-498f-af55-fe190f3224d2",
                                     "http://dm-store:4506/documents/80e2af54-7a93-498f-af55-fe190f3224d2/binary",
-                                    "Screenshot 2020-03-06 at 10.07.01.jpg");
+                                    "Screenshot 2020-03-06 at 10.07.01.jpg",
+                                    "hash");
         return new DocumentWithMetadata(doc, "some desc", "2020-01-01", documentTag, suppliedBy);
     }
 }

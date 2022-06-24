@@ -28,7 +28,9 @@ public class ErrorForStartApplicationAppender implements PreSubmitCallbackHandle
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && callback.getEvent() == Event.START_APPLICATION
+               && (callback.getEvent() == Event.START_APPLICATION
+                   || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+                   || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT)
                && callback.getPageId().equals(REDIRECT_TO_PREVIOUS_APPLICATION_OR_NOC.value());
     }
 

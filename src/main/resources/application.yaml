@@ -120,3 +120,8 @@ launchDarkly:
 
 bailRefusalWithInDays: 28
 
+core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
+assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}
+core_case_data_api_assignments_path: "/case-users"
+assign_case_access_api_assignments_path: "/case-assignments"
+apply_noc_access_api_assignments_path: "/noc/check-noc-approval"

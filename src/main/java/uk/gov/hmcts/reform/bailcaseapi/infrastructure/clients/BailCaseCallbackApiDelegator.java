@@ -56,7 +56,6 @@ public class BailCaseCallbackApiDelegator {
     ) {
         requireNonNull(callback, "callback must not be null");
         requireNonNull(endpoint, "endpoint must not be null");
-        LOG.info("Secret value: {}, Micro-service: {}, Auth-URL: {} ", secret, microService, authUrl);
         final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
         final String accessToken = accessTokenProvider.getAccessToken();
 

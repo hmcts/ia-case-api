@@ -50,7 +50,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
-            .thenReturn(Optional.of("yes"));
+            .thenReturn(Optional.of("Yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
             .thenReturn(Optional.of(bailCaseReferenceNumber));
 
@@ -73,7 +73,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
 
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
-            .thenReturn(Optional.of("yes"));
+            .thenReturn(Optional.of("Yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
             .thenReturn(Optional.of(ariaCaseReferenceNumber));
 
@@ -95,7 +95,7 @@ public class CaseInferenceByBailNumberHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getPageId()).thenReturn(HAS_PREVIOUS_BAIL_APPLICATION.value());
         when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class))
-            .thenReturn(Optional.of("yes"));
+            .thenReturn(Optional.of("Yes"));
         when(bailCase.read(PREVIOUS_BAIL_APPLICATION_NUMBER, String.class))
             .thenReturn(Optional.of(wrongCaseReferenceNumber));
 
@@ -149,7 +149,8 @@ public class CaseInferenceByBailNumberHandlerTest {
 
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT
                     && (callback.getEvent() == Event.START_APPLICATION
-                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION)
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION
+                        || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT)
                     && callback.getPageId().equals(HAS_PREVIOUS_BAIL_APPLICATION.value())) {
 
                     assertTrue(canHandle);

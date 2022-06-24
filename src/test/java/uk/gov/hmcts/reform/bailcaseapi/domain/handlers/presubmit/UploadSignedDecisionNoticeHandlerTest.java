@@ -62,6 +62,8 @@ public class UploadSignedDecisionNoticeHandlerTest {
     @Mock
     private DocumentWithMetadata signedDecisionNoticeMetadata1;
     @Mock
+    private DocumentWithMetadata unsignedDecisionNoticeMetadata1;
+    @Mock
     private List<IdValue<DocumentWithMetadata>> newSignedDecisionNotice;
     @Mock
     private DateProvider dateProvider;
@@ -87,29 +89,34 @@ public class UploadSignedDecisionNoticeHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(dateProvider.nowWithTime()).thenReturn(nowWithTime);
+        when(signedDecisionNoticeMetadata1.getTag()).thenReturn(DocumentTag.SIGNED_DECISION_NOTICE);
+        when(unsignedDecisionNoticeMetadata1.getTag()).thenReturn(DocumentTag.BAIL_DECISION_UNSIGNED);
     }
 
     @Test
-    void should_add_new_document_to_the_case() {
+    void should_add_signed_document_remove_unsigned_document() {
 
         List<IdValue<DocumentWithMetadata>> allTribunalDocs =
             List.of(
-                new IdValue<>("1", signedDecisionNoticeMetadata1)
+                new IdValue<>("1", signedDecisionNoticeMetadata1),
+                new IdValue<>("2", unsignedDecisionNoticeMetadata1)
             );
 
         when(bailCase.read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class)).thenReturn(
             Optional.of(signedDecisionNotice1));
 
-        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(
-            Optional.empty());
+        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(List.of(
+            new IdValue<>("1", unsignedDecisionNoticeMetadata1))));
 
         when(documentReceiver.tryReceive(new DocumentWithDescription(signedDecisionNotice1, ""),
-                                         DocumentTag.SIGNED_DECISION_NOTICE))
-            .thenReturn(Optional.of(signedDecisionNoticeMetadata1));
+                                         DocumentTag.SIGNED_DECISION_NOTICE)).thenReturn(Optional.of(
+            signedDecisionNoticeMetadata1));
 
-        when(documentsAppender.append(eq(new ArrayList<>()), eq(List.of(signedDecisionNoticeMetadata1))))
-            .thenReturn(allTribunalDocs);
-        
+        when(documentsAppender.append(
+            eq(List.of(new IdValue<>("1", unsignedDecisionNoticeMetadata1))),
+            eq(List.of(signedDecisionNoticeMetadata1))
+        )).thenReturn(allTribunalDocs);
+
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -130,9 +137,10 @@ public class UploadSignedDecisionNoticeHandlerTest {
                 .getAllValues()
                 .get(0);
 
-        assertEquals(0, actualExistingDecisionNoticeDocuments.size());
+        assertEquals(1, actualExistingDecisionNoticeDocuments.size());
 
-        verify(bailCase, times(1)).write(TRIBUNAL_DOCUMENTS_WITH_METADATA, allTribunalDocs);
+        verify(bailCase, times(1)).write(TRIBUNAL_DOCUMENTS_WITH_METADATA,
+                                         List.of(new IdValue<>("1", signedDecisionNoticeMetadata1)));
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
 

@@ -204,7 +204,8 @@ class EditDocsAuditServiceTest {
         Document doc = new Document(
             "http://dm-store:89/" + docId,
             "",
-            filename
+            filename,
+            null
         );
         IdValue<HasDocument> idValue = new IdValue<>(id, buildValue(doc, description));
         return Collections.singletonList(idValue);

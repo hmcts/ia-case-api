@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
@@ -43,6 +45,11 @@ public class ApplicationSubmittedByAppenderTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
+    }
+
+    @Test
+    void should_be_handled_at_latest_point() {
+        assertEquals(DispatchPriority.LATEST, applicationSubmittedByAppender.getDispatchPriority());
     }
 
     @Test

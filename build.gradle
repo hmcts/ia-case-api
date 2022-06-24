@@ -116,6 +116,11 @@ sourceSets {
   }
 }
 
+lombok {
+  config['lombok.addLombokGeneratedAnnotation'] = 'true'
+  config['lombok.anyConstructor.addConstructorProperties'] = 'true'
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
