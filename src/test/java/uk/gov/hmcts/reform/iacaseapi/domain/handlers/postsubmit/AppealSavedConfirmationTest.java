@@ -117,11 +117,10 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_pay_offline_by_card() {
+    void should_return_confirmation_for_pay_EA() {
 
         long caseId = 1234;
 
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -162,11 +161,10 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_pay_now_hu() {
+    void should_return_confirmation_for_pay_hu() {
 
         long caseId = 1234;
 
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
