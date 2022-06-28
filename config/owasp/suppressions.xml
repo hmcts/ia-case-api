@@ -54,6 +54,12 @@
         <cve>CVE-2022-22965</cve>
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
+    </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+            All related to spring retry, most of the them has base score as NA
+            ]]>
+        </notes>
         <cve>CVE-2020-36518</cve>
         <cve>CVE-2021-28170</cve>
         <cve>CVE-2020-23171</cve>
@@ -66,4 +72,5 @@
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2022-29885</cve>
     </suppress>
+
 </suppressions>
