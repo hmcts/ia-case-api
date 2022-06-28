@@ -75,8 +75,8 @@ public class SystemDocumentManagementUploader {
                     .binary
                     .href,
                 uploadedDocument
-                    .originalDocumentName
-            );
+                    .originalDocumentName,
+                "1234567890");
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
