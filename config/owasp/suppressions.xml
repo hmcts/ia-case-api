@@ -56,14 +56,14 @@
         <cve>CVE-2022-22970</cve>
         <cve>CVE-2020-36518</cve>
         <cve>CVE-2021-28170</cve>
-        <cve>CCVE-2020-23171</cve>
+        <cve>CVE-2020-23171</cve>
         <cve>CVE-2022-25647</cve>
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22965</cve>
         <cve>CVE-2022-22971</cve>
         <cve>CVE-2022-22950</cve>
         <cve>CVE-2022-22970</cve>
-        <cve>CCVE-2018-1258</cve>
+        <cve>CVE-2018-1258</cve>
         <cve>CVE-2022-29885</cve>
     </suppress>
 </suppressions>
