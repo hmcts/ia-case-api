@@ -108,7 +108,10 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "1",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl",
+                        "binaryUrl",
+                        "documentFilename",
+                        "1234567890"),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -117,7 +120,10 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "2",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl",
+                        "binaryUrl",
+                        "documentFilename",
+                        "1234567890"),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -129,7 +135,10 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "1",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl",
+                        "binaryUrl",
+                        "documentFilename",
+                        "1234567890"),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
@@ -138,7 +147,10 @@ class PreviousRequirementsAndRequestsAppenderTest {
             new IdValue<DocumentWithMetadata>(
                 "2",
                 new DocumentWithMetadata(
-                    new Document("documentUrl", "binaryUrl", "documentFilename"),
+                    new Document("documentUrl",
+                        "binaryUrl",
+                        "documentFilename",
+                        "1234567890"),
                     "description",
                     "dateUploaded",
                     DocumentTag.HEARING_REQUIREMENTS
