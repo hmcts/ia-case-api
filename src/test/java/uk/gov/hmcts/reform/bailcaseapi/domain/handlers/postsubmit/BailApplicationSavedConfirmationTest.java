@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.postsubmit;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,9 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.OrganisationPolicy;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
@@ -41,12 +47,18 @@ public class BailApplicationSavedConfirmationTest {
 
     @Mock private OrganisationEntityResponse organisationEntityResponse;
 
+    @Mock private UserDetails userDetails;
+
+    @Mock private UserDetailsHelper userDetailsHelper;
+
     private BailApplicationSavedConfirmation bailApplicationSavedConfirmation;
 
     @BeforeEach
     public void setUp() {
         bailApplicationSavedConfirmation = new BailApplicationSavedConfirmation(professionalOrganisationRetriever,
-                                                                                ccdCaseAssignment);
+                                                                                ccdCaseAssignment,
+                                                                                userDetails,
+                                                                                userDetailsHelper);
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
     }
 
@@ -58,6 +70,7 @@ public class BailApplicationSavedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -94,6 +107,7 @@ public class BailApplicationSavedConfirmationTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -114,13 +128,14 @@ public class BailApplicationSavedConfirmationTest {
     }
 
     @Test
-    void should_assign_and_revoke_access_to_case() {
+    void should_assign_and_revoke_access_to_case_when_user_is_Lr() {
         long caseId = 1234L;
         String organisationIdentifier = "someOrgIdentifier";
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getId()).thenReturn(caseId);
         when(callback.getCaseDetails().getCaseData()).thenReturn(bailCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.LEGAL_REPRESENTATIVE);
         when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
             Optional.of(organisationPolicy));
         when(professionalOrganisationRetriever.retrieve()).thenReturn(organisationEntityResponse);
@@ -130,5 +145,22 @@ public class BailApplicationSavedConfirmationTest {
 
         verify(ccdCaseAssignment, times(1)).assignAccessToCase(callback);
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
+    }
+
+    @Test
+    void should_not_assign_and_revoke_access_to_case_when_user_is_not_LR() {
+        long caseId = 1234L;
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getId()).thenReturn(caseId);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(bailCase);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(any())).thenReturn(UserRoleLabel.ADMIN_OFFICER);
+        when(bailCase.read(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)).thenReturn(
+            Optional.of(organisationPolicy));
+
+        bailApplicationSavedConfirmation.handle(callback);
+
+        verify(ccdCaseAssignment, never()).assignAccessToCase(callback);
+        verify(ccdCaseAssignment, never()).revokeAccessToCase(any(), anyString());
     }
 }

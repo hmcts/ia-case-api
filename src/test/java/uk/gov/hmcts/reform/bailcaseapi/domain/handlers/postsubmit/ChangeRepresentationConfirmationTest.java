@@ -84,6 +84,11 @@ class ChangeRepresentationConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationHeader().get())
             .contains("# You have removed the legal representative from this case");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains("### What happens next\n\n"
+                      + "This legal representative will no longer have access to this case.");
     }
 
     @Test

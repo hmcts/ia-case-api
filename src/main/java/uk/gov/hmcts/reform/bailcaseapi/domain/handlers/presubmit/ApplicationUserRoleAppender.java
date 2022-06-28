@@ -36,6 +36,7 @@ public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<Bai
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
                && (callback.getEvent() == Event.START_APPLICATION
+                   || callback.getEvent() == Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
                    || callback.getEvent() == Event.MAKE_NEW_APPLICATION)
                || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                   && callback.getEvent() == Event.MAKE_NEW_APPLICATION;

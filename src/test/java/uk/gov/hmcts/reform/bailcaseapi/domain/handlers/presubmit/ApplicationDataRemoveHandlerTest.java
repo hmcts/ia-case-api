@@ -103,6 +103,11 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.VIDEO_HEARING_YESNO;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.HAS_PREVIOUS_BAIL_APPLICATION;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.APPLICANT_BEEN_REFUSED_BAIL;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.BAIL_HEARING_DATE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -263,6 +268,14 @@ public class ApplicationDataRemoveHandlerTest {
     }
 
     @Test
+    void should_remove_previous_application_details_if_none_present() {
+        setUpValuesIfValuesAreRemoved();
+        applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(bailCase, times(1)).remove(APPLICANT_BEEN_REFUSED_BAIL);
+        verify(bailCase, times(1)).remove(BAIL_HEARING_DATE);
+    }
+
+    @Test
     void should_remove_appeal_reference_number_if_none_present() {
         setUpValuesIfValuesAreRemoved();
         applicationDataRemoveHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -348,6 +361,7 @@ public class ApplicationDataRemoveHandlerTest {
         verify(bailCase, times(1)).remove(LEGAL_REP_NAME);
         verify(bailCase, times(1)).remove(LEGAL_REP_PHONE);
         verify(bailCase, times(1)).remove(LEGAL_REP_REFERENCE);
+        verify(bailCase, times(1)).write(IS_LEGALLY_REPRESENTED_FOR_FLAG, NO);
     }
 
 
@@ -376,6 +390,8 @@ public class ApplicationDataRemoveHandlerTest {
         verify(bailCase, never()).remove(SUPPORTER_2_GIVEN_NAMES);
         verify(bailCase, never()).remove(SUPPORTER_3_GIVEN_NAMES);
         verify(bailCase, never()).remove(SUPPORTER_4_GIVEN_NAMES);
+        verify(bailCase, never()).remove(APPLICANT_BEEN_REFUSED_BAIL);
+        verify(bailCase, never()).remove(BAIL_HEARING_DATE);
     }
 
     private void setUpValuesIfValuesAreRemoved() {
@@ -401,6 +417,7 @@ public class ApplicationDataRemoveHandlerTest {
             "immigrationRemovalCentre"));
         when(bailCase.read(APPLICANT_GENDER, String.class)).thenReturn(Optional.of("male"));
         when(bailCase.read(HAS_APPEAL_HEARING_PENDING, String.class)).thenReturn(Optional.of("No"));
+        when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class)).thenReturn(Optional.of("No"));
     }
 
     private void setUpValuesIfValuesArePresent() {
@@ -426,6 +443,7 @@ public class ApplicationDataRemoveHandlerTest {
             "immigrationRemovalCentre"));
         when(bailCase.read(APPLICANT_GENDER, String.class)).thenReturn(Optional.of("other"));
         when(bailCase.read(HAS_APPEAL_HEARING_PENDING, String.class)).thenReturn(Optional.of("Yes"));
+        when(bailCase.read(HAS_PREVIOUS_BAIL_APPLICATION, String.class)).thenReturn(Optional.of("Yes"));
     }
 
     private void assertFinancialConditionSupporter1Removed() {

@@ -69,7 +69,7 @@ public enum BailCaseFieldDefinition {
     APPLICANT_HAS_MOBILE(
         "applicantHasMobile", new TypeReference<YesOrNo>(){}),
     APPLICANT_MOBILE_NUMBER(
-        "applicantMobileNumber", new TypeReference<String>(){}),
+        "applicantMobileNumber1", new TypeReference<String>(){}),
     HAS_APPEAL_HEARING_PENDING(
         "hasAppealHearingPending", new TypeReference<String>(){}),
     APPEAL_REFERENCE_NUMBER(
@@ -89,7 +89,7 @@ public enum BailCaseFieldDefinition {
     AGREES_TO_BOUND_BY_FINANCIAL_COND(
         "agreesToBoundByFinancialCond", new TypeReference<YesOrNo>(){}),
     FINANCIAL_COND_AMOUNT(
-        "financialCondAmount", new TypeReference<String>(){}),
+        "financialCondAmount1", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER(
         "hasFinancialCondSupporter", new TypeReference<YesOrNo>(){}),
     SUPPORTER_GIVEN_NAMES(
@@ -101,11 +101,11 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_CONTACT_DETAILS(
         "supporterContactDetails", new TypeReference<String>(){}),
     SUPPORTER_TELEPHONE_NUMBER(
-        "supporterTelephoneNumber", new TypeReference<String>(){}),
+        "supporterTelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_MOBILE_NUMBER(
-        "supporterMobileNumber", new TypeReference<String>(){}),
+        "supporterMobileNumber1", new TypeReference<String>(){}),
     SUPPORTER_EMAIL_ADDRESS(
-        "supporterEmailAddress", new TypeReference<String>(){}),
+        "supporterEmailAddress1", new TypeReference<String>(){}),
     SUPPORTER_DOB(
         "supporterDOB", new TypeReference<String>(){}),
     SUPPORTER_RELATION(
@@ -121,7 +121,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_PASSPORT(
         "supporterPassport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_UNDERTAKES(
-        "financialAmountSupporterUndertakes", new TypeReference<String>(){}),
+        "financialAmountSupporterUndertakes1", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_2(
         "hasFinancialCondSupporter2", new TypeReference<YesOrNo>(){}),
     SUPPORTER_2_GIVEN_NAMES(
@@ -133,11 +133,11 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_2_CONTACT_DETAILS(
         "supporter2ContactDetails", new TypeReference<String>(){}),
     SUPPORTER_2_TELEPHONE_NUMBER(
-        "supporter2TelephoneNumber", new TypeReference<String>(){}),
+        "supporter2TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_2_MOBILE_NUMBER(
-        "supporter2MobileNumber", new TypeReference<String>(){}),
+        "supporter2MobileNumber1", new TypeReference<String>(){}),
     SUPPORTER_2_EMAIL_ADDRESS(
-        "supporter2EmailAddress", new TypeReference<String>(){}),
+        "supporter2EmailAddress1", new TypeReference<String>(){}),
     SUPPORTER_2_DOB(
         "supporter2DOB", new TypeReference<String>(){}),
     SUPPORTER_2_RELATION(
@@ -153,7 +153,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_2_PASSPORT(
         "supporter2Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_2_UNDERTAKES(
-        "financialAmountSupporter2Undertakes", new TypeReference<String>(){}),
+        "financialAmountSupporter2Undertakes1", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_3(
         "hasFinancialCondSupporter3", new TypeReference<YesOrNo>(){}),
     SUPPORTER_3_GIVEN_NAMES(
@@ -165,11 +165,11 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_3_CONTACT_DETAILS(
         "supporter3ContactDetails", new TypeReference<String>(){}),
     SUPPORTER_3_TELEPHONE_NUMBER(
-        "supporter3TelephoneNumber", new TypeReference<String>(){}),
+        "supporter3TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_3_MOBILE_NUMBER(
-        "supporter3MobileNumber", new TypeReference<String>(){}),
+        "supporter3MobileNumber1", new TypeReference<String>(){}),
     SUPPORTER_3_EMAIL_ADDRESS(
-        "supporter3EmailAddress", new TypeReference<String>(){}),
+        "supporter3EmailAddress1", new TypeReference<String>(){}),
     SUPPORTER_3_DOB(
         "supporter3DOB", new TypeReference<String>(){}),
     SUPPORTER_3_RELATION(
@@ -185,7 +185,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_3_PASSPORT(
         "supporter3Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_3_UNDERTAKES(
-        "financialAmountSupporter3Undertakes", new TypeReference<String>(){}),
+        "financialAmountSupporter3Undertakes1", new TypeReference<String>(){}),
     HAS_FINANCIAL_COND_SUPPORTER_4(
         "hasFinancialCondSupporter4", new TypeReference<YesOrNo>(){}),
     SUPPORTER_4_GIVEN_NAMES(
@@ -197,11 +197,11 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_4_CONTACT_DETAILS(
         "supporter4ContactDetails", new TypeReference<String>(){}),
     SUPPORTER_4_TELEPHONE_NUMBER(
-        "supporter4TelephoneNumber", new TypeReference<String>(){}),
+        "supporter4TelephoneNumber1", new TypeReference<String>(){}),
     SUPPORTER_4_MOBILE_NUMBER(
-        "supporter4MobileNumber", new TypeReference<String>(){}),
+        "supporter4MobileNumber1", new TypeReference<String>(){}),
     SUPPORTER_4_EMAIL_ADDRESS(
-        "supporter4EmailAddress", new TypeReference<String>(){}),
+        "supporter4EmailAddress1", new TypeReference<String>(){}),
     SUPPORTER_4_DOB(
         "supporter4DOB", new TypeReference<String>(){}),
     SUPPORTER_4_RELATION(
@@ -217,7 +217,7 @@ public enum BailCaseFieldDefinition {
     SUPPORTER_4_PASSPORT(
         "supporter4Passport", new TypeReference<String>(){}),
     FINANCIAL_AMOUNT_SUPPORTER_4_UNDERTAKES(
-        "financialAmountSupporter4Undertakes", new TypeReference<String>(){}),
+        "financialAmountSupporter4Undertakes1", new TypeReference<String>(){}),
     INTERPRETER_YESNO(
         "interpreterYesNo", new TypeReference<YesOrNo>(){}),
     INTERPRETER_LANGUAGES(

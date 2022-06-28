@@ -62,6 +62,11 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this case"
                 );
+
+                postSubmitResponse.setConfirmationBody(
+                    "### What happens next\n\n"
+                    + "This legal representative will no longer have access to this case."
+                );
             }
         } catch (Exception e) {
             log.error("Unable to change representation (apply noc) for case id {} with error message: {}",

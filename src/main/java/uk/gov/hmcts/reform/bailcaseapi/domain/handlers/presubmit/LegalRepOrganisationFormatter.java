@@ -5,10 +5,13 @@ import static java.util.Objects.requireNonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Organisation;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.OrganisationPolicy;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserRoleLabel;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -22,11 +25,17 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.ProfessionalOrgani
 public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<BailCase> {
 
     private final ProfessionalOrganisationRetriever professionalOrganisationRetriever;
+    private UserDetails userDetails;
+    private UserDetailsHelper userDetailsHelper;
 
     public LegalRepOrganisationFormatter(
-        ProfessionalOrganisationRetriever professionalOrganisationRetriever
+        ProfessionalOrganisationRetriever professionalOrganisationRetriever,
+        UserDetails userDetails,
+        UserDetailsHelper userDetailsHelper
     ) {
         this.professionalOrganisationRetriever = professionalOrganisationRetriever;
+        this.userDetails = userDetails;
+        this.userDetailsHelper = userDetailsHelper;
     }
 
     @Override
@@ -35,7 +44,8 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPLICATION;
+               && callback.getEvent() == Event.START_APPLICATION
+               && isLegalRep(userDetails, userDetailsHelper);
     }
 
     @Override
@@ -80,6 +90,11 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
                 .build();
 
         bailCase.write(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, organisationPolicy);
+    }
+
+    private boolean isLegalRep(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
+        UserRoleLabel userRoleLabel = userDetailsHelper.getLoggedInUserRoleLabel(userDetails);
+        return userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE);
     }
 }
 

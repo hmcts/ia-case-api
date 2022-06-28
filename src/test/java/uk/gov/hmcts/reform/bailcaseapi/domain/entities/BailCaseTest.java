@@ -62,10 +62,10 @@ public class BailCaseTest {
     @Test
     void remove_entry_by_key_string() throws IOException {
 
-        String caseData = "{\"applicantMobileNumber\":\"01234567891\"}";
+        String caseData = "{\"applicantMobileNumber1\":\"01234567891\"}";
         BailCase bailCase = objectMapper.readValue(caseData, BailCase.class);
 
-        bailCase.removeByString("applicantMobileNumber");
+        bailCase.removeByString("applicantMobileNumber1");
 
         assertThat(bailCase.read(BailCaseFieldDefinition.APPLICANT_MOBILE_NUMBER, String.class)).isEmpty();
     }
