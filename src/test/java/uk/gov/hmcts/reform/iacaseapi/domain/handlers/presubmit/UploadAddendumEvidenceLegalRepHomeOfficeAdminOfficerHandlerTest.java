@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
@@ -82,6 +83,13 @@ class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandlerTest {
                 documentReceiver,
                 documentsAppender
             );
+
+        Document document1 = new Document("documentUrl1", "documentBinaryUrl1", "documentFilename1");
+        Document document2 = new Document("documentUrl2", "documentBinaryUrl2", "documentFilename2");
+        additionalEvidence1 = new DocumentWithDescription(document1, "description1");
+        additionalEvidence2 = new DocumentWithDescription(document2, "description2");
+        additionalEvidence1WithMetadata = new DocumentWithMetadata(document1, "description1", "dateUploaded1", DocumentTag.ADDENDUM_EVIDENCE, "suppliedBy1", "TCW");
+        additionalEvidence2WithMetadata = new DocumentWithMetadata(document2, "description2", "dateUploaded2", DocumentTag.ADDENDUM_EVIDENCE, "suppliedBy2", "TCW");
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.UPLOAD_ADDENDUM_EVIDENCE_HOME_OFFICE);
