@@ -6,22 +6,23 @@ import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
-import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+
 
 @Service
 public class SystemDocumentManagementUploader {
 
-    private final DocumentUploadClientApi documentUploadClientApi;
+    private final CaseDocumentClient documentUploadClient;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
     public SystemDocumentManagementUploader(
-        DocumentUploadClientApi documentUploadClientApi,
+            CaseDocumentClient documentUploadClient,
         AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
-        this.documentUploadClientApi = documentUploadClientApi;
+        this.documentUploadClient = documentUploadClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
@@ -51,17 +52,17 @@ public class SystemDocumentManagementUploader {
             );
 
             UploadResponse uploadResponse =
-                documentUploadClientApi
-                    .upload(
+                documentUploadClient
+                        .uploadDocuments(
                         accessToken,
                         serviceAuthorizationToken,
-                        userId,
+                        "Asylum",
+                        "IA",
                         Collections.singletonList(file)
                     );
 
-            uk.gov.hmcts.reform.document.domain.Document uploadedDocument =
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
                 uploadResponse
-                    .getEmbedded()
                     .getDocuments()
                     .get(0);
 
