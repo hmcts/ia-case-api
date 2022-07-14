@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
@@ -72,7 +73,12 @@ public class LegalRepresentativeDetailsAppender implements PreSubmitCallbackHand
 
             final OrganisationEntityResponse organisationEntityResponse =
                 professionalOrganisationRetriever.retrieve();
-            setupLocalAuthorityPolicy(callback, organisationEntityResponse.getOrganisationIdentifier());
+
+            if (organisationEntityResponse != null
+                && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())) {
+                setupLocalAuthorityPolicy(callback, organisationEntityResponse.getOrganisationIdentifier());
+            }
+
         }
 
         return new PreSubmitCallbackResponse<>(bailCase);

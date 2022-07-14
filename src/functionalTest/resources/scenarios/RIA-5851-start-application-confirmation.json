@@ -1,0 +1,23 @@
+{
+  "description": "Start the application (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have saved this application",
+      "body": "contains(### Do this next\n\nReview and [edit the application](/case/IA/Bail/1111/trigger/editBailApplication) if necessary. [Submit the application](/case/IA/Bail/1111/trigger/submitApplication))"
+    }
+  }
+}

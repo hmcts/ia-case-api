@@ -1,0 +1,36 @@
+{
+  "description": "Start the application by admin - stateless nationality appender",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantNationality": "STATELESS"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicantNationality": "STATELESS",
+        "applicantNationalities": [
+          {
+            "id": "1",
+            "value": {
+              "code": "Stateless"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "description": "Start the application by admin application sent by Applicant",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "uploadB1FormDocs":
+          [
+            {
+              "id":"1",
+              "value":{
+                "document":{
+                  "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                  "document_filename": "B1-doc.pdf",
+                  "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/"
+                },
+                "description":"B1 document"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "bailReferenceNumber": "1111-2222-3333-4444"
+      }
+    }
+  }
+}

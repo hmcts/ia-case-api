@@ -1,0 +1,32 @@
+{
+  "description": "Start the application by admin - detention facility appender Prison",
+  "request": {
+    "uri": "/bail/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "ircName": "",
+          "prisonName": "Askham Grange",
+          "applicantPrisonDetails": "1234"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "ircName": "",
+        "detentionFacility": "Askham Grange",
+        "hearingCentre": "bradford"
+      }
+    }
+  }
+}

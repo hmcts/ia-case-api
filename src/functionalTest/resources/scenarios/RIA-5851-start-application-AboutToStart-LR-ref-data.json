@@ -1,0 +1,32 @@
+{
+  "description": "Start the application by Legal Representative - append LR ref data",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "startApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicationSubmittedBy": "Legal Representative"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicationSubmittedBy": "Legal Representative",
+        "legalRepEmail":"ialegalreporgcreator12@mailnesia.com",
+        "legalRepCompany":"ia-legal-rep-org777",
+        "isAdmin": "No",
+        "isLegalRep": "Yes"
+      }
+    }
+  }
+}

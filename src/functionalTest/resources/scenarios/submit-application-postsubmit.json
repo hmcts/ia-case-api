@@ -1,0 +1,49 @@
+{
+  "description": "Submit the application (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "submitApplication",
+      "state": "applicationStarted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantDocumentsWithMetadata":
+          [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "$/http:\/\/dm-store:8080\/documents\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/",
+                  "document_binary_url": "$/http://dm-store:8080/documents/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/binary/",
+                  "document_filename": "LastName-bail-application-details.PDF"
+                },
+                "description":"",
+                "dateUploaded": "{$TODAY}",
+                "tag":"bailSubmission",
+                "suppliedBy":""
+              }
+            }
+          ],
+          "notificationsSent": [
+            { "id": "1111_BAIL_APPLICATION_SUBMITTED_HEARING_CENTRE",
+              "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+            },
+            {"id": "1111_BAIL_APPLICATION_SUBMITTED_HOME_OFFICE",
+              "value":"$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"}
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have submitted this application",
+      "body": "### What happens next\n\nAll parties will be notified that the application has been submitted."
+    }
+  }
+}
