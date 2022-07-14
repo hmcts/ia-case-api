@@ -67,4 +67,8 @@ public class DocumentWithMetadata implements HasDocument {
     public String getSuppliedBy() {
         return suppliedBy;
     }
+
+    public void setSuppliedBy(String newSuppliedBy) {
+        this.suppliedBy = newSuppliedBy;
+    }
 }
