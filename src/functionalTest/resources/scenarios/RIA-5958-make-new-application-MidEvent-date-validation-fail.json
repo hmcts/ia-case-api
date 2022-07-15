@@ -1,0 +1,31 @@
+{
+  "description": "Start the application by admin - applicant date of birth date validation fail",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=applicantDateOfBirth",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "makeNewApplication",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "applicantDateOfBirth": "9999-01-01"
+        }
+      },
+      "caseDataBefore": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The date must not be a future date."],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "applicantDateOfBirth": "9999-01-01"
+      }
+    }
+  }
+}

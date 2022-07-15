@@ -31,6 +31,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.fixtures.Fixture;
 import uk.gov.hmcts.reform.bailcaseapi.util.AuthorizationHeadersProvider;
@@ -311,14 +312,27 @@ public class CcdScenarioRunnerTest {
                 templatesByFilename
             );
 
-            PreSubmitCallbackResponse<BailCase> preSubmitCallbackResponse =
-                new PreSubmitCallbackResponse<>(
+            State newState = null;
+
+            if (expectation.containsKey("state")) {
+                newState = State.valueOf(MapValueExtractor.extractOrThrow(expectation, "state"));
+            }
+
+            PreSubmitCallbackResponse<BailCase> preSubmitCallbackResponse = (newState == null)
+                ? new PreSubmitCallbackResponse<>(
                     objectMapper.readValue(
                         MapSerializer.serialize(caseData),
                         new TypeReference<BailCase>() {
                         }
                     )
-                );
+                ) : new PreSubmitCallbackResponse<>(
+                objectMapper.readValue(
+                    MapSerializer.serialize(caseData),
+                    new TypeReference<BailCase>() {
+                    }
+                ),
+                newState
+            );
 
             preSubmitCallbackResponse.addErrors(MapValueExtractor.extract(expectation, "errors"));
 
