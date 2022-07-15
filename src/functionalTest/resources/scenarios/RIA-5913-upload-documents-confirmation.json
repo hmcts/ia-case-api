@@ -1,0 +1,23 @@
+{
+  "description": "Upload documents (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadDocuments",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# Your upload is complete",
+      "body": "contains(#### What happens next\n\nThe document(s) you uploaded are available to view in the [documents tab](/cases/case-details/1111#Documents)"
+    }
+  }
+}
