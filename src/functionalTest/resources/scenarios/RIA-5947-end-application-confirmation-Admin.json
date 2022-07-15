@@ -1,0 +1,23 @@
+{
+  "description": "RIA-5947 End application confirmation by Admin Offier (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "endApplication",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have ended the application",
+      "body": "#### What happens next\n\nA notification has been sent to all parties. No further action is required.<br>"
+    }
+  }
+}
