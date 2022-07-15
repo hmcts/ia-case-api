@@ -1,0 +1,23 @@
+{
+  "description": "Upload signed decision notice (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "uploadSignedDecisionNotice",
+      "state": "decisionDecided",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You uploaded the signed decision notice",
+      "body": "contains(### What happens next\n\nThe signed decision notice is available to view in the [documents tab](/cases/case-details/1111#Documents)"
+    }
+  }
+}
