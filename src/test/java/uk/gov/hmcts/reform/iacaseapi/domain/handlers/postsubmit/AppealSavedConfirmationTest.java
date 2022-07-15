@@ -152,7 +152,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         assertThat(
@@ -242,7 +242,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         assertThat(
@@ -289,7 +289,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         assertThat(
@@ -335,7 +335,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         assertThat(
@@ -374,7 +374,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -439,7 +439,7 @@ class AppealSavedConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains(
                 "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "/trigger/payAndSubmitAppeal)"
+                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
