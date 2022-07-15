@@ -1,0 +1,22 @@
+{
+  "description": "Change bail direction due date event - about to start no directions exist error",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "changeBailDirectionDueDate",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["There is no direction to edit"],
+    "caseData": {
+      "template": "minimal-application-started.json"
+    }
+  }
+}
