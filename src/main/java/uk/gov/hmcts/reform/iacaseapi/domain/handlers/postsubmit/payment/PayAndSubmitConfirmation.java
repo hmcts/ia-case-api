@@ -56,9 +56,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-               || callback.getEvent() == Event.PAY_FOR_APPEAL
-               || callback.getEvent() == Event.PAYMENT_APPEAL;
+        return callback.getEvent() == Event.PAYMENT_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -103,7 +101,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 rollbackEvent = (AppealType.PA == appealType)
                     ? Event.ROLLBACK_PAYMENT_TIMEOUT : Event.ROLLBACK_PAYMENT_TIMEOUT_TO_PAYMENT_PENDING;
             } else {
-                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent() || (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent() && AppealType.PA == appealType))
+                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent())
                     ? Event.ROLLBACK_PAYMENT : Event.MOVE_TO_PAYMENT_PENDING;
             }
 
