@@ -1,0 +1,31 @@
+{
+  "description": "RIA-5915 Remove legal representative (Admin Officer) - localAuthorityPolicy present",
+  "request": {
+    "uri": "/bail/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "removeBailLegalRepresentative",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json",
+        "replacements": {
+          "localAuthorityPolicy": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [
+      "You cannot use this feature because the legal representative does not have a MyHMCTS account.",
+      "If you are a legal representative, you must contact all parties confirming you no longer represent this client."
+    ],
+    "caseData": {
+      "template": "minimal-application-started.json",
+      "replacements": {
+        "localAuthorityPolicy": null
+      }
+    }
+  }
+}
