@@ -1,0 +1,23 @@
+{
+  "description": "Send direction (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "sendBailDirection",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You have sent a direction",
+      "body": "contains(### What happens next\n\nYou can see the status of the direction in the [directions tab](/case/IA/Bail/1111#Directions)"
+    }
+  }
+}
