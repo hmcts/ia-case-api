@@ -40,10 +40,7 @@ public class PaymentHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-                   || callback.getEvent() == Event.PAY_FOR_APPEAL
-                   || callback.getEvent() == Event.PAYMENT_APPEAL
-               )
+               && callback.getEvent() == Event.PAYMENT_APPEAL
                && isfeePaymentEnabled;
     }
 

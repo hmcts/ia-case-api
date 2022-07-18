@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -47,7 +46,7 @@ class AppealSubmitHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
     void should_call_successfully(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -76,8 +75,7 @@ class AppealSubmitHandlerTest {
                 boolean canHandle = appealSubmitHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
-                        && (callback.getEvent() == SUBMIT_APPEAL
-                        || callback.getEvent() == PAY_AND_SUBMIT_APPEAL)
+                        && (callback.getEvent() == SUBMIT_APPEAL)
                 ) {
                     assertTrue(canHandle);
                 } else {

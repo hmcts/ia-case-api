@@ -180,8 +180,6 @@ security:
       - "editAppeal"
       - "submitAppeal"
       - "paymentAppeal"
-      - "payAndSubmitAppeal"
-      - "payForAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
@@ -196,7 +194,6 @@ security:
       - "removeRepresentation"
       - "requestFeeRemission"
       - "nocRequest"
-      - "editPaymentMethod"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "moveToSubmitted"
