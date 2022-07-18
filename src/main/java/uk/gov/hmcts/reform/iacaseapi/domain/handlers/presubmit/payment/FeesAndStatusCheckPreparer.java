@@ -101,8 +101,6 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
             .orElse(PaymentStatus.PAYMENT_PENDING);
 
         final String paymentOptionNotAvailableLabel = "The Make a payment option is not available.";
-        final String payAndSubmitOptionNotAvailableLabel = "The Pay and submit your appeal option is not available. "
-                                                           + "Select Submit your appeal if you want to submit the appeal now.";
 
         final String oldOrExistingCasesLabel = "You cannot make a payment for this appeal using Payment by Account";
 
