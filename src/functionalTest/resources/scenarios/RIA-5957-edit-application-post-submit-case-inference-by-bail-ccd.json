@@ -1,0 +1,30 @@
+{
+  "description": "Edit the application append previous application done by type CCD",
+  "request": {
+    "uri": "/bail/ccdMidEvent?pageId=hasPreviousBailApplication",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1111,
+      "eventId": "editBailApplicationAfterSubmit",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-submitted.json",
+        "replacements": {
+          "hasPreviousBailApplication": "Yes",
+          "previousBailApplicationNumber": "1111222233334444"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-application-submitted.json",
+      "replacements": {
+        "hasPreviousBailApplication": "Yes",
+        "previousApplicationDoneViaCcd": "Yes"
+      }
+    }
+  }
+}
