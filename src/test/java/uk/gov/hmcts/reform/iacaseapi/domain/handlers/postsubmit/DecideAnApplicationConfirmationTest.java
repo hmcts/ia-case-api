@@ -9,7 +9,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -30,7 +29,6 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -98,8 +96,7 @@ class DecideAnApplicationConfirmationTest {
 
         when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
-        when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
-            .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
+
 
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 
@@ -123,18 +120,6 @@ class DecideAnApplicationConfirmationTest {
                             + "will be sent to all parties.");
                 break;
 
-            case "Link/unlink appeals":
-                assertThat(
-                    callbackResponse.getConfirmationBody().get())
-                    .contains(
-                        "#### What happens next\n\n"
-                            +
-                            "The application decision has been recorded and is now available in the applications tab. "
-                            + "You must now [link the appeal](/case/IA/Asylum/"
-                            + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                            + " or [unlink the appeal](/case/IA/Asylum/"
-                            + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal).");
-                break;
 
             case "Judge's review of application decision":
                 assertThat(

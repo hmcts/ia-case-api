@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -68,26 +67,6 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
                                 + "You need to tell the listing team to relist the case. Once the case is relisted a new Notice of Hearing "
                                 + "will be sent to all parties."
                             );
-                            break;
-
-                        case "Link/unlink appeals":
-                            final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
-                                asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
-                            String body =
-                                reasonForLinkAppeal.isPresent() == true
-                                    ? whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or [unlink the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal)."
-                                    : whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or unlink the appeal";
-                            postSubmitResponse.setConfirmationBody(body);
-
                             break;
 
                         case "Judge's review of application decision":
