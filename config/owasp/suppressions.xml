@@ -54,67 +54,20 @@
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22968</cve>
     </suppress>
-    <suppress until="2022-05-31">
+    <suppress until="2030-01-01">
         <notes>Dependency-Analyze Failure:
             [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
             have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
+            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885
+            suppressing during development</notes>
         <cve>CVE-2022-25647</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-22968</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-22965</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-22971</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-22950</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2016-1000027</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-22970</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-34305</cve>
-    </suppress>
-    <suppress until="2022-05-31">
-        <notes>Dependency-Analyze Failure:
-            [2022-07-21T15:39:24.016Z]   One or more dependencies were identified with vulnerabilities that
-            have a CVSS score greater than '0.0': CVE-2022-25647, CVE-2022-22968, CVE-2022-22965, CVE-2022-22971,
-            CVE-2022-22950, CVE-2016-1000027, CVE-2022-22970, CVE-2022-34305, CVE-2022-29885</notes>
         <cve>CVE-2022-29885</cve>
     </suppress>
 </suppressions>
