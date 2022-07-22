@@ -827,9 +827,6 @@ public enum AsylumCaseFieldDefinition {
     REVIEW_TIME_EXTENSION_DUE_DATE(
         "reviewTimeExtensionDueDate", new TypeReference<String>(){}),
 
-    FLAG_CASE_TYPE_OF_FLAG(
-        "flagCaseTypeOfFlag", new TypeReference<CaseFlagType>(){}),
-
     FLAG_CASE_ADDITIONAL_INFORMATION(
         "flagCaseAdditionalInformation", new TypeReference<String>(){}),
 
