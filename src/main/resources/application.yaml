@@ -54,6 +54,70 @@ spring:
     include:
       - hearingcentre-mapping
 
+
+security:
+  anonymousPaths:
+    - "/"
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/loggers/**"
+    - "/swagger-ui/**"
+    - "/swagger-resources/**"
+    - "/v3/api-docs/**"
+    - "/favicon.ico"
+  authorisedRoles:
+    - "caseworker-ia"
+  roleEventAccess:
+    caseworker-caa:
+      - "nocRequest"
+    caseworker-approver:
+      - "applyNocDecision"
+    caseworker-ia-legalrep-solicitor:
+      - "startApplication"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+    caseworker-ia-admofficer:
+      - "startApplication"
+      - "submitApplication"
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "editBailApplicationAfterSubmit"
+      - "viewPreviousApplications"
+      - "removeBailLegalRepresentative"
+    caseworker-ia-respondentofficer:
+      - "startApplication"
+      - "uploadBailSummary"
+      - "submitApplication"
+      - "uploadDocuments"
+      - "editBailApplication"
+      - "makeNewApplication"
+      - "viewPreviousApplications"
+    caseworker-ia-iacjudge:
+      - "recordTheDecision"
+      - "addCaseNote"
+      - "sendBailDirection"
+      - "changeBailDirectionDueDate"
+      - "uploadSignedDecisionNotice"
+      - "moveApplicationToDecided"
+      - "endApplication"
+      - "uploadDocuments"
+      - "editBailDocuments"
+      - "viewPreviousApplications"
+
+
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}
 core_case_data_api_url: ${CCD_URL:http://127.0.0.1:4452}

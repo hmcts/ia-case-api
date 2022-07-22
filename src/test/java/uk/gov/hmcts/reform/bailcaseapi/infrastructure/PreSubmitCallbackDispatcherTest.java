@@ -8,19 +8,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.security.access.AccessDeniedException;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
@@ -32,11 +41,15 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.eventvalidation.EventValid;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.eventvalidation.EventValidCheckers;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 public class PreSubmitCallbackDispatcherTest {
+
+    @Mock
+    private CcdEventAuthorizor ccdEventAuthorizor;
 
     @Mock
     private PreSubmitCallbackHandler<CaseData> handler1;
@@ -85,6 +98,7 @@ public class PreSubmitCallbackDispatcherTest {
     @BeforeEach
     public void setUp() {
         preSubmitCallbackDispatcher = new PreSubmitCallbackDispatcher(
+            ccdEventAuthorizor,
             Arrays.asList(
                 handler1,
                 handler2,
@@ -149,7 +163,20 @@ public class PreSubmitCallbackDispatcherTest {
             assertEquals(caseDataMutation2, callbackResponse.getData());
             assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrderElementsOf(expectedErrors);
 
-            //TODO - CCDEventAuthorizer
+            verify(ccdEventAuthorizor, times(1)).throwIfNotAuthorized(Event.START_APPLICATION);
+
+            InOrder inOrder = inOrder(handler1, handler3, handler2);
+
+            inOrder.verify(handler1, times(1)).canHandle(eq(callbackStage), any(Callback.class));
+            inOrder.verify(handler1, times(1)).handle(eq(callbackStage), any(Callback.class));
+
+            inOrder.verify(handler3, times(1)).canHandle(eq(callbackStage), any(Callback.class));
+            inOrder.verify(handler3, times(1)).handle(eq(callbackStage), any(Callback.class));
+
+            inOrder.verify(handler2, times(1)).canHandle(eq(callbackStage), any(Callback.class));
+            inOrder.verify(handler2, times(1)).handle(eq(callbackStage), any(Callback.class));
+
+            reset(ccdEventAuthorizor, handler1, handler2, handler3);
 
         }
     }
@@ -158,7 +185,8 @@ public class PreSubmitCallbackDispatcherTest {
     void should_not_error_if_no_handlers_are_provided() {
 
         PreSubmitCallbackDispatcher<CaseData> preSubmitCallbackDispatcher =
-            new PreSubmitCallbackDispatcher(Collections.emptyList(), eventValidChecker, Collections.emptyList());
+            new PreSubmitCallbackDispatcher(ccdEventAuthorizor, Collections.emptyList(),
+                                            eventValidChecker, Collections.emptyList());
 
         for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
@@ -181,9 +209,36 @@ public class PreSubmitCallbackDispatcherTest {
     }
 
     @Test
+    void should_not_dispatch_to_handlers_if_user_not_authorized_for_event() {
+
+        for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
+
+            when(callback.getEvent()).thenReturn(Event.UPLOAD_BAIL_SUMMARY);
+
+            doThrow(AccessDeniedException.class)
+                .when(ccdEventAuthorizor)
+                .throwIfNotAuthorized(Event.UPLOAD_BAIL_SUMMARY);
+
+            Assertions.assertThatThrownBy(() -> preSubmitCallbackDispatcher.handle(callbackStage, callback))
+                .isExactlyInstanceOf(AccessDeniedException.class);
+
+            verify(ccdEventAuthorizor, times(1)).throwIfNotAuthorized(Event.UPLOAD_BAIL_SUMMARY);
+
+            verify(handler1, never()).canHandle(any(), any());
+            verify(handler1, never()).handle(any(), any());
+            verify(handler2, never()).canHandle(any(), any());
+            verify(handler2, never()).handle(any(), any());
+            verify(handler3, never()).canHandle(any(), any());
+            verify(handler3, never()).handle(any(), any());
+
+            reset(ccdEventAuthorizor, handler1, handler2, handler3);
+        }
+    }
+
+    @Test
     void should_not_allow_null_handlers() {
 
-        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(null, eventValidChecker, null))
+        assertThatThrownBy(() -> new PreSubmitCallbackDispatcher<>(ccdEventAuthorizor, null, eventValidChecker, null))
             .hasMessage("callbackHandlers must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

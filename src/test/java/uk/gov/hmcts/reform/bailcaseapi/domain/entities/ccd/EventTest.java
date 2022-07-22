@@ -24,11 +24,13 @@ public class EventTest {
         assertEquals("changeBailDirectionDueDate", Event.CHANGE_BAIL_DIRECTION_DUE_DATE.toString());
         assertEquals("makeNewApplication", Event.MAKE_NEW_APPLICATION.toString());
         assertEquals("viewPreviousApplications", Event.VIEW_PREVIOUS_APPLICATIONS.toString());
+        assertEquals("nocRequest", Event.NOC_REQUEST.toString());
+        assertEquals("applyNocDecision", Event.APPLY_NOC_DECISION.toString());
         assertEquals("unknown", Event.UNKNOWN.toString());
     }
 
     @Test
     void fail_if_changes_needed_after_modifying_class() {
-        assertEquals(19, Event.values().length);
+        assertEquals(20, Event.values().length);
     }
 }

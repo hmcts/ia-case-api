@@ -19,26 +19,12 @@
     <cve>CVE-2020-5408</cve>
   </suppress>
   <suppress until="2030-01-01">
-    <notes><![CDATA[
-                incorrectly tagging spring-security-rsa as spring-security
-                ]]>
-    </notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.+$</packageUrl>
-    <cve>CVE-2022-22976</cve>
-    <cve>CVE-2022-22978</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-            incorrectly tagging spring-boot-starter-security as spring-security
-            ]]>
-    </notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot\-starter\-security@.+$</packageUrl>
-    <cve>CVE-2022-22976</cve>
-    <cve>CVE-2022-22978</cve>
-  </suppress>
-  <suppress until="2030-01-01">
     <cve>CVE-2022-33915</cve>
     <cve>CVE-2022-34305</cve>
     <cve>CVE-2022-31569</cve>
+    <cve>CVE-2018-1258</cve>
+    <cve>CVE-2021-22112</cve>
+    <cve>CVE-2022-22976</cve>
+    <cve>CVE-2022-22978</cve>
   </suppress>
 </suppressions>

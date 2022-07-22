@@ -284,8 +284,15 @@ dependencyManagement {
     }
 
     dependencySet(group: 'org.springframework.security', version: '5.7.1') {
+      entry 'spring-security-config'
       entry 'spring-security-core'
       entry 'spring-security-crypto'
+      entry 'spring-security-crypto'
+      entry 'spring-security-oauth2-core'
+      entry 'spring-security-oauth2-client'
+      entry 'spring-security-oauth2-jose'
+      entry 'spring-security-oauth2-resource-server'
+      entry 'spring-security-web'
     }
   }
 }
@@ -295,6 +302,11 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.14'
 
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
 
