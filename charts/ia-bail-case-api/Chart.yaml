@@ -2,12 +2,12 @@ apiVersion: v2
 description: A Helm chart for Bail Case API App
 name: ia-bail-case-api
 home: https://github.com/hmcts/ia-bail-case-api
-version: 0.0.9
+version: 0.0.10
 maintainers:
   - name: Immigration & Asylum Team
     email: ImmigrationandAsylum@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.7.2
+    version: 4.0.1
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
 
