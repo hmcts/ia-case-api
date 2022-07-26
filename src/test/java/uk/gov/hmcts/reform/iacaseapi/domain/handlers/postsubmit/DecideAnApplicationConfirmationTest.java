@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECIDE_AN_APPLICATION_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MAKE_AN_APPLICATIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_FOR_LINK_APPEAL;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -29,8 +30,8 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -122,7 +123,6 @@ class DecideAnApplicationConfirmationTest {
                             + "will be sent to all parties.");
                 break;
 
-
             case "Link/unlink appeals":
                 assertThat(
                         callbackResponse.getConfirmationBody().get())
@@ -136,7 +136,7 @@ class DecideAnApplicationConfirmationTest {
                                         + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal).");
                 break;
 
-                case "Judge's review of application decision":
+            case "Judge's review of application decision":
                 assertThat(
                     callbackResponse.getConfirmationBody().get())
                     .contains(
