@@ -29,9 +29,9 @@ java:
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   postgresql:
     auth:
-      username: ia_tes
-      password: ia_tes
-      database: ia_tes
+      username: ia_case_api
+      password: ia_case_api
+      database: ia_case_api
     service:
       port: 5432
   keyVaults:
