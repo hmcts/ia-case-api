@@ -32,8 +32,8 @@
     </suppress>
     <suppress until="2022-05-31">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
-        work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
-        work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
+            work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
+            work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22950</cve>
     </suppress>
     <suppress until="2022-05-31">
@@ -53,5 +53,62 @@
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22968</cve>
+    </suppress>
+    <suppress>
+        <notes>
+            Suppressing Spring Framework related vulnerabilities temporarily
+        </notes>
+        <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2022-22950</cve>
+        <cve>CVE-2022-22965</cve>
+        <cve>CVE-2022-22968</cve>
+        <cve>CVE-2022-22970</cve>
+        <cve>CVE-2022-22971</cve>
+        <cve>CVE-2021-22044</cve>
+        <cve>CVE-2020-5408</cve>
+        <cve>CVE-2022-22976</cve>
+        <cve>CVE-2021-22119</cve>
+        <cve>CVE-2022-22978</cve>
+        <cve>CVE-2021-22096</cve>
+        <cve>CVE-2021-22118</cve>
+        <cve>CVE-2021-22060</cve>
+        <cve>CVE-2022-31569</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: bcprov-jdk15on-1.64.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+        <vulnerabilityName>CVE-2020-0187</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: json-smart-2.3.1.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/net\.minidev/json\-smart@.*$</packageUrl>
+        <vulnerabilityName>CVE-2021-31684</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.2.2.jar (shaded: com.google.code.gson:gson:2.7)
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.code\.gson/gson@.*$</packageUrl>
+        <cve>CVE-2022-25647</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: tomcat-embed-core-9.0.58.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+        <cve>CVE-2022-29885</cve>
+        <cve>CVE-2022-34305</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.58.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+        <cve>CVE-2022-29885</cve>
+        <cve>CVE-2022-34305</cve>
     </suppress>
 </suppressions>
