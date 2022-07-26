@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplication;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ReasonForLinkAppealOptions;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -96,7 +97,8 @@ class DecideAnApplicationConfirmationTest {
 
         when(asylumCase.read(DECIDE_AN_APPLICATION_ID, String.class)).thenReturn(Optional.of("1"));
         when(asylumCase.read(MAKE_AN_APPLICATIONS)).thenReturn(Optional.of(makeAnApplications));
-
+        when(asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class))
+                .thenReturn(Optional.of(ReasonForLinkAppealOptions.BAIL));
 
         PostSubmitCallbackResponse callbackResponse = decideAnApplicationConfirmation.handle(callback);
 
@@ -121,7 +123,20 @@ class DecideAnApplicationConfirmationTest {
                 break;
 
 
-            case "Judge's review of application decision":
+            case "Link/unlink appeals":
+                assertThat(
+                        callbackResponse.getConfirmationBody().get())
+                        .contains(
+                                "#### What happens next\n\n"
+                                        +
+                                        "The application decision has been recorded and is now available in the applications tab. "
+                                        + "You must now [link the appeal](/case/IA/Asylum/"
+                                        + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
+                                        + " or [unlink the appeal](/case/IA/Asylum/"
+                                        + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal).");
+                break;
+
+                case "Judge's review of application decision":
                 assertThat(
                     callbackResponse.getConfirmationBody().get())
                     .contains(
