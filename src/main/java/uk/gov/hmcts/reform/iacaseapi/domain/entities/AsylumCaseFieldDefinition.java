@@ -955,7 +955,7 @@ public enum AsylumCaseFieldDefinition {
         "applicationOutOfTimeDocument", new TypeReference<Document>() {}),
 
     REASON_FOR_LINK_APPEAL(
-        "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
+            "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
 
     HEARING_DECISION_SELECTED(
         "hearingDecisionSelected", new TypeReference<String>(){}),

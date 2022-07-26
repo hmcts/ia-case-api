@@ -72,20 +72,20 @@ public class DecideAnApplicationConfirmation implements PostSubmitCallbackHandle
 
                         case "Link/unlink appeals":
                             final Optional<ReasonForLinkAppealOptions> reasonForLinkAppeal =
-                                asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
+                                    asylumCase.read(REASON_FOR_LINK_APPEAL, ReasonForLinkAppealOptions.class);
                             String body =
-                                reasonForLinkAppeal.isPresent() == true
-                                    ? whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or [unlink the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal)."
-                                    : whatHappensNextHeader
-                                      + decisionRecordedText
-                                      + "You must now [link the appeal](/case/IA/Asylum/"
-                                      + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
-                                      + " or unlink the appeal";
+                                    reasonForLinkAppeal.isPresent() == true
+                                            ? whatHappensNextHeader
+                                            + decisionRecordedText
+                                            + "You must now [link the appeal](/case/IA/Asylum/"
+                                            + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
+                                            + " or [unlink the appeal](/case/IA/Asylum/"
+                                            + callback.getCaseDetails().getId() + "/trigger/unlinkAppeal)."
+                                            : whatHappensNextHeader
+                                            + decisionRecordedText
+                                            + "You must now [link the appeal](/case/IA/Asylum/"
+                                            + callback.getCaseDetails().getId() + "/trigger/linkAppeal)"
+                                            + " or unlink the appeal";
                             postSubmitResponse.setConfirmationBody(body);
 
                             break;
