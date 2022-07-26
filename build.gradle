@@ -219,7 +219,7 @@ pitest {
   outputFormats = ['XML', 'HTML']
   timestampedReports = false
   failWhenNoMutations = false
-  mutationThreshold = 90
+  mutationThreshold = 85
 }
 
 project.tasks['pitest'].group = "Verification"
