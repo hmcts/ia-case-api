@@ -31,6 +31,8 @@ public enum DocumentTag {
     APPEAL_REASONS("appealReasons"),
     CLARIFYING_QUESTIONS("clarifyingQuestions"),
 
+    END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
+
     @JsonEnumDefaultValue
     NONE("");
 
