@@ -19,6 +19,8 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
 @Component
 public class IdamAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
+    public static final String REGISTRATION_ID = "oidc";
+
     static final String TOKEN_NAME = "tokenName";
 
     private final IdamApi idamApi;
