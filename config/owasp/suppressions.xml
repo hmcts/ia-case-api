@@ -79,6 +79,7 @@
         <cve>CVE-2021-22096</cve>
         <cve>CVE-2021-22118</cve>
         <cve>CVE-2021-22060</cve>
+        <cve>CVE-2022-31569</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -107,6 +108,7 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <cve>CVE-2022-29885</cve>
+        <cve>CVE-2022-34305</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -114,5 +116,6 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2022-29885</cve>
+        <cve>CVE-2022-34305</cve>
     </suppress>
 </suppressions>
