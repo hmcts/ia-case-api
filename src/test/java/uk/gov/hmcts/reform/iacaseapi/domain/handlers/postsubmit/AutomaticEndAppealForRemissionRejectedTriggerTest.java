@@ -1,0 +1,126 @@
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
+
+
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
+class AutomaticEndAppealForRemissionRejectedTriggerTest {
+
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock
+    private DateProvider dateProvider;
+    @Mock
+    private Scheduler scheduler;
+
+    @Captor
+    private ArgumentCaptor<TimedEvent> timedEventArgumentCaptor;
+    private final LocalDateTime now = LocalDateTime.now();
+    private final String id = "someId";
+    private final long caseId = 12345;
+
+    private final String jurisdiction = "IA";
+    private final String caseType = "Asylum";
+
+    private AutomaticEndAppealForRemissionRejectedTrigger autoEndAppealTrigger;
+
+    @BeforeEach
+    void setUp() {
+
+        autoEndAppealTrigger =
+            new AutomaticEndAppealForRemissionRejectedTrigger(
+                dateProvider,
+                scheduler
+            );
+    }
+
+    @Test
+    void should_schedule_automatic_end_appeal_14_days_from_now() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        TimedEvent timedEvent = new TimedEvent(
+            id,
+            Event.END_APPEAL_AUTOMATICALLY,
+            ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
+            jurisdiction,
+            caseType,
+            caseId
+        );
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
+
+
+        PostSubmitCallbackResponse callbackResponse =
+            autoEndAppealTrigger.handle(callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        assertEquals(timedEvent.getCaseId(), result.getCaseId());
+        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
+        assertEquals(timedEvent.getCaseType(), result.getCaseType());
+        assertEquals(timedEvent.getEvent(), result.getEvent());
+        assertEquals("", result.getId());
+    }
+
+    @Test
+    void should_rethrow_exception_when_scheduler_failed() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(RemissionDecision.REJECTED));
+
+        when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
+    }
+
+    @Test
+    void handling_should_throw_if_null_callback() {
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.canHandle(null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+    }
+}
