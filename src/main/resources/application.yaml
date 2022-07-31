@@ -15,6 +15,8 @@ management:
   health:
     probes:
       enabled: true
+    case-document-am-api:
+      enabled: true
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
@@ -367,6 +369,7 @@ document_management.url: ${DM_URL:http://127.0.0.1:4506}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
 idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
+case_document_am.url: ${CD_URL:http://127.0.0.1:4455}
 
 feign:
   hystrix:
