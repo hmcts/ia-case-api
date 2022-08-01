@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
-public class EndAppealAutomaticallyHandler implements PostSubmitCallbackHandler<AsylumCase> {
+public class EndAppealAutomaticallyConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     @Override
     public boolean canHandle(

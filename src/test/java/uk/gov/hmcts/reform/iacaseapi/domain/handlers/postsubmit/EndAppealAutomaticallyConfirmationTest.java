@@ -21,13 +21,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class EndAppealAutomaticallyHandlerTest {
+class EndAppealAutomaticallyConfirmationTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private EndAppealAutomaticallyHandler endAppealAutomaticallyHandler = new EndAppealAutomaticallyHandler();
+    private EndAppealAutomaticallyConfirmation endAppealAutomaticallyConfirmation = new EndAppealAutomaticallyConfirmation();
 
     @Test
     void should_return_confirmation() {
@@ -35,7 +35,7 @@ class EndAppealAutomaticallyHandlerTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
 
         PostSubmitCallbackResponse callbackResponse =
-            endAppealAutomaticallyHandler.handle(callback);
+            endAppealAutomaticallyConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
@@ -48,7 +48,7 @@ class EndAppealAutomaticallyHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> endAppealAutomaticallyHandler.handle(callback))
+        assertThatThrownBy(() -> endAppealAutomaticallyConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -60,7 +60,7 @@ class EndAppealAutomaticallyHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
 
-            boolean canHandle = endAppealAutomaticallyHandler.canHandle(callback);
+            boolean canHandle = endAppealAutomaticallyConfirmation.canHandle(callback);
 
             if (event == Event.END_APPEAL_AUTOMATICALLY) {
 
@@ -76,11 +76,11 @@ class EndAppealAutomaticallyHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> endAppealAutomaticallyHandler.canHandle(null))
+        assertThatThrownBy(() -> endAppealAutomaticallyConfirmation.canHandle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> endAppealAutomaticallyHandler.handle(null))
+        assertThatThrownBy(() -> endAppealAutomaticallyConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }

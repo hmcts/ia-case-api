@@ -115,7 +115,6 @@ public enum Event {
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
-
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
 
     @JsonEnumDefaultValue
