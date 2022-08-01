@@ -250,7 +250,8 @@ class SendNotificationHandlerTest {
                         Event.RECORD_REMISSION_DECISION,
                         Event.REQUEST_FEE_REMISSION,
                         Event.MANAGE_FEE_UPDATE,
-                        Event.RECORD_OUT_OF_TIME_DECISION
+                        Event.RECORD_OUT_OF_TIME_DECISION,
+                        Event.END_APPEAL_AUTOMATICALLY
                     ).contains(event)) {
 
                     assertTrue(canHandle);
