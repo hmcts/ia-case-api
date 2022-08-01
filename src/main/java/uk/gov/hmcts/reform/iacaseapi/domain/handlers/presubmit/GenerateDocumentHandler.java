@@ -75,6 +75,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.SUBMIT_CMA_REQUIREMENTS,
             Event.LIST_CMA,
             Event.END_APPEAL,
+            Event.END_APPEAL_AUTOMATICALLY,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
             Event.SUBMIT_REASONS_FOR_APPEAL,
             Event.SUBMIT_CLARIFYING_QUESTION_ANSWERS,
