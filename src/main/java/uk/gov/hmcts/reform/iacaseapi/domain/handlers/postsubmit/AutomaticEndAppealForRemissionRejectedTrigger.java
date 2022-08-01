@@ -46,8 +46,8 @@ public class AutomaticEndAppealForRemissionRejectedTrigger implements PostSubmit
                 .getCaseData();
 
         Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
-        return callback.getEvent() == Event.RECORD_REMISSION_DECISION &&
-               remissionDecision.isPresent()
+        return callback.getEvent() == Event.RECORD_REMISSION_DECISION
+               && remissionDecision.isPresent()
                && remissionDecision.get() == RemissionDecision.REJECTED;
     }
 

@@ -66,6 +66,7 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
     @Test
     void should_schedule_automatic_end_appeal_14_days_from_now() {
 
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
@@ -99,6 +100,7 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
 
     @Test
     void should_rethrow_exception_when_scheduler_failed() {
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
