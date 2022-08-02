@@ -1,0 +1,20 @@
+{
+  "description": "RIA-5727 end appeal automatically confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "endAppealAutomatically",
+      "state": "submitAppeal",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# Appeal has been ended"
+    }
+  }
+}
