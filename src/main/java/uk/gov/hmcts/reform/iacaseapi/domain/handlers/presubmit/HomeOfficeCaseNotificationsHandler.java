@@ -45,56 +45,10 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         this.homeOfficeApi = homeOfficeApi;
     }
 
-    public void resetRetry(){
-        if (retryCounter == 3) {
-            retryCounter = 0;
-            notificationSent = false;
-        }
-    }
-
-    public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
-        requireNonNull(callbackStage, "callbackStage must not be null");
-        requireNonNull(callback, "callback must not be null");
-
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (Arrays.asList(
-                    Event.REQUEST_RESPONDENT_EVIDENCE,
-                    Event.REQUEST_RESPONDENT_REVIEW,
-                    Event.LIST_CASE,
-                    Event.EDIT_CASE_LISTING,
-                    Event.ADJOURN_HEARING_WITHOUT_DATE,
-                    Event.SEND_DECISION_AND_REASONS,
-                    Event.APPLY_FOR_FTPA_APPELLANT,
-                    Event.APPLY_FOR_FTPA_RESPONDENT,
-                    Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                    Event.RESIDENT_JUDGE_FTPA_DECISION,
-                    Event.END_APPEAL,
-                    Event.REQUEST_RESPONSE_AMEND
-                ).contains(callback.getEvent())
-               || (callback.getEvent() == Event.SEND_DIRECTION
-                   && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
-                   && getLatestNonStandardRespondentDirection(
-                        callback.getCaseDetails().getCaseData()).isPresent())
-
-               || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
-                   && (Arrays.asList(
-                        State.AWAITING_RESPONDENT_EVIDENCE,
-                        State.RESPONDENT_REVIEW
-                        ).contains(callback.getCaseDetails().getState()))
-                   && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
-                  )
-               )
-               && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
-    }
-
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        retryCounter = retryCounter + 1;
         resetRetry();
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -165,6 +119,41 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
     }
 
+    public boolean canHandle(
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callbackStage, "callbackStage must not be null");
+        requireNonNull(callback, "callback must not be null");
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && (isAHandeableEvent(callback.getEvent())
+
+                || (callback.getEvent() == Event.SEND_DIRECTION
+                && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
+                && getLatestNonStandardRespondentDirection(
+                callback.getCaseDetails().getCaseData()).isPresent())
+
+                || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+                && (Arrays.asList(
+                State.AWAITING_RESPONDENT_EVIDENCE,
+                State.RESPONDENT_REVIEW
+        ).contains(callback.getCaseDetails().getState()))
+                && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
+        )
+        )
+                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
+    }
+
+
+    public void resetRetry() {
+        retryCounter = retryCounter + 1;
+        if (retryCounter == 3) {
+            retryCounter = 0;
+            notificationSent = false;
+        }
+    }
+
     protected Optional<Direction> getLatestNonStandardRespondentDirection(AsylumCase asylumCase) {
 
         Optional<List<IdValue<Direction>>> maybeExistingDirections = asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS);
@@ -185,5 +174,22 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
         return parties.equals(Parties.RESPONDENT);
 
+    }
+
+    /*  Returns true when the callback event is handeable.*/
+    public boolean isAHandeableEvent(Event callbackEvent){
+        return Arrays.asList(
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.REQUEST_RESPONDENT_REVIEW,
+                Event.LIST_CASE,
+                Event.EDIT_CASE_LISTING,
+                Event.ADJOURN_HEARING_WITHOUT_DATE,
+                Event.SEND_DECISION_AND_REASONS,
+                Event.APPLY_FOR_FTPA_APPELLANT,
+                Event.APPLY_FOR_FTPA_RESPONDENT,
+                Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+                Event.RESIDENT_JUDGE_FTPA_DECISION,
+                Event.END_APPEAL,
+                Event.REQUEST_RESPONSE_AMEND).contains(callbackEvent);
     }
 }
