@@ -47,6 +47,9 @@ public abstract class CallbackTransformer extends ResponseDefinitionTransformer 
             .getCaseDetails()
             .getCaseData();
 
+        System.out.println("**************************************8");
+        System.out.println(incomingAsylumCase);
+
         AsylumCaseForTest asylumCaseToBeReturned = anAsylumCase()
             .withCaseDetails(incomingAsylumCase)
             .writeOrOverwrite(additionalAsylumCaseData);
