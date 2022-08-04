@@ -351,7 +351,6 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
 
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
-    testImplementation 'com.github.hmcts:ccd-case-document-am-client:1.7.3'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.0'
