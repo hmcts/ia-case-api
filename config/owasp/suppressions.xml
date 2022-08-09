@@ -54,4 +54,11 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Apache tomcat vulnerabilities : Base score of medium
+            ]]>
+        </notes>
+        <cve>CVE-2022-34305</cve>
+    </suppress>
 </suppressions>
