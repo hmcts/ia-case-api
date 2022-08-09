@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,9 +33,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                                                          + "homeOfficeNotificationsEligible: {} ";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
-    private Boolean notificationSent = false;
-    private int retryCounter = 0;
-    private Long caseIdNotified;
+    private String notificationSentName;
+    private Long caseIdNotified = 0L;
 
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
@@ -43,13 +43,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
         this.featureToggler = featureToggler;
         this.homeOfficeApi = homeOfficeApi;
-    }
-
-    public void resetRetry(){
-        if (retryCounter == 3) {
-            retryCounter = 0;
-            notificationSent = false;
-        }
     }
 
     public boolean canHandle(
@@ -94,8 +87,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-        retryCounter = retryCounter + 1;
-        resetRetry();
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -125,8 +116,21 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-            if (Boolean.TRUE.equals(notificationSent) && caseIdNotified == caseId) {
-                log.info("Home Office notification already invoked: awaiting Respondent Evidence - "
+            System.out.println("******************************");
+            System.out.println("CASE ID = " + caseId);
+            System.out.println("******************************");
+            System.out.println("******************************");
+            System.out.println("CASE NOTIFIED = " + caseIdNotified);
+            System.out.println("******************************");
+            System.out.println("******************************");
+            System.out.println("NOTIFICATION SENT NAME = " + notificationSentName);
+            System.out.println("******************************");
+            System.out.println("NOTIFICATION NAME = " + callback.getEvent().name());
+            System.out.println("******************************");
+
+            // RIA-5683
+            if (Objects.equals(notificationSentName, callback.getEvent().name()) && caseIdNotified == caseId) {
+                log.info("Home Office notification already invoked: "
                          + SUPPRESSION_LOG_FIELDS,
                         callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                         homeOfficeNotificationsEligible);
@@ -145,7 +149,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
                 caseIdNotified = caseId;
-                notificationSent = true;
+                notificationSentName = callback.getEvent().name();
             } else {
 
                 log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
