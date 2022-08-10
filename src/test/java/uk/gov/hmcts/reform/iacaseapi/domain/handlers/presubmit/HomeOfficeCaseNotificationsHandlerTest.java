@@ -628,7 +628,22 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Test
     void should_not_send_request_respondent_evidence_notifications_if_state_already_awaiting_respondent_evidence() {
         when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
+        when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class)).thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
-        verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
+        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
+//        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
+        when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+        when(asylumCase.read(APPELLANT_IN_UK,YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
+        when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        when(callback.getCaseDetails().getId()).thenReturn(1L);
+        homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        when(callback.getCaseDetails().getId()).thenReturn(0L);
+        homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
 }
