@@ -99,6 +99,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
+                // We store the case Id and event to prevent duplicated notifications.
                 caseIdNotified = caseId;
                 notificationSentName = callback.getEvent().name();
             } else {
@@ -128,22 +129,21 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && (isAHandeableEvent(callback.getEvent())
+                    && (isAHandleableEvent(callback.getEvent())
 
-                || (callback.getEvent() == Event.SEND_DIRECTION
-                && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
-                && getLatestNonStandardRespondentDirection(
-                callback.getCaseDetails().getCaseData()).isPresent())
+                        || (callback.getEvent() == Event.SEND_DIRECTION
+                            && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
+                            && getLatestNonStandardRespondentDirection(
+                                callback.getCaseDetails().getCaseData()).isPresent())
 
-                || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
-                && (Arrays.asList(
-                State.AWAITING_RESPONDENT_EVIDENCE,
-                State.RESPONDENT_REVIEW
-        ).contains(callback.getCaseDetails().getState()))
-                && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData())
-        )
-        )
-                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
+                        || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+                            && (Arrays.asList(
+                                State.AWAITING_RESPONDENT_EVIDENCE,
+                                State.RESPONDENT_REVIEW
+                            ).contains(callback.getCaseDetails().getState()))
+                            && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData()))
+                    )
+                    && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
     protected Optional<Direction> getLatestNonStandardRespondentDirection(AsylumCase asylumCase) {
@@ -168,8 +168,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
     }
 
-    /*  Returns true when the callback event is handeable.*/
-    public boolean isAHandeableEvent(Event callbackEvent){
+    /*  Returns true when the callback event is handleable. */
+    public boolean isAHandleableEvent(Event callbackEvent) {
         return Arrays.asList(
                 Event.REQUEST_RESPONDENT_EVIDENCE,
                 Event.REQUEST_RESPONDENT_REVIEW,
