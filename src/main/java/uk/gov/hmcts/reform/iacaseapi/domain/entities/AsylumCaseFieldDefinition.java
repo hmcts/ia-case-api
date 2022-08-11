@@ -957,6 +957,15 @@ public enum AsylumCaseFieldDefinition {
     REASON_FOR_LINK_APPEAL(
             "reasonForLinkAppeal", new TypeReference<ReasonForLinkAppealOptions>() {}),
 
+    APPELLANT_TITLE(
+            "appellantTitle", new TypeReference<String>(){}),
+
+    APPELLANT_EMAIL_ADDRESS(
+            "appellantEmailAddress", new TypeReference<String>(){}),
+
+    GLOBAL_SEARCH_PARTIES(
+            "globalSearchParties", new TypeReference<List<IdValue<String>>>(){}),
+
     HEARING_DECISION_SELECTED(
         "hearingDecisionSelected", new TypeReference<String>(){}),
     IS_FEE_PAYMENT_ENABLED(
