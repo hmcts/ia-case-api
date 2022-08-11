@@ -40,7 +40,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data( @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void should_get_users_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -83,7 +84,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data_no_org_id( @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void should_get_users_from_professional_ref_data_no_org_id(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJsonNoOrgId =
             new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
@@ -126,7 +128,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_organisation_identifier_from_professional_ref_data( @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
+    public void should_get_organisation_identifier_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
