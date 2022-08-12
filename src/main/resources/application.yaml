@@ -195,6 +195,7 @@ security:
       - "removeRepresentation"
       - "requestFeeRemission"
       - "nocRequest"
+      - "generateServiceRequest"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "moveToSubmitted"
