@@ -264,7 +264,6 @@ security:
       - "recordOutOfTimeDecision"
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
-      - "markAddendumEvidenceAsReviewed"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -292,7 +291,6 @@ security:
       - "removeLegalRepresentative"
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
-      - "markPaymentRequestSent"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -353,7 +351,6 @@ security:
       - "requestNewHearingRequirements"
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
-      - "markAddendumEvidenceAsReviewed"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
