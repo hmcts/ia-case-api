@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REMISSION;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -80,22 +79,15 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
                 .orElse("");
         }
 
-        String submitPaymentAppealUrl = "";
-        String payOrSubmitLabel = "";
+        String submitAppealUrl = "/trigger/submitAppeal";
+        String submitLabel = "submit your appeal";
 
-        if (((paymentOption != null && paymentOption.equals("payNow")) || appealType == AppealType.EA || appealType == AppealType.HU) && remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
-            submitPaymentAppealUrl = "#Service%20Request";
-            payOrSubmitLabel = "pay for and submit your appeal";
-        } else {
-            submitPaymentAppealUrl = "/trigger/submitAppeal";
-            payOrSubmitLabel = "submit your appeal";
-        }
 
         postSubmitResponse.setConfirmationHeader("# Your appeal details have been saved\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-            + "If you're ready to proceed [" + payOrSubmitLabel + "](/case/IA/Asylum/"
-            + callback.getCaseDetails().getId() + submitPaymentAppealUrl + ").\n\n"
+            + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"
+            + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
             + "#### Not ready to submit yet?\n"
             + "You can return to the case details to make changes."
         );
