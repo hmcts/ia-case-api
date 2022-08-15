@@ -29,7 +29,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     public void sets_flag_to_indicate_the_hearing_details_have_been_recorded(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
+        server.resetAll();
         addServiceAuthStub(server);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
@@ -50,7 +50,7 @@ public class RecordAttendeesAndDurationTest extends SpringBootIntegrationTest im
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-admofficer"})
     public void returns_confirmation_page_content(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
+        server.resetAll();
         addServiceAuthStub(server);
         PostSubmitCallbackResponseForTest response = iaCaseApiClient.ccdSubmitted(callback()
             .event(Event.RECORD_ATTENDEES_AND_DURATION)

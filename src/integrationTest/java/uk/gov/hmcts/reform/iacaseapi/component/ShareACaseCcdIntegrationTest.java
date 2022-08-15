@@ -71,7 +71,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_user_is_valid_and_201_returned_from_ccd(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
+        server.resetAll();
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
@@ -102,41 +102,41 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     }
 
-    //@Test
-    //@WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    //public void should_return_failure_when_user_is_invalid(
-    //    @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-    //
-    //    addServiceAuthStub(server);
-    //    addLegalRepUserDetailsStub(server);
-    //    addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
-    //
-    //    // invalid user is chosen in dropdown
-    //    dynamicList = new DynamicList(value1, values);
-    //
-    //    //Userdetails stub will always return uid 1
-    //    String idamUserId = "1";
-    //    long caseId = 9999L;
-    //    URI uri = buildUri(idamUserId, String.valueOf(caseId));
-    //    addReferenceCreatedStub(server, uri.getPath());
-    //
-    //    PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
-    //        .event(SHARE_A_CASE)
-    //        .caseDetails(someCaseDetailsWith()
-    //            .id(caseId)
-    //            .state(DECISION)
-    //            .caseData(anAsylumCase()
-    //                .with(ORG_LIST_OF_USERS, dynamicList)
-    //                .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
-    //                .with(APPEAL_TYPE, AppealType.PA)
-    //                .with(APPELLANT_GIVEN_NAMES, "some-given-name")
-    //                .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
-    //
-    //    assertThat(response).isNotNull();
-    //    assertThat(response.getErrors()).contains("You can share a case only with Active Users in your Organization.");
-    //    assertEquals(Optional.empty(), response.getAsylumCase().read(ORG_LIST_OF_USERS));
-    //
-    //}
+    @Test
+    @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
+    public void should_return_failure_when_user_is_invalid(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+        server.resetAll();
+        addServiceAuthStub(server);
+        addLegalRepUserDetailsStub(server);
+        addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
+
+        // invalid user is chosen in dropdown
+        dynamicList = new DynamicList(value1, values);
+
+        //Userdetails stub will always return uid 1
+        String idamUserId = "1";
+        long caseId = 9999L;
+        URI uri = buildUri(idamUserId, String.valueOf(caseId));
+        addReferenceCreatedStub(server, uri.getPath());
+
+        PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToSubmit(callback()
+            .event(SHARE_A_CASE)
+            .caseDetails(someCaseDetailsWith()
+                .id(caseId)
+                .state(DECISION)
+                .caseData(anAsylumCase()
+                    .with(ORG_LIST_OF_USERS, dynamicList)
+                    .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
+                    .with(APPEAL_TYPE, AppealType.PA)
+                    .with(APPELLANT_GIVEN_NAMES, "some-given-name")
+                    .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).contains("You can share a case only with Active Users in your Organization.");
+        assertEquals(Optional.empty(), response.getAsylumCase().read(ORG_LIST_OF_USERS));
+
+    }
 
     private URI buildUri(String idamUserId,
                          String caseId) {

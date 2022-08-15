@@ -30,7 +30,7 @@ public class GenerateDecisionAndReasonsTest extends SpringBootIntegrationTest im
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
     public void handles_generate_decision_and_reasons_event(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
+        server.resetAll();
         addServiceAuthStub(server);
         addDocumentApiTransformerStub(server);
 

@@ -50,7 +50,7 @@ public class NewShareACaseCcdIntegrationTest extends SpringBootIntegrationTest i
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
     public void should_return_success_when_org_creator_access_revoked_and_case_assignment_set(
         @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
-
+        server.resetAll();
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPathUsers, prdResponseJson);
