@@ -4,36 +4,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.AsylumCaseForTest.anAsylumCase;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CallbackForTest.CallbackForTestBuilder.callback;
 import static uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.CaseDetailsForTest.CaseDetailsForTestBuilder.someCaseDetailsWith;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CASE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_STARTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
+import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ProfessionalUsersResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
@@ -50,25 +42,10 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     private ProfessionalUsersResponse prdSuccessResponse;
 
-    private static WireMockServer server;
-
-    @BeforeAll
-    static void init() {
-        server = new WireMockServer(
-                new WireMockConfiguration().port(8990)
-        );
-        server.start();
-        WireMock.configureFor("localhost", 8990);
-    }
-
-    @AfterAll
-    static void stop() {
-        server.stop();
-    }
-
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data() throws Exception {
+    public void should_get_users_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -88,6 +65,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
                 .state(DECISION)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
+                    .with(APPEAL_TYPE, AppealType.PA)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
@@ -110,7 +88,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_users_from_professional_ref_data_no_org_id() throws Exception {
+    public void should_get_users_from_professional_ref_data_no_org_id(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJsonNoOrgId =
             new String(Files.readAllBytes(Paths.get(resourceFileNoOrgId.getURI())));
@@ -130,6 +109,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
                 .state(DECISION)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "no-org-id-appeal-reference-number")
+                    .with(APPEAL_TYPE, AppealType.PA)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 
@@ -152,7 +132,8 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_get_organisation_identifier_from_professional_ref_data() throws Exception {
+    public void should_get_organisation_identifier_from_professional_ref_data(
+        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) throws Exception {
 
         String prdResponseJson =
             new String(Files.readAllBytes(Paths.get(resourceFile.getURI())));
@@ -172,6 +153,7 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
                 .state(APPEAL_STARTED)
                 .caseData(anAsylumCase()
                     .with(APPEAL_REFERENCE_NUMBER, "some-appeal-reference-number")
+                    .with(APPEAL_TYPE, AppealType.PA)
                     .with(APPELLANT_GIVEN_NAMES, "some-given-name")
                     .with(APPELLANT_FAMILY_NAME, "some-family-name"))));
 

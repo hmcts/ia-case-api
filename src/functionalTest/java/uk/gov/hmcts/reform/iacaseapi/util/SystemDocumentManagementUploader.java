@@ -6,24 +6,24 @@ import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseDocumentAmClient;
 
 @Service
 public class SystemDocumentManagementUploader {
 
-    private final CcdCaseDocumentAmClient documentUploadClient;
+    private final CaseDocumentClientApi caseDocumentClientApi;
 
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
     public SystemDocumentManagementUploader(
-            CcdCaseDocumentAmClient documentUploadClient,
+        CaseDocumentClientApi caseDocumentClientApi,
         AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
-        this.documentUploadClient = documentUploadClient;
+        this.caseDocumentClientApi = caseDocumentClientApi;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
@@ -58,7 +58,7 @@ public class SystemDocumentManagementUploader {
             );
 
             UploadResponse uploadResponse =
-                    documentUploadClient
+                caseDocumentClientApi
                             .uploadDocuments(
                                     accessToken,
                                     serviceAuthorizationToken,
