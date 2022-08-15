@@ -9,13 +9,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADD_CASE_N
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.util.List;
 import java.util.Optional;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.lanwen.wiremock.ext.WiremockResolver;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.fixtures.PreSubmitCallbackResponseForTest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -24,10 +28,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUserDetailsStub {
 
+    public static WireMockServer server;
+
+    @BeforeAll
+    static void setUpServer(){
+            server = new WireMockServer(
+                    new WireMockConfiguration().port(8990)
+            );
+            server.start();
+            WireMock.configureFor("localhost", 8990);
+    }
+
+    @AfterAll
+    static void stop() {
+        server.stop();
+    }
+
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-caseofficer"})
-    public void adds_a_case_note(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void adds_a_case_note() {
 
         addCaseWorkerUserDetailsStub(server);
 
