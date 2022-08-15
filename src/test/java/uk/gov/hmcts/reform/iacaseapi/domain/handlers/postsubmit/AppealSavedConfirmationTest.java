@@ -151,8 +151,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -241,8 +241,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -288,8 +288,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -334,8 +334,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         assertThat(
@@ -346,7 +346,7 @@ class AppealSavedConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation_for_PA_pay_for() {
+    void should_return_confirmation_for_PA_pay() {
 
         long caseId = 1234;
 
@@ -373,8 +373,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
@@ -438,8 +438,8 @@ class AppealSavedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "[pay for and submit your appeal]"
-                + "(/case/IA/Asylum/" + caseId + "#Service%20Request)"
+                "[submit your appeal]"
+                + "(/case/IA/Asylum/" + caseId + "/trigger/submitAppeal)"
             );
 
         verify(ccdCaseAssignment, times(1)).revokeAccessToCase(callback, organisationIdentifier);
