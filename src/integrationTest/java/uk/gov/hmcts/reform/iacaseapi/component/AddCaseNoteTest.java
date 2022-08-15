@@ -13,8 +13,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.util.List;
 import java.util.Optional;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,12 +29,12 @@ public class AddCaseNoteTest extends SpringBootIntegrationTest implements WithUs
     public static WireMockServer server;
 
     @BeforeAll
-    static void setUpServer(){
-            server = new WireMockServer(
-                    new WireMockConfiguration().port(8990)
-            );
-            server.start();
-            WireMock.configureFor("localhost", 8990);
+    static void setUpServer() {
+        server = new WireMockServer(
+                new WireMockConfiguration().port(8990)
+        );
+        server.start();
+        WireMock.configureFor("localhost", 8990);
     }
 
     @AfterAll
