@@ -72,6 +72,7 @@
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2022-29885</cve>
         <cve>CVE-2022-34305</cve>
+        <cve>CVE-2022-31197</cve>
     </suppress>
 
 </suppressions>
