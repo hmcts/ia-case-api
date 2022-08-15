@@ -49,18 +49,14 @@ public abstract class SpringBootIntegrationTest {
     @Autowired
     private WebApplicationContext wac;
 
+    protected IaCaseApiClient iaCaseApiClient;
+
     @BeforeEach
     void setUp() {
         WebRequestTrackingFilter filter;
         filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mockMvc = webAppContextSetup(wac).addFilters(filter).build();
-    }
-
-    protected IaCaseApiClient iaCaseApiClient;
-
-    @BeforeEach
-    public void setUpApiClient() {
         iaCaseApiClient = new IaCaseApiClient(objectMapper, mockMvc);
     }
 

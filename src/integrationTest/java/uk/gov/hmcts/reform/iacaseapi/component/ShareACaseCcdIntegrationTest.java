@@ -10,6 +10,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SHARE_A_CA
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECISION;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -18,14 +20,16 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.lanwen.wiremock.ext.WiremockResolver;
+import uk.gov.hmcts.reform.iacaseapi.Application;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.SpringBootIntegrationTest;
-import uk.gov.hmcts.reform.iacaseapi.component.testutils.StaticPortWiremockFactory;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithReferenceDataStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithServiceAuthStub;
 import uk.gov.hmcts.reform.iacaseapi.component.testutils.WithUserDetailsStub;
@@ -34,7 +38,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 
+
 @Slf4j
+@ContextConfiguration(classes = Application.class)
 public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest implements WithServiceAuthStub,
     WithUserDetailsStub, WithReferenceDataStub {
 
@@ -58,6 +64,23 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     private String prdResponseJson;
 
+    private static WireMockServer server;
+
+
+    @BeforeAll
+    static void init() {
+        server = new WireMockServer(
+                new WireMockConfiguration().port(8990)
+        );
+        server.start();
+        WireMock.configureFor("localhost", 8990);
+    }
+
+    @AfterAll
+    static void stop() {
+        server.stop();
+    }
+
     @BeforeEach
     public void setupReferenceDataStub() throws IOException {
 
@@ -69,8 +92,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_success_when_user_is_valid_and_201_returned_from_ccd(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void should_return_success_when_user_is_valid_and_201_returned_from_ccd() {
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
@@ -104,8 +126,7 @@ public class ShareACaseCcdIntegrationTest extends SpringBootIntegrationTest impl
 
     @Test
     @WithMockUser(authorities = {"caseworker-ia", "caseworker-ia-legalrep-solicitor"})
-    public void should_return_failure_when_user_is_invalid(
-        @WiremockResolver.Wiremock(factory = StaticPortWiremockFactory.class) WireMockServer server) {
+    public void should_return_failure_when_user_is_invalid() {
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);

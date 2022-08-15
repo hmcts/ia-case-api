@@ -16,3 +16,6 @@ featureFlag:
 idam:
   s2s-authorised:
     services: ia
+
+wiremock:
+  reset-mappings-after-each-test: true
