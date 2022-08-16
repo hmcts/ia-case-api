@@ -105,7 +105,7 @@ class ChangeDirectionDueDateHandlerTest {
     void should_copy_due_date_back_into_main_direction_fields_ignoring_other_changes() {
 
         List<IdValue<Direction>> existingDirections =
-            Arrays.asList(
+               Arrays.asList(
                 new IdValue<>("1", new Direction(
                     "explanation-1",
                     Parties.LEGAL_REPRESENTATIVE,
@@ -117,13 +117,15 @@ class ChangeDirectionDueDateHandlerTest {
                     UUID.randomUUID().toString(),
                     "directionType1"
                 )),
+
+
                 new IdValue<>("2", new Direction(
                     "explanation-2",
                     Parties.RESPONDENT,
                     "2020-11-01",
                     "2019-11-01",
                     DirectionTag.RESPONDENT_REVIEW,
-                    newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
+                        newArrayList(new IdValue<>("1", new PreviousDates("2018-05-01", "2018-03-01"))),
                     Collections.emptyList(),
                     UUID.randomUUID().toString(),
                     "directionType2"
