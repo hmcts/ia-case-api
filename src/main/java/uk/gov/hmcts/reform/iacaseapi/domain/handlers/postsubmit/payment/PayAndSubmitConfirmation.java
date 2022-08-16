@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealPaymentCon
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Slf4j
@@ -36,19 +37,22 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     private final PostNotificationSender<AsylumCase> postNotificationSender;
     private final Scheduler scheduler;
     private final DateProvider dateProvider;
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
     public PayAndSubmitConfirmation(
         AppealPaymentConfirmationProvider appealPaymentConfirmationProvider,
         FeePayment<AsylumCase> feePayment,
         PostNotificationSender<AsylumCase> postNotificationSender,
         Scheduler scheduler,
-        DateProvider dateProvider) {
+        DateProvider dateProvider,
+        CcdSupplementaryUpdater ccdSupplementaryUpdater) {
 
         this.appealPaymentConfirmationProvider = appealPaymentConfirmationProvider;
         this.feePayment = feePayment;
         this.postNotificationSender = postNotificationSender;
         this.scheduler = scheduler;
         this.dateProvider = dateProvider;
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
     public boolean canHandle(
@@ -78,6 +82,10 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
 
         if (isAipJourney) {
             return new PostSubmitCallbackResponse();
+        }
+
+        if (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent()) {
+            ccdSupplementaryUpdater.updateSupplementary(callback);
         }
 
         boolean isException = false;
@@ -111,6 +119,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 // optionally we can use timed event status to send appropriate message to the Case Officer in case of rollback failure
             }
         }
+
 
         // send GovNotify notifications
         PostSubmitCallbackResponse postSubmitResponse = sendNotifications(callback, asylumCase);

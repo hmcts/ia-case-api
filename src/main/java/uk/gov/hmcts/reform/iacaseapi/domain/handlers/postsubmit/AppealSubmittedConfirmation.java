@@ -23,9 +23,12 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @Component
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
     private static final String PAYMENT_OPTION_PAY_OFFLINE = "payOffline";
     private static final String PAYMENT_OPTION_PAY_LATER = "payLater";
@@ -50,6 +53,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
+    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+    }
+
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
@@ -67,6 +74,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
+
+        ccdSupplementaryUpdater.updateSupplementary(callback);
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
