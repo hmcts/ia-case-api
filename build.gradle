@@ -239,6 +239,7 @@ project.tasks['sonarqube'].group = "Verification"
 repositories {
     jcenter()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencyManagement {
@@ -294,10 +295,13 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.1'
+    implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
+
     testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
     testImplementation group: 'ru.lanwen.wiremock', name: 'wiremock-junit5', version: '1.3.1'
     testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
+    testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'3.5.0'
@@ -312,7 +316,7 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
     testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
-    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+
     //pact contract testing
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
     contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
