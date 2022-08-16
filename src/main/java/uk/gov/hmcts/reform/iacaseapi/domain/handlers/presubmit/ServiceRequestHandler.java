@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
-import java.util.Objects;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -23,8 +23,7 @@ public class ServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCas
 
     public ServiceRequestHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
-        FeePayment<AsylumCase> feePayment
-    ) {
+        FeePayment<AsylumCase> feePayment) {
         this.feePayment = feePayment;
         this.isFeePaymentEnabled = isFeePaymentEnabled;
     }
@@ -37,7 +36,7 @@ public class ServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCas
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-               && Objects.equals(Event.SUBMIT_APPEAL, callback.getEvent())
+               && List.of(Event.SUBMIT_APPEAL, Event.GENERATE_SERVICE_REQUEST).contains(callback.getEvent())
                && isFeePaymentEnabled;
     }
 
@@ -54,6 +53,7 @@ public class ServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCas
 
         if (!isAipJourney(asylumCase)) {
             asylumCase = feePayment.aboutToSubmit(callback);
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
