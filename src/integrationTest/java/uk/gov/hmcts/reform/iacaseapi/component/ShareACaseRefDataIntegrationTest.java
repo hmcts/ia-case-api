@@ -57,7 +57,6 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
-        addCaseWorkerUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
@@ -102,7 +101,6 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
-        addCaseWorkerUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJsonNoOrgId);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
@@ -147,7 +145,6 @@ public class ShareACaseRefDataIntegrationTest extends SpringBootIntegrationTest 
 
         addServiceAuthStub(server);
         addLegalRepUserDetailsStub(server);
-        addCaseWorkerUserDetailsStub(server);
         addReferenceDataPrdResponseStub(server, refDataPath, prdResponseJson);
 
         PreSubmitCallbackResponseForTest response = iaCaseApiClient.aboutToStart(callback()
