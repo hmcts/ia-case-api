@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -20,8 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class SubmitAppealPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
-    private final String PAY_OFFLINE = "payOffline";
-    private final String PAY_LATER = "payLater";
+    private static final String PAY_OFFLINE = "payOffline";
+    private static final String PAY_LATER = "payLater";
 
     public SubmitAppealPreparer(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled

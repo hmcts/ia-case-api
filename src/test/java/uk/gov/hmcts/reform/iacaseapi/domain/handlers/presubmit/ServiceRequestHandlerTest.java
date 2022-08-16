@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,7 +112,8 @@ public class ServiceRequestHandlerTest {
                 boolean canHandle = serviceRequestHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && Objects.equals(Event.SUBMIT_APPEAL, event)) {
+                    && List.of(Event.SUBMIT_APPEAL,
+                    Event.GENERATE_SERVICE_REQUEST).contains(event)) {
 
                     assertTrue(canHandle);
                 } else {

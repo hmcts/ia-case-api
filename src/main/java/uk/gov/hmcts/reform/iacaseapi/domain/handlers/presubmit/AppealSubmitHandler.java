@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -18,8 +19,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final String PAY_OFFLINE = "payOffline";
-    private final String PAY_LATER = "payLater";
+    private static final String PAY_OFFLINE = "payOffline";
+    private static final String PAY_LATER = "payLater";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -47,9 +48,14 @@ public class AppealSubmitHandler implements PreSubmitCallbackHandler<AsylumCase>
                 .getCaseDetails()
                 .getCaseData();
 
+        boolean isAipJourney = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.AIP)
+            .orElse(false);
+
         String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
 
-        if (paAppealTypePaymentOption.equals(PAY_OFFLINE)) {
+        if (paAppealTypePaymentOption.equals(PAY_OFFLINE) && !isAipJourney) {
             asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, PAY_LATER);
         }
 
