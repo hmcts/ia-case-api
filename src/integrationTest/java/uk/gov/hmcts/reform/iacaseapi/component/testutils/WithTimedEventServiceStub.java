@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
+import org.springframework.http.HttpHeaders;
 
 public interface WithTimedEventServiceStub {
 
@@ -22,6 +23,7 @@ public interface WithTimedEventServiceStub {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
+                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .withBody("{ \"id\": \"" + expectedId + "\","
                         + " \"jurisdiction\": \"IA\","
                         + " \"caseType\": \"Asylum\","
