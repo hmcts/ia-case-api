@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
@@ -25,6 +26,10 @@ public class TimedEventMessageConverterCustomizerTest {
 
         timedEventMessageConverterCustomizer.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
 
+        assertNull(timedEventMessageConverterCustomizer.getObject());
+        assertNull(timedEventMessageConverterCustomizer.getIfAvailable());
+        assertNull(timedEventMessageConverterCustomizer.getObject(new Object()));
+        assertNull(timedEventMessageConverterCustomizer.getIfUnique());
         assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());
     }
 
