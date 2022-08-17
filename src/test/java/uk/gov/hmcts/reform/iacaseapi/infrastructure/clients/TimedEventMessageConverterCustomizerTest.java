@@ -25,7 +25,7 @@ public class TimedEventMessageConverterCustomizerTest {
 
         timedEventMessageConverterCustomizer.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
 
-        assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes() );
+        assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());
     }
 
 }
