@@ -6,9 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.infrastructure.config.ServiceTokenGe
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.codec.Decoder;
-import java.util.function.Consumer;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
@@ -42,7 +39,7 @@ public interface TimedEventServiceApi {
         @Bean
         public Decoder decoder(ObjectMapper objectMapper) {
             HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-            return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter), new CusotmizerObjectProvider<>()));
+            return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter), new TimedEventMessageConverterCustomizer<>()));
         }
 
         @Bean
@@ -53,33 +50,7 @@ public interface TimedEventServiceApi {
 
     }
 
-    class CusotmizerObjectProvider<T> implements ObjectProvider<T> {
-        @Override
-        public T getObject() throws BeansException {
-            return null;
-        }
 
-        @Override
-        public T getObject(Object... args) throws BeansException {
-            return null;
-        }
-
-        @Override
-        public T getIfAvailable() throws BeansException {
-            return null;
-        }
-
-        @Override
-        public T getIfUnique() throws BeansException {
-            return null;
-        }
-
-        @Override
-        public void forEach(Consumer action) {
-            // do nothing
-        }
-
-    }
 
 }
 
