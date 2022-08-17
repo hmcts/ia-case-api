@@ -94,14 +94,14 @@ public class IdamApiConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentUserInfo")
-    public void verifyIdamUserDetailsRolesPactUserInfo() throws InterruptedException {
+    public void verifyIdamUserDetailsRolesPactUserInfo() {
         UserInfo userInfo = idamApi.userInfo(AUTH_TOKEN);
         assertEquals("User is not Case Officer", "ia-caseofficer@fake.hmcts.net", userInfo.getEmail());
     }
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentToken")
-    public void verifyIdamUserDetailsRolesPactToken() throws InterruptedException{
+    public void verifyIdamUserDetailsRolesPactToken() {
         Map<String, String> tokenRequestMap = buildTokenRequestMap();
         Token token = idamApi.token(tokenRequestMap);
         assertEquals("Token is not expected", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre", token.getAccessToken());
