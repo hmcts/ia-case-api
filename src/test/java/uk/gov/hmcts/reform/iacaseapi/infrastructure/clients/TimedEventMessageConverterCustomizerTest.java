@@ -23,14 +23,14 @@ public class TimedEventMessageConverterCustomizerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         HttpMessageConverter jacksonConverter1 = new MappingJackson2HttpMessageConverter(objectMapper);
         HttpMessageConverter jacksonConverter2 = new MappingJackson2HttpMessageConverter(objectMapper);
-
         timedEventMessageConverterCustomizer.forEach(t -> t.accept(Arrays.asList(jacksonConverter1)));
 
+        assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());
         assertNull(timedEventMessageConverterCustomizer.getObject());
         assertNull(timedEventMessageConverterCustomizer.getIfAvailable());
         assertNull(timedEventMessageConverterCustomizer.getObject(new Object()));
         assertNull(timedEventMessageConverterCustomizer.getIfUnique());
-        assertEquals(jacksonConverter1.getSupportedMediaTypes(),jacksonConverter2.getSupportedMediaTypes());
+
     }
 
 }
