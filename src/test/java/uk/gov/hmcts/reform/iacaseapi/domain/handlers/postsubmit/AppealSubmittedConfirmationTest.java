@@ -5,10 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -29,9 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment.PayAndSubmitConfirmation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -73,7 +71,7 @@ class AppealSubmittedConfirmationTest {
 
         appealSubmittedConfirmation.handle(callback);
 
-        verify(ccdSupplementaryUpdater).updateSupplementary(callback);
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
     }
 
     @Test

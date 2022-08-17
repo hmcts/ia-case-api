@@ -103,7 +103,7 @@ class PayAndSubmitConfirmationTest {
 
         payAndSubmitConfirmation.handle(callback);
 
-        verify(ccdSupplementaryUpdater).updateSupplementary(callback);
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
     }
 
     @Test

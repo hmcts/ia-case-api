@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static java.util.Collections.singletonMap;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.Maps;
+import java.net.URI;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -13,12 +18,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-import java.net.URI;
-import java.util.Map;
-
-import static java.util.Collections.singletonMap;
-import static java.util.Objects.requireNonNull;
-
 @Service
 @Slf4j
 public class CcdSupplementaryUpdater {
@@ -30,21 +29,24 @@ public class CcdSupplementaryUpdater {
     private final UserDetails userDetails;
     private String ccdUrl;
     private String ccdSupplementaryApiPath;
+    private String hmctsServiceId;
 
     public CcdSupplementaryUpdater(RestTemplate restTemplate,
                                    AuthTokenGenerator serviceAuthTokenGenerator,
                                    UserDetails userDetails,
                                    @Value("${core_case_data_api_url}") String ccrUrl,
-                                   @Value("${core_case_data_api_supplementary_data_path}") String ccdSupplementaryApiPath
+                                   @Value("${core_case_data_api_supplementary_data_path}") String ccdSupplementaryApiPath,
+                                   @Value("${hmcts_service_id}") String hmctsServiceId
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetails = userDetails;
         this.ccdUrl = ccrUrl;
         this.ccdSupplementaryApiPath = ccdSupplementaryApiPath;
+        this.hmctsServiceId = hmctsServiceId;
     }
 
-    public void updateSupplementary(
+    public void setHmctsServiceIdSupplementary(
         final Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
@@ -61,7 +63,7 @@ public class CcdSupplementaryUpdater {
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
 
         Map<String, Map<String, Object>> payloadData = Maps.newHashMap();
-        payloadData.put("$set", singletonMap("HMCTSServiceId", "BFA1"));
+        payloadData.put("$set", singletonMap("HMCTSServiceId", hmctsServiceId));
 
         Map<String, Object> payload = Maps.newHashMap();
         payload.put("supplementary_data_updates", payloadData);

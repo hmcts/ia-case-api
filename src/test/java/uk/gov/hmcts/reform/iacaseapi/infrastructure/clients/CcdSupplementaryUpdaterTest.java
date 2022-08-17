@@ -1,5 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,13 +22,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +39,7 @@ class CcdSupplementaryUpdaterTest {
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
     private String ccdUrl = "some-host";
     private String ccdSupplementaryApiPath = "some-path";
+    private String hmctsServiceId = "some-id";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private RestTemplate restTemplate;
@@ -53,7 +60,8 @@ class CcdSupplementaryUpdaterTest {
                 serviceAuthTokenGenerator,
                 userDetails,
                 ccdUrl,
-                ccdSupplementaryApiPath);
+                ccdSupplementaryApiPath,
+                hmctsServiceId);
     }
 
     @Test
@@ -73,7 +81,7 @@ class CcdSupplementaryUpdaterTest {
 
         when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
 
-        ccdSupplementaryUpdater.updateSupplementary(callback);
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         verify(restTemplate)
             .exchange(
@@ -102,7 +110,7 @@ class CcdSupplementaryUpdaterTest {
             )
         ).thenThrow(restClientResponseEx);
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.updateSupplementary(callback))
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback))
             .isInstanceOf(CcdDataIntegrationException.class)
             .hasMessage("Couldn't update CCD case supplementary data using API: "
                 + ccdUrl
@@ -122,7 +130,7 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_throw_when_callback_param_is_null() {
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.updateSupplementary(null))
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

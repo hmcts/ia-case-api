@@ -85,7 +85,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         }
 
         if (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent()) {
-            ccdSupplementaryUpdater.updateSupplementary(callback);
+            ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
         }
 
         boolean isException = false;
