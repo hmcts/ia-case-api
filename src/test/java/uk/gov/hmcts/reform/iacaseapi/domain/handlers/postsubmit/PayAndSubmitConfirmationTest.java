@@ -145,6 +145,8 @@ class PayAndSubmitConfirmationTest {
         PostSubmitCallbackResponse equalCallbackResponse =
                 payAndSubmitConfirmation.handle(callback);
 
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+
         assertNotNull(equalCallbackResponse);
         assertFalse(equalCallbackResponse.getConfirmationHeader().isPresent());
         assertFalse(equalCallbackResponse.getConfirmationBody().isPresent());

@@ -75,6 +75,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         long caseId = callback.getCaseDetails().getId();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+
         // make a payment
         final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
             .map(j -> j == JourneyType.AIP)
@@ -84,9 +86,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
             return new PostSubmitCallbackResponse();
         }
 
-        if (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent()) {
-            ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
-        }
 
         boolean isException = false;
         try {
