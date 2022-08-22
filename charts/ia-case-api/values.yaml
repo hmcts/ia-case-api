@@ -28,9 +28,10 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   postgresql:
-    postgresqlUsername: ia_case_api
-    postgresqlPassword: ia_case_api
-    postgresqlDatabase: ia_case_api
+    auth:
+      username: ia_case_api
+      password: ia_case_api
+      database: ia_case_api
     service:
       port: 5432
   keyVaults:
