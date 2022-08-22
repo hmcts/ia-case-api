@@ -55,6 +55,7 @@ public class MakeAnApplicationTypesProvider {
             case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
             case AWAITING_CMA_REQUIREMENTS:
             case CASE_UNDER_REVIEW:
+            case REASONS_FOR_APPEAL_SUBMITTED:
             case RESPONDENT_REVIEW:
             case SUBMIT_HEARING_REQUIREMENTS:
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
