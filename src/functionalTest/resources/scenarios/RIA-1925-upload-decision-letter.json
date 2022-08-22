@@ -1,5 +1,6 @@
 {
   "description": "RIA-1925 upload decision letter at appeal submission",
+  "disable": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
