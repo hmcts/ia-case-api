@@ -51,8 +51,7 @@ class PaymentStateHandlerTest {
 
     private PaymentStateHandler paymentStateHandler;
 
-    private final String PA_PAY_NOW = "payNow";
-
+    private static final String PA_PAY_NOW = "payNow";
 
     @BeforeEach
     public void setUp() {

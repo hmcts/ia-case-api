@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandl
 public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
-    private final static String PA_PAY_NOW = "payNow";
+    private static final String PA_PAY_NOW = "payNow";
 
     public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled
@@ -80,7 +80,7 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
                                                                  || (remissionType.isPresent());
-        boolean isPAPayNow = paPaymentType.isPresent() && paPaymentType.equals(Optional.of(PA_PAY_NOW));
+        boolean isPaPayNow = paPaymentType.isPresent() && paPaymentType.equals(Optional.of(PA_PAY_NOW));
 
         switch (appealType) {
             case EA:
@@ -90,8 +90,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             case PA:
-                if (isPaymentStatusPendingOrFailed && isPAPayNow) {
-                        return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+                if (isPaymentStatusPendingOrFailed && isPaPayNow) {
+                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
