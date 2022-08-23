@@ -1,5 +1,6 @@
 {
   "description": "RIA-3305 sends ho notification for async Stitching Complete",
+  "disabled": "true",
   "launchDarklyKey": "home-office-notification-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
