@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PRIVATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.PUBLIC;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.RESTRICTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,14 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Attributes;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Classification;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.GrantType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignmentResource;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.allocatecase.CaseWorkerName;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.CaseWorkerProfile;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.refdata.UserIds;
@@ -81,8 +72,7 @@ class CaseWorkerServiceTest {
                 Attributes.PRIMARY_LOCATION, List.of("some location")
             ))
             .build();
-        assertThat(actualQueryRequest)
-            .isEqualToIgnoringGivenFields(expectedQueryRequest, "validAt");
+        assertThat(actualQueryRequest).usingRecursiveComparison().ignoringFields("validAt").isEqualTo(expectedQueryRequest);
     }
 
     private static Stream<Scenario> scenarioProvider() {
