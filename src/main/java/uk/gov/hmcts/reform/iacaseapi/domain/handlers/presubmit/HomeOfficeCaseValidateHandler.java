@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
@@ -56,7 +55,6 @@ public class HomeOfficeCaseValidateHandler implements PreSubmitCallbackHandler<A
         return isHomeOfficeIntegrationEnabled
             && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && (callback.getEvent() == SUBMIT_APPEAL
-            || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
             || callback.getEvent() == MARK_APPEAL_PAID
             || callback.getEvent() == REQUEST_HOME_OFFICE_DATA);
     }

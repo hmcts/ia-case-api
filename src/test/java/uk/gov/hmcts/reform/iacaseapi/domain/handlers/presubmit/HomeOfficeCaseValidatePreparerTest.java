@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_HOME_OFFICE_INTEGRATION_ENABLED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
@@ -178,11 +177,6 @@ class HomeOfficeCaseValidatePreparerTest {
                 Arguments.of(SUBMIT_APPEAL, DC),
                 Arguments.of(SUBMIT_APPEAL, EA),
                 Arguments.of(SUBMIT_APPEAL, HU),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, PA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, RP),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, DC),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, EA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, HU),
                 Arguments.of(MARK_APPEAL_PAID, PA),
                 Arguments.of(MARK_APPEAL_PAID, RP),
                 Arguments.of(MARK_APPEAL_PAID, DC),
@@ -221,31 +215,6 @@ class HomeOfficeCaseValidatePreparerTest {
         verify(homeOfficeApi, times(0)).aboutToStart(callback);
     }
 
-    @ParameterizedTest
-    @MethodSource("eventAndAppealTypesData")
-    void handler_checks_home_office_integration_disabled_returns_no(Event event, AppealType appealType) {
-
-        homeOfficeCaseValidatePreparer =
-                new HomeOfficeCaseValidatePreparer(false, featureToggler, homeOfficeApi);
-        when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
-        when(featureToggler.getValue("home-office-uan-dc-ea-hu-feature", false)).thenReturn(true);
-
-        when(callback.getEvent()).thenReturn(PAY_AND_SUBMIT_APPEAL);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-            homeOfficeCaseValidatePreparer.handle(ABOUT_TO_START, callback);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isNotEmpty();
-        assertThat(response.getData()).isEqualTo(asylumCase);
-        assertThat(response.getErrors()).isEmpty();
-        verify(asylumCase, times(1)).write(
-            IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);
-    }
-
     @Test
     void it_can_handle_callback() {
 
@@ -259,7 +228,6 @@ class HomeOfficeCaseValidatePreparerTest {
 
                 if (callbackStage == ABOUT_TO_START
                     && (callback.getEvent() == SUBMIT_APPEAL
-                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
                     || callback.getEvent() == MARK_APPEAL_PAID
                     || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {

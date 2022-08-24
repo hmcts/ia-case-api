@@ -1,49 +1,43 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
-public class SubmitAppealPreparer implements PreSubmitCallbackHandler<AsylumCase> {
+public class ServiceRequestHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final boolean isfeePaymentEnabled;
-    private static final String PAY_OFFLINE = "payOffline";
-    private static final String PAY_LATER = "payLater";
+    private final FeePayment<AsylumCase> feePayment;
+    private final boolean isFeePaymentEnabled;
 
-    public SubmitAppealPreparer(
-        @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled
-    ) {
-        this.isfeePaymentEnabled = isfeePaymentEnabled;
+    public ServiceRequestHandler(
+        @Value("${featureFlag.isfeePaymentEnabled}") boolean isFeePaymentEnabled,
+        FeePayment<AsylumCase> feePayment) {
+        this.feePayment = feePayment;
+        this.isFeePaymentEnabled = isFeePaymentEnabled;
     }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
-
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        boolean isAipJourney = callback.getCaseDetails().getCaseData()
-            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-            .map(journeyType -> journeyType == JourneyType.AIP)
-            .orElse(false);
-
-        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)
-               && Event.SUBMIT_APPEAL == callback.getEvent()
-               && isfeePaymentEnabled
-               && !isAipJourney;
+        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+               && List.of(Event.SUBMIT_APPEAL, Event.GENERATE_SERVICE_REQUEST).contains(callback.getEvent())
+               && isFeePaymentEnabled;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -54,14 +48,20 @@ public class SubmitAppealPreparer implements PreSubmitCallbackHandler<AsylumCase
             throw new IllegalStateException("Cannot handle callback");
         }
 
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String paAppealTypePaymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+        if (!isAipJourney(asylumCase)) {
+            asylumCase = feePayment.aboutToSubmit(callback);
 
-        if (paAppealTypePaymentOption.equals(PAY_OFFLINE)) {
-            asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, PAY_LATER);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private boolean isAipJourney(AsylumCase asylumCase) {
+        return asylumCase.read(JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.AIP)
+            .orElse(false);
     }
 }

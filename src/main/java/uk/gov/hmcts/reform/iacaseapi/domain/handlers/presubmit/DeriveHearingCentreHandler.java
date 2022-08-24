@@ -52,8 +52,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
             Event.SUBMIT_APPEAL,
-            Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.PAY_AND_SUBMIT_APPEAL)
+            Event.EDIT_APPEAL_AFTER_SUBMIT)
                    .contains(callback.getEvent());
     }
 

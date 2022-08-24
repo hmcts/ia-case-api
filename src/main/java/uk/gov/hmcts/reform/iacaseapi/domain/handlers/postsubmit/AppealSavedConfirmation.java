@@ -2,14 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -69,32 +71,23 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
-        if (appealType == AppealType.EA || appealType == AppealType.HU) {
-            paymentOption = asylumCase
-                .read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
-                .orElse("");
-        } else if (appealType == AppealType.PA) {
+        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+
+        if (appealType == AppealType.PA) {
             paymentOption = asylumCase
                 .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                 .orElse("");
         }
 
-        String submitPaymentAppealUrl = "";
-        String payOrSubmitLabel = "";
+        String submitAppealUrl = "/trigger/submitAppeal";
+        String submitLabel = "submit your appeal";
 
-        if (paymentOption != null && paymentOption.equals("payNow")) {
-            submitPaymentAppealUrl = "/trigger/payAndSubmitAppeal";
-            payOrSubmitLabel = "pay for and submit your appeal";
-        } else {
-            submitPaymentAppealUrl = "/trigger/submitAppeal";
-            payOrSubmitLabel = "submit your appeal";
-        }
 
         postSubmitResponse.setConfirmationHeader("# Your appeal details have been saved\n# You still need to submit it");
         postSubmitResponse.setConfirmationBody(
             "### Do this next\n\n"
-            + "If you're ready to proceed [" + payOrSubmitLabel + "](/case/IA/Asylum/"
-            + callback.getCaseDetails().getId() + submitPaymentAppealUrl + ").\n\n"
+            + "If you're ready to proceed [" + submitLabel + "](/case/IA/Asylum/"
+            + callback.getCaseDetails().getId() + submitAppealUrl + ").\n\n"
             + "#### Not ready to submit yet?\n"
             + "You can return to the case details to make changes."
         );

@@ -145,24 +145,6 @@ class MarkPaymentPaidPreparerTest {
         assertThat(returnedCallbackResponse.getErrors()).contains("Payment is not required for this type of appeal.");
     }
 
-    @Test
-    void should_throw_error_for_pa_pay_later() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
-
-        assertNotNull(returnedCallbackResponse);
-        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid");
-    }
-
     @ParameterizedTest
     @MethodSource("appealTypesWithRemissionTypes")
     void handling_should_error_for_remission_decision_not_present(AppealType type, RemissionType remissionType, AsylumCaseFieldDefinition field) {

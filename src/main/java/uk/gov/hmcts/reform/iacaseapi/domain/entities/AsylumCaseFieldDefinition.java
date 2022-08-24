@@ -1542,6 +1542,9 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_CATEGORY(
         "hmctsCaseCategory", new TypeReference<String>(){}),
 
+    HAS_SERVICE_REQUEST_ALREADY(
+        "hasServiceRequestAlready", new TypeReference<YesOrNo>(){}),
+
     ;
 
     private final String value;

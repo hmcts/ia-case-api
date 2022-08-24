@@ -46,7 +46,7 @@ public class AnonymousByDefaultHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
     void should_set_anonymity_flag_for_PA_appeal(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -66,7 +66,7 @@ public class AnonymousByDefaultHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
     void should_set_anonymity_flag_for_RP_appeal(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -86,7 +86,7 @@ public class AnonymousByDefaultHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"})
     void anonymity_flag_should_not_be_set_for_non_PA_or_RP_appeal_if_not_already_set(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -110,8 +110,7 @@ public class AnonymousByDefaultHandlerTest {
                 boolean canHandle = anonymousByDefaultHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && (callback.getEvent() == SUBMIT_APPEAL
-                        || callback.getEvent() == PAY_AND_SUBMIT_APPEAL)) {
+                        && callback.getEvent() == SUBMIT_APPEAL) {
                     assertTrue(canHandle, "Can handle event " + event);
                 } else {
                     assertFalse(canHandle, "Cannot handle event " + event);

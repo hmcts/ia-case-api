@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
 import java.util.Collections;
@@ -37,8 +36,7 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         return
                 callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && (callback.getEvent() == SUBMIT_APPEAL
-                        || callback.getEvent() == PAY_AND_SUBMIT_APPEAL);
+                        && (callback.getEvent() == SUBMIT_APPEAL);
     }
 
     @Override

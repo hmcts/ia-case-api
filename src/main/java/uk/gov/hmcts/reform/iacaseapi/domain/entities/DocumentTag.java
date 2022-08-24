@@ -30,6 +30,7 @@ public enum DocumentTag {
     UPPER_TRIBUNAL_BUNDLE("upperTribunalBundle"),
     APPEAL_REASONS("appealReasons"),
     CLARIFYING_QUESTIONS("clarifyingQuestions"),
+    END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
 
     @JsonEnumDefaultValue
     NONE("");

@@ -4,22 +4,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -39,42 +33,6 @@ class PaymentHandlerTest {
 
         paymentHandler =
             new PaymentHandler(true);
-    }
-
-    @Test
-    void should_make_payment_status_update_on_the_case() {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            paymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.PAID);
-        verify(asylumCase).write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
-
-    }
-
-    @Test
-    void should_not_set_payment_status_for_aip() {
-
-        when(callback.getEvent()).thenReturn(Event.PAY_AND_SUBMIT_APPEAL);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-
-        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class))
-                .thenReturn(Optional.of(JourneyType.AIP));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                paymentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        verify(asylumCase, times(0))
-                .write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.PAID);
-        verify(asylumCase, times(1))
-                .write(AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED, YesOrNo.YES);
     }
 
     @Test
@@ -110,9 +68,7 @@ class PaymentHandlerTest {
                 boolean canHandle = paymentHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-                        || callback.getEvent() == Event.PAY_FOR_APPEAL
-                        || callback.getEvent() == Event.PAYMENT_APPEAL)) {
+                    && callback.getEvent() == Event.PAYMENT_APPEAL) {
 
                     assertTrue(canHandle);
                 } else {

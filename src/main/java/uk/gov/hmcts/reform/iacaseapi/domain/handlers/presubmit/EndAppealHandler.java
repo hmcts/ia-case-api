@@ -44,7 +44,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.END_APPEAL;
+               && (callback.getEvent() == Event.END_APPEAL || callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

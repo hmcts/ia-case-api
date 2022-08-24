@@ -11,7 +11,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_PAID;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_HOME_OFFICE_DATA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
@@ -306,11 +305,6 @@ class HomeOfficeCaseValidateHandlerTest {
                 Arguments.of(SUBMIT_APPEAL, DC),
                 Arguments.of(SUBMIT_APPEAL, EA),
                 Arguments.of(SUBMIT_APPEAL, HU),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, PA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, RP),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, DC),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, EA),
-                Arguments.of(PAY_AND_SUBMIT_APPEAL, HU),
                 Arguments.of(MARK_APPEAL_PAID, PA),
                 Arguments.of(MARK_APPEAL_PAID, RP),
                 Arguments.of(MARK_APPEAL_PAID, DC),
@@ -337,7 +331,6 @@ class HomeOfficeCaseValidateHandlerTest {
 
                 if (callbackStage == ABOUT_TO_SUBMIT
                     && (callback.getEvent() == SUBMIT_APPEAL
-                    || callback.getEvent() == PAY_AND_SUBMIT_APPEAL
                     || callback.getEvent() == MARK_APPEAL_PAID
                     || callback.getEvent() == REQUEST_HOME_OFFICE_DATA)
                 ) {

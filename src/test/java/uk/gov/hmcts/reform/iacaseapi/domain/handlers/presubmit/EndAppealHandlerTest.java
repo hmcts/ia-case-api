@@ -167,7 +167,7 @@ class EndAppealHandlerTest {
 
                 boolean canHandle = endAppealHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event == Event.END_APPEAL) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && (event == Event.END_APPEAL || event == Event.END_APPEAL_AUTOMATICALLY)) {
 
                     assertTrue(canHandle);
                 } else {

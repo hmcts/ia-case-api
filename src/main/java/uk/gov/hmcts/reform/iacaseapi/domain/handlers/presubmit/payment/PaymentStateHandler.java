@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandl
 public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
+    private static final String PA_PAY_NOW = "payNow";
 
     public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled
@@ -69,21 +70,30 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
+        Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
                 appealType, remissionType, callback.getCaseDetails().getId());
 
+        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                                                                 || (remissionType.isPresent());
+        boolean isPaPayNow = paPaymentType.isPresent() && paPaymentType.equals(Optional.of(PA_PAY_NOW));
+
         switch (appealType) {
             case EA:
             case HU:
-                if ((paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-                    || (remissionType.isPresent()))) {
+                if (isPaymentStatusPendingOrFailed) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-
+            case PA:
+                if (isPaymentStatusPendingOrFailed && isPaPayNow) {
+                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
+                }
+                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
         }
