@@ -8,8 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
@@ -19,16 +18,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 @Service
 public class DocumentManagementUploader implements DocumentUploader {
 
-    private final CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDocumentClient caseDocumentClient;
     private final AuthTokenGenerator serviceAuthorizationTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
 
     public DocumentManagementUploader(
-        CaseDocumentClientApi caseDocumentClientApi,
+        CaseDocumentClient caseDocumentClient,
         AuthTokenGenerator serviceAuthorizationTokenGenerator,
         @Qualifier("requestUser") UserDetailsProvider userDetailsProvider
     ) {
-        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.caseDocumentClient = caseDocumentClient;
         this.serviceAuthorizationTokenGenerator = serviceAuthorizationTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
     }
@@ -50,18 +49,15 @@ public class DocumentManagementUploader implements DocumentUploader {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            DocumentUploadRequest uploadRequest = new DocumentUploadRequest(
-                "PUBLIC",
-                "Asylum",
-                "IA",
-                List.of(file));
 
             UploadResponse uploadResponse =
-                caseDocumentClientApi
+                caseDocumentClient
                     .uploadDocuments(
                         accessToken,
                         serviceAuthorizationToken,
-                        uploadRequest
+                        "Asylum",
+                        "IA",
+                        List.of(file)
                     );
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =

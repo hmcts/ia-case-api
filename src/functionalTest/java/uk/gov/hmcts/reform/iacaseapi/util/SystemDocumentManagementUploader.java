@@ -6,8 +6,7 @@ import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
@@ -15,15 +14,15 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 @Service
 public class SystemDocumentManagementUploader {
 
-    private final CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDocumentClient caseDocumentClient;
 
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
     public SystemDocumentManagementUploader(
-        CaseDocumentClientApi caseDocumentClientApi,
+        CaseDocumentClient caseDocumentClient,
         AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
-        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.caseDocumentClient = caseDocumentClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
@@ -50,19 +49,15 @@ public class SystemDocumentManagementUploader {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            DocumentUploadRequest uploadRequest = new DocumentUploadRequest(
-                "PUBLIC",
-                "Asylum",
-                "IA",
-                Collections.singletonList(file)
-            );
 
             UploadResponse uploadResponse =
-                caseDocumentClientApi
+                caseDocumentClient
                     .uploadDocuments(
                         accessToken,
                         serviceAuthorizationToken,
-                        uploadRequest
+                        "Asylum",
+                        "IA",
+                        Collections.singletonList(file)
                     );
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =

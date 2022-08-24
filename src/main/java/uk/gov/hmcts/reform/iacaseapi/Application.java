@@ -5,14 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 
-@SpringBootApplication
+@SpringBootApplication (
+    scanBasePackages = {"uk.gov.hmcts.reform.ccd.document.am"})
 @EnableRetry
 @EnableFeignClients(basePackages =
     {
     "uk.gov.hmcts.reform.auth",
     "uk.gov.hmcts.reform.authorisation",
-    "uk.gov.hmcts.reform.iacaseapi",
-    "uk.gov.hmcts.reform.ccd.document"
+    "uk.gov.hmcts.reform.iacaseapi"
     })
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
