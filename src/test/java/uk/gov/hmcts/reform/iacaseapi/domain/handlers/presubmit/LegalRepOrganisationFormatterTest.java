@@ -233,10 +233,8 @@ class LegalRepOrganisationFormatterTest {
         for (Event event : Event.values()) {
 
             when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
             when(callback.getEvent()).thenReturn(event);
 
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
@@ -254,28 +252,30 @@ class LegalRepOrganisationFormatterTest {
     }
 
     @Test
-    void it_can_not_handle_callback_for_aip_journey() {
+    void should_write_skeleton_local_authority_policy_for_aip_journey() {
+        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
 
-        for (Event event : Event.values()) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(callback.getEvent()).thenReturn(event);
-            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
-                boolean canHandle = legalRepOrganisationFormatter.canHandle(callbackStage, callback);
+        PreSubmitCallbackResponse<AsylumCase> response =
+                legalRepOrganisationFormatter.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                        callback
+                );
 
-                if ((event == Event.START_APPEAL)
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
 
-                    assertFalse(canHandle);
-                } else {
-                    assertFalse(canHandle);
-                }
-            }
-
-            reset(callback);
-        }
+        verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
     }
 
     @Test
