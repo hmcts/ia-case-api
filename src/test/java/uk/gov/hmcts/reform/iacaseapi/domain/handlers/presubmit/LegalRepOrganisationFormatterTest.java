@@ -253,14 +253,6 @@ class LegalRepOrganisationFormatterTest {
 
     @Test
     void should_write_skeleton_local_authority_policy_for_aip_journey() {
-        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
-                .organisation(Organisation.builder()
-                        .organisationID(null)
-                        .build()
-                )
-                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
-                .build();
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -274,6 +266,14 @@ class LegalRepOrganisationFormatterTest {
 
         assertNotNull(response);
         assertEquals(asylumCase, response.getData());
+
+        OrganisationPolicy skeletonPolicy = OrganisationPolicy.builder()
+                .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build()
+                )
+                .orgPolicyCaseAssignedRole("[LEGALREPRESENTATIVE]")
+                .build();
 
         verify(asylumCase, times(1)).write(LOCAL_AUTHORITY_POLICY, skeletonPolicy);
     }

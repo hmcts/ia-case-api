@@ -62,7 +62,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if(isRepJourney(asylumCase)) {
+        if (isRepJourney(asylumCase)) {
             final OrganisationEntityResponse organisationEntityResponse =
                     professionalOrganisationRetriever.retrieve();
 
