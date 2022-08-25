@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringJUnitWebConfig
 @SpringBootTest
 @ActiveProfiles("integration")
-public class SwaggerPublisher {
+public class OpenApiPublisher {
 
     @Autowired
     private MockMvc mvc;
@@ -48,7 +48,7 @@ public class SwaggerPublisher {
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void generateDocs() throws Exception {
-        byte[] specs = mvc.perform(get("/v2/api-docs"))
+        byte[] specs = mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()

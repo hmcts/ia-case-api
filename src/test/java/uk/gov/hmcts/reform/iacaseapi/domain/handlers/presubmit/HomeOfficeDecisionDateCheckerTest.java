@@ -163,11 +163,11 @@ class HomeOfficeDecisionDateCheckerTest {
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getAllValues().contains(RECORDED_OUT_OF_TIME_DECISION));
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
 
-        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
-        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
     }
 
     @Test
@@ -200,10 +200,10 @@ class HomeOfficeDecisionDateCheckerTest {
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
-        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
-        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getAllValues().contains(RECORDED_OUT_OF_TIME_DECISION));
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
     }
 
     @Test
@@ -226,12 +226,10 @@ class HomeOfficeDecisionDateCheckerTest {
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
         verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
 
-
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(SUBMISSION_OUT_OF_TIME);
-        assertThat(asylumExtractor.getValue()).isEqualToComparingOnlyGivenFields(RECORDED_OUT_OF_TIME_DECISION);
-
-        assertThat(outOfTime.getValue()).isEqualToComparingOnlyGivenFields(YES);
-        assertThat(recordedOutOfTimeDecision.getValue()).isEqualToComparingOnlyGivenFields(NO);
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
 
     }
 
