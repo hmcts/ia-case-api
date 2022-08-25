@@ -148,6 +148,9 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
             if (callbackHandler.getDispatchPriority() == dispatchPriority) {
 
+                System.out.println("Priority Handler Name: " + callbackHandler.getClass().getSimpleName());
+                System.out.println("Priority: " + dispatchPriority);
+
                 Callback<T> callbackForHandler = new Callback<>(
                     new CaseDetails<>(
                         callback.getCaseDetails().getId(),
