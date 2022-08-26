@@ -1,5 +1,6 @@
 {
   "description": "RIA-4026 Legal rep submits appeal with Belfast address and the hearing centre will be Glasgow",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
