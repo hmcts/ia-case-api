@@ -1,6 +1,6 @@
 {
   "description": "RIA-3389 Home Office Reference Number Formatter - letter plus seven digits",
-  "disabled", "true",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
