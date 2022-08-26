@@ -25,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -48,6 +50,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
+    @Autowired private CacheManager cacheManager;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
@@ -492,6 +495,13 @@ class HomeOfficeCaseNotificationsHandlerTest {
         // We assert that we send two notifications.
         verify(homeOfficeApi, times(2)).aboutToSubmit(callback);
     }
+
+//    @Test
+//    void it_should_return_cached_values(){
+//        homeOfficeCaseNotificationsHandler.cacheCaseId(1234L, "anEvent");
+//        assertEquals("1234", cacheManager.getCache("caseId").getName());
+//        assertEquals("anEvent", cacheManager.getCache("notificationSentName").getName());
+//    }
 
     private static Stream<Arguments> stateAndAppealTypesData() {
 
