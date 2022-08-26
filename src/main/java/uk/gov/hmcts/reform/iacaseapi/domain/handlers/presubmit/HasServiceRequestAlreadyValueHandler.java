@@ -28,7 +28,7 @@ public class HasServiceRequestAlreadyValueHandler implements PreSubmitCallbackHa
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && Objects.equals(Event.START_APPEAL, callback.getEvent());
+               && callback.getEvent() == Event.START_APPEAL;
     }
 
     @Override
