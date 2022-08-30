@@ -205,7 +205,7 @@ jacocoTestReport {
 }
 
 pitest {
-    junit5PluginVersion = '0.12'
+    junit5PluginVersion = '0.15'
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
             'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
