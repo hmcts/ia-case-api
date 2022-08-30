@@ -1,5 +1,6 @@
 {
   "description": "RIA-910 & RIA-911 & RIA-912 Current case state is maintained in fields for Case Officer, Legal Representative and Judge #1",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
