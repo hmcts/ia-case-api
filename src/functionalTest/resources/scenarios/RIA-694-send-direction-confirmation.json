@@ -1,5 +1,6 @@
 {
   "description": "RIA-694 Send direction confirmation",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "CaseOfficer",
