@@ -8,18 +8,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 
 @Component
 class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
-
-    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
-
-    public CreateFlagHandler(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
-        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
-    }
 
     @Override
     public boolean canHandle(
@@ -45,8 +38,6 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 callback
                         .getCaseDetails()
                         .getCaseData();
-
-        ccdSupplementaryUpdater.setAppellantLevelFlagsSupplementary(callback);
 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
