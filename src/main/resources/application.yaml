@@ -164,7 +164,6 @@ security:
     - "/swagger-ui.html"
     - "/swagger-resources/**"
     - "/v3/api-docs"
-    - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
   authorisedRoles:
     - "caseworker-ia"
