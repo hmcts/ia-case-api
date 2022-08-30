@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 
 import com.google.common.collect.Maps;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,13 +33,15 @@ public class CcdSupplementaryUpdater {
     private String ccdUrl;
     private String ccdSupplementaryApiPath;
     private String hmctsServiceId;
+    private String roleOnCase;
 
     public CcdSupplementaryUpdater(RestTemplate restTemplate,
                                    AuthTokenGenerator serviceAuthTokenGenerator,
                                    UserDetails userDetails,
                                    @Value("${core_case_data_api_url}") String ccrUrl,
                                    @Value("${core_case_data_api_supplementary_data_path}") String ccdSupplementaryApiPath,
-                                   @Value("${hmcts_service_id}") String hmctsServiceId
+                                   @Value("${hmcts_service_id}") String hmctsServiceId,
+                                   @Value("${role_on_case}") String roleOnCase
     ) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
@@ -44,6 +49,7 @@ public class CcdSupplementaryUpdater {
         this.ccdUrl = ccrUrl;
         this.ccdSupplementaryApiPath = ccdSupplementaryApiPath;
         this.hmctsServiceId = hmctsServiceId;
+        this.roleOnCase = roleOnCase;
     }
 
     public void setHmctsServiceIdSupplementary(
@@ -94,4 +100,70 @@ public class CcdSupplementaryUpdater {
         log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
 
     }
+
+    public void setAppellantLevelFlagsSupplementary(
+            final Callback<AsylumCase> callback
+    ) {
+        requireNonNull(callback, "callback must not be null");
+
+        final long caseId = callback.getCaseDetails().getId();
+
+        final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
+        final String accessToken = userDetails.getAccessToken();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        headers.set(HttpHeaders.AUTHORIZATION, accessToken);
+        headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
+
+        final AsylumCase asylumCase =
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
+
+        final String appellantNameForDisplay =
+                asylumCase
+                        .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
+                        .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
+
+
+        Map<String, Object> coreData = Maps.newHashMap();
+        coreData.put("partyName", appellantNameForDisplay);
+        coreData.put("roleOnCase", roleOnCase);
+
+        Map<String, Map<String, Object>> payloadData = Maps.newHashMap();
+        payloadData.put("$set", coreData);
+
+
+        Map<String, Object> payload = Maps.newHashMap();
+        payload.put("supplementary_data_updates", payloadData);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(payload, headers);
+
+        URI uri = UriComponentsBuilder
+                .fromPath(ccdSupplementaryApiPath)
+                .build(caseId);
+
+        ResponseEntity<Object> response;
+        try {
+            response = restTemplate
+                    .exchange(
+                            ccdUrl + uri.getPath(),
+                            HttpMethod.POST,
+                            requestEntity,
+                            Object.class
+                    );
+
+        } catch (RestClientResponseException e) {
+            throw new CcdDataIntegrationException(
+                    "Couldn't update CCD case supplementary data using API: " + ccdUrl + ccdSupplementaryApiPath,
+                    e
+            );
+        }
+
+        log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
+
+    }
+
 }

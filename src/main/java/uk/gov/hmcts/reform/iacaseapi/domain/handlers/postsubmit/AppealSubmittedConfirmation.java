@@ -76,6 +76,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             new PostSubmitCallbackResponse();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+        ccdSupplementaryUpdater.setAppellantLevelFlagsSupplementary(callback);
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
