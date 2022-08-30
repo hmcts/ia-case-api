@@ -1,5 +1,6 @@
 {
   "description": "RIA-730-RIA-971 Home Office reference number is truncated when it has slashes and is over 8 characters ",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
