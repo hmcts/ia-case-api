@@ -1,5 +1,6 @@
 {
   "description": "RIA-769 Create appeal submission PDF (Docmosis enabled)",
+  "disabled": "true",
   "enabled": "{$featureFlag.docmosisEnabled}",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
