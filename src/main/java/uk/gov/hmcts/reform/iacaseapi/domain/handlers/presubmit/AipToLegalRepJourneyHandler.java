@@ -36,7 +36,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackHandler<Asy
         }
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        asylumCase.write(JOURNEY_TYPE, JourneyType.REP);
+        asylumCase.remove(JOURNEY_TYPE.value());
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 

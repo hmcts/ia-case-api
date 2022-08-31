@@ -96,7 +96,7 @@ public class AipToLegalRepJourneyHandlerTest {
 
         aipToLegalRepJourneyHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
-        verify(asylumCase, times(1)).write(JOURNEY_TYPE, JourneyType.REP);
+        verify(asylumCase, times(1)).remove(JOURNEY_TYPE.value());
     }
-
+    
 }
