@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -9,10 +13,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -25,7 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-@EnableCaching
+@CacheConfig(cacheNames = {"caseId","event"})
 @Component
 @Slf4j
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -37,8 +46,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                                                          + "homeOfficeNotificationsEligible: {} ";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
-    private String notificationSentName;
-    private Long caseIdNotified = 0L;
+    private Long cacheCaseId = 99999L;
+    private String cachedEvent;
 
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
@@ -88,7 +97,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
             // RIA-5683: Prevent multiple notifications for the same event and case ID.
-            if (Objects.equals(notificationSentName, callback.getEvent().toString()) && caseIdNotified == caseId) {
+            if (Objects.equals(cachedEvent, callback.getEvent().toString()) && cacheCaseId == caseId) {
                 log.info("Home Office notification already invoked: "
                          + SUPPRESSION_LOG_FIELDS,
                         callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
@@ -108,7 +117,8 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
                 // We store the case Id to prevent duplicated notifications.
-                cacheCaseId(caseId, callback.getEvent().toString());
+                cacheCaseId = cacheCaseId(callback);
+                cachedEvent = cacheEvent(callback);
             } else {
 
                 log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
@@ -153,12 +163,18 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
-    @Cacheable({"caseIdNotified", "notificationSentName"})
-    public void cacheCaseId(Long caseId, String notification) {
-        caseIdNotified = caseId;
-        notificationSentName = notification;
-        System.out.println("Cached Case Id = " + caseIdNotified);
-        System.out.println("Cached Notification Id = " + notificationSentName);
+    @Cacheable({"caseId"})
+    public Long cacheCaseId(Callback callback) {
+        long id = callback.getCaseDetails().getId();
+        System.out.println(("Cached Case Id = {}" + id));
+        return id;
+    }
+
+    @Cacheable({"event"})
+    public String cacheEvent(Callback callback) {
+        String event = callback.getEvent().toString();
+        System.out.println(("Cached Event = {}" + event));
+        return event;
     }
 
     protected Optional<Direction> getLatestNonStandardRespondentDirection(AsylumCase asylumCase) {

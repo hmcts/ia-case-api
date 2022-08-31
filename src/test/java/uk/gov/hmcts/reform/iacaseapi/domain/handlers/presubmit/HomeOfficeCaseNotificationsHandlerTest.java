@@ -5,15 +5,46 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.DC;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.RP;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTION_EDIT_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_NOTIFICATIONS_ELIGIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_SEARCH_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.ADJOURN_HEARING_WITHOUT_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_APPELLANT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.APPLY_FOR_FTPA_RESPONDENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.CHANGE_DIRECTION_DUE_DATE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_CASE_LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.END_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LEADERSHIP_JUDGE_FTPA_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.LIST_CASE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONDENT_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.REQUEST_RESPONSE_AMEND;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.RESIDENT_JUDGE_FTPA_DECISION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DECISION_AND_REASONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SEND_DIRECTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +56,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -50,7 +84,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
-    @Autowired private CacheManager cacheManager;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
@@ -496,12 +529,17 @@ class HomeOfficeCaseNotificationsHandlerTest {
         verify(homeOfficeApi, times(2)).aboutToSubmit(callback);
     }
 
-//    @Test
-//    void it_should_return_cached_values(){
-//        homeOfficeCaseNotificationsHandler.cacheCaseId(1234L, "anEvent");
-//        assertEquals("1234", cacheManager.getCache("caseId").getName());
-//        assertEquals("anEvent", cacheManager.getCache("notificationSentName").getName());
-//    }
+    @Test
+    void it_should_return_cached_values(){
+        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getCaseDetails().getId()).thenReturn(123456L);
+        Long caseId = homeOfficeCaseNotificationsHandler.cacheCaseId(callback);
+        String event = homeOfficeCaseNotificationsHandler.cacheEvent(callback);
+        assertEquals(123456L, caseId);
+        assertEquals("requestRespondentEvidence", event);
+    }
 
     private static Stream<Arguments> stateAndAppealTypesData() {
 
@@ -671,8 +709,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
         homeOfficeCaseNotificationsHandler = new HomeOfficeCaseNotificationsHandler(
             featureToggler,
-            homeOfficeApi
-        );
+            homeOfficeApi);
 
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
