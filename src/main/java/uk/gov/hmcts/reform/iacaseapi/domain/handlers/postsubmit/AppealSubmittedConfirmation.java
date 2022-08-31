@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
@@ -13,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REM
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpda
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private String hmctsServiceId;
 
     private static final String PAYMENT_OPTION_PAY_OFFLINE = "payOffline";
     private static final String PAYMENT_OPTION_PAY_LATER = "payLater";
@@ -53,8 +56,11 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
-    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+    public AppealSubmittedConfirmation(CcdSupplementaryUpdater ccdSupplementaryUpdater,
+                                       @Value("${hmcts_service_id}") String hmctsServiceId
+    ) {
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+        this.hmctsServiceId = hmctsServiceId;
     }
 
     public boolean canHandle(
@@ -75,7 +81,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
-        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,11 +45,13 @@ class AppealSubmittedConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
 
+    private String hmctsServiceId = "some-id";
+
     @Mock
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
     private AppealSubmittedConfirmation appealSubmittedConfirmation =
-        new AppealSubmittedConfirmation(ccdSupplementaryUpdater);
+        new AppealSubmittedConfirmation(ccdSupplementaryUpdater, hmctsServiceId);
 
     @BeforeEach
     public void setUp() {
@@ -57,7 +60,8 @@ class AppealSubmittedConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         appealSubmittedConfirmation =
                 new AppealSubmittedConfirmation(
-                        ccdSupplementaryUpdater
+                        ccdSupplementaryUpdater,
+                        hmctsServiceId
                 );
     }
 
@@ -71,7 +75,7 @@ class AppealSubmittedConfirmationTest {
 
         appealSubmittedConfirmation.handle(callback);
 
-        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+        verify(ccdSupplementaryUpdater).setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
     }
 
     @Test

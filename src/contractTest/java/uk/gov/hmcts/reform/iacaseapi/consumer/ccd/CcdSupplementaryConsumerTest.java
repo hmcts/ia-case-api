@@ -47,7 +47,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
     @PactTestFor(pactMethod = "generatePactFragmentForSupplementaryUpdate")
     public void verifySupplementaryUpdate() {
 
-        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
     }
 

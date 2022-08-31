@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -83,7 +84,7 @@ class CcdSupplementaryUpdaterTest {
 
         when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
 
-        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
         verify(restTemplate)
             .exchange(
@@ -112,7 +113,8 @@ class CcdSupplementaryUpdaterTest {
             )
         ).thenThrow(restClientResponseEx);
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback))
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setSupplementaryValues(callback,
+                singletonMap("HMCTSServiceId", hmctsServiceId)))
             .isInstanceOf(CcdDataIntegrationException.class)
             .hasMessage("Couldn't update CCD case supplementary data using API: "
                 + ccdUrl
@@ -132,7 +134,7 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_throw_when_callback_param_is_null() {
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(null))
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setSupplementaryValues(null, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
@@ -141,7 +143,7 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_throw_when_callback_appellant_flag_param_is_null() {
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.setAppellantLevelFlagsSupplementary(null))
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setSupplementaryValues(null, null))
                 .hasMessage("callback must not be null")
                 .isExactlyInstanceOf(NullPointerException.class);
 

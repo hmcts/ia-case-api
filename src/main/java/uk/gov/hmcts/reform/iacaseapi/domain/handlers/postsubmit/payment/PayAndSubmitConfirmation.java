@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment;
 
+import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
@@ -8,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import java.time.ZoneId;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -38,6 +40,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     private final Scheduler scheduler;
     private final DateProvider dateProvider;
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private String hmctsServiceId;
 
     public PayAndSubmitConfirmation(
         AppealPaymentConfirmationProvider appealPaymentConfirmationProvider,
@@ -45,6 +48,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         PostNotificationSender<AsylumCase> postNotificationSender,
         Scheduler scheduler,
         DateProvider dateProvider,
+        @Value("${hmcts_service_id}") String hmctsServiceId,
         CcdSupplementaryUpdater ccdSupplementaryUpdater) {
 
         this.appealPaymentConfirmationProvider = appealPaymentConfirmationProvider;
@@ -52,6 +56,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         this.postNotificationSender = postNotificationSender;
         this.scheduler = scheduler;
         this.dateProvider = dateProvider;
+        this.hmctsServiceId = hmctsServiceId;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -75,7 +80,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         long caseId = callback.getCaseDetails().getId();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
         // make a payment
         final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)

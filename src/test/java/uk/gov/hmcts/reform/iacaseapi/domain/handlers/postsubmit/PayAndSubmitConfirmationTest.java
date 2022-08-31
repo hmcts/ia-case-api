@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,6 +72,8 @@ class PayAndSubmitConfirmationTest {
 
     private long caseId = 1234;
 
+    private String hmctsServiceId = "some-id";
+
     private PayAndSubmitConfirmation payAndSubmitConfirmation;
 
     @BeforeEach
@@ -89,6 +92,7 @@ class PayAndSubmitConfirmationTest {
                 postNotificationSender,
                 scheduler,
                 dateProvider,
+                hmctsServiceId,
                 ccdSupplementaryUpdater
             );
     }
@@ -103,7 +107,7 @@ class PayAndSubmitConfirmationTest {
 
         payAndSubmitConfirmation.handle(callback);
 
-        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+        verify(ccdSupplementaryUpdater).setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
     }
 
     @Test
@@ -145,7 +149,7 @@ class PayAndSubmitConfirmationTest {
         PostSubmitCallbackResponse equalCallbackResponse =
                 payAndSubmitConfirmation.handle(callback);
 
-        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+        verify(ccdSupplementaryUpdater).setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
         assertNotNull(equalCallbackResponse);
         assertFalse(equalCallbackResponse.getConfirmationHeader().isPresent());
