@@ -39,7 +39,7 @@ public interface TimedEventServiceApi {
         @Bean
         public Decoder decoder(ObjectMapper objectMapper) {
             HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-            return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter), null));
+            return new ResponseEntityDecoder(new SpringDecoder(() -> new HttpMessageConverters(jacksonConverter), new TimedEventMessageConverterCustomizer<>()));
         }
 
         @Bean
@@ -49,6 +49,8 @@ public interface TimedEventServiceApi {
         }
 
     }
+
+
 
 }
 
