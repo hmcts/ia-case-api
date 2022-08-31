@@ -530,7 +530,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     }
 
     @Test
-    void it_should_return_cached_values(){
+    void it_should_return_cached_values() {
         when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
