@@ -1542,7 +1542,8 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_CATEGORY(
         "hmctsCaseCategory", new TypeReference<String>(){}),
 
-    ;
+    APPELLANT_PIN_IN_POST(
+            "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
 
     private final String value;
     private final TypeReference typeReference;
