@@ -165,8 +165,8 @@ security:
     - "/health/readiness"
     - "/loggers/**"
     - "/swagger-ui.html"
-    - "/swagger-resources/**"
-    - "/v3/api-docs"
+    - "/swagger-ui/**"
+    - "/v3/api-docs/**"
     - "/favicon.ico"
   authorisedRoles:
     - "caseworker-ia"
