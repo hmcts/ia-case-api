@@ -40,6 +40,7 @@ class CcdSupplementaryUpdaterTest {
     private String ccdUrl = "some-host";
     private String ccdSupplementaryApiPath = "some-path";
     private String hmctsServiceId = "some-id";
+    private String roleOnCase = "some-role";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private RestTemplate restTemplate;
@@ -61,7 +62,8 @@ class CcdSupplementaryUpdaterTest {
                 userDetails,
                 ccdUrl,
                 ccdSupplementaryApiPath,
-                hmctsServiceId);
+                hmctsServiceId,
+                roleOnCase);
     }
 
     @Test
@@ -133,6 +135,15 @@ class CcdSupplementaryUpdaterTest {
         assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+
+    }
+
+    @Test
+    void should_throw_when_callback_appellant_flag_param_is_null() {
+
+        assertThatThrownBy(() -> ccdSupplementaryUpdater.setAppellantLevelFlagsSupplementary(null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
     }
 

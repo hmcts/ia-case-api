@@ -41,6 +41,8 @@ public class CcdSupplementaryProviderBaseTest {
     String supplementaryUrl;
     @Value("${hmcts_service_id}")
     String hmctsServiceId;
+    @Value("some-role")
+    String roleOnCase;
 
     CcdSupplementaryUpdater ccdSupplementaryUpdater;
 
@@ -63,7 +65,7 @@ public class CcdSupplementaryProviderBaseTest {
 
         ccdSupplementaryUpdater =
             new CcdSupplementaryUpdater(new RestTemplate(), serviceAuthTokenGenerator, userDetails, ccdUrl,
-                    urlPath, hmctsServiceId);
+                    urlPath, hmctsServiceId, roleOnCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(CASE_ID);
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);

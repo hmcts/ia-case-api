@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Objects.requireNonNull;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -7,8 +9,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
-
-import static java.util.Objects.requireNonNull;
 
 
 @Component
@@ -39,11 +39,11 @@ public class CreateFlagConfirmation implements PostSubmitCallbackHandler<AsylumC
 
         ccdSupplementaryUpdater.setAppellantLevelFlagsSupplementary(callback);
 
-//        postSubmitResponse.setConfirmationHeader("# You've flagged this case");
-//        postSubmitResponse.setConfirmationBody(
-//                "#### What happens next\r\n\r\n"
-//                        + "This flag will only be visible to the Tribunal. The case will proceed as usual."
-//        );
+        //postSubmitResponse.setConfirmationHeader("# You've flagged this case");
+        //postSubmitResponse.setConfirmationBody(
+        //        "#### What happens next\r\n\r\n"
+        //                + "This flag will only be visible to the Tribunal. The case will proceed as usual."
+        //);
         return postSubmitResponse;
     }
 }
