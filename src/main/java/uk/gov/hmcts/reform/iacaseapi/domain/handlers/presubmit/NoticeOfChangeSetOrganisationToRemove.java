@@ -1,36 +1,37 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.PinInPostDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.AccessCodeGenerator;
-
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseCallbackApiDelegator;
 
 @Component
-public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> {
+public class NoticeOfChangeSetOrganisationToRemove implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final long accessCodeExpiryDays;
+    private final AsylumCaseCallbackApiDelegator apiDelegator;
+    private final String aacUrl;
+    private final String setSetOrganisationToRemoveApiPath;
+
+    public NoticeOfChangeSetOrganisationToRemove(
+            AsylumCaseCallbackApiDelegator apiDelegator,
+            @Value("${assign_case_access_api_url}") String aacUrl,
+            @Value("${noc_set_organisation_to_remove_path}") String setSetOrganisationToRemoveApiPath
+    ) {
+        this.apiDelegator = apiDelegator;
+        this.aacUrl = aacUrl;
+        this.setSetOrganisationToRemoveApiPath = setSetOrganisationToRemoveApiPath;
+    }
 
     @Override
     public boolean canHandle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (callback.getEvent() == Event.REMOVE_REPRESENTATION
                     || callback.getEvent() == Event.REMOVE_LEGAL_REPRESENTATIVE);
-    }
-
-    public PinInPostGenerator(
-            @Value("${pip_access_code_expiry_days}") long accessCodeExpiryDays
-    ) {
-        this.accessCodeExpiryDays = accessCodeExpiryDays;
     }
 
     @Override
@@ -41,13 +42,7 @@ public class PinInPostGenerator implements PreSubmitCallbackHandler<AsylumCase> 
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        asylumCase.write(AsylumCaseFieldDefinition.APPELLANT_PIN_IN_POST, PinInPostDetails.builder()
-                .accessCode(AccessCodeGenerator.generateAccessCode())
-                .expiryDate(LocalDate.now().plusDays(accessCodeExpiryDays).toString())
-                .pinUsed(YesOrNo.NO)
-                .build());
+        AsylumCase asylumCase = apiDelegator.delegate(callback, aacUrl + setSetOrganisationToRemoveApiPath);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
