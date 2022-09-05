@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL;
+
 import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -35,6 +37,7 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
 
         if (expectedCaseName != null && ((caseNameToBeTransitioned.isPresent() && !caseNameToBeTransitioned.get().toString().equals(expectedCaseName)) || caseNameToBeTransitioned.isEmpty())) {
             asylumCase.write(hmctsCaseNameInternal, expectedCaseName);
+            asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
         }
     }
 

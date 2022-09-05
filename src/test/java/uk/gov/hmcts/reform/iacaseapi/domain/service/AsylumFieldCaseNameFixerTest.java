@@ -31,6 +31,8 @@ class AsylumFieldCaseNameFixerTest {
 
         assertThat(asylumCase.read(HMCTS_CASE_NAME_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
+        assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
+            .isEqualTo(expectedCaseName);
     }
 
     @Test
@@ -44,6 +46,8 @@ class AsylumFieldCaseNameFixerTest {
 
         assertThat(asylumCase.read(HMCTS_CASE_NAME_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
+        assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
+            .isEqualTo(expectedCaseName);
     }
 
     @Test
@@ -53,10 +57,13 @@ class AsylumFieldCaseNameFixerTest {
         asylumCase.write(APPELLANT_GIVEN_NAMES, "John ");
         asylumCase.write(APPELLANT_FAMILY_NAME, "  Smith");
         asylumCase.write(HMCTS_CASE_NAME_INTERNAL, "Incorrect-CaseName");
+        asylumCase.write(CASE_NAME_HMCTS_INTERNAL, "Incorrect-CaseName");
 
         asylumFieldCaseNameFixer.fix(asylumCase);
 
         assertThat(asylumCase.read(HMCTS_CASE_NAME_INTERNAL, String.class).get())
+            .isEqualTo(expectedCaseName);
+        assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
     }
 
@@ -66,10 +73,13 @@ class AsylumFieldCaseNameFixerTest {
         final String expectedCaseName = "Some-CaseName";
         asylumCase.write(APPELLANT_FAMILY_NAME, "Smith");
         asylumCase.write(HMCTS_CASE_NAME_INTERNAL, expectedCaseName);
+        asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
 
         asylumFieldCaseNameFixer.fix(asylumCase);
 
         assertThat(asylumCase.read(HMCTS_CASE_NAME_INTERNAL, String.class).get())
+            .isEqualTo(expectedCaseName);
+        assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
     }
 
@@ -79,10 +89,13 @@ class AsylumFieldCaseNameFixerTest {
         final String expectedCaseName = "Some-CaseName";
         asylumCase.write(APPELLANT_GIVEN_NAMES, "John ");
         asylumCase.write(HMCTS_CASE_NAME_INTERNAL, expectedCaseName);
+        asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
 
         asylumFieldCaseNameFixer.fix(asylumCase);
 
         assertThat(asylumCase.read(HMCTS_CASE_NAME_INTERNAL, String.class).get())
+            .isEqualTo(expectedCaseName);
+        assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
     }
 }
