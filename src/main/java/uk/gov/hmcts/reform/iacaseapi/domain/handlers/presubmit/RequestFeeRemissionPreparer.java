@@ -67,6 +67,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
         switch (appealType) {
             case DC:
+            case EU:
             case RP:
 
                 callbackResponse.addError("You cannot request a fee remission for this appeal");

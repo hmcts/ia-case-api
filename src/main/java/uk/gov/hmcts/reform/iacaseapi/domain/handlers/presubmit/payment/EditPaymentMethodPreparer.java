@@ -114,6 +114,7 @@ public class EditPaymentMethodPreparer implements PreSubmitCallbackHandler<Asylu
                     break;
 
                 case DC:
+                case EU:
                 case RP:
                     callbackResponse.addError("You cannot change the payment method because there is no "
                             + "fee for this appeal.");
