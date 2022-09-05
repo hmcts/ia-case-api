@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
-import org.springframework.http.HttpHeaders;
 
 public interface WithAcaAssignmentsStub {
 
@@ -23,7 +22,6 @@ public interface WithAcaAssignmentsStub {
                 aResponse()
                     .withStatus(201)
                     .withHeader("Content-Type", "application/json")
-                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .withBody("{ \"assignee_id\": \"" + expectedAssigneeId + "\","
                               + " \"case_id\": \"" + expectedCaseId + "\","
                               + " \"case_type_id\": \"Asylum\" }")
