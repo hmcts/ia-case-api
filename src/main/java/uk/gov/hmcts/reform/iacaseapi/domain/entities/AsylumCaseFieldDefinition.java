@@ -1497,6 +1497,9 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_NAME_INTERNAL(
         "hmctsCaseNameInternal", new TypeReference<String>() {}),
 
+    CASE_NAME_HMCTS_INTERNAL(
+        "caseNameHmctsInternal", new TypeReference<String>() {}),
+
     APPEAL_REVIEW_OUTCOME(
         "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),
 
