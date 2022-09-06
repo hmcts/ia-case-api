@@ -17,21 +17,26 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @Component
 public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
+    private final FeePayment<AsylumCase> feePayment;
 
     public RecordRemissionDecisionStateHandler(
         FeatureToggler featureToggler,
-        DateProvider dateProvider
+        DateProvider dateProvider,
+        FeePayment<AsylumCase> feePayment
     ) {
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
+        this.feePayment = feePayment;
     }
 
     public boolean canHandle(
@@ -84,6 +89,11 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+
+                feePayment.aboutToSubmit(callback);
+
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE, YesOrNo.YES);
+
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             default:
