@@ -2,12 +2,15 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.bailcaseapi.domain.UserDetailsHelper;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.LegRepAddressUk;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.Organisation;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.OrganisationPolicy;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.UserDetails;
@@ -16,6 +19,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.AddressUK;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
@@ -71,6 +75,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
                      callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
 
             setupCaseCreation(callback, organisationEntityResponse.getOrganisationIdentifier());
+            setupLegalRepCompanyAddress(callback, organisationEntityResponse);
         }
 
         return new PreSubmitCallbackResponse<>(callback.getCaseDetails().getCaseData());
@@ -90,6 +95,39 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<B
                 .build();
 
         bailCase.write(BailCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, organisationPolicy);
+    }
+
+    private void setupLegalRepCompanyAddress(Callback<BailCase> callback,
+                                             OrganisationEntityResponse organisationEntityResponse) {
+        BailCase bailCase = callback.getCaseDetails().getCaseData();
+        AddressUK addressUk;
+        List<LegRepAddressUk> addresses = organisationEntityResponse.getContactInformation() == null
+            ? Collections.emptyList() : organisationEntityResponse.getContactInformation();
+
+        if (!addresses.isEmpty()) {
+            LegRepAddressUk legRepAddressUk = addresses.get(0);
+            addressUk = new AddressUK(
+                legRepAddressUk.getAddressLine1() == null ? "" : legRepAddressUk.getAddressLine1(),
+                legRepAddressUk.getAddressLine2() == null ? "" : legRepAddressUk.getAddressLine2(),
+                legRepAddressUk.getAddressLine3() == null ? "" : legRepAddressUk.getAddressLine3(),
+                legRepAddressUk.getTownCity() == null ? "" : legRepAddressUk.getTownCity(),
+                legRepAddressUk.getCounty() == null ? "" : legRepAddressUk.getCounty(),
+                legRepAddressUk.getPostCode() == null ? "" : legRepAddressUk.getPostCode(),
+                legRepAddressUk.getCountry() == null ? "" : legRepAddressUk.getCountry()
+            );
+        } else {
+            addressUk = new AddressUK(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            );
+        }
+
+        bailCase.write(BailCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS, addressUk);
     }
 
     private boolean isLegalRep(UserDetails userDetails, UserDetailsHelper userDetailsHelper) {
