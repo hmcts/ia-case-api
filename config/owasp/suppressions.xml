@@ -74,4 +74,8 @@
         </notes>
         <cve>CVE-2022-31197</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2022-38752</cve>
+        <cve>CVE-2022-25857</cve>
+    </suppress>
 </suppressions>
