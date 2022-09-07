@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("org.yaml:snakeyaml:1.23")
+        classpath("org.yaml:snakeyaml:1.31")
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
     }
 }
@@ -328,7 +328,7 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.31'
 
     compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
@@ -374,19 +374,19 @@ dependencies {
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
 
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
         force = true
     }
 
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
         force = true
     }
 
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
         force = true
     }
 
-    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
+    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
         force = true
     }
 
