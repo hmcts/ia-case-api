@@ -1545,8 +1545,11 @@ public enum AsylumCaseFieldDefinition {
     HAS_SERVICE_REQUEST_ALREADY(
         "hasServiceRequestAlready", new TypeReference<YesOrNo>(){}),
 
-    IS_SERVICE_REQUEST_TAB_VISIBLE(
-        "isServiceRequestTabVisible", new TypeReference<YesOrNo>(){})
+    IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS(
+        "isServiceRequestTabVisibleConsideringRemissions", new TypeReference<YesOrNo>(){}),
+
+    DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION(
+        "displayMarkAsPaidEventForPartialRemission", new TypeReference<YesOrNo>(){})
     ;
 
     private final String value;

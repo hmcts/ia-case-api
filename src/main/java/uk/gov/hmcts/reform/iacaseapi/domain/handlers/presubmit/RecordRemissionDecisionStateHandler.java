@@ -85,6 +85,17 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case PARTIALLY_APPROVED:
+                asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+                asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+                    LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+
+                feePayment.aboutToSubmit(callback);
+
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+                asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
+
+                return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+
             case REJECTED:
                 asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
@@ -92,9 +103,10 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
 
                 feePayment.aboutToSubmit(callback);
 
-                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE, YesOrNo.YES);
+                asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+                asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
 
-                return new PreSubmitCallbackResponse<>(asylumCase, currentState);
+        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
