@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpda
 
 
 @Component
+// TODO: THIS CAN BE REMOVED
 public class CreateFlagConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
@@ -49,17 +50,7 @@ public class CreateFlagConfirmation implements PostSubmitCallbackHandler<AsylumC
                         .getCaseDetails()
                         .getCaseData();
 
-        final String appellantNameForDisplay =
-                asylumCase
-                        .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
-                        .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
 
-
-        Map<String, Object> coreData = Maps.newHashMap();
-        coreData.put("partyName", appellantNameForDisplay);
-        coreData.put("roleOnCase", roleOnCase);
-
-        ccdSupplementaryUpdater.setSupplementaryValues(callback, coreData);
 
         //postSubmitResponse.setConfirmationHeader("# You've flagged this case");
         //postSubmitResponse.setConfirmationBody(
