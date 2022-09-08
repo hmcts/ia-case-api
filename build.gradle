@@ -41,8 +41,8 @@ def versions = [
     springHystrix      : '2.1.1.RELEASE',
     springfoxSwagger   : '2.9.2',
     pact_version       : '4.1.7',
-    jackson            : '2.11.2'
-
+    jackson            : '2.11.2',
+    snakeyaml          : '1.31'
 ]
 
 ext.libraries = [
@@ -278,6 +278,9 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
+
+        //CVE-2022-25857
+        dependency(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml)
     }
 }
 
@@ -328,7 +331,7 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.31'
+    compile group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml
 
     compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
@@ -374,19 +377,19 @@ dependencies {
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
 
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
+    testCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
         force = true
     }
 
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
+    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
         force = true
     }
 
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
+    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
         force = true
     }
 
-    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.31') {
+    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml) {
         force = true
     }
 
