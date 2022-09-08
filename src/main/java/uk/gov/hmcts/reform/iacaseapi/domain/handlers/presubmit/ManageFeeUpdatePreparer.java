@@ -89,6 +89,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
                 break;
 
             case DC:
+            case EU:
             case RP:
 
                 callbackResponse.addError("You cannot manage a fee update for this appeal");

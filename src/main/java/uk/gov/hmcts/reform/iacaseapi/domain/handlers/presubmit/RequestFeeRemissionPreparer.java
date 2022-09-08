@@ -73,6 +73,7 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
                 break;
 
             case EA:
+            case EU:
             case HU:
             case PA:
 

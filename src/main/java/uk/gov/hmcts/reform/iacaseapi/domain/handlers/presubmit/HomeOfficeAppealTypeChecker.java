@@ -21,6 +21,7 @@ public class HomeOfficeAppealTypeChecker {
                 return featureToggler.getValue(HO_UAN_DC_EA_HU_FEATURE, false) ? true : false;
 
             case PA:
+            case EU:
             case RP:
                 return featureToggler.getValue(HO_UAN_PA_RP_FEATURE, false) ? true : false;
 

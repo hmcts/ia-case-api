@@ -106,6 +106,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 break;
 
             case RP:
+            case EU:
             case DC:
                 callbackResponse.addError("Payment is not required for this type of appeal.");
                 break;
