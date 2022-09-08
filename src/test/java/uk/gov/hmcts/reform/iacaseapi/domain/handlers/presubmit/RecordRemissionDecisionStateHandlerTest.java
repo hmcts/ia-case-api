@@ -30,7 +30,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -43,6 +45,7 @@ class RecordRemissionDecisionStateHandlerTest {
 
     @Mock private FeatureToggler featureToggler;
     @Mock private DateProvider dateProvider;
+    @Mock private FeePayment feePayment;
 
     private RecordRemissionDecisionStateHandler recordRemissionDecisionStateHandler;
 
@@ -50,7 +53,7 @@ class RecordRemissionDecisionStateHandlerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider);
+        recordRemissionDecisionStateHandler = new RecordRemissionDecisionStateHandler(featureToggler, dateProvider, feePayment);
     }
 
     @Test
@@ -89,6 +92,8 @@ class RecordRemissionDecisionStateHandlerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU" })
     void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu(AppealType type) {
+        // and service-request tab should be hidden (no payment to take care of)
+        // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -107,11 +112,17 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAID);
+
+        verify(feePayment, never()).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
     }
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU" })
     void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
+        // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
+        // and markAppealAsPaid should be visible, to allow admins to process offline payments
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -131,11 +142,15 @@ class RecordRemissionDecisionStateHandlerTest {
         assertThat(returnedCallbackResponse.getData()).isEqualTo(asylumCase);
         assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
+        verify(feePayment, never()).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
+            LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.YES);
     }
 
     @Test
     void should_return_appeal_submitted_state_on_remission_approved_for_pa() {
-
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
@@ -158,6 +173,8 @@ class RecordRemissionDecisionStateHandlerTest {
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" })
     void handle_should_return_payment_due_for_remission_rejected(AppealType type) {
+        // and service-request tab should be visible (payment is handled via waysToPay service-request)
+        // and markAppealAsPaid should not be visible, (payment handled via waysToPay service-request)
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
 
@@ -178,6 +195,10 @@ class RecordRemissionDecisionStateHandlerTest {
         verify(asylumCase, times(1)).write(PAYMENT_STATUS, PAYMENT_PENDING);
         verify(asylumCase,times(1)).write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
             LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+        verify(asylumCase, times(1)).write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
     }
 
     @Test
