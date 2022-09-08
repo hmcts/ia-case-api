@@ -4,9 +4,9 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     POSTGRES_CONNECTION_OPTIONS: ""
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
