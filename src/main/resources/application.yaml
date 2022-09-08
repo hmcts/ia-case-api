@@ -329,6 +329,7 @@ security:
       - "submitCmaRequirements"
       - "makeAnApplication"
       - "draftHearingRequirements"
+      - "uploadAddendumEvidenceLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
