@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -62,9 +64,8 @@ class CreateFlagHandlerTest {
 
                 boolean canHandle = createFlagHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.CREATE_FLAG
+                if (event == Event.START_APPEAL
                     && callbackStage == ABOUT_TO_SUBMIT) {
-
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

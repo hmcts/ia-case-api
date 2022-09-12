@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
+import java.util.Collections;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
-
-import java.util.Collections;
-import java.util.List;
 
 @Value
 @Getter
