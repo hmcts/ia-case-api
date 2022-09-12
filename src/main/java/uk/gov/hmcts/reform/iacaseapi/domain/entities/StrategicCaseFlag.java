@@ -14,7 +14,7 @@ public class StrategicCaseFlag {
     String partyName;
     String roleOnCase;
 
-    List<FlagDetail> details;
+    List<String> details;
 
     public StrategicCaseFlag(String appellantNameForDisplay) {
         this.partyName = appellantNameForDisplay;
