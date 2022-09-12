@@ -529,18 +529,6 @@ class HomeOfficeCaseNotificationsHandlerTest {
         verify(homeOfficeApi, times(2)).aboutToSubmit(callback);
     }
 
-    @Test
-    void it_should_return_cached_values() {
-        when(callback.getEvent()).thenReturn(REQUEST_RESPONDENT_EVIDENCE);
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getCaseDetails().getId()).thenReturn(123456L);
-        Long caseId = homeOfficeCaseNotificationsHandler.cacheCaseId(callback);
-        String event = homeOfficeCaseNotificationsHandler.cacheEvent(callback);
-        assertEquals(123456L, caseId);
-        assertEquals("requestRespondentEvidence", event);
-    }
-
     private static Stream<Arguments> stateAndAppealTypesData() {
 
         return Stream.of(
