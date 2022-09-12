@@ -62,5 +62,8 @@
         <cve>CVE-2022-34305</cve>
         <cve>CVE-2022-29885</cve>
         <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38750</cve>
+        <cve>CVE-2022-38749</cve>
     </suppress>
 </suppressions>
