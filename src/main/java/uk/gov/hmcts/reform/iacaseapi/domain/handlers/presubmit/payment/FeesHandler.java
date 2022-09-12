@@ -89,6 +89,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         switch (appealType) {
             case EA:
+            case EU:
             case HU:
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -113,7 +114,6 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 break;
 
             case DC:
-            case EU:
             case RP:
                 // by default (before remissions feature integration) we choose decisionWithHearing
                 // when the remissions are turned on it is a choice for the Legal Rep

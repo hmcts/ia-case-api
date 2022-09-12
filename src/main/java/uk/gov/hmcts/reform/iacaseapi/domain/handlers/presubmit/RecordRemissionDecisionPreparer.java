@@ -66,6 +66,7 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
 
         switch (appealType) {
             case EA:
+            case EU:
             case HU:
             case PA:
                 Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
@@ -97,7 +98,6 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
                 break;
 
             case DC:
-            case EU:
             case RP:
                 callbackResponse.addError("Record remission decision is not valid for the appeal type.");
                 break;

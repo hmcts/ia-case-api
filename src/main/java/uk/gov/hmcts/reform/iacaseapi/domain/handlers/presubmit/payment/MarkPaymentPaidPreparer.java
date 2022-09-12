@@ -67,6 +67,7 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
 
         switch (appealType) {
             case EA:
+            case EU:
             case HU:
             case PA:
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
@@ -106,7 +107,6 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 break;
 
             case RP:
-            case EU:
             case DC:
                 callbackResponse.addError("Payment is not required for this type of appeal.");
                 break;

@@ -94,6 +94,7 @@ public class EditPaymentMethodPreparer implements PreSubmitCallbackHandler<Asylu
             String paymentOption;
             switch (appealType) {
                 case EA:
+                case EU:
                 case HU:
                     paymentOption = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                             .orElseThrow(() -> new IllegalStateException("Payment option is not present"));
@@ -114,7 +115,6 @@ public class EditPaymentMethodPreparer implements PreSubmitCallbackHandler<Asylu
                     break;
 
                 case DC:
-                case EU:
                 case RP:
                     callbackResponse.addError("You cannot change the payment method because there is no "
                             + "fee for this appeal.");

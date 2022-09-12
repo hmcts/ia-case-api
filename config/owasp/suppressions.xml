@@ -54,6 +54,16 @@
         <cve>CVE-2022-22968</cve>
         <cve>CVE-2022-22970</cve>
     </suppress>
+    <suppress until="2030-01-01">
+        <notes><![CDATA[
+            All related to spring retry, most of the them has base score as NA
+            ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.retry/spring\-retry@.+$</packageUrl>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38750</cve>
+        <cve>CVE-2022-38749</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
             Temporarily suppress tomcat-embed and snakeyaml vulnerabilities
@@ -63,3 +73,4 @@
         <cve>CVE-2022-25857</cve>
     </suppress>
 </suppressions>
+

@@ -118,6 +118,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                 Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
                 switch (type) {
                     case EA:
+                    case EU:
                     case HU:
                         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
                         if (eaHuPaymentType.isEmpty()
@@ -175,7 +176,6 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                             });
                         break;
                     case RP:
-                    case EU:
                     case DC:
                         if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 
