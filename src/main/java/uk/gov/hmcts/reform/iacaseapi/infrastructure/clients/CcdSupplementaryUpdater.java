@@ -29,23 +29,19 @@ public class CcdSupplementaryUpdater {
     private String ccdUrl;
     private String ccdSupplementaryApiPath;
     private String hmctsServiceId;
-    private String roleOnCase;
 
     public CcdSupplementaryUpdater(RestTemplate restTemplate,
                                    AuthTokenGenerator serviceAuthTokenGenerator,
                                    UserDetails userDetails,
                                    @Value("${core_case_data_api_url}") String ccrUrl,
                                    @Value("${core_case_data_api_supplementary_data_path}") String ccdSupplementaryApiPath,
-                                   @Value("${hmcts_service_id}") String hmctsServiceId,
-                                   @Value("${role_on_case}") String roleOnCase
-    ) {
+                                   @Value("${hmcts_service_id}") String hmctsServiceId) {
         this.restTemplate = restTemplate;
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.userDetails = userDetails;
         this.ccdUrl = ccrUrl;
         this.ccdSupplementaryApiPath = ccdSupplementaryApiPath;
         this.hmctsServiceId = hmctsServiceId;
-        this.roleOnCase = roleOnCase;
     }
 
     public void setSupplementaryValues(

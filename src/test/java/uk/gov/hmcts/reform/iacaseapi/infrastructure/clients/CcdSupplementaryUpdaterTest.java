@@ -41,7 +41,6 @@ class CcdSupplementaryUpdaterTest {
     private String ccdUrl = "some-host";
     private String ccdSupplementaryApiPath = "some-path";
     private String hmctsServiceId = "some-id";
-    private String roleOnCase = "some-role";
 
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private RestTemplate restTemplate;
@@ -63,8 +62,7 @@ class CcdSupplementaryUpdaterTest {
                 userDetails,
                 ccdUrl,
                 ccdSupplementaryApiPath,
-                hmctsServiceId,
-                roleOnCase);
+                hmctsServiceId);
     }
 
     @Test
