@@ -130,7 +130,8 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.APPLICANT_NATIONALITIES.value(),
         BailCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER.value(),
         BailCaseFieldDefinition.APPLICANT_PRISON_DETAILS.value(),
-        BailCaseFieldDefinition.APPLICANT_ARRIVAL_IN_UK.value());
+        BailCaseFieldDefinition.APPLICANT_ARRIVAL_IN_UK.value(),
+        BailCaseFieldDefinition.CASE_NOTES.value());
 
     private static final List<String> VALID_ABOUT_TO_SUBMIT_MAKE_NEW_APPLICATION_FIELDS = List.of(
         BailCaseFieldDefinition.BAIL_REFERENCE_NUMBER.value(),
@@ -245,5 +246,6 @@ public class MakeNewApplicationService {
         BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS.value(),
         BailCaseFieldDefinition.LEGAL_REP_PHONE.value(),
         BailCaseFieldDefinition.LEGAL_REP_REFERENCE.value(),
-        BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS.value());
+        BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS.value(),
+        BailCaseFieldDefinition.CASE_NOTES.value());
 }
