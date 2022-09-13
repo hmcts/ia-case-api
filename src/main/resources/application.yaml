@@ -166,9 +166,8 @@ security:
     - "/health/readiness"
     - "/loggers/**"
     - "/swagger-ui.html"
-    - "/swagger-resources/**"
-    - "/v2/api-docs"
-    - "/webjars/springfox-swagger-ui/**"
+    - "/swagger-ui/**"
+    - "/v3/api-docs/**"
     - "/favicon.ico"
   authorisedRoles:
     - "caseworker-ia"
@@ -337,6 +336,7 @@ security:
       - "submitCmaRequirements"
       - "makeAnApplication"
       - "draftHearingRequirements"
+      - "uploadAddendumEvidenceLegalRep"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"

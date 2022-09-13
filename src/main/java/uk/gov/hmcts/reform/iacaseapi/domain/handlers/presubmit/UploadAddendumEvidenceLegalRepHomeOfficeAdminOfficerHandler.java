@@ -73,6 +73,9 @@ public class UploadAddendumEvidenceLegalRepHomeOfficeAdminOfficerHandler impleme
                 .map(document -> documentReceiver.tryReceive(document, DocumentTag.ADDENDUM_EVIDENCE, party))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(doc -> callback.getEvent() == Event.UPLOAD_ADDENDUM_EVIDENCE_ADMIN_OFFICER
+                        ? new DocumentWithMetadata(doc.getDocument(), doc.getDescription(), doc.getDateUploaded(), doc.getTag(), doc.getSuppliedBy(), "TCW")
+                        : doc)
                 .collect(Collectors.toList());
 
         Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingAdditionalEvidenceDocuments =
