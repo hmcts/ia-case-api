@@ -524,10 +524,14 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         // The api is called 2 times per event.
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        Long caseId = callback.getCaseDetails().getId();
+        when(hoNotificationCache.getIfPresent(caseId)).thenReturn(caseId);
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         when(callback.getCaseDetails().getId()).thenReturn(1L);
         when(callback.getEvent()).thenReturn(ADJOURN_HEARING_WITHOUT_DATE);
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        caseId = callback.getCaseDetails().getId();
+        when(hoNotificationCache.getIfPresent(caseId)).thenReturn(caseId);
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         // We assert that we send two notifications.
         verify(homeOfficeApi, times(2)).aboutToSubmit(callback);

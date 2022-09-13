@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class CacheConfig {
+class CacheConfiguration {
 
     @Bean
     public Cache<Long, Long> hoNotificationCache() {
