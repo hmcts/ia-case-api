@@ -59,7 +59,6 @@
             All related to spring retry, most of the them has base score as NA
             ]]>
         </notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.retry/spring\-retry@.+$</packageUrl>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38749</cve>
