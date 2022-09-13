@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -35,8 +36,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-@Component
+
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final String SUPPRESSION_LOG_FIELDS = "event: {}, "
@@ -46,24 +49,15 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                                                          + "homeOfficeNotificationsEligible: {} ";
     private final FeatureToggler featureToggler;
     private final HomeOfficeApi<AsylumCase> homeOfficeApi;
+    private final Cache<Long, Long> hoNotificationCache;
 
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
-    private Cache<Long, Long> cache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            .maximumSize(100)
-            .build();
+
 
     @Override
     public DispatchPriority getDispatchPriority() {
         return DispatchPriority.LATEST;
-    }
-
-    public HomeOfficeCaseNotificationsHandler(
-        FeatureToggler featureToggler,
-        HomeOfficeApi<AsylumCase> homeOfficeApi) {
-        this.featureToggler = featureToggler;
-        this.homeOfficeApi = homeOfficeApi;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -80,7 +74,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                 .getCaseData();
 
         AppealType appealType = asylumCaseWithHomeOfficeData.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
@@ -100,11 +94,11 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
             // RIA-5683: Prevent multiple notifications for the same event and case ID.
-            if (Objects.nonNull(cache.getIfPresent(caseId))) {
+            if (Objects.nonNull(hoNotificationCache.getIfPresent(caseId))) {
                 log.info("Home Office notification already invoked: "
                          + SUPPRESSION_LOG_FIELDS,
-                        callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
-                        homeOfficeNotificationsEligible);
+                    callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
+                    homeOfficeNotificationsEligible);
                 return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
             }
             if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
@@ -120,7 +114,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
                 // We store the case Id to prevent duplicated notifications.
-                cache.put(caseId, caseId);
+                hoNotificationCache.put(caseId, caseId);
             } else {
 
                 log.info("Home Office notification was NOT invoked due to unsuccessful validation search - "
@@ -141,28 +135,28 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
     }
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && (isAHandleableEvent(callback.getEvent())
+               && (isAHandleableEvent(callback.getEvent())
 
-                        || (callback.getEvent() == Event.SEND_DIRECTION
-                            && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
-                            && getLatestNonStandardRespondentDirection(
-                                callback.getCaseDetails().getCaseData()).isPresent())
+                   || (callback.getEvent() == Event.SEND_DIRECTION
+                       && callback.getCaseDetails().getState() == State.AWAITING_RESPONDENT_EVIDENCE
+                       && getLatestNonStandardRespondentDirection(
+            callback.getCaseDetails().getCaseData()).isPresent())
 
-                        || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
-                            && (Arrays.asList(
-                                State.AWAITING_RESPONDENT_EVIDENCE,
-                                State.RESPONDENT_REVIEW
-                            ).contains(callback.getCaseDetails().getState()))
-                            && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData()))
-                    )
-                    && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
+                   || (callback.getEvent() == Event.CHANGE_DIRECTION_DUE_DATE
+                       && (Arrays.asList(
+            State.AWAITING_RESPONDENT_EVIDENCE,
+            State.RESPONDENT_REVIEW
+        ).contains(callback.getCaseDetails().getState()))
+                       && isDirectionForRespondentParties(callback.getCaseDetails().getCaseData()))
+               )
+               && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
 
@@ -191,17 +185,17 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
     /*  Returns true when the callback event is handleable. */
     public boolean isAHandleableEvent(Event callbackEvent) {
         return Arrays.asList(
-                Event.REQUEST_RESPONDENT_EVIDENCE,
-                Event.REQUEST_RESPONDENT_REVIEW,
-                Event.LIST_CASE,
-                Event.EDIT_CASE_LISTING,
-                Event.ADJOURN_HEARING_WITHOUT_DATE,
-                Event.SEND_DECISION_AND_REASONS,
-                Event.APPLY_FOR_FTPA_APPELLANT,
-                Event.APPLY_FOR_FTPA_RESPONDENT,
-                Event.LEADERSHIP_JUDGE_FTPA_DECISION,
-                Event.RESIDENT_JUDGE_FTPA_DECISION,
-                Event.END_APPEAL,
-                Event.REQUEST_RESPONSE_AMEND).contains(callbackEvent);
+            Event.REQUEST_RESPONDENT_EVIDENCE,
+            Event.REQUEST_RESPONDENT_REVIEW,
+            Event.LIST_CASE,
+            Event.EDIT_CASE_LISTING,
+            Event.ADJOURN_HEARING_WITHOUT_DATE,
+            Event.SEND_DECISION_AND_REASONS,
+            Event.APPLY_FOR_FTPA_APPELLANT,
+            Event.APPLY_FOR_FTPA_RESPONDENT,
+            Event.LEADERSHIP_JUDGE_FTPA_DECISION,
+            Event.RESIDENT_JUDGE_FTPA_DECISION,
+            Event.END_APPEAL,
+            Event.REQUEST_RESPONSE_AMEND).contains(callbackEvent);
     }
 }

@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_R
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,6 +85,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
+    @Mock private Cache<Long, Long> hoNotificationCache;
 
     private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
@@ -130,7 +132,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
     @BeforeEach
     void setUp() {
         homeOfficeCaseNotificationsHandler =
-            new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
+            new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi, hoNotificationCache);
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
     }
 
@@ -499,6 +501,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         // The api is called 3 times, with the same event
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        Long caseId = callback.getCaseDetails().getId();
+        when(hoNotificationCache.getIfPresent(caseId)).thenReturn(caseId);
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         // We assert that we only send one notification.
@@ -697,7 +701,8 @@ class HomeOfficeCaseNotificationsHandlerTest {
 
         homeOfficeCaseNotificationsHandler = new HomeOfficeCaseNotificationsHandler(
             featureToggler,
-            homeOfficeApi);
+            homeOfficeApi,
+            hoNotificationCache);
 
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
