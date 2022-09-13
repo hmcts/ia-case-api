@@ -7,7 +7,7 @@ public enum UserRoleLabel {
     JUDGE("Judge"),
     TRIBUNAL_CASEWORKER("Tribunal Caseworker"),
     ADMIN_OFFICER("Admin Officer"),
-    HOME_OFFICE_GENERIC("Home Office"),
+    HOME_OFFICE_BAIL("Home Office"),
     LEGAL_REPRESENTATIVE("Legal Representative"),
     SYSTEM("System");
 

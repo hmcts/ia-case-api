@@ -143,7 +143,7 @@ class ApplicationUserRoleAppenderTest {
         when(callback.getEvent()).thenReturn(Event.START_APPLICATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_BAIL);
 
 
         PreSubmitCallbackResponse<BailCase> response =

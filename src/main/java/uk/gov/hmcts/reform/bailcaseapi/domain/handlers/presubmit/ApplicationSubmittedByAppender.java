@@ -63,7 +63,7 @@ public class ApplicationSubmittedByAppender implements PreSubmitCallbackHandler<
         } else if (isLegalRep) {
             applicationSubmittedBy = UserRoleLabel.LEGAL_REPRESENTATIVE.toString();
         } else if (isHomeOffice) {
-            applicationSubmittedBy = UserRoleLabel.HOME_OFFICE_GENERIC.toString();
+            applicationSubmittedBy = UserRoleLabel.HOME_OFFICE_BAIL.toString();
         } else {
             throw new IllegalStateException("Unknown user");
         }

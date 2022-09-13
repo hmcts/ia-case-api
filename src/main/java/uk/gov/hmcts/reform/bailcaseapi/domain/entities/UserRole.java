@@ -10,7 +10,7 @@ public enum UserRole {
     JUDICIARY("caseworker-ia-judiciary"),
     JUDGE("caseworker-ia-iacjudge"),
     SYSTEM("caseworker-ia-system"),
-    HOME_OFFICE_GENERIC("caseworker-ia-respondentofficer"),
+    HOME_OFFICE_BAIL("caseworker-ia-homeofficebail"),
     CITIZEN("citizen");
 
     @JsonValue

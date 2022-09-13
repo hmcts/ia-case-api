@@ -82,7 +82,7 @@ public class MakeNewApplicationService {
         if (userRoleLabel.equals(UserRoleLabel.LEGAL_REPRESENTATIVE)) {
             bailCase.remove(BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS);
         }
-        if (userRoleLabel.equals(UserRoleLabel.HOME_OFFICE_GENERIC)) {
+        if (userRoleLabel.equals(UserRoleLabel.HOME_OFFICE_BAIL)) {
             bailCase.remove(BailCaseFieldDefinition.UPLOAD_B1_FORM_DOCS);
         }
     }

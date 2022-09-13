@@ -119,7 +119,7 @@ class MakeNewApplicationServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = UserRoleLabel.class, names = {"LEGAL_REPRESENTATIVE", "HOME_OFFICE_GENERIC"})
+    @EnumSource(value = UserRoleLabel.class, names = {"LEGAL_REPRESENTATIVE", "HOME_OFFICE_BAIL"})
     void should_clear_role_dependent_field(UserRoleLabel userRoleLabel) {
         List<IdValue<DocumentWithDescription>> b1DocumentList =
             Arrays.asList(

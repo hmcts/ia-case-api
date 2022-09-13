@@ -117,7 +117,7 @@ public class UploadDocumentsHandlerTest {
             );
 
         when(bailCase.read(CURRENT_USER, String.class))
-            .thenReturn(Optional.of(UserRoleLabel.HOME_OFFICE_GENERIC.toString()));
+            .thenReturn(Optional.of(UserRoleLabel.HOME_OFFICE_BAIL.toString()));
 
         when(bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(existingHomeOfficeDocuments));
         when(bailCase.read(UPLOAD_DOCUMENTS)).thenReturn(Optional.of(homeOfficeDocumentsWithDescriptionList));

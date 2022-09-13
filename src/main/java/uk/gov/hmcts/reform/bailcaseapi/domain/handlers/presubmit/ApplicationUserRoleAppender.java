@@ -63,7 +63,7 @@ public class ApplicationUserRoleAppender implements PreSubmitCallbackHandler<Bai
         } else {
             bailCase.write(BailCaseFieldDefinition.IS_LEGAL_REP, YesOrNo.NO);
         }
-        if (userRoleLabel.equals(UserRoleLabel.HOME_OFFICE_GENERIC)) {
+        if (userRoleLabel.equals(UserRoleLabel.HOME_OFFICE_BAIL)) {
             bailCase.write(BailCaseFieldDefinition.IS_HOME_OFFICE, YesOrNo.YES);
         } else {
             bailCase.write(BailCaseFieldDefinition.IS_HOME_OFFICE, YesOrNo.NO);

@@ -65,7 +65,7 @@ public class CurrentUserRoleAppenderTest {
         verify(bailCase, times(1)).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.ADMIN_OFFICER.toString());
         verify(bailCase, never()).write(
-            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_BAIL.toString());
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
         verify(bailCase, never()).write(
@@ -77,7 +77,7 @@ public class CurrentUserRoleAppenderTest {
         when(callback.getEvent()).thenReturn(Event.UPLOAD_DOCUMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
-        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_GENERIC);
+        when(userDetailsHelper.getLoggedInUserRoleLabel(userDetails)).thenReturn(UserRoleLabel.HOME_OFFICE_BAIL);
 
 
         PreSubmitCallbackResponse<BailCase> response =
@@ -88,7 +88,7 @@ public class CurrentUserRoleAppenderTest {
         assertThat(response.getData()).isEqualTo(bailCase);
         assertThat(response.getErrors()).isEmpty();
         verify(bailCase, times(1)).write(
-            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_BAIL.toString());
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.ADMIN_OFFICER.toString());
         verify(bailCase, never()).write(
@@ -118,7 +118,7 @@ public class CurrentUserRoleAppenderTest {
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.ADMIN_OFFICER.toString());
         verify(bailCase, never()).write(
-            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_BAIL.toString());
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.JUDGE.toString());
     }
@@ -144,7 +144,7 @@ public class CurrentUserRoleAppenderTest {
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.ADMIN_OFFICER.toString());
         verify(bailCase, never()).write(
-            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+            BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.HOME_OFFICE_BAIL.toString());
         verify(bailCase, never()).write(
             BailCaseFieldDefinition.CURRENT_USER, UserRoleLabel.LEGAL_REPRESENTATIVE.toString());
     }

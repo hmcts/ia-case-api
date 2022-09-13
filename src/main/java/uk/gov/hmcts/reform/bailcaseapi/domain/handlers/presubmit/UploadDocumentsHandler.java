@@ -112,7 +112,7 @@ public class UploadDocumentsHandler implements PreSubmitCallbackHandler<BailCase
     }
 
     private boolean currentUserIsHomeOfficer(String userRole) {
-        return userRole.equals(UserRoleLabel.HOME_OFFICE_GENERIC.toString());
+        return userRole.equals(UserRoleLabel.HOME_OFFICE_BAIL.toString());
     }
 
     private boolean currentUserIsAdminOrJudge(String userRole) {

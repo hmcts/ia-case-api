@@ -14,7 +14,7 @@ class UserRoleTest {
         assertEquals("caseworker-ia-iacjudge", UserRole.JUDGE.toString());
         assertEquals("caseworker-ia-system", UserRole.SYSTEM.toString());
         assertEquals("caseworker-ia-admofficer", UserRole.ADMIN_OFFICER.toString());
-        assertEquals("caseworker-ia-respondentofficer", UserRole.HOME_OFFICE_GENERIC.toString());
+        assertEquals("caseworker-ia-homeofficebail", UserRole.HOME_OFFICE_BAIL.toString());
         assertEquals("citizen", UserRole.CITIZEN.toString());
     }
 

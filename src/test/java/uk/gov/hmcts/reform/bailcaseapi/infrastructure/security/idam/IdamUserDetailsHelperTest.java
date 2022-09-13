@@ -79,10 +79,10 @@ class IdamUserDetailsHelperTest {
     }
 
     @Test
-    public void should_get_logged_in_user_role_home_office_generic() {
+    public void should_get_logged_in_user_role_home_office_bail() {
 
         Stream.of(
-            "caseworker-ia-respondentofficer"
+            "caseworker-ia-homeofficebail"
         ).forEach(roleName -> {
             List<String> expectedRoles = Arrays.asList(roleName, "role-2");
 
