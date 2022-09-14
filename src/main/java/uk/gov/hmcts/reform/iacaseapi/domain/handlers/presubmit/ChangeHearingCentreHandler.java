@@ -52,7 +52,7 @@ public class ChangeHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
         HearingCentre maybeHearingCentre =
             asylumCase.read(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, HearingCentre.class)
-                .orElse(HearingCentre.TAYLOR_HOUSE);
+                .orElse(HearingCentre.NEWPORT);
         State maybePreviousState =
             asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class).orElse(State.UNKNOWN);
 
