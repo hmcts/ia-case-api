@@ -106,6 +106,10 @@ core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-t
 core_case_data_api_permissions_path: "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users"
 core_case_data_api_permissions_revoke_path: "/caseworkers/{idamIdOfUserWhoGrantsAccess}/jurisdictions/{jurisdiction}/case-types/{caseType}/cases/{caseId}/users/{idamOfUserToRevokeAccess}"
 
+core_case_data_api_supplementary_data_path: "/cases/{caseId}/supplementary-data"
+hmcts_service_id: "BFA1"
+role_on_case: "Appellant"
+
 core_case_data_api_assignments_url: ${CCD_URL:http://127.0.0.1:4452}
 core_case_data_api_assignments_path: "/case-users"
 
@@ -239,6 +243,7 @@ security:
       - "reviewTimeExtension"
       - "sendDirectionWithQuestions"
       - "flagCase"
+      - "createFlag"
       - "removeFlag"
       - "requestCmaRequirements"
       - "reviewCmaRequirements"
@@ -271,6 +276,7 @@ security:
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
       - "flagCase"
+      - "createFlag"
       - "removeFlag"
       - "adjournHearingWithoutDate"
       - "restoreStateFromAdjourn"

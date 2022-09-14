@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment;
 
+import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
@@ -8,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import java.time.ZoneId;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealPaymentCon
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @Slf4j
@@ -36,19 +39,25 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     private final PostNotificationSender<AsylumCase> postNotificationSender;
     private final Scheduler scheduler;
     private final DateProvider dateProvider;
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private String hmctsServiceId;
 
     public PayAndSubmitConfirmation(
         AppealPaymentConfirmationProvider appealPaymentConfirmationProvider,
         FeePayment<AsylumCase> feePayment,
         PostNotificationSender<AsylumCase> postNotificationSender,
         Scheduler scheduler,
-        DateProvider dateProvider) {
+        DateProvider dateProvider,
+        @Value("${hmcts_service_id}") String hmctsServiceId,
+        CcdSupplementaryUpdater ccdSupplementaryUpdater) {
 
         this.appealPaymentConfirmationProvider = appealPaymentConfirmationProvider;
         this.feePayment = feePayment;
         this.postNotificationSender = postNotificationSender;
         this.scheduler = scheduler;
         this.dateProvider = dateProvider;
+        this.hmctsServiceId = hmctsServiceId;
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
     public boolean canHandle(
@@ -71,6 +80,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         long caseId = callback.getCaseDetails().getId();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
+        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
+
         // make a payment
         final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
             .map(j -> j == JourneyType.AIP)
@@ -79,6 +90,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         if (isAipJourney) {
             return new PostSubmitCallbackResponse();
         }
+
 
         boolean isException = false;
         try {
@@ -111,6 +123,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 // optionally we can use timed event status to send appropriate message to the Case Officer in case of rollback failure
             }
         }
+
 
         // send GovNotify notifications
         PostSubmitCallbackResponse postSubmitResponse = sendNotifications(callback, asylumCase);
