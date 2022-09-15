@@ -5,8 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
@@ -35,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -47,15 +47,17 @@ class AppealSubmittedConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
-    private AppealSubmittedConfirmation appealSubmittedConfirmation =
-        new AppealSubmittedConfirmation();
+    @Mock
+    private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService);
     }
 
     @Test
@@ -779,5 +781,26 @@ class AppealSubmittedConfirmationTest {
         assertThatThrownBy(() -> appealSubmittedConfirmation.handle(callback))
             .isExactlyInstanceOf(IllegalStateException.class)
             .hasMessage("Appeal type is not present");
+    }
+
+    @Test
+    void should_send_postSubmit_payment_callback() {
+        reset(callback);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(
+            Optional.of(RemissionType.NO_REMISSION));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
+
+        assertNotNull(callbackResponse);
+
     }
 }
