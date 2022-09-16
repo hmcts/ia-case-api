@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REM
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
+@Slf4j
 @Component
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -258,7 +260,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             callback.getCaseDetailsBefore(),
             Event.SUBMIT_APPEAL
         );
-
+        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
         asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+
     }
 }
