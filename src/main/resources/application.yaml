@@ -15,8 +15,7 @@ management:
   health:
     probes:
       enabled: true
-    case-document-am-api:
-      enabled: true
+            
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
