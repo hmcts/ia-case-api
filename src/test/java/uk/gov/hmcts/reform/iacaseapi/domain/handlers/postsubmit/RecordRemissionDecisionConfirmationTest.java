@@ -2,24 +2,35 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class RecordRemissionDecisionConfirmationTest {
@@ -27,18 +38,20 @@ class RecordRemissionDecisionConfirmationTest {
     @Mock private AsylumCase asylumCase;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private Callback<AsylumCase> callback;
+    @Mock private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+    private RecordRemissionDecisionConfirmation recordRemissionDecisionConfirmation;
 
-    @InjectMocks
-    private RecordRemissionDecisionConfirmation recordRemissionDecisionConfirmation
-        = new RecordRemissionDecisionConfirmation();
-
-
-    @Test
-    void handling_should_return_confirmation_for_remission_approved() {
-
+    @BeforeEach
+    public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+
+        recordRemissionDecisionConfirmation = new RecordRemissionDecisionConfirmation(asylumCasePostFeePaymentService);
+    }
+
+    @Test
+    void handling_should_return_confirmation_for_remission_approved() {
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(APPROVED));
 
@@ -57,10 +70,6 @@ class RecordRemissionDecisionConfirmationTest {
 
     @Test
     void handling_should_return_confirmation_for_remission_partially_approved() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
 
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(PARTIALLY_APPROVED));
 
@@ -81,10 +90,6 @@ class RecordRemissionDecisionConfirmationTest {
     @Test
     void handling_should_return_confirmation_for_remission_rejected() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
-
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(Optional.of(REJECTED));
 
         PostSubmitCallbackResponse callbackResponse =
@@ -102,6 +107,8 @@ class RecordRemissionDecisionConfirmationTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
         assertThatThrownBy(() -> recordRemissionDecisionConfirmation.handle(callback))
             .hasMessage("Cannot handle callback")
@@ -138,6 +145,18 @@ class RecordRemissionDecisionConfirmationTest {
         assertThatThrownBy(() -> recordRemissionDecisionConfirmation.handle(null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_send_postSubmit_payment_callback() {
+
+        PostSubmitCallbackResponse callbackResponse =
+            recordRemissionDecisionConfirmation.handle(callback);
+
+        verify(asylumCasePostFeePaymentService, times(1)).ccdSubmitted(any(Callback.class));
+
+        assertNotNull(callbackResponse);
+
     }
 
 }
