@@ -15,7 +15,7 @@ management:
   health:
     probes:
       enabled: true
-            
+
   services:
     documentsApi:
       uri: ${IA_CASE_DOCUMENTS_API_URL:http://127.0.0.1:8092}/health
@@ -34,6 +34,9 @@ management:
       response: '"status":"UP"'
     timedEvent:
       uri: ${IA_TIMED_EVENT_SERVICE_URL:http://127.0.0.1:8095}/health
+      response: '"status":"UP"'
+    timedEvent:
+      uri: ${CDAM_URL:http://127.0.0.1:4455}/health
       response: '"status":"UP"'
 
 spring:
