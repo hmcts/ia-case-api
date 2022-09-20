@@ -299,14 +299,14 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap' , version: '3.1.1'
-    testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.19.0'
+    testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.23.2'
     testImplementation group: 'ru.lanwen.wiremock', name: 'wiremock-junit5', version: '1.3.1'
     testImplementation group: 'org.pitest', name: 'pitest', version: '1.5.2'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'3.5.0'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile "com.github.tomakehurst:wiremock:2.19.2"
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
