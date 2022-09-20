@@ -270,7 +270,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv'
     compile group: 'org.flywaydb', name: 'flyway-core'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.31'
+    compile group: 'org.yaml', name: 'snakeyaml'
     compile group: 'org.apache.commons', name: 'commons-lang3'
     compile group: 'commons-io', name: 'commons-io', version: '2.10.0'
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
@@ -278,8 +278,7 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.4.1'
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     compile group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-
-    compile (group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1')
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1'
 
     compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
@@ -319,9 +318,6 @@ dependencies {
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
 
     testImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', {
-        exclude group: 'com.github.tomakehurst', module: 'wiremock-standalone'
-    }
 
     //pact contract testing
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
