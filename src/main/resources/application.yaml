@@ -291,7 +291,6 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
-      - "moveToSubmitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

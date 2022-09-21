@@ -397,7 +397,7 @@ class PaymentStateHandlerTest {
     }
 
     @Test
-    void should_return_updated_state_for_pa_pay_now_payment_pending_submit_as_pending_payment_state() {
+    void should_return_updated_state_for_pa_pay_now_payment_pending_submit_as_appeal_submitted_state() {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -412,13 +412,13 @@ class PaymentStateHandlerTest {
             paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
     @ParameterizedTest
     @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
-    void should_return_updated_state_for_pa_pay_now_remission_submit_as_payment_pending_state(RemissionType remissionType) {
+    void should_return_updated_state_for_pa_pay_now_remission_submit_as_appeal_submitted_state(RemissionType remissionType) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -433,7 +433,7 @@ class PaymentStateHandlerTest {
             paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertNotNull(returnedCallbackResponse);
-        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 }
