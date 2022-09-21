@@ -122,6 +122,6 @@ public class HearingCentreTest extends SpringBootIntegrationTest {
         assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.find("TD1 1AA"));
         assertEquals(HearingCentre.GLASGOW, hearingCentreFinder.find("ZE1 1AA"));
 
-        assertEquals(HearingCentre.TAYLOR_HOUSE, hearingCentreFinder.find("XX"));
+        assertEquals(HearingCentre.NEWPORT, hearingCentreFinder.find("XX"));
     }
 }
