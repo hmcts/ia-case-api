@@ -42,14 +42,14 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        boolean isRepJourney = callback.getCaseDetails().getCaseData()
-            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-            .map(journeyType -> journeyType == JourneyType.REP)
-            .orElse(true);
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.START_APPEAL
-               && isRepJourney;
+               && callback.getEvent() == Event.START_APPEAL;
+    }
+
+    private boolean isRepJourney(AsylumCase caseData) {
+        return caseData.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+                .map(journeyType -> journeyType == JourneyType.REP)
+                .orElse(true);
     }
 
     @Override
@@ -60,32 +60,39 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             throw new IllegalStateException("Cannot handle callback");
         }
 
-        final OrganisationEntityResponse organisationEntityResponse =
-            professionalOrganisationRetriever.retrieve();
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (organisationEntityResponse == null) {
-            log.warn("Data fetched from Professional Ref data is empty, case ID: {}", callback.getCaseDetails().getId());
+        if (isRepJourney(asylumCase)) {
+            final OrganisationEntityResponse organisationEntityResponse =
+                    professionalOrganisationRetriever.retrieve();
+
+            if (organisationEntityResponse == null) {
+                log.warn("Data fetched from Professional Ref data is empty, case ID: {}", callback.getCaseDetails().getId());
+            }
+
+            if (organisationEntityResponse != null
+                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
+                    && featureToggler.getValue("share-case-feature", false)) {
+
+                log.info("PRD endpoint called for caseId [{}] orgId[{}]",
+                        callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
+
+                setupCaseCreation(asylumCase, organisationEntityResponse.getOrganisationIdentifier());
+            }
+
+            mapToAsylumCase(asylumCase, organisationEntityResponse);
+        } else {
+            setupCaseCreation(asylumCase, null);
         }
 
-        if (organisationEntityResponse != null
-            && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
-            && featureToggler.getValue("share-case-feature", false)) {
-
-            log.info("PRD endpoint called for caseId [{}] orgId[{}]",
-                callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
-
-            setupCaseCreation(callback, organisationEntityResponse.getOrganisationIdentifier());
-        }
-
-        return mapToAsylumCase(callback, organisationEntityResponse);
+        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private PreSubmitCallbackResponse<AsylumCase> mapToAsylumCase(
-        Callback<AsylumCase> callback,
+    private void mapToAsylumCase(
+            AsylumCase asylumCase,
         OrganisationEntityResponse organisationEntityResponse
     ) {
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         AddressUk addressUk;
         String organisationName = "";
         if (organisationEntityResponse != null) {
@@ -130,14 +137,9 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME, organisationName);
         asylumCase.write(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS, addressUk);
-
-        return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private void setupCaseCreation(Callback<AsylumCase> callback, String organisationIdentifier) {
-
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
+    private void setupCaseCreation(AsylumCase asylumCase, String organisationIdentifier) {
         final OrganisationPolicy organisationPolicy =
             OrganisationPolicy.builder()
                 .organisation(Organisation.builder()
