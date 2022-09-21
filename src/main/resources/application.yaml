@@ -114,7 +114,7 @@ assign_case_access_api_assignments_path: "/case-assignments"
 apply_noc_access_api_assignments_path: "/noc/check-noc-approval"
 noc_set_organisation_to_remove_path: "/noc/set-organisation-to-remove"
 
-pip_access_code_expiry_days: 90
+pip_access_code_expiry_days: 30
 
 appealReferenceSequenceSeed: 50000
 
