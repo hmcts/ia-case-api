@@ -128,7 +128,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isHuOrEaOrPa(asylumCase), !isAipJourney(asylumCase))) {
 
-                    setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
+                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
@@ -229,6 +229,20 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             submissionOutOfTime == NO
             ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
             : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
+        );
+    }
+
+    private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                         Callback<AsylumCase> callback,
+                                         YesOrNo submissionOutOfTime) {
+
+        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
+                              + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+
+        postSubmitCallbackResponse.setConfirmationBody(
+            submissionOutOfTime == NO
+                ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
+                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
         );
     }
 

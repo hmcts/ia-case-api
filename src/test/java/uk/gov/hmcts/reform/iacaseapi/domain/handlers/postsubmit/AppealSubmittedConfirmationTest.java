@@ -252,7 +252,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU"})
     void lr_should_return_out_of_time_confirmation_for_ea_hu_paPayLater(String appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -311,7 +311,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.");
+                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/");
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
@@ -319,7 +319,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU"})
     void lr_should_return_confirmation_for_ea_hu_paPayNow(String appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
@@ -378,7 +378,7 @@ class AppealSubmittedConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
+                "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
             );
     }
 
