@@ -117,10 +117,11 @@ class EventTest {
         assertEquals("updatePaymentStatus", Event.UPDATE_PAYMENT_STATUS.toString());
         assertEquals("markAddendumEvidenceAsReviewed", Event.MARK_ADDENDUM_EVIDENCE_AS_REVIEWED.toString());
         assertEquals("markPaymentRequestSent", Event.MARK_PAYMENT_REQUEST_SENT.toString());
+        assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(114, Event.values().length);
+        assertEquals(115, Event.values().length);
     }
 }

@@ -334,6 +334,7 @@ security:
       - "makeAnApplication"
       - "draftHearingRequirements"
       - "uploadAddendumEvidenceLegalRep"
+      - "pipActivation"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
