@@ -72,6 +72,11 @@
         <cve>CVE-2022-29885</cve>
     </suppress>
     <suppress until="2030-01-01">
+        <cve>CVE-2022-22965</cve>
+        <cve>CVE-2022-22968</cve>
+        <cve>CVE-2022-22970</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[
             Temporarily suppress tomcat-embed and snakeyaml vulnerabilities
             ]]>
