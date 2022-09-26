@@ -55,7 +55,9 @@ public class RecordOutOfTimeDecisionPreparer implements PreSubmitCallbackHandler
         // Migration to new F&P waysToPay requires "payOffline" not to be an option anymore.
         // "payOffline" values in old cases have to conform to "payLater".
         String paymentOption = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
-        if (paymentOption.equals("payOffline")) asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, "payLater");
+        if (paymentOption.equals("payOffline")) {
+            asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, "payLater");
+        }
 
         YesOrNo recordedOutOfTimeDecision = asylumCase.read(RECORDED_OUT_OF_TIME_DECISION, YesOrNo.class).orElse(NO);
 
