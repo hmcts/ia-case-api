@@ -70,8 +70,6 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-        Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
@@ -80,17 +78,11 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
 
         boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
                                                                  || (remissionType.isPresent());
-        boolean isPaPayNow = paPaymentType.isPresent() && paPaymentType.equals(Optional.of(PA_PAY_NOW));
 
         switch (appealType) {
             case EA:
             case HU:
                 if (isPaymentStatusPendingOrFailed) {
-                    return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
-                }
-                return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-            case PA:
-                if (isPaymentStatusPendingOrFailed && isPaPayNow) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);

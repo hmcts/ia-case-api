@@ -43,7 +43,7 @@ class HasServiceRequestAlreadyValueHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class)).thenReturn(Optional.empty());
 
-        hasServiceRequestAlreadyValueHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        hasServiceRequestAlreadyValueHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY, YesOrNo.NO);
 
@@ -55,7 +55,7 @@ class HasServiceRequestAlreadyValueHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         assertThatThrownBy(
-            () -> hasServiceRequestAlreadyValueHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            () -> hasServiceRequestAlreadyValueHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -66,7 +66,7 @@ class HasServiceRequestAlreadyValueHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = hasServiceRequestAlreadyValueHandler.canHandle(callbackStage, callback);
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     && (callback.getEvent() == Event.START_APPEAL)) {
                     assertTrue(canHandle);
                 } else {

@@ -91,7 +91,6 @@ public enum Event {
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
     MOVE_TO_PAYMENT_PENDING("moveToPaymentPending"),
-    MOVE_TO_SUBMITTED("moveToSubmitted"),
     ROLLBACK_PAYMENT("rollbackPayment"),
     ROLLBACK_PAYMENT_TIMEOUT("rollbackPaymentTimeout"),
     ROLLBACK_PAYMENT_TIMEOUT_TO_PAYMENT_PENDING("rollbackPaymentTimeoutToPaymentPending"),

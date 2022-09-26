@@ -1,12 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
@@ -14,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REM
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -25,7 +21,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 
+@Slf4j
 @Component
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -51,6 +49,12 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
+
+    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+
+    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService) {
+        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -81,6 +85,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+
+        sendPaymentCallback(callback);
 
         postSubmitResponse.setConfirmationHeader(
             submissionOutOfTime == NO ? DEFAULT_HEADER : ""
@@ -245,5 +251,17 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                    || appealType.equals(AppealType.PA);
         }
         return false;
+    }
+
+    private void sendPaymentCallback(Callback<AsylumCase> callback) {
+
+        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
+            callback.getCaseDetails(),
+            callback.getCaseDetailsBefore(),
+            Event.SUBMIT_APPEAL
+        );
+        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
+        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+
     }
 }

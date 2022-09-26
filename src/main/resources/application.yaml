@@ -101,6 +101,7 @@ requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
 appellantReasonsForAppeal.dueInDays: 28
 paymentAfterRemissionRejection.dueInMinutes: 20160
+paymentEaHuNoRemission.dueInMinutes: 20160
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -143,6 +144,7 @@ paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  ccdSubmittedPath: "/asylum/ccdSubmitted"
 
 role-assignment-service:
   url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
@@ -288,7 +290,6 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
-      - "moveToSubmitted"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
