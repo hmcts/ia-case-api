@@ -36,8 +36,8 @@ public class PinInPostActivatedTest {
 
     private AsylumCase asylumCase;
 
-    @Mock
-    private Callback<AsylumCase> callback;
+    @Mock private Callback<AsylumCase> callback;
+    
     @Mock private CaseDetails<AsylumCase> caseDetails;
 
     @Mock private UserDetailsProvider userDetailsProvider;
