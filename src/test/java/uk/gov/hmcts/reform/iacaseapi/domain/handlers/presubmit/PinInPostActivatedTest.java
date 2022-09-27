@@ -1,10 +1,17 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -34,10 +42,11 @@ public class PinInPostActivatedTest {
 
     private PinInPostActivated pinInPostActivated;
 
+    @Mock
     private AsylumCase asylumCase;
 
     @Mock private Callback<AsylumCase> callback;
-    
+
     @Mock private CaseDetails<AsylumCase> caseDetails;
 
     @Mock private UserDetailsProvider userDetailsProvider;
@@ -47,7 +56,6 @@ public class PinInPostActivatedTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        asylumCase = new AsylumCase();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
@@ -58,9 +66,12 @@ public class PinInPostActivatedTest {
 
     @Test
     public void journeyType_is_updated() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
         );
 
         Optional<JourneyType> details = response.getData().read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class);
@@ -69,12 +80,15 @@ public class PinInPostActivatedTest {
 
     @Test
     public void subscription_should_added_wantsEmail() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
         asylumCase.write(AsylumCaseFieldDefinition.EMAIL,"appellant@examples.com");
         asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
         );
 
         Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
@@ -84,23 +98,26 @@ public class PinInPostActivatedTest {
         assertEquals(USER_ID, subscriptions.get().get(0).getId());
 
         Subscriber expectedSubscriber = new Subscriber(
-                SubscriberType.APPELLANT,
-                "appellant@examples.com",
-                YesOrNo.YES,
-                null,
-                YesOrNo.NO);
+            SubscriberType.APPELLANT,
+            "appellant@examples.com",
+            YesOrNo.YES,
+            null,
+            YesOrNo.NO);
         assertThat(subscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
     public void subscription_should_added_wantsSms() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        
         asylumCase.write(AsylumCaseFieldDefinition.EMAIL, Optional.of("appellant@examples.com"));
         asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of("01234123123"));
         asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
         );
 
         Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
@@ -110,12 +127,39 @@ public class PinInPostActivatedTest {
         assertEquals(USER_ID, subscriptions.get().get(0).getId());
 
         Subscriber expectedSubscriber = new Subscriber(
-                SubscriberType.APPELLANT,
-                "appellant@examples.com",
-                YesOrNo.NO,
-                "01234123123",
-                YesOrNo.YES);
+            SubscriberType.APPELLANT,
+            "appellant@examples.com",
+            YesOrNo.NO,
+            "01234123123",
+            YesOrNo.YES);
         assertThat(subscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+    }
+
+    @Test
+    public void caseData_should_contain_reason_for_appeal_field() {
+        Document document = new Document(
+            "documentUrl", "documentBinaryUrl", "documentFileName"
+        );
+        DocumentWithMetadata documentWithMetadata = new DocumentWithMetadata(
+            document, "description", "dateUploaded", DocumentTag.CASE_ARGUMENT
+        );
+        IdValue<DocumentWithMetadata> documentWithMetadataIdValue = new IdValue<>("id1", documentWithMetadata);
+        List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = Arrays.asList(documentWithMetadataIdValue);
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS))
+            .thenReturn(Optional.of(legalRepresentativeDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback
+        );
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
+
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
     }
 
     @Test

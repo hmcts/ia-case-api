@@ -914,6 +914,10 @@ public enum AsylumCaseFieldDefinition {
             "appellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     REASONS_FOR_APPEAL_DOCUMENTS(
             "reasonsForAppealDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    REASONS_FOR_APPEAL_DECISION(
+        "reasonsForAppealDecision", new TypeReference<String>(){}),
+    REASONS_FOR_APPEAL_DATE_UPLOADED(
+        "reasonsForAppealDateUploaded", new TypeReference<String>(){}),
     CLARIFYING_QUESTIONS_ANSWERS("clarifyingQuestionsAnswers",
             new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
