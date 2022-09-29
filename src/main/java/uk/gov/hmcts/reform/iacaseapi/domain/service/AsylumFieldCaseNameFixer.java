@@ -40,7 +40,7 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
             asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
         }
 
-        if (asylumCase.read(CASE_NAME_HMCTS_INTERNAL).isEmpty()){
+        if (asylumCase.read(CASE_NAME_HMCTS_INTERNAL).isEmpty()) {
             asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
         }
     }

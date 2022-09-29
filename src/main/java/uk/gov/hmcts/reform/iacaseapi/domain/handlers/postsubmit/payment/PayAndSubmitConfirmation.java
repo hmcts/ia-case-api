@@ -164,7 +164,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                     caseDetails.getState(),
                     asylumCase,
                     caseDetails.getCreatedDate(),
-                    caseDetails.getSecurityClassification()
+                    caseDetails.getSecurityClassification(),
+                    caseDetails.getSupplementaryData()
                 ),
                 callback.getCaseDetailsBefore(),
                 callback.getEvent()
