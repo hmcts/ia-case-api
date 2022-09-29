@@ -39,6 +39,10 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
             asylumCase.write(hmctsCaseNameInternal, expectedCaseName);
             asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
         }
+
+        if (asylumCase.read(CASE_NAME_HMCTS_INTERNAL).isEmpty()){
+            asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
+        }
     }
 
     public String getCaseName(String appealReferenceNumberToBeConcatenated, String appellantFamilyNameToBeConcatenated) {
