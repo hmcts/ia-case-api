@@ -1,16 +1,30 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("unchecked")
 class AsylumFieldCaseNameFixerTest {
 
     private AsylumFieldCaseNameFixer asylumFieldCaseNameFixer;
     private AsylumCase asylumCase;
+
+    @Mock
+    private AsylumCase asylumCaseMock;
+
 
     @BeforeEach
     public void setUp() {
@@ -97,5 +111,18 @@ class AsylumFieldCaseNameFixerTest {
             .isEqualTo(expectedCaseName);
         assertThat(asylumCase.read(CASE_NAME_HMCTS_INTERNAL, String.class).get())
             .isEqualTo(expectedCaseName);
+    }
+
+    @Test
+    void should_set_case_name_hmcts_internal_if_not_present() {
+
+        when(asylumCaseMock.read(HMCTS_CASE_NAME_INTERNAL)).thenReturn(Optional.of("John Smith"));
+        when(asylumCaseMock.read(APPELLANT_GIVEN_NAMES)).thenReturn(Optional.of("John "));
+        when(asylumCaseMock.read(APPELLANT_FAMILY_NAME)).thenReturn(Optional.of("Smith"));
+
+        asylumFieldCaseNameFixer.fix(asylumCaseMock);
+
+        verify(asylumCaseMock, times(1)).write(
+            AsylumCaseFieldDefinition.CASE_NAME_HMCTS_INTERNAL, "John Smith");
     }
 }

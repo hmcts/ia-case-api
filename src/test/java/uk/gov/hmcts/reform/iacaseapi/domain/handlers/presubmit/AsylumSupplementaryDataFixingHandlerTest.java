@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,6 +40,11 @@ class AsylumSupplementaryDataFixingHandlerTest {
     @BeforeEach
     public void setUp() {
         asylumSupplementaryDataFixingHandler = new AsylumSupplementaryDataFixingHandler(ccdSupplementaryUpdater);
+    }
+
+    @Test
+    void set_to_earliest() {
+        assertThat(asylumSupplementaryDataFixingHandler.getDispatchPriority()).isEqualTo(EARLIEST);
     }
 
     @Test
