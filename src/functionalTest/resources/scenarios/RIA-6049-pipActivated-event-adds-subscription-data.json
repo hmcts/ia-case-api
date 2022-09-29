@@ -1,0 +1,41 @@
+{
+  "description": "RIA-6050 transform case to from legally represented format to appellant in person format",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 6049,
+      "eventId": "pipActivation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "email": "appellant@example.com",
+          "mobileNumber": "01234123123",
+          "contactPreference": "wantsEmail"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "subscriptions": [
+          {
+            "id": "101e967a-c2fe-4340-b0c8-da18b3107f28",
+            "value": {
+              "email": "appellant@example.com",
+              "mobileNumber": "01234123123",
+              "wantsSms": "No",
+              "subscriber": "appellant",
+              "wantsEmail": "Yes"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
