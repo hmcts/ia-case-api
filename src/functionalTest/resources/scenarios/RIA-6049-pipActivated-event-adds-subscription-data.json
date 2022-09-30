@@ -1,5 +1,5 @@
 {
-  "description": "RIA-6050 transform case to from legally represented format to appellant in person format",
+  "description": "RIA-6049 transform case from legally represented format to appellant in person format",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "Citizen",
@@ -23,15 +23,17 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "email": "appellant@example.com",
+        "mobileNumber": "01234123123",
+        "contactPreference": "wantsEmail",
         "subscriptions": [
           {
-            "id": "101e967a-c2fe-4340-b0c8-da18b3107f28",
             "value": {
-              "email": "appellant@example.com",
-              "mobileNumber": "01234123123",
-              "wantsSms": "No",
-              "subscriber": "appellant",
-              "wantsEmail": "Yes"
+              "subscriber":"appellant",
+              "email":"appellant@example.com",
+              "wantsEmail":"Yes",
+              "mobileNumber":"01234123123",
+              "wantsSms":"No"
             }
           }
         ]
