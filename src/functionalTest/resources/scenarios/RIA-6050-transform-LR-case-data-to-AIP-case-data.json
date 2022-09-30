@@ -78,7 +78,14 @@
             }
           }
         ],
-        "journeyType": "aip"
+        "journeyType": "aip",
+        "legalRepName": null,
+        "legalRepresentativeName": null,
+        "legalRepCompany": null,
+        "legalRepCompanyName": null,
+        "legalRepCompanyAddress": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepReferenceNumber": null
       }
     }
   }
