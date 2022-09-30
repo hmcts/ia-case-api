@@ -48,6 +48,7 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         updateJourneyType(asylumCase);
+        removeLegalRepDetails(asylumCase);
         updateSubscription(asylumCase);
         updateReasonForAppeal(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
@@ -55,6 +56,16 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void updateJourneyType(AsylumCase asylumCase) {
         asylumCase.write(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.AIP);
+    }
+
+    private void removeLegalRepDetails(AsylumCase asylumCase) {
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_NAME);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_NAME);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_EMAIL_ADDRESS);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_NAME);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_COMPANY_ADDRESS);
+        asylumCase.clear(AsylumCaseFieldDefinition.LEGAL_REP_REFERENCE_NUMBER);
     }
 
     private void updateSubscription(AsylumCase asylumCase) {
