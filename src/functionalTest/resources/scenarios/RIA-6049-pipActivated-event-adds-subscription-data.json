@@ -23,9 +23,6 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "email": "appellant@example.com",
-        "mobileNumber": "01234123123",
-        "contactPreference": "wantsEmail",
         "subscriptions": [
           {
             "value": {
@@ -36,7 +33,18 @@
               "wantsSms":"No"
             }
           }
-        ]
+        ],
+        "legalRepName": null,
+        "legalRepresentativeName": null,
+        "legalRepCompany": null,
+        "legalRepCompanyName": null,
+        "legalRepCompanyAddress": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepReferenceNumber": null,
+        "email": null,
+        "mobileNumber": null,
+        "contactPreference": null,
+        "contactPreferenceDescription": null
       }
     }
   }
