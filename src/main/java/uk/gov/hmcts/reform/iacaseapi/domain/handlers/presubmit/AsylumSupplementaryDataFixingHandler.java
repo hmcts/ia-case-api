@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -28,27 +30,23 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
 
     @Override
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         return true;
     }
 
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
-        if (!canHandle(callbackStage, callback)) {
-            throw new IllegalStateException("Cannot handle callback");
-        }
-
         final CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
         final AsylumCase asylumCase = caseDetails.getCaseData();
 
         Map<String, JsonNode> supplementaryData = caseDetails.getSupplementaryData();
 
-        if (supplementaryData != null && !supplementaryData.containsKey("HMCTSServiceId")) {
+        if (supplementaryData != null && !supplementaryData.containsKey(CcdSupplementaryUpdater.HMCTS_SERVICE_ID)) {
             ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
         }
 
