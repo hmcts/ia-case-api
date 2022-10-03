@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
 
 import java.util.Optional;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +44,9 @@ class PayOfflineMigrationHandlerTest {
     public void setUp() {
         payOfflineMigrationHandler = new PayOfflineMigrationHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getState()).thenReturn(State.APPEAL_STARTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
     }
 
     @ParameterizedTest
@@ -50,10 +54,6 @@ class PayOfflineMigrationHandlerTest {
     void should_overwrite_payOffline_as_payLater(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
-
-        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
-
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
 
         payOfflineMigrationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -63,14 +63,23 @@ class PayOfflineMigrationHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class)
-    void should_not_overwrite_other_values() {
+    void should_not_overwrite_other_values(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
-
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payNow"));
+
+        payOfflineMigrationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, never()).write(PA_APPEAL_TYPE_PAYMENT_OPTION, "payLater");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class)
+    void should_not_overwrite_values_if_aip(Event event) {
+
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
         payOfflineMigrationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
