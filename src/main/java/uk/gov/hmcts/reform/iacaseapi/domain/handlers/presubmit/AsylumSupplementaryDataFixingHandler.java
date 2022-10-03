@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.Map;
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
