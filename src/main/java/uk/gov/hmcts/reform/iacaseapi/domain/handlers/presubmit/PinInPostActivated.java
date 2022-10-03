@@ -82,6 +82,11 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
 
         asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Arrays.asList(
             new IdValue<>(userDetailsProvider.getUserDetails().getId(), subscriber)));
+
+        asylumCase.clear(AsylumCaseFieldDefinition.EMAIL);
+        asylumCase.clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+        asylumCase.clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
+        asylumCase.clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
     }
 
     private void updateReasonForAppeal(AsylumCase asylumCase) {
