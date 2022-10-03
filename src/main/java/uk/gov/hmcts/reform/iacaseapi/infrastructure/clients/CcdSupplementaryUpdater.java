@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 @Service
 @Slf4j
 public class CcdSupplementaryUpdater {
-
+    public static final String HMCTS_SERVICE_ID = "HMCTSServiceId";
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private final RestTemplate restTemplate;
@@ -63,7 +63,7 @@ public class CcdSupplementaryUpdater {
         headers.set(SERVICE_AUTHORIZATION, serviceAuthorizationToken);
 
         Map<String, Map<String, Object>> payloadData = Maps.newHashMap();
-        payloadData.put("$set", singletonMap("HMCTSServiceId", hmctsServiceId));
+        payloadData.put("$set", singletonMap(HMCTS_SERVICE_ID, hmctsServiceId));
 
         Map<String, Object> payload = Maps.newHashMap();
         payload.put("supplementary_data_updates", payloadData);
