@@ -175,6 +175,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                             });
                         break;
                     case RP:
+                    case EU:
                     case DC:
                         if (callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL) {
 

@@ -66,6 +66,10 @@ public class AsylumFieldCaseCategoryFixer implements DataFixer {
                 asylumCase.write(hmctsCaseCategory, ("DoC"));
                 break;
 
+            case EU:
+                asylumCase.write(hmctsCaseCategory, ("EU Settlement Scheme"));
+                break;
+
             default:
                 break;
         }

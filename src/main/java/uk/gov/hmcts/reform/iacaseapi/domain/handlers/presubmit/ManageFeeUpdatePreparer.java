@@ -73,6 +73,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
 
         switch (appealType) {
             case EA:
+            case EU:
             case HU:
             case PA:
 
