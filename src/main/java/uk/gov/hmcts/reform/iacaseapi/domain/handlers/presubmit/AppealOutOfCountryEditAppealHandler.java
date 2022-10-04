@@ -160,6 +160,12 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 case REFUSAL_OF_PROTECTION:
                     clearHumanRightsDecision(asylumCase);
                     break;
+                case REFUSE_PERMIT:
+                    clearRefusalOfProtection(asylumCase);
+                    asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
+                    asylumCase.clear(HOME_OFFICE_REFERENCE_NUMBER);
+                    asylumCase.clear(DEPORTATION_ORDER_OPTIONS);
+                    break;
                 case REMOVAL_OF_CLIENT:
                     clearHumanRightsDecision(asylumCase);
                     clearRefusalOfProtection(asylumCase);
