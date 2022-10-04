@@ -39,13 +39,13 @@ def versions = [
 ]
 
 ext.libraries = [
-        junit5: [
-                "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-                "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-                "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-                "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-                "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-        ]
+    junit5: [
+        "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+        "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+        "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+        "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
+        "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
+    ]
 ]
 
 
@@ -154,8 +154,8 @@ pmd {
     sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
     ruleSets = [
-            'category/java/errorprone.xml',
-            'category/java/bestpractices.xml'
+        'category/java/errorprone.xml',
+        'category/java/bestpractices.xml'
     ]
 }
 
@@ -208,8 +208,8 @@ pitest {
     junit5PluginVersion = '0.15'
     targetClasses = ['uk.gov.hmcts.reform.iacaseapi.*']
     excludedClasses = [
-            'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
-            'uk.gov.hmcts.reform.iacaseapi.Application'
+        'uk.gov.hmcts.reform.iacaseapi.infrastructure.config.*',
+        'uk.gov.hmcts.reform.iacaseapi.Application'
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']
@@ -228,9 +228,9 @@ sonarqube {
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/config/**," +
-                "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
-                "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
-                "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java"
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java"
     }
 }
 
