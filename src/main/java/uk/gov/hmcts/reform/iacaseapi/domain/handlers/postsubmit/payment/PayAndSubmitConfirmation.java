@@ -86,7 +86,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
             return new PostSubmitCallbackResponse();
         }
 
-
         boolean isException = false;
         try {
             asylumCase = feePayment.aboutToSubmit(callback);
@@ -118,7 +117,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 // optionally we can use timed event status to send appropriate message to the Case Officer in case of rollback failure
             }
         }
-
 
         // send GovNotify notifications
         PostSubmitCallbackResponse postSubmitResponse = sendNotifications(callback, asylumCase);
