@@ -55,11 +55,6 @@
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
             work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
-    </suppress>
-    <suppress until="2030-01-01">
-        <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
-            work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
-            work. Springfox doesn't seem to work well with Springboot 2.6.7</notes>
         <cve>CVE-2022-22965</cve>
     </suppress >
     <suppress until="2030-01-01">
@@ -76,9 +71,6 @@
         <cve>CVE-2022-22971</cve>
         <cve>CVE-2022-29885</cve>
     </suppress>
-    <suppress until="2030-01-01">
-        <cve>CVE-2022-22965</cve>
-    </suppress >
     <suppress until="2030-01-01">
         <notes>Suppressing because the version of Springboot starters, 2.6.7, that addresses the vulnerability does not
             work well with the current Springfox version, 2.9.2 and bumping Springfox to the latest version, 3.0.0, does not
