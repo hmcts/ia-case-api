@@ -286,7 +286,7 @@ class PaymentStateHandlerTest {
         Assert.assertNotNull(returnedCallbackResponse);
         Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
