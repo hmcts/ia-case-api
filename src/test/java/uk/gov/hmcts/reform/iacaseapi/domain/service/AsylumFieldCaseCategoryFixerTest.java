@@ -83,6 +83,18 @@ class AsylumFieldCaseCategoryFixerTest {
     }
 
     @Test
+    void transposes_EU_asylum_hmcts_case_category() {
+
+        final String expectedCaseCategory = "EU Settlement Scheme";
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EU));
+
+        asylumFieldCaseCategoryFixer.fix(asylumCase);
+
+        assertThat(asylumCase.read(HMCTS_CASE_CATEGORY, String.class).get())
+            .isEqualTo(expectedCaseCategory);
+    }
+
+    @Test
     void transposes_and_format_asylum_hmcts_case_category_if_already_exists_and_is_incorrect() {
 
         final String expectedCaseCategory = "Human rights";
