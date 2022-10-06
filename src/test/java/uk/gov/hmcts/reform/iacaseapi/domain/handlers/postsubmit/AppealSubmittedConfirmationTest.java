@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -252,7 +253,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU"})
+    @ValueSource(strings = {"EA", "HU", "EU"})
     void lr_should_return_out_of_time_confirmation_for_ea_hu_paPayLater(String appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));
@@ -319,7 +320,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU"})
+    @ValueSource(strings = {"EA", "HU", "EU"})
     void lr_should_return_confirmation_for_ea_hu_paPayNow(String appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
@@ -382,45 +383,14 @@ class AppealSubmittedConfirmationTest {
             );
     }
 
-    @Test
-    void aip_should_return_confirmation_for_pay_offline_by_card_ea() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
+    void aip_should_return_confirmation_for_pay_offline_by_card_ea(AppealType appealType) {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
-
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
-
-        PostSubmitCallbackResponse callbackResponse =
-            appealSubmittedConfirmation.handle(callback);
-
-        assertNotNull(callbackResponse);
-        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
-        assertTrue(callbackResponse.getConfirmationBody().isPresent());
-
-        assertThat(
-            callbackResponse.getConfirmationHeader().get())
-            .contains("# Your appeal has been submitted");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains("#### What happens next");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "You still have to pay for this appeal. You will soon receive a notification with instructions on how to pay by card online. You need to pay within 14 days of receiving the notification or the Tribunal will end the appeal."
-            );
-    }
-
-    @Test
-    void aip_should_return_confirmation_for_pay_offline_by_card_hu() {
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payOffline"));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -621,7 +591,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP"})
+    @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP", "EU"})
     void handle_should_return_default_confirmation_for_payment_feature_disabled_and_in_time(String type) {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
@@ -646,7 +616,7 @@ class AppealSubmittedConfirmationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP"})
+    @ValueSource(strings = {"DC", "EA", "HU", "PA", "RP", "EU"})
     void handle_should_return_default_confirmation_for_payment_feature_disabled_and_out_of_time(String type) {
 
         when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YES));

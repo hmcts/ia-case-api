@@ -255,7 +255,7 @@ class FeesAndStatusCheckPreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection", "euSettlementScheme"})
     void should_error_on_duplicate_payment_for_make_a_payment(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
@@ -276,7 +276,7 @@ class FeesAndStatusCheckPreparerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection"})
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection", "euSettlementScheme"})
     void should_not_check_on_duplicate_payment_for_aip(String type) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
