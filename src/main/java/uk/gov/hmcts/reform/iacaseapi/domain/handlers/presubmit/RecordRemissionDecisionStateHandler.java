@@ -76,6 +76,8 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
         final RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
 
+        final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(PaymentStatus.PAYMENT_PENDING);
+
         switch (remissionDecision) {
             case APPROVED:
                 asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAID);
@@ -88,7 +90,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case PARTIALLY_APPROVED:
-                asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+                asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
 
@@ -98,7 +100,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 
             case REJECTED:
-                asylumCase.write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+                asylumCase.write(PAYMENT_STATUS, paymentStatus);
                 asylumCase.write(REMISSION_REJECTED_DATE_PLUS_14DAYS,
                     LocalDate.parse(dateProvider.now().plusDays(14).toString()).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
 
@@ -106,6 +108,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
 
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.YES);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
+                asylumCase.write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.YES);
 
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);
 

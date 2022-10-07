@@ -246,7 +246,7 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-        dependency group: 'org.yaml', name: 'snakeyaml', version: '1.32'
+        dependency group: 'org.yaml', name: 'snakeyaml', version: '1.33'
     }
 }
 

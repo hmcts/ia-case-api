@@ -72,4 +72,10 @@
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[fasterxml:jackson-databind:2.13.3]]>
+        </notes>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
 </suppressions>
