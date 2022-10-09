@@ -50,6 +50,7 @@ class RoleAssignmentServiceTest {
     private final long caseId = 1234567890L;
     private final String accessToken = "accessToken";
     private final String serviceToken = "serviceToken";
+    private final String assignmentId = "assignmentId";
 
     @BeforeEach
     void setUp() {
@@ -102,6 +103,18 @@ class RoleAssignmentServiceTest {
             eq(accessToken),
             eq(serviceToken),
             any(QueryRequest.class)
+        );
+
+    }
+
+    @Test
+    void deleteRoleAssignmentTest() {
+        roleAssignmentService.deleteRoleAssignment(assignmentId);
+
+        verify(roleAssignmentApi).deleteRoleAssignment(
+            eq(accessToken),
+            eq(serviceToken),
+            eq(assignmentId)
         );
 
     }

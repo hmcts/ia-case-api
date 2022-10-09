@@ -184,8 +184,6 @@ public class CcdScenarioRunnerTest {
                     .body()
                     .asString();
 
-            System.out.println("Response body: " + actualResponseBody);
-
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),
                 templatesByFilename

@@ -80,4 +80,14 @@ public class RoleAssignmentService {
         );
     }
 
+    public void deleteRoleAssignment(String assignmentId) {
+        if (assignmentId != null) {
+            roleAssignmentApi.deleteRoleAssignment(
+                userDetails.getAccessToken(),
+                serviceAuthTokenGenerator.generate(),
+                assignmentId
+            );
+        }
+    }
+
 }

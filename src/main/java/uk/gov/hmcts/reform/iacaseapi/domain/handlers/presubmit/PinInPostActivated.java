@@ -57,6 +57,7 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void updateJourneyType(AsylumCase asylumCase) {
         asylumCase.write(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.AIP);
+        asylumCase.write(AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE, JourneyType.REP);
     }
 
     private void updatePaymentOption(AsylumCase asylumCase) {
