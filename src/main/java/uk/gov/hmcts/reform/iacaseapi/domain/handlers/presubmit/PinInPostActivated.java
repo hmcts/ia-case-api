@@ -61,7 +61,7 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void updatePaymentOption(AsylumCase asylumCase) {
         Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
-        if(paymentOption.isPresent()) {
+        if (paymentOption.isPresent()) {
             asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION,
                     "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
             asylumCase.clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
