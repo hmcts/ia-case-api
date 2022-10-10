@@ -51,11 +51,21 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
         removeLegalRepDetails(asylumCase);
         updateSubscription(asylumCase);
         updateReasonForAppeal(asylumCase);
+        updatePaymentOption(asylumCase);
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
     private void updateJourneyType(AsylumCase asylumCase) {
         asylumCase.write(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.AIP);
+    }
+
+    private void updatePaymentOption(AsylumCase asylumCase) {
+        Optional<String> paymentOption = asylumCase.read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+        if(paymentOption.isPresent()) {
+            asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION,
+                    "payNow".equals(paymentOption.get()) ? "payNow" : "payLater");
+            asylumCase.clear(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+        }
     }
 
     private void removeLegalRepDetails(AsylumCase asylumCase) {
