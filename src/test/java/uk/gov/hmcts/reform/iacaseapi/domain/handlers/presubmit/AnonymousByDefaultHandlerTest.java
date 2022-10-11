@@ -17,16 +17,25 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagAppender;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.CaseFlagDto;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.Flag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.FlagDetail;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagMapper;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RdCommonDataClient;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AnonymousByDefaultHandlerTest {
 
     @Mock
@@ -36,32 +45,54 @@ public class AnonymousByDefaultHandlerTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
-    private CaseFlagAppender caseFlagAppender;
+    private RdCommonDataClient rdCommonDataClient;
+    @Mock
+    private StrategicCaseFlag strategicCaseFlag;
+    @Mock
+    private CaseFlagMapper caseFlagMapper;
+
+    private CaseFlagDto caseFlagDto;
+
 
     private AnonymousByDefaultHandler anonymousByDefaultHandler;
 
     @BeforeEach
     public void setUp() {
-        anonymousByDefaultHandler = new AnonymousByDefaultHandler(caseFlagAppender);
+        anonymousByDefaultHandler = new AnonymousByDefaultHandler(rdCommonDataClient, caseFlagMapper);
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL", "PAY_AND_SUBMIT_APPEAL"})
+    @EnumSource(value = Event.class, names = {"SUBMIT_APPEAL"}) //, "PAY_AND_SUBMIT_APPEAL"
     void should_set_anonymity_flag_for_PA_appeal(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("John Doe"));
+
+        var caseFlagDto = new CaseFlagDto();
+        var flag = new Flag();
+        flag.setFlagDetails(getFlagDetail());
+        List<Flag> flags = new ArrayList<>();
+        flags.add(flag);
+
+        caseFlagDto.setFlags(flags);
+
+        when(rdCommonDataClient.getStrategicCaseFlags()).thenReturn(caseFlagDto);
+
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
+        //when(caseFlagMapper.buildStrategicCaseFlagDetail(caseFlagDto.getFlags().get(0),
+        //    StrategicCaseFlagType.RRO_ANONYMISATION, "Case", "John Doe"))
+        //    .thenReturn(strategicCaseFlag);
+
+        asylumCase.write(APPELLANT_NAME_FOR_DISPLAY, "John Doe");
+
+        verify(asylumCase, times(1)).write(CASE_LEVEL_FLAGS, strategicCaseFlag);
         verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
     }
 
@@ -81,7 +112,7 @@ public class AnonymousByDefaultHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
+        verify(asylumCase, times(1)).read(CASE_LEVEL_FLAGS);
         verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
     }
 
