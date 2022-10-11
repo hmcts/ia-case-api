@@ -8,8 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -183,5 +182,24 @@ public class AnonymousByDefaultHandlerTest {
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
+    }
+
+    private List<FlagDetail> getFlagDetail() {
+        List<FlagDetail> childFlagDetails = new ArrayList<>();
+        FlagDetail childFlagDetail = FlagDetail.builder()
+            .name("RRO (Restricted Reporting Order / Anonymisation)")
+            .flagCode("CF0012")
+            .hearingRelevant(Boolean.TRUE)
+            .path(Arrays.asList("Case"))
+            .build();
+        childFlagDetails.add(childFlagDetail);
+
+        List<FlagDetail> flagDetails = new ArrayList<>();
+        FlagDetail flagDetail = FlagDetail.builder()
+            .name("Case")
+            .childFlags(childFlagDetails)
+            .build();
+        flagDetails.add(flagDetail);
+        return flagDetails;
     }
 }
