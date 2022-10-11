@@ -12,7 +12,8 @@
         "replacements": {
           "email": "appellant@example.com",
           "mobileNumber": "01234123123",
-          "contactPreference": "wantsEmail"
+          "contactPreference": "wantsEmail",
+          "paAppealTypePaymentOption": "payOffline"
         }
       }
     }
@@ -44,7 +45,9 @@
         "email": null,
         "mobileNumber": null,
         "contactPreference": null,
-        "contactPreferenceDescription": null
+        "contactPreferenceDescription": null,
+        "paAppealTypePaymentOption": null,
+        "paAppealTypeAipPaymentOption": "payLater"
       }
     }
   }

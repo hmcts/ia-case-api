@@ -136,6 +136,26 @@ public class PinInPostActivatedTest {
     }
 
     @Test
+    public void payment_type_should_be_updated_for_aip() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        asylumCase.write(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of("payNow"));
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback
+        );
+
+        Optional<String> paymentOption = response.getData().read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
+        assertFalse(paymentOption.isPresent());
+
+        Optional<String> aipPaymentOption = response.getData().read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_AIP_PAYMENT_OPTION);
+        assertTrue(aipPaymentOption.isPresent());
+        assertEquals("payNow", aipPaymentOption.get());
+    }
+
+    @Test
     public void caseData_should_contain_reason_for_appeal_field() {
         Document document = new Document(
             "documentUrl", "documentBinaryUrl", "documentFileName"
