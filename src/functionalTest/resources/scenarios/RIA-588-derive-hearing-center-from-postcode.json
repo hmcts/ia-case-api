@@ -1,5 +1,6 @@
 {
   "description": "RIA-588 Derive hearing centre from postcode",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

@@ -1,5 +1,6 @@
 {
   "description": "RIA-3389 Home Office Reference Number CID Formatter",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

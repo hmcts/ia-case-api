@@ -1,5 +1,6 @@
 {
   "description": "RIA-610 User details are added to case upon appeal submission",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

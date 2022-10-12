@@ -1,5 +1,6 @@
 {
   "description": "RIA-3761 Derive hearing centre from Legal Rep Company address postcode when no fixed address appellant",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

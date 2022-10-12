@@ -1,5 +1,6 @@
 {
   "description": "RIA-3317 Derive hearing centre from postcode, Should assign to newcastle and no longer north shields",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

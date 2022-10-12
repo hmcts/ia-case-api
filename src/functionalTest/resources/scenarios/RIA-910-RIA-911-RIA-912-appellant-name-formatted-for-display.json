@@ -1,5 +1,6 @@
 {
   "description": "RIA-910 & RIA-911 & RIA-912 Appellant name formatted for display",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

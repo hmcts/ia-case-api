@@ -1,5 +1,6 @@
 {
   "description": "RIA-581 Generates a valid appeal reference number",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",

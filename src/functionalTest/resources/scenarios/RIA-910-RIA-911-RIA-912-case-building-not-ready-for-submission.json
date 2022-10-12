@@ -1,5 +1,6 @@
 {
   "description": "RIA-910 & RIA-911 & RIA-912 Case building ready for submission *not* flagged when argument is missing",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
