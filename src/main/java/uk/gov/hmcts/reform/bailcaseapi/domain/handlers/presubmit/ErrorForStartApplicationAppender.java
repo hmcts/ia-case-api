@@ -49,11 +49,7 @@ public class ErrorForStartApplicationAppender implements PreSubmitCallbackHandle
 
         PreSubmitCallbackResponse<BailCase> response = new PreSubmitCallbackResponse<>(bailCase);
 
-        response.addError("A case record already exists for this applicant.\n"
-                          + "If you did not make a previous application on the applicant’s behalf you will need to "
-                          + "acquire the case record to continue. You can do so by using Notice of Change.\n"
-                          + "If you did you need to find the applicant in your case list and make a new application "
-                          + "from within the existing record.");
+        response.addError("A case record already exists for this applicant.");
 
         return response;
     }

@@ -17,7 +17,7 @@
   },
   "expectation": {
     "status": 200,
-    "errors": ["contains(A case record already exists for this applicant.\nIf you did not make a previous application on the)"],
+    "errors": ["contains(A case record already exists for this applicant.)"],
     "caseData": {
       "template": "minimal-application-submitted.json",
       "replacements": {
