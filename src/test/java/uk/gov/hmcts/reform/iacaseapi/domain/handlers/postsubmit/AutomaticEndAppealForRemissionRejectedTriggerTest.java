@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_DECISION;
 
 import java.time.LocalDateTime;
@@ -19,12 +21,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -64,7 +68,7 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
     }
 
     @Test
-    void should_schedule_automatic_end_appeal_14_days_from_now() {
+    void should_schedule_hu_appeal_automatic_end_appeal_14_days_from_now() {
 
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -72,6 +76,8 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
             .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.HU));
         when(dateProvider.nowWithTime()).thenReturn(now);
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -82,7 +88,6 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
             caseId
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
-
 
         PostSubmitCallbackResponse callbackResponse =
             autoEndAppealTrigger.handle(callback);
@@ -99,6 +104,74 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
     }
 
     @Test
+    void should_schedule_ea_appeal_automatic_end_appeal_14_days_from_now() {
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getId()).thenReturn(caseId);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.EA));
+        when(dateProvider.nowWithTime()).thenReturn(now);
+        TimedEvent timedEvent = new TimedEvent(
+            id,
+            Event.END_APPEAL_AUTOMATICALLY,
+            ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
+            jurisdiction,
+            caseType,
+            caseId
+        );
+        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
+
+        PostSubmitCallbackResponse callbackResponse =
+            autoEndAppealTrigger.handle(callback);
+
+        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
+
+        TimedEvent result = timedEventArgumentCaptor.getValue();
+
+        assertEquals(timedEvent.getCaseId(), result.getCaseId());
+        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
+        assertEquals(timedEvent.getCaseType(), result.getCaseType());
+        assertEquals(timedEvent.getEvent(), result.getEvent());
+        assertEquals("", result.getId());
+    }
+
+    @Test
+    void should_fail_can_handle_for_pa_appeal_type() {
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.PA));
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_fail_can_handle_for_paid_appeals() {
+
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(RemissionDecision.REJECTED));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.HU));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAID));
+
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     void should_rethrow_exception_when_scheduler_failed() {
         when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -107,7 +180,8 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(dateProvider.nowWithTime()).thenReturn(now);
         when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
             .thenReturn(Optional.of(RemissionDecision.REJECTED));
-
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(AppealType.HU));
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
         assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
