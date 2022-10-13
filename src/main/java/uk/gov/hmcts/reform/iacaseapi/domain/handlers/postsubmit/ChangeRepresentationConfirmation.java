@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AipToLegalRepJourneyHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
 @Component
 public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
-    private static final Logger logger = getLogger(AipToLegalRepJourneyHandler.class);
     private final RoleAssignmentService roleAssignmentService;
     private final CcdCaseAssignment ccdCaseAssignment;
     private final PostNotificationSender<AsylumCase> postNotificationSender;
@@ -102,6 +99,10 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             log.error("Unable to change representation (apply noc) for case id {} with error message: {}",
                 callback.getCaseDetails().getId(), e.getMessage());
 
+            if (HandlerUtils.isAipToRepJourney(callback.getCaseDetails().getCaseData())) {
+                throw(e);
+            }
+
             postSubmitResponse.setConfirmationBody(
                 "### Something went wrong\n\n"
                 + "You have not stopped representing the appellant in this appeal.\n\n"
@@ -126,19 +127,21 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             ))
             .build();
 
-        logger.info("Query role assignment with the parameters: {}", queryRequest);
+        log.debug("Query role assignment with the parameters: {}", queryRequest);
 
         RoleAssignmentResource roleAssignmentResource = roleAssignmentService
             .queryRoleAssignments(queryRequest);
-        logger.info("Found {} Citizen roles in the appeal with case ID {}", roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
+        log.debug("Found {} Citizen roles in the appeal with case ID {}", roleAssignmentResource.getRoleAssignmentResponse().size(), caseId);
 
-        roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst()
-            .map(Assignment::getActorId).ifPresent(id -> {
-                logger.info("Revoking Appellant's access to appeal with case ID: {}", caseId);
+        Optional<Assignment> roleAssignment = roleAssignmentResource.getRoleAssignmentResponse().stream().findFirst();
+        if (roleAssignment.isPresent()) {
+            log.info("Revoking Appellant's access to appeal with case ID {}", caseId);
 
-                roleAssignmentService.deleteRoleAssignment(id);
+            roleAssignmentService.deleteRoleAssignment(roleAssignment.get().getId());
 
-                logger.info("Successfully revoked Appellant's access to appeal with case ID: {}", caseId);
-            });
+            log.info("Successfully revoked Appellant's access to appeal with case ID {}", caseId);
+        } else {
+            log.error("Problem revoking Appellant's access to appeal with case ID {}. Role assignment for appellant not found", caseId);
+        }
     }
 }
