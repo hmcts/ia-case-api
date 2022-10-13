@@ -3,18 +3,16 @@ package uk.gov.hmcts.reform.bailcaseapi.domain.handlers.presubmit;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.OUTCOME_STATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
-import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,18 +27,15 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCase;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentTag;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.Document;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentReceiver;
-import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentsAppender;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -48,30 +43,24 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.service.DocumentsAppender;
 public class UploadSignedDecisionNoticeHandlerTest {
 
     @Mock
-    private DocumentReceiver documentReceiver;
-    @Mock
-    private DocumentsAppender documentsAppender;
-    @Mock
     private Callback<BailCase> callback;
     @Mock
     private CaseDetails<BailCase> caseDetails;
     @Mock
     private BailCase bailCase;
     @Mock
-    private Document signedDecisionNotice1;
-    @Mock
-    private DocumentWithMetadata signedDecisionNoticeMetadata1;
+    private DateProvider dateProvider;
     @Mock
     private DocumentWithMetadata unsignedDecisionNoticeMetadata1;
     @Mock
-    private List<IdValue<DocumentWithMetadata>> newSignedDecisionNotice;
+    private DocumentWithMetadata tribunalDocument1;
     @Mock
-    private DateProvider dateProvider;
-
-    private List<IdValue<DocumentWithMetadata>> existingTribunalDocumentsWithMetadata = new ArrayList<>();
+    private DocumentWithMetadata tribunalDocument2;
 
     @Captor
     private ArgumentCaptor<List<IdValue<DocumentWithMetadata>>> existingDecisionNoticeDocumentsCaptor;
+
+    private List<IdValue<DocumentWithMetadata>> existingTribunalDocumentsWithMetadata = new ArrayList<>();
 
     private UploadSignedDecisionNoticeHandler uploadSignedDecisionNoticeHandler;
 
@@ -81,69 +70,87 @@ public class UploadSignedDecisionNoticeHandlerTest {
     public void setUp() {
         uploadSignedDecisionNoticeHandler =
             new UploadSignedDecisionNoticeHandler(
-                documentReceiver,
-                documentsAppender,
                 dateProvider
             );
         when(callback.getEvent()).thenReturn(Event.UPLOAD_SIGNED_DECISION_NOTICE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(bailCase);
         when(dateProvider.nowWithTime()).thenReturn(nowWithTime);
-        when(signedDecisionNoticeMetadata1.getTag()).thenReturn(DocumentTag.SIGNED_DECISION_NOTICE);
         when(unsignedDecisionNoticeMetadata1.getTag()).thenReturn(DocumentTag.BAIL_DECISION_UNSIGNED);
+        when(tribunalDocument1.getTag()).thenReturn(DocumentTag.UPLOAD_DOCUMENT);
+        when(tribunalDocument2.getTag()).thenReturn(DocumentTag.BAIL_SUBMISSION);
+
     }
 
     @Test
-    void should_add_signed_document_remove_unsigned_document() {
-
-        List<IdValue<DocumentWithMetadata>> allTribunalDocs =
-            List.of(
-                new IdValue<>("1", signedDecisionNoticeMetadata1),
-                new IdValue<>("2", unsignedDecisionNoticeMetadata1)
-            );
-
-        when(bailCase.read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class)).thenReturn(
-            Optional.of(signedDecisionNotice1));
-
-        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(List.of(
-            new IdValue<>("1", unsignedDecisionNoticeMetadata1))));
-
-        when(documentReceiver.tryReceive(new DocumentWithDescription(signedDecisionNotice1, ""),
-                                         DocumentTag.SIGNED_DECISION_NOTICE)).thenReturn(Optional.of(
-            signedDecisionNoticeMetadata1));
-
-        when(documentsAppender.append(
-            eq(List.of(new IdValue<>("1", unsignedDecisionNoticeMetadata1))),
-            eq(List.of(signedDecisionNoticeMetadata1))
-        )).thenReturn(allTribunalDocs);
+    void should_add_outcome_date_state_and_remove_unsigned_doc_from_tribunal() {
+        List<IdValue<DocumentWithMetadata>> tribunalDocumentsWithUnsignedDoc = List.of(
+            new IdValue<>("1", tribunalDocument1),
+            new IdValue<>("2", tribunalDocument2),
+            new IdValue<>("3", unsignedDecisionNoticeMetadata1));
+        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocumentsWithUnsignedDoc));
+        final List<IdValue<DocumentWithMetadata>> tribunalDocumentsWithoutUnSignedDoc = List.of(
+            new IdValue<>("1", tribunalDocument1),
+            new IdValue<>("2", tribunalDocument2));
 
         PreSubmitCallbackResponse<BailCase> callbackResponse =
             uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(bailCase, callbackResponse.getData());
-
-        verify(bailCase, times(1)).read(UPLOAD_SIGNED_DECISION_NOTICE_DOCUMENT, Document.class);
-
-        verify(documentReceiver, times(1)).tryReceive(
-            new DocumentWithDescription(signedDecisionNotice1, ""),
-            DocumentTag.SIGNED_DECISION_NOTICE);
-
-        verify(documentsAppender, times(1))
-            .append(existingDecisionNoticeDocumentsCaptor.capture(), eq(List.of(signedDecisionNoticeMetadata1)));
-
-        List<IdValue<DocumentWithMetadata>> actualExistingDecisionNoticeDocuments =
-            existingDecisionNoticeDocumentsCaptor
-                .getAllValues()
-                .get(0);
-
-        assertEquals(1, actualExistingDecisionNoticeDocuments.size());
-
-        verify(bailCase, times(1)).write(TRIBUNAL_DOCUMENTS_WITH_METADATA,
-                                         List.of(new IdValue<>("1", signedDecisionNoticeMetadata1)));
+        verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
+        //Verify - No Document is left in the Tribunal Documents
+        verify(bailCase, times(1))
+            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocumentsWithoutUnSignedDoc);
         verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
         verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+    }
 
+    @Test
+    void should_handle_when_tribunal_collection_not_contains_unsigned_document() {
+        List<IdValue<DocumentWithMetadata>> tribunalDocuments = List.of(
+            new IdValue<>("1", tribunalDocument1),
+            new IdValue<>("2", tribunalDocument2));
+        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocuments));
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(bailCase, callbackResponse.getData());
+        verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
+        //Verify - Tribunal Documents are same, as there is no Unsigned Document
+        verify(bailCase, times(1))
+            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
+        verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
+        verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+    }
+
+    @Test
+    void should_handle_when_tribunal_collection_is_empty() {
+        List<IdValue<DocumentWithMetadata>> tribunalDocuments = Collections.EMPTY_LIST;
+        when(bailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA)).thenReturn(Optional.of(tribunalDocuments));
+
+        PreSubmitCallbackResponse<BailCase> callbackResponse =
+            uploadSignedDecisionNoticeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(bailCase, callbackResponse.getData());
+        verify(bailCase, times(1)).read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
+        //Verify - Tribunal Documents are same, as there is no document
+        verify(bailCase, times(1))
+            .write(TRIBUNAL_DOCUMENTS_WITH_METADATA, tribunalDocuments);
+        verify(bailCase).write(OUTCOME_DATE, nowWithTime.toString());
+        verify(bailCase, times(1)).write(OUTCOME_STATE, State.DECISION_DECIDED);
+    }
+
+    @Test
+    void should_get_dispatch_priority_as_latest() {
+        DispatchPriority dispatchPriority =
+            uploadSignedDecisionNoticeHandler.getDispatchPriority();
+
+        assertNotNull(dispatchPriority);
+        assertEquals(DispatchPriority.LATEST, dispatchPriority);
     }
 
     @Test

@@ -1,31 +1,21 @@
 package uk.gov.hmcts.reform.bailcaseapi.domain.entities;
 
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.stream.Stream;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.bailcaseapi.domain.service.MakeNewApplicationService;
 
 public class BailCaseFieldDefinitionTest {
-
-    @Test
-    void mapped_to_correct_field_name() {
-        Stream.of(BailCaseFieldDefinition.values())
-            .forEach(v -> assertThat(UPPER_UNDERSCORE.to(LOWER_CAMEL, v.name())));
-    }
-
     /**
      * Check if the fields need to be added/removed on the VALID_FIELDS list in.
      * @see MakeNewApplicationService
      */
     @Test
     void fail_if_changes_needed_after_modifying_bail_case_definition() {
-        assertEquals(209, BailCaseFieldDefinition.values().length);
+        assertEquals(213, BailCaseFieldDefinition.values().length);
     }
 
     @Test

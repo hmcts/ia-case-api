@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_REFUSAL_REASONS;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRANSFER_BAIL_MANAGEMENT_OPTION;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.TRIBUNAL_REFUSAL_REASON;
@@ -98,11 +99,13 @@ public class ShowPreviousApplicationService {
         if (previousBailCase.read(APPLICANT_DOCUMENTS_WITH_METADATA).isPresent()
             || previousBailCase.read(TRIBUNAL_DOCUMENTS_WITH_METADATA).isPresent()
             || previousBailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA).isPresent()
+            || previousBailCase.read(SIGNED_DECISION_DOCUMENTS_WITH_METADATA).isPresent()
         ) {
             return "|Documents||\n|--------|--------|\n"
                 + getApplicantDocumentsDetails(previousBailCase)
                 + getTribunalDocumentsDetails(previousBailCase)
-                + getHODocumentsDetails(previousBailCase);
+                + getHODocumentsDetails(previousBailCase)
+                + getDecisionDocumentsDetails(previousBailCase);
         }
         return null;
     }
@@ -644,6 +647,14 @@ public class ShowPreviousApplicationService {
             .read(TRIBUNAL_DOCUMENTS_WITH_METADATA);
         return mayBeTribunalDocs.isEmpty()
             ? "" : getDetailsForGivenCollection(mayBeTribunalDocs, "Tribunal") + "|\n";
+    }
+
+
+    private String getDecisionDocumentsDetails(BailCase previousBailCase) {
+        Optional<List<IdValue<DocumentWithMetadata>>> mayBeUnsignedDecisionDoc = previousBailCase
+            .read(SIGNED_DECISION_DOCUMENTS_WITH_METADATA);
+        return mayBeUnsignedDecisionDoc.isEmpty()
+            ? "" : getDetailsForGivenCollection(mayBeUnsignedDecisionDoc, "Decision") + "|\n";
     }
 
     private String getHODocumentsDetails(BailCase previousBailCase) {

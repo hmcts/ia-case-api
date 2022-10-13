@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefin
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.NO_TRANSFER_BAIL_MANAGEMENT_REASONS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.PRISON_NAME;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SIGNED_DECISION_DOCUMENTS_WITH_METADATA;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_ADDRESS_DETAILS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_DOB;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SUPPORTER_EMAIL_ADDRESS;
@@ -127,6 +128,9 @@ public class ShowPreviousApplicationServiceTest {
         List<IdValue<DocumentWithMetadata>> existingHODocuments = List.of(
             new IdValue<>("1", document2WithMetadata)
         );
+        List<IdValue<DocumentWithMetadata>> existingDecisionDocuments = List.of(
+            new IdValue<>("1", document1WithMetadata)
+        );
 
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(
@@ -189,6 +193,8 @@ public class ShowPreviousApplicationServiceTest {
             .thenReturn(Optional.of(existingTribunalDocuments));
         when(bailCase.read(HOME_OFFICE_DOCUMENTS_WITH_METADATA))
             .thenReturn(Optional.of(existingHODocuments));
+        when(bailCase.read(SIGNED_DECISION_DOCUMENTS_WITH_METADATA))
+            .thenReturn(Optional.of(existingDecisionDocuments));
         when(document1WithMetadata.getDocument())
             .thenReturn(new Document("document1Url", "/hostname/documents/document1BinaryUrl",
                                      "document1FileName", "document1Hash"));
@@ -305,6 +311,9 @@ public class ShowPreviousApplicationServiceTest {
         assertTrue(label.contains(
             "|Home Office document 1<br>*Document:* <a href=\"/documents/document2BinaryUrl\" "
                 + "target=\"_blank\">document2FileName</a>"));
+        assertTrue(label.contains(
+            "|Decision document 1<br>*Document:* <a href=\"/documents/document1BinaryUrl\" "
+                + "target=\"_blank\">document1FileName</a>"));
     }
 
     @Test

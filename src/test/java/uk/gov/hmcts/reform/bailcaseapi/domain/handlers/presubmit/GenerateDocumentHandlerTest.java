@@ -60,7 +60,8 @@ public class GenerateDocumentHandlerTest {
                     Event.RECORD_THE_DECISION,
                     Event.END_APPLICATION,
                     Event.MAKE_NEW_APPLICATION,
-                    Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT
+                    Event.EDIT_BAIL_APPLICATION_AFTER_SUBMIT,
+                    Event.UPLOAD_SIGNED_DECISION_NOTICE
                 ).contains(event)) {
                     assertTrue(canHandle);
                 } else {

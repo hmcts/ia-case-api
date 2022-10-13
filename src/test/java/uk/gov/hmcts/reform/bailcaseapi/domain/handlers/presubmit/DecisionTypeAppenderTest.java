@@ -10,8 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DECISION_DETAILS_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DECISION_GRANTED_OR_REFUSED;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.DECISION_UNSIGNED_DETAILS_DATE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_THE_DECISION_LIST;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RECORD_UNSIGNED_DECISION_TYPE;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.RELEASE_STATUS_YES_OR_NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SECRETARY_OF_STATE_YES_OR_NO;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.SS_CONSENT_DECISION;
@@ -57,6 +59,7 @@ class DecisionTypeAppenderTest {
     private static final String REFUSED = "refused";
     private static final String GRANTED = "granted";
     private static final String MINDED_TO_GRANT = "mindedToGrant";
+    private static final String CONDITIONAL_GRANT = "conditionalGrant";
 
     @BeforeEach
     public void setUp() {
@@ -72,6 +75,7 @@ class DecisionTypeAppenderTest {
 
         when(bailCase.read(DECISION_GRANTED_OR_REFUSED, String.class)).thenReturn(Optional.of(REFUSED));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(REFUSED));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -82,7 +86,24 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.REFUSED);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, REFUSED);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
+    }
+
+    @Test
+    void throw_exception_if_record_decision_is_empty() {
+
+        when(bailCase.read(DECISION_GRANTED_OR_REFUSED, String.class)).thenReturn(Optional.of(REFUSED));
+        when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+            () -> decisionTypeAppender.handle(ABOUT_TO_SUBMIT, callback))
+            .hasMessage("Record decision type missing")
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -90,6 +111,7 @@ class DecisionTypeAppenderTest {
 
         when(bailCase.read(RECORD_THE_DECISION_LIST, String.class)).thenReturn(Optional.of(REFUSED));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(REFUSED));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -100,7 +122,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.REFUSED);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, REFUSED);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
@@ -109,6 +135,7 @@ class DecisionTypeAppenderTest {
         when(bailCase.read(RECORD_THE_DECISION_LIST, String.class)).thenReturn(Optional.of(MINDED_TO_GRANT));
         when(bailCase.read(SS_CONSENT_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(REFUSED));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -119,7 +146,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.REFUSED);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, REFUSED);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
@@ -128,6 +159,8 @@ class DecisionTypeAppenderTest {
         when(bailCase.read(DECISION_GRANTED_OR_REFUSED, String.class)).thenReturn(Optional.of(GRANTED));
         when(bailCase.read(RELEASE_STATUS_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(GRANTED));
+
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -138,7 +171,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.GRANTED);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, GRANTED);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
@@ -148,6 +185,7 @@ class DecisionTypeAppenderTest {
         when(bailCase.read(RELEASE_STATUS_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(SS_CONSENT_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(GRANTED));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -158,7 +196,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.GRANTED);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, GRANTED);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
@@ -167,6 +209,7 @@ class DecisionTypeAppenderTest {
         when(bailCase.read(DECISION_GRANTED_OR_REFUSED, String.class)).thenReturn(Optional.of(GRANTED));
         when(bailCase.read(RELEASE_STATUS_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(CONDITIONAL_GRANT));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -177,7 +220,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.CONDITIONAL_GRANT);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, CONDITIONAL_GRANT);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
@@ -187,6 +234,7 @@ class DecisionTypeAppenderTest {
         when(bailCase.read(RELEASE_STATUS_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(bailCase.read(SS_CONSENT_DECISION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(bailCase.read(SECRETARY_OF_STATE_YES_OR_NO, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(bailCase.read(RECORD_DECISION_TYPE, String.class)).thenReturn(Optional.of(CONDITIONAL_GRANT));
 
         PreSubmitCallbackResponse<BailCase> response = decisionTypeAppender
             .handle(ABOUT_TO_SUBMIT, callback);
@@ -197,7 +245,11 @@ class DecisionTypeAppenderTest {
         verify(bailCase, times(1))
             .write(RECORD_DECISION_TYPE, DecisionType.CONDITIONAL_GRANT);
         verify(bailCase, times(1))
+            .write(RECORD_UNSIGNED_DECISION_TYPE, CONDITIONAL_GRANT);
+        verify(bailCase, times(1))
             .write(DECISION_DETAILS_DATE, now.toString());
+        verify(bailCase, times(1))
+            .write(DECISION_UNSIGNED_DETAILS_DATE, now.toString());
     }
 
     @Test
