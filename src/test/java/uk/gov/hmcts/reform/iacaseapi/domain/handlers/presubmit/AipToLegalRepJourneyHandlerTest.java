@@ -129,5 +129,4 @@ public class AipToLegalRepJourneyHandlerTest {
 
         assertEquals(response.getState(), State.CASE_BUILDING);
     }
-    
 }
