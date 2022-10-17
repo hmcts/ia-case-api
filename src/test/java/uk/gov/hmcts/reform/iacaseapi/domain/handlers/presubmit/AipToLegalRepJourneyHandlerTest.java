@@ -115,5 +115,19 @@ public class AipToLegalRepJourneyHandlerTest {
 
         assertEquals(response.getState(), State.CASE_UNDER_REVIEW);
     }
+
+    @Test
+    void state_is_awaitingReasonsForAppeal_transition_to_caseBuilding() {
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_REASONS_FOR_APPEAL);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertEquals(response.getState(), State.CASE_BUILDING);
+    }
     
 }

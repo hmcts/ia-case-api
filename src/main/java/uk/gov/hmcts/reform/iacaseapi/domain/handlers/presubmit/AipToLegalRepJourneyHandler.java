@@ -41,6 +41,9 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         asylumCase.remove(JOURNEY_TYPE.value());
 
         final State currentState = callback.getCaseDetails().getState();
+        if (currentState == State.AWAITING_REASONS_FOR_APPEAL) {
+            return new PreSubmitCallbackResponse<>(asylumCase, State.CASE_BUILDING);
+        }
         if (currentState == State.REASONS_FOR_APPEAL_SUBMITTED) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.CASE_UNDER_REVIEW);
         }
