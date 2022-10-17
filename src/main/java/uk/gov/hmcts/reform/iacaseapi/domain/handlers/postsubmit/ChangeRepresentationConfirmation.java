@@ -100,7 +100,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 callback.getCaseDetails().getId(), e.getMessage());
 
             if (HandlerUtils.isAipToRepJourney(callback.getCaseDetails().getCaseData())) {
-                throw(e);
+                log.error("Revoking Appellant's access to appeal with case id {} failed with error message: {}",
+                    callback.getCaseDetails().getId(), e.getMessage());
             }
 
             postSubmitResponse.setConfirmationBody(

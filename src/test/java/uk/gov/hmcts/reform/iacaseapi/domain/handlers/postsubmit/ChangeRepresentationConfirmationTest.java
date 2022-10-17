@@ -132,7 +132,7 @@ class ChangeRepresentationConfirmationTest {
     @Test
     void should_revoke_appellant_access_to_case() {
 
-        String actorId = "actorId";
+        String assignmentId = "assignmentId";
         QueryRequest queryRequest = QueryRequest.builder()
             .roleType(List.of(RoleType.CASE))
             .roleName(List.of(RoleName.CREATOR))
@@ -143,7 +143,7 @@ class ChangeRepresentationConfirmationTest {
                 Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
             )).build();
 
-        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().actorId(actorId).build()));
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
 
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -156,7 +156,7 @@ class ChangeRepresentationConfirmationTest {
         changeRepresentationConfirmation.handle(callback);
 
         verify(roleAssignmentService).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService).deleteRoleAssignment(actorId);
+        verify(roleAssignmentService).deleteRoleAssignment(assignmentId);
     }
 
     @Test
@@ -164,6 +164,9 @@ class ChangeRepresentationConfirmationTest {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
         doThrow(restClientResponseEx).when(ccdCaseAssignment).applyNoc(callback);

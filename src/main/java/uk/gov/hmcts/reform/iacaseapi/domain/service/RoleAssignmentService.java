@@ -25,13 +25,15 @@ public class RoleAssignmentService {
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
     private final RoleAssignmentApi roleAssignmentApi;
+    private final IdamService idamService;
 
     public RoleAssignmentService(AuthTokenGenerator serviceAuthTokenGenerator,
                                  RoleAssignmentApi roleAssignmentApi,
-                                 UserDetails userDetails) {
+                                 UserDetails userDetails, IdamService idamService) {
         this.serviceAuthTokenGenerator = serviceAuthTokenGenerator;
         this.roleAssignmentApi = roleAssignmentApi;
         this.userDetails = userDetails;
+        this.idamService = idamService;
     }
 
     public void assignRole(long caseDetailsId, String assigneeId) {
@@ -83,10 +85,8 @@ public class RoleAssignmentService {
     public void deleteRoleAssignment(String assignmentId) {
         if (assignmentId != null) {
             roleAssignmentApi.deleteRoleAssignment(
-                userDetails.getAccessToken(),
-                serviceAuthTokenGenerator.generate(),
-                assignmentId
-            );
+                idamService.getServiceUserToken(),
+                serviceAuthTokenGenerator.generate(), assignmentId);
         }
     }
 

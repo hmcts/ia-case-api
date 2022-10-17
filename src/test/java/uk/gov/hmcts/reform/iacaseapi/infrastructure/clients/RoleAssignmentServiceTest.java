@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleAssignme
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleCategory;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
@@ -45,16 +46,20 @@ class RoleAssignmentServiceTest {
     @Mock
     private UserDetails userDetails;
     @Mock
+    private IdamService idamService;
+    @Mock
     private CaseDetails<CaseData> caseDetails;
     private final String userId = "userId";
     private final long caseId = 1234567890L;
     private final String accessToken = "accessToken";
+    private final String systemAccessToken = "systemAccessToken";
     private final String serviceToken = "serviceToken";
     private final String assignmentId = "assignmentId";
 
     @BeforeEach
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(serviceToken);
+        when(idamService.getServiceUserToken()).thenReturn(systemAccessToken);
 
         when(userDetails.getAccessToken()).thenReturn(accessToken);
         when(userDetails.getId()).thenReturn(userId);
@@ -112,7 +117,7 @@ class RoleAssignmentServiceTest {
         roleAssignmentService.deleteRoleAssignment(assignmentId);
 
         verify(roleAssignmentApi).deleteRoleAssignment(
-            eq(accessToken),
+            eq(systemAccessToken),
             eq(serviceToken),
             eq(assignmentId)
         );
