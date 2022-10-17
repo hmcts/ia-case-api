@@ -22,7 +22,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "journeyType": null
+        "journeyType": null,
+        "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
   }
