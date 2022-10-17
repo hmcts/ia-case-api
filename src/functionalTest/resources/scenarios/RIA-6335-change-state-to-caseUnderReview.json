@@ -1,0 +1,29 @@
+{
+  "description": "RIA-6335 AIP to LR NoC, when case state is reasonsForAppealSubmitted change case state to caseUnderReview",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 6335,
+      "eventId": "nocRequest",
+      "state": "reasonsForAppealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "aip"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "caseUnderReview",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "journeyType": null
+      }
+    }
+  }
+}

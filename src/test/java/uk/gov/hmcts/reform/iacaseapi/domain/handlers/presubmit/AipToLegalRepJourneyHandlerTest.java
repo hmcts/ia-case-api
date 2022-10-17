@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,7 +18,9 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
@@ -34,6 +35,8 @@ public class AipToLegalRepJourneyHandlerTest {
     private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
+
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -94,9 +97,23 @@ public class AipToLegalRepJourneyHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
-        aipToLegalRepJourneyHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        aipToLegalRepJourneyHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         verify(asylumCase, times(1)).remove(JOURNEY_TYPE.value());
+    }
+
+    @Test
+    void state_is_reasonsForAppealSubmitted_transition_to_caseUnderReview() {
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.REASONS_FOR_APPEAL_SUBMITTED);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertEquals(response.getState(), State.CASE_UNDER_REVIEW);
     }
     
 }
