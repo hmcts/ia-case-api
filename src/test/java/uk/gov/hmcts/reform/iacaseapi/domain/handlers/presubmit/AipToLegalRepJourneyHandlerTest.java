@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,5 +129,35 @@ public class AipToLegalRepJourneyHandlerTest {
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
 
         assertEquals(response.getState(), State.CASE_BUILDING);
+    }
+
+    @Test
+    void state_is_awaitingClarifyingQuestionsAnswers_transition_to_previousState() {
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(PRE_CLARIFYING_STATE, State.class)).thenReturn(Optional.of(State.APPEAL_SUBMITTED));
+
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertEquals(State.APPEAL_SUBMITTED, response.getState());
+    }
+
+    @Test
+    void state_is_awaitingClarifyingQuestionsAnswers_transition_to_legal_rep_valid_state() {
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(PRE_CLARIFYING_STATE, State.class)).thenReturn(Optional.of(State.REASONS_FOR_APPEAL_SUBMITTED));
+
+        PreSubmitCallbackResponse<AsylumCase> response = aipToLegalRepJourneyHandler.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertEquals(State.CASE_UNDER_REVIEW, response.getState());
     }
 }
