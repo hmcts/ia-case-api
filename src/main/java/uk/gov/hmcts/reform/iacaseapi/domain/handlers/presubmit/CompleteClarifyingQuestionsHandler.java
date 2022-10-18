@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
@@ -33,8 +34,13 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.COMPLETE_CLARIFY_QUESTIONS
+            && (callback.getEvent() == Event.COMPLETE_CLARIFY_QUESTIONS
+                || callback.getEvent() == Event.NOC_REQUEST)
             && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
+    }
+
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLY;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -61,7 +67,7 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
             List<IdValue<ClarifyingQuestion>> questions = direction.getClarifyingQuestions();
 
             List<IdValue<ClarifyingQuestionAnswer>> answers = questions
-                .stream().map(x -> mapDefaultAnswer(x, direction))
+                .stream().map(x -> mapDefaultAnswer(x, direction, callback.getEvent()))
                 .collect(Collectors.toList());
 
             Optional<List<IdValue<ClarifyingQuestionAnswer>>> existingAnswers = asylumCase.read(CLARIFYING_QUESTIONS_ANSWERS);
@@ -72,10 +78,12 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private IdValue<ClarifyingQuestionAnswer> mapDefaultAnswer(IdValue<ClarifyingQuestion> clarifyingQuestion, Direction direction) {
+    private IdValue<ClarifyingQuestionAnswer> mapDefaultAnswer(IdValue<ClarifyingQuestion> clarifyingQuestion, Direction direction, Event event) {
         ClarifyingQuestionAnswer answer = new ClarifyingQuestionAnswer(direction.getDateSent(), direction.getDateDue(),
             null, clarifyingQuestion.getValue().getQuestion(),
-            "No answer submitted because the question was marked as complete by the Tribunal",
+                event == Event.NOC_REQUEST
+                    ? "No answer submitted because the question was marked as complete due to change in representation"
+                    : "No answer submitted because the question was marked as complete by the Tribunal",
             direction.getUniqueId(), Collections.emptyList());
         return new IdValue<>(clarifyingQuestion.getId(), answer);
     }

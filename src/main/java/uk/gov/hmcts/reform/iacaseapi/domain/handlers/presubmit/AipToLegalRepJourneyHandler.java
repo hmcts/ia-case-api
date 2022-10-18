@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PRE_CLARIFYING_STATE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,14 +44,17 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         asylumCase.remove(JOURNEY_TYPE.value());
         asylumCase.write(PREV_JOURNEY_TYPE, JourneyType.AIP);
 
-        final State currentState = callback.getCaseDetails().getState();
+        State currentState = callback.getCaseDetails().getState();
+        if (currentState == State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS) {
+            currentState = asylumCase.read(PRE_CLARIFYING_STATE, State.class).orElse(currentState);
+        }
         if (currentState == State.AWAITING_REASONS_FOR_APPEAL) {
-            return new PreSubmitCallbackResponse<>(asylumCase, State.CASE_BUILDING);
+            currentState = State.CASE_BUILDING;
         }
         if (currentState == State.REASONS_FOR_APPEAL_SUBMITTED) {
-            return new PreSubmitCallbackResponse<>(asylumCase, State.CASE_UNDER_REVIEW);
+            currentState = State.CASE_UNDER_REVIEW;
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(asylumCase, currentState);
     }
 }
