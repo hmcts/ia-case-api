@@ -17,16 +17,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 @Component
-public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> {
+public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private UserDetailsProvider userDetailsProvider;
 
@@ -41,7 +42,10 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
     }
 
     @Override
-    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage, Callback<AsylumCase> callback) {
+    public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
+                                                        Callback<AsylumCase> callback,
+                                                        PreSubmitCallbackResponse<AsylumCase> callbackResponse) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -52,7 +56,17 @@ public class PinInPostActivated implements PreSubmitCallbackHandler<AsylumCase> 
         updateSubscription(asylumCase);
         updateReasonForAppeal(asylumCase);
         updatePaymentOption(asylumCase);
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return new PreSubmitCallbackResponse<>(asylumCase, updatedState(callback.getCaseDetails().getState()));
+    }
+
+    private State updatedState(State currentState) {
+        if (currentState == State.CASE_BUILDING) {
+            return State.AWAITING_REASONS_FOR_APPEAL;
+        }
+        if (currentState == State.CASE_UNDER_REVIEW) {
+            return State.REASONS_FOR_APPEAL_SUBMITTED;
+        }
+        return currentState;
     }
 
     private void updateJourneyType(AsylumCase asylumCase) {

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -53,6 +54,8 @@ public class PinInPostActivatedTest {
 
     @Mock private UserDetails userDetails;
 
+    @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
+
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -71,7 +74,7 @@ public class PinInPostActivatedTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-            callback
+            callback, callbackResponse
         );
 
         Optional<JourneyType> details = response.getData().read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class);
@@ -88,7 +91,7 @@ public class PinInPostActivatedTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-            callback
+            callback, callbackResponse
         );
 
         Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
@@ -117,7 +120,7 @@ public class PinInPostActivatedTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-            callback
+            callback, callbackResponse
         );
 
         Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
@@ -144,7 +147,7 @@ public class PinInPostActivatedTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
                 PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback
+                callback, callbackResponse
         );
 
         Optional<String> paymentOption = response.getData().read(AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION);
@@ -171,7 +174,7 @@ public class PinInPostActivatedTest {
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-            callback
+            callback, callbackResponse
         );
 
         assertNotNull(response);
@@ -180,6 +183,34 @@ public class PinInPostActivatedTest {
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
+    }
+
+    @Test
+    public void when_state_caseBuilding_change_to_awaitingReasonsForAppeal() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_BUILDING);
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback, callbackResponse
+        );
+
+        assertEquals(State.AWAITING_REASONS_FOR_APPEAL, response.getState());
+    }
+
+    @Test
+    public void when_state_caseUnderReview_change_to_reasonsForAppealSubmitted() {
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(caseDetails.getState()).thenReturn(State.CASE_UNDER_REVIEW);
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+                callback, callbackResponse
+        );
+
+        assertEquals(State.REASONS_FOR_APPEAL_SUBMITTED, response.getState());
     }
 
     @Test
