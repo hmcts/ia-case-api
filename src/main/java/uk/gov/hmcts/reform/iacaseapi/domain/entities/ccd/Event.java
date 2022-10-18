@@ -38,6 +38,7 @@ public enum Event {
     GENERATE_DECISION_AND_REASONS("generateDecisionAndReasons"),
     SEND_DECISION_AND_REASONS("sendDecisionAndReasons"),
     ADD_CASE_NOTE("addCaseNote"),
+    MANAGE_CASE_TTL("manageCaseTTL"),
     EDIT_CASE_LISTING("editCaseListing"),
     RECORD_APPLICATION("recordApplication"),
     RECORD_ATTENDEES_AND_DURATION("recordAttendeesAndDuration"),

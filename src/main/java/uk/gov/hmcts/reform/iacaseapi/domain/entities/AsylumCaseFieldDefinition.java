@@ -550,6 +550,9 @@ public enum AsylumCaseFieldDefinition {
     CASE_NOTES(
         "caseNotes", new TypeReference<List<IdValue<CaseNote>>>(){}),
 
+    CASE_TYPE_TTL(
+            "caseTypeTTL", new TypeReference<TTL>(){}),
+
     ADD_CASE_NOTE_DOCUMENT(
         "addCaseNoteDocument", new TypeReference<Document>(){}),
 

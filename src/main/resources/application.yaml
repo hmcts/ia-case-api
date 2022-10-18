@@ -268,6 +268,7 @@ security:
       - "recordAttendeesAndDuration"
       - "editCaseListing"
       - "addCaseNote"
+      - "manageCaseTTL"
       - "sendDecisionAndReasons"
       - "recordAllocatedJudge"
       - "flagCase"
