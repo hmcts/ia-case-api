@@ -9,5 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 public class CaseFlagDto {
+    @Singular
     private List<Flag> flags;
 }

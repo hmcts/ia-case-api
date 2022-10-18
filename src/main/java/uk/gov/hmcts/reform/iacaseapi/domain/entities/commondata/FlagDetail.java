@@ -24,6 +24,7 @@ public class FlagDetail {
     @JsonProperty("isParent")
     private Boolean parent;
     @JsonProperty("Path")
+    @Singular("path")
     private List<String> path;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Builder.Default

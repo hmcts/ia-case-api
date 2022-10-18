@@ -11,5 +11,6 @@ import lombok.*;
 @Setter
 public class Flag {
     @JsonProperty("FlagDetails")
+    @Singular
     private List<FlagDetail> flagDetails;
 }

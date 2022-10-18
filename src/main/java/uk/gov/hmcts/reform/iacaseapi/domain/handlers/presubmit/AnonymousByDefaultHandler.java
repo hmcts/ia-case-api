@@ -68,11 +68,11 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
        CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
 
-        Optional<String> appellantFullName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY);
+        String appellantFullName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).get();
 
         StrategicCaseFlag anonymityFlag =
             caseFlagMapper.buildStrategicCaseFlagDetail(caseFlagDto.getFlags().get(0),
-                StrategicCaseFlagType.RRO_ANONYMISATION, "Case", appellantFullName.get());
+                StrategicCaseFlagType.RRO_ANONYMISATION, "Case", appellantFullName);
 
         asylumCase.write(CASE_LEVEL_FLAGS, anonymityFlag);
 
