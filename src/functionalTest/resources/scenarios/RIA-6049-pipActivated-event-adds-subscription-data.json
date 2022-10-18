@@ -28,7 +28,7 @@
           {
             "value": {
               "subscriber":"appellant",
-              "email":"appellant@example.com",
+              "email":"{$citizenEmail}",
               "wantsEmail":"Yes",
               "mobileNumber":"01234123123",
               "wantsSms":"No"

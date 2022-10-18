@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,28 +35,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
-
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class PinInPostActivatedTest {
 
+    private static final String APPELLANT_EMAIL = "appellant@examples.com";
+    private static final String APPELLANT_MOBILE_NUMBER = "111222333";
+    private static final String AUTH_USER_EMAIL = "authuser@examples.com";
+    private static final String REASON_FOR_APPEAL = "reason for appeal";
     private static final String USER_ID = "userId";
-
     private PinInPostActivated pinInPostActivated;
 
     @Mock
     private AsylumCase asylumCase;
-
     @Mock private Callback<AsylumCase> callback;
-
     @Mock private CaseDetails<AsylumCase> caseDetails;
-
     @Mock private UserDetailsProvider userDetailsProvider;
-
     @Mock private UserDetails userDetails;
 
     @Mock private PreSubmitCallbackResponse<AsylumCase> callbackResponse;
-
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -64,6 +62,8 @@ public class PinInPostActivatedTest {
         when(callback.getEvent()).thenReturn(Event.PIP_ACTIVATION);
         when(userDetails.getId()).thenReturn(USER_ID);
         when(userDetailsProvider.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getEmailAddress()).thenReturn(AUTH_USER_EMAIL);
+        when(userDetails.getId()).thenReturn(USER_ID);
         pinInPostActivated = new PinInPostActivated(userDetailsProvider);
     }
 
@@ -82,60 +82,97 @@ public class PinInPostActivatedTest {
     }
 
     @Test
-    public void subscription_should_added_wantsEmail() {
+    public void should_build_subscription_with_contact_preference_email() {
         asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        asylumCase.write(AsylumCaseFieldDefinition.EMAIL,"appellant@examples.com");
-        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
+        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Collections.emptyList()));
+        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_EMAIL));
+        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
 
-        assertTrue(subscriptions.isPresent());
-        assertEquals(1, subscriptions.get().size());
-        assertEquals(USER_ID, subscriptions.get().get(0).getId());
+        assertTrue(expectedSubscriptions.isPresent());
+        assertEquals(1, expectedSubscriptions.get().size());
+        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            "appellant@examples.com",
+            AUTH_USER_EMAIL,
             YesOrNo.YES,
-            null,
+            APPELLANT_MOBILE_NUMBER,
             YesOrNo.NO);
-        assertThat(subscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
-    public void subscription_should_added_wantsSms() {
+    public void should_build_subscription_with_contact_preference_sms() {
         asylumCase = new AsylumCase();
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        
-        asylumCase.write(AsylumCaseFieldDefinition.EMAIL, Optional.of("appellant@examples.com"));
-        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of("01234123123"));
+
+        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Collections.emptyList()));
         asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
+        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
             PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
             callback, callbackResponse
         );
 
-        Optional<List<IdValue<Subscriber>>> subscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
 
-        assertTrue(subscriptions.isPresent());
-        assertEquals(1, subscriptions.get().size());
-        assertEquals(USER_ID, subscriptions.get().get(0).getId());
+        assertTrue(expectedSubscriptions.isPresent());
+        assertEquals(1, expectedSubscriptions.get().size());
+        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
 
         Subscriber expectedSubscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            "appellant@examples.com",
+            AUTH_USER_EMAIL,
             YesOrNo.NO,
-            "01234123123",
+            APPELLANT_MOBILE_NUMBER,
             YesOrNo.YES);
-        assertThat(subscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
+    }
+
+    @Test
+    public void should_update_existing_subscription() {
+        Subscriber existingSubscriber = new Subscriber(
+            SubscriberType.APPELLANT,
+            APPELLANT_EMAIL,
+            YesOrNo.YES,
+            APPELLANT_MOBILE_NUMBER,
+            YesOrNo.NO);
+
+        asylumCase = new AsylumCase();
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Optional.of(Arrays.asList(new IdValue<>(USER_ID, existingSubscriber))));
+        asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, Optional.of(ContactPreference.WANTS_SMS));
+        asylumCase.write(AsylumCaseFieldDefinition.MOBILE_NUMBER, Optional.of(APPELLANT_MOBILE_NUMBER));
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        Optional<List<IdValue<Subscriber>>> expectedSubscriptions = response.getData().read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+
+        assertTrue(expectedSubscriptions.isPresent());
+        assertEquals(1, expectedSubscriptions.get().size());
+        assertEquals(USER_ID, expectedSubscriptions.get().get(0).getId());
+
+        Subscriber expectedSubscriber = new Subscriber(
+            SubscriberType.APPELLANT,
+            AUTH_USER_EMAIL,
+            YesOrNo.YES,
+            APPELLANT_MOBILE_NUMBER,
+            YesOrNo.NO);
+        assertThat(expectedSubscriptions.get().get(0).getValue()).usingRecursiveComparison().isEqualTo(expectedSubscriber);
     }
 
     @Test
@@ -206,11 +243,38 @@ public class PinInPostActivatedTest {
         when(caseDetails.getState()).thenReturn(State.CASE_UNDER_REVIEW);
 
         PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
-                PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
-                callback, callbackResponse
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
         );
 
         assertEquals(State.REASONS_FOR_APPEAL_SUBMITTED, response.getState());
+    }
+
+    @Test
+    public void should_not_update_reason_for_appeal_if_already_existis() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION)).thenReturn(Optional.of(REASON_FOR_APPEAL));
+        Document document = new Document(
+            "documentUrl", "documentBinaryUrl", "documentFileName"
+        );
+        DocumentWithMetadata documentWithMetadata = new DocumentWithMetadata(
+            document, "description", "dateUploaded", DocumentTag.CASE_ARGUMENT
+        );
+        IdValue<DocumentWithMetadata> documentWithMetadataIdValue = new IdValue<>("id1", documentWithMetadata);
+        List<IdValue<DocumentWithMetadata>> legalRepresentativeDocuments = Arrays.asList(documentWithMetadataIdValue);
+
+        when(asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS))
+            .thenReturn(Optional.of(legalRepresentativeDocuments));
+
+        PreSubmitCallbackResponse<AsylumCase> response = pinInPostActivated.handle(
+            PreSubmitCallbackStage.ABOUT_TO_SUBMIT,
+            callback, callbackResponse
+        );
+
+        assertNotNull(response);
+
+        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, documentWithMetadata.getDescription());
+        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, documentWithMetadata.getDateUploaded());
+        verify(asylumCase, times(0)).write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, Arrays.asList(documentWithMetadataIdValue));
     }
 
     @Test
