@@ -79,6 +79,7 @@
           }
         ],
         "journeyType": "aip",
+        "prevJourneyType": "rep",
         "legalRepName": null,
         "legalRepresentativeName": null,
         "legalRepCompany": null,

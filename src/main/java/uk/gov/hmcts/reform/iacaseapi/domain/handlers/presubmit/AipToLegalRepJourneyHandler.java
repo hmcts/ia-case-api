@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 @Slf4j
@@ -25,7 +27,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && callback.getEvent() == Event.NOC_REQUEST
-                && isJourneyTypeAip(callback.getCaseDetails().getCaseData());
+                && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     @Override
@@ -39,6 +41,7 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         asylumCase.remove(JOURNEY_TYPE.value());
+        asylumCase.write(PREV_JOURNEY_TYPE, JourneyType.AIP);
 
         final State currentState = callback.getCaseDetails().getState();
         if (currentState == State.AWAITING_REASONS_FOR_APPEAL) {
@@ -49,11 +52,5 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-
-    private boolean isJourneyTypeAip(AsylumCase asylumCase) {
-        return asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.AIP)
-                .orElse(false);
     }
 }

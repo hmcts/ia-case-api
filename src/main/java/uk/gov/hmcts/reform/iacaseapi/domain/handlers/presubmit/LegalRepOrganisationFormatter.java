@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.ProfessionalOrganisationRetriever;
@@ -46,12 +46,6 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
                && callback.getEvent() == Event.START_APPEAL;
     }
 
-    private boolean isRepJourney(AsylumCase caseData) {
-        return caseData.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-                .map(journeyType -> journeyType == JourneyType.REP)
-                .orElse(true);
-    }
-
     @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(PreSubmitCallbackStage callbackStage,
                                                         Callback<AsylumCase> callback) {
@@ -62,7 +56,7 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (isRepJourney(asylumCase)) {
+        if (HandlerUtils.isRepJourney(asylumCase)) {
             final OrganisationEntityResponse organisationEntityResponse =
                     professionalOrganisationRetriever.retrieve();
 

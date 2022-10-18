@@ -709,6 +709,8 @@ public enum AsylumCaseFieldDefinition {
 
     JOURNEY_TYPE(
         "journeyType", new TypeReference<JourneyType>(){}),
+    PREV_JOURNEY_TYPE(
+        "prevJourneyType", new TypeReference<JourneyType>(){}),
 
     HEARING_TYPE(
         "hearingType", new TypeReference<HearingType>(){}),

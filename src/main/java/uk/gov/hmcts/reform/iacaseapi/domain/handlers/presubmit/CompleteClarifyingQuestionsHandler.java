@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -35,7 +34,7 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
             && callback.getEvent() == Event.COMPLETE_CLARIFY_QUESTIONS
-            && isAipJourney(callback);
+            && HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -79,11 +78,6 @@ public class CompleteClarifyingQuestionsHandler implements PreSubmitCallbackHand
             "No answer submitted because the question was marked as complete by the Tribunal",
             direction.getUniqueId(), Collections.emptyList());
         return new IdValue<>(clarifyingQuestion.getId(), answer);
-    }
-
-    private boolean isAipJourney(Callback<AsylumCase> callback) {
-        Optional<JourneyType> journeyTypeOptional = callback.getCaseDetails().getCaseData().read(JOURNEY_TYPE);
-        return journeyTypeOptional.map(journeyType -> journeyType == JourneyType.AIP).orElse(false);
     }
 
 }

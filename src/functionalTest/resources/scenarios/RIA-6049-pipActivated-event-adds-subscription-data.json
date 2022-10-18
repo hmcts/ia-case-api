@@ -47,7 +47,9 @@
         "contactPreference": null,
         "contactPreferenceDescription": null,
         "paAppealTypePaymentOption": null,
-        "paAppealTypeAipPaymentOption": "payLater"
+        "paAppealTypeAipPaymentOption": "payLater",
+        "journeyType": "aip",
+        "prevJourneyType": "rep"
       }
     }
   }
