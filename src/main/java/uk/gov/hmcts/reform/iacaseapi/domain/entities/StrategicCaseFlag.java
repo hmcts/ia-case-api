@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,7 @@ public class StrategicCaseFlag {
 
     public StrategicCaseFlag(String appellantNameForDisplay) {
         this.partyName = appellantNameForDisplay;
+        this.roleOnCase = "Appellant";
+        this.details = Collections.emptyList();
     }
 }
