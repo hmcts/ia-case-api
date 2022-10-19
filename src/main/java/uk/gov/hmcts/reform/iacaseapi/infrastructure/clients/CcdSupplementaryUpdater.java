@@ -49,10 +49,8 @@ public class CcdSupplementaryUpdater {
         this.hmctsServiceId = hmctsServiceId;
     }
 
-    public void setHmctsServiceIdSupplementary(
-        final Callback<AsylumCase> callback
-    ) {
-        if(featureToggler.getValue("wa-R3-feature", false)) {
+    public void setHmctsServiceIdSupplementary(final Callback<AsylumCase> callback) {
+        if (featureToggler.getValue("wa-R3-feature", false)) {
             requireNonNull(callback, "callback must not be null");
 
             final long caseId = callback.getCaseDetails().getId();

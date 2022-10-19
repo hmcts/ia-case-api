@@ -41,7 +41,7 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
 
         if (expectedCaseName != null && ((caseNameToBeTransitioned.isPresent() && !caseNameToBeTransitioned.get().toString().equals(expectedCaseName)) || caseNameToBeTransitioned.isEmpty())) {
             asylumCase.write(hmctsCaseNameInternal, expectedCaseName);
-            if(migrateCaseName) {
+            if (migrateCaseName) {
                 asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
             }
         }

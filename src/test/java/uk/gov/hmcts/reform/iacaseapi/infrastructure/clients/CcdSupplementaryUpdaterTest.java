@@ -69,7 +69,7 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_sent_post_to_update_ccd_and_receive_201() {
 
-        setupForSuccesfulPostRequest();
+        setupForSuccessfulPostRequest();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
@@ -82,6 +82,7 @@ class CcdSupplementaryUpdaterTest {
             );
 
     }
+
     @Test
     void should_handle_when_rest_exception_thrown() {
 
@@ -128,21 +129,16 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_do_nothing_when_flag_disabled() {
         when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(false);
-        setupForSuccesfulPostRequest();
+        setupForSuccessfulPostRequest();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         verify(restTemplate, never())
-                .exchange(
-                        anyString(),
-                        eq(HttpMethod.POST),
-                        any(HttpEntity.class),
-                        eq(Object.class)
-                );
+                .exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class));
 
     }
 
-    private void setupForSuccesfulPostRequest() {
+    private void setupForSuccessfulPostRequest() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
 
