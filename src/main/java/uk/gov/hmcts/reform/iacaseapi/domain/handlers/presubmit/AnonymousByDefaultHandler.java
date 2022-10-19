@@ -8,6 +8,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RdCommonDataClient;
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final RdCommonDataClient rdCommonDataClient;
+    @Autowired
     private final CaseFlagMapper caseFlagMapper;
 
     AnonymousByDefaultHandler(RdCommonDataClient rdCommonDataClient, CaseFlagMapper caseFlagMapper) {
