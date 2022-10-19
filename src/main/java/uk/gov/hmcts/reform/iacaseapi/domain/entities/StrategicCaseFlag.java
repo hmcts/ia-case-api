@@ -25,4 +25,5 @@ public class StrategicCaseFlag {
 
     @JsonProperty("details")
     List<CaseFlagDetail> details;
+    
 }

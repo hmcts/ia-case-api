@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment.PayAndSu
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -43,6 +45,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 @SuppressWarnings("unchecked")
 class PayAndSubmitConfirmationTest {
 
+    @Mock
+    private CcdSupplementaryUpdater ccdSupplementaryUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -68,6 +72,8 @@ class PayAndSubmitConfirmationTest {
 
     private long caseId = 1234;
 
+    private String hmctsServiceId = "some-id";
+
     private PayAndSubmitConfirmation payAndSubmitConfirmation;
 
     @BeforeEach
@@ -85,8 +91,23 @@ class PayAndSubmitConfirmationTest {
                 feePayment,
                 postNotificationSender,
                 scheduler,
-                dateProvider
+                dateProvider,
+                hmctsServiceId,
+                ccdSupplementaryUpdater
             );
+    }
+
+    @Test
+    void should_invoke_supplementary_updater() {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(postNotificationSender.send(any(Callback.class))).thenReturn(new PostSubmitCallbackResponse());
+
+        payAndSubmitConfirmation.handle(callback);
+
+        verify(ccdSupplementaryUpdater).setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
     }
 
     @Test
@@ -127,6 +148,8 @@ class PayAndSubmitConfirmationTest {
 
         PostSubmitCallbackResponse equalCallbackResponse =
                 payAndSubmitConfirmation.handle(callback);
+
+        verify(ccdSupplementaryUpdater).setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
 
         assertNotNull(equalCallbackResponse);
         assertFalse(equalCallbackResponse.getConfirmationHeader().isPresent());
