@@ -25,5 +25,8 @@ public class StrategicCaseFlag {
 
     @JsonProperty("details")
     List<CaseFlagDetail> details;
-    
+
+    public StrategicCaseFlag(String appellantNameForDisplay) {
+        this.partyName = appellantNameForDisplay;
+    }
 }
