@@ -314,6 +314,7 @@ dependencies {
     testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
     testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+    testCompile 'org.apiguardian:apiguardian-api:1.0.0'
     //pact contract testing
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
     contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'

@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -66,7 +65,7 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void setAnonymityFlag(AsylumCase asylumCase) {
 
-       CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
+        CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
 
         String appellantFullName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).get();
 
