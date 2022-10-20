@@ -76,6 +76,8 @@ public class AnonymousByDefaultHandlerTest {
     @CsvSource({"SUBMIT_APPEAL,RP", "SUBMIT_APPEAL,PA", "PAY_AND_SUBMIT_APPEAL,RP", "PAY_AND_SUBMIT_APPEAL,PA"})
     void should_set_anonymity_flag_for_PA_appeal(Event event, AppealType appealType) {
 
+        asylumCase.write(APPELLANT_NAME_FOR_DISPLAY, "John Doe");
+
         when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
