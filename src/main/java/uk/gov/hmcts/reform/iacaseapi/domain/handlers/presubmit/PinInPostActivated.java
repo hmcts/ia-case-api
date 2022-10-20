@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_REPRESENTATIVE_DOCUMENTS;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,13 +95,26 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
     }
 
     private void updateSubscription(AsylumCase asylumCase) {
+        List<IdValue<Subscriber>> existingSubscriptions = fetchSubscriptions(asylumCase);
+        if (existingSubscriptions.isEmpty()) {
+            buildSubscriptions(asylumCase);
+        } else {
+            updateExistingSubscriptions(asylumCase, existingSubscriptions);
+        }
+    }
+
+    private List<IdValue<Subscriber>> fetchSubscriptions(AsylumCase asylumCase) {
+        Optional<List<IdValue<Subscriber>>> subscriptionsOptional = asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+        return subscriptionsOptional.orElse(Collections.emptyList());
+    }
+
+    private void buildSubscriptions(AsylumCase asylumCase) {
         Optional<ContactPreference> contactPreference = asylumCase.read(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
         Optional<String> mobileNumber = asylumCase.read(AsylumCaseFieldDefinition.MOBILE_NUMBER);
-        Optional<String> email = asylumCase.read(AsylumCaseFieldDefinition.EMAIL);
 
         Subscriber subscriber = new Subscriber(
             SubscriberType.APPELLANT,
-            email.orElse(null),
+            userDetailsProvider.getUserDetails().getEmailAddress(),
             contactPreference.filter(p -> p.equals(ContactPreference.WANTS_EMAIL)).map(p -> YesOrNo.YES).orElse(YesOrNo.NO),
             mobileNumber.orElse(null),
             contactPreference.filter(p -> p.equals(ContactPreference.WANTS_SMS)).map(p -> YesOrNo.YES).orElse(YesOrNo.NO));
@@ -114,17 +128,40 @@ public class PinInPostActivated implements PreSubmitCallbackStateHandler<AsylumC
         asylumCase.clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION);
     }
 
-    private void updateReasonForAppeal(AsylumCase asylumCase) {
-        Optional<List<IdValue<DocumentWithMetadata>>> legalRepDocumentsOptional =
-            asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
-        List<IdValue<DocumentWithMetadata>> caseArgumentDocuments = legalRepDocumentsOptional.orElse(emptyList()).stream()
-            .filter(documentWithMetadata -> documentWithMetadata.getValue().getTag() == DocumentTag.CASE_ARGUMENT)
-            .collect(Collectors.toList());
+    private void updateExistingSubscriptions(AsylumCase asylumCase, List<IdValue<Subscriber>> existingSubscriptions) {
+        Subscriber existingSubscriber = existingSubscriptions.get(0).getValue();
+        String existingSubscriberEmail = existingSubscriber.getEmail();
+        String authUserEmail = userDetailsProvider.getUserDetails().getEmailAddress();
+        if (existingSubscriber.getWantsEmail() == YesOrNo.YES && !existingSubscriberEmail.equals(authUserEmail)) {
+            asylumCase.clear(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
 
-        if (!caseArgumentDocuments.isEmpty()) {
-            asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.get(0).getValue().getDescription());
-            asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.get(0).getValue().getDateUploaded());
-            asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, caseArgumentDocuments);
+            Subscriber updatedSubscriber = new Subscriber(
+                existingSubscriber.getSubscriber(),
+                userDetailsProvider.getUserDetails().getEmailAddress(),
+                existingSubscriber.getWantsEmail(),
+                existingSubscriber.getMobileNumber(),
+                existingSubscriber.getWantsSms()
+            );
+
+            asylumCase.write(AsylumCaseFieldDefinition.SUBSCRIPTIONS, Arrays.asList(
+                new IdValue<>(userDetailsProvider.getUserDetails().getId(), updatedSubscriber)
+            ));
+        }
+    }
+
+    private void updateReasonForAppeal(AsylumCase asylumCase) {
+        if (asylumCase.read(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION).isEmpty()) {
+            Optional<List<IdValue<DocumentWithMetadata>>> legalRepDocumentsOptional =
+                asylumCase.read(LEGAL_REPRESENTATIVE_DOCUMENTS);
+            List<IdValue<DocumentWithMetadata>> caseArgumentDocuments = legalRepDocumentsOptional.orElse(emptyList()).stream()
+                .filter(documentWithMetadata -> documentWithMetadata.getValue().getTag() == DocumentTag.CASE_ARGUMENT)
+                .collect(Collectors.toList());
+
+            if (!caseArgumentDocuments.isEmpty()) {
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DECISION, caseArgumentDocuments.get(0).getValue().getDescription());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DATE_UPLOADED, caseArgumentDocuments.get(0).getValue().getDateUploaded());
+                asylumCase.write(AsylumCaseFieldDefinition.REASONS_FOR_APPEAL_DOCUMENTS, caseArgumentDocuments);
+            }
         }
     }
 }
