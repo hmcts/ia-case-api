@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
+import feign.FeignException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.IdamApi;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.security.idam.IdentityManagerResponseException;
 
 @Component
 public class IdamService {
@@ -47,6 +49,14 @@ public class IdamService {
         idamAuthDetails.put("scope", systemUserScope);
 
         return "Bearer " + idamApi.token(idamAuthDetails).getAccessToken();
+    }
+
+    public String getSystemUserId(String userToken) {
+        try {
+            return idamApi.userInfo(userToken).getUid();
+        } catch (FeignException ex) {
+            throw new IdentityManagerResponseException("Could not get system user id from IDAM", ex);
+        }
     }
 
 }
