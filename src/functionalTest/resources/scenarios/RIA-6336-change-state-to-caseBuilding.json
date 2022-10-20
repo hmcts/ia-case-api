@@ -1,0 +1,29 @@
+{
+  "description": "RIA-6336 AIP to LR NoC, when case state is awaitingReasonsForAppeal change case state to caseBuilding",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "id": 6335,
+      "eventId": "nocRequest",
+      "state": "awaitingReasonsForAppeal",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "journeyType": "aip"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "state": "caseBuilding",
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "journeyType": null
+      }
+    }
+  }
+}

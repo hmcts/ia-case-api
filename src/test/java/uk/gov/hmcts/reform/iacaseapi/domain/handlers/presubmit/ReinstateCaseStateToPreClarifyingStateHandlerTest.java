@@ -48,7 +48,7 @@ class ReinstateCaseStateToPreClarifyingStateHandlerTest {
         reinstateCaseStateToPreClarifyingStateHandler = new ReinstateCaseStateToPreClarifyingStateHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
     }
 
     @ParameterizedTest
@@ -76,7 +76,7 @@ class ReinstateCaseStateToPreClarifyingStateHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = reinstateCaseStateToPreClarifyingStateHandler.canHandle(callbackStage, callback);

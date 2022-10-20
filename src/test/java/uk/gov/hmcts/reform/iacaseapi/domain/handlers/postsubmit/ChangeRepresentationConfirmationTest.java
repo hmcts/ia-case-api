@@ -5,7 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +23,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdCaseAssignment;
-
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -29,8 +37,10 @@ class ChangeRepresentationConfirmationTest {
     @Mock private CcdCaseAssignment ccdCaseAssignment;
     @Mock PostNotificationSender<AsylumCase> postNotificationSender;
     @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+    @Mock private RoleAssignmentService roleAssignmentService;
 
-    public static final long CASE_ID = 1234567890L;
+    private static final long CASE_ID = 1234567890L;
     private ChangeRepresentationConfirmation changeRepresentationConfirmation;
 
     @BeforeEach
@@ -38,7 +48,8 @@ class ChangeRepresentationConfirmationTest {
 
         changeRepresentationConfirmation = new ChangeRepresentationConfirmation(
             ccdCaseAssignment,
-            postNotificationSender
+            postNotificationSender,
+            roleAssignmentService
         );
     }
 
@@ -46,6 +57,9 @@ class ChangeRepresentationConfirmationTest {
     void should_apply_noc_for_remove_representation() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -71,6 +85,9 @@ class ChangeRepresentationConfirmationTest {
     void should_apply_noc_for_remove_legal_representative() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -92,6 +109,9 @@ class ChangeRepresentationConfirmationTest {
     void should_apply_noc_for_change_legal_representative() {
 
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -110,11 +130,43 @@ class ChangeRepresentationConfirmationTest {
     }
 
     @Test
+    void should_revoke_appellant_access_to_case() {
+
+        String assignmentId = "assignmentId";
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
+            )).build();
+
+        RoleAssignmentResource roleAssignmentResource = new RoleAssignmentResource(Arrays.asList(Assignment.builder().id(assignmentId).build()));
+
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(CASE_ID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
+        when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
+
+        changeRepresentationConfirmation.handle(callback);
+
+        verify(roleAssignmentService).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService).deleteRoleAssignment(assignmentId);
+    }
+
+    @Test
     void should_handle_when_rest_exception_thrown_for_apply_noc() {
 
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(CASE_ID);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
         doThrow(restClientResponseEx).when(ccdCaseAssignment).applyNoc(callback);
