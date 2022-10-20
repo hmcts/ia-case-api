@@ -74,7 +74,7 @@ public class AnonymousByDefaultHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"SUBMIT_APPEAL,RP"})//, "SUBMIT_APPEAL,PA", "PAY_AND_SUBMIT_APPEAL,RP", "PAY_AND_SUBMIT_APPEAL,PA"
+    @CsvSource({"SUBMIT_APPEAL,RP", "SUBMIT_APPEAL,PA", "PAY_AND_SUBMIT_APPEAL,RP", "PAY_AND_SUBMIT_APPEAL,PA"})
     void should_set_anonymity_flag_for_PA_appeal(Event event, AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -98,9 +98,10 @@ public class AnonymousByDefaultHandlerTest {
         verify(asylumCase, times(1)).write(eq(CASE_LEVEL_FLAGS), asylumValueCaptor.capture());
         verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
 
-        assertNotNull(asylumValueCaptor.capture(), "Flag not found");
+        StrategicCaseFlag asylumValueCaptorValue = asylumValueCaptor.getValue();
+        assertNotNull(asylumValueCaptorValue, "Flag not found");
 
-        CaseFlagDetail anonymityCaseFlagDetail = asylumValueCaptor.getValue().getDetails().get(0);
+        CaseFlagDetail anonymityCaseFlagDetail = asylumValueCaptorValue.getDetails().get(0);
         assertEquals(anonymityCaseFlagDetail.getCaseFlagValue().getFlagCode(), FLAG_CODE,
                 "Flag Code should match");
         assertEquals(anonymityCaseFlagDetail.getCaseFlagValue().getCaseFlagPath().get(0).getValue(), PATH,
