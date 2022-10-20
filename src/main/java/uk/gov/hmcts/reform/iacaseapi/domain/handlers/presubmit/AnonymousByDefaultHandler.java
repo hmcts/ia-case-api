@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAY_AND_SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -24,12 +23,9 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RdCommonDataClient;
 class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final RdCommonDataClient rdCommonDataClient;
-    @Autowired
-    private final CaseFlagMapper caseFlagMapper;
 
-    AnonymousByDefaultHandler(RdCommonDataClient rdCommonDataClient, CaseFlagMapper caseFlagMapper) {
+    AnonymousByDefaultHandler(RdCommonDataClient rdCommonDataClient) {
         this.rdCommonDataClient = rdCommonDataClient;
-        this.caseFlagMapper = caseFlagMapper;
     }
 
     @Override
@@ -67,12 +63,12 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void setAnonymityFlag(AsylumCase asylumCase) {
 
-        CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
+       CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
 
         String appellantFullName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).get();
 
         StrategicCaseFlag anonymityFlag =
-            caseFlagMapper.buildStrategicCaseFlagDetail(caseFlagDto.getFlags().get(0),
+            CaseFlagMapper.buildStrategicCaseFlagDetail(caseFlagDto.getFlags().get(0),
                 StrategicCaseFlagType.RRO_ANONYMISATION, "Case", appellantFullName);
 
         asylumCase.write(CASE_LEVEL_FLAGS, anonymityFlag);

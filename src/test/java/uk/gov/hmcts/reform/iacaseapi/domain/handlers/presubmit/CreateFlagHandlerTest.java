@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class CreateFlagHandlerTest {
 
     private final String appellantNameForDisplay = "some-name";
 
-    private final StrategicCaseFlag strategicCaseFlag = new StrategicCaseFlag(appellantNameForDisplay);
+    private final StrategicCaseFlag strategicCaseFlag = new StrategicCaseFlag(appellantNameForDisplay, "Appellant", Collections.emptyList());
     private final StrategicCaseFlag strategicCaseFlagEmpty = new StrategicCaseFlag();
 
     @BeforeEach

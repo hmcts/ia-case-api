@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.Flag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.FlagDetail;
 
-@Service
 public class CaseFlagMapper {
 
     public static final String CASE_FLAG = "Case";

@@ -1547,7 +1547,7 @@ public enum AsylumCaseFieldDefinition {
 
     APPELLANT_LEVEL_FLAGS(
         "appellantLevelFlags", new TypeReference<StrategicCaseFlag>(){}),
-        
+
     ;
 
     private final String value;

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.Collections;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.StrategicCaseFlag;
@@ -46,7 +47,7 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                         .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
                         .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
 
-        asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay));
+        asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay, "Appellant", Collections.emptyList()));
         asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag());
 
         return new PreSubmitCallbackResponse<>(asylumCase);
