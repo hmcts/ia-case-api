@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.CaseFlagDto;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.Flag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.commondata.FlagDetail;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.CaseFlagMapper;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.RdCommonDataClient;
 
 

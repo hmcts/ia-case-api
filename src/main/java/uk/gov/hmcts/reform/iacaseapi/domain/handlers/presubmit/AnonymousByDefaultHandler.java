@@ -63,7 +63,7 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
     private void setAnonymityFlag(AsylumCase asylumCase) {
 
-       CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
+        CaseFlagDto caseFlagDto = rdCommonDataClient.getStrategicCaseFlags();
 
         String appellantFullName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).get();
 
