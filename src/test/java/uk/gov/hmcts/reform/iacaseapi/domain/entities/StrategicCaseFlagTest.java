@@ -2,25 +2,29 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 class StrategicCaseFlagTest {
 
-    private final String appellantName = "some-appellant-name";
+    private final String partyName = "some-partyName";
+    private final String roleOnCase = "some-roleOnCase";
+    @Mock
+    private List<CaseFlagDetail> details;
 
     private StrategicCaseFlag strategicCaseFlag;
 
     @BeforeEach
     public void setUp() {
-        strategicCaseFlag = new StrategicCaseFlag(appellantName);
+        strategicCaseFlag = new StrategicCaseFlag(partyName, roleOnCase, details);
     }
 
     @Test
     void should_hold_onto_values() {
-        assertThat(strategicCaseFlag.getPartyName()).isEqualTo((appellantName));
-        assertThat(strategicCaseFlag.getRoleOnCase()).isEqualTo(("Appellant"));
-        assertThat(strategicCaseFlag.getDetails()).isEqualTo((Collections.emptyList()));
+        assertThat(strategicCaseFlag.getPartyName()).isEqualTo(partyName);
+        assertThat(strategicCaseFlag.getRoleOnCase()).isEqualTo(roleOnCase);
+        assertThat(strategicCaseFlag.getDetails()).isEqualTo(details);
     }
 }

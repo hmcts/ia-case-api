@@ -1542,9 +1542,11 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_CATEGORY(
         "hmctsCaseCategory", new TypeReference<String>(){}),
 
-    APPELLANT_LEVEL_FLAGS("appellantLevelFlags", new TypeReference<StrategicCaseFlag>() {
-    }),
-    CASE_LEVEL_FLAGS("caseLevelFlags", new TypeReference<StrategicCaseFlag>(){})
+    CASE_LEVEL_FLAGS(
+        "caseLevelFlags", new TypeReference<StrategicCaseFlag>(){}),
+
+    APPELLANT_LEVEL_FLAGS(
+        "appellantLevelFlags", new TypeReference<StrategicCaseFlag>(){}),
 
     ;
 
