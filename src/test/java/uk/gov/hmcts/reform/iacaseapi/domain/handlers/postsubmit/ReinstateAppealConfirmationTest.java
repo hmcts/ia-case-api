@@ -5,17 +5,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice.TimeToLiveDataService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -24,13 +31,24 @@ class ReinstateAppealConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private TimeToLiveDataService timeToLiveDataService;
 
-    private ReinstateAppealConfirmation reinstateAppealConfirmation = new ReinstateAppealConfirmation();
+    private ReinstateAppealConfirmation reinstateAppealConfirmation;
+
+    @BeforeEach
+    void setup() {
+        reinstateAppealConfirmation = new ReinstateAppealConfirmation(timeToLiveDataService);
+    }
 
     @Test
     void should_return_confirmation() {
 
         when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.APPEAL_SUBMITTED); // state different than ENDED (successful)
 
         PostSubmitCallbackResponse callbackResponse =
             reinstateAppealConfirmation.handle(callback);
@@ -47,6 +65,23 @@ class ReinstateAppealConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("The legal representative and the Home Office "
                 + "will be notified that the case has been reinstated.");
+
+        verify(timeToLiveDataService, times(1)).updateTheClock(callback, true);
+    }
+
+    @Test
+    void should_not_call_manageCaseTtl_if_call_unsuccessful() {
+
+        when(callback.getEvent()).thenReturn(Event.REINSTATE_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(State.ENDED); // unexpected unchanged state
+
+        PostSubmitCallbackResponse callbackResponse =
+            reinstateAppealConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(timeToLiveDataService, never()).updateTheClock(callback, true);
     }
 
     @Test
