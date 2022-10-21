@@ -19,8 +19,8 @@ public class CcdDataService {
     protected final CcdDataApi ccdDataApi;
     protected final IdamService idamService;
     protected final AuthTokenGenerator serviceAuthorization;
-    protected final static String JURISDICTION = "IA";
-    protected final static String CASE_TYPE= "Asylum";
+    protected static final String JURISDICTION = "IA";
+    protected static final String CASE_TYPE = "Asylum";
     protected String userToken;
     protected String s2sToken;
     protected String uid;

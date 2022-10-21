@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;

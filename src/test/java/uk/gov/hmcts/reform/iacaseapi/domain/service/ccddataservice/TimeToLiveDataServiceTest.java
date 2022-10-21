@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.service.ccdDataService;
+package uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice.TimeToLiveDataService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -58,7 +57,7 @@ public class TimeToLiveDataServiceTest {
     private static final String USER_TOKEN = "userToken";
     private static final String S2S_TOKEN = "s2sToken";
     private static final String UID = "uid";
-    private static final String CASE_TYPE= "Asylum";
+    private static final String CASE_TYPE = "Asylum";
     private static final String JURISDICTION = "IA";
     private static final String EVENT_TOKEN = "eventToken";
     private static final long CASE_ID = 1;
