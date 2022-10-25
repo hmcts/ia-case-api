@@ -8,9 +8,20 @@
       "eventId": "nocRequest",
       "state": "reasonsForAppealSubmitted",
       "caseData": {
-        "template": "minimal-appeal-submitted.json",
+        "template": "minimal-aip-appeal-submitted.json",
         "replacements": {
-          "journeyType": "aip"
+          "journeyType": "aip",
+          "subscriptions": [
+            {
+              "value": {
+                "subscriber":"appellant",
+                "email":"citizen@example.com",
+                "wantsEmail":"Yes",
+                "mobileNumber":"01234123123",
+                "wantsSms":"No"
+              }
+            }
+          ]
         }
       }
     }
@@ -20,9 +31,14 @@
     "errors": [],
     "state": "caseUnderReview",
     "caseData": {
-      "template": "minimal-appeal-submitted.json",
+      "template": "minimal-aip-appeal-submitted.json",
       "replacements": {
         "journeyType": null,
+        "prevJourneyType": "aip",
+        "email": "citizen@example.com",
+        "mobileNumber": "01234123123",
+        "contactPreference": "wantsEmail",
+        "contactPreferenceDescription": "Email",
         "uploadAdditionalEvidenceActionAvailable": "Yes"
       }
     }
