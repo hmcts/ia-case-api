@@ -3,15 +3,30 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice.TimeToLiveDataService;
 
 @Component
 public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
+
+    private static final String GRANTED = "granted";
+    private static final String PARTIALLY_GRANTED = "partiallyGranted";
+    private static final String REFUSED = "refused";
+    private static final String NOT_ADMITTED = "notAdmitted";
+
+    private final TimeToLiveDataService timeToLiveDataService;
+
+    public LeadershipJudgeFtpaDecisionConfirmation(TimeToLiveDataService timeToLiveDataService) {
+        this.timeToLiveDataService = timeToLiveDataService;
+    }
 
     public boolean canHandle(
         Callback<AsylumCase> callback
@@ -49,22 +64,22 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
 
         switch (ftpaOutcomeType) {
 
-            case "granted":
-            case "partiallyGranted":
+            case GRANTED:
+            case PARTIALLY_GRANTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified of the decision. The Upper Tribunal has also been notified, and will now proceed with the case.<br>"
                 );
                 break;
 
-            case "refused":
+            case REFUSED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "Both parties have been notified that permission was refused. They'll also be able to access this information in the FTPA tab.<br>"
                 );
                 break;
 
-            case "notAdmitted":
+            case NOT_ADMITTED:
                 postSubmitResponse.setConfirmationBody(
                     "#### What happens next\n\n"
                     + "The applicant has been notified that the application was not admitted. They'll also be able to access this information in the FTPA tab.<br>"
@@ -75,7 +90,18 @@ public class LeadershipJudgeFtpaDecisionConfirmation implements PostSubmitCallba
                 throw new IllegalStateException("FtpaDecisionOutcome is not present");
         }
 
+        if (wasSuccessful(callback)
+            && List.of(GRANTED, PARTIALLY_GRANTED).contains(ftpaOutcomeType)) {
+
+            // stop the clock
+            timeToLiveDataService.updateTheClock(callback, true);
+        }
 
         return postSubmitResponse;
+    }
+
+    private boolean wasSuccessful(Callback<AsylumCase> callback) {
+        CaseDetails<AsylumCase> caseDetails = callback.getCaseDetails();
+        return caseDetails.getState().equals(State.FTPA_DECIDED);
     }
 }

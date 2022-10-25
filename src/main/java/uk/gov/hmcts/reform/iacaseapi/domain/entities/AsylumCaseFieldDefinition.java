@@ -493,6 +493,9 @@ public enum AsylumCaseFieldDefinition {
     CURRENT_CASE_STATE_VISIBLE_TO_ADMIN_OFFICER(
         "currentCaseStateVisibleToAdminOfficer", new TypeReference<State>(){}),
 
+    CURRENT_CASE_STATE_VISIBLE_TO_SYSTEM(
+        "currentCaseStateVisibleToSystem", new TypeReference<State>(){}),
+
     CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_APC(
         "currentCaseStateVisibleToHomeOfficeApc", new TypeReference<State>(){}),
 
@@ -1542,7 +1545,8 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_CATEGORY(
         "hmctsCaseCategory", new TypeReference<String>(){}),
 
-    ;
+    TTL(
+        "TTL", new TypeReference<TTL>(){});
 
     private final String value;
     private final TypeReference typeReference;
