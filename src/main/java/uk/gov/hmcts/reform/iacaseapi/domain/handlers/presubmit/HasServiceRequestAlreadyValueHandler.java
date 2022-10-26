@@ -1,22 +1,22 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_SERVICE_REQUEST_ALREADY;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-@Slf4j
 @Component
-public class MoveToSubmittedHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class HasServiceRequestAlreadyValueHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    @Override
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -24,16 +24,15 @@ public class MoveToSubmittedHandler implements PreSubmitCallbackHandler<AsylumCa
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return
-            callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && Event.MOVE_TO_SUBMITTED == callback.getEvent();
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+               && callback.getEvent() == Event.START_APPEAL;
     }
 
-
+    @Override
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
-    ) {
+        Callback<AsylumCase> callback) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -43,15 +42,16 @@ public class MoveToSubmittedHandler implements PreSubmitCallbackHandler<AsylumCa
                 .getCaseDetails()
                 .getCaseData();
 
-        long caseId = callback
-            .getCaseDetails()
-            .getId();
+        Optional<YesOrNo> hasServiceRequestAlready = asylumCase.read(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.class);
 
-        asylumCase.write(AsylumCaseFieldDefinition.PAYMENT_STATUS, PaymentStatus.PAID);
+        if (hasServiceRequestAlready.isEmpty()) {
 
-        log.info("Move appeal with case ID {} to pendingPayment state", caseId);
+            asylumCase.write(HAS_SERVICE_REQUEST_ALREADY, YesOrNo.NO);
+
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
-    }
-}
 
+    }
+
+}

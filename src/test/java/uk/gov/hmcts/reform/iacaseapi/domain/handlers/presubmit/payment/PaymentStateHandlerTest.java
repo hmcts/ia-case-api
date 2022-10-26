@@ -51,6 +51,8 @@ class PaymentStateHandlerTest {
 
     private PaymentStateHandler paymentStateHandler;
 
+    private static final String PA_PAY_NOW = "payNow";
+
     @BeforeEach
     public void setUp() {
         paymentStateHandler = new PaymentStateHandler(true);
@@ -392,5 +394,46 @@ class PaymentStateHandlerTest {
         assertThatThrownBy(() -> paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_return_updated_state_for_pa_pay_now_payment_pending_submit_as_appeal_submitted_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+        asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of(PA_PAY_NOW));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
+    void should_return_updated_state_for_pa_pay_now_remission_submit_as_appeal_submitted_state(RemissionType remissionType) {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+        asylumCase.write(REMISSION_TYPE, remissionType);
+        asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of(PA_PAY_NOW));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 }
