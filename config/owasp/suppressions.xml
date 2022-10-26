@@ -56,7 +56,7 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-            Temporarily suppress tomcat-embed and snakeyaml vulnerabilities
+            Temporarily suppress tomcat-embed vulnerabilities
             ]]>
         </notes>
         <cve>CVE-2022-34305</cve>
@@ -64,13 +64,18 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-            Temporarily suppress jackson-bind,launchdarkly-java-server-sdk, snakeyaml vulnerabilities
-        ]]></notes>
+            Snakeyaml coming via Launch Darkly transitives
+            ]]>
+        </notes>
+        <cve>CVE-2022-38749</cve>
+        <cve>CVE-2022-38750</cve>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[fasterxml:jackson-databind:2.13.3]]>
+        </notes>
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
-        <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38749</cve>
     </suppress>
 </suppressions>

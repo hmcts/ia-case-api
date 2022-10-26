@@ -81,19 +81,15 @@ class DeriveHearingCentreHandlerTest {
     @CsvSource({
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
 
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
         "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
         "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
 
         "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
-        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
-        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
     })
     void should_derive_hearing_centre_from_appellant_postcode(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -131,19 +127,15 @@ class DeriveHearingCentreHandlerTest {
     @CsvSource({
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
 
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
         "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
         "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
 
         "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
-        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
-        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
     })
     void should_derive_hearing_centre_from_sponsor_postcode(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -182,19 +174,15 @@ class DeriveHearingCentreHandlerTest {
     @CsvSource({
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
 
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
         "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
         "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
 
         "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
-        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,",
-        "PAY_AND_SUBMIT_APPEAL, NEWCASTLE, Newcastle,"
+        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
     })
     void should_derive_hearing_centre_from_legal_rep_company_postcode(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -234,15 +222,12 @@ class DeriveHearingCentreHandlerTest {
     @CsvSource({
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
 
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
         "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
     void should_use_default_hearing_centre_if_sponsor_present_and_no_valid_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -279,15 +264,12 @@ class DeriveHearingCentreHandlerTest {
     @CsvSource({
         "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
         "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-        "PAY_AND_SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
 
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
         "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
 
         "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "PAY_AND_SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
+        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS"
     })
     void should_use_default_hearing_centre_if_appellant_has_no_fixed_address(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -321,8 +303,7 @@ class DeriveHearingCentreHandlerTest {
     @ParameterizedTest
     @CsvSource({
         "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "PAY_AND_SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE"
+        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE"
     })
     void should_derive_hearing_centre_from_wa_dummy_postcode_if_available(
         Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
@@ -403,8 +384,7 @@ class DeriveHearingCentreHandlerTest {
 
                 if (Arrays.asList(
                     Event.SUBMIT_APPEAL,
-                    Event.EDIT_APPEAL_AFTER_SUBMIT,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                    Event.EDIT_APPEAL_AFTER_SUBMIT)
                     .contains(callback.getEvent())
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
