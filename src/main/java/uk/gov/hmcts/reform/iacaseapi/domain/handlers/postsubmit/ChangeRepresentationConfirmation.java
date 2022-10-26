@@ -62,7 +62,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         try {
             ccdCaseAssignment.applyNoc(callback);
 
-            if (HandlerUtils.isAipToRepJourney(callback.getCaseDetails().getCaseData())) {
+            if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
                 revokeAppellantAccessToCase(String.valueOf(callback.getCaseDetails().getId()));
             }
 
@@ -96,12 +96,12 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 );
             }
         } catch (Exception e) {
-            log.error("Unable to change representation (apply noc) for case id {} with error message: {}",
-                callback.getCaseDetails().getId(), e.getMessage());
-
-            if (HandlerUtils.isAipToRepJourney(callback.getCaseDetails().getCaseData())) {
-                log.error("Revoking Appellant's access to appeal with case id {} failed with error message: {}",
-                    callback.getCaseDetails().getId(), e.getMessage());
+            if (shouldRevokeAppellantAccess(callback.getEvent(), callback.getCaseDetails().getCaseData())) {
+                log.error("Revoking Appellant's access to appeal with case id {} failed. Cause: {}",
+                    callback.getCaseDetails().getId(), e);
+            } else {
+                log.error("Unable to change representation (apply noc) for case id {}. Cause: {}",
+                    callback.getCaseDetails().getId(), e);
             }
 
             postSubmitResponse.setConfirmationBody(
@@ -144,5 +144,9 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         } else {
             log.error("Problem revoking Appellant's access to appeal with case ID {}. Role assignment for appellant not found", caseId);
         }
+    }
+
+    private boolean shouldRevokeAppellantAccess(Event event, AsylumCase asylumCase) {
+        return event == Event.NOC_REQUEST && HandlerUtils.isAipToRepJourney(asylumCase);
     }
 }
