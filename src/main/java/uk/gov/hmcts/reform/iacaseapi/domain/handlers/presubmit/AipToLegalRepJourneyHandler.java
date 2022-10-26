@@ -83,6 +83,8 @@ public class AipToLegalRepJourneyHandler implements PreSubmitCallbackStateHandle
                 asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE, contactPreference);
                 asylumCase.write(AsylumCaseFieldDefinition.CONTACT_PREFERENCE_DESCRIPTION, contactPreference.getDescription());
 
+                asylumCase.clear(AsylumCaseFieldDefinition.SUBSCRIPTIONS);
+
                 return;
             }
         }
