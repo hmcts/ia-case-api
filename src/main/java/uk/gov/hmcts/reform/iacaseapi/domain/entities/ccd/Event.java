@@ -118,6 +118,8 @@ public enum Event {
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
+    CREATE_CASE_LINK("createCaseLink"),
+    MAINTAIN_CASE_LINKS("maintainCaseLinks"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
