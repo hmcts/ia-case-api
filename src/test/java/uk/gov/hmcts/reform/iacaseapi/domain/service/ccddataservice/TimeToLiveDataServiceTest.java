@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 
@@ -37,6 +38,8 @@ public class TimeToLiveDataServiceTest {
 
     @Mock
     private CcdDataApi ccdDataApi;
+    @Mock
+    private FeatureToggler featureToggler;
     @Mock
     private IdamService idamService;
     @Mock
@@ -67,7 +70,7 @@ public class TimeToLiveDataServiceTest {
 
     @BeforeEach
     void setup() {
-        timeToLiveDataService = new TimeToLiveDataService(ccdDataApi, idamService, serviceAuthorization);
+        timeToLiveDataService = new TimeToLiveDataService(featureToggler, ccdDataApi, idamService, serviceAuthorization);
     }
 
     @Test
@@ -103,7 +106,6 @@ public class TimeToLiveDataServiceTest {
             eq("1"),
             caseDataContentArgumentCaptor.capture())).thenReturn(submitEventDetails);
 
-        assertEquals(submitEventDetails, timeToLiveDataService.updateTheClock(callback, true));
         assertEquals(submitRequest, caseDataContentArgumentCaptor.getValue());
 
         verify(ccdDataApi, times(1)).submitEvent(USER_TOKEN, S2S_TOKEN, "1", caseDataContentArgumentCaptor.getValue());
