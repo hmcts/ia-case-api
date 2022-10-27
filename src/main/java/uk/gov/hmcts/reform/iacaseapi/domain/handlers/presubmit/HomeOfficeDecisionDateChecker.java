@@ -48,8 +48,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
 
         return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                && Arrays.asList(
-                Event.SUBMIT_APPEAL,
-                Event.PAY_AND_SUBMIT_APPEAL)
+                Event.SUBMIT_APPEAL)
                    .contains(callback.getEvent());
     }
 

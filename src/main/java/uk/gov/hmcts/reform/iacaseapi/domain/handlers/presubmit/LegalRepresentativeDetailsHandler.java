@@ -32,9 +32,7 @@ public class LegalRepresentativeDetailsHandler implements PreSubmitCallbackHandl
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && Arrays.asList(
-                    Event.SUBMIT_APPEAL,
-                    Event.EDIT_PAYMENT_METHOD,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                    Event.SUBMIT_APPEAL)
                    .contains(callback.getEvent())
                 && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData());
     }
