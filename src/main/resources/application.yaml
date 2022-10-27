@@ -196,6 +196,8 @@ security:
       - "requestFeeRemission"
       - "nocRequest"
       - "editPaymentMethod"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "moveToSubmitted"
@@ -290,6 +292,8 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
@@ -352,6 +356,8 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markAddendumEvidenceAsReviewed"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
