@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PREV_JOURNEY_TYPE;
 
 import java.util.Arrays;
@@ -59,7 +58,6 @@ class ChangeRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -87,7 +85,6 @@ class ChangeRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_LEGAL_REPRESENTATIVE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -111,7 +108,6 @@ class ChangeRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PostSubmitCallbackResponse callbackResponse =
             changeRepresentationConfirmation.handle(callback);
@@ -150,13 +146,55 @@ class ChangeRepresentationConfirmationTest {
         when(caseDetails.getId()).thenReturn(CASE_ID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
         when(roleAssignmentService.queryRoleAssignments(queryRequest)).thenReturn(roleAssignmentResource);
 
         changeRepresentationConfirmation.handle(callback);
 
-        verify(roleAssignmentService).queryRoleAssignments(queryRequest);
-        verify(roleAssignmentService).deleteRoleAssignment(assignmentId);
+        verify(roleAssignmentService, times(1)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(1)).deleteRoleAssignment(assignmentId);
+    }
+
+    @Test
+    void should_not_revoke_appellant_access_to_case_for_non_noc_request_event() {
+        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+
+        changeRepresentationConfirmation.handle(callback);
+
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
+            )).build();
+
+        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
+    }
+
+    @Test
+    void should_not_revoke_appellant_access_to_case_for_lr_to_lr_noc() {
+        when(callback.getEvent()).thenReturn(Event.NOC_REQUEST);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        changeRepresentationConfirmation.handle(callback);
+
+        QueryRequest queryRequest = QueryRequest.builder()
+            .roleType(List.of(RoleType.CASE))
+            .roleName(List.of(RoleName.CREATOR))
+            .roleCategory(List.of(RoleCategory.CITIZEN))
+            .attributes(Map.of(
+                Attributes.JURISDICTION, List.of(Jurisdiction.IA.name()),
+                Attributes.CASE_TYPE, List.of("Asylum"),
+                Attributes.CASE_ID, List.of(String.valueOf(CASE_ID))
+            )).build();
+
+        verify(roleAssignmentService, times(0)).queryRoleAssignments(queryRequest);
+        verify(roleAssignmentService, times(0)).deleteRoleAssignment("assignmentId");
     }
 
     @Test
@@ -165,8 +203,6 @@ class ChangeRepresentationConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(PREV_JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
-        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         RestClientResponseException restClientResponseEx = mock(RestClientResponseException.class);
         doThrow(restClientResponseEx).when(ccdCaseAssignment).applyNoc(callback);
