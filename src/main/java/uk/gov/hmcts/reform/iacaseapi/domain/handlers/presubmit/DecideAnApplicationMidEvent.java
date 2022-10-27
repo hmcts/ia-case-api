@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +95,7 @@ public class DecideAnApplicationMidEvent implements PreSubmitCallbackHandler<Asy
                 .filter(val -> val.getLabel().contains("Pending"))
                 .map(val -> new Value(
                         val.getCode(),
-                            val.getLabel().replace("Pending" , "")))
+                            val.getLabel().replace("Pending","")))
                 .collect(Collectors.toList());
 
     }
