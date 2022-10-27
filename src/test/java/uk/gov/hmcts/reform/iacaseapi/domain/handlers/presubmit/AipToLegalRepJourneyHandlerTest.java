@@ -189,6 +189,7 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).write(MOBILE_NUMBER, APPELLANT_MOBILE_NUMBER);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE, ContactPreference.WANTS_EMAIL);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_EMAIL.getDescription());
+        verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
     }
 
     @Test
@@ -210,5 +211,6 @@ public class AipToLegalRepJourneyHandlerTest {
         verify(asylumCase, times(1)).write(MOBILE_NUMBER, APPELLANT_MOBILE_NUMBER);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE, ContactPreference.WANTS_SMS);
         verify(asylumCase, times(1)).write(CONTACT_PREFERENCE_DESCRIPTION, ContactPreference.WANTS_SMS.getDescription());
+        verify(asylumCase, times(1)).clear(SUBSCRIPTIONS);
     }
 }
