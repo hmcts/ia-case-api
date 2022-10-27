@@ -115,10 +115,12 @@ class EventTest {
         assertEquals("markPaymentRequestSent", Event.MARK_PAYMENT_REQUEST_SENT.toString());
         assertEquals("endAppealAutomatically", Event.END_APPEAL_AUTOMATICALLY.toString());
         assertEquals("generateServiceRequest", Event.GENERATE_SERVICE_REQUEST.toString());
+        assertEquals("createCaseLink", Event.CREATE_CASE_LINK.toString());
+        assertEquals("maintainCaseLinks", Event.MAINTAIN_CASE_LINKS.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(112, Event.values().length);
+        assertEquals(114, Event.values().length);
     }
 }
