@@ -2,15 +2,16 @@ package uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,11 +20,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDataContent;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -57,6 +54,7 @@ public class TimeToLiveDataServiceTest {
     @Mock
     private SubmitEventDetails submitEventDetails;
 
+
     private static final String USER_TOKEN = "userToken";
     private static final String S2S_TOKEN = "s2sToken";
     private static final String UID = "uid";
@@ -73,42 +71,58 @@ public class TimeToLiveDataServiceTest {
         timeToLiveDataService = new TimeToLiveDataService(featureToggler, ccdDataApi, idamService, serviceAuthorization);
     }
 
-    @Test
-    void should_update_the_clock() {
-        when(idamService.getUserToken()).thenReturn(USER_TOKEN);
-        when(serviceAuthorization.generate()).thenReturn(S2S_TOKEN);
-        when(idamService.getSystemUserId(USER_TOKEN)).thenReturn(UID);
+    @ParameterizedTest
+    @MethodSource("iaRetainDisposeFlagData")
+    void should_update_the_clock(boolean iaRetainDisposeFlag) {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getId()).thenReturn(CASE_ID);
-        when(asylumCase.read(AsylumCaseFieldDefinition.TTL, TTL.class)).thenReturn(Optional.of(ttl));
+        when(featureToggler.getValue("ia-retain-dispose", false)).thenReturn(iaRetainDisposeFlag);
 
-        when(ccdDataApi.startEvent(USER_TOKEN, S2S_TOKEN, UID, JURISDICTION, CASE_TYPE, "1", Event.MANAGE_CASE_TTL.toString()))
-            .thenReturn(startEventDetails);
+        if (iaRetainDisposeFlag) {
+            when(idamService.getUserToken()).thenReturn(USER_TOKEN);
+            when(serviceAuthorization.generate()).thenReturn(S2S_TOKEN);
+            when(idamService.getSystemUserId(USER_TOKEN)).thenReturn(UID);
 
-        when(startEventDetails.getToken()).thenReturn(EVENT_TOKEN);
-        when(startEventDetails.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(caseDetails.getId()).thenReturn(CASE_ID);
+            when(asylumCase.read(AsylumCaseFieldDefinition.TTL, TTL.class)).thenReturn(Optional.of(ttl));
 
-        CaseDataContent submitRequest = new CaseDataContent(
-            "1",
-            Map.of("TTL", ttl),
-            Map.of("id", Event.MANAGE_CASE_TTL.toString()),
-            EVENT_TOKEN,
-            true);
+            when(ccdDataApi.startEvent(USER_TOKEN, S2S_TOKEN, UID, JURISDICTION, CASE_TYPE, "1", Event.MANAGE_CASE_TTL.toString()))
+                    .thenReturn(startEventDetails);
 
-        ArgumentCaptor<CaseDataContent> caseDataContentArgumentCaptor = ArgumentCaptor.forClass(CaseDataContent.class);
+            when(startEventDetails.getToken()).thenReturn(EVENT_TOKEN);
+            when(startEventDetails.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(ccdDataApi.submitEvent(
-            eq(USER_TOKEN),
-            eq(S2S_TOKEN),
-            eq("1"),
-            caseDataContentArgumentCaptor.capture())).thenReturn(submitEventDetails);
+            CaseDataContent submitRequest = new CaseDataContent(
+                    "1",
+                    Map.of("TTL", ttl),
+                    Map.of("id", Event.MANAGE_CASE_TTL.toString()),
+                    EVENT_TOKEN,
+                    true);
 
-        assertEquals(submitRequest, caseDataContentArgumentCaptor.getValue());
+            ArgumentCaptor<CaseDataContent> caseDataContentArgumentCaptor = ArgumentCaptor.forClass(CaseDataContent.class);
 
-        verify(ccdDataApi, times(1)).submitEvent(USER_TOKEN, S2S_TOKEN, "1", caseDataContentArgumentCaptor.getValue());
-        verify(ttl, times(1)).setSuspended(YesOrNo.YES);
+            when(ccdDataApi.submitEvent(
+                    eq(USER_TOKEN),
+                    eq(S2S_TOKEN),
+                    eq("1"),
+                    caseDataContentArgumentCaptor.capture())).thenReturn(submitEventDetails);
+
+            timeToLiveDataService.updateTheClock(callback, true);
+            assertEquals(submitRequest, caseDataContentArgumentCaptor.getValue());
+
+            verify(ccdDataApi, times(1)).submitEvent(USER_TOKEN, S2S_TOKEN, "1", caseDataContentArgumentCaptor.getValue());
+            verify(ttl, times(1)).setSuspended(YesOrNo.YES);
+        } else {
+            //do nothing
+        }
+    }
+
+    private static Stream<Arguments> iaRetainDisposeFlagData() {
+        return Stream.of(
+                Arguments.of(false),
+                Arguments.of(true)
+        );
     }
 }
