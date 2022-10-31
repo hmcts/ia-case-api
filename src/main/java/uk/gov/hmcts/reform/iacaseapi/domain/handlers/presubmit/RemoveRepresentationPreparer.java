@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
-import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 @Component
 public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<AsylumCase> {
@@ -48,20 +47,17 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
             return response;
         } else {
-            if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)
-                    .stream()
-                    .filter(policy -> policy.getOrganisation() != null && policy.getOrganisation().getOrganisationID() != null)
-                    .count() != 0) {
-                Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
-                asylumCase.write(
-                        AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD,
-                        new ChangeOrganisationRequest(
-                                new DynamicList(caseRole, newArrayList(caseRole)),
-                                LocalDateTime.now().toString(),
-                                "1"
-                        )
-                );
-            }
+
+            Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
+            asylumCase.write(
+                AsylumCaseFieldDefinition.CHANGE_ORGANISATION_REQUEST_FIELD,
+                new ChangeOrganisationRequest(
+                    new DynamicList(caseRole, newArrayList(caseRole)),
+                    LocalDateTime.now().toString(),
+                    "1"
+                )
+            );
+
             return response;
         }
     }
