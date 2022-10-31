@@ -12,14 +12,17 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
     private final AsylumCaseFieldDefinition appellantGivenNames;
     private final AsylumCaseFieldDefinition appellantFamilyName;
 
+    private final FeatureToggler featureToggler;
+
     public AsylumFieldCaseNameFixer(
         AsylumCaseFieldDefinition hmctsCaseNameInternal,
         AsylumCaseFieldDefinition appellantGivenNames,
-        AsylumCaseFieldDefinition appellantFamilyName
-    ) {
+        AsylumCaseFieldDefinition appellantFamilyName,
+        FeatureToggler featureToggler) {
         this.hmctsCaseNameInternal = hmctsCaseNameInternal;
         this.appellantGivenNames = appellantGivenNames;
         this.appellantFamilyName = appellantFamilyName;
+        this.featureToggler = featureToggler;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
         Optional<Object> caseNameToBeTransitioned = asylumCase.read(hmctsCaseNameInternal);
         Optional<Object> appellantGivenNamesToBeConcatenated = asylumCase.read(appellantGivenNames);
         Optional<Object> appellantFamilyNameToBeConcatenated = asylumCase.read(appellantFamilyName);
+        boolean migrateCaseName = featureToggler.getValue("wa-R3-feature", false);
 
         String expectedCaseName = null;
 
@@ -37,10 +41,12 @@ public class AsylumFieldCaseNameFixer implements DataFixer {
 
         if (expectedCaseName != null && ((caseNameToBeTransitioned.isPresent() && !caseNameToBeTransitioned.get().toString().equals(expectedCaseName)) || caseNameToBeTransitioned.isEmpty())) {
             asylumCase.write(hmctsCaseNameInternal, expectedCaseName);
-            asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
+            if (migrateCaseName) {
+                asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
+            }
         }
 
-        if (asylumCase.read(CASE_NAME_HMCTS_INTERNAL).isEmpty()) {
+        if (migrateCaseName && asylumCase.read(CASE_NAME_HMCTS_INTERNAL).isEmpty()) {
             asylumCase.write(CASE_NAME_HMCTS_INTERNAL, expectedCaseName);
         }
     }

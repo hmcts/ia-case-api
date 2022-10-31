@@ -93,4 +93,11 @@
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-38752</cve>
     </suppress>
+    <suppress>
+        <notes>
+            <![CDATA[https://nvd.nist.gov/vuln/detail/CVE-2022-42003, Affecting feature not currently used. ]]>
+        </notes>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
 </suppressions>

@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +24,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -41,6 +40,8 @@ class CcdSupplementaryUpdaterTest {
     private String ccdSupplementaryApiPath = "some-path";
     private String hmctsServiceId = "some-id";
 
+    @Mock private FeatureToggler featureToggler;
+
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
@@ -54,9 +55,10 @@ class CcdSupplementaryUpdaterTest {
 
         when(serviceAuthTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(userDetails.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
 
         ccdSupplementaryUpdater = new CcdSupplementaryUpdater(
-                restTemplate,
+                featureToggler, restTemplate,
                 serviceAuthTokenGenerator,
                 userDetails,
                 ccdUrl,
@@ -67,19 +69,7 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_sent_post_to_update_ccd_and_receive_201() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getId()).thenReturn(123L);
-
-        when(restTemplate
-            .exchange(
-                anyString(),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                eq(Object.class)
-            )
-        ).thenReturn(responseEntity);
-
-        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
+        setupForSuccessfulPostRequest();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
@@ -134,6 +124,34 @@ class CcdSupplementaryUpdaterTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
+    }
+
+    @Test
+    void should_do_nothing_when_flag_disabled() {
+        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(false);
+        setupForSuccessfulPostRequest();
+
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+
+        verify(restTemplate, never())
+                .exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class));
+
+    }
+
+    private void setupForSuccessfulPostRequest() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getId()).thenReturn(123L);
+
+        when(restTemplate
+                .exchange(
+                        anyString(),
+                        eq(HttpMethod.POST),
+                        any(HttpEntity.class),
+                        eq(Object.class)
+                )
+        ).thenReturn(responseEntity);
+
+        when(responseEntity.getStatusCodeValue()).thenReturn(HttpStatus.CREATED.value());
     }
 
 }
