@@ -245,8 +245,7 @@ class HomeOfficeDecisionDateCheckerTest {
                 boolean canHandle = homeOfficeDecisionDateChecker.canHandle(callbackStage, callback);
 
                 if (Arrays.asList(
-                    Event.SUBMIT_APPEAL,
-                    Event.PAY_AND_SUBMIT_APPEAL)
+                    Event.SUBMIT_APPEAL)
                     .contains(callback.getEvent())
                     && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     || callbackStage == PreSubmitCallbackStage.ABOUT_TO_START)) {
