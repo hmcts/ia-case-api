@@ -51,13 +51,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
+
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
     private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
     public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
         this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
-
     }
 
     public boolean canHandle(

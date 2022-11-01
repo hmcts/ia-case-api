@@ -75,6 +75,7 @@ class AppealSubmittedConfirmationTest {
         appealSubmittedConfirmation.handle(callback);
 
         verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+
     }
 
     @Test
@@ -376,6 +377,7 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
 
         PostSubmitCallbackResponse callbackResponse =
             appealSubmittedConfirmation.handle(callback);
