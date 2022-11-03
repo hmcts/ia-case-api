@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.Organisation;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.ccd.OrganisationPolicy;
 
 
@@ -165,5 +166,28 @@ class RemoveRepresentationPreparerTest {
         assertThatThrownBy(() -> removeRepresentationPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {
+            "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+    })
+    void should_return_change_organisationRequest_when_organisation_policy_organizationId_present() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.REMOVE_REPRESENTATION);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        Organisation organisation = Organisation.builder().organisationID("D1HRWLA").organisationName("[LEGALREPRESENTATIVE]").build();
+
+        when(organisationPolicy.getOrganisation()).thenReturn(organisation);
+        when(asylumCase.read(LOCAL_AUTHORITY_POLICY)).thenReturn(Optional.of(organisationPolicy));
+        PreSubmitCallbackResponse<AsylumCase> response =
+                removeRepresentationPreparer.handle(
+                        PreSubmitCallbackStage.ABOUT_TO_START,
+                        callback
+                );
+
+        assertNotNull(response);
+        assertEquals(asylumCase, response.getData());
     }
 }

@@ -4,6 +4,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -42,14 +44,13 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
-
-        if (callback.getCaseDetails().getCaseData().read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY).isEmpty()) {
+        Optional<OrganisationPolicy> organisationPolicy =  asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY);
+        if (organisationPolicy.isEmpty()) {
             response.addError("You cannot use this feature because the legal representative does not have a MyHMCTS account or the appeal was created before 10 February 2021.");
             response.addError("If you are a legal representative, you must contact all parties confirming you no longer represent this client.");
             return response;
         } else {
-            if (asylumCase.read(AsylumCaseFieldDefinition.LOCAL_AUTHORITY_POLICY, OrganisationPolicy.class)
-                    .stream()
+            if (organisationPolicy.stream()
                     .filter(policy -> policy.getOrganisation() != null && policy.getOrganisation().getOrganisationID() != null)
                     .count() != 0) {
                 Value caseRole = new Value("[LEGALREPRESENTATIVE]", "Legal Representative");
