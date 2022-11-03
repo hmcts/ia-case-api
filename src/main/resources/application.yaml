@@ -196,8 +196,6 @@ security:
       - "requestFeeRemission"
       - "nocRequest"
       - "editPaymentMethod"
-      - "createCaseLink"
-      - "maintainCaseLinks"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
       - "moveToSubmitted"
@@ -264,6 +262,8 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "createCaseLink"
+      - "maintainCaseLinks"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
