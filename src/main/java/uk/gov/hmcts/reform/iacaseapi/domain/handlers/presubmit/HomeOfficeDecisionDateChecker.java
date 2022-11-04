@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates.HolidayService;
 
 @Component
 public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<AsylumCase> {
@@ -29,14 +30,18 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
 
+    private final HolidayService holidayService;
+
     public HomeOfficeDecisionDateChecker(
         DateProvider dateProvider,
+        HolidayService holidayService,
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
         @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc
     ) {
         this.dateProvider = dateProvider;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
+        this.holidayService = holidayService;
     }
 
     public boolean canHandle(
