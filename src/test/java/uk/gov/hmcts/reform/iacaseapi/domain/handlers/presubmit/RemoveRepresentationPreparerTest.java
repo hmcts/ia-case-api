@@ -170,7 +170,7 @@ class RemoveRepresentationPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-            "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
+        "REMOVE_REPRESENTATION", "REMOVE_LEGAL_REPRESENTATIVE"
     })
     void should_return_change_organisationRequest_when_organisation_policy_organizationId_present() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
