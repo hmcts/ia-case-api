@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 
@@ -24,7 +25,7 @@ public class TimeToLiveDataService extends CcdDataService {
         super(ccdDataApi, idamService, serviceAuthorization);
     }
 
-    public SubmitEventDetails updateTheClock(Callback<AsylumCase> callback, boolean isToBeSuspended) {
+    public SubmitEventDetails updateTheClock(Callback<AsylumCase> callback, int days) {
 
         String caseId = String.valueOf(callback.getCaseDetails().getId());
         authorize(Event.MANAGE_CASE_TTL, caseId);
@@ -39,7 +40,7 @@ public class TimeToLiveDataService extends CcdDataService {
             Event.MANAGE_CASE_TTL);
 
         // Update TTL
-        TTL ttlToBeUpdated = updateTTL(startEventDetails, isToBeSuspended);
+        TTL ttlToBeUpdated = updateTTL(startEventDetails, days);
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(AsylumCaseFieldDefinition.TTL.value(), ttlToBeUpdated);
@@ -58,17 +59,15 @@ public class TimeToLiveDataService extends CcdDataService {
         return submitEventDetails;
     }
 
-    private TTL updateTTL(StartEventDetails startEventDetails, boolean isToBeSuspended) {
+    private TTL updateTTL(StartEventDetails startEventDetails, int days) {
 
         TTL ttl = startEventDetails.getCaseDetails().getCaseData()
             .read(AsylumCaseFieldDefinition.TTL, TTL.class)
             .orElseThrow(() -> new IllegalStateException("TTL not present"));
 
-        if (isToBeSuspended) {
-            ttl.setSuspended(YesOrNo.YES);
-        } else {
-            ttl.setSuspended(YesOrNo.NO);
-        }
+        LocalDate expiryDate = LocalDate.now().plusDays(days);
+
+        ttl.setSystemTTL(expiryDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         return ttl;
     }

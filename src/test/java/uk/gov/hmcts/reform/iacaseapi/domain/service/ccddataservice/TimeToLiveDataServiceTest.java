@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.StartEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.SubmitEventDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdDataApi;
 
@@ -61,6 +60,7 @@ public class TimeToLiveDataServiceTest {
     private static final String JURISDICTION = "IA";
     private static final String EVENT_TOKEN = "eventToken";
     private static final long CASE_ID = 1;
+    private static final int ONE_HUNDRED_YEARS = 36524;
 
 
     private TimeToLiveDataService timeToLiveDataService;
@@ -103,10 +103,9 @@ public class TimeToLiveDataServiceTest {
             eq("1"),
             caseDataContentArgumentCaptor.capture())).thenReturn(submitEventDetails);
 
-        assertEquals(submitEventDetails, timeToLiveDataService.updateTheClock(callback, true));
+        assertEquals(submitEventDetails, timeToLiveDataService.updateTheClock(callback, ONE_HUNDRED_YEARS));
         assertEquals(submitRequest, caseDataContentArgumentCaptor.getValue());
 
         verify(ccdDataApi, times(1)).submitEvent(USER_TOKEN, S2S_TOKEN, "1", caseDataContentArgumentCaptor.getValue());
-        verify(ttl, times(1)).setSuspended(YesOrNo.YES);
     }
 }
