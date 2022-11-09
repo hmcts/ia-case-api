@@ -21,6 +21,8 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -38,6 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class StartAppealMidEventTest {
 
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -59,21 +62,25 @@ class StartAppealMidEventTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID, ""})
+    void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn(pageId);
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
                 boolean canHandle = startAppealMidEvent.canHandle(callbackStage, callback);
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
-                    && callbackStage == MID_EVENT) {
+                    && callbackStage == MID_EVENT
+                    && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
