@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.IS_LEGALLY_REPRESENTED_FOR_FLAG;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_COMPANY;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.bailcaseapi.domain.entities.BailCaseFieldDefinition.LEGAL_REP_NAME;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.field.YesOrNo;
 
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -68,6 +70,7 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         when(bailCase.read(UPDATE_LEGAL_REP_EMAIL_ADDRESS, String.class)).thenReturn(Optional.of(legalRepEmailAddress));
         when(bailCase.read(UPDATE_LEGAL_REP_PHONE, String.class)).thenReturn(Optional.of(legalRepPhoneNumber));
         when(bailCase.read(UPDATE_LEGAL_REP_REFERENCE, String.class)).thenReturn(Optional.of(legalRepReferenceNumber));
+        when(bailCase.read(IS_LEGALLY_REPRESENTED_FOR_FLAG, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
     }
 
     @Test
@@ -95,6 +98,8 @@ class LegalRepresentativeUpdateDetailsHandlerTest {
         verify(bailCase, times(1)).write(eq(LEGAL_REP_EMAIL_ADDRESS), eq(legalRepEmailAddress));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_PHONE), eq(legalRepPhoneNumber));
         verify(bailCase, times(1)).write(eq(LEGAL_REP_REFERENCE), eq(legalRepReferenceNumber));
+        verify(bailCase, times(1)).write(eq(IS_LEGALLY_REPRESENTED_FOR_FLAG), eq(YesOrNo.YES));
+
     }
 
     @Test

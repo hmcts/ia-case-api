@@ -44,7 +44,8 @@
         "legalRepName": "Legal rep Bob",
         "legalRepEmail": "example123@test.com",
         "legalRepPhone": "01234567891",
-        "legalRepReference": "ref-678910"
+        "legalRepReference": "ref-678910",
+        "isLegallyRepresentedForFlag": "Yes"
       }
     }
   }
