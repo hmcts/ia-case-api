@@ -710,8 +710,8 @@ public enum AsylumCaseFieldDefinition {
     JOURNEY_TYPE(
         "journeyType", new TypeReference<JourneyType>(){}),
 
-    HEARING_TYPE(
-        "hearingType", new TypeReference<HearingType>(){}),
+    HEARING_TYPE_RESULT(
+        "hearingTypeResult", new TypeReference<HearingType>(){}),
 
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
@@ -1508,6 +1508,12 @@ public enum AsylumCaseFieldDefinition {
 
     IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
+
+    IS_ACCELERATED_DETAINED_IN_APPEAL(
+            "isAcceleratedDetainedAppeal", new TypeReference<String>(){}),
+
+    HEARING_TYPE(
+            "hearingType", new TypeReference<YesOrNo>(){}),
 
     SUBSCRIPTIONS(
         "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
