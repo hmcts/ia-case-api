@@ -132,6 +132,7 @@ public class ShowPreviousApplicationServiceTest {
             new IdValue<>("1", document1WithMetadata)
         );
 
+
         List<IdValue<Direction>> existingDirections =
             Arrays.asList(
                 new IdValue<>("1", new Direction(

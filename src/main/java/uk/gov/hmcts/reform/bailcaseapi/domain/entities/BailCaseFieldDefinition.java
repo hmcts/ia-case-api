@@ -434,6 +434,16 @@ public enum BailCaseFieldDefinition {
         "prevAppGroundsForBail", new TypeReference<String>() {}),
     PREV_APP_LEGAL_REP_DETAILS(
         "prevAppLegalRepDetails", new TypeReference<String>() {}),
+    UPDATE_LEGAL_REP_COMPANY(
+        "updateLegalRepCompany", new TypeReference<String>(){}),
+    UPDATE_LEGAL_REP_EMAIL_ADDRESS(
+        "updateLegalRepEmail1", new TypeReference<String>(){}),
+    UPDATE_LEGAL_REP_NAME(
+        "updateLegalRepName", new TypeReference<String>(){}),
+    UPDATE_LEGAL_REP_REFERENCE(
+        "updateLegalRepReference", new TypeReference<String>(){}),
+    UPDATE_LEGAL_REP_PHONE(
+        "updateLegalRepPhone", new TypeReference<String>(){}),
     UNSIGNED_DECISION_DOCUMENTS_WITH_METADATA(
         "unsgnDecisionDocumentWithMetadata", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     SIGNED_DECISION_DOCUMENTS_WITH_METADATA(

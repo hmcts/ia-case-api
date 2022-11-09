@@ -649,7 +649,6 @@ public class ShowPreviousApplicationService {
             ? "" : getDetailsForGivenCollection(mayBeTribunalDocs, "Tribunal") + "|\n";
     }
 
-
     private String getDecisionDocumentsDetails(BailCase previousBailCase) {
         Optional<List<IdValue<DocumentWithMetadata>>> mayBeUnsignedDecisionDoc = previousBailCase
             .read(SIGNED_DECISION_DOCUMENTS_WITH_METADATA);

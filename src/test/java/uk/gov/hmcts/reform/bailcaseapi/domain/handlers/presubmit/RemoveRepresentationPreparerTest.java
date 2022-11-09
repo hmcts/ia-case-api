@@ -68,10 +68,10 @@ class RemoveRepresentationPreparerTest {
     }
 
     // There's only REMOVE_BAIL_LEGAL_REPRESENTATIVE for now, but more events can be added to the list
-    // (e.g. REMOVE_REPRESENTATION)
+    // (e.g. STOP_LEGAL_REPRESENTING)
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "REMOVE_BAIL_LEGAL_REPRESENTATIVE"
+        "REMOVE_BAIL_LEGAL_REPRESENTATIVE", "STOP_LEGAL_REPRESENTING"
     })
     void should_write_to_remove_representation_requested_flag_field(Event event) {
 
@@ -107,10 +107,10 @@ class RemoveRepresentationPreparerTest {
     }
 
     // There's only REMOVE_BAIL_LEGAL_REPRESENTATIVE for now, but more events can be added to the list
-    // (e.g. REMOVE_REPRESENTATION)
+    // (e.g. STOP_LEGAL_REPRESENTING)
     @ParameterizedTest
     @EnumSource(value = Event.class, names = {
-        "REMOVE_BAIL_LEGAL_REPRESENTATIVE"
+        "REMOVE_BAIL_LEGAL_REPRESENTATIVE", "STOP_LEGAL_REPRESENTING"
     })
     void should_respond_with_error_for_legal_rep_when_organisation_policy_not_present() {
 
@@ -146,7 +146,7 @@ class RemoveRepresentationPreparerTest {
 
                 boolean canHandle = removeRepresentationPreparer.canHandle(callbackStage, callback);
 
-                if ((event == Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE)
+                if ((event == Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE || event == Event.STOP_LEGAL_REPRESENTING)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);

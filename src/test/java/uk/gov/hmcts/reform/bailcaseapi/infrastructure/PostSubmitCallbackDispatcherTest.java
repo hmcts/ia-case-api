@@ -18,9 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.CaseData;
+import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.security.CcdEventAuthorizor;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +38,9 @@ public class PostSubmitCallbackDispatcherTest {
     private PostSubmitCallbackHandler<CaseData> handler3;
 
     @Mock
+    private CcdEventAuthorizor ccdEventAuthorizor;
+
+    @Mock
     private Callback<CaseData> callback;
 
     @Mock
@@ -46,6 +51,7 @@ public class PostSubmitCallbackDispatcherTest {
     @BeforeEach
     public void setUp() {
         postSubmitCallbackDispatcher = new PostSubmitCallbackDispatcher<>(
+            ccdEventAuthorizor,
             Arrays.asList(
                 handler1,
                 handler2,
@@ -62,6 +68,8 @@ public class PostSubmitCallbackDispatcherTest {
 
         when(response.getConfirmationBody()).thenReturn(expectedConfirmationBody);
         when(response.getConfirmationHeader()).thenReturn(expectedConfirmationHeader);
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPLICATION);
+
 
         when(handler1.canHandle(callback)).thenReturn(true);
         when(handler1.handle(callback)).thenReturn(response);
@@ -83,11 +91,14 @@ public class PostSubmitCallbackDispatcherTest {
         verify(handler2, times(0)).handle(callback);
         verify(handler3, times(1)).canHandle(callback);
         verify(handler3, times(1)).handle(callback);
+        verify(ccdEventAuthorizor, times(1)).throwIfNotAuthorized(Event.SUBMIT_APPLICATION);
+
     }
 
     @Test
     void should_not_fail_for_no_handlers() {
         postSubmitCallbackDispatcher = new PostSubmitCallbackDispatcher<>(
+            ccdEventAuthorizor,
             Arrays.asList()
         );
 
@@ -99,7 +110,7 @@ public class PostSubmitCallbackDispatcherTest {
 
     @Test
     void should_fail_for_null_handlers() {
-        assertThatThrownBy(() -> postSubmitCallbackDispatcher = new PostSubmitCallbackDispatcher<>(null))
+        assertThatThrownBy(() -> postSubmitCallbackDispatcher = new PostSubmitCallbackDispatcher<>(null, null))
             .isExactlyInstanceOf(NullPointerException.class)
             .hasMessage("callbackHandlers cannot be null");
     }

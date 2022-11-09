@@ -1,0 +1,23 @@
+{
+  "description": "Update legal representative details by legal rep role (post-submit REST call)",
+  "request": {
+    "uri": "/bail/ccdSubmitted",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "id": 1111,
+      "eventId": "updateBailLegalRepDetails",
+      "state": "applicationSubmitted",
+      "caseData": {
+        "template": "minimal-application-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "confirmation": {
+      "header": "# You've updated the legal representative's details",
+      "body": "#### What happens next\n\nThe service will be updated. The new details will be used on all future correspondence and documents.<br />"
+    }
+  }
+}

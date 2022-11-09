@@ -69,8 +69,11 @@ security:
   authorisedRoles:
     - "caseworker-ia"
   roleEventAccess:
+    caseworker-ia-system:
+      - "clearLegalRepresentativeDetails"
     caseworker-caa:
       - "nocRequest"
+      - "clearLegalRepresentativeDetails"
     caseworker-approver:
       - "applyNocDecision"
     caseworker-ia-legalrep-solicitor:
@@ -80,6 +83,10 @@ security:
       - "editBailApplication"
       - "makeNewApplication"
       - "viewPreviousApplications"
+      - "stopLegalRepresenting"
+      - "updateBailLegalRepDetails"
+      - "nocRequest"
+      - "nocRequestBail"
     caseworker-ia-admofficer:
       - "startApplication"
       - "submitApplication"
@@ -159,6 +166,10 @@ hystrix:
 idam:
   baseUrl: ${OPEN_ID_IDAM_URL:http://127.0.0.1:5000}
   redirectUrl: ${IA_IDAM_REDIRECT_URI:http://localhost:3002/oauth2/callback}
+  system:
+    username: ${IA_SYSTEM_USERNAME:ia-system-user@fake.hmcts.net}
+    password: ${IA_SYSTEM_PASSWORD:something}
+  scope: "openid profile authorities acr roles create-user manage-user search-user"
   s2s-auth:
     totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
     microservice: ${IA_S2S_MICROSERVICE:ia}

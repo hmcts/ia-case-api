@@ -28,7 +28,8 @@ public class RemoveRepresentationPreparer implements PreSubmitCallbackHandler<Ba
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
-               && (callback.getEvent() ==  Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE);
+               && (callback.getEvent() ==  Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE
+                    || callback.getEvent() ==  Event.STOP_LEGAL_REPRESENTING);
     }
 
     public PreSubmitCallbackResponse<BailCase> handle(

@@ -30,7 +30,6 @@ public class ServiceHealthIndicator implements HealthIndicator {
             ResponseEntity<String> response = restTemplate
                 .getForEntity(uri, String.class);
 
-            log.info("HERE");
             String responseBody = Optional
                 .ofNullable(response.getBody())
                 .map(body -> body.replaceAll("\\s", ""))

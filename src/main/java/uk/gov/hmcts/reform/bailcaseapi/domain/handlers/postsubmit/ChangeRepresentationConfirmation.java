@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.bailcaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.bailcaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.bailcaseapi.domain.service.PostNotificationSender;
+import uk.gov.hmcts.reform.bailcaseapi.infrastructure.service.CcdDataService;
 import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 
 @Slf4j
@@ -17,11 +19,17 @@ import uk.gov.hmcts.reform.bailcaseapi.infrastructure.clients.CcdCaseAssignment;
 public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandler<BailCase> {
 
     private final CcdCaseAssignment ccdCaseAssignment;
+    private final PostNotificationSender<BailCase> postNotificationSender;
+    private final CcdDataService ccdDataService;
 
     public ChangeRepresentationConfirmation(
-        CcdCaseAssignment ccdCaseAssignment
+        CcdCaseAssignment ccdCaseAssignment,
+        PostNotificationSender<BailCase> postNotificationSender,
+        CcdDataService ccdDataService
     ) {
         this.ccdCaseAssignment = ccdCaseAssignment;
+        this.postNotificationSender = postNotificationSender;
+        this.ccdDataService = ccdDataService;
     }
 
     public boolean canHandle(
@@ -29,7 +37,8 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
     ) {
         requireNonNull(callback, "callback must not be null");
         return (callback.getEvent() == Event.NOC_REQUEST
-                || callback.getEvent() == Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE);
+                || callback.getEvent() == Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE
+                || callback.getEvent() == Event.STOP_LEGAL_REPRESENTING);
     }
 
     /**
@@ -49,7 +58,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             ccdCaseAssignment.applyNoc(callback);
 
             if (callback.getEvent() == Event.NOC_REQUEST) {
-
+                sendNotification(callback);
                 String caseReference = callback.getCaseDetails().getCaseData()
                     .read(BailCaseFieldDefinition.BAIL_REFERENCE_NUMBER, String.class).orElse("");
 
@@ -59,6 +68,7 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
             }
 
             if (callback.getEvent() == Event.REMOVE_BAIL_LEGAL_REPRESENTATIVE) {
+                ccdDataService.clearLegalRepDetails(callback);
                 postSubmitResponse.setConfirmationHeader(
                     "# You have removed the legal representative from this case"
                 );
@@ -66,6 +76,21 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
                 postSubmitResponse.setConfirmationBody(
                     "### What happens next\n\n"
                     + "This legal representative will no longer have access to this case."
+                );
+            }
+
+            if (callback.getEvent() == Event.STOP_LEGAL_REPRESENTING) {
+                postNotificationSender.send(callback);
+                ccdDataService.clearLegalRepDetails(callback);
+                postSubmitResponse.setConfirmationHeader(
+                    "# You have stopped representing this client"
+                );
+
+                postSubmitResponse.setConfirmationBody(
+                    "### What happens next\n\n"
+                        + "We've sent you an email confirming you're no longer representing this client. You have been "
+                        + "removed from this case and no longer have access to it.\n\n\n\n"
+                        + "[View case list](/cases)"
                 );
             }
         } catch (Exception e) {
@@ -78,5 +103,18 @@ public class ChangeRepresentationConfirmation implements PostSubmitCallbackHandl
         }
 
         return postSubmitResponse;
+    }
+
+    private void sendNotification(Callback<BailCase> callback) {
+        //NOC_REQUEST is an event in notification-api, which is used by asylum.
+        // In order to separate bail NOC, we are sending the notification request
+        // with a new Event name NOC_REQUEST_BAIL.
+        Callback<BailCase> callbackForNotification = new Callback<>(
+            callback.getCaseDetails(),
+            callback.getCaseDetailsBefore(),
+            Event.NOC_REQUEST_BAIL
+        );
+
+        postNotificationSender.send(callbackForNotification);
     }
 }
