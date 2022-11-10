@@ -48,21 +48,25 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
                         .orElse("");
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+            .orElse(null);
 
         //AppealType.class
 
         //Yes to show the screen
 
-        if ((appealType.equals(Optional.of("Deprivation of citizenship"))
+        if(appealType!=null) {
+            if ((appealType.equals(Optional.of("Deprivation of citizenship"))
                 || appealType.getValue().equals(Optional.of("Revocation of a protection status")))
                 || isAcceleratedDetainedAppeal.equals("Yes")) {
 
-            asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.YES);
+                asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.YES);
 
-        } else {
-            asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
+            } else {
+                asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
+            }
         }
+
+
 
 
         return new PreSubmitCallbackResponse<>(asylumCase);
