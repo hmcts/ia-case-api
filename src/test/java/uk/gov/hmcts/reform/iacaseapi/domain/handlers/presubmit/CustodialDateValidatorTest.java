@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 public class CustodialDateValidatorTest {
 
-    private final static String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
+    private static final String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock

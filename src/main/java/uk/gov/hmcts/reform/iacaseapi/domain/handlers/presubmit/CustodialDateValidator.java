@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Component
 public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final static String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
+    private static final String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -50,7 +50,7 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
             LocalDate custodialDate = LocalDate.parse(custodialSentenceDate.getCustodialDate());
             if (!custodialDate.isAfter(LocalDate.now())) {
                 response.addError("Client's release date must be in the future");
-            };
+            }
         });
 
         return response;
