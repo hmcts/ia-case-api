@@ -1573,7 +1573,14 @@ public enum AsylumCaseFieldDefinition {
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
 
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+    APPELLANT_IN_DETENTION(
+        "appellantInDetention", new TypeReference<YesOrNo>(){}),
+    IS_ACCELERATED_DETAINED_APPEAL(
+        "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
+    DETENTION_STATUS(
+        "detentionStatus", new TypeReference<String>(){}),
+    ;
 
     private final String value;
     private final TypeReference typeReference;
