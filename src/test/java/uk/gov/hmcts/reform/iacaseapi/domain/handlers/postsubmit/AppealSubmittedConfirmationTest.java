@@ -286,6 +286,7 @@ class AppealSubmittedConfirmationTest {
                 "Once you have paid for the appeal, a Tribunal Caseworker will review the reasons your appeal was out of time and you will be notified if it can proceed.");
     }
 
+
     @Test
     void lr_should_return_out_of_time_confirmation_for_paPayNow() {
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());

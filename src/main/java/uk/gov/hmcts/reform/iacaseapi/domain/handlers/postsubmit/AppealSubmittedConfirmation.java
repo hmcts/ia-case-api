@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
@@ -108,12 +109,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && !isWaysToPay(isEaHuPaEu(asylumCase), !isAipJourney(asylumCase))) {
-
                     setEaHuAppealTypesConfirmation(postSubmitResponse, asylumCase, submissionOutOfTime);
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !isAipJourney(asylumCase))) {
-
                     setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
@@ -128,12 +127,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && !isWaysToPay(isEaHuPaEu(asylumCase), !isAipJourney(asylumCase))) {
-
                     setPaAppealTypeConfirmation(postSubmitResponse, callback, asylumCase, submissionOutOfTime);
                 } else if (remissionType.isPresent()
                            && remissionType.get() == NO_REMISSION
                            && isWaysToPay(isEaHuPaEu(asylumCase), !isAipJourney(asylumCase))) {
-
                     setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
@@ -261,6 +258,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             .map(journey -> journey == JourneyType.AIP)
             .orElse(false);
     }
+
 
     private boolean isEaHuPaEu(AsylumCase asylumCase) {
         Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
