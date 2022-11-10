@@ -39,9 +39,6 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
 
-    HOME_OFFICE_DECISION_DATE_ADA(
-            "homeOfficeDecisionDateADA", new TypeReference<String>(){}),
-
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
@@ -1512,7 +1509,7 @@ public enum AsylumCaseFieldDefinition {
     IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
 
-    IS_ACCELERATED_DETAINED_IN_APPEAL(
+    IS_ACCELERATED_DETAINED_APPEAL(
             "isAcceleratedDetainedAppeal", new TypeReference<String>(){}),
 
     HEARING_TYPE(

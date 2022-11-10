@@ -75,7 +75,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
         Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (asylumCase.read(IS_ACCELERATED_DETAINED_IN_APPEAL, YesOrNo.class)
+        if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
                 .orElse(NO) == NO) {
 
             if (maybeOutOfCountryDecisionType.isPresent()) {
@@ -106,6 +106,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
             }
         } else {
+            //do nothing
 
         }
 
