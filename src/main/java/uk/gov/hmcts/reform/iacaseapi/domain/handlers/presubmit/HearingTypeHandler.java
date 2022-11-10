@@ -50,24 +50,14 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElse(null);
 
-        //AppealType.class
-
-        //Yes to show the screen
-
-        if(appealType!=null) {
-            if ((appealType.equals(Optional.of("Deprivation of citizenship"))
-                || appealType.getValue().equals(Optional.of("Revocation of a protection status")))
-                || isAcceleratedDetainedAppeal.equals("Yes")) {
-
+        if (appealType != null) {
+            if ((appealType == AppealType.DC || appealType == AppealType.RP)
+                    || isAcceleratedDetainedAppeal.equals("Yes")) {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.YES);
-
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
             }
         }
-
-
-
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

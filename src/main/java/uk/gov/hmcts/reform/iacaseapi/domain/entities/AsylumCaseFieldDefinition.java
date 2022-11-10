@@ -39,6 +39,9 @@ public enum AsylumCaseFieldDefinition {
     HOME_OFFICE_DECISION_DATE(
         "homeOfficeDecisionDate", new TypeReference<String>(){}),
 
+    HOME_OFFICE_DECISION_DATE_ADA(
+            "homeOfficeDecisionDateADA", new TypeReference<String>(){}),
+
     APPELLANT_GIVEN_NAMES(
         "appellantGivenNames", new TypeReference<String>(){}),
 
