@@ -1529,9 +1529,6 @@ public enum AsylumCaseFieldDefinition {
     IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
 
-    IS_ACCELERATED_DETAINED_APPEAL(
-            "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
-
     HEARING_TYPE(
             "hearingType", new TypeReference<YesOrNo>(){}),
 
@@ -1586,9 +1583,15 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_IN_DETENTION(
         "appellantInDetention", new TypeReference<YesOrNo>(){}),
 
+    IS_ACCELERATED_DETAINED_APPEAL(
+        "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
+
     DETENTION_STATUS(
         "detentionStatus", new TypeReference<String>(){}),
-    ;
+
+    DATE_CUSTODIAL_SENTENCE(
+        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}
+    );
 
     private final String value;
     private final TypeReference typeReference;

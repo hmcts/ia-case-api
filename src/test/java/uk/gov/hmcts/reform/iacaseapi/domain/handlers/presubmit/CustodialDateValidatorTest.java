@@ -6,16 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.CustodialSentenceDate;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -38,35 +37,34 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class StartAppealMidEventTest {
+public class CustodialDateValidatorTest {
 
-    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String CUSTODIAL_SENTENCE_PAGE_ID = "custodialSentence";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
-    private String correctHomeOfficeReferenceFormatCid = "01234567";
-    private String correctHomeOfficeReferenceFormatUan = "1234-5678-9876-5432";
-    private String wrongHomeOfficeReferenceFormat = "A234567";
-    private String callbackErrorMessage =
-        "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
-    private StartAppealMidEvent startAppealMidEvent;
+    @Mock
+    private CustodialSentenceDate custodialSentenceDate;
+    private LocalDate now;
+    private String callbackErrorMessage = "Client's release date must be in the future";
+    private CustodialDateValidator custodialDateValidator;
 
     @BeforeEach
     public void setUp() {
-        startAppealMidEvent = new StartAppealMidEvent();
+        custodialDateValidator = new CustodialDateValidator();
+        now = LocalDate.now();
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(CUSTODIAL_SENTENCE_PAGE_ID);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID, ""})
+    @ValueSource(strings = { CUSTODIAL_SENTENCE_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -76,11 +74,11 @@ class StartAppealMidEventTest {
 
             for (PreSubmitCallbackStage callbackStage : values()) {
 
-                boolean canHandle = startAppealMidEvent.canHandle(callbackStage, callback);
+                boolean canHandle = custodialDateValidator.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
+                if (event == Event.START_APPEAL
                     && callbackStage == MID_EVENT
-                    && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
+                    && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -94,11 +92,11 @@ class StartAppealMidEventTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> custodialDateValidator.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> startAppealMidEvent.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> custodialDateValidator.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -106,22 +104,25 @@ class StartAppealMidEventTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> startAppealMidEvent.canHandle(null, callback))
+        assertThatThrownBy(() -> custodialDateValidator.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> startAppealMidEvent.canHandle(MID_EVENT, null))
+        assertThatThrownBy(() -> custodialDateValidator.canHandle(MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void should_error_when_home_office_reference_format_is_wrong() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(wrongHomeOfficeReferenceFormat));
+    void should_error_when_date_is_not_future() {
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE, CustodialSentenceDate.class))
+            .thenReturn(Optional.of(custodialSentenceDate));
+
+        String yesterday = now.minusDays(1).toString();
+        when(custodialSentenceDate.getCustodialDate()).thenReturn(yesterday);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            custodialDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -130,46 +131,17 @@ class StartAppealMidEventTest {
     }
 
     @Test
-    void should_successfully_validate_when_home_office_reference_format_is_correct_cid() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatCid));
+    void should_not_error_if_date_is_null() {
+        when(asylumCase.read(DATE_CUSTODIAL_SENTENCE, CustodialSentenceDate.class))
+            .thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+            custodialDateValidator.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_successfully_validate_when_home_office_reference_format_is_correct_uan() {
-        when(asylumCase.read(HOME_OFFICE_REFERENCE_NUMBER, String.class))
-            .thenReturn(Optional.of(correctHomeOfficeReferenceFormatUan));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callback);
-        assertEquals(asylumCase, callbackResponse.getData());
-        final Set<String> errors = callbackResponse.getErrors();
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void should_not_touch_home_office_reference_numbers_when_ooc_and_refusal_of_human_rights_is_decided() {
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
-
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-
-        verify(asylumCase, never()).write(any(),any());
     }
 }
+
