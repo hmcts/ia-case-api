@@ -120,6 +120,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                 callback.getEvent()
             );
 
+            callbackForHandler.setPageId(callback.getPageId());
+
             if (callbackStateHandler.canHandle(callbackStage, callbackForHandler)) {
 
                 PreSubmitCallbackResponse<T> callbackResponseFromHandler =
@@ -160,6 +162,8 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
                     callback.getCaseDetailsBefore(),
                     callback.getEvent()
                 );
+
+                callbackForHandler.setPageId(callback.getPageId());
 
                 if (callbackHandler.canHandle(callbackStage, callbackForHandler)) {
 
