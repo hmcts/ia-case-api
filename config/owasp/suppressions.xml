@@ -65,6 +65,7 @@
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
+        <cve>CVE-2022-42252</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -90,5 +91,11 @@
         </notes>
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[spring_security:5.7.1]]>
+        </notes>
+        <cve>CVE-2022-31690</cve>
+        <cve>CVE-2022-31692</cve>
     </suppress>
 </suppressions>
