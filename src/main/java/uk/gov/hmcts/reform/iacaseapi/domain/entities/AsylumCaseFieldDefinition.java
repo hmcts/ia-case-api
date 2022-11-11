@@ -1510,7 +1510,7 @@ public enum AsylumCaseFieldDefinition {
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
 
     IS_ACCELERATED_DETAINED_APPEAL(
-            "isAcceleratedDetainedAppeal", new TypeReference<String>(){}),
+            "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
 
     HEARING_TYPE(
             "hearingType", new TypeReference<YesOrNo>(){}),
