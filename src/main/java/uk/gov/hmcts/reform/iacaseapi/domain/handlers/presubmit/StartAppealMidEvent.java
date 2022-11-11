@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
 
     private static final Pattern HOME_OFFICE_REF_PATTERN = Pattern.compile("^(([0-9]{4}\\-[0-9]{4}\\-[0-9]{4}\\-[0-9]{4})|([0-9]{1,9}))$");
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -27,7 +28,8 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                 && (callback.getEvent() == Event.START_APPEAL
                     || callback.getEvent() == Event.EDIT_APPEAL
-                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
+                    || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+               && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
