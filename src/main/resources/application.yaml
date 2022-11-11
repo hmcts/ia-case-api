@@ -123,6 +123,7 @@ cache:
 
 appealOutOfTimeDaysUk: 14
 appealOutOfTimeDaysOoc: 28
+appealOutOfTimeAcceleratedDetainedWorkingDays: 5
 ftpaAppellantAppealOutOfTimeDaysUk: 14
 ftpaAppellantAppealOutOfTimeDaysOoc: 28
 ftpaRespondentAppealOutOfTimeDaysUk: 14

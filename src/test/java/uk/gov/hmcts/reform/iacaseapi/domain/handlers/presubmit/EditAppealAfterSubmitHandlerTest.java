@@ -1,18 +1,22 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +33,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -41,6 +42,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +50,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS_UK = 14;
     private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
+    private static final int APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS = 5;
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     @Mock
@@ -58,6 +61,8 @@ class EditAppealAfterSubmitHandlerTest {
     private AsylumCase asylumCase;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private DueDateService dueDateService;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
@@ -68,6 +73,12 @@ class EditAppealAfterSubmitHandlerTest {
     private String applicationDecisionReason = "Granted";
     private String applicationDateOfDecision = "31/01/2019";
     private String applicationStatus = "In progress";
+    @Captor
+    private ArgumentCaptor<AsylumCaseFieldDefinition> asylumExtractor;
+    @Captor
+    private ArgumentCaptor<YesOrNo> outOfTime;
+    @Captor
+    private ArgumentCaptor<YesOrNo> recordedOutOfTimeDecision;
 
     private List<IdValue<Application>> applications = newArrayList(new IdValue<>("1", new Application(
         Collections.emptyList(),
@@ -85,7 +96,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider, APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC);
+        editAppealAfterSubmitHandler = new EditAppealAfterSubmitHandler(dateProvider,dueDateService,APPEAL_OUT_OF_TIME_DAYS_UK,APPEAL_OUT_OF_TIME_DAYS_OOC,APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS);
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -459,5 +470,70 @@ class EditAppealAfterSubmitHandlerTest {
         assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void handles_ada_case_when_in_time() {
+
+        final String receivedLetterDate = "2022-11-18";
+        final String dueDate = "2022-11-23";
+        final String nowDate = "2022-11-20";
+        final ZonedDateTime zonedDateTime = LocalDate.parse(receivedLetterDate).atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
+        when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+        verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
+    }
+
+    @Test
+    void handles_ada_case_when_out_of_time() {
+
+        final String receivedLetterDate = "2022-11-10";
+        final String dueDate = "2022-11-15";
+        final String nowDate = "2022-11-20";
+        final ZonedDateTime zonedDateTime = LocalDate.parse(receivedLetterDate).atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of(receivedLetterDate));
+        when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_ADA_WORKING_DAYS)).thenReturn(zonedDueDateTime);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
+    }
+
+    @Test
+    void should_throw_exception_when_ada_decision_received_date_is_missing() {
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        assertThatThrownBy(() -> editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("decisionLetterReceivedDate is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+
     }
 }
