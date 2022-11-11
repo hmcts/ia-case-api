@@ -75,33 +75,41 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
         Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (maybeOutOfCountryDecisionType.isPresent()) {
-            OutOfCountryDecisionType decisionType = maybeOutOfCountryDecisionType.get();
+        if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
+                .orElse(NO) == NO) {
 
-            if (decisionType == OutOfCountryDecisionType.REMOVAL_OF_CLIENT) {
-                Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+            if (maybeOutOfCountryDecisionType.isPresent()) {
+                OutOfCountryDecisionType decisionType = maybeOutOfCountryDecisionType.get();
 
+                if (decisionType == OutOfCountryDecisionType.REMOVAL_OF_CLIENT) {
+                    Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+
+                    decisionDate =
+                            parse(maybeHomeOfficeDecisionLetterDate
+                                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+                } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_PROTECTION) {
+                    Optional<String> maybeDateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK);
+
+                    decisionDate =
+                            parse(maybeDateClientLeaveUk
+                                    .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
+                } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS) {
+                    Optional<String> maybeDateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
+
+                    decisionDate =
+                            parse(maybeDateEntryClearanceDecision
+                                    .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
+                }
+            } else {
                 decisionDate =
-                    parse(maybeHomeOfficeDecisionLetterDate
-                        .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
-            } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_PROTECTION) {
-                Optional<String> maybeDateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK);
-
-                decisionDate =
-                    parse(maybeDateClientLeaveUk
-                        .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
-            } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS) {
-                Optional<String> maybeDateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
-
-                decisionDate =
-                    parse(maybeDateEntryClearanceDecision
-                        .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
+                        parse(maybeHomeOfficeDecisionDate
+                                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
             }
         } else {
-            decisionDate =
-                parse(maybeHomeOfficeDecisionDate
-                    .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
+            //do nothing
+
         }
+
 
 
         if (decisionDate != null
