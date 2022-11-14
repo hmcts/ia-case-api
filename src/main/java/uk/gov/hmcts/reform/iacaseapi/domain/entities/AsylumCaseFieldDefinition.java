@@ -1554,6 +1554,8 @@ public enum AsylumCaseFieldDefinition {
     REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST(
 
         "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
+    REMOVE_APPEAL_FROM_ONLINE_REASON(
+        "removeAppealFromOnlineReason", new TypeReference<String>(){})
     ;
 
     private final String value;
