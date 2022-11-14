@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE;
@@ -23,12 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice.TimeToLiveDataService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -41,14 +38,12 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-    @Mock
-    TimeToLiveDataService timeToLiveDataService;
 
     ResidentJudgeFtpaDecisionConfirmation residentJudgeFtpaDecisionConfirmation;
 
     @BeforeEach
     void setup() {
-        residentJudgeFtpaDecisionConfirmation = new ResidentJudgeFtpaDecisionConfirmation(timeToLiveDataService);
+        residentJudgeFtpaDecisionConfirmation = new ResidentJudgeFtpaDecisionConfirmation();
     }
 
     @Test
@@ -59,7 +54,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("granted"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -81,7 +75,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, times(1)).updateTheClock(callback, true);
     }
 
     @Test
@@ -93,7 +86,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("partiallyGranted"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -115,7 +107,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, times(1)).updateTheClock(callback, true);
     }
 
     @Test
@@ -126,7 +117,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class)).thenReturn(Optional.of("refused"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -148,7 +138,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, never()).updateTheClock(callback, true);
     }
 
     @Test
@@ -160,7 +149,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule32"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -182,7 +170,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, times(1)).updateTheClock(callback, true);
     }
 
     @Test
@@ -194,7 +181,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("reheardRule35"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -216,7 +202,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, times(1)).updateTheClock(callback, true);
     }
 
 
@@ -229,7 +214,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
         when(asylumCase.read(FTPA_APPLICANT_TYPE, String.class)).thenReturn(Optional.of("appellant"));
         when(asylumCase.read(FTPA_APPELLANT_RJ_DECISION_OUTCOME_TYPE, String.class))
             .thenReturn(Optional.of("remadeRule32"));
-        when(caseDetails.getState()).thenReturn(State.FTPA_DECIDED);
 
         PostSubmitCallbackResponse callbackResponse =
             residentJudgeFtpaDecisionConfirmation.handle(callback);
@@ -250,7 +234,6 @@ class ResidentJudgeFtpaDecisionConfirmationTest {
             callbackResponse.getConfirmationBody().get())
             .contains("#### What happens next");
 
-        verify(timeToLiveDataService, never()).updateTheClock(callback, true);
     }
 
     @Test

@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -20,12 +18,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.TTL;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.ccddataservice.TimeToLiveDataService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -35,14 +29,12 @@ class EndAppealConfirmationTest {
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
-    @Mock private TimeToLiveDataService timeToLiveDataService;
-    @Mock private TTL ttl;
 
     private EndAppealConfirmation endAppealConfirmation;
 
     @BeforeEach
     void setup() {
-        endAppealConfirmation = new EndAppealConfirmation(timeToLiveDataService);
+        endAppealConfirmation = new EndAppealConfirmation();
     }
 
     @Test
@@ -51,12 +43,8 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.ENDED);
-        when(asylumCase.read(AsylumCaseFieldDefinition.TTL, TTL.class)).thenReturn(Optional.of(ttl));
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of(""));
-
-        when(ttl.getSuspended()).thenReturn(YesOrNo.YES);
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
@@ -83,7 +71,6 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of("FAIL"));
-        when(caseDetails.getState()).thenReturn(State.ENDED);
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
@@ -108,16 +95,12 @@ class EndAppealConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.END_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(caseDetails.getState()).thenReturn(State.ENDED);
-        when(asylumCase.read(AsylumCaseFieldDefinition.TTL, TTL.class)).thenReturn(Optional.of(ttl));
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_END_APPEAL_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of(""));
-        when(ttl.getSuspended()).thenReturn(YesOrNo.YES);
 
         PostSubmitCallbackResponse callbackResponse =
             endAppealConfirmation.handle(callback);
 
-        verify(timeToLiveDataService, times(1)).updateTheClock(callback, false);
     }
 
     @Test
