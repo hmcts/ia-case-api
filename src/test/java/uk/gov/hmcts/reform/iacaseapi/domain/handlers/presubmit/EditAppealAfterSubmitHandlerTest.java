@@ -19,6 +19,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -46,6 +48,7 @@ class EditAppealAfterSubmitHandlerTest {
 
     private static final int APPEAL_OUT_OF_TIME_DAYS_UK = 14;
     private static final int APPEAL_OUT_OF_TIME_DAYS_OOC = 28;
+    private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -90,6 +93,7 @@ class EditAppealAfterSubmitHandlerTest {
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
         when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class))
             .thenReturn(Optional.of(State.AWAITING_RESPONDENT_EVIDENCE));
+        when(callback.getPageId()).thenReturn(HOME_OFFICE_DECISION_PAGE_ID);
     }
 
     @Test
@@ -408,21 +412,24 @@ class EditAppealAfterSubmitHandlerTest {
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID, "" })
     @SuppressWarnings("unchecked")
-    void it_can_handle_callback() {
+    void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getPageId()).thenReturn(pageId);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = editAppealAfterSubmitHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.EDIT_APPEAL_AFTER_SUBMIT
+                if ((event == Event.EDIT_APPEAL_AFTER_SUBMIT
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    || callbackStage == PreSubmitCallbackStage.MID_EVENT) {
+                    || callbackStage == PreSubmitCallbackStage.MID_EVENT)
+                    && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
 
                     assertTrue(canHandle);
                 } else {
