@@ -5,13 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,11 +20,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SubscriberType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 
@@ -35,6 +43,10 @@ class SendNotificationHandlerTest {
     private NotificationSender<AsylumCase> notificationSender;
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private SendNotificationHandler sendNotificationHandler;
 
@@ -117,16 +129,16 @@ class SendNotificationHandlerTest {
             Event.UPDATE_PAYMENT_STATUS
         ).forEach(event -> {
 
-            AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
             when(callback.getEvent()).thenReturn(event);
-            when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
+            when(notificationSender.send(callback)).thenReturn(asylumCase);
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
             assertNotNull(callbackResponse);
-            assertEquals(expectedUpdatedCase, callbackResponse.getData());
+            assertEquals(asylumCase, callbackResponse.getData());
 
             verify(notificationSender, times(1)).send(callback);
 
@@ -139,21 +151,92 @@ class SendNotificationHandlerTest {
     void should_notify_case_officer_that_case_is_listed() {
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
-
-        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
-
-        when(notificationSender.send(callback)).thenReturn(expectedUpdatedCase);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(notificationSender.send(callback)).thenReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
-        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(notificationSender, times(1)).send(callback);
 
         reset(callback);
         reset(notificationSender);
+    }
+
+    @Test
+    void should_successfully_send_notifications() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_APPEAL_FROM_ONLINE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(notificationSender.send(callback)).thenReturn(asylumCase);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        String reason = "removeAppealFromOnlineReasonremoveAppealFromOnlineReason";
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_REASON, String.class)).thenReturn(Optional.of(reason));
+        List<IdValue<Subscriber>> subscribers = Arrays.asList(
+            new IdValue<>(
+                "someId", new Subscriber(
+                SubscriberType.APPELLANT, null, YesOrNo.NO, "07411112222", YesOrNo.YES))
+        );
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(subscribers));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(notificationSender, times(1)).send(callback);
+    }
+
+    @Test
+    void should_return_error_for_taking_appeal_offline_is_invalid() {
+
+        when(callback.getEvent()).thenReturn(Event.REMOVE_APPEAL_FROM_ONLINE);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
+        String reason =
+            "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason"
+                + "removeAppealFromOnlineReasonremoveAppealFromOnlineReason";
+        when(asylumCase.read(AsylumCaseFieldDefinition.REMOVE_APPEAL_FROM_ONLINE_REASON, String.class)).thenReturn(Optional.of(reason));
+        List<IdValue<Subscriber>> subscribers = Arrays.asList(
+            new IdValue<>(
+                "someId", new Subscriber(
+                SubscriberType.APPELLANT, null, YesOrNo.NO, "07411112222", YesOrNo.YES))
+        );
+        when(asylumCase.read(AsylumCaseFieldDefinition.SUBSCRIPTIONS)).thenReturn(Optional.of(subscribers));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            sendNotificationHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(notificationSender, times(0)).send(callback);
+
+        String errorMessage = "Reasons must not be more than 918 characters long";
+        assertTrue(callbackResponse.getErrors().contains(errorMessage));
     }
 
     @Test

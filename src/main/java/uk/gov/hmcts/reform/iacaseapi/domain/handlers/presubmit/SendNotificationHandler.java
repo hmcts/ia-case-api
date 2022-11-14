@@ -1,23 +1,31 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Subscriber;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
 @Component
 public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final int REMOVE_APPEAL_FROM_ONLINE_REASON_MAX_LENGTH = 918;
     private final NotificationSender<AsylumCase> notificationSender;
     @Value("${featureFlag.isSaveAndContinueEnabled}")
     private boolean isSaveAndContinueEnabled;
@@ -127,8 +135,39 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             throw new IllegalStateException("Cannot handle callback");
         }
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        if (Event.REMOVE_APPEAL_FROM_ONLINE == callback.getEvent() && isAipJourney(asylumCase)) {
+            boolean isValid = validateReasonForTakingAppealOffline(asylumCase);
+
+            if (!isValid) {
+                PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+                String errorMessage = "Reasons must not be more than " + REMOVE_APPEAL_FROM_ONLINE_REASON_MAX_LENGTH + " characters long";
+                response.addError(errorMessage);
+
+                return response;
+            }
+        }
+
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
+    }
+
+    private boolean validateReasonForTakingAppealOffline(AsylumCase asylumCase) {
+        Optional<List<IdValue<Subscriber>>> optionalSubscribers = asylumCase.read(SUBSCRIPTIONS);
+        String removeAppealFromOnlineReason = asylumCase.read(REMOVE_APPEAL_FROM_ONLINE_REASON, String.class)
+            .orElse("").trim();
+        boolean wantsSms = optionalSubscribers.orElse(Collections.emptyList()).stream()
+            .filter(subscriber -> YES.equals(subscriber.getValue().getWantsSms())).count() > 0;
+
+        return wantsSms
+            ? wantsSms && removeAppealFromOnlineReason.length() <= REMOVE_APPEAL_FROM_ONLINE_REASON_MAX_LENGTH
+            : true;
+    }
+
+    private boolean isAipJourney(AsylumCase asylumCase) {
+        return asylumCase
+            .read(JOURNEY_TYPE, JourneyType.class)
+            .map(type -> type == JourneyType.AIP).orElse(false);
     }
 }
