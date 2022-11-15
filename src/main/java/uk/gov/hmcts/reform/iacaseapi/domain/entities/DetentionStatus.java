@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DetentionStatus {
 
-    DETAINED("detained"),
-    ACCELERATED("accelerated");
+    DETAINED("Detained"),
+    ACCELERATED("Detained - Accelerated");
 
     @JsonValue
     private String value;
