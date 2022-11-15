@@ -129,7 +129,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             }
 
         } else {
-            //do nothing
             Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
             decisionDate =
                 parse(maybeHomeOfficeDecisionLetterDate
