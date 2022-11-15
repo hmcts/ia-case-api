@@ -8,6 +8,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @Component
 public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -34,16 +37,23 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
     private final DateProvider dateProvider;
     private final int appealOutOfTimeDaysUk;
     private final int appealOutOfTimeDaysOoc;
+    private final int appealOutOfTimeAcceleratedDetainedWorkingDays;
+
+    private final DueDateService dueDateService;
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
 
     public EditAppealAfterSubmitHandler(
         DateProvider dateProvider,
+        DueDateService dueDateService,
         @Value("${appealOutOfTimeDaysUk}") int appealOutOfTimeDaysUk,
-        @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc
+        @Value("${appealOutOfTimeDaysOoc}") int appealOutOfTimeDaysOoc,
+        @Value("${appealOutOfTimeAcceleratedDetainedWorkingDays}") int appealOutOfTimeAcceleratedDetainedWorkingDays
     ) {
         this.dateProvider = dateProvider;
         this.appealOutOfTimeDaysUk = appealOutOfTimeDaysUk;
         this.appealOutOfTimeDaysOoc = appealOutOfTimeDaysOoc;
+        this.appealOutOfTimeAcceleratedDetainedWorkingDays = appealOutOfTimeAcceleratedDetainedWorkingDays;
+        this.dueDateService = dueDateService;
     }
 
     public boolean canHandle(
@@ -107,23 +117,36 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                         parse(maybeHomeOfficeDecisionDate
                                 .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
             }
+
+            if (decisionDate != null
+                && decisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+            } else {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+                asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+            }
+
         } else {
-            //do nothing
+            Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+            decisionDate =
+                parse(maybeHomeOfficeDecisionLetterDate
+                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+
+            ZonedDateTime dueDateTime = dueDateService.calculateDueDate(decisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
+
+            if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(dateProvider.now())) {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+                asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
+            } else {
+                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+                asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+                asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+            }
 
         }
-
-
-
-        if (decisionDate != null
-            && decisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-        } else {
-            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
-            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
-            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
-            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
-        }
-
 
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
             changeEditAppealApplicationsToCompleted(asylumCase);
@@ -133,7 +156,6 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER, maybePreviousState);
             clearNewMatters(asylumCase);
         }
-
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
