@@ -304,6 +304,7 @@ dependencies {
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'3.5.0'
+    testImplementation group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
     testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
     testCompile 'com.github.tomakehurst:wiremock:2.23.2'
