@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -43,8 +44,13 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+                .orElse(PaymentStatus.PAYMENT_PENDING);
+        boolean isAutoEndAppeal = callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus != PaymentStatus.PAID;
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.END_APPEAL || callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY);
+                && (callback.getEvent() == Event.END_APPEAL || isAutoEndAppeal);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
