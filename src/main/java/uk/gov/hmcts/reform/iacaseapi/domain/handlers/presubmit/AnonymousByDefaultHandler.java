@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -63,13 +63,13 @@ class AnonymousByDefaultHandler implements PreSubmitCallbackHandler<AsylumCase> 
                 || appealType == AppealType.RP);
     }
 
-    private List<IdValue<CaseFlag>> getExistingCaseFlags(AsylumCase asylumCase) {
-        Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
+    private List<IdValue<LegacyCaseFlag>> getExistingCaseFlags(AsylumCase asylumCase) {
+        Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
         return maybeExistingCaseFlags.orElse(Collections.emptyList());
     }
 
     private void setAnonymityFlag(AsylumCase asylumCase) {
-        asylumCase.write(CASE_FLAGS, caseFlagAppender.append(
+        asylumCase.write(LEGACY_CASE_FLAGS, caseFlagAppender.append(
                 getExistingCaseFlags(asylumCase),
                 CaseFlagType.ANONYMITY, ""
         ));

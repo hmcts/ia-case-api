@@ -5,31 +5,31 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 
 @Service
 public class CaseFlagAppender {
 
-    public List<IdValue<CaseFlag>> append(
-        List<IdValue<CaseFlag>> existingCaseFlags,
-        CaseFlagType caseFlagType,
-        String caseFlagAdditionalInformation
+    public List<IdValue<LegacyCaseFlag>> append(
+        List<IdValue<LegacyCaseFlag>> existingCaseFlags,
+        CaseFlagType legacyCaseFlagType,
+        String legacyCaseFlagAdditionalInformation
     ) {
         requireNonNull(existingCaseFlags, "existingCaseFlags must not be null");
-        requireNonNull(caseFlagType, "caseFlagType must not be null");
-        requireNonNull(caseFlagAdditionalInformation, "caseFlagAdditionalInformation must not be null");
+        requireNonNull(legacyCaseFlagType, "legacyCaseFlagType must not be null");
+        requireNonNull(legacyCaseFlagAdditionalInformation, "legacyCaseFlagAdditionalInformation must not be null");
 
-        final CaseFlag newCaseFlag = new CaseFlag(caseFlagType, caseFlagAdditionalInformation);
+        final LegacyCaseFlag newCaseFlag = new LegacyCaseFlag(legacyCaseFlagType, legacyCaseFlagAdditionalInformation);
 
-        final List<IdValue<CaseFlag>> allCaseFlags = new ArrayList<>();
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = new ArrayList<>();
 
         int index = existingCaseFlags.size() + 1;
         boolean addedNewCaseFlag = false;
 
-        for (IdValue<CaseFlag> existingCaseFlag : existingCaseFlags) {
-            if (existingCaseFlag.getValue().getCaseFlagType() == caseFlagType) {
+        for (IdValue<LegacyCaseFlag> existingCaseFlag : existingCaseFlags) {
+            if (existingCaseFlag.getValue().getLegacyCaseFlagType() == legacyCaseFlagType) {
                 allCaseFlags.add(new IdValue<>(String.valueOf(index--), newCaseFlag));
                 addedNewCaseFlag = true;
             } else {

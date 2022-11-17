@@ -14,15 +14,15 @@
             {
               "id": "1",
               "value": {
-                "caseFlagType": "appealOnHold",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "appealOnHold",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             },
             {
               "id": "2",
               "value": {
-                "caseFlagType": "anonymity",
-                "caseFlagAdditionalInformation": "some additional information"
+                "legacyCaseFlagType": "anonymity",
+                "legacyCaseFlagAdditionalInformation": "some additional information"
               }
             }
           ],
@@ -58,8 +58,8 @@
           {
             "id": "2",
             "value": {
-              "caseFlagType": "anonymity",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "anonymity",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ]
