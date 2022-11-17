@@ -44,19 +44,15 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
-                .orElse(PaymentStatus.PAYMENT_PENDING);
-        boolean isAutoEndAppeal = callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus != PaymentStatus.PAID;
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && (callback.getEvent() == Event.END_APPEAL || isAutoEndAppeal);
+               && (callback.getEvent() == Event.END_APPEAL || callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -65,6 +61,15 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+            .orElse(PaymentStatus.PAYMENT_PENDING);
+        if(callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+            callbackResponse.addError(
+                "Cannot auto end appeal as the payment is already made!");
+            return callbackResponse;
+        }
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
