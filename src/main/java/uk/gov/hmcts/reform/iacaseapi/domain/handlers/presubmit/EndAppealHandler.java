@@ -65,10 +65,7 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
         if(callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
-            callbackResponse.addError(
-                "Cannot auto end appeal as the payment is already made!");
-            return callbackResponse;
+            throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
         }
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
