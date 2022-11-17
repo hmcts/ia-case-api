@@ -83,4 +83,11 @@
         <cve>CVE-2022-31692</cve>
         <cve>CVE-2022-42252</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Snakeyaml coming via Launch Darkly transitives
+            ]]>
+        </notes>
+        <cve>CVE-2022-41854</cve>
+    </suppress>
 </suppressions>
