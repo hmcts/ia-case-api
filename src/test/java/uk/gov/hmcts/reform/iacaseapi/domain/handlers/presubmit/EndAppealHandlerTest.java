@@ -191,8 +191,6 @@ class EndAppealHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getCaseDetails()).thenReturn(caseDetails);
-            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
