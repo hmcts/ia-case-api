@@ -20,10 +20,11 @@ class BaseLocationTest {
         assertEquals("366796", BaseLocation.NEWCASTLE.getId());
         assertEquals("324339", BaseLocation.ARNHEM_HOUSE.getId());
         assertEquals("28837", BaseLocation.HARMONDSWORTH.getId());
+        assertEquals("649000", BaseLocation.YARLSWOOD.getId());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(12, BaseLocation.values().length);
+        assertEquals(13, BaseLocation.values().length);
     }
 }
