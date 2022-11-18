@@ -14,7 +14,8 @@ public enum BaseLocation {
     NORTH_SHIELDS("562808"),
     NEWCASTLE("366796"),
     ARNHEM_HOUSE("324339"),
-    HARMONDSWORTH("28837");
+    HARMONDSWORTH("28837"),
+    YARLSWOOD("649000");
 
     @JsonValue
     private final String id;
