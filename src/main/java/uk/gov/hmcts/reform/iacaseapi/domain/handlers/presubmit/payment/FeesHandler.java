@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 
 @Component
 public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -77,7 +78,19 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .orElse(false);
 
         if (isAipJourney) {
-            return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
+
+            PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
+
+            try {
+
+                callbackResponse.setData(feePayment.aboutToSubmit(callback));
+                asylumCase.write(IS_FEE_LOOKUP_FAILED, YesOrNo.NO);
+            } catch (AsylumCaseServiceResponseException ex) {
+
+                asylumCase.write(IS_FEE_LOOKUP_FAILED, YesOrNo.YES);
+            }
+
+            return callbackResponse;
         }
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
@@ -93,7 +106,6 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-                asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {
                     setFeeRemissionTypeDetails(asylumCase);
