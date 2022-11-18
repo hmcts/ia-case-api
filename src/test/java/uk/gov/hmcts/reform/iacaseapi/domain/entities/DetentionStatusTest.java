@@ -10,15 +10,15 @@ class DetentionStatusTest {
     @Test
     void has_correct_detained_detention_status() {
         assertEquals(DetentionStatus.DETAINED.toString(), DetentionStatus.DETAINED.getValue());
-        assertEquals("Detained", DetentionStatus.DETAINED.toString());
-        assertEquals(DetentionStatus.DETAINED, DetentionStatus.from("Detained"));
+        assertEquals("detained", DetentionStatus.DETAINED.toString());
+        assertEquals(DetentionStatus.DETAINED, DetentionStatus.from("detained"));
     }
 
     @Test
     void has_correct_accelerated_detention_status() {
         assertEquals(DetentionStatus.ACCELERATED.toString(), DetentionStatus.ACCELERATED.getValue());
-        assertEquals("Detained - Accelerated", DetentionStatus.ACCELERATED.toString());
-        assertEquals(DetentionStatus.ACCELERATED, DetentionStatus.from("Detained - Accelerated"));
+        assertEquals("detainedAccelerated", DetentionStatus.ACCELERATED.toString());
+        assertEquals(DetentionStatus.ACCELERATED, DetentionStatus.from("detainedAccelerated"));
     }
 
     @Test
