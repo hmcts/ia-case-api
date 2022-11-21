@@ -437,8 +437,8 @@ class EditAppealAfterSubmitHandlerTest {
 
                 boolean canHandle = editAppealAfterSubmitHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.EDIT_APPEAL_AFTER_SUBMIT
-                    && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                if (event == Event.EDIT_APPEAL_AFTER_SUBMIT
+                    && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     || callbackStage == PreSubmitCallbackStage.MID_EVENT)
                     && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
 
