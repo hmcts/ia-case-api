@@ -22,21 +22,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 
+
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class HearingTypeHandlerTest {
+class LetterSentOrRecievedHandlerTest {
 
-    private final String isOutOfCountry = "Yes";
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+
+    private final String isOutOfCountryEnabled = "Yes";
     private final String appellantInUk = "Yes";
-    private final String isAda = "Yes";
-    private final String appellantInDet = "Yes";
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
+    private final String isAcc = "Yes";
+    private final String appellantInDetention = "Yes";
+
     private LetterSentOrRecievedHandler letterSentOrRecievedHandler;
 
     @BeforeEach
@@ -47,10 +47,10 @@ class HearingTypeHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, String.class)).thenReturn(Optional.of(isOutOfCountry));
+        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, String.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, String.class)).thenReturn(Optional.of(appellantInUk));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAda));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, String.class)).thenReturn(Optional.of(appellantInDet));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAcc));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, String.class)).thenReturn(Optional.of(appellantInDetention));
 
     }
 
@@ -93,12 +93,12 @@ class HearingTypeHandlerTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
     }
 
