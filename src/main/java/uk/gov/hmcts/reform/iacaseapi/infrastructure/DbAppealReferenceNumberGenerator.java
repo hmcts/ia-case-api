@@ -34,13 +34,14 @@ public class DbAppealReferenceNumberGenerator implements AppealReferenceNumberGe
 
     public String generate(
         long caseId,
-        AppealType appealType
+        AppealType appealType,
+        boolean isDetainedAppeal
     ) {
         final int currentYear = dateProvider.now().getYear();
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("caseId", caseId);
-        parameters.addValue("appealType", appealType.name());
+        parameters.addValue("appealType", isDetainedAppeal ? "DE" : appealType.name());
         parameters.addValue("year", currentYear);
         parameters.addValue("seed", appealReferenceSequenceSeed);
 
