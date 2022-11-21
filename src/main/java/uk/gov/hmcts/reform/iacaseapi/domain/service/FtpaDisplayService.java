@@ -13,7 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlag;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.LegacyCaseFlag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.CaseFlagType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -153,15 +153,15 @@ public class FtpaDisplayService {
     protected void updateCaseFlags(AsylumCase asylumCase) {
 
         final CaseFlagType reheardSetAsideFlagType = CaseFlagType.SET_ASIDE_REHEARD;
-        final Optional<List<IdValue<CaseFlag>>> maybeExistingCaseFlags = asylumCase.read(CASE_FLAGS);
-        final List<IdValue<CaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
+        final Optional<List<IdValue<LegacyCaseFlag>>> maybeExistingCaseFlags = asylumCase.read(LEGACY_CASE_FLAGS);
+        final List<IdValue<LegacyCaseFlag>> existingCaseFlags = maybeExistingCaseFlags.orElse(Collections.emptyList());
 
-        final List<IdValue<CaseFlag>> allCaseFlags = caseFlagAppender.append(
+        final List<IdValue<LegacyCaseFlag>> allCaseFlags = caseFlagAppender.append(
             existingCaseFlags,
             reheardSetAsideFlagType,
             ""
         );
 
-        asylumCase.write(CASE_FLAGS, allCaseFlags);
+        asylumCase.write(LEGACY_CASE_FLAGS, allCaseFlags);
     }
 }

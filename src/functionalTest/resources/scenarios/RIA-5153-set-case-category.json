@@ -27,8 +27,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "s94bOutOfCountry",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "s94bOutOfCountry",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

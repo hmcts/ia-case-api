@@ -26,8 +26,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "foreignNationalOffender",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "foreignNationalOffender",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

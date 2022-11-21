@@ -211,7 +211,7 @@ class FtpaDisplayServiceTest {
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
-        verify(asylumCase, times(1)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 
     @Test
@@ -221,7 +221,7 @@ class FtpaDisplayServiceTest {
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(STITCHING_STATUS, "");
-        verify(asylumCase, times(1)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(1)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 
     @Test
@@ -231,7 +231,7 @@ class FtpaDisplayServiceTest {
         verify(asylumCase, times(1)).write(IS_REHEARD_APPEAL_ENABLED, YesOrNo.NO);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 
     @Test
@@ -240,26 +240,26 @@ class FtpaDisplayServiceTest {
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "granted");
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
 
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "partiallyGranted");
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
 
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "refused");
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
 
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "notAdmitted");
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
 
         ftpaDisplayService.setFtpaCaseFlag(asylumCase, true, "remadeRule32");
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.YES);
         verify(asylumCase, times(0)).write(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.NO);
-        verify(asylumCase, times(0)).write(CASE_FLAGS, Collections.emptyList());
+        verify(asylumCase, times(0)).write(LEGACY_CASE_FLAGS, Collections.emptyList());
     }
 }

@@ -26,8 +26,8 @@
           {
             "id": "1",
             "value": {
-              "caseFlagType": "unacceptableCustomerBehaviour",
-              "caseFlagAdditionalInformation": "some additional information"
+              "legacyCaseFlagType": "unacceptableCustomerBehaviour",
+              "legacyCaseFlagAdditionalInformation": "some additional information"
             }
           }
         ],

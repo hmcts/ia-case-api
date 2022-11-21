@@ -71,14 +71,14 @@ class FlagCaseMidEventHandlerTest {
         "CASE_FLAG_APPEAL_ON_HOLD_ADDITIONAL_INFORMATION, this appeal on hold reason, APPEAL_ON_HOLD"
     })
     void given_existing_flag_should_populate_additional_information_field(
-        AsylumCaseFieldDefinition caseFlagFieldDefinition, String existingAdditionalInfo, CaseFlagType caseFlagType) {
+        AsylumCaseFieldDefinition caseFlagFieldDefinition, String existingAdditionalInfo, CaseFlagType legacyCaseFlagType) {
 
         given(callback.getEvent()).willReturn(FLAG_CASE);
         given(callback.getCaseDetails()).willReturn(caseDetails);
 
         AsylumCase asylumCase = new AsylumCase();
         asylumCase.write(caseFlagFieldDefinition, existingAdditionalInfo);
-        asylumCase.write(FLAG_CASE_TYPE_OF_FLAG, caseFlagType);
+        asylumCase.write(FLAG_CASE_TYPE_OF_FLAG, legacyCaseFlagType);
         given(caseDetails.getCaseData()).willReturn(asylumCase);
 
         PreSubmitCallbackResponse<AsylumCase> actualAsylumCase = handler.handle(MID_EVENT, callback);

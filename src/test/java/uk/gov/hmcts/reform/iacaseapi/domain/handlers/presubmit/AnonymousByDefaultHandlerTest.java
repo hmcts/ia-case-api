@@ -53,7 +53,7 @@ public class AnonymousByDefaultHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -61,7 +61,7 @@ public class AnonymousByDefaultHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
+        verify(asylumCase, times(1)).read(LEGACY_CASE_FLAGS);
         verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
     }
 
@@ -73,7 +73,7 @@ public class AnonymousByDefaultHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
-        when(asylumCase.read(CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
+        when(asylumCase.read(LEGACY_CASE_FLAGS)).thenReturn(Optional.of(Collections.emptyList()));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 anonymousByDefaultHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -81,7 +81,7 @@ public class AnonymousByDefaultHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).read(APPEAL_TYPE, AppealType.class);
-        verify(asylumCase, times(1)).read(CASE_FLAGS);
+        verify(asylumCase, times(1)).read(LEGACY_CASE_FLAGS);
         verify(asylumCase, times(1)).write(CASE_FLAG_ANONYMITY_EXISTS, YesOrNo.YES);
     }
 
