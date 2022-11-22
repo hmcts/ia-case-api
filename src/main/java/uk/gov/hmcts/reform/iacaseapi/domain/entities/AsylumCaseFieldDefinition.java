@@ -719,6 +719,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_TYPE_RESULT(
         "hearingTypeResult", new TypeReference<HearingType>(){}),
 
+    LETTER_SENT_OR_RECEIVED(
+            "letterSentOrReceived", new TypeReference<String>(){}),
+
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
 
