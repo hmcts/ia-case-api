@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -62,9 +63,11 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
             throw new IllegalStateException("Cannot handle callback for auto end appeal for remission rejection");
         }
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
 
-        scheduler.schedule(
+        TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(
                 "",
                 Event.END_APPEAL_AUTOMATICALLY,
@@ -74,6 +77,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
                 callback.getCaseDetails().getId()
             )
         );
+        asylumCase.write(AsylumCaseFieldDefinition.AUTOMATIC_END_APPEAL_TIMED_EVENT_ID, timedEvent.getId());
         return new PostSubmitCallbackResponse();
     }
 }
