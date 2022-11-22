@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
@@ -27,41 +27,34 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @SuppressWarnings("unchecked")
 class HearingTypeHandlerTest {
 
-    private final String isOutOfCountry = "Yes";
-    private final String appellantInUk = "Yes";
-    private final String isAda = "Yes";
-    private final String appellantInDet = "Yes";
-    @Mock
-    private Callback<AsylumCase> callback;
-    @Mock
-    private CaseDetails<AsylumCase> caseDetails;
-    @Mock
-    private AsylumCase asylumCase;
-    private LetterSentOrRecievedHandler letterSentOrRecievedHandler;
+    @Mock private Callback<AsylumCase> callback;
+    @Mock private CaseDetails<AsylumCase> caseDetails;
+    @Mock private AsylumCase asylumCase;
+
+    private final String isAcc = "Yes";
+
+    private HearingTypeHandler hearingTypeHandler;
 
     @BeforeEach
     public void setUp() {
-        letterSentOrRecievedHandler = new LetterSentOrRecievedHandler();
+        hearingTypeHandler = new HearingTypeHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, String.class)).thenReturn(Optional.of(isOutOfCountry));
-        when(asylumCase.read(APPELLANT_IN_UK, String.class)).thenReturn(Optional.of(appellantInUk));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAda));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, String.class)).thenReturn(Optional.of(appellantInDet));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAcc));
 
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> hearingTypeHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> hearingTypeHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -75,7 +68,7 @@ class HearingTypeHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = letterSentOrRecievedHandler.canHandle(callbackStage, callback);
+                boolean canHandle = hearingTypeHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.MID_EVENT && event.equals(Event.START_APPEAL)) {
 
@@ -92,13 +85,13 @@ class HearingTypeHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(null, callback))
-                .hasMessage("callbackStage must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> hearingTypeHandler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
-                .hasMessage("callback must not be null")
-                .isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> hearingTypeHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
+            .hasMessage("callback must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
 
     }
 
