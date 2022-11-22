@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +24,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -32,10 +38,10 @@ class LetterSentOrRecievedHandlerTest {
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private final String isOutOfCountryEnabled = "Yes";
-    private final String appellantInUk = "Yes";
-    private final String isAcc = "Yes";
-    private final String appellantInDetention = "Yes";
+    private final YesOrNo isOutOfCountryEnabled = YES;
+    private final YesOrNo appellantInUk = YES;
+    private final YesOrNo isAcc = YES;
+    private final YesOrNo appellantInDetention = YES;
 
     private LetterSentOrRecievedHandler letterSentOrRecievedHandler;
 
@@ -46,11 +52,6 @@ class LetterSentOrRecievedHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
-        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, String.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
-        when(asylumCase.read(APPELLANT_IN_UK, String.class)).thenReturn(Optional.of(appellantInUk));
-        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAcc));
-        when(asylumCase.read(APPELLANT_IN_DETENTION, String.class)).thenReturn(Optional.of(appellantInDetention));
 
     }
 
@@ -64,6 +65,42 @@ class LetterSentOrRecievedHandlerTest {
         assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_write_sent_in_letter_sent_or_received() {
+
+        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(isAcc));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                letterSentOrRecievedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(LETTER_SENT_OR_RECEIVED, "Received");
+
+    }
+
+    @Test
+    void should_write_sent_in_letter_sent_or_sent() {
+
+        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                letterSentOrRecievedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).write(LETTER_SENT_OR_RECEIVED, "Sent");
+
     }
 
     @Test
