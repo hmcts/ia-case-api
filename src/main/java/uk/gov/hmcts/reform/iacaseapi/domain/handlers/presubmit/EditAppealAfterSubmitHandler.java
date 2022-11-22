@@ -65,7 +65,7 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
         return (callbackStage == PreSubmitCallbackStage.MID_EVENT
             || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-            && (callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT)
+            && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
             && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID);
     }
 
