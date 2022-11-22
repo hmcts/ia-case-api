@@ -40,6 +40,7 @@ public class MakeAnApplicationTypesProvider {
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                values.add(new Value(INTERIM_RELIEF.name(), INTERIM_RELIEF.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -135,6 +136,7 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
                 values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                values.add(new Value(INTERIM_RELIEF.name(), INTERIM_RELIEF.toString()));
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 

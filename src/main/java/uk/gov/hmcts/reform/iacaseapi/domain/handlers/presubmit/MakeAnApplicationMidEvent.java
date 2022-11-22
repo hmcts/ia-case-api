@@ -90,6 +90,10 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Explain why you believe the Tribunal should reinstate this appeal.");
                 break;
+            case INTERIM_RELIEF:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                        "Explain why you are applying for interim relief while the age assessment appeal is being decided.");
+                break;
             case TIME_EXTENSION:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Tell us which task you need more time to complete, explain why you need more time and include how much more time you will need.");
