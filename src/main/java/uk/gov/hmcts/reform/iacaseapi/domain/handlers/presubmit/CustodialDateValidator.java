@@ -29,7 +29,7 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)
-               && callback.getEvent() == Event.START_APPEAL;
+               && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
