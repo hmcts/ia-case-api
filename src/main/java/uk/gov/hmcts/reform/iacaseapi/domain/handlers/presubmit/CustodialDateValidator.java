@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -29,8 +30,7 @@ public class CustodialDateValidator implements PreSubmitCallbackHandler<AsylumCa
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
                && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)
-               && (callback.getEvent() == Event.START_APPEAL
-               || callback.getEvent() == Event.EDIT_APPEAL);
+               && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
