@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -61,10 +62,10 @@ public class RecordRemissionDecisionPreparer implements PreSubmitCallbackHandler
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+        final SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
+            .orElseThrow(() -> new IllegalStateException("Appeal type or Super appeal type not present"));
 
-        switch (appealType) {
+        switch (superAppealType) {
             case EA:
             case HU:
             case PA:

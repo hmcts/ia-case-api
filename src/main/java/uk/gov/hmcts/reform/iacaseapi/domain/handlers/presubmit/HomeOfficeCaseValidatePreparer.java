@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -61,10 +62,10 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
         //Check if home office is enabled and set field for CCD definition
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
+                .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present."));
 
-        if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+        if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, superAppealType)) {
 
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
@@ -73,7 +74,7 @@ public class HomeOfficeCaseValidatePreparer implements PreSubmitCallbackHandler<
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.YES);
             asylumCase =
                     featureToggler.getValue("home-office-uan-feature", false)
-                            && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)
+                            && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, superAppealType)
                             ? homeOfficeApi.aboutToStart(callback) : asylumCase;
         } else {
             asylumCase.write(IS_HOME_OFFICE_INTEGRATION_ENABLED, YesOrNo.NO);

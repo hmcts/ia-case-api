@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import java.util.Optional;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -50,21 +51,22 @@ public class RollbackPaymentPreparer implements PreSubmitCallbackHandler<AsylumC
 
         PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElseThrow(() -> new IllegalStateException("appealType is not set"));
+        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
+            .orElseThrow(() -> new IllegalStateException("appealType is not set"));
 
-        if (AppealType.EA != appealType && AppealType.HU != appealType) {
+        if (EA != superAppealType && HU != superAppealType) {
             asylumCasePreSubmitCallbackResponse.addError("You cannot mark this type of appeal as unpaid.");
         }
 
         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
         Optional<RemissionDecision> optionalRemissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
         // remisssion is present and remissionDecision is not rejected
-        if ((appealType == EA || appealType == HU) && (eaHuPaymentType.isEmpty()
-                && optionalRemissionDecision.isPresent() && optionalRemissionDecision.get() != RemissionDecision.REJECTED)) {
+        if ((superAppealType == EA || superAppealType == HU) && (eaHuPaymentType.isEmpty()
+                                                                  && optionalRemissionDecision.isPresent() && optionalRemissionDecision.get() != RemissionDecision.REJECTED)) {
             asylumCasePreSubmitCallbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 
-        if ((appealType == EA || appealType == HU) && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payOffline")) {
+        if ((superAppealType == EA || superAppealType == HU) && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payOffline")) {
             asylumCasePreSubmitCallbackResponse.addError(NOT_AVAILABLE_LABEL);
         }
 

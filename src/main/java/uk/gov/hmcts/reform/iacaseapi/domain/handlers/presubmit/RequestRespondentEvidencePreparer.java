@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -65,11 +66,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-                .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
+        final SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
+                .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present."));
 
         if (featureToggler.getValue("home-office-uan-feature", false)
-                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, superAppealType)) {
 
             Optional<String> homeOfficeSearchStatus = asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class);
             YesOrNo isAppealOutOfCountry = asylumCase.read(APPEAL_OUT_OF_COUNTRY, YesOrNo.class).orElse(NO);

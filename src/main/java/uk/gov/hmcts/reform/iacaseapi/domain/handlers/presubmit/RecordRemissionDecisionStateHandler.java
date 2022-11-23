@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -70,8 +71,8 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 .getCaseDetails()
                 .getState();
 
-        final AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
+        final SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
+            .orElseThrow(() -> new IllegalStateException("Appeal type or Super appeal type not present"));
 
         final RemissionDecision remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class)
             .orElseThrow(() -> new IllegalStateException("Remission decision is not present"));
@@ -84,7 +85,7 @@ public class RecordRemissionDecisionStateHandler implements PreSubmitCallbackSta
                 asylumCase.write(IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS, YesOrNo.NO);
                 asylumCase.write(DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION, YesOrNo.NO);
 
-                if (Arrays.asList(AppealType.EA, AppealType.HU).contains(appealType)) {
+                if (Arrays.asList(AppealType.EA, AppealType.HU).contains(superAppealType)) {
                     return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, currentState);

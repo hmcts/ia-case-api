@@ -62,10 +62,11 @@ public class RequestFeeRemissionPreparer implements PreSubmitCallbackHandler<Asy
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse = new PreSubmitCallbackResponse<>(asylumCase);
 
-        final AppealType appealType = asylumCase.read(AsylumCaseFieldDefinition.APPEAL_TYPE, AppealType.class)
+        final SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-        switch (appealType) {
+        switch (superAppealType) {
+            case AG: // TODO: update this line if necessary when ticket about payments for AG types comes along
             case DC:
             case RP:
 

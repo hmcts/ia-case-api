@@ -109,13 +109,13 @@ public class AdvancedFinalBundlingStitchingCallbackHandler implements PreSubmitC
 
         asylumCase.write(AsylumCaseFieldDefinition.STITCHING_STATUS, stitchStatus);
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
                 .orElseThrow(() -> new IllegalStateException("AppealType is not present."));
 
         if (asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)
                 .map(value -> value.equals(YesOrNo.YES))
                 .orElse(true)
-                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
+                && HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, superAppealType)) {
 
             handleHomeOfficeNotification(callback, asylumCase);
         }
