@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class LetterSentOrRecievedHandlerTest {
+class LetterSentOrReceivedHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
@@ -43,11 +43,11 @@ class LetterSentOrRecievedHandlerTest {
     private final YesOrNo isAcc = YES;
     private final YesOrNo appellantInDetention = YES;
 
-    private LetterSentOrRecievedHandler letterSentOrRecievedHandler;
+    private LetterSentOrReceivedHandler letterSentOrReceivedHandler;
 
     @BeforeEach
     public void setUp() {
-        letterSentOrRecievedHandler = new LetterSentOrRecievedHandler();
+        letterSentOrReceivedHandler = new LetterSentOrReceivedHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -57,12 +57,7 @@ class LetterSentOrRecievedHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
-
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> letterSentOrReceivedHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -77,7 +72,7 @@ class LetterSentOrRecievedHandlerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                letterSentOrRecievedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                letterSentOrReceivedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -95,7 +90,7 @@ class LetterSentOrRecievedHandlerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                letterSentOrRecievedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                letterSentOrReceivedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -113,7 +108,7 @@ class LetterSentOrRecievedHandlerTest {
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                letterSentOrRecievedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+                letterSentOrReceivedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -130,10 +125,9 @@ class LetterSentOrRecievedHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = letterSentOrRecievedHandler.canHandle(callbackStage, callback);
+                boolean canHandle = letterSentOrReceivedHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.MID_EVENT && event.equals(Event.START_APPEAL)) {
-
+                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT) && event.equals(Event.START_APPEAL)) {
                     assertThat(canHandle).isEqualTo(true);
                 } else {
                     assertThat(canHandle).isEqualTo(false);
@@ -147,11 +141,11 @@ class LetterSentOrRecievedHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> letterSentOrReceivedHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
+        assertThatThrownBy(() -> letterSentOrReceivedHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 

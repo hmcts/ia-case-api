@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class LetterSentOrRecievedHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
@@ -25,7 +25,7 @@ public class LetterSentOrRecievedHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
+        return (callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                 && callback.getEvent() == Event.START_APPEAL;
     }
 
