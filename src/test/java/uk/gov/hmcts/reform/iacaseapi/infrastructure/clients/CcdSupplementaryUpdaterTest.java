@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,6 +130,18 @@ class CcdSupplementaryUpdaterTest {
     @Test
     void should_do_nothing_when_flag_disabled() {
         when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(false);
+        setupForSuccessfulPostRequest();
+
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+
+        verify(restTemplate, never())
+                .exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class));
+
+    }
+
+    @Test
+    void should_do_nothing_when_user_is_a_citizen() {
+        when(userDetails.getRoles()).thenReturn(Arrays.asList("citizen"));
         setupForSuccessfulPostRequest();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);

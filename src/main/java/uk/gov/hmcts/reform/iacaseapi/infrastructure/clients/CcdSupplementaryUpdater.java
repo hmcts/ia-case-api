@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Maps;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,10 @@ public class CcdSupplementaryUpdater {
         if (featureToggler.getValue("wa-R3-feature", false)) {
             requireNonNull(callback, "callback must not be null");
 
+            if (hasCitizenRole(userDetails.getRoles())) {
+                return;
+            }
+
             final long caseId = callback.getCaseDetails().getId();
 
             final String serviceAuthorizationToken = serviceAuthTokenGenerator.generate();
@@ -95,5 +100,9 @@ public class CcdSupplementaryUpdater {
 
             log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
         }
+    }
+
+    private boolean hasCitizenRole(List<String> roles) {
+        return roles != null && roles.contains("citizen");
     }
 }
