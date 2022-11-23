@@ -13,15 +13,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.CancelAutomaticDirectionRequestingHearingRequirementsHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 import java.time.*;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -138,9 +134,12 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
         for (Event event : Event.values()) {
             for(PaymentStatus paymentStatus : PaymentStatus.values()){
 
+                when(callback.getCaseDetails()).thenReturn(caseDetails);
+                when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
                 when(callback.getEvent()).thenReturn(event);
                 when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(paymentStatus));
-                when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of(timedEventId));
+                when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of("1234567"));
 
 
                 boolean canHandle = cancelAutomaticEndAppealHandler.canHandle(callback);
@@ -148,13 +147,13 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
                 if (timedEventServiceEnabled
                         && event == Event.UPDATE_PAYMENT_STATUS
                         && paymentStatus == PaymentStatus.PAID
-                        && asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID).isPresent()) {
+                        && !timedEventId.isEmpty() && timedEventId != null) {
                     assertThat(canHandle).isEqualTo(true);
                 } else {
                     assertThat(canHandle).isEqualTo(false);
                 }
 
-                //reset(callback);
+                reset(callback);
             }
         }
     }

@@ -45,11 +45,12 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
                 .orElse(PaymentStatus.PAYMENT_PENDING);
+        Optional<String> timedEventId = asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID);
 
         return timedEventServiceEnabled
                 && callback.getEvent() == Event.UPDATE_PAYMENT_STATUS
                 && paymentStatus == PaymentStatus.PAID
-                && asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID).isPresent();
+                && timedEventId.isPresent();
 
     }
 
