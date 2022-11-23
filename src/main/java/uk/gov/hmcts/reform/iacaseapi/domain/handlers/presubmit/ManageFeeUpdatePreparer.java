@@ -5,14 +5,12 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISPLAY_FEE_UPDATE_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_UPDATE_COMPLETED_STAGES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUPER_APPEAL_TYPE;
 
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -70,10 +68,10 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
             return callbackResponse;
         }
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present"));
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-        switch (superAppealType) {
+        switch (appealType) {
             case EA:
             case HU:
             case PA:
@@ -89,9 +87,9 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
                     callbackResponse.setData(asylumCase);
                 }
                 break;
+
             case DC:
             case RP:
-            case AG:
 
                 callbackResponse.addError("You cannot manage a fee update for this appeal");
                 break;

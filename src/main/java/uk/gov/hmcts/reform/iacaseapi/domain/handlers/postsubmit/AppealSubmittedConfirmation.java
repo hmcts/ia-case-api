@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -84,8 +83,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("Appeal type or Super appeal type not present"));
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         sendPaymentCallback(callback);
 
@@ -93,7 +92,7 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             submissionOutOfTime == NO ? DEFAULT_HEADER : ""
         );
 
-        switch (superAppealType) {
+        switch (appealType) {
 
             case EA:
             case HU:

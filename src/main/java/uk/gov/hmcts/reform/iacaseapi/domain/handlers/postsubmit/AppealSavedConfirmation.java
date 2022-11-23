@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
@@ -69,12 +68,12 @@ public class AppealSavedConfirmation implements PostSubmitCallbackHandler<Asylum
 
         String paymentOption = null;
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present"));
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
-        if (superAppealType == SuperAppealType.PA) {
+        if (appealType == AppealType.PA) {
             paymentOption = asylumCase
                 .read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)
                 .orElse("");

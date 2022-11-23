@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 public class HomeOfficeAppealTypeChecker {
@@ -16,23 +15,6 @@ public class HomeOfficeAppealTypeChecker {
     protected static boolean isAppealTypeEnabled(FeatureToggler featureToggler, AppealType appealType) {
 
         switch (appealType) {
-            case DC:
-            case EA:
-            case HU:
-                return featureToggler.getValue(HO_UAN_DC_EA_HU_FEATURE, false) ? true : false;
-
-            case PA:
-            case RP:
-                return featureToggler.getValue(HO_UAN_PA_RP_FEATURE, false) ? true : false;
-
-            default:
-                return false;
-        }
-    }
-
-    protected static boolean isAppealTypeEnabled(FeatureToggler featureToggler, SuperAppealType superAppealType) {
-
-        switch (superAppealType) {
             case DC:
             case EA:
             case HU:

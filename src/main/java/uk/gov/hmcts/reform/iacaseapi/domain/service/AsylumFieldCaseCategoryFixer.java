@@ -6,7 +6,6 @@ import java.util.Optional;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 
 public class AsylumFieldCaseCategoryFixer implements DataFixer {
 
@@ -42,8 +41,8 @@ public class AsylumFieldCaseCategoryFixer implements DataFixer {
 
     public void mapToWaDescriptions(AsylumCase asylumCase) {
 
-        SuperAppealType caseAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("Appeal type or Super appeal type not present"));
+        AppealType caseAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         switch (caseAppealType) {
 
@@ -65,10 +64,6 @@ public class AsylumFieldCaseCategoryFixer implements DataFixer {
 
             case DC:
                 asylumCase.write(hmctsCaseCategory, ("DoC"));
-                break;
-
-            case AG:
-                asylumCase.write(hmctsCaseCategory, ("Age Assessment"));
                 break;
 
             default:

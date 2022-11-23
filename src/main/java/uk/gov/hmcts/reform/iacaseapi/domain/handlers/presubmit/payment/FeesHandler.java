@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -81,14 +80,14 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present"));
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         YesOrNo isRemissionsEnabled
             = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
-        switch (superAppealType) {
+        switch (appealType) {
             case EA:
             case HU:
             case PA:
@@ -99,21 +98,20 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     && optRemissionType.get() == HO_WAIVER_REMISSION) {
                     setFeeRemissionTypeDetails(asylumCase);
                 } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
-                           && optRemissionType.get() == HELP_WITH_FEES) {
+                    && optRemissionType.get() == HELP_WITH_FEES) {
                     setHelpWithFeesDetails(asylumCase);
                 } else if (isRemissionsEnabled == YES && optRemissionType.isPresent()
-                           && optRemissionType.get() == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
+                    && optRemissionType.get() == EXCEPTIONAL_CIRCUMSTANCES_REMISSION) {
                     setExceptionalCircumstancesRemissionDetails(asylumCase);
                 } else {
 
-                    setFeePaymentDetails(asylumCase, AppealType.PA);
+                    setFeePaymentDetails(asylumCase, appealType);
                     clearRemissionDetails(asylumCase);
                 }
 
                 asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
                 break;
 
-            case AG: // TODO: update this line if necessary when payment ticket for AG comes along
             case DC:
             case RP:
                 // by default (before remissions feature integration) we choose decisionWithHearing

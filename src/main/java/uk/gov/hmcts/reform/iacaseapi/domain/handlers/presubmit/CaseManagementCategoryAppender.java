@@ -48,11 +48,12 @@ public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType is not present"));
+        AppealType appealType = asylumCase
+            .read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
-        String value = superAppealType.getValue();
-        String description = superAppealType.getDescription();
+        String value = appealType.getValue();
+        String description = appealType.getDescription();
         List<Value> values = Collections.singletonList(new Value(value, description));
 
         asylumCase.write(CASE_MANAGEMENT_CATEGORY, new DynamicList(values.get(0), values));

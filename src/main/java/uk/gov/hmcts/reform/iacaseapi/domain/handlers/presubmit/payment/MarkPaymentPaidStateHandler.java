@@ -1,19 +1,14 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAID_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType.HU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType.PA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -71,14 +66,14 @@ public class MarkPaymentPaidStateHandler implements PreSubmitCallbackStateHandle
         asylumCase.write(PAYMENT_DATE,
             LocalDate.parse(paymentDate).format(DateTimeFormatter.ofPattern("d MMM yyyy")));
 
-        SuperAppealType superAppealType = SuperAppealType.mapFromAsylumCaseAppealType(asylumCase)
-            .orElseThrow(() -> new IllegalStateException("AppealType or SuperAppealType not present"));
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new IllegalStateException("AppealType is not present"));
 
-        if (superAppealType == EA || superAppealType == HU) {
+        if (appealType == AppealType.EA || appealType == AppealType.HU) {
             return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
         }
 
-        if (superAppealType == PA && State.PENDING_PAYMENT == currentState) {
+        if (appealType == AppealType.PA && State.PENDING_PAYMENT == currentState) {
 
             return new PreSubmitCallbackResponse<>(asylumCase, State.APPEAL_SUBMITTED);
         }

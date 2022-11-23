@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.SuperAppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AgeAssessmentSuperAppealTypeHandlerTest {
+public class AgeAssessmentAppealTypeHandlerTest {
 
     private static final String AGE_ASSESSMENT_PAGE_ID = "ageAssessment";
 
@@ -46,11 +46,11 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private AgeAssessmentSuperAppealTypeHandler ageAssessmentSuperAppealTypeHandler;
+    private AgeAssessmentAppealTypeHandler ageAssessmentAppealTypeHandler;
 
     @BeforeEach
     void setup() {
-        ageAssessmentSuperAppealTypeHandler = new AgeAssessmentSuperAppealTypeHandler();
+        ageAssessmentAppealTypeHandler = new AgeAssessmentAppealTypeHandler();
     }
 
     @Test
@@ -62,12 +62,12 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ageAssessmentSuperAppealTypeHandler.handle(MID_EVENT, callback);
+            ageAssessmentAppealTypeHandler.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(APPEAL_TYPE, SuperAppealType.AG);
+        verify(asylumCase, times(1)).write(APPEAL_TYPE, AppealType.AG);
     }
 
     @Test
@@ -79,12 +79,12 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ageAssessmentSuperAppealTypeHandler.handle(MID_EVENT, callback);
+            ageAssessmentAppealTypeHandler.handle(MID_EVENT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never()).write(APPEAL_TYPE, SuperAppealType.AG);
+        verify(asylumCase, never()).write(APPEAL_TYPE, AppealType.AG);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = ageAssessmentSuperAppealTypeHandler.canHandle(callbackStage, callback);
+                boolean canHandle = ageAssessmentAppealTypeHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == MID_EVENT
                     && callback.getEvent().equals(START_APPEAL)
@@ -116,19 +116,19 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.handle(null, callback))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -136,12 +136,12 @@ public class AgeAssessmentSuperAppealTypeHandlerTest {
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        assertThatThrownBy(() -> ageAssessmentSuperAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
