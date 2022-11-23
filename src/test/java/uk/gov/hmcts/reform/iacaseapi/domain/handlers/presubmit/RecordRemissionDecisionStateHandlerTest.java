@@ -73,7 +73,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA" , "EU"})
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU"})
     void handling_should_throw_if_remission_decision_is_not_present(AppealType type) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
