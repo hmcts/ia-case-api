@@ -58,10 +58,6 @@ class LetterSentOrRecievedHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_SUBMIT, callback))
-                .hasMessage("Cannot handle callback")
-                .isExactlyInstanceOf(IllegalStateException.class);
-
         assertThatThrownBy(() -> letterSentOrRecievedHandler.handle(ABOUT_TO_START, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
@@ -132,8 +128,7 @@ class LetterSentOrRecievedHandlerTest {
 
                 boolean canHandle = letterSentOrRecievedHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.MID_EVENT && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL))) {
-
+                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT) && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL))) {
                     assertThat(canHandle).isEqualTo(true);
                 } else {
                     assertThat(canHandle).isEqualTo(false);
