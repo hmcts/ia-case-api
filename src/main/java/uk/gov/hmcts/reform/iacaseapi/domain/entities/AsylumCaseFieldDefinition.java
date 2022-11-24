@@ -713,6 +713,9 @@ public enum AsylumCaseFieldDefinition {
     HEARING_TYPE_RESULT(
         "hearingTypeResult", new TypeReference<HearingType>(){}),
 
+    LETTER_SENT_OR_RECEIVED(
+            "letterSentOrReceived", new TypeReference<String>(){}),
+
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
 
@@ -1568,8 +1571,13 @@ public enum AsylumCaseFieldDefinition {
         "detentionStatus", new TypeReference<String>(){}),
 
     DATE_CUSTODIAL_SENTENCE(
-        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}
-    );
+        "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
+
+    BAIL_APPLICATION_NUMBER(
+             "bailApplicationNumber", new TypeReference<String>(){}),
+
+    HAS_PENDING_BAIL_APPLICATIONS(
+             "hasPendingBailApplications", new TypeReference<BailApplicationStatus>(){});
 
     private final String value;
     private final TypeReference typeReference;

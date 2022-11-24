@@ -6,6 +6,7 @@ public interface AppealReferenceNumberGenerator {
 
     String generate(
         long caseId,
-        AppealType appealType
+        AppealType appealType,
+        boolean isDetainedAppeal
     );
 }
