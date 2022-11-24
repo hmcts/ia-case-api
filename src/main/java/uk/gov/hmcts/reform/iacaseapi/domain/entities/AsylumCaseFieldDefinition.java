@@ -78,6 +78,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
+    APPEAL_TYPE_FOR_DISPLAY(
+        "appealTypeForDisplay", new TypeReference<AppealTypeForDisplay>(){}),
+
     APPEAL_TYPE_PREVIOUS_SELECTION(
         "appealTypePreviousSelection", new TypeReference<AppealType>(){}),
 

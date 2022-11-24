@@ -12,12 +12,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -35,7 +39,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-public class AgeAssessmentAppealTypeHandlerTest {
+public class AppealTypeHandlerTest {
 
     private static final String AGE_ASSESSMENT_PAGE_ID = "ageAssessment";
 
@@ -46,23 +50,22 @@ public class AgeAssessmentAppealTypeHandlerTest {
     @Mock
     private AsylumCase asylumCase;
 
-    private AgeAssessmentAppealTypeHandler ageAssessmentAppealTypeHandler;
+    private AppealTypeHandler appealTypeHandler;
 
     @BeforeEach
     void setup() {
-        ageAssessmentAppealTypeHandler = new AgeAssessmentAppealTypeHandler();
+        appealTypeHandler = new AppealTypeHandler();
     }
 
     @Test
-    void should_set_appealType_to_ageAssessment_if_yes() {
+    void should_set_appealType_to_ag_if_ageAssessment_yes() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn(AGE_ASSESSMENT_PAGE_ID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ageAssessmentAppealTypeHandler.handle(MID_EVENT, callback);
+            appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -71,20 +74,36 @@ public class AgeAssessmentAppealTypeHandlerTest {
     }
 
     @Test
-    void should_not_set_appealType_to_ageAssessment_if_no() {
+    void should_set_appealType_to_appealTypeForDisplay_if_ageAssessment_no() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        when(callback.getPageId()).thenReturn(AGE_ASSESSMENT_PAGE_ID);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
+            .thenReturn(Optional.of(AppealTypeForDisplay.HU));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            ageAssessmentAppealTypeHandler.handle(MID_EVENT, callback);
+            appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(APPEAL_TYPE, AppealType.AG);
+        verify(asylumCase, times(1))
+            .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.HU.getValue()));
+    }
+
+    @Test
+    void should_throw_error_if_appealType_and_appealTypeForDisplay_are_both_empty() {
+        when(callback.getEvent()).thenReturn(START_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback))
+            .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -93,15 +112,13 @@ public class AgeAssessmentAppealTypeHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getPageId()).thenReturn(AGE_ASSESSMENT_PAGE_ID);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = ageAssessmentAppealTypeHandler.canHandle(callbackStage, callback);
+                boolean canHandle = appealTypeHandler.canHandle(callbackStage, callback);
 
-                if (callbackStage == MID_EVENT
-                    && callback.getEvent().equals(START_APPEAL)
-                    && callback.getPageId().equals(AGE_ASSESSMENT_PAGE_ID)
+                if (callbackStage == ABOUT_TO_SUBMIT
+                    && List.of(START_APPEAL, EDIT_APPEAL).contains(callback.getEvent())
                 ) {
                     assertTrue(canHandle);
                 } else {
@@ -116,19 +133,19 @@ public class AgeAssessmentAppealTypeHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> appealTypeHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.canHandle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> appealTypeHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(null, callback))
+        assertThatThrownBy(() -> appealTypeHandler.handle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(ABOUT_TO_SUBMIT, null))
+        assertThatThrownBy(() -> appealTypeHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -136,12 +153,7 @@ public class AgeAssessmentAppealTypeHandlerTest {
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
-
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        assertThatThrownBy(() -> ageAssessmentAppealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> appealTypeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
