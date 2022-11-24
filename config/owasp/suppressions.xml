@@ -88,4 +88,9 @@
         <cve>CVE-2022-42252</cve>
         <cve>CVE-2022-41854</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[postgresql:postgresql:42.4.1]]>
+        </notes>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
 </suppressions>
