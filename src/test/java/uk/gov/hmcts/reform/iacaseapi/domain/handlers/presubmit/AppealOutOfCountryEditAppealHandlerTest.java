@@ -86,7 +86,7 @@ class AppealOutOfCountryEditAppealHandlerTest {
     @EnumSource(value = Event.class, names = {
         "EDIT_APPEAL", "EDIT_APPEAL_AFTER_SUBMIT"
     })
-    void should_clear_HO_decision_date_when_switching_to_ADA_case(Event event) {
+    void should_clear_HO_decision_date_when_switching_to_ada_case(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
