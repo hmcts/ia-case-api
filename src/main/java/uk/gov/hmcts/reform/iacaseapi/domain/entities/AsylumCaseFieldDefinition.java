@@ -78,6 +78,9 @@ public enum AsylumCaseFieldDefinition {
     APPEAL_TYPE(
         "appealType", new TypeReference<AppealType>(){}),
 
+    APPEAL_TYPE_FOR_DISPLAY(
+        "appealTypeForDisplay", new TypeReference<AppealTypeForDisplay>(){}),
+
     APPEAL_TYPE_PREVIOUS_SELECTION(
         "appealTypePreviousSelection", new TypeReference<AppealType>(){}),
 
@@ -1577,7 +1580,13 @@ public enum AsylumCaseFieldDefinition {
              "bailApplicationNumber", new TypeReference<String>(){}),
 
     HAS_PENDING_BAIL_APPLICATIONS(
-             "hasPendingBailApplications", new TypeReference<BailApplicationStatus>(){});
+             "hasPendingBailApplications", new TypeReference<BailApplicationStatus>(){}),
+
+    DATE_ON_DECISION_LETTER(
+        "dateOnDecisionLetter", new TypeReference<String>(){}),
+
+    AGE_ASSESSMENT(
+        "ageAssessment", new TypeReference<YesOrNo>(){});
 
     private final String value;
     private final TypeReference typeReference;
