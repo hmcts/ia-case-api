@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.Jurisdiction
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.QueryRequest;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleName;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.roleassignment.RoleType;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.roleassignment.RoleAssignmentApi;
 
@@ -66,6 +67,8 @@ public class RoleAssignmentQueryConsumerTest {
 
     @Mock
     private CaseDetails caseDetails;
+    @Mock
+    private IdamService idamService;
 
     private RoleAssignmentService roleAssignmentService;
 
@@ -87,7 +90,7 @@ public class RoleAssignmentQueryConsumerTest {
 
         when(caseDetails.getId()).thenReturn(caseId);
 
-        roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails);
+        roleAssignmentService = new RoleAssignmentService(authTokenGenerator, roleAssignmentApi, userDetails, idamService);
     }
 
 

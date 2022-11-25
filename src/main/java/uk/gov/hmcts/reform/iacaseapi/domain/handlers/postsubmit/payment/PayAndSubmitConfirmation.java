@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealPaymentConfirmationProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -56,9 +56,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-               || callback.getEvent() == Event.PAY_FOR_APPEAL
-               || callback.getEvent() == Event.PAYMENT_APPEAL;
+        return callback.getEvent() == Event.PAYMENT_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -72,11 +70,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         // make a payment
-        final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-            .map(j -> j == JourneyType.AIP)
-            .orElse(false);
-
-        if (isAipJourney) {
+        if (HandlerUtils.isAipJourney(asylumCase)) {
             return new PostSubmitCallbackResponse();
         }
 
@@ -103,7 +97,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 rollbackEvent = (AppealType.PA == appealType)
                     ? Event.ROLLBACK_PAYMENT_TIMEOUT : Event.ROLLBACK_PAYMENT_TIMEOUT_TO_PAYMENT_PENDING;
             } else {
-                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent() || (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent() && AppealType.PA == appealType))
+                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent())
                     ? Event.ROLLBACK_PAYMENT : Event.MOVE_TO_PAYMENT_PENDING;
             }
 

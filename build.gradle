@@ -3,7 +3,6 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("org.yaml:snakeyaml:1.23")
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.11")
     }
 }
@@ -247,6 +246,9 @@ dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+    dependencies {
+        dependency group: 'org.yaml', name: 'snakeyaml', version: '1.33'
+    }
 }
 
 dependencies {
@@ -325,22 +327,6 @@ dependencies {
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
-
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
-        force = true
-    }
-
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
-        force = true
-    }
-
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
-        force = true
-    }
-
-    contractTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
-        force = true
-    }
 
     integrationTestCompile sourceSets.main.runtimeClasspath
     integrationTestCompile sourceSets.test.runtimeClasspath

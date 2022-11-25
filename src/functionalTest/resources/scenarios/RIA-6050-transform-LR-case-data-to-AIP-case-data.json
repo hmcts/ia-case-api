@@ -1,0 +1,97 @@
+{
+  "description": "RIA-6050 transform case from legally represented format to appellant in person format",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 6050,
+      "eventId": "pipActivation",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "legalRepresentativeDocuments": [
+            {
+              "id": "1",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/AAA",
+                  "document_binary_url": "http://document-store/AAA/binary",
+                  "document_filename": "case-argument.pdf"
+                },
+                "description": "Reason for appeal",
+                "dateUploaded": "2018-12-25",
+                "tag": "caseArgument"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "document": {
+                  "document_url": "http://document-store/BBB",
+                  "document_binary_url": "http://document-store/BBB/binary",
+                  "document_filename": "case-evidence.pdf"
+                },
+                "description": "Reason for appeal",
+                "dateUploaded": "2018-12-25",
+                "tag": "caseArgument"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "reasonsForAppealDecision": "Reason for appeal",
+        "reasonsForAppealDateUploaded": "2018-12-25",
+        "reasonsForAppealDocuments": [
+          {
+            "id": "1",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/AAA",
+                "document_binary_url": "http://document-store/AAA/binary",
+                "document_filename": "case-argument.pdf"
+              },
+              "description": "Reason for appeal",
+              "dateUploaded": "2018-12-25",
+              "tag": "caseArgument"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "document": {
+                "document_url": "http://document-store/BBB",
+                "document_binary_url": "http://document-store/BBB/binary",
+                "document_filename": "case-evidence.pdf"
+              },
+              "description": "Reason for appeal",
+              "dateUploaded": "2018-12-25",
+              "tag": "caseArgument"
+            }
+          }
+        ],
+        "journeyType": "aip",
+        "prevJourneyType": "rep",
+        "legalRepName": null,
+        "legalRepresentativeName": null,
+        "legalRepCompany": null,
+        "legalRepCompanyName": null,
+        "legalRepCompanyAddress": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepReferenceNumber": null,
+        "email": null,
+        "mobileNumber": null,
+        "contactPreference": null,
+        "contactPreferenceDescription": null
+      }
+    }
+  }
+}
