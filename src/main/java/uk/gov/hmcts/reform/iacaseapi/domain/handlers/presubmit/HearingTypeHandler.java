@@ -28,7 +28,8 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && callback.getEvent() == Event.START_APPEAL;
+                && (callback.getEvent() == Event.START_APPEAL
+                || callback.getEvent() == Event.EDIT_APPEAL);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
