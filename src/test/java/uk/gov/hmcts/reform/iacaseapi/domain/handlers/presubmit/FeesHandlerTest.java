@@ -72,6 +72,8 @@ class FeesHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+            when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -107,6 +109,7 @@ class FeesHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.HU));
+            when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -133,6 +136,7 @@ class FeesHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+            when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -160,6 +164,7 @@ class FeesHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
                 AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+            when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
             when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
                 .thenReturn(Optional.of("decisionWithoutHearing"));
 
@@ -200,6 +205,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -222,6 +228,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -244,6 +251,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(false);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -402,6 +410,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -433,6 +442,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -466,6 +476,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -498,6 +509,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -530,6 +542,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HO_WAIVER_REMISSION));
         when(asylumCase.read(REMISSION_CLAIM, String.class))
@@ -563,6 +576,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.HELP_WITH_FEES));
 
@@ -596,6 +610,7 @@ class FeesHandlerTest {
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION));
 
