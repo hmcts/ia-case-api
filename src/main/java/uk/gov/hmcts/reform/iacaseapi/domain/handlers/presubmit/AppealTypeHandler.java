@@ -2,28 +2,32 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
-
 @Component
-public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<AsylumCase> {
+public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    public static final int REQUIRED_CID_REF_LENGTH = 9;
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.EARLIEST;
+    }
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -32,10 +36,10 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        Event event = callback.getEvent();
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.START_APPEAL
-                   || callback.getEvent() == Event.EDIT_APPEAL)
-               && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData());
+               && List.of(START_APPEAL, EDIT_APPEAL).contains(event);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -51,23 +55,19 @@ public class HomeOfficeReferenceFormatter implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        if (!asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class).map(
-            value -> (OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS.equals(value)
-            || OutOfCountryDecisionType.REFUSE_PERMIT.equals(value))).orElse(false) && !isAgeAssessmentAppealType(asylumCase)) {
-            String homeOfficeReferenceNumber = asylumCase
-                .read(HOME_OFFICE_REFERENCE_NUMBER, String.class)
-                .orElseThrow(() -> new IllegalStateException("homeOfficeReferenceNumber is missing"));
+        YesOrNo ageAssessment = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO);
 
-            if (homeOfficeReferenceNumber.length() < REQUIRED_CID_REF_LENGTH) {
-                asylumCase.write(HOME_OFFICE_REFERENCE_NUMBER,
-                    String.format("%09d", Integer.parseInt(homeOfficeReferenceNumber)));
-            }
+        if (ageAssessment.equals(YES)) {
+            asylumCase.write(APPEAL_TYPE, AppealType.AG);
+        } else {
+            AppealTypeForDisplay appealTypeForDisplay = asylumCase
+                .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+                .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
+
+            asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
-    private boolean isAgeAssessmentAppealType(AsylumCase asylumCase) {
-        return asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
-    }
 }
