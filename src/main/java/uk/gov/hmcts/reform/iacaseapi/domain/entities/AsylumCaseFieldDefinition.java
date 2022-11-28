@@ -1532,9 +1532,6 @@ public enum AsylumCaseFieldDefinition {
     IS_APPEAL_REFERENCE_NUMBER_AVAILABLE(
         "isAppealReferenceNumberAvailable", new TypeReference<YesOrNo>(){}),
 
-    HEARING_TYPE(
-            "hearingType", new TypeReference<YesOrNo>(){}),
-
     SUBSCRIPTIONS(
         "subscriptions", new TypeReference<List<IdValue<Subscriber>>>(){}),
 
