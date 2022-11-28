@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubm
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.values;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +77,7 @@ public class CustodialDateValidatorTest {
 
                 boolean canHandle = custodialDateValidator.canHandle(callbackStage, callback);
 
-                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
+                if (Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL, Event.EDIT_APPEAL_AFTER_SUBMIT).contains(event)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)) {
                     assertTrue(canHandle);
