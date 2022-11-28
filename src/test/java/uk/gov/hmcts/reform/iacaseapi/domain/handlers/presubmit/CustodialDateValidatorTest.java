@@ -76,7 +76,7 @@ public class CustodialDateValidatorTest {
 
                 boolean canHandle = custodialDateValidator.canHandle(callbackStage, callback);
 
-                if (event == Event.START_APPEAL
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(CUSTODIAL_SENTENCE_PAGE_ID)) {
                     assertTrue(canHandle);

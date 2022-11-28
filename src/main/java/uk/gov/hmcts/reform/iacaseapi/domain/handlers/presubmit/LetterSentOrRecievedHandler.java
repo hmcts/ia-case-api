@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -25,8 +26,11 @@ public class LetterSentOrRecievedHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && callback.getEvent() == Event.START_APPEAL;
+        return (callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+               && Arrays.asList(
+            Event.START_APPEAL,
+            Event.EDIT_APPEAL
+        ).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

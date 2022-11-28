@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPT
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
@@ -92,6 +93,8 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case HU:
             case PA:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
+                Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+
 
                 asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
@@ -109,7 +112,12 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     clearRemissionDetails(asylumCase);
                 }
 
-                asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
+                if (isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO))) {
+                    asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
+                } else {
+                    asylumCase.clear(DECISION_HEARING_FEE_OPTION);
+                }
+
                 break;
 
             case DC:
