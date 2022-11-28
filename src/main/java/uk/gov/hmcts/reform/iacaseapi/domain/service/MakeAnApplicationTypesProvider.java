@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DynamicList;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @Service
 public class MakeAnApplicationTypesProvider {
@@ -29,6 +31,8 @@ public class MakeAnApplicationTypesProvider {
 
         final State currentState = callback.getCaseDetails().getState();
 
+        AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
         DynamicList dynamicList;
         final List<Value> values = new ArrayList<>();
         switch (currentState) {
@@ -39,12 +43,23 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
             case ENDED:
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(REINSTATE.name(), REINSTATE.toString()));
                 break;
 
@@ -65,7 +80,14 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -77,7 +99,11 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -91,7 +117,14 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -105,7 +138,14 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 break;
 
             case ADJOURNED:
@@ -124,7 +164,14 @@ public class MakeAnApplicationTypesProvider {
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -134,7 +181,14 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                 }
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
-                values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    values.add(new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()));
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+                }
                 values.add(new Value(OTHER.name(), OTHER.toString()));
                 break;
 
@@ -157,5 +211,11 @@ public class MakeAnApplicationTypesProvider {
         return userDetails
             .getRoles()
             .contains(roleName);
+    }
+
+    private boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
+        return asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
+            .orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
     }
 }
