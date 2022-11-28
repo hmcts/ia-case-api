@@ -1595,6 +1595,24 @@ public enum AsylumCaseFieldDefinition {
     DETENTION_STATUS(
         "detentionStatus", new TypeReference<String>(){}),
 
+    DETENTION_FACILITY(
+        "detentionFacility", new TypeReference<String>(){}),
+
+    PRISON_NOMS(
+        "prisonNOMSNumber", new TypeReference<String>(){}),
+
+    IRC_NAME(
+        "ircName", new TypeReference<String>(){}),
+
+    PRISON_NAME(
+        "prisonName", new TypeReference<String>(){}),
+
+    OTHER_DETENTION_FACILITY_NAME(
+        "otherDetentionFacilityName", new TypeReference<String>(){}),
+
+    CUSTODIAL_SENTENCE(
+        "custodialSentence", new TypeReference<YesOrNo>(){}),
+
     DATE_CUSTODIAL_SENTENCE(
         "dateCustodialSentence", new TypeReference<CustodialSentenceDate>(){}),
 
@@ -1608,7 +1626,15 @@ public enum AsylumCaseFieldDefinition {
         "dateOnDecisionLetter", new TypeReference<String>(){}),
 
     AGE_ASSESSMENT(
-        "ageAssessment", new TypeReference<YesOrNo>(){});
+        "ageAssessment", new TypeReference<YesOrNo>(){}),
+
+    REMOVAL_ORDER_OPTIONS(
+        "removalOrderOptions", new TypeReference<YesOrNo>(){}),
+
+    REMOVAL_ORDER_DATE(
+        "removalOrderDate", new TypeReference<String>(){})
+    ;
+
 
     private final String value;
     private final TypeReference typeReference;

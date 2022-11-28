@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class LetterSentOrRecievedHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
             PreSubmitCallbackStage callbackStage,
