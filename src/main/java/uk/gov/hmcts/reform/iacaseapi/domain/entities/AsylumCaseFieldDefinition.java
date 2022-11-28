@@ -1625,6 +1625,9 @@ public enum AsylumCaseFieldDefinition {
     AGE_ASSESSMENT(
         "ageAssessment", new TypeReference<YesOrNo>(){}),
 
+    AA_APPELLANT_DATE_OF_BIRTH(
+        "aaAppellantDateOfBirth", new TypeReference<String>() {}),
+
     REMOVAL_ORDER_OPTIONS(
         "removalOrderOptions", new TypeReference<YesOrNo>(){}),
 
