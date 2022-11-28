@@ -1584,6 +1584,9 @@ public enum AsylumCaseFieldDefinition {
     IS_ACCELERATED_DETAINED_APPEAL(
         "isAcceleratedDetainedAppeal", new TypeReference<YesOrNo>(){}),
 
+    LOCAL_AUTHORITY(
+        "localAuthority", new TypeReference<LocalAuthority>(){}),
+
     DETENTION_STATUS(
         "detentionStatus", new TypeReference<String>(){}),
 
