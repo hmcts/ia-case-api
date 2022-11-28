@@ -719,6 +719,12 @@ public enum AsylumCaseFieldDefinition {
     LETTER_SENT_OR_RECEIVED(
             "letterSentOrReceived", new TypeReference<String>(){}),
 
+    PREV_JOURNEY_TYPE(
+        "prevJourneyType", new TypeReference<JourneyType>(){}),
+
+    HEARING_TYPE(
+        "hearingType", new TypeReference<HearingType>(){}),
+
     HEARING_DATE_RANGE_DESCRIPTION(
         "hearingDateRangeDescription", new TypeReference<String>() {}),
 
@@ -920,6 +926,10 @@ public enum AsylumCaseFieldDefinition {
             "appellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     REASONS_FOR_APPEAL_DOCUMENTS(
             "reasonsForAppealDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    REASONS_FOR_APPEAL_DECISION(
+        "reasonsForAppealDecision", new TypeReference<String>(){}),
+    REASONS_FOR_APPEAL_DATE_UPLOADED(
+        "reasonsForAppealDateUploaded", new TypeReference<String>(){}),
     CLARIFYING_QUESTIONS_ANSWERS("clarifyingQuestionsAnswers",
             new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
@@ -973,6 +983,10 @@ public enum AsylumCaseFieldDefinition {
 
     PA_APPEAL_TYPE_PAYMENT_OPTION(
         "paAppealTypePaymentOption", new TypeReference<String>() {}),
+
+    PA_APPEAL_TYPE_AIP_PAYMENT_OPTION(
+            "paAppealTypeAipPaymentOption", new TypeReference<String>() {}),
+
     EA_HU_APPEAL_TYPE_PAYMENT_OPTION(
         "eaHuAppealTypePaymentOption", new TypeReference<String>() {}),
     APPEAL_FEE_HEARING_DESC(
@@ -1503,6 +1517,9 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_NAME_INTERNAL(
         "hmctsCaseNameInternal", new TypeReference<String>() {}),
 
+    CASE_NAME_HMCTS_INTERNAL(
+        "caseNameHmctsInternal", new TypeReference<String>() {}),
+
     APPEAL_REVIEW_OUTCOME(
         "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),
 
@@ -1610,8 +1627,10 @@ public enum AsylumCaseFieldDefinition {
         "removalOrderOptions", new TypeReference<YesOrNo>(){}),
 
     REMOVAL_ORDER_DATE(
-        "removalOrderDate", new TypeReference<String>(){})
-    ;
+        "removalOrderDate", new TypeReference<String>(){}),
+    
+    APPELLANT_PIN_IN_POST(
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
 
 
     private final String value;

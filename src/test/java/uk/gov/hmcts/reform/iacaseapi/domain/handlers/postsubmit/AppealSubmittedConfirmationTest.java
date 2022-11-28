@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +49,10 @@ class AppealSubmittedConfirmationTest {
     @Mock
     private AsylumCase asylumCase;
     @Mock
+    private CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    @Mock
     private AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+
     private AppealSubmittedConfirmation appealSubmittedConfirmation;
 
     @BeforeEach
@@ -57,7 +61,21 @@ class AppealSubmittedConfirmationTest {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
-        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService);
+        appealSubmittedConfirmation = new AppealSubmittedConfirmation(asylumCasePostFeePaymentService, ccdSupplementaryUpdater);
+    }
+
+    @Test
+    void should_invoke_supplementary_updater() {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.RP));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        appealSubmittedConfirmation.handle(callback);
+
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
+
     }
 
     @Test
@@ -359,6 +377,7 @@ class AppealSubmittedConfirmationTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
 
         PostSubmitCallbackResponse callbackResponse =
             appealSubmittedConfirmation.handle(callback);

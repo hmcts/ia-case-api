@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -25,13 +25,8 @@ public class CaseManagementCategoryAppender implements PreSubmitCallbackHandler<
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        boolean isRepJourney = callback.getCaseDetails().getCaseData()
-            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
-            .map(journeyType -> journeyType == JourneyType.REP)
-            .orElse(true);
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && isRepJourney
+               && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData())
                && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL,

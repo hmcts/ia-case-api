@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
@@ -113,12 +114,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 homeOfficeDecisionDate = parse(maybeHomeOfficeDecisionDate
                     .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
             }
-
-            final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-                .map(j -> j == JourneyType.AIP)
-                .orElse(false);
-
-            if (!isAipJourney) {
+            
+            if (!HandlerUtils.isAipJourney(asylumCase)) {
                 if (homeOfficeDecisionDate != null
                     && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
                     asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
@@ -132,7 +129,7 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             homeOfficeDecisionDate =
                 parse(maybeHomeOfficeDecisionLetterDate
                     .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
-
+                    
             ZonedDateTime dueDateTime = dueDateService.calculateDueDate(homeOfficeDecisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
 
             if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(dateProvider.now())) {

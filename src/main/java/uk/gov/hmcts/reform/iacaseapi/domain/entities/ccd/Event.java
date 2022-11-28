@@ -117,6 +117,8 @@ public enum Event {
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
 
+    PIP_ACTIVATION("pipActivation"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
