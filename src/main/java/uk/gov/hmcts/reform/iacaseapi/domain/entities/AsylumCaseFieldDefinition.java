@@ -1586,7 +1586,10 @@ public enum AsylumCaseFieldDefinition {
         "dateOnDecisionLetter", new TypeReference<String>(){}),
 
     AGE_ASSESSMENT(
-        "ageAssessment", new TypeReference<YesOrNo>(){});
+        "ageAssessment", new TypeReference<YesOrNo>(){}),
+
+    AA_APPELLANT_DATE_OF_BIRTH(
+        "aaAppellantDateOfBirth", new TypeReference<String>() {});
 
     private final String value;
     private final TypeReference typeReference;
