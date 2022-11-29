@@ -4,14 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW_LR;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.REINSTATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TIME_EXTENSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,6 +46,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.Value;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +57,7 @@ class MakeAnApplicationTypesProviderTest {
 
     @Mock Callback<AsylumCase> callback;
     @Mock CaseDetails<AsylumCase> caseCaseDetails;
+    @Mock AsylumCase asylumCase;
 
     @Mock UserDetails userDetails;
 
@@ -64,6 +70,8 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(APPEAL_SUBMITTED);
 
         final List<Value> values = new ArrayList<>();
@@ -71,7 +79,9 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -87,13 +97,17 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(DECIDED);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -121,6 +135,8 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         final List<Value> values = new ArrayList<>();
@@ -129,7 +145,9 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -149,6 +167,8 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         final List<Value> values = new ArrayList<>();
@@ -156,7 +176,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -175,6 +195,8 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(state);
 
         final List<Value> values = new ArrayList<>();
@@ -187,7 +209,9 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -203,11 +227,13 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(ENDED);
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
             new Value(REINSTATE.name(), REINSTATE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -223,6 +249,8 @@ class MakeAnApplicationTypesProviderTest {
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(callback.getCaseDetails().getState()).thenReturn(FINAL_BUNDLING);
 
         final List<Value> values = new ArrayList<>();
@@ -232,7 +260,9 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -249,6 +279,8 @@ class MakeAnApplicationTypesProviderTest {
 
         when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
         when(callback.getCaseDetails().getState()).thenReturn(LISTING);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.empty());
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
