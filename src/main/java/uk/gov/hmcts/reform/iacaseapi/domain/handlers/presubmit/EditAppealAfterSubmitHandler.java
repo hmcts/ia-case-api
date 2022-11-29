@@ -63,10 +63,9 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return (callbackStage == PreSubmitCallbackStage.MID_EVENT
+        return (((callbackStage == PreSubmitCallbackStage.MID_EVENT  && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID))
             || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
-            && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT
-            && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID);
+            && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
