@@ -110,6 +110,10 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Explain why you want to withdraw the appeal.");
                 break;
+            case TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS:
+                asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
+                    "Explain why this appeal should be transferred out of the accelerated detained appeal process.");
+                break;
             case OTHER:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Describe the application you are making and explain the reasons for the application.");
