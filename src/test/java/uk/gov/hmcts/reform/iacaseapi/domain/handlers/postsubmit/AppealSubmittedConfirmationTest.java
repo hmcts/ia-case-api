@@ -747,6 +747,54 @@ class AppealSubmittedConfirmationTest {
 
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "NO", "YES" })
+    void lr_should_return_confirmation_for_age_assessment_appeals(String flag) {
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.valueOf(flag)));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        PostSubmitCallbackResponse callbackResponse =
+            appealSubmittedConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        if (flag.equals(NO.toString())) {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("You will receive an email confirming that this appeal has been submitted successfully."
+                          + "\n\nYou can now apply for [interim relief](#).");
+        }
+
+        if (flag.equals(YES.toString())) {
+            assertThat(
+                callbackResponse.getConfirmationHeader().get())
+                .contains("# Your appeal has been submitted");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("#### What happens next");
+
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
+                          + "telling you whether your appeal can go ahead."
+                          + "\n\nYou can now apply for [interim relief](#).");
+        }
+
+    }
+
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
