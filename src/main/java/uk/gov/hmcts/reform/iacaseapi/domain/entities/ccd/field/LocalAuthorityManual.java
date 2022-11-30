@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
