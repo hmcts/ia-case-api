@@ -1,5 +1,5 @@
 {
-  "description": "RIA-2010-RIA-3628-add-stateless-start-appeal",
+  "description": "RIA-2010-RIA-3628-add-stateless-edit-appeal",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "LegalRepresentative",
