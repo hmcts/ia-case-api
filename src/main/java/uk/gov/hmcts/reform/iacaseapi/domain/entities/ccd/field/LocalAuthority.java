@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,10 +13,12 @@ import lombok.NoArgsConstructor;
 public class LocalAuthority {
 
     @JsonProperty("localAuthorityCode")
-    private Optional<String> localAuthorityCode = Optional.empty();
+    private String localAuthorityCode;
+
     @JsonProperty("checklistNoLocalAuthority")
-    private Optional<String> checklistNoLocalAuthority = Optional.empty();
-    @JsonProperty("localAuthorityAddress")
-    private Optional<AddressGlobal> localAuthorityAddress = Optional.empty();
+    private List<String> checklistNoLocalAuthority;
+
+    @JsonProperty("localAuthorityManual")
+    private LocalAuthorityManual localAuthorityManual;
 
 }

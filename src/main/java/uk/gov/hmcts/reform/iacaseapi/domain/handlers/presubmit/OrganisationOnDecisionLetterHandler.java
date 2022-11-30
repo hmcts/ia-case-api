@@ -1,22 +1,19 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.LocalAuthority;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class AgeAssessmentDecisionHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class OrganisationOnDecisionLetterHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private static final String AGE_ASSESSMENT_DECISION_PAGE_ID = "ageAssessmentDecision";
+    private static final String ORGANISATION_ON_DECISION_LETTER_PAGE_ID = "organisationOnDecisionLetter";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -26,7 +23,7 @@ public class AgeAssessmentDecisionHandler implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-            && callback.getPageId().equals(AGE_ASSESSMENT_DECISION_PAGE_ID)
+            && callback.getPageId().equals(ORGANISATION_ON_DECISION_LETTER_PAGE_ID)
             && callback.getEvent() == Event.START_APPEAL;
     }
 
@@ -43,9 +40,10 @@ public class AgeAssessmentDecisionHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
+        PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<LocalAuthority> localAuthority = asylumCase.read(LOCAL_AUTHORITY);
+        // TODO: This handler will be used to fill the dynamic list of Local Authorities we'll be provided with
 
-        return new PreSubmitCallbackResponse<>(asylumCase);
+        return response;
     }
 }

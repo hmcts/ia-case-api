@@ -1587,6 +1587,9 @@ public enum AsylumCaseFieldDefinition {
     LOCAL_AUTHORITY(
         "localAuthority", new TypeReference<LocalAuthority>(){}),
 
+    ORGANISATION_ON_DECISION_LETTER(
+        "organisationOnDecisionLetter", new TypeReference<String>(){}),
+
     DETENTION_STATUS(
         "detentionStatus", new TypeReference<String>(){}),
 

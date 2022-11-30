@@ -23,27 +23,25 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class AgeAssessmentDecisionHandlerTest {
+class OrganisationOnDecisionLetterHandlerTest {
 
-    private static final String AGE_ASSESSMENT_DECISION_PAGE_ID = "ageAssessmentDecision";
+    private static final String ORGANISATION_ON_DECISION_LETTER_PAGE_ID = "organisationOnDecisionLetter";
     @Mock
     private Callback<AsylumCase> callback;
-
     @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
 
-
-    private AgeAssessmentDecisionHandler ageAssessmentDecisionHandler;
+    private OrganisationOnDecisionLetterHandler organisationOnDecisionLetterHandler;
 
     @BeforeEach
     public void setUp() {
-        ageAssessmentDecisionHandler = new AgeAssessmentDecisionHandler();
+        organisationOnDecisionLetterHandler = new OrganisationOnDecisionLetterHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
-        when(callback.getPageId()).thenReturn(AGE_ASSESSMENT_DECISION_PAGE_ID);
+        when(callback.getPageId()).thenReturn(ORGANISATION_ON_DECISION_LETTER_PAGE_ID);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
     }
@@ -51,11 +49,11 @@ class AgeAssessmentDecisionHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> ageAssessmentDecisionHandler.handle(ABOUT_TO_SUBMIT, callback))
+        assertThatThrownBy(() -> organisationOnDecisionLetterHandler.handle(ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
-        assertThatThrownBy(() -> ageAssessmentDecisionHandler.handle(ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> organisationOnDecisionLetterHandler.handle(ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -66,13 +64,15 @@ class AgeAssessmentDecisionHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
-            when(callback.getPageId()).thenReturn(AGE_ASSESSMENT_DECISION_PAGE_ID);
+            when(callback.getPageId()).thenReturn(ORGANISATION_ON_DECISION_LETTER_PAGE_ID);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = ageAssessmentDecisionHandler.canHandle(callbackStage, callback);
+                boolean canHandle = organisationOnDecisionLetterHandler.canHandle(callbackStage, callback);
 
-                assertThat(canHandle).isEqualTo(callbackStage == PreSubmitCallbackStage.MID_EVENT && event.equals(Event.START_APPEAL) && callback.getPageId().equals(AGE_ASSESSMENT_DECISION_PAGE_ID));
+                assertThat(canHandle).isEqualTo(callbackStage == PreSubmitCallbackStage.MID_EVENT
+                                                && event.equals(Event.START_APPEAL)
+                                                && callback.getPageId().equals(ORGANISATION_ON_DECISION_LETTER_PAGE_ID));
             }
 
             reset(callback);
@@ -82,11 +82,11 @@ class AgeAssessmentDecisionHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> ageAssessmentDecisionHandler.canHandle(null, callback))
+        assertThatThrownBy(() -> organisationOnDecisionLetterHandler.canHandle(null, callback))
             .hasMessage("callbackStage must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> ageAssessmentDecisionHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
+        assertThatThrownBy(() -> organisationOnDecisionLetterHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
