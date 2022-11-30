@@ -111,7 +111,6 @@ class GenerateDocumentHandlerTest {
 
         Arrays.asList(
             SUBMIT_APPEAL,
-            PAY_AND_SUBMIT_APPEAL,
             SUBMIT_CASE,
             LIST_CASE,
             EDIT_CASE_LISTING,
@@ -124,6 +123,7 @@ class GenerateDocumentHandlerTest {
             SUBMIT_CMA_REQUIREMENTS,
             LIST_CMA,
             END_APPEAL,
+            END_APPEAL_AUTOMATICALLY,
             EDIT_APPEAL_AFTER_SUBMIT,
             GENERATE_UPPER_TRIBUNAL_BUNDLE,
             SUBMIT_REASONS_FOR_APPEAL,
@@ -256,7 +256,6 @@ class GenerateDocumentHandlerTest {
                     &&
                     Arrays.asList(
                         SUBMIT_APPEAL,
-                        PAY_AND_SUBMIT_APPEAL,
                         SUBMIT_CASE,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
@@ -271,6 +270,7 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CMA_REQUIREMENTS,
                         LIST_CMA,
                         END_APPEAL,
+                        END_APPEAL_AUTOMATICALLY,
                         EDIT_APPEAL_AFTER_SUBMIT,
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,
@@ -335,7 +335,6 @@ class GenerateDocumentHandlerTest {
                 ImmutableSet<Event> eventsThatDontRequireStitching =
                     immutableEnumSet(
                         SUBMIT_APPEAL,
-                        PAY_AND_SUBMIT_APPEAL,
                         DRAFT_HEARING_REQUIREMENTS,
                         UPDATE_HEARING_REQUIREMENTS,
                         LIST_CASE,
@@ -349,6 +348,7 @@ class GenerateDocumentHandlerTest {
                         SUBMIT_CMA_REQUIREMENTS,
                         LIST_CMA,
                         END_APPEAL,
+                        END_APPEAL_AUTOMATICALLY,
                         EDIT_APPEAL_AFTER_SUBMIT,
                         GENERATE_UPPER_TRIBUNAL_BUNDLE,
                         SUBMIT_REASONS_FOR_APPEAL,

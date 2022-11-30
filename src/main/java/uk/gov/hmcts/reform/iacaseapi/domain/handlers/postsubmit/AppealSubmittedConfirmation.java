@@ -1,11 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMISSION_OUT_OF_TIME;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
@@ -13,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.NO_REM
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
@@ -21,9 +18,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
+@Slf4j
 @Component
 public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -50,6 +51,15 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
+
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
+    private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
+
+    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
+        this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
+    }
+
     public boolean canHandle(
         Callback<AsylumCase> callback
     ) {
@@ -68,6 +78,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
+
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         YesOrNo submissionOutOfTime =
@@ -80,6 +92,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        sendPaymentCallback(callback);
+
         postSubmitResponse.setConfirmationHeader(
             submissionOutOfTime == NO ? DEFAULT_HEADER : ""
         );
@@ -91,9 +105,16 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
-                } else if (remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
+                } else if (remissionType.isPresent()
+                           && remissionType.get() == NO_REMISSION
+                           && !isWaysToPay(isHuOrEaOrPa(asylumCase), !isAipJourney(asylumCase))) {
 
                     setEaHuAppealTypesConfirmation(postSubmitResponse, asylumCase, submissionOutOfTime);
+                } else if (remissionType.isPresent()
+                           && remissionType.get() == NO_REMISSION
+                           && isWaysToPay(isHuOrEaOrPa(asylumCase), !isAipJourney(asylumCase))) {
+
+                    setWaysToPayLabelEuHuPa(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
@@ -104,9 +125,16 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 if (remissionType.isPresent() && remissionType.get() != NO_REMISSION) {
 
                     setRemissionConfirmation(postSubmitResponse, remissionType.get(), submissionOutOfTime);
-                } else if (remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
+                } else if (remissionType.isPresent()
+                           && remissionType.get() == NO_REMISSION
+                           && !isWaysToPay(isHuOrEaOrPa(asylumCase), !isAipJourney(asylumCase))) {
 
                     setPaAppealTypeConfirmation(postSubmitResponse, callback, asylumCase, submissionOutOfTime);
+                } else if (remissionType.isPresent()
+                           && remissionType.get() == NO_REMISSION
+                           && isWaysToPay(isHuOrEaOrPa(asylumCase), !isAipJourney(asylumCase))) {
+
+                    setWaysToPayLabelPaPayNowPayLater(postSubmitResponse, callback, submissionOutOfTime);
                 } else {
 
                     setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
@@ -194,5 +222,66 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL
                 : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL
         );
+    }
+
+    private void setWaysToPayLabelEuHuPa(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                         Callback<AsylumCase> callback,
+                                         YesOrNo submissionOutOfTime) {
+
+        String payForAppeal = "You need to pay for your appeal.\n\n[Pay for appeal](cases/case-details/"
+                                     + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+
+        postSubmitCallbackResponse.setConfirmationBody(
+            submissionOutOfTime == NO
+            ? WHAT_HAPPENS_NEXT_LABEL + payForAppeal
+            : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + payForAppeal + REVIEW_LABEL
+        );
+    }
+
+    private void setWaysToPayLabelPaPayNowPayLater(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                         Callback<AsylumCase> callback,
+                                         YesOrNo submissionOutOfTime) {
+
+        String paPayNowPayLaterLabel = "You still have to pay for this appeal.\n\nYou can do this by selecting [Pay for appeal](cases/case-details/"
+                              + callback.getCaseDetails().getId() + "#Service%20Request)\n\n";
+
+        postSubmitCallbackResponse.setConfirmationBody(
+            submissionOutOfTime == NO
+                ? WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel
+                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + paPayNowPayLaterLabel + REVIEW_LABEL
+        );
+    }
+
+    private boolean isWaysToPay(boolean isHuOrEaOrPa, boolean isLegalRepJourney) {
+        return isHuOrEaOrPa && isLegalRepJourney;
+    }
+
+    private boolean isAipJourney(AsylumCase asylumCase) {
+        return asylumCase.read(JOURNEY_TYPE, JourneyType.class)
+            .map(journey -> journey == JourneyType.AIP)
+            .orElse(false);
+    }
+
+    private boolean isHuOrEaOrPa(AsylumCase asylumCase) {
+        Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        if (optionalAppealType.isPresent()) {
+            AppealType appealType = optionalAppealType.get();
+            return appealType.equals(AppealType.EA)
+                   || appealType.equals(AppealType.HU)
+                   || appealType.equals(AppealType.PA);
+        }
+        return false;
+    }
+
+    private void sendPaymentCallback(Callback<AsylumCase> callback) {
+
+        Callback<AsylumCase> callbackForPaymentApi = new Callback<>(
+            callback.getCaseDetails(),
+            callback.getCaseDetailsBefore(),
+            Event.SUBMIT_APPEAL
+        );
+        log.debug("PostSubmit Callback to ia-case-payments-api to generate service request");
+        asylumCasePostFeePaymentService.ccdSubmitted(callbackForPaymentApi);
+
     }
 }

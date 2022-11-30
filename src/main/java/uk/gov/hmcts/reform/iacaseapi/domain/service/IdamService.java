@@ -35,7 +35,7 @@ public class IdamService {
         this.idamApi = idamApi;
     }
 
-    public String getUserToken() {
+    public String getServiceUserToken() {
         Map<String, String> idamAuthDetails = new ConcurrentHashMap<>();
 
         idamAuthDetails.put("grant_type", "password");

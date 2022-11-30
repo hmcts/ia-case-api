@@ -710,6 +710,9 @@ public enum AsylumCaseFieldDefinition {
     JOURNEY_TYPE(
         "journeyType", new TypeReference<JourneyType>(){}),
 
+    PREV_JOURNEY_TYPE(
+        "prevJourneyType", new TypeReference<JourneyType>(){}),
+
     HEARING_TYPE(
         "hearingType", new TypeReference<HearingType>(){}),
 
@@ -914,6 +917,10 @@ public enum AsylumCaseFieldDefinition {
             "appellantDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
     REASONS_FOR_APPEAL_DOCUMENTS(
             "reasonsForAppealDocuments", new TypeReference<List<IdValue<DocumentWithMetadata>>>(){}),
+    REASONS_FOR_APPEAL_DECISION(
+        "reasonsForAppealDecision", new TypeReference<String>(){}),
+    REASONS_FOR_APPEAL_DATE_UPLOADED(
+        "reasonsForAppealDateUploaded", new TypeReference<String>(){}),
     CLARIFYING_QUESTIONS_ANSWERS("clarifyingQuestionsAnswers",
             new TypeReference<List<IdValue<ClarifyingQuestionAnswer>>>() {}),
     REASON_TO_FORCE_CASE_TO_CASE_UNDER_REVIEW(
@@ -967,6 +974,10 @@ public enum AsylumCaseFieldDefinition {
 
     PA_APPEAL_TYPE_PAYMENT_OPTION(
         "paAppealTypePaymentOption", new TypeReference<String>() {}),
+
+    PA_APPEAL_TYPE_AIP_PAYMENT_OPTION(
+            "paAppealTypeAipPaymentOption", new TypeReference<String>() {}),
+
     EA_HU_APPEAL_TYPE_PAYMENT_OPTION(
         "eaHuAppealTypePaymentOption", new TypeReference<String>() {}),
     APPEAL_FEE_HEARING_DESC(
@@ -1497,6 +1508,9 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_NAME_INTERNAL(
         "hmctsCaseNameInternal", new TypeReference<String>() {}),
 
+    CASE_NAME_HMCTS_INTERNAL(
+        "caseNameHmctsInternal", new TypeReference<String>() {}),
+
     APPEAL_REVIEW_OUTCOME(
         "appealReviewOutcome", new TypeReference<AppealReviewOutcome>(){}),
 
@@ -1542,7 +1556,21 @@ public enum AsylumCaseFieldDefinition {
     HMCTS_CASE_CATEGORY(
         "hmctsCaseCategory", new TypeReference<String>(){}),
 
-    ;
+    HAS_SERVICE_REQUEST_ALREADY(
+        "hasServiceRequestAlready", new TypeReference<YesOrNo>(){}),
+
+    IS_SERVICE_REQUEST_TAB_VISIBLE_CONSIDERING_REMISSIONS(
+        "isServiceRequestTabVisibleConsideringRemissions", new TypeReference<YesOrNo>(){}),
+
+    DISPLAY_MARK_AS_PAID_EVENT_FOR_PARTIAL_REMISSION(
+        "displayMarkAsPaidEventForPartialRemission", new TypeReference<YesOrNo>(){}),
+
+    REQUEST_FEE_REMISSION_FLAG_FOR_SERVICE_REQUEST(
+
+        "requestFeeRemissionFlagForServiceRequest", new TypeReference<YesOrNo>(){}),
+
+    APPELLANT_PIN_IN_POST(
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
 
     private final String value;
     private final TypeReference typeReference;

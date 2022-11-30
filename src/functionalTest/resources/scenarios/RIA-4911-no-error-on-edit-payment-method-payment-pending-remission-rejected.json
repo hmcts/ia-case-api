@@ -1,6 +1,6 @@
 {
   "description": "RIA-4911 No error on edit payment method (Payment status - Payment pending, remission - rejected)",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",

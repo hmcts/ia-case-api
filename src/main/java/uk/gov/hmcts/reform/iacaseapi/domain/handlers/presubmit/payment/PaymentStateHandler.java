@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandler;
 
 @Slf4j
@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackStateHandl
 public class PaymentStateHandler implements PreSubmitCallbackStateHandler<AsylumCase> {
 
     private final boolean isfeePaymentEnabled;
+    private static final String PA_PAY_NOW = "payNow";
 
     public PaymentStateHandler(
         @Value("${featureFlag.isfeePaymentEnabled}") boolean isfeePaymentEnabled
@@ -39,14 +40,9 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        boolean isRepJourney = callback.getCaseDetails().getCaseData()
-                .read(JOURNEY_TYPE, JourneyType.class)
-                .map(j -> j == JourneyType.REP)
-                .orElse(true);
-
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                && (callback.getEvent() == Event.SUBMIT_APPEAL || callback.getEvent() == Event.PAYMENT_APPEAL)
-               && isRepJourney
+               && HandlerUtils.isRepJourney(callback.getCaseDetails().getCaseData())
                && isfeePaymentEnabled;
     }
 
@@ -75,15 +71,16 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         log.info("Appeal type [{}] and Remission type [{}] for caseId [{}]",
                 appealType, remissionType, callback.getCaseDetails().getId());
 
+        boolean isPaymentStatusPendingOrFailed = paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
+                                                                 || (remissionType.isPresent());
+
         switch (appealType) {
             case EA:
             case HU:
-                if ((paymentStatus.isPresent() && (paymentStatus.get() == PAYMENT_PENDING || paymentStatus.get() == FAILED)
-                    || (remissionType.isPresent()))) {
+                if (isPaymentStatusPendingOrFailed) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
-
             default:
                 return new PreSubmitCallbackResponse<>(asylumCase, APPEAL_SUBMITTED);
         }

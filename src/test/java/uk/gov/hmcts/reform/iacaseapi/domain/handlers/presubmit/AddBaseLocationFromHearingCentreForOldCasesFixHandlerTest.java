@@ -63,7 +63,6 @@ class AddBaseLocationFromHearingCentreForOldCasesFixHandlerTest {
         List<Event> blackListEvents = Arrays.asList(
             Event.SUBMIT_APPEAL,
             Event.EDIT_APPEAL_AFTER_SUBMIT,
-            Event.PAY_AND_SUBMIT_APPEAL,
             Event.CHANGE_HEARING_CENTRE,
             Event.START_APPEAL);
 
