@@ -30,5 +30,6 @@
   "hearingCentre": "taylorHouse",
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
-  "journeyType": "aip"
+  "journeyType": "aip",
+  "isOutOfCountryEnabled": "Yes"
 }

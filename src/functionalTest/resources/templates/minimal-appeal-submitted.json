@@ -32,5 +32,6 @@
   "sendDirectionActionAvailable": "Yes",
   "hearingCentre": "taylorHouse",
   "submissionOutOfTime": "No",
-  "uploadAdditionalEvidenceActionAvailable": "No"
+  "uploadAdditionalEvidenceActionAvailable": "No",
+  "isOutOfCountryEnabled": "Yes"
 }

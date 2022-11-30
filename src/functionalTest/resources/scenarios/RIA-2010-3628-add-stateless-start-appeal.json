@@ -11,7 +11,6 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "appellantStateless": "isStateless",
-          "isOutOfCountryEnabled": "Yes",
           "appellantInUk": "Yes"
         }
       }
