@@ -9,7 +9,9 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "appellantStateless": "isStateless"
+          "appellantStateless": "isStateless",
+          "isOutOfCountryEnabled": "Yes",
+          "appellantInUk": "Yes"
         }
       }
     }
