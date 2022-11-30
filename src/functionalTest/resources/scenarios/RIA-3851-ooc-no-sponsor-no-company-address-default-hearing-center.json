@@ -37,6 +37,7 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
+        "appellantInUk": "No",
         "hearingCentre": "taylorHouse",
         "staffLocation": "Taylor House",
         "caseManagementLocation": {

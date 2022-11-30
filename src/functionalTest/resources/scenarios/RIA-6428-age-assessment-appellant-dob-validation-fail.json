@@ -1,5 +1,5 @@
 {
-  "description": "age assessment - applicant date of birth date validation fail",
+  "description": "ria-6428-age assessment - applicant date of birth date validation fail",
   "request": {
     "uri": "/asylum/ccdMidEvent?pageId=aaAppellantDateOfBirth",
     "credentials": "LegalRepresentative",
@@ -10,7 +10,7 @@
       "caseData": {
         "template": "minimal-appeal-started.json",
         "replacements": {
-          "aaApplicantDateOfBirth": "9999-01-01",
+          "aaAppellantDateOfBirth": "9999-01-01",
           "ageAssessment": "Yes"
         }
       }
@@ -22,7 +22,6 @@
     "caseData": {
       "template": "minimal-appeal-started.json",
       "replacements": {
-        "aaApplicantDateOfBirth": "9999-01-01",
         "ageAssessment": "Yes"
       }
     }
