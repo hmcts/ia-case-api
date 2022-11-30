@@ -33,5 +33,6 @@
   "hearingCentre": "taylorHouse",
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
-  "isOutOfCountryEnabled": "Yes"
+  "isOutOfCountryEnabled": "Yes",
+  "appellantInUk": "Yes"
 }

@@ -31,5 +31,6 @@
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
   "journeyType": "aip",
-  "isOutOfCountryEnabled": "Yes"
+  "isOutOfCountryEnabled": "Yes",
+  "appellantInUk": "Yes"
 }

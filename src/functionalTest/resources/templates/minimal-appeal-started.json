@@ -26,5 +26,6 @@
   "hasNewMatters": "No",
   "hasOtherAppeals": "No",
   "appealReferenceNumber": "DRAFT",
-  "isOutOfCountryEnabled": "Yes"
+  "isOutOfCountryEnabled": "Yes",
+  "appellantInUk": "Yes"
 }
