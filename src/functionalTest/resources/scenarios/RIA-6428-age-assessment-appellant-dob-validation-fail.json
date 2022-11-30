@@ -1,7 +1,7 @@
 {
   "description": "age assessment - applicant date of birth date validation fail",
   "request": {
-    "uri": "/bail/ccdMidEvent?pageId=aaAppellantDateOfBirth",
+    "uri": "/asylum/ccdMidEvent?pageId=aaAppellantDateOfBirth",
     "credentials": "LegalRepresentative",
     "input": {
       "id": 1111,
