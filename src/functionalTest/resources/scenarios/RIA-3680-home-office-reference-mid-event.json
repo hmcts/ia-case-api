@@ -1,5 +1,6 @@
 {
-  "description": "RIA-3680 Home Office Reference Number Mid-Event - wrong home-office reference number for startAppeal event",
+  "description": "RIA-3680 Home Office Reference Number Mid-Event - wrong home-office reference number for startAppeal event - disabled",
+  "disabled": "true",
   "request": {
     "uri": "/asylum/ccdMidEvent",
     "credentials": "LegalRepresentativeOrgSuccess",
