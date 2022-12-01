@@ -53,11 +53,11 @@ class ListCaseConfirmationTest {
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("The hearing notice will be sent to all parties.<br>");
+            .contains("The legal representative will be directed to submit the appellant's hearing<br>");
 
         assertThat(
             callbackResponse.getConfirmationBody().get())
-            .contains("You don't need to do any more on this case.");
+            .contains("requirements and a Notice of Hearing will be sent to all parties.");
 
     }
 
