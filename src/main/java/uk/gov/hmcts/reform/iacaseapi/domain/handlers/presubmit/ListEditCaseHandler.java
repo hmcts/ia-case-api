@@ -35,7 +35,9 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (callback.getEvent() == Event.LIST_CASE || callback.getEvent() == Event.EDIT_CASE_LISTING);
+               && (callback.getEvent() == Event.LIST_CASE
+                   || callback.getEvent() == Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL
+                   || callback.getEvent() == Event.EDIT_CASE_LISTING);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

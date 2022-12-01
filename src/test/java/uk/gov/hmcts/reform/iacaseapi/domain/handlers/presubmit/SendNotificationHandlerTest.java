@@ -15,6 +15,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -135,10 +137,11 @@ class SendNotificationHandlerTest {
         });
     }
 
-    @Test
-    void should_notify_case_officer_that_case_is_listed() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_notify_case_officer_that_case_is_listed(Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(callback.getEvent()).thenReturn(event);
 
         AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
 
@@ -200,6 +203,7 @@ class SendNotificationHandlerTest {
                         Event.REVIEW_HEARING_REQUIREMENTS,
                         Event.REQUEST_HEARING_REQUIREMENTS_FEATURE,
                         Event.LIST_CASE,
+                        Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL,
                         Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS,
                         Event.EDIT_CASE_LISTING,
                         Event.END_APPEAL,

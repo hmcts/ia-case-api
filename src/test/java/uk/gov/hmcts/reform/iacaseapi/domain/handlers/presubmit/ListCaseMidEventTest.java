@@ -12,6 +12,8 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -45,7 +47,6 @@ class ListCaseMidEventTest {
     public void setUp() {
         listCaseMidEvent = new ListCaseMidEvent();
 
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
@@ -61,7 +62,9 @@ class ListCaseMidEventTest {
 
                 boolean canHandle = listCaseMidEvent.canHandle(callbackStage, callback);
 
-                if ((event == Event.LIST_CASE || event == Event.EDIT_CASE_LISTING)
+                if ((event == Event.LIST_CASE
+                     || event == Event.EDIT_CASE_LISTING
+                     || event == Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL)
                     && callbackStage == MID_EVENT) {
                     assertTrue(canHandle);
                 } else {
@@ -97,8 +100,11 @@ class ListCaseMidEventTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-    @Test
-    void should_error_when_list_case_hearing_centre_is_decision_without_hearing_for_case_listing() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_error_when_list_case_hearing_centre_is_decision_without_hearing_for_case_listing(Event event) {
+        when(callback.getEvent()).thenReturn(event);
+
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.DECISION_WITHOUT_HEARING));
 
@@ -111,8 +117,10 @@ class ListCaseMidEventTest {
         assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
     }
 
-    @Test
-    void should_successfully_validate_when_list_case_hearing_centre_is_not_decision_without_hearing_for_case_listing() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_successfully_validate_when_list_case_hearing_centre_is_not_decision_without_hearing_for_case_listing(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.GLASGOW_TRIBUNALS_CENTRE));
 

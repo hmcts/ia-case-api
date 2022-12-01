@@ -31,6 +31,7 @@ class EventTest {
         assertEquals("changeDirectionDueDate", Event.CHANGE_DIRECTION_DUE_DATE.toString());
         assertEquals("uploadAdditionalEvidence", Event.UPLOAD_ADDITIONAL_EVIDENCE.toString());
         assertEquals("listCase", Event.LIST_CASE.toString());
+        assertEquals("listCaseForAcceleratedDetainedAppeal", Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL.toString());
         assertEquals("createCaseSummary", Event.CREATE_CASE_SUMMARY.toString());
         assertEquals("revertStateToAwaitingRespondentEvidence",
             Event.REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE.toString());
@@ -120,6 +121,6 @@ class EventTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(113, Event.values().length);
+        assertEquals(114, Event.values().length);
     }
 }

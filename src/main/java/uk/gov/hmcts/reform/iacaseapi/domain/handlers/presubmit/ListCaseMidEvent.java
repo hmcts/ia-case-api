@@ -21,7 +21,9 @@ public class ListCaseMidEvent implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-                && (callback.getEvent() == Event.LIST_CASE || callback.getEvent() == Event.EDIT_CASE_LISTING);
+                && (callback.getEvent() == Event.LIST_CASE
+                    || callback.getEvent() == Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL
+                    || callback.getEvent() == Event.EDIT_CASE_LISTING);
     }
 
     @Override

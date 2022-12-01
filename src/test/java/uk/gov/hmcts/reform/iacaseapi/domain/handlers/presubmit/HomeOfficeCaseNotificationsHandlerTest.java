@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -98,13 +99,14 @@ class HomeOfficeCaseNotificationsHandlerTest {
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
     }
 
-    @Test
-    void handle_should_error_if_appeal_type_is_not_present() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void handle_should_error_if_appeal_type_is_not_present(Event event) {
 
         when(featureToggler.getValue("home-office-uan-feature", false)).thenReturn(true);
         when(featureToggler.getValue("home-office-uan-pa-rp-feature", false)).thenReturn(true);
 
-        when(callback.getEvent()).thenReturn(LIST_CASE);
+        when(callback.getEvent()).thenReturn(event);
         when(homeOfficeApi.aboutToSubmit(callback)).thenReturn(asylumCase);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
@@ -266,6 +268,11 @@ class HomeOfficeCaseNotificationsHandlerTest {
                 Arguments.of(LIST_CASE, DC),
                 Arguments.of(LIST_CASE, EA),
                 Arguments.of(LIST_CASE, HU),
+                Arguments.of(LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL, PA),
+                Arguments.of(LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL, RP),
+                Arguments.of(LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL, DC),
+                Arguments.of(LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL, EA),
+                Arguments.of(LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL, HU),
                 Arguments.of(EDIT_CASE_LISTING, PA),
                 Arguments.of(EDIT_CASE_LISTING, RP),
                 Arguments.of(EDIT_CASE_LISTING, DC),
@@ -544,6 +551,7 @@ class HomeOfficeCaseNotificationsHandlerTest {
                         REQUEST_RESPONDENT_EVIDENCE,
                         REQUEST_RESPONDENT_REVIEW,
                         LIST_CASE,
+                        LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL,
                         EDIT_CASE_LISTING,
                         ADJOURN_HEARING_WITHOUT_DATE,
                         SEND_DECISION_AND_REASONS,

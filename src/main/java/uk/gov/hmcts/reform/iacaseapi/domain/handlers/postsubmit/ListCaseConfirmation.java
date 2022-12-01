@@ -18,7 +18,8 @@ public class ListCaseConfirmation implements PostSubmitCallbackHandler<AsylumCas
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.LIST_CASE;
+        return callback.getEvent() == Event.LIST_CASE
+               || callback.getEvent() == Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(

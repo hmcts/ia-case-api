@@ -65,6 +65,7 @@ public class GenerateDocumentHandler implements PreSubmitCallbackHandler<AsylumC
             Event.DRAFT_HEARING_REQUIREMENTS,
             Event.UPDATE_HEARING_REQUIREMENTS,
             Event.LIST_CASE,
+            Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL,
             Event.GENERATE_HEARING_BUNDLE,
             Event.CUSTOMISE_HEARING_BUNDLE,
             Event.GENERATE_DECISION_AND_REASONS,

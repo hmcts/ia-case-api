@@ -43,8 +43,8 @@ public class DateOfBirthValidationHandler implements PreSubmitCallbackHandler<As
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<YesOrNo> isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class);
-        if (isAgeAssessmentAppeal.equals(Optional.of(YesOrNo.YES))) {
+        YesOrNo isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(YesOrNo.NO);
+        if (isAgeAssessmentAppeal.equals(YesOrNo.YES)) {
             String appellantDobStr = asylumCase.read(AA_APPELLANT_DATE_OF_BIRTH, String.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("Appellant Date of Birth missing (Age Assessment)"));
 

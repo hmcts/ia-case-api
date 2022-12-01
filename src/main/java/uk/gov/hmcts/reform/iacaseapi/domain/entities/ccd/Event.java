@@ -28,6 +28,7 @@ public enum Event {
     UPLOAD_ADDITIONAL_EVIDENCE("uploadAdditionalEvidence"),
     UPLOAD_ADDENDUM_EVIDENCE("uploadAddendumEvidence"),
     LIST_CASE("listCase"),
+    LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL("listCaseForAcceleratedDetainedAppeal"),
     LIST_CASE_WITHOUT_HEARING_REQUIREMENTS("listCaseWithoutHearingRequirements"),
     CREATE_CASE_SUMMARY("createCaseSummary"),
     REVERT_STATE_TO_AWAITING_RESPONDENT_EVIDENCE("revertStateToAwaitingRespondentEvidence"),

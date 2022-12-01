@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -32,13 +33,15 @@ class RequestRespondentEvidenceHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+    @Mock
+    private DueDateService dueDateService;
 
     private RequestRespondentEvidenceHandler requestRespondentEvidenceHandler;
 
     @BeforeEach
     public void setUp() {
         requestRespondentEvidenceHandler =
-            new RequestRespondentEvidenceHandler();
+            new RequestRespondentEvidenceHandler(dueDateService);
     }
 
     @Test

@@ -24,10 +24,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -67,13 +70,13 @@ class ListEditCaseHandlerTest {
             new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_set_default_list_case_hearing_centre_field() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_default_list_case_hearing_centre_field(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -96,9 +99,10 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @Test
-    void should_set_hearing_centre_for_remote_hearing() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_hearing_centre_for_remote_hearing(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.REMOTE_HEARING));
         when(asylumCase.read(HEARING_CENTRE, HearingCentre.class))
@@ -125,9 +129,10 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @Test
-    void should_set_default_if_listing_hearing_centre_is_not_active() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_default_if_listing_hearing_centre_is_not_active(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.MANCHESTER)).thenReturn(false);
@@ -155,9 +160,10 @@ class ListEditCaseHandlerTest {
         verify(asylumCase, times(1)).clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
     }
 
-    @Test
-    void should_not_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_listing_only() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_not_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_listing_only(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.COVENTRY));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.COVENTRY)).thenReturn(true);
@@ -186,9 +192,10 @@ class ListEditCaseHandlerTest {
     }
 
 
-    @Test
-    void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_update_designated_hearing_centre_if_list_case_hearing_centre_field_is_not_listing_only(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(LIST_CASE_HEARING_CENTRE, HearingCentre.class))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(hearingCentreFinder.hearingCentreIsActive(HearingCentre.MANCHESTER)).thenReturn(true);
@@ -240,7 +247,9 @@ class ListEditCaseHandlerTest {
 
                 boolean canHandle = listEditCaseHandler.canHandle(callbackStage, callback);
 
-                if ((event == Event.LIST_CASE || event == Event.EDIT_CASE_LISTING)
+                if (List.of(Event.LIST_CASE,
+                    Event.EDIT_CASE_LISTING,
+                    Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

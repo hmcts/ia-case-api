@@ -54,6 +54,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     Event.REQUEST_RESPONDENT_EVIDENCE,
                     Event.REQUEST_RESPONDENT_REVIEW,
                     Event.LIST_CASE,
+                    Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL,
                     Event.EDIT_CASE_LISTING,
                     Event.ADJOURN_HEARING_WITHOUT_DATE,
                     Event.SEND_DECISION_AND_REASONS,

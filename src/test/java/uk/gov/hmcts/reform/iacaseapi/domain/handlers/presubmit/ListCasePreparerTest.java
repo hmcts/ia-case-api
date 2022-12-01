@@ -17,11 +17,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
 
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -60,13 +63,13 @@ class ListCasePreparerTest {
             new ListCasePreparer(featureToggler);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_set_default_list_case_hearing_centre_field() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_default_list_case_hearing_centre_field(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
 
@@ -79,9 +82,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
-    @Test
-    void should_set_glasgow_as_list_case_hearing_centre_field() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_glasgow_as_list_case_hearing_centre_field(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
                 .thenReturn(Optional.of(HearingCentre.GLASGOW));
 
@@ -94,9 +98,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
     }
 
-    @Test
-    void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -108,9 +113,10 @@ class ListCasePreparerTest {
         verify(asylumCase, never()).write(any(), any());
     }
 
-    @Test
-    void should_set_error_when_requirements_not_reviewed() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_error_when_requirements_not_reviewed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
@@ -133,9 +139,10 @@ class ListCasePreparerTest {
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
-    @Test
-    void should_set_error_when_reviewed_requirements_flag_not_set() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_set_error_when_reviewed_requirements_flag_not_set(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
@@ -158,9 +165,10 @@ class ListCasePreparerTest {
         verify(asylumCase, never()).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
-    @Test
-    void should_not_set_error_when_requirements_have_been_reviewed() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_not_set_error_when_requirements_have_been_reviewed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
@@ -181,9 +189,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
-    @Test
-    void should_work_for_old_flow_when_requirements_not_captured() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_work_for_old_flow_when_requirements_not_captured(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
             .thenReturn(Optional.of(HearingCentre.MANCHESTER));
         when(asylumCase.read(AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class))
@@ -202,9 +211,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.MANCHESTER);
     }
 
-    @Test
-    void should_clear_hearing_details_when_reheard_case_listed() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_clear_hearing_details_when_reheard_case_listed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(true);
 
@@ -216,9 +226,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(1)).clear(LIST_CASE_HEARING_LENGTH);
     }
 
-    @Test
-    void should_not_clear_hearing_details_when_not_a_reheard_case_listed() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_not_clear_hearing_details_when_not_a_reheard_case_listed(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -229,9 +240,10 @@ class ListCasePreparerTest {
         verify(asylumCase, times(0)).clear(LIST_CASE_HEARING_LENGTH);
     }
 
-    @Test
-    void should_not_clear_hearing_details_when_feature_flag_disabled() {
-
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_not_clear_hearing_details_when_feature_flag_disabled(Event event) {
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(featureToggler.getValue("reheard-feature", false)).thenReturn(false);
 
@@ -267,7 +279,7 @@ class ListCasePreparerTest {
 
                 boolean canHandle = listCasePreparer.canHandle(callbackStage, callback);
 
-                if (event == Event.LIST_CASE
+                if (List.of(Event.LIST_CASE, Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL).contains(event)
                     && callbackStage == PreSubmitCallbackStage.ABOUT_TO_START) {
 
                     assertTrue(canHandle);

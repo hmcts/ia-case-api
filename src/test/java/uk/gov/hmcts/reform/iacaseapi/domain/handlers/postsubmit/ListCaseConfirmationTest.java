@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -33,12 +35,13 @@ class ListCaseConfirmationTest {
 
     private ListCaseConfirmation listCaseConfirmation = new ListCaseConfirmation();
 
-    @Test
-    void should_return_confirmation() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_return_confirmation(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(callback.getEvent()).thenReturn(event);
 
         PostSubmitCallbackResponse callbackResponse =
             listCaseConfirmation.handle(callback);
@@ -61,12 +64,13 @@ class ListCaseConfirmationTest {
 
     }
 
-    @Test
-    void should_return_notification_failed_confirmation() {
+    @ParameterizedTest
+    @EnumSource(value = Event.class, names = {"LIST_CASE", "LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL"})
+    void should_return_notification_failed_confirmation(Event event) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(callback.getEvent()).thenReturn(Event.LIST_CASE);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(AsylumCaseFieldDefinition.HOME_OFFICE_HEARING_INSTRUCT_STATUS, String.class))
             .thenReturn(Optional.of("FAIL"));
 
@@ -108,7 +112,7 @@ class ListCaseConfirmationTest {
 
             boolean canHandle = listCaseConfirmation.canHandle(callback);
 
-            if (event == Event.LIST_CASE) {
+            if (event == Event.LIST_CASE || event == Event.LIST_CASE_FOR_ACCELERATED_DETAINED_APPEAL) {
 
                 assertTrue(canHandle);
             } else {

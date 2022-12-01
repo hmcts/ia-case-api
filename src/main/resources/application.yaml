@@ -272,6 +272,7 @@ security:
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
+      - "listCaseForAcceleratedDetainedAppeal"
       - "recordAttendeesAndDuration"
       - "editCaseListing"
       - "addCaseNote"
