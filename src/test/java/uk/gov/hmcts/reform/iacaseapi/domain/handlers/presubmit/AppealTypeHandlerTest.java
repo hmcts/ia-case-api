@@ -80,6 +80,7 @@ public class AppealTypeHandlerTest {
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
             .thenReturn(Optional.of(AppealTypeForDisplay.HU));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             appealTypeHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -98,6 +99,7 @@ public class AppealTypeHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
             .thenReturn(Optional.empty());
 
