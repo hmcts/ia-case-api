@@ -8,9 +8,11 @@
       "eventId": "submitAppeal",
       "state": "appealSubmitted",
       "caseData": {
-        "template": "minimal-appeal-started.json",
+        "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "isAcceleratedDetainedAppeal": "Yes"
+          "hearingCentre": "harmondsworth",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "decisionLetterReceivedDate": "{$TODAY-3}"
         }
       }
     }
@@ -19,9 +21,10 @@
     "status": 200,
     "errors": [],
     "caseData": {
-      "template": "minimal-appeal-started.json",
+      "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hearingCentre": "harmondsworth"
+        "hearingCentre": "harmondsworth",
+        "decisionLetterReceivedDate": "{$TODAY-3}"
       }
     }
   }

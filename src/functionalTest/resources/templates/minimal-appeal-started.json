@@ -25,5 +25,7 @@
   },
   "hasNewMatters": "No",
   "hasOtherAppeals": "No",
-  "appealReferenceNumber": "DRAFT"
+  "appealReferenceNumber": "DRAFT",
+  "isOutOfCountryEnabled": "Yes",
+  "appellantInUk": "Yes"
 }

@@ -60,11 +60,14 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (ageAssessment.equals(YES)) {
             asylumCase.write(APPEAL_TYPE, AppealType.AG);
         } else {
-            AppealTypeForDisplay appealTypeForDisplay = asylumCase
-                .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
-
-            asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
+            // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
+            // So in order to manage the FieldShowConditions we are mapping the APPEAL_TYPE to same as APPEAL_TYPE_FOR_DISPLAY
+            if (asylumCase.read(APPEAL_TYPE, AppealType.class).isEmpty()) {
+                AppealTypeForDisplay appealTypeForDisplay = asylumCase
+                    .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+                    .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
+                asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
