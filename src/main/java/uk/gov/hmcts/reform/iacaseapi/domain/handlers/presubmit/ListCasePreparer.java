@@ -48,9 +48,6 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        Optional<HearingCentre> maybeHearingCentre =
-            asylumCase.read(HEARING_CENTRE);
-
         if (asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && asylumCase.read(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.NO)).orElse(true)) {
 
@@ -65,13 +62,12 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             asylumCase.clear(LIST_CASE_HEARING_DATE);
             asylumCase.clear(LIST_CASE_HEARING_LENGTH);
         } else {
-
-            maybeHearingCentre.ifPresent(hearingCentre -> {
-                if (hearingCentre.equals(HearingCentre.GLASGOW)) {
-                    asylumCase.write(LIST_CASE_HEARING_CENTRE, HearingCentre.GLASGOW_TRIBUNALS_CENTRE);
-                } else {
-                    asylumCase.write(LIST_CASE_HEARING_CENTRE, hearingCentre);
-                }
+            Optional<HearingCentre> hearingCentreOptional =
+                asylumCase.read(HEARING_CENTRE);
+            hearingCentreOptional.ifPresent(hearingCentre -> {
+                asylumCase.write(
+                    LIST_CASE_HEARING_CENTRE,
+                    hearingCentre == HearingCentre.GLASGOW ? HearingCentre.GLASGOW_TRIBUNALS_CENTRE : hearingCentre);
             });
         }
 
