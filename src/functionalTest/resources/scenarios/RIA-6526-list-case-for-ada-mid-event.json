@@ -1,0 +1,35 @@
+{
+  "description": "RIA-6526 List case (for accelerated detained appeal) with decision without hearing",
+  "request": {
+    "uri": "/asylum/ccdMidEvent",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCaseForAcceleratedDetainedAppeal",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAutomaticDetainedAppeal": "Yes",
+          "hearingCentre": "taylorHouse",
+          "listCaseHearingCentre": "decisionWithoutHearing",
+          "listCaseHearingLength": null,
+          "listCaseHearingDate": null,
+          "listCaseRequirementsVulnerabilities": null,
+          "listCaseRequirementsMultimedia": null,
+          "listCaseRequirementsSingleSexCourt": null,
+          "listCaseRequirementsInCameraCourt": null,
+          "listCaseRequirementsOther": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["You cannot select Decision without a hearing when listing a case"],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+      }
+    }
+  }
+}

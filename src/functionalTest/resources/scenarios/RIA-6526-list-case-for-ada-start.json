@@ -1,0 +1,45 @@
+{
+  "description": "RIA-6526 List case (for accelerated detained appeal) - prefill hearing centre",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCaseForAcceleratedDetainedAppeal",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAcceleratedDetainedAppeal": "Yes",
+          "hearingCentre": "manchester",
+          "listCaseHearingCentre": null,
+          "listCaseHearingLength": null,
+          "listCaseHearingDate": null,
+          "listCaseRequirementsVulnerabilities": null,
+          "listCaseRequirementsMultimedia": null,
+          "listCaseRequirementsSingleSexCourt": null,
+          "listCaseRequirementsInCameraCourt": null,
+          "listCaseRequirementsOther": null
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "isAcceleratedDetainedAppeal": "Yes",
+        "hearingCentre": "manchester",
+        "listCaseHearingCentre": "manchester",
+        "listCaseHearingLength": null,
+        "listCaseHearingDate": null,
+        "listCaseRequirementsVulnerabilities": null,
+        "listCaseRequirementsMultimedia": null,
+        "listCaseRequirementsSingleSexCourt": null,
+        "listCaseRequirementsInCameraCourt": null,
+        "listCaseRequirementsOther": null
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "description": "RIA-6526 List case (for accelerated detained appeal) confirmation",
+  "request": {
+    "uri": "/asylum/ccdSubmitted",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "listCaseForAcceleratedDetainedAppeal",
+      "state": "prepareForHearing",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "confirmation": {
+      "header": "# You have listed the case",
+      "body": "#### What happens next\n\nThe hearing notice will be sent to all parties.<br>You don't need to do any more on this case."
+    }
+  }
+}
