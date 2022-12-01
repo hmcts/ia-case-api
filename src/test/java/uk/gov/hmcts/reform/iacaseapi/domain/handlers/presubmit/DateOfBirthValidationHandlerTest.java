@@ -73,14 +73,6 @@ public class DateOfBirthValidationHandlerTest {
     }
 
     @Test
-    void should_throw_error_when_age_assessment_field_missing() {
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> dateOfBirthValidationHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback))
-            .isExactlyInstanceOf(RequiredFieldMissingException.class)
-            .hasMessage("Age Assessment field missing");
-    }
-
-    @Test
     void should_handle_valid_event() {
         for (Event event : Event.values()) {
             when(callback.getEvent()).thenReturn(event);
