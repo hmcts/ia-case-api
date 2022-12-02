@@ -38,11 +38,11 @@ public class AsylumCaseDataConfiguration {
     }
 
     @Bean
-    public DataFixer caseNameAppender() {
+    public DataFixer caseNameAppender(FeatureToggler featureToggler) {
         return new AsylumFieldCaseNameFixer(
             AsylumCaseFieldDefinition.HMCTS_CASE_NAME_INTERNAL,
             AsylumCaseFieldDefinition.APPELLANT_GIVEN_NAMES,
-            AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME);
+            AsylumCaseFieldDefinition.APPELLANT_FAMILY_NAME, featureToggler);
     }
 
     @Bean
