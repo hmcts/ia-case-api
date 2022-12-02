@@ -1,6 +1,6 @@
 {
   "description": "RIA-515 Lodge appeal confirmation - disable",
-  "disabled": "true",
+  "launchDarklyKey": "wa-R3-feature:false",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "LegalRepresentative",
