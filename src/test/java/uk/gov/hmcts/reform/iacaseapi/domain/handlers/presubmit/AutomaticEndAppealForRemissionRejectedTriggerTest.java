@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +28,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.AutomaticEndAppealForRemissionRejectedTrigger;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -89,8 +92,8 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        PostSubmitCallbackResponse callbackResponse =
-            autoEndAppealTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -125,8 +128,8 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        PostSubmitCallbackResponse callbackResponse =
-            autoEndAppealTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -150,7 +153,7 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
             .thenReturn(Optional.of(AppealType.PA));
 
-        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
@@ -167,7 +170,7 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
             .thenReturn(Optional.of(PaymentStatus.PAID));
 
-        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(IllegalStateException.class);
     }
 
@@ -184,18 +187,18 @@ class AutomaticEndAppealForRemissionRejectedTriggerTest {
             .thenReturn(Optional.of(AppealType.HU));
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
-        assertThatThrownBy(() -> autoEndAppealTrigger.handle(callback))
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
     @Test
     void handling_should_throw_if_null_callback() {
 
-        assertThatThrownBy(() -> autoEndAppealTrigger.handle(null))
+        assertThatThrownBy(() -> autoEndAppealTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> autoEndAppealTrigger.canHandle(null))
+        assertThatThrownBy(() -> autoEndAppealTrigger.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
