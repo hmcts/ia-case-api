@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -27,6 +28,7 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
         requireNonNull(callback, "callback must not be null");
 
         return (callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
+               && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
                && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL
