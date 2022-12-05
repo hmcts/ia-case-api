@@ -26,7 +26,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -52,6 +54,7 @@ class LetterSentOrReceivedHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty()); //non-AIP
 
     }
 
@@ -122,12 +125,16 @@ class LetterSentOrReceivedHandlerTest {
         for (Event event : Event.values()) {
 
             when(callback.getEvent()).thenReturn(event);
+            when(callback.getCaseDetails()).thenReturn(caseDetails);
+            when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
                 boolean canHandle = letterSentOrReceivedHandler.canHandle(callbackStage, callback);
 
-                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT) && (event.equals(Event.START_APPEAL)  || event.equals(Event.EDIT_APPEAL))) {
+                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT)
+                     && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL))
+                     && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())) {
                     assertThat(canHandle).isEqualTo(true);
                 } else {
                     assertThat(canHandle).isEqualTo(false);
