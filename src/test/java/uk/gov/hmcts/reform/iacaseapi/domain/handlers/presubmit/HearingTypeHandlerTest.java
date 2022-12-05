@@ -98,6 +98,7 @@ class HearingTypeHandlerTest {
         verify(asylumCase, times(1))
                 .write(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.YES);
     }
+
     @ParameterizedTest
     @ValueSource(strings = {"PA", "EA", "HU"})
     void should_write_to_hearing_type_result_no_for_start_appeal_event(String type) {
