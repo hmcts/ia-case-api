@@ -439,9 +439,7 @@ class EditAppealAfterSubmitHandlerTest {
 
                 if (event == Event.EDIT_APPEAL_AFTER_SUBMIT
                     && (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    || callbackStage == PreSubmitCallbackStage.MID_EVENT)
-                    && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
-
+                    || (callbackStage == PreSubmitCallbackStage.MID_EVENT && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

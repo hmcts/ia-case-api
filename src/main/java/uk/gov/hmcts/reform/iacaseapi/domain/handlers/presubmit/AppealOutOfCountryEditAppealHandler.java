@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_OUT_OF_COUNTRY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_UK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_CLIENT_LEAVE_UK;
@@ -98,9 +99,12 @@ public class AppealOutOfCountryEditAppealHandler implements PreSubmitCallbackHan
                 clearHumanRightsDecision(asylumCase);
                 clearRefusalOfProtection(asylumCase);
 
-                if (isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO))) {
+                YesOrNo isDetained = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(NO);
+                // If non-accelerated Detained or non Detained - remove Decision Receive date
+                if ((isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO))) || isDetained.equals(NO)) {
                     asylumCase.clear(DECISION_LETTER_RECEIVED_DATE);
                 } else {
+                    // if Accelerated Detained
                     asylumCase.clear(HOME_OFFICE_DECISION_DATE);
                 }
 

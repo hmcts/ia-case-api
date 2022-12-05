@@ -46,8 +46,8 @@ public class ListCaseConfirmation implements PostSubmitCallbackHandler<AsylumCas
             postSubmitResponse.setConfirmationHeader("# You have listed the case");
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
-                + "The hearing notice will be sent to all parties.<br>"
-                + "You don't need to do any more on this case."
+                + "The legal representative will be directed to submit the appellant's hearing<br>"
+                + "requirements and a Notice of Hearing will be sent to all parties."
             );
         }
 

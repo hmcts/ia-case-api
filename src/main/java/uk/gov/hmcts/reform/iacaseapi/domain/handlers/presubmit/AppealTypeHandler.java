@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -60,11 +61,16 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if (ageAssessment.equals(YES)) {
             asylumCase.write(APPEAL_TYPE, AppealType.AG);
         } else {
-            AppealTypeForDisplay appealTypeForDisplay = asylumCase
-                .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
-                .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
+            // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
+            // So in order to manage the FieldShowConditions we are mapping the APPEAL_TYPE to same as APPEAL_TYPE_FOR_DISPLAY
+            if (asylumCase.read(APPEAL_TYPE, AppealType.class).isEmpty()
+                && !HandlerUtils.isAipJourney(asylumCase)) {
 
-            asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
+                AppealTypeForDisplay appealTypeForDisplay = asylumCase
+                    .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+                    .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
+                asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

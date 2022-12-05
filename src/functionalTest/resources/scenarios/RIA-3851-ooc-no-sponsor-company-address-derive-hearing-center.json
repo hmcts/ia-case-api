@@ -46,7 +46,8 @@
     "caseData": {
       "template": "minimal-appeal-submitted.json",
       "replacements": {
-        "hearingCentre": "newcastle"
+        "hearingCentre": "newcastle",
+        "appellantInUk": "No"
       }
     }
   }
