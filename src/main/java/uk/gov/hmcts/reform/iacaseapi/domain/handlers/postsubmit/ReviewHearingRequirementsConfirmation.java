@@ -38,7 +38,7 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
         postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
         postSubmitResponse.setConfirmationBody(
             "#### What happens next\n\n"
-            + "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>"
+            + "All parties will be notified of the agreed adjustments.<br><br>"
         );
 
         return postSubmitResponse;
