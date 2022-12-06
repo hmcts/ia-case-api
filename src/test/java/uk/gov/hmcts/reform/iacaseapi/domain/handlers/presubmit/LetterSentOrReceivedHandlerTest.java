@@ -55,7 +55,7 @@ class LetterSentOrReceivedHandlerTest {
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty()); //non-AIP
-
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
     }
 
     @Test
@@ -155,6 +155,26 @@ class LetterSentOrReceivedHandlerTest {
         assertThatThrownBy(() -> letterSentOrReceivedHandler.canHandle(PreSubmitCallbackStage.MID_EVENT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+
+    }
+
+    @Test
+    void should_not_write_received_or_sent_for_aaa() {
+
+        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(appellantInDetention));
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            letterSentOrReceivedHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, never()).write(eq(LETTER_SENT_OR_RECEIVED), any());
 
     }
 
