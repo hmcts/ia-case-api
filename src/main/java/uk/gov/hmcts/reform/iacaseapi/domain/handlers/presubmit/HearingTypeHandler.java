@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_TYPE_RESULT;
@@ -8,6 +9,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
@@ -65,10 +67,16 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
             }
         }
 
-        if (callback.getEvent() == Event.START_APPEAL && appealTypeForDisplay != null) {
-            if ((appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP)
-                    || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                    .orElse(NO) == YES) {
+        //if RP or DC or ADA
+        boolean isRpDcAda = appealTypeForDisplay != null
+            && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
+            || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+
+        //if ageAssessment
+        boolean isAgeAssessment = appealTypeForDisplay == null && (asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).equals(Optional.of(YES)));
+
+        if (callback.getEvent() == Event.START_APPEAL) {
+            if (isRpDcAda || isAgeAssessment) {
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);

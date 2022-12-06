@@ -7,6 +7,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_TYPE_RESULT;
@@ -84,7 +85,7 @@ class HearingTypeHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"PA", "EA", "HU", "AG"})
+    @ValueSource(strings = {"PA", "EA", "HU"})
     void should_write_to_hearing_type_result_no_for_edit_appeal_event(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -179,8 +180,19 @@ class HearingTypeHandlerTest {
     }
 
     @Test
-    void should_set_hearing_type_for_age_assessment_appeal() {
+    void should_set_hearing_type_for_age_assessment_start_appeal() {
+        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        hearingTypeHandler.handle(MID_EVENT, callback);
+
+        verify(asylumCase, times(1)).write(asylumExtractor.capture(), hearingTypeResult.capture());
+        assertThat(asylumExtractor.getValue()).isEqualTo(HEARING_TYPE_RESULT);
+        assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void should_set_hearing_type_for_age_assessment_edit_appeal() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         hearingTypeHandler.handle(MID_EVENT, callback);
 
         verify(asylumCase, times(1)).write(asylumExtractor.capture(), hearingTypeResult.capture());
