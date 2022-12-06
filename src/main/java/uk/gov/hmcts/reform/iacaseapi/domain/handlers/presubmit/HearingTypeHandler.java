@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -51,7 +52,8 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         if (appealType != null) {
             if ((appealType == AppealType.DC || appealType == AppealType.RP)
                     || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                .orElse(NO) == YES) {
+                .orElse(NO) == YES
+                || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);

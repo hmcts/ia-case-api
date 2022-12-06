@@ -54,16 +54,19 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
                 .read(APPELLANT_IN_UK, YesOrNo.class)
                 .orElseThrow(() -> new IllegalArgumentException("appellantInUk is missing"));
 
+        Optional<YesOrNo> isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class);
         Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
         Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
-
-        if ((isOutOfCountryEnabled.equals(YES) && appellantInUk.equals(NO))
+        if (isAgeAssessmentAppeal.equals(Optional.of(NO))) {
+            // Set the values only for non age assessment appeals. For age assessment, we have separate field - DATE_ON_DECISION_LETTER
+            if ((isOutOfCountryEnabled.equals(YES) && appellantInUk.equals(NO))
                 || isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.YES))) {
-            asylumCase.write(LETTER_SENT_OR_RECEIVED, "Received");
-        } else if ((appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(YesOrNo.NO)))
+                asylumCase.write(LETTER_SENT_OR_RECEIVED, "Received");
+            } else if ((appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(YesOrNo.NO)))
                 || (appellantInUk.equals(YES) && appellantInDetention.equals(Optional.of(YesOrNo.YES))
                 && isAcceleratedDetainedAppeal.equals(Optional.of(NO)))) {
-            asylumCase.write(LETTER_SENT_OR_RECEIVED, "Sent");
+                asylumCase.write(LETTER_SENT_OR_RECEIVED, "Sent");
+            }
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

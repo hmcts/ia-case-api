@@ -1,0 +1,24 @@
+{
+  "homeOfficeReferenceNumber": "123456789",
+  "homeOfficeDecisionDate": "{$TODAY}",
+  "appellantTitle": "Mr",
+  "appellantGivenNames": "Talha",
+  "appellantFamilyName": "Awan",
+  "aaAppellantDateOfBirth": "{$TODAY-7300}",
+  "appellantNationalities": [
+    {
+      "id": "1",
+      "value": {
+        "code": "IS"
+      }
+    }
+  ],
+  "aaAppellantHasFixedAddress": "No",
+  "aaContactPreference": "wantsSms",
+  "wantsSms": "Text message",
+  "aaMobileNumber": "07977111111",
+  "appealType": "ageAssessment",
+  "appealReferenceNumber": "DRAFT",
+  "isOutOfCountryEnabled": "Yes",
+  "appellantInUk": "Yes"
+}
