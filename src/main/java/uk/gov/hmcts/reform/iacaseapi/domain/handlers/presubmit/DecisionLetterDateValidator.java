@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ public class DecisionLetterDateValidator implements PreSubmitCallbackHandler<Asy
         String pageId = callback.getPageId();
 
         return callbackStage == PreSubmitCallbackStage.MID_EVENT
-               && event.equals(START_APPEAL)
+               && (event.equals(START_APPEAL) || event.equals(EDIT_APPEAL))
                && pageId.equals(DECISION_LETTER_DETAILS_PAGE_ID);
     }
 
