@@ -12,7 +12,7 @@ public class HomeOfficeAppealTypeChecker {
     private HomeOfficeAppealTypeChecker() {
     }
 
-    protected static boolean isAppealTypeEnabled(FeatureToggler featureToggler, AppealType appealType) {
+    public static boolean isAppealTypeEnabled(FeatureToggler featureToggler, AppealType appealType) {
 
         switch (appealType) {
             case DC:

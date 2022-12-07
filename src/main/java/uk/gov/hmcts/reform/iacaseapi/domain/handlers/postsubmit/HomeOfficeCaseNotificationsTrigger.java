@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
@@ -13,17 +13,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.HomeOfficeAppealTypeChecker;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
+
+
 @Component
 @Slf4j
-public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHandler<AsylumCase> {
+public class HomeOfficeCaseNotificationsTrigger implements PostSubmitCallbackHandler<AsylumCase> {
 
     private static final String SUPPRESSION_LOG_FIELDS = "event: {}, "
                                                          + "caseId: {}, "
@@ -35,7 +37,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
     private static final String HO_NOTIFICATION_FEATURE = "home-office-notification-feature";
 
-    public HomeOfficeCaseNotificationsHandler(
+    public HomeOfficeCaseNotificationsTrigger(
         FeatureToggler featureToggler,
         HomeOfficeApi<AsylumCase> homeOfficeApi) {
         this.featureToggler = featureToggler;
@@ -43,14 +45,11 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
     }
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+          Callback<AsylumCase> callback
     ) {
-        requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && (Arrays.asList(
+        return  (Arrays.asList(
                     Event.REQUEST_RESPONDENT_EVIDENCE,
                     Event.REQUEST_RESPONDENT_REVIEW,
                     Event.LIST_CASE,
@@ -80,11 +79,10 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                && featureToggler.getValue(HO_NOTIFICATION_FEATURE, false);
     }
 
-    public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
+    public PostSubmitCallbackResponse handle(
         Callback<AsylumCase> callback
     ) {
-        if (!canHandle(callbackStage, callback)) {
+        if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
 
@@ -98,7 +96,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
         if (!HomeOfficeAppealTypeChecker.isAppealTypeEnabled(featureToggler, appealType)) {
 
-            return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
+            return new PostSubmitCallbackResponse();
         }
 
         final String homeOfficeSearchStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_SEARCH_STATUS, String.class)
@@ -113,7 +111,6 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
         if (asylumCaseWithHomeOfficeData.read(APPELLANT_IN_UK, YesOrNo.class).map(
             value -> value.equals(YesOrNo.YES)).orElse(true)) {
 
-
             if ("SUCCESS".equalsIgnoreCase(homeOfficeSearchStatus)
                 && homeOfficeNotificationsEligible == YesOrNo.YES) {
 
@@ -121,7 +118,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
                     homeOfficeNotificationsEligible);
 
-                asylumCaseWithHomeOfficeData = homeOfficeApi.aboutToSubmit(callback);
+                homeOfficeApi.aboutToSubmit(callback);
 
                 log.info("Finish: Sending Home Office notification - " + SUPPRESSION_LOG_FIELDS,
                     callback.getEvent(), caseId, homeOfficeReferenceNumber, homeOfficeSearchStatus,
@@ -142,7 +139,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
         }
 
-        return new PreSubmitCallbackResponse<>(asylumCaseWithHomeOfficeData);
+        return new PostSubmitCallbackResponse();
     }
 
     protected Optional<Direction> getLatestNonStandardRespondentDirection(AsylumCase asylumCase) {
