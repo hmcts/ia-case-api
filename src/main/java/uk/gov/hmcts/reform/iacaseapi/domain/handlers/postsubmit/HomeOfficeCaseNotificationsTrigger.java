@@ -102,8 +102,7 @@ public class HomeOfficeCaseNotificationsTrigger implements PostSubmitCallbackHan
         final String homeOfficeSearchStatus = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_SEARCH_STATUS, String.class)
             .orElse("");
         final YesOrNo homeOfficeNotificationsEligible
-            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)
-            .orElse(YesOrNo.NO);
+            = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class).orElse(YesOrNo.NO);
         final long caseId = callback.getCaseDetails().getId();
         final String homeOfficeReferenceNumber
             = asylumCaseWithHomeOfficeData.read(HOME_OFFICE_REFERENCE_NUMBER, String.class).orElse("");
