@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
@@ -78,6 +79,7 @@ class HomeOfficeDecisionDateCheckerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
     }
 
     @Test
@@ -348,6 +350,63 @@ class HomeOfficeDecisionDateCheckerTest {
             .hasMessage("decisionLetterReceivedDate is not present")
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
 
+    }
+
+    @Test
+    void handles_aaa_case_when_in_time() {
+
+        final String decisionLetterDate = "2022-11-10";
+        final String dueDate = "2022-11-24";
+        final String nowDate = "2022-11-20";
+        final ZonedDateTime zonedDateTime = LocalDate.parse(decisionLetterDate).atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(decisionLetterDate));
+        when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_DAYS_UK)).thenReturn(zonedDueDateTime);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
+    }
+
+    @Test
+    void handles_aaa_case_when_out_of_time() {
+
+        final String decisionLetterDate = "2022-11-10";
+        final String dueDate = "2022-11-24";
+        final String nowDate = "2022-11-25";
+        final ZonedDateTime zonedDateTime = LocalDate.parse(decisionLetterDate).atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(dueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(decisionLetterDate));
+        when(dueDateService.calculateDueDate(zonedDateTime, APPEAL_OUT_OF_TIME_DAYS_UK)).thenReturn(zonedDueDateTime);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), outOfTime.capture());
+        verify(asylumCase, times(2)).write(asylumExtractor.capture(), recordedOutOfTimeDecision.capture());
+
+        assertThat(asylumExtractor.getAllValues().contains(SUBMISSION_OUT_OF_TIME));
+        assertThat(asylumExtractor.getValue()).isEqualTo(RECORDED_OUT_OF_TIME_DECISION);
+        assertThat(outOfTime.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(YES);
+        assertThat(recordedOutOfTimeDecision.getValue()).usingRecursiveComparison().getRecursiveComparisonConfiguration().equals(NO);
+    }
+
+    @Test
+    void should_throw_exception_when_aaa_decision_date_is_missing() {
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
+        assertThatThrownBy(() -> homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+            .hasMessage("dateOnDecisionLetter is not present")
+            .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
 }
