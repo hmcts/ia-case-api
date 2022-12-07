@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType.AIP;
 
 import com.google.common.collect.Maps;
 import java.net.URI;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Service
@@ -54,7 +57,8 @@ public class CcdSupplementaryUpdater {
         if (featureToggler.getValue("wa-R3-feature", false)) {
             requireNonNull(callback, "callback must not be null");
 
-            if (hasCitizenRole(userDetails.getRoles())) {
+            if (isAipJourney(callback.getCaseDetails().getCaseData())
+                    && hasCitizenRole(userDetails.getRoles())) {
                 return;
             }
 
@@ -100,6 +104,12 @@ public class CcdSupplementaryUpdater {
 
             log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
         }
+    }
+
+    private boolean isAipJourney(AsylumCase asylumCase) {
+        return asylumCase
+                .read(JOURNEY_TYPE, JourneyType.class)
+                .map(type -> type == AIP).orElse(false);
     }
 
     private boolean hasCitizenRole(List<String> roles) {
