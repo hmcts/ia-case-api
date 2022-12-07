@@ -1630,7 +1630,13 @@ public enum AsylumCaseFieldDefinition {
         "removalOrderDate", new TypeReference<String>(){}),
     
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    LISTING_AVAILABLE_FOR_ADA(
+        "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
+
+    CALCULATED_HEARING_DATE(
+        "calculatedHearingDate", new TypeReference<String>(){});
 
 
     private final String value;
