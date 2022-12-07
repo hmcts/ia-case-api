@@ -1632,8 +1632,13 @@ public enum AsylumCaseFieldDefinition {
         "removalOrderOptions", new TypeReference<YesOrNo>(){}),
 
     REMOVAL_ORDER_DATE(
-        "removalOrderDate", new TypeReference<String>(){})
-    ;
+        "removalOrderDate", new TypeReference<String>(){}),
+
+    LISTING_AVAILABLE_FOR_ADA(
+        "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
+
+    CALCULATED_HEARING_DATE(
+        "calculatedHearingDate", new TypeReference<String>(){});
 
 
     private final String value;
