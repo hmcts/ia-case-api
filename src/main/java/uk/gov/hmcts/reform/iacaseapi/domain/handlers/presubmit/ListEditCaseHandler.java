@@ -1,17 +1,29 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.utils.StaffLocation;
 
@@ -21,10 +33,17 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
 
     private final HearingCentreFinder hearingCentreFinder;
     private final CaseManagementLocationService caseManagementLocationService;
+    private final int dueInDaysSinceSubmission;
+    private final DirectionAppender directionAppender;
 
-    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder, CaseManagementLocationService caseManagementLocationService) {
+    public ListEditCaseHandler(HearingCentreFinder hearingCentreFinder,
+                               CaseManagementLocationService caseManagementLocationService,
+                               @Value("${adaCaseListedDirection.dueInDaysSinceSubmission}")  int dueInDaysSinceSubmission,
+                               DirectionAppender directionAppender) {
         this.hearingCentreFinder = hearingCentreFinder;
         this.caseManagementLocationService = caseManagementLocationService;
+        this.dueInDaysSinceSubmission = dueInDaysSinceSubmission;
+        this.directionAppender = directionAppender;
     }
 
     public boolean canHandle(
@@ -101,6 +120,8 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             // reset flag that makes ListCase available for accelerated detained appeals in
             // awaitingRespondentEvidence
             asylumCase.write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+
+            addDirection(asylumCase);
         }
 
 
@@ -114,5 +135,74 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.write(STAFF_LOCATION, staffLocationName);
         asylumCase.write(CASE_MANAGEMENT_LOCATION,
             caseManagementLocationService.getCaseManagementLocation(staffLocationName));
+    }
+
+    private AsylumCase addDirection(AsylumCase asylumCase) {
+
+        LocalDate appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)
+            .map(LocalDate::parse)
+            .orElseThrow(() -> new IllegalStateException("appealSubmissionDate is missing"));
+
+        LocalDate directionDueDate = appealSubmissionDate
+            .plusDays(dueInDaysSinceSubmission); // 15
+
+        Optional<List<IdValue<Direction>>> maybeDirections = asylumCase.read(DIRECTIONS);
+
+        final List<IdValue<Direction>> existingDirections =
+            maybeDirections.orElse(emptyList());
+
+        List<IdValue<Direction>> allDirections =
+            directionAppender.append(
+                asylumCase,
+                existingDirections,
+                "You have a direction for this case.\n"
+                + "\n"
+                + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
+                + "\n"
+                + "# Next steps\n"
+                + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
+                + "\n"
+                + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
+                + "\n"
+                + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.\n"
+                + "\n"
+                + "You must complete this direction by: " + directionDueDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+                Parties.LEGAL_REPRESENTATIVE,
+                directionDueDate.toString(),
+                DirectionTag.ADA_LIST_CASE,
+                Event.LIST_CASE.toString()
+            );
+
+        asylumCase.write(DIRECTIONS, allDirections);
+
+        //------
+        //asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
+        //
+        //LocalDate appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)
+        //    .map(LocalDate::parse)
+        //    .orElseThrow(() -> new IllegalStateException("appealSubmissionDate is missing"));
+        //
+        //String directionDueDate = appealSubmissionDate
+        //    .plusDays(dueInDaysSinceSubmission) // 15
+        //    .toString();
+        //
+        //asylumCase.write(SEND_DIRECTION_DATE_DUE, directionDueDate);
+        //
+        //asylumCase.write(SEND_DIRECTION_EXPLANATION,
+        //    "You have a direction for this case.\n"
+        //    + "\n"
+        //    + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
+        //    + "\n"
+        //    + "# Next steps\n"
+        //    + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
+        //    + "\n"
+        //    + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
+        //    + "\n"
+        //    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.\n"
+        //    + "\n"
+        //    + "You must complete this direction by: " + directionDueDate
+        //);
+
+        return asylumCase;
     }
 }
