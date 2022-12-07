@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
@@ -174,34 +173,6 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             );
 
         asylumCase.write(DIRECTIONS, allDirections);
-
-        //------
-        //asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
-        //
-        //LocalDate appealSubmissionDate = asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)
-        //    .map(LocalDate::parse)
-        //    .orElseThrow(() -> new IllegalStateException("appealSubmissionDate is missing"));
-        //
-        //String directionDueDate = appealSubmissionDate
-        //    .plusDays(dueInDaysSinceSubmission) // 15
-        //    .toString();
-        //
-        //asylumCase.write(SEND_DIRECTION_DATE_DUE, directionDueDate);
-        //
-        //asylumCase.write(SEND_DIRECTION_EXPLANATION,
-        //    "You have a direction for this case.\n"
-        //    + "\n"
-        //    + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
-        //    + "\n"
-        //    + "# Next steps\n"
-        //    + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
-        //    + "\n"
-        //    + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
-        //    + "\n"
-        //    + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.\n"
-        //    + "\n"
-        //    + "You must complete this direction by: " + directionDueDate
-        //);
 
         return asylumCase;
     }
