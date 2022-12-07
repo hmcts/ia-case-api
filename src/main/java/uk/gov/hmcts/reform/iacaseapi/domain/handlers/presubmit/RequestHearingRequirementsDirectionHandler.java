@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 
@@ -69,9 +68,6 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
         final List<IdValue<Direction>> existingDirections =
             maybeDirections.orElse(emptyList());
 
-        Optional<JourneyType> journeyType = asylumCase.read(JOURNEY_TYPE, JourneyType.class);
-        boolean isAipJourney = journeyType.isPresent() && journeyType.get() == JourneyType.AIP;
-
         List<IdValue<Direction>> allDirections =
                 directionAppender.append(
                         asylumCase,
@@ -81,7 +77,7 @@ public class RequestHearingRequirementsDirectionHandler implements PreSubmitCall
                     + "Visit the online service and use the HMCTS reference to find the case. You'll be able to submit the hearing requirements by following the instructions on the overview tab.\n\n"
                     + "The Tribunal will review the hearing requirements and any requests for additional adjustments. You'll then be sent a hearing date.\n\n"
                     + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant's needs for the hearing.\n",
-                    isAipJourney ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE,
+                    HandlerUtils.isAipJourney(asylumCase) ? Parties.APPELLANT : Parties.LEGAL_REPRESENTATIVE,
                     dateProvider
                         .now()
                         .plusDays(hearingRequirementsDueInDays)

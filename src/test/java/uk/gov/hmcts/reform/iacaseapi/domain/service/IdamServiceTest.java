@@ -43,7 +43,7 @@ class IdamServiceTest {
 
         when(idamApi.token(anyMap())).thenReturn(new Token("some user token", SCOPE));
 
-        String actual = idamService.getUserToken();
+        String actual = idamService.getServiceUserToken();
 
         assertThat(actual).isEqualTo("Bearer some user token");
 
