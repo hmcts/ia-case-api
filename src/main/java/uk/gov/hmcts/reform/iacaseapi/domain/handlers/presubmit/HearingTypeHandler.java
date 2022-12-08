@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -53,19 +52,21 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElse(null);
 
-        AppealTypeForDisplay appealTypeForDisplay = asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
-                .orElse(null);
+        //if RP or DC or ADA
+        boolean isRpDcAdaEditAppeal = appealType != null
+                && (appealType == AppealType.DC || appealType == AppealType.RP
+                || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
 
-        if (callback.getEvent() == Event.EDIT_APPEAL && appealType != null) {
-            if ((appealType == AppealType.DC || appealType == AppealType.RP)
-                    || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                .orElse(NO) == YES
-                || HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
+        if (callback.getEvent() == Event.EDIT_APPEAL) {
+            if (isRpDcAdaEditAppeal) {
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
             }
         }
+
+        AppealTypeForDisplay appealTypeForDisplay = asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+                .orElse(null);
 
         //if RP or DC or ADA
         boolean isRpDcAda = appealTypeForDisplay != null
