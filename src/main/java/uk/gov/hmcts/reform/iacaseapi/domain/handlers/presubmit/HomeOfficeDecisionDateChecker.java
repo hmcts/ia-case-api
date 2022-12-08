@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -77,8 +78,11 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                 .getCaseData();
 
         LocalDate homeOfficeDecisionDate = null;
+        LocalDate decisionLetterDate = null;
 
         Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
+        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+            .orElseThrow(() -> new RequiredFieldMissingException("Appeal type is missing"));
 
         //change this to be ADA appeal
         if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
@@ -109,6 +113,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                         parse(maybeDateEntryClearanceDecision
                             .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
                 }
+            } else if (appealType.equals(AppealType.AG)) {
+                Optional<String> mayBeDecisionLatter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
+                decisionLetterDate = parse(mayBeDecisionLatter.orElseThrow(() -> new RequiredFieldMissingException("dateOnDecisionLetter is not present")));
             } else {
                 homeOfficeDecisionDate = parse(maybeHomeOfficeDecisionDate
                     .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
@@ -117,6 +124,9 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
             if (!HandlerUtils.isAipJourney(asylumCase)) {
                 if (homeOfficeDecisionDate != null
                     && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
+                    asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+                    asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
+                } else if (decisionLetterDate != null && decisionLetterDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
                     asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                     asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
                 } else {

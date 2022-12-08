@@ -803,6 +803,9 @@ public enum AsylumCaseFieldDefinition {
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
 
+    ACCELERATED_DETAINED_APPEAL_LISTED(
+        "acceleratedDetainedAppealListed", new TypeReference<YesOrNo>() {}),
+
     AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS(
         "automaticDirectionRequestingHearingRequirements", new TypeReference<String>(){}),
 
@@ -1630,7 +1633,13 @@ public enum AsylumCaseFieldDefinition {
         "removalOrderDate", new TypeReference<String>(){}),
     
     APPELLANT_PIN_IN_POST(
-        "appellantPinInPost", new TypeReference<PinInPostDetails>(){});
+        "appellantPinInPost", new TypeReference<PinInPostDetails>(){}),
+
+    LISTING_AVAILABLE_FOR_ADA(
+        "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
+
+    CALCULATED_HEARING_DATE(
+        "calculatedHearingDate", new TypeReference<String>(){});
 
 
     private final String value;

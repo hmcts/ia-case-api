@@ -12,7 +12,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_FLAG_SET_ASIDE_REHEARD_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LIST_CASE_HEARING_LENGTH;
@@ -97,8 +96,6 @@ class ListCasePreparerTest {
     @Test
     void should_not_set_default_list_case_hearing_centre_if_case_hearing_centre_not_present() {
 
-        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -106,6 +103,21 @@ class ListCasePreparerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, never()).write(any(), any());
+    }
+
+    @Test
+    void should_set_default_list_case_hearing_centre_for_aaa_cases_to_harmondsworth() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
+            .thenReturn(Optional.of(HearingCentre.HARMONDSWORTH));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(LIST_CASE_HEARING_CENTRE, HearingCentre.HARMONDSWORTH);
     }
 
     @Test

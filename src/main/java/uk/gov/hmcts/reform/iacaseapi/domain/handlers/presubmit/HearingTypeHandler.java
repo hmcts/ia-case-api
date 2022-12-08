@@ -1,14 +1,18 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_TYPE_RESULT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -48,10 +52,32 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElse(null);
 
-        if (appealType != null) {
-            if ((appealType == AppealType.DC || appealType == AppealType.RP)
-                    || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                .orElse(NO) == YES) {
+        //if RP or DC or ADA
+        boolean isRpDcAdaEditAppeal = appealType != null
+                && (appealType == AppealType.DC || appealType == AppealType.RP
+                || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+
+        if (callback.getEvent() == Event.EDIT_APPEAL) {
+            if (isRpDcAdaEditAppeal) {
+                asylumCase.write(HEARING_TYPE_RESULT, YES);
+            } else {
+                asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
+            }
+        }
+
+        AppealTypeForDisplay appealTypeForDisplay = asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+                .orElse(null);
+
+        //if RP or DC or ADA
+        boolean isRpDcAda = appealTypeForDisplay != null
+            && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
+            || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+
+        //if ageAssessment
+        boolean isAgeAssessment = appealTypeForDisplay == null && (asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).equals(Optional.of(YES)));
+
+        if (callback.getEvent() == Event.START_APPEAL) {
+            if (isRpDcAda || isAgeAssessment) {
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);

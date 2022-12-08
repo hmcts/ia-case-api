@@ -77,7 +77,7 @@ public class DecisionLetterDateValidatorTest {
 
                 boolean canHandle = decisionLetterDateValidator.canHandle(callbackStage, callback);
 
-                if (event == Event.START_APPEAL
+                if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL)
                     && callbackStage == MID_EVENT
                     && callback.getPageId().equals(DECISION_LETTER_DETAILS_PAGE_ID)) {
                     assertTrue(canHandle);

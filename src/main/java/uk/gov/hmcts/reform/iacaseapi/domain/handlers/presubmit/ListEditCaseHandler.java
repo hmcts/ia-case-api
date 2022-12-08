@@ -88,6 +88,19 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         asylumCase.clear(REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS);
         addBaseLocationAndStaffLocationFromHearingCentre(asylumCase);
 
+        boolean isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
+            .orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+
+        if (isAcceleratedDetainedAppeal) {
+            asylumCase.write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
+
+            // reset flag that makes ListCase available for accelerated detained appeals in
+            // awaitingRespondentEvidence
+            asylumCase.write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        }
+
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 
