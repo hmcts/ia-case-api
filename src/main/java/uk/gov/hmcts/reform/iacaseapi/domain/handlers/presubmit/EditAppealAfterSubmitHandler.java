@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
@@ -81,70 +82,20 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
                 .getCaseDetails()
                 .getCaseData();
 
-        LocalDate decisionDate = null;
-        Optional<String> maybeHomeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE);
-
-        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
         if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                .orElse(NO) == NO) {
+                .orElse(NO) == YES) {
 
-            if (maybeOutOfCountryDecisionType.isPresent()) {
-                OutOfCountryDecisionType decisionType = maybeOutOfCountryDecisionType.get();
+            handleAccelaratedDetainedAppeal(asylumCase);
+        } else if (outOfCountryDecisionTypeOptional.isPresent()) {
 
-                if (decisionType == OutOfCountryDecisionType.REMOVAL_OF_CLIENT) {
-                    Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+            handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get());
+        } else if (HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
 
-                    decisionDate =
-                            parse(maybeHomeOfficeDecisionLetterDate
-                                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
-                } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_PROTECTION) {
-                    Optional<String> maybeDateClientLeaveUk = asylumCase.read(DATE_CLIENT_LEAVE_UK);
-
-                    decisionDate =
-                            parse(maybeDateClientLeaveUk
-                                    .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
-                } else if (decisionType == OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS) {
-                    Optional<String> maybeDateEntryClearanceDecision = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
-
-                    decisionDate =
-                            parse(maybeDateEntryClearanceDecision
-                                    .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
-                }
-            } else {
-                decisionDate =
-                        parse(maybeHomeOfficeDecisionDate
-                                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
-            }
-
-            if (decisionDate != null
-                && decisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-            } else {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
-                asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
-                asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
-                asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
-            }
-
+            handleInCountryAgeAssessmentAppeal(asylumCase);
         } else {
-            Optional<String> maybeHomeOfficeDecisionLetterDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
-            decisionDate =
-                parse(maybeHomeOfficeDecisionLetterDate
-                    .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
-
-            ZonedDateTime dueDateTime = dueDateService.calculateDueDate(decisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
-
-            if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(dateProvider.now())) {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
-                asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
-            } else {
-                asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
-                asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
-                asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
-                asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
-            }
-
+            handleInCountryAppeal(asylumCase);
         }
 
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
@@ -191,5 +142,95 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             })
             .collect(Collectors.toList())
         );
+    }
+
+    private void handleAccelaratedDetainedAppeal(AsylumCase asylumCase) {
+        Optional<String> homeOfficeDecisionLetterDateOptional = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+        LocalDate decisionDate =
+            parse(homeOfficeDecisionLetterDateOptional
+                .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+
+        ZonedDateTime dueDateTime = dueDateService.calculateDueDate(decisionDate.atStartOfDay(ZoneOffset.UTC), appealOutOfTimeAcceleratedDetainedWorkingDays);
+
+        if (dueDateTime != null && dueDateTime.toLocalDate().isBefore(dateProvider.now())) {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+            asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
+        } else {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        }
+    }
+
+    private void handleOutOfCountryAppeal(AsylumCase asylumCase, OutOfCountryDecisionType decisionType) {
+        LocalDate decisionDate;
+
+        switch (decisionType) {
+            case REMOVAL_OF_CLIENT :
+                Optional<String> homeOfficeDecisionLetterDateOptional = asylumCase.read(DECISION_LETTER_RECEIVED_DATE);
+                decisionDate =
+                    parse(homeOfficeDecisionLetterDateOptional
+                        .orElseThrow(() -> new RequiredFieldMissingException("decisionLetterReceivedDate is not present")));
+                break;
+            case REFUSAL_OF_PROTECTION :
+                Optional<String> dateClientLeaveUkOptional = asylumCase.read(DATE_CLIENT_LEAVE_UK);
+
+                decisionDate =
+                    parse(dateClientLeaveUkOptional
+                        .orElseThrow(() -> new RequiredFieldMissingException("dateClientLeaveUk is not present")));
+                break;
+            case REFUSAL_OF_HUMAN_RIGHTS:
+                Optional<String> dateEntryClearanceDecisionOptional = asylumCase.read(DATE_ENTRY_CLEARANCE_DECISION);
+
+                decisionDate =
+                    parse(dateEntryClearanceDecisionOptional
+                        .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
+                break;
+            default:
+                decisionDate = null;
+        }
+
+        if (decisionDate != null
+            && decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysOoc))) {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+        } else {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        }
+    }
+
+    private void handleInCountryAgeAssessmentAppeal(AsylumCase asylumCase) {
+
+        Optional<String> dateOnDecisionLetterOptional = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
+        LocalDate decisionDate = parse(dateOnDecisionLetterOptional.orElseThrow(() -> new RequiredFieldMissingException("dateOnDecisionLetter is not present")));
+
+        if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+        } else {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        }
+    }
+
+    private void handleInCountryAppeal(AsylumCase asylumCase) {
+
+        Optional<String> homeOfficeDecisionDateOptional = asylumCase.read(HOME_OFFICE_DECISION_DATE);
+        LocalDate decisionDate =
+            parse(homeOfficeDecisionDateOptional
+                .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is missing")));
+
+        if (decisionDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
+        } else {
+            asylumCase.write(SUBMISSION_OUT_OF_TIME, NO);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+            asylumCase.clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+            asylumCase.clear(RECORDED_OUT_OF_TIME_DECISION);
+        }
     }
 }
