@@ -132,8 +132,7 @@ class LetterSentOrReceivedHandlerTest {
 
                 boolean canHandle = letterSentOrReceivedHandler.canHandle(callbackStage, callback);
 
-                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT)
-                     && (event.equals(Event.START_APPEAL) || event.equals(Event.EDIT_APPEAL))
+                if ((callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == ABOUT_TO_SUBMIT) && (event.equals(Event.START_APPEAL)  || event.equals(Event.EDIT_APPEAL) || event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT))
                      && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())) {
                     assertThat(canHandle).isEqualTo(true);
                 } else {
