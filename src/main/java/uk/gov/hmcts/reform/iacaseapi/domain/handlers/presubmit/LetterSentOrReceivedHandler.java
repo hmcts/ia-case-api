@@ -31,7 +31,8 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
                && !HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
                && Arrays.asList(
             Event.START_APPEAL,
-            Event.EDIT_APPEAL
+            Event.EDIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT
         ).contains(callback.getEvent());
     }
 
