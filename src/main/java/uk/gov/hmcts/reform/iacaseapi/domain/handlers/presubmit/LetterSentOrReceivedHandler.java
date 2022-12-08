@@ -29,7 +29,8 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
         return (callbackStage == PreSubmitCallbackStage.MID_EVENT || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                && Arrays.asList(
             Event.START_APPEAL,
-            Event.EDIT_APPEAL
+            Event.EDIT_APPEAL,
+            Event.EDIT_APPEAL_AFTER_SUBMIT
         ).contains(callback.getEvent());
     }
 
