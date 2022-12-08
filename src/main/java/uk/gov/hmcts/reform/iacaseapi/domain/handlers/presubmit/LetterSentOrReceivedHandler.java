@@ -56,10 +56,10 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
                 .read(APPELLANT_IN_UK, YesOrNo.class)
                 .orElseThrow(() -> new IllegalArgumentException("appellantInUk is missing"));
 
-        Optional<YesOrNo> isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class);
+        YesOrNo isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO);
         Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
         Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
-        if (isAgeAssessmentAppeal.equals(Optional.of(NO))) {
+        if (isAgeAssessmentAppeal.equals(NO)) {
             // Set the values only for non age assessment appeals. For age assessment, we have separate field - DATE_ON_DECISION_LETTER
             if ((isOutOfCountryEnabled.equals(YES) && appellantInUk.equals(NO))
                 || isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.YES))) {
