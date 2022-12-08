@@ -82,17 +82,6 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
             return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
-        Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
-        if (remissionType.isPresent()
-            && Arrays.asList(HO_WAIVER_REMISSION, HELP_WITH_FEES, EXCEPTIONAL_CIRCUMSTANCES_REMISSION)
-                .contains(remissionType.get())
-        ) {
-            asylumCasePreSubmitCallbackResponse
-                .addError(
-                    "The Pay and submit option is not available. Select Submit your appeal to submit the appeal.");
-            return asylumCasePreSubmitCallbackResponse;
-        }
-
         final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
 
