@@ -184,6 +184,6 @@ class HearingTypeHandlerTest {
 
         verify(asylumCase, times(1)).write(asylumExtractor.capture(), hearingTypeResult.capture());
         assertThat(asylumExtractor.getValue()).isEqualTo(HEARING_TYPE_RESULT);
-        assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.YES);
+        assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.NO);
     }
 }
