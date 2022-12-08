@@ -65,7 +65,6 @@ class HearingTypeHandlerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, String.class)).thenReturn(Optional.of(isAcc));
-
     }
 
     @ParameterizedTest
@@ -187,16 +186,4 @@ class HearingTypeHandlerTest {
         assertThat(asylumExtractor.getValue()).isEqualTo(HEARING_TYPE_RESULT);
         assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.YES);
     }
-
-    @Test
-    void should_set_hearing_type_for_age_assessment_edit_appeal() {
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
-        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        hearingTypeHandler.handle(MID_EVENT, callback);
-
-        verify(asylumCase, times(1)).write(asylumExtractor.capture(), hearingTypeResult.capture());
-        assertThat(asylumExtractor.getValue()).isEqualTo(HEARING_TYPE_RESULT);
-        assertThat(hearingTypeResult.getValue()).isEqualTo(YesOrNo.YES);
-    }
-
 }
