@@ -803,6 +803,9 @@ public enum AsylumCaseFieldDefinition {
     SUBMIT_HEARING_REQUIREMENTS_AVAILABLE(
         "submitHearingRequirementsAvailable", new TypeReference<YesOrNo>() {}),
 
+    ACCELERATED_DETAINED_APPEAL_LISTED(
+        "acceleratedDetainedAppealListed", new TypeReference<YesOrNo>() {}),
+
     AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS(
         "automaticDirectionRequestingHearingRequirements", new TypeReference<String>(){}),
 
