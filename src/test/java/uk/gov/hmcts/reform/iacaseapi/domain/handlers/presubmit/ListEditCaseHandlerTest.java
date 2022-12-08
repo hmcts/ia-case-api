@@ -83,9 +83,7 @@ class ListEditCaseHandlerTest {
                                           + "\n"
                                           + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
                                           + "\n"
-                                          + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.\n"
-                                          + "\n"
-                                          + "You must complete this direction by: 16 December 2022";
+                                          + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.";
 
     private ListEditCaseHandler listEditCaseHandler;
 

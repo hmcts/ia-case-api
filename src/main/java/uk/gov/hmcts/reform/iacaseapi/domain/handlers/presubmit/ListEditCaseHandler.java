@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -163,9 +162,7 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
                 + "\n"
                 + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
                 + "\n"
-                + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.\n"
-                + "\n"
-                + "You must complete this direction by: " + directionDueDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+                + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.",
                 Parties.LEGAL_REPRESENTATIVE,
                 directionDueDate.toString(),
                 DirectionTag.ADA_LIST_CASE,
