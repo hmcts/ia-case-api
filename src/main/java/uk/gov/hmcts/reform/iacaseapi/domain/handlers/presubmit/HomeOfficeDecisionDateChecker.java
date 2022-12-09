@@ -126,7 +126,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                     && homeOfficeDecisionDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
                     asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                     asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
-                } else if (decisionLetterDate != null && decisionLetterDate.isBefore(dateProvider.now().minusDays(maybeOutOfCountryDecisionType.isPresent() ? appealOutOfTimeDaysOoc : appealOutOfTimeDaysUk))) {
+                } else if (decisionLetterDate != null
+                    && decisionLetterDate.isBefore(dateProvider.now().minusDays(appealOutOfTimeDaysUk))) {
                     asylumCase.write(SUBMISSION_OUT_OF_TIME, YES);
                     asylumCase.write(RECORDED_OUT_OF_TIME_DECISION, NO);
                 } else {
