@@ -88,6 +88,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case EA:
             case HU:
             case PA:
+            case EU:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
 
