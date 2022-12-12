@@ -75,6 +75,7 @@ public class ManageFeeUpdatePreparer implements PreSubmitCallbackHandler<AsylumC
             case EA:
             case HU:
             case PA:
+            case EU:
 
                 PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
                     .orElseThrow(() -> new IllegalStateException("Payment status is not present"));
