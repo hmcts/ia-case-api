@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CLARIFYING_QUESTIONS_ANSWERS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.COMPLETE_CLARIFY_QUESTIONS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.NOC_REQUEST;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,12 +61,23 @@ class CompleteClarifyingQuestionsHandlerTest {
         handler = new CompleteClarifyingQuestionsHandler();
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
     }
 
     @Test
-    void should_set_default_answer_to_clarifying_questions() {
-        when(callback.getEvent()).thenReturn(COMPLETE_CLARIFY_QUESTIONS);
+    void should_set_default_answer_to_clarifying_questions_for_event_completeClarifyQuestions() {
+        should_set_default_answer_to_clarifying_questions(COMPLETE_CLARIFY_QUESTIONS,
+                "No answer submitted because the question was marked as complete by the Tribunal");
+    }
+
+    @Test
+    void should_set_default_answer_to_clarifying_questions_for_event_nocRequest() {
+        should_set_default_answer_to_clarifying_questions(NOC_REQUEST,
+                "No answer submitted because the question was marked as complete due to change in representation");
+    }
+
+    private void should_set_default_answer_to_clarifying_questions(Event event, String expectedAnswer) {
+        when(callback.getEvent()).thenReturn(event);
         when(callback.getCaseDetails().getState()).thenReturn(State.AWAITING_CLARIFYING_QUESTIONS_ANSWERS);
         List<IdValue<ClarifyingQuestion>> clarifyingQuestions = Collections.singletonList(
             new IdValue<>("1", new ClarifyingQuestion("question 1"))
@@ -96,7 +108,7 @@ class CompleteClarifyingQuestionsHandlerTest {
 
         List<IdValue<ClarifyingQuestionAnswer>> answers = answersCaptor.getValue();
         assertEquals(1, answers.size());
-        assertEquals("No answer submitted because the question was marked as complete by the Tribunal",
+        assertEquals(expectedAnswer,
             answers.get(0).getValue().getAnswer());
     }
 
@@ -108,11 +120,12 @@ class CompleteClarifyingQuestionsHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             when(callback.getCaseDetails()).thenReturn(caseDetails);
             when(caseDetails.getCaseData()).thenReturn(asylumCase);
-            when(asylumCase.read(JOURNEY_TYPE)).thenReturn(Optional.of(JourneyType.AIP));
+            when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = handler.canHandle(callbackStage, callback);
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && event == COMPLETE_CLARIFY_QUESTIONS) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                        && (event == COMPLETE_CLARIFY_QUESTIONS || event == NOC_REQUEST)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

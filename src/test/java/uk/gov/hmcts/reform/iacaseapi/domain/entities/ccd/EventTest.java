@@ -115,10 +115,11 @@ class EventTest {
         assertEquals("markPaymentRequestSent", Event.MARK_PAYMENT_REQUEST_SENT.toString());
         assertEquals("endAppealAutomatically", Event.END_APPEAL_AUTOMATICALLY.toString());
         assertEquals("generateServiceRequest", Event.GENERATE_SERVICE_REQUEST.toString());
+        assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(112, Event.values().length);
+        assertEquals(113, Event.values().length);
     }
 }

@@ -4,7 +4,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 
@@ -17,13 +22,32 @@ class CaseDetailsTest {
     private final LocalDateTime createdDate = LocalDateTime.parse("2019-01-31T11:22:33");
     private final String classification = "PUBLIC";
 
-    private CaseDetails<CaseData> caseDetails = new CaseDetails<>(
+    static ObjectMapper mapper = new ObjectMapper();
+    static JsonNode serviceIdValue;
+
+    static {
+        try {
+            serviceIdValue = mapper.readValue("\"BFA1\"", JsonNode.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final Map<String, JsonNode> supplementaryData = new HashMap<>();
+
+    static {
+        supplementaryData.put("HMCTSServiceId:", serviceIdValue);
+    }
+
+
+    private final CaseDetails<CaseData> caseDetails = new CaseDetails<>(
         id,
         jurisdiction,
         state,
         caseData,
         createdDate,
-        classification
+        classification,
+        supplementaryData
     );
 
     @Test
@@ -35,13 +59,15 @@ class CaseDetailsTest {
         assertEquals(caseData, caseDetails.getCaseData());
         assertEquals(createdDate, caseDetails.getCreatedDate());
         assertEquals(classification, caseDetails.getSecurityClassification());
+        assertEquals(supplementaryData, caseDetails.getSupplementaryData());
     }
 
     @Test
-    void should_throw_required_field_missing_exception() {
+    void should_throw_required_field_missing_exception() throws JsonProcessingException {
 
         CaseDetails<CaseData> caseDetails = new CaseDetails<>(
             id,
+            null,
             null,
             null,
             null,

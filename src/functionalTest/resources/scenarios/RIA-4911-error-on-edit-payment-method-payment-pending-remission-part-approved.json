@@ -1,6 +1,6 @@
 {
   "description": "RIA-4911 error on edit payment method (Payment status - Payment pending, remission - partially approved)",
-  "enabled": "{$featureFlag.isfeePaymentEnabled}",
+  "enabled": "false",
   "request": {
     "uri": "/asylum/ccdAboutToStart",
     "credentials": "LegalRepresentative",
