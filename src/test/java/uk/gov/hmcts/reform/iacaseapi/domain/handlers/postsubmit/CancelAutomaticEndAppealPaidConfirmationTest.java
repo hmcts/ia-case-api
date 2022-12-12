@@ -130,8 +130,8 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
     @Test
     void it_can_handle_callback() {
 
-        for(Event event : Event.values()){
-            for(PaymentStatus paymentStatus : PaymentStatus.values()){
+        for (Event event : Event.values()) {
+            for (PaymentStatus paymentStatus : PaymentStatus.values()) {
 
                 when(callback.getCaseDetails()).thenReturn(caseDetails);
                 when(caseDetails.getCaseData()).thenReturn(asylumCase);

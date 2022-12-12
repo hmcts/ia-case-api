@@ -71,7 +71,7 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
             int scheduleDelayInMinutes = 52560000;
             ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
 
-             scheduler.schedule(
+            scheduler.schedule(
                     new TimedEvent(
                             timeEventId.get(),
                             Event.END_APPEAL_AUTOMATICALLY,
