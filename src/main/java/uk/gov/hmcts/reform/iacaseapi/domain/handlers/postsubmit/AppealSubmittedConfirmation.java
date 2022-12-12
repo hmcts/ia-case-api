@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 
 @Slf4j
 @Component
@@ -50,10 +51,13 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
 
+
+    private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
     private final AsylumCasePostFeePaymentService asylumCasePostFeePaymentService;
 
-    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService) {
+    public AppealSubmittedConfirmation(AsylumCasePostFeePaymentService asylumCasePostFeePaymentService, CcdSupplementaryUpdater ccdSupplementaryUpdater) {
         this.asylumCasePostFeePaymentService = asylumCasePostFeePaymentService;
+        this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
     public boolean canHandle(
@@ -73,6 +77,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
+
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 

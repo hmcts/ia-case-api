@@ -119,6 +119,8 @@ public enum Event {
     CREATE_CASE_LINK("createCaseLink"),
     MAINTAIN_CASE_LINKS("maintainCaseLinks"),
 
+    PIP_ACTIVATION("pipActivation"),
+
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 
