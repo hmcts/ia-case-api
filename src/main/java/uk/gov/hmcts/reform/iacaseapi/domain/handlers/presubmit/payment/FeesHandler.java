@@ -87,6 +87,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
             case EA:
             case HU:
             case PA:
+            case EU:
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
 
                 asylumCase = feePayment.aboutToSubmit(callback);
