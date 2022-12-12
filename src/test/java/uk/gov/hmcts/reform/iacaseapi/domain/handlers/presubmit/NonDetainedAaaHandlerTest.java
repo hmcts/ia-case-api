@@ -32,17 +32,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class NonDetainedAAAHandlerTest {
+class NonDetainedAaaHandlerTest {
 
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private AsylumCase asylumCase;
 
-    private NonDetainedAAAHandler nonDetainedAAAHandler;
+    private NonDetainedAaaHandler nonDetainedAaaHandler;
 
     @BeforeEach
     public void setUp() {
-        nonDetainedAAAHandler = new NonDetainedAAAHandler();
+        nonDetainedAaaHandler = new NonDetainedAaaHandler();
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
@@ -52,7 +52,7 @@ class NonDetainedAAAHandlerTest {
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
-        assertThatThrownBy(() -> nonDetainedAAAHandler.handle(MID_EVENT, callback))
+        assertThatThrownBy(() -> nonDetainedAaaHandler.handle(MID_EVENT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -65,7 +65,7 @@ class NonDetainedAAAHandlerTest {
                 .thenReturn(Optional.of(REFUSAL_OF_PROTECTION));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                nonDetainedAAAHandler.handle(ABOUT_TO_START, callback);
+                nonDetainedAaaHandler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -81,7 +81,7 @@ class NonDetainedAAAHandlerTest {
                 .thenReturn(Optional.of(REFUSAL_OF_HUMAN_RIGHTS));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                nonDetainedAAAHandler.handle(ABOUT_TO_START, callback);
+                nonDetainedAaaHandler.handle(ABOUT_TO_START, callback);
 
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
@@ -100,7 +100,7 @@ class NonDetainedAAAHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                boolean canHandle = nonDetainedAAAHandler.canHandle(callbackStage, callback);
+                boolean canHandle = nonDetainedAaaHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_START && event.equals(Event.EDIT_APPEAL_AFTER_SUBMIT)) {
                     assertThat(canHandle).isEqualTo(true);
@@ -115,13 +115,13 @@ class NonDetainedAAAHandlerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> nonDetainedAAAHandler.canHandle(null, callback))
-            .hasMessage("callbackStage must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> nonDetainedAaaHandler.canHandle(null, callback))
+                .hasMessage("callbackStage must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> nonDetainedAAAHandler.canHandle(ABOUT_TO_START, null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> nonDetainedAaaHandler.canHandle(ABOUT_TO_START, null))
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
     }
 

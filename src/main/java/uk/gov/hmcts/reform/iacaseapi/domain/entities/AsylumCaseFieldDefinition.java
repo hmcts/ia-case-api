@@ -720,7 +720,7 @@ public enum AsylumCaseFieldDefinition {
             "letterSentOrReceived", new TypeReference<String>(){}),
 
     APPELLANT_IN_UK_OR_NOT_HU(
-            "appellantInUkOrNotHU", new TypeReference<String>(){}),
+            "appellantInUkOrNotHu", new TypeReference<String>(){}),
 
     PREV_JOURNEY_TYPE(
         "prevJourneyType", new TypeReference<JourneyType>(){}),

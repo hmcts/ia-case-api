@@ -100,6 +100,7 @@ class EditAppealAfterSubmitHandlerTest {
 
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL_AFTER_SUBMIT);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.HU));
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPLICATIONS)).thenReturn(Optional.of(applications));
         when(asylumCase.read(CURRENT_CASE_STATE_VISIBLE_TO_HOME_OFFICE_ALL, State.class))
