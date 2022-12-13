@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 
@@ -37,16 +41,15 @@ class CcdSupplementaryUpdaterTest {
     private static final String ACCESS_TOKEN = "12345";
 
     private CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    private String ccdUrl = "some-host";
-    private String ccdSupplementaryApiPath = "some-path";
-    private String hmctsServiceId = "some-id";
+    private final String ccdUrl = "some-host";
+    private final String ccdSupplementaryApiPath = "some-path";
+    private final String hmctsServiceId = "some-id";
 
+    @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
-
     @Mock private AuthTokenGenerator serviceAuthTokenGenerator;
     @Mock private RestTemplate restTemplate;
     @Mock private ResponseEntity<Object> responseEntity;
-
     @Mock private Callback<AsylumCase> callback;
     @Mock private CaseDetails<AsylumCase> caseDetails;
     @Mock private UserDetails userDetails;
@@ -69,6 +72,8 @@ class CcdSupplementaryUpdaterTest {
 
     @Test
     void should_sent_post_to_update_ccd_and_receive_201() {
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         setupForSuccessfulPostRequest();
 
@@ -91,6 +96,8 @@ class CcdSupplementaryUpdaterTest {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getId()).thenReturn(123L);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.REP));
 
         when(restTemplate
             .exchange(
@@ -101,12 +108,7 @@ class CcdSupplementaryUpdaterTest {
             )
         ).thenThrow(restClientResponseEx);
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback))
-            .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't update CCD case supplementary data using API: "
-                + ccdUrl
-                + ccdSupplementaryApiPath)
-            .hasCauseInstanceOf(RestClientResponseException.class);
+        assertThatNoException().isThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback));
 
         verify(restTemplate)
             .exchange(
@@ -141,7 +143,10 @@ class CcdSupplementaryUpdaterTest {
 
     @Test
     void should_do_nothing_when_user_is_a_citizen() {
-        when(userDetails.getRoles()).thenReturn(Arrays.asList("citizen"));
+        when(userDetails.getRoles()).thenReturn(List.of("citizen"));
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+
         setupForSuccessfulPostRequest();
 
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
