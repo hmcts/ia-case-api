@@ -88,7 +88,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
@@ -114,7 +114,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -154,7 +154,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -183,7 +183,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @ParameterizedTest
@@ -218,7 +218,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
@@ -240,7 +240,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
@@ -269,7 +269,7 @@ class MakeAnApplicationTypesProviderTest {
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
@@ -284,18 +284,18 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
+            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
-            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()));
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
-        assertThat(expectedList).isEqualTo(actualList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
     }
 
     @Test
