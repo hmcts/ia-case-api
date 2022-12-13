@@ -5,7 +5,8 @@ public enum DispatchPriority {
     EARLIEST("earliest"),
     EARLY("early"),
     LATE("late"),
-    LATEST("latest");
+    LATEST("latest"),
+    LATELATEST("late-latest");
 
     private final String id;
 

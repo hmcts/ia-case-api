@@ -1,16 +1,15 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.RESPONDENT_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -29,17 +28,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HomeOfficeApi;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
-class HomeOfficeCaseNotificationsTriggerTest {
+class HomeOfficeCaseNotificationsHandlerTest {
 
     @Mock private HomeOfficeApi<AsylumCase> homeOfficeApi;
     @Mock private Callback<AsylumCase> callback;
@@ -47,7 +46,7 @@ class HomeOfficeCaseNotificationsTriggerTest {
     @Mock private AsylumCase asylumCase;
     @Mock private FeatureToggler featureToggler;
 
-    private HomeOfficeCaseNotificationsTrigger homeOfficeCaseNotificationsTrigger;
+    private HomeOfficeCaseNotificationsHandler homeOfficeCaseNotificationsHandler;
 
     private IdValue originalDirection8 = new IdValue(
         "8",
@@ -91,8 +90,8 @@ class HomeOfficeCaseNotificationsTriggerTest {
 
     @BeforeEach
     void setUp() {
-        homeOfficeCaseNotificationsTrigger =
-            new HomeOfficeCaseNotificationsTrigger(featureToggler, homeOfficeApi);
+        homeOfficeCaseNotificationsHandler =
+            new HomeOfficeCaseNotificationsHandler(featureToggler, homeOfficeApi);
         when(featureToggler.getValue("home-office-notification-feature", false)).thenReturn(true);
     }
 
@@ -110,7 +109,7 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.handle(callback))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("AppealType is not present.");
     }
@@ -132,10 +131,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         if (Arrays.asList(PA, RP).contains(appealType)) {
             verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
@@ -162,10 +162,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
@@ -187,10 +188,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         if (Arrays.asList(DC, EA, HU).contains(appealType)) {
             verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
@@ -212,10 +214,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("FAIL"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
     }
@@ -233,10 +236,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
     }
@@ -321,10 +325,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         if (hoUanfeatureFlag) {
             verify(homeOfficeApi, times(0)).aboutToSubmit(callback);
@@ -366,10 +371,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         if (Arrays.asList(PA, RP).contains(appealType)) {
 
@@ -397,10 +403,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         if (Arrays.asList(DC, EA, HU).contains(appealType)) {
 
@@ -429,10 +436,11 @@ class HomeOfficeCaseNotificationsTriggerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
         when(asylumCase.read(HOME_OFFICE_NOTIFICATIONS_ELIGIBLE, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
-        PostSubmitCallbackResponse callbackResponse =
-                homeOfficeCaseNotificationsTrigger.handle(callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
 
         verify(homeOfficeApi, times(1)).aboutToSubmit(callback);
     }
@@ -457,20 +465,20 @@ class HomeOfficeCaseNotificationsTriggerTest {
     void should_return_true_for_respondent_direction() {
 
         when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
-        assertTrue(homeOfficeCaseNotificationsTrigger.isDirectionForRespondentParties(asylumCase));
+        assertTrue(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
     }
 
     @Test
     void should_return_false_for_non_respondent_direction() {
 
         when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.LEGAL_REPRESENTATIVE));
-        assertFalse(homeOfficeCaseNotificationsTrigger.isDirectionForRespondentParties(asylumCase));
+        assertFalse(homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase));
     }
 
     @Test
     void should_return_error_for_missing_direction() {
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.isDirectionForRespondentParties(asylumCase))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.isDirectionForRespondentParties(asylumCase))
             .hasMessage("sendDirectionParties is not present")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -485,7 +493,7 @@ class HomeOfficeCaseNotificationsTriggerTest {
         directionList.add(originalDirection11);
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
 
-        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsTrigger.getLatestNonStandardRespondentDirection(asylumCase);
+        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
 
         assertTrue(selectedDirection.isPresent());
         assertEquals(Parties.RESPONDENT, selectedDirection.get().getParties());
@@ -500,7 +508,7 @@ class HomeOfficeCaseNotificationsTriggerTest {
         directionList.add(originalDirection10);
         when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
 
-        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsTrigger.getLatestNonStandardRespondentDirection(asylumCase);
+        Optional<Direction> selectedDirection = homeOfficeCaseNotificationsHandler.getLatestNonStandardRespondentDirection(asylumCase);
 
         assertTrue(selectedDirection.isEmpty());
     }
@@ -511,54 +519,58 @@ class HomeOfficeCaseNotificationsTriggerTest {
 
         for (Event event : Event.values()) {
 
-            for (State state : State.values()) {
+            for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                when(callback.getEvent()).thenReturn(event);
-                when(callback.getCaseDetails()).thenReturn(caseDetails);
-                when(caseDetails.getCaseData()).thenReturn(asylumCase);
-                when(callback.getCaseDetails().getState()).thenReturn(state);
-                when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
+                for (State state : State.values()) {
 
-                List<IdValue<Direction>> directionList = new ArrayList<>();
-                directionList.add(originalDirection8);
-                directionList.add(originalDirection9);
-                when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
+                    when(callback.getEvent()).thenReturn(event);
+                    when(callback.getCaseDetails()).thenReturn(caseDetails);
+                    when(caseDetails.getCaseData()).thenReturn(asylumCase);
+                    when(callback.getCaseDetails().getState()).thenReturn(state);
+                    when(asylumCase.read(DIRECTION_EDIT_PARTIES, Parties.class)).thenReturn(Optional.of(Parties.RESPONDENT));
 
-                boolean canHandle = homeOfficeCaseNotificationsTrigger.canHandle(callback);
+                    List<IdValue<Direction>> directionList = new ArrayList<>();
+                    directionList.add(originalDirection8);
+                    directionList.add(originalDirection9);
+                    when(asylumCase.read(AsylumCaseFieldDefinition.DIRECTIONS)).thenReturn(Optional.of((directionList)));
 
-                if (Arrays.asList(
-                    REQUEST_RESPONDENT_EVIDENCE,
-                    REQUEST_RESPONDENT_REVIEW,
-                    LIST_CASE,
-                    EDIT_CASE_LISTING,
-                    ADJOURN_HEARING_WITHOUT_DATE,
-                    SEND_DECISION_AND_REASONS,
-                    APPLY_FOR_FTPA_APPELLANT,
-                    APPLY_FOR_FTPA_RESPONDENT,
-                    LEADERSHIP_JUDGE_FTPA_DECISION,
-                    RESIDENT_JUDGE_FTPA_DECISION,
-                    END_APPEAL,
-                    SEND_DIRECTION,
-                    REQUEST_RESPONSE_AMEND
-                ).contains(callback.getEvent())
-                    || (event == CHANGE_DIRECTION_DUE_DATE
+                    boolean canHandle = homeOfficeCaseNotificationsHandler.canHandle(callbackStage, callback);
+
+                    if (callbackStage == ABOUT_TO_SUBMIT
                         && (Arrays.asList(
-                            AWAITING_RESPONDENT_EVIDENCE,
-                            RESPONDENT_REVIEW
-                        ).contains(callback.getCaseDetails().getState()))
+                        REQUEST_RESPONDENT_EVIDENCE,
+                        REQUEST_RESPONDENT_REVIEW,
+                        LIST_CASE,
+                        EDIT_CASE_LISTING,
+                        ADJOURN_HEARING_WITHOUT_DATE,
+                        SEND_DECISION_AND_REASONS,
+                        APPLY_FOR_FTPA_APPELLANT,
+                        APPLY_FOR_FTPA_RESPONDENT,
+                        LEADERSHIP_JUDGE_FTPA_DECISION,
+                        RESIDENT_JUDGE_FTPA_DECISION,
+                        END_APPEAL,
+                        SEND_DIRECTION,
+                        REQUEST_RESPONSE_AMEND
+                    ).contains(callback.getEvent())
+                        || (event == CHANGE_DIRECTION_DUE_DATE
+                            && (Arrays.asList(
+                                AWAITING_RESPONDENT_EVIDENCE,
+                                RESPONDENT_REVIEW
+                            ).contains(callback.getCaseDetails().getState()))
+                            )
                         )
-                ) {
-                    if (event == SEND_DIRECTION
-                        && state != AWAITING_RESPONDENT_EVIDENCE) {
-                        assertFalse(canHandle);
+                    ) {
+                        if (event == SEND_DIRECTION
+                            && state != AWAITING_RESPONDENT_EVIDENCE) {
+                            assertFalse(canHandle);
+                        } else {
+                            assertTrue(canHandle);
+                        }
                     } else {
-                        assertTrue(canHandle);
+                        assertFalse(canHandle);
                     }
-                } else {
-                    assertFalse(canHandle);
                 }
             }
-
         }
         reset(callback);
     }
@@ -566,11 +578,19 @@ class HomeOfficeCaseNotificationsTriggerTest {
     @Test
     void should_not_allow_null_arguments() {
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.canHandle(null))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.canHandle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.canHandle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.handle(null))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(null, callback))
+            .hasMessage("callbackStage must not be null")
+            .isExactlyInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
@@ -578,12 +598,12 @@ class HomeOfficeCaseNotificationsTriggerTest {
     @Test
     void handler_throws_error_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.handle(callback))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 
         when(callback.getEvent()).thenReturn(START_APPEAL);
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.handle(callback))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -591,12 +611,12 @@ class HomeOfficeCaseNotificationsTriggerTest {
     @Test
     void handler_throws_error_if_feature_not_enabled() {
 
-        homeOfficeCaseNotificationsTrigger = new HomeOfficeCaseNotificationsTrigger(
+        homeOfficeCaseNotificationsHandler = new HomeOfficeCaseNotificationsHandler(
             featureToggler,
             homeOfficeApi
         );
 
-        assertThatThrownBy(() -> homeOfficeCaseNotificationsTrigger.handle(callback))
+        assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
 

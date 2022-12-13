@@ -92,7 +92,7 @@ public class PreSubmitCallbackDispatcher<T extends CaseData> {
 
             dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATE);
             dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATEST);
-
+            dispatchToHandlers(callbackStage, callback, sortedCallbackHandlers, callbackResponse, DispatchPriority.LATELATEST);
         } else {
             callbackResponse.addError(check.getInvalidReason());
         }
