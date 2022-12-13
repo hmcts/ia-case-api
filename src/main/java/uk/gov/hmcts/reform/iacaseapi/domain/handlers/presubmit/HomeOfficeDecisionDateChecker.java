@@ -114,8 +114,8 @@ public class HomeOfficeDecisionDateChecker implements PreSubmitCallbackHandler<A
                             .orElseThrow(() -> new RequiredFieldMissingException("dateEntryClearanceDecision is not present")));
                 }
             } else if (appealType.equals(AppealType.AG)) {
-                Optional<String> mayBeDecisionLatter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
-                decisionLetterDate = parse(mayBeDecisionLatter.orElseThrow(() -> new RequiredFieldMissingException("dateOnDecisionLetter is not present")));
+                Optional<String> maybeDecisionLetter = asylumCase.read(DATE_ON_DECISION_LETTER, String.class);
+                decisionLetterDate = parse(maybeDecisionLetter.orElseThrow(() -> new RequiredFieldMissingException("dateOnDecisionLetter is not present")));
             } else {
                 homeOfficeDecisionDate = parse(maybeHomeOfficeDecisionDate
                     .orElseThrow(() -> new RequiredFieldMissingException("homeOfficeDecisionDate is not present")));
