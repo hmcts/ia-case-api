@@ -98,6 +98,9 @@ class ReviewHearingRequirementsConfirmationTest {
     void should_return_confirmation_when_list_case_without_requirements() {
 
         when(callback.getEvent()).thenReturn(Event.LIST_CASE_WITHOUT_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
