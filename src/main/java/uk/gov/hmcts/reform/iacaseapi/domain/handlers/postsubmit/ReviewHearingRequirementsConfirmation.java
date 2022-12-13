@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 
 import java.util.Arrays;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 
@@ -35,11 +37,25 @@ public class ReviewHearingRequirementsConfirmation implements PostSubmitCallback
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
 
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        boolean isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
+            .orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+
         postSubmitResponse.setConfirmationHeader("# You've recorded the agreed hearing adjustments");
-        postSubmitResponse.setConfirmationBody(
-            "#### What happens next\n\n"
-            + "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>"
-        );
+
+        if (isAcceleratedDetainedAppeal) {
+            postSubmitResponse.setConfirmationBody(
+                "#### What happens next\n\n"
+                + "All parties will be notified of the agreed adjustments.<br><br>"
+            );
+        } else {
+            postSubmitResponse.setConfirmationBody(
+                "#### What happens next\n\n"
+                + "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>"
+            );
+        }
 
         return postSubmitResponse;
     }

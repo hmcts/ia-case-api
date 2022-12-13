@@ -105,8 +105,14 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
         }
 
-        //For ADA case type path clear submittable flag to stop resubmission
-        asylumCase.clear(ADA_HEARING_REQUIREMENTS_SUBMITTABLE);
+        boolean isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
+            .orElse(YesOrNo.NO)
+            .equals(YesOrNo.YES);
+
+        if (isAcceleratedDetainedAppeal) {
+            asylumCase.clear(ADA_HEARING_REQUIREMENTS_SUBMITTABLE);
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.YES);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
