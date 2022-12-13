@@ -57,6 +57,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             reviewDraftHearingRequirementsHandler.handle(ABOUT_TO_SUBMIT, callback);
@@ -64,6 +65,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
 
         reset(callback);
         reset(asylumCase);

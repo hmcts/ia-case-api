@@ -8,15 +8,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +29,10 @@ class ReviewHearingRequirementsConfirmationTest {
 
     @Mock
     private Callback<AsylumCase> callback;
+    @Mock
+    private CaseDetails<AsylumCase> caseDetails;
+    @Mock
+    private AsylumCase asylumCase;
 
     private ReviewHearingRequirementsConfirmation reviewHearingRequirementsConfirmation;
 
@@ -35,9 +43,38 @@ class ReviewHearingRequirementsConfirmationTest {
     }
 
     @Test
-    void should_return_confirmation() {
+    void should_return_confirmation_appeal_journey() {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        PostSubmitCallbackResponse callbackResponse =
+            reviewHearingRequirementsConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
+            callbackResponse.getConfirmationHeader().get())
+            .contains("You've recorded the agreed hearing adjustments");
+
+        assertThat(
+            callbackResponse.getConfirmationBody().get())
+            .contains(
+                "All parties will be notified of the agreed adjustments.");
+
+    }
+
+    @Test
+    void should_return_confirmation_ada_journey() {
+
+        when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
