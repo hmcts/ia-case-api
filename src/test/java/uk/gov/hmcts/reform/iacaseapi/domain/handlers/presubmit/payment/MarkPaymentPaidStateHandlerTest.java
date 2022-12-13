@@ -60,7 +60,7 @@ class MarkPaymentPaidStateHandlerTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights"})
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "euSettlementScheme"})
     void should_mark_appeal_as_paid_and_state_change_for_ea_and_hu_appeals(String appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);

@@ -106,7 +106,7 @@ class CaseWorkerServiceTest {
     void getCaseWorkerNameForActorId(CaseWorkerNameScenario scenario) {
 
         String userBearerToken = "some user bearer token";
-        when(idamService.getUserToken()).thenReturn(userBearerToken);
+        when(idamService.getServiceUserToken()).thenReturn(userBearerToken);
 
         String serviceBearerToken = "some service bearer token";
         when(authTokenGenerator.generate()).thenReturn(serviceBearerToken);

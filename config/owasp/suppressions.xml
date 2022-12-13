@@ -78,4 +78,22 @@
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-42004</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            spring security and tomcat vulnerabilites
+            ]]>
+        </notes>
+        <cve>CVE-2022-31692</cve>
+        <cve>CVE-2022-31690</cve>
+        <cve>CVE-2022-42252</cve>
+        <cve>CVE-2022-41854</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[postgresql:postgresql:42.4.1]]>
+        </notes>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
+    <suppress>
+        <cve>CVE-2021-37533</cve>    
+    </suppress>
 </suppressions>

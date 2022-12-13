@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealPaymentConfirmationProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -76,11 +76,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         // make a payment
-        final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-            .map(j -> j == JourneyType.AIP)
-            .orElse(false);
-
-        if (isAipJourney) {
+        if (HandlerUtils.isAipJourney(asylumCase)) {
             return new PostSubmitCallbackResponse();
         }
 

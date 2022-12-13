@@ -45,9 +45,6 @@ public class SubmitAppealPreparerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-
         assertThatThrownBy(() -> submitAppealPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
