@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.infrastructure.clients;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -100,12 +101,7 @@ class CcdSupplementaryUpdaterTest {
             )
         ).thenThrow(restClientResponseEx);
 
-        assertThatThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback))
-            .isInstanceOf(CcdDataIntegrationException.class)
-            .hasMessage("Couldn't update CCD case supplementary data using API: "
-                + ccdUrl
-                + ccdSupplementaryApiPath)
-            .hasCauseInstanceOf(RestClientResponseException.class);
+        assertThatNoException().isThrownBy(() -> ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback));
 
         verify(restTemplate)
             .exchange(

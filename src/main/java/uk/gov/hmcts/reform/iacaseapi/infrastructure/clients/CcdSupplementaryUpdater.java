@@ -77,23 +77,21 @@ public class CcdSupplementaryUpdater {
                     .build(caseId);
 
             ResponseEntity<Object> response;
+            String url = ccdUrl + uri.getPath();
             try {
                 response = restTemplate
                         .exchange(
-                                ccdUrl + uri.getPath(),
+                                url,
                                 HttpMethod.POST,
                                 requestEntity,
                                 Object.class
                         );
 
+                log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCodeValue());
             } catch (RestClientResponseException e) {
-                throw new CcdDataIntegrationException(
-                        "Couldn't update CCD case supplementary data using API: " + ccdUrl + ccdSupplementaryApiPath,
-                        e
-                );
+                log.info("Couldn't update CCD case supplementary data using API: [{}]", url, e);
             }
 
-            log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
         }
     }
 }
