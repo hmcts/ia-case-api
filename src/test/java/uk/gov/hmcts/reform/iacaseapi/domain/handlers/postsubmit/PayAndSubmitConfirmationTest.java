@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment.PayAndSu
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PostNotificationSender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -41,6 +42,8 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 @SuppressWarnings("unchecked")
 class PayAndSubmitConfirmationTest {
 
+    @Mock
+    private CcdSupplementaryUpdater ccdSupplementaryUpdater;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -83,8 +86,22 @@ class PayAndSubmitConfirmationTest {
                 feePayment,
                 postNotificationSender,
                 scheduler,
-                dateProvider
+                dateProvider,
+                ccdSupplementaryUpdater
             );
+    }
+
+    @Test
+    void should_invoke_supplementary_updater() {
+
+        when(asylumCase.read(SUBMISSION_OUT_OF_TIME, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PAID));
+        when(feePayment.aboutToSubmit(callback)).thenReturn(asylumCase);
+        when(postNotificationSender.send(any(Callback.class))).thenReturn(new PostSubmitCallbackResponse());
+
+        payAndSubmitConfirmation.handle(callback);
+
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
     }
 
     @Test
@@ -119,6 +136,7 @@ class PayAndSubmitConfirmationTest {
                 "Call 01633 652 125 (option 3) or email MiddleOffice.DDServices@liberata.com to try to resolve the payment issue.");
 
         verify(scheduler).schedule(timedEventCaptor.capture());
+        verify(ccdSupplementaryUpdater).setHmctsServiceIdSupplementary(callback);
         assertEquals(timedEventCaptor.getValue().getId(), "");
         assertEquals(timedEventCaptor.getValue().getJurisdiction(), "IA");
         assertEquals(timedEventCaptor.getValue().getCaseType(), "Asylum");
