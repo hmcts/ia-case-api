@@ -95,6 +95,9 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
         if (isAcceleratedDetainedAppeal) {
             asylumCase.write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
 
+            // Set flag for first submission of hearing requirements' event for ADA
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_SUBMITTABLE, YesOrNo.YES);
+
             // reset flag that makes ListCase available for accelerated detained appeals in
             // awaitingRespondentEvidence
             asylumCase.write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);

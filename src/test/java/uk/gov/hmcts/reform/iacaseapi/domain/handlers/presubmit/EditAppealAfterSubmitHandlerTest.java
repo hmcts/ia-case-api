@@ -534,4 +534,43 @@ class EditAppealAfterSubmitHandlerTest {
             .isExactlyInstanceOf(RequiredFieldMissingException.class);
 
     }
+
+    @Test
+    void handles_aaa_case_when_in_time() {
+
+        final String dateOnDecisionLetterOptional = "2022-11-18";
+        final String nowDate = "2022-11-20";
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, NO);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_EXPLANATION);
+        verify(asylumCase).clear(APPLICATION_OUT_OF_TIME_DOCUMENT);
+        verify(asylumCase).clear(RECORDED_OUT_OF_TIME_DECISION);
+    }
+
+    @Test
+    void handles_aaa_case_when_out_of_time() {
+
+        final String dateOnDecisionLetterOptional = "2022-09-18";
+        final String nowDate = "2022-11-20";
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YES);
+    }
 }
