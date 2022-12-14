@@ -20,8 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 
 @PactTestFor(providerName = "ccdDataStoreAPI_supplementaryUpdate", port = "8873")
