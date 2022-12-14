@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.service;
 
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class MakeAnApplicationTypesProvider {
                     values.add(new Value(UPDATE_APPEAL_DETAILS.name(),
                         UPDATE_APPEAL_DETAILS.toString()));
 
-                    if (isAcceleratedDetainedAppeal(asylumCase)) {
+                    if (isAcceleratedDetainedAppeal(asylumCase) && currentState != PENDING_PAYMENT) {
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }

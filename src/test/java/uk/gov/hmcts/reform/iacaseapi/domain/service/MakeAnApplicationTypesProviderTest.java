@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,8 +149,15 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
+
+        if (state.equals(PENDING_PAYMENT)) {
+            values.remove(5);
+        }
+
         DynamicList actualList =
             new DynamicList(values.get(0), values);
+
+
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
