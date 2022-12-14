@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -84,18 +81,22 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
 
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
-        if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-                .orElse(NO) == YES) {
+        if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES) {
 
             handleAccelaratedDetainedAppeal(asylumCase);
+
         } else if (outOfCountryDecisionTypeOptional.isPresent()) {
 
             handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get());
+
         } else if (HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
 
             handleInCountryAgeAssessmentAppeal(asylumCase);
+
         } else {
+
             handleInCountryAppeal(asylumCase);
+
         }
 
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
