@@ -621,6 +621,5 @@ class HomeOfficeCaseNotificationsHandlerTest {
         assertThatThrownBy(() -> homeOfficeCaseNotificationsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
             .hasMessage("Cannot handle callback")
             .isExactlyInstanceOf(IllegalStateException.class);
-
     }
 }
