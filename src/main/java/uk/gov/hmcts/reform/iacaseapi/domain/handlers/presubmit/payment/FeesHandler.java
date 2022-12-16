@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPT
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
@@ -92,6 +91,18 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 Optional<RemissionType> optRemissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
 
+                if (isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(YES))) {
+                    // Accelerated Detained Appeals should be treated as RP/DC - no payment fees
+                    String hearingOption = asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class)
+                        .orElse("decisionWithHearing");
+                    asylumCase.write(DECISION_HEARING_FEE_OPTION, hearingOption);
+                    asylumCase.clear(REMISSION_TYPE);
+                    asylumCase.clear(FEE_REMISSION_TYPE);
+                    asylumCase.clear(PAYMENT_STATUS);
+                    clearFeeOptionDetails(asylumCase);
+                    clearRemissionDetails(asylumCase);
+                    break;
+                }
 
                 asylumCase = feePayment.aboutToSubmit(callback);
                 if (isRemissionsEnabled == YES && optRemissionType.isPresent()
@@ -109,12 +120,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     clearRemissionDetails(asylumCase);
                 }
 
-                if (isAcceleratedDetainedAppeal.isPresent() && isAcceleratedDetainedAppeal.equals(Optional.of(NO))) {
-                    asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
-                } else {
-                    asylumCase.clear(DECISION_HEARING_FEE_OPTION);
-                }
-
+                asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
                 break;
 
             case DC:

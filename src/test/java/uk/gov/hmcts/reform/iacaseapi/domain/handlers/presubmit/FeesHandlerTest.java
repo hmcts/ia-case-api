@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -634,5 +635,43 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "PA", "RP", "DC", "EU" })
+    void should_clear_payments_for_all_ada_types(String appealType) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+            .thenReturn(Optional.of("decisionWithoutHearing"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+        verify(asylumCase, times(1))
+            .clear(HEARING_DECISION_SELECTED);
+        verify(asylumCase, times(1))
+            .clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1))
+            .clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1))
+            .clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        reset(callback);
+        reset(feePayment);
     }
 }
