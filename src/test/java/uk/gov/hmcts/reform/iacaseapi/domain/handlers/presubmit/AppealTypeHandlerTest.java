@@ -82,7 +82,6 @@ public class AppealTypeHandlerTest {
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
             .thenReturn(Optional.of(AppealTypeForDisplay.HU));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -97,12 +96,11 @@ public class AppealTypeHandlerTest {
     }
 
     @Test
-    void should_throw_error_if_appealType_and_appealTypeForDisplay_are_both_empty() {
+    void should_throw_error_if_appealTypeForDisplay_is_empty() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(NO));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class))
             .thenReturn(Optional.empty());
         when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.empty());
