@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AsylumCasePostFeePaymentService;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
@@ -97,7 +98,9 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
-        sendPaymentCallback(callback);
+        if (!HandlerUtils.isAipJourney(asylumCase)) {
+            sendPaymentCallback(callback);
+        }
 
         postSubmitResponse.setConfirmationHeader(
             submissionOutOfTime == NO ? DEFAULT_HEADER : ""

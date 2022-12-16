@@ -5,10 +5,13 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HELP_WITH_FEES;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.HO_WAIVER_REMISSION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAYMENT_PENDING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -72,11 +75,13 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        if (HandlerUtils.isAipJourney(asylumCase)) {
+        Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+
+        if (HandlerUtils.isAipJourney(asylumCase) && optionalAppealType.isEmpty()) {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+        AppealType appealType = optionalAppealType
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         YesOrNo isRemissionsEnabled

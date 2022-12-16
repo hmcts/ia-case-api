@@ -78,9 +78,9 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse
             = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (HandlerUtils.isAipJourney(asylumCase)) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
+//        if (HandlerUtils.isAipJourney(asylumCase)) {
+//            return new PreSubmitCallbackResponse<>(asylumCase);
+//        }
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         if (remissionType.isPresent()
