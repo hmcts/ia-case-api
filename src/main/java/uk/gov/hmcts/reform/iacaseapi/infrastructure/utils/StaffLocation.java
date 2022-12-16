@@ -37,7 +37,7 @@ public class StaffLocation {
             case "harmondsworth":
                 return new Location("", "Harmondsworth");
             case "yarlswood":
-                return new Location("", "Yarl's Wood");
+                return new Location("", "Yarls Wood");
             case "remoteHearing":
                 return new Location("", "Remote hearing");
             case "decisionWithoutHearing":
