@@ -1648,7 +1648,11 @@ public enum AsylumCaseFieldDefinition {
         "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
 
     CALCULATED_HEARING_DATE(
-        "calculatedHearingDate", new TypeReference<String>(){});
+        "calculatedHearingDate", new TypeReference<String>(){}),
+    PRE_NABA_CASE_FLAG(
+        "preNabaCaseFlag", new TypeReference<YesOrNo>(){}),
+    POST_NABA_CASE_FLAG(
+        "postNabaCaseFlag", new TypeReference<YesOrNo>(){});
 
 
     private final String value;
