@@ -20,7 +20,7 @@ class BaseLocationTest {
         assertEquals("366796", BaseLocation.NEWCASTLE.getId());
         assertEquals("324339", BaseLocation.ARNHEM_HOUSE.getId());
         assertEquals("28837", BaseLocation.HARMONDSWORTH.getId());
-        assertEquals("649000", BaseLocation.YARLSWOOD.getId());
+        assertEquals("649000", BaseLocation.YARLS_WOOD.getId());
     }
 
     @Test
