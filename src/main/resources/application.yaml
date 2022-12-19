@@ -102,6 +102,7 @@ requestRespondentReview.dueInDays: 14
 appellantReasonsForAppeal.dueInDays: 28
 paymentAfterRemissionRejection.dueInMinutes: 20160
 paymentEaHuNoRemission.dueInMinutes: 20160
+adaCaseListedDirection.dueInDaysSinceSubmission: 15
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"

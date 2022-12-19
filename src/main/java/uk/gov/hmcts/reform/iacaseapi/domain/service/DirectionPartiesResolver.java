@@ -19,6 +19,7 @@ public class DirectionPartiesResolver {
 
         switch (callback.getEvent()) {
 
+            case LIST_CASE:
             case REQUEST_CASE_EDIT:
             case REQUEST_CASE_BUILDING:
             case FORCE_REQUEST_CASE_BUILDING:
