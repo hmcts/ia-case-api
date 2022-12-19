@@ -11,12 +11,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACCELERATED_DETAINED_APPEAL_LISTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ACTUAL_CASE_HEARING_LENGTH;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_SUBMISSION_DATE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_APPELLANTS_LEGAL_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_HOME_OFFICE_LEGAL_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_JUDGE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ATTENDING_TCW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DIRECTIONS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DOES_THE_CASE_NEED_TO_BE_RELISTED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CENTRE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_CONDUCTION_OPTIONS;
@@ -27,6 +29,9 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REHEARD_CASE_LISTED_WITHOUT_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,13 +41,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Direction;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DirectionTag;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.Parties;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DirectionAppender;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.HearingCentreFinder;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -60,14 +70,30 @@ class ListEditCaseHandlerTest {
     private HearingCentreFinder hearingCentreFinder;
     @Mock
     private CaseManagementLocationService caseManagementLocationService;
+    @Mock
+    private DirectionAppender directionAppender;
+    private int dueDaysSinceSubmission = 15;
+
+    private String directionExplanation = "You have a direction for this case.\n"
+                                          + "\n"
+                                          + "The accelerated detained appeal has been listed and you should tell the Tribunal if the appellant has any hearing requirements.\n"
+                                          + "\n"
+                                          + "# Next steps\n"
+                                          + "Log in to the service and select the case from your case list. You’ll be able to submit the hearing requirements by selecting Submit hearing requirements from the Next step dropdown on the overview tab.\n"
+                                          + "\n"
+                                          + "The Tribunal will review the hearing requirements and any requests for additional adjustments.\n"
+                                          + "\n"
+                                          + "If you do not submit the hearing requirements by the date indicated below, the Tribunal may not be able to accommodate the appellant’s needs for the hearing.";
 
     private ListEditCaseHandler listEditCaseHandler;
 
     @BeforeEach
     public void setUp() {
 
-        listEditCaseHandler =
-            new ListEditCaseHandler(hearingCentreFinder, caseManagementLocationService);
+        listEditCaseHandler = new ListEditCaseHandler(hearingCentreFinder,
+            caseManagementLocationService,
+            dueDaysSinceSubmission,
+            directionAppender);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.LIST_CASE);
@@ -100,8 +126,29 @@ class ListEditCaseHandlerTest {
     }
 
     @Test
-    void should_set_listCase_availability_to_no_if_case_accelerated() {
+    void should_set_flags_and_add_direction_if_ada() {
+        Direction expectedDirection = new Direction(directionExplanation,
+            Parties.LEGAL_REPRESENTATIVE,
+            "2022-12-16",
+            LocalDate.now().toString(),
+            DirectionTag.ADA_LIST_CASE,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            "1",
+            Event.LIST_CASE.toString());
+
+        List<IdValue<Direction>> expectedListOfDirections = List.of(new IdValue<>("1", expectedDirection));
+
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_SUBMISSION_DATE, String.class)).thenReturn(Optional.of("2022-12-01"));
+        when(asylumCase.read(DIRECTIONS)).thenReturn(Optional.empty());
+        when(directionAppender.append(asylumCase,
+            Collections.emptyList(),
+            directionExplanation,
+            Parties.LEGAL_REPRESENTATIVE,
+            "2022-12-16",
+            DirectionTag.ADA_LIST_CASE,
+            Event.LIST_CASE.toString())).thenReturn(expectedListOfDirections);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             listEditCaseHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -111,6 +158,7 @@ class ListEditCaseHandlerTest {
 
         verify(asylumCase, times(1)).write(ACCELERATED_DETAINED_APPEAL_LISTED, YesOrNo.YES);
         verify(asylumCase, times(1)).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(DIRECTIONS, expectedListOfDirections);
     }
 
     @Test

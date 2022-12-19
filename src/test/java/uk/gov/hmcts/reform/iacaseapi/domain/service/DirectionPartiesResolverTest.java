@@ -52,6 +52,7 @@ class DirectionPartiesResolverTest {
             ImmutableMap
                 .<Event, Parties>builder()
                 .put(Event.SEND_DIRECTION, expectedDirectionParties)
+                .put(Event.LIST_CASE, Parties.LEGAL_REPRESENTATIVE)
                 .put(Event.REQUEST_CASE_EDIT, Parties.LEGAL_REPRESENTATIVE)
                 .put(Event.REQUEST_RESPONDENT_EVIDENCE, Parties.RESPONDENT)
                 .put(Event.REQUEST_RESPONDENT_REVIEW, Parties.RESPONDENT)
