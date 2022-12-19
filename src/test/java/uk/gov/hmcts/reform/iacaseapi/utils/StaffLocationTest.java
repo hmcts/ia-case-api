@@ -100,7 +100,7 @@ class StaffLocationTest {
     void should_get_correct_location_of_Yarlswood() {
         HearingCentre hearingCentre = HearingCentre.YARLSWOOD;
         Location result = StaffLocation.getLocation(hearingCentre);
-        assertEquals("Yarl's Wood", result.getName());
+        assertEquals("Yarls Wood", result.getName());
     }
 
     @Test
