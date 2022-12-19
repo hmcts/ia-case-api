@@ -59,6 +59,8 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
         if (isAcceleratedDetainedAppeal) {
             //For ADA case type - Set flag to no to remove event from being re-submittable
             asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
+            //Set flag to Yes to enable updateHearingRequirementsEvent for ada cases
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -1,15 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 
 @Component
@@ -32,14 +29,6 @@ public class SendDecisionAndReasonsConfirmation implements PostSubmitCallbackHan
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
-
-        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
-
-        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
-
-        if (isAcceleratedDetainedAppeal) {
-            asylumCase.write(ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.NO);
-        }
 
         postSubmitResponse.setConfirmationHeader("# You've uploaded the Decision and Reasons document");
         postSubmitResponse.setConfirmationBody(
