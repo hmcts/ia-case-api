@@ -45,7 +45,7 @@ public class HomeOfficeCaseNotificationsHandler implements PreSubmitCallbackHand
 
     @Override
     public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.LAST_LATEST;
+        return DispatchPriority.LAST;
     }
 
     public boolean canHandle(
