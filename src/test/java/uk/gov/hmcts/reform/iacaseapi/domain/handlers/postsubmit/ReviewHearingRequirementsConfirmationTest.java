@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -42,13 +44,14 @@ class ReviewHearingRequirementsConfirmationTest {
             new ReviewHearingRequirementsConfirmation();
     }
 
-    @Test
-    void should_return_confirmation_appeal_journey() {
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = { "NO", "YES" })
+    void should_return_confirmation_appeal_journey(YesOrNo yesOrNo) {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
@@ -61,20 +64,28 @@ class ReviewHearingRequirementsConfirmationTest {
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "All parties will be notified of the agreed adjustments.");
-
+        if (yesOrNo.equals(YesOrNo.NO)) {
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "#### What happens next\n\n"
+                    + "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>");
+        } else {
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "All parties will be notified of the agreed adjustments.");
+        }
     }
 
-    @Test
-    void should_return_confirmation_ada_journey() {
+    @ParameterizedTest
+    @EnumSource(value = YesOrNo.class, names = { "NO", "YES" })
+    void should_return_confirmation_ada_journey(YesOrNo yesOrNo) {
 
         when(callback.getEvent()).thenReturn(Event.REVIEW_HEARING_REQUIREMENTS);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
 
         PostSubmitCallbackResponse callbackResponse =
             reviewHearingRequirementsConfirmation.handle(callback);
@@ -87,10 +98,18 @@ class ReviewHearingRequirementsConfirmationTest {
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
 
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "All parties will be notified of the agreed adjustments.");
+        if (yesOrNo.equals(YesOrNo.NO)) {
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "#### What happens next\n\n"
+                    + "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>");
+        } else {
+            assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains(
+                    "All parties will be notified of the agreed adjustments.");
+        }
 
     }
 
@@ -112,11 +131,6 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationHeader().get())
             .contains("You've recorded the agreed hearing adjustments");
-
-        assertThat(
-            callbackResponse.getConfirmationBody().get())
-            .contains(
-                "All parties will be notified of the agreed adjustments.");
 
     }
 
