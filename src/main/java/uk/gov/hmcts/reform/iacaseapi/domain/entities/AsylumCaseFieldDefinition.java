@@ -809,6 +809,9 @@ public enum AsylumCaseFieldDefinition {
     ADA_HEARING_REQUIREMENTS_SUBMITTABLE(
         "adaHearingRequirementsSubmittable", new TypeReference<YesOrNo>() {}),
 
+    ADA_HEARING_REQUIREMENTS_TO_REVIEW(
+        "adaHearingRequirementsToReview", new TypeReference<YesOrNo>() {}),
+
     AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS(
         "automaticDirectionRequestingHearingRequirements", new TypeReference<String>(){}),
 
