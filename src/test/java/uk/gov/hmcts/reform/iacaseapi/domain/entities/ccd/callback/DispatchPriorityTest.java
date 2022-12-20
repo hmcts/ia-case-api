@@ -12,7 +12,7 @@ class DispatchPriorityTest {
         assertEquals("early", DispatchPriority.EARLY.toString());
         assertEquals("late", DispatchPriority.LATE.toString());
         assertEquals("latest", DispatchPriority.LATEST.toString());
-        assertEquals("lastLatest", DispatchPriority.LAST_LATEST.toString());
+        assertEquals("lastLatest", DispatchPriority.LAST.toString());
     }
 
     @Test
