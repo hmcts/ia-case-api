@@ -12,7 +12,7 @@ class MakeAnApplicationTypesTest {
         assertEquals("Expedite", MakeAnApplicationTypes.EXPEDITE.toString());
         assertEquals("Link/unlink appeals", MakeAnApplicationTypes.LINK_OR_UNLINK.toString());
         assertEquals("Judge's review of application decision", MakeAnApplicationTypes.JUDGE_REVIEW.toString());
-        assertEquals("Judge's review of Legal Officer decision", MakeAnApplicationTypes.JUDGE_REVIEW_LR.toString());
+        assertEquals("Judge's review of Legal Officer decision", MakeAnApplicationTypes.JUDGE_REVIEW_LO.toString());
         assertEquals("Time extension", MakeAnApplicationTypes.TIME_EXTENSION.toString());
         assertEquals("Transfer", MakeAnApplicationTypes.TRANSFER.toString());
         assertEquals("Withdraw", MakeAnApplicationTypes.WITHDRAW.toString());

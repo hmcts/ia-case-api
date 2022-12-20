@@ -7,8 +7,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW_LR;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW_LO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.REINSTATE;
@@ -24,6 +23,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +79,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
@@ -105,7 +105,7 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
@@ -145,12 +145,19 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
+
+        if (state.equals(PENDING_PAYMENT)) {
+            values.remove(5);
+        }
+
         DynamicList actualList =
             new DynamicList(values.get(0), values);
+
+
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -176,7 +183,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(OTHER.name(), OTHER.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -209,7 +216,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
@@ -233,7 +240,7 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(REINSTATE.name(), REINSTATE.toString()));
         DynamicList actualList =
             new DynamicList(values.get(0), values);
@@ -260,7 +267,7 @@ class MakeAnApplicationTypesProviderTest {
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
-            new Value(JUDGE_REVIEW_LR.name(), JUDGE_REVIEW_LR.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
@@ -284,7 +291,7 @@ class MakeAnApplicationTypesProviderTest {
 
         final List<Value> values = new ArrayList<>();
         Collections.addAll(values,
-            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
