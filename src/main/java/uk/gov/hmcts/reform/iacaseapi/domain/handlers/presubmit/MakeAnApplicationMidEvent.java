@@ -81,7 +81,7 @@ public class MakeAnApplicationMidEvent implements PreSubmitCallbackHandler<Asylu
                     + "of each appeal you want to link to or unlink from.");
                 break;
             case JUDGE_REVIEW:
-            case JUDGE_REVIEW_LR:
+            case JUDGE_REVIEW_LO:
                 asylumCase.write(MAKE_AN_APPLICATION_DETAILS_LABEL,
                     "Tell us which application decision you want to be reviewed by a Judge and explain why you think the original decision "
                     + "was wrong.");
