@@ -17,8 +17,8 @@
   "aaContactPreference": "wantsSms",
   "wantsSms": "Text message",
   "aaMobileNumber": "07977111111",
-  "appealType": "ageAssessment",
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
-  "appellantInUk": "Yes"
+  "appellantInUk": "Yes",
+  "ageAssessment": "Yes"
 }
