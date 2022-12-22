@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.AG;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
@@ -54,7 +55,7 @@ public class RollbackPaymentPreparer implements PreSubmitCallbackHandler<AsylumC
 
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class).orElseThrow(() -> new IllegalStateException("appealType is not set"));
 
-        boolean isEaHuEu = List.of(EA, HU, EU).contains(appealType);
+        boolean isEaHuEu = List.of(EA, HU, EU, AG).contains(appealType);
 
         if (!isEaHuEu) {
             asylumCasePreSubmitCallbackResponse.addError("You cannot mark this type of appeal as unpaid.");
