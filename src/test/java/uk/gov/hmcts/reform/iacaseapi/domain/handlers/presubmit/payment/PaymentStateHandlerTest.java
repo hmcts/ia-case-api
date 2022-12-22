@@ -140,7 +140,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_ea_submit_as_appeal_submitted_state(AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -216,7 +216,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU", "AG"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -234,7 +234,7 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -242,7 +242,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU", "AG"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types_payment_failed(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -260,7 +260,7 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -286,7 +286,7 @@ class PaymentStateHandlerTest {
         Assert.assertNotNull(returnedCallbackResponse);
         Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU, AppealType.AG).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);

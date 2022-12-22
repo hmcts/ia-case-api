@@ -96,6 +96,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                     case EA:
                     case HU:
                     case EU:
+                    case AG:
                         Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
                         if (eaHuPaymentType.isEmpty()
                             && (remissionDecision.isEmpty() || remissionDecision.get() != RemissionDecision.REJECTED)

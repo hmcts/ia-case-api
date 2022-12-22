@@ -68,7 +68,7 @@ class RollbackPaymentPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {
-        "EA", "HU", "EU"
+        "EA", "HU", "EU", "AG"
     })
     void should_not_throw_error_on_handler_for_given_appeal_type(AppealType appealType) {
 
@@ -100,7 +100,7 @@ class RollbackPaymentPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {
-        "EA", "HU", "EU"
+        "EA", "HU", "EU", "AG"
     })
     void should_not_return_error_on_handler_for_given_appeal_type_when_payment_option_is_empty_and_remission_rejected(AppealType appealType) {
 
@@ -116,7 +116,7 @@ class RollbackPaymentPreparerTest {
 
     @ParameterizedTest
     @EnumSource(value = AppealType.class, names = {
-        "EA", "HU", "EU"
+        "EA", "HU", "EU", "AG"
     })
     void should_return_error_on_handler_for_given_appeal_type_when_payment_option_is_card_payment(AppealType appealType) {
 
