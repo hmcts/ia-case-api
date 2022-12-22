@@ -11,8 +11,8 @@
         "template": "minimal-age-assessment-appeal-started.json",
         "replacements": {
           "appellantInUk": "Yes",
-          "ageAssessment": "Yes",
-          "dateOnDecisionLetter": "{$TODAY-14}"
+          "dateOnDecisionLetter": "{$TODAY-14}",
+          "appealType": "ageAssessment"
         }
       }
     }

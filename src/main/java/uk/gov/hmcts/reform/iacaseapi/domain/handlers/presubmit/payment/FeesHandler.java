@@ -84,6 +84,7 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
         switch (appealType) {
+            case AG:
             case EA:
             case HU:
             case PA:
