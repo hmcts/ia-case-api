@@ -32,8 +32,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @Component
 public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
-    private final static String PAYMENT_OPTION_NOT_AVAILABLE_LABEL = "The Make a payment option is not available.";
-    private final static String OLD_OR_EXISTING_CASES_LABEL = "You cannot make a payment for this appeal using Payment by Account";
+    private static final String PAYMENT_OPTION_NOT_AVAILABLE_LABEL = "The Make a payment option is not available.";
+    private static final String OLD_OR_EXISTING_CASES_LABEL = "You cannot make a payment for this appeal using Payment by Account";
     private final FeePayment<AsylumCase> feePayment;
     private final FeatureToggler featureToggler;
     private final boolean isfeePaymentEnabled;
@@ -141,8 +141,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
 
                         if ((isPaid || remissionPartiallyApproved || remissionApproved || paAppealStartedPayLater)
                             && paymentAppealEvent) {
-
-                                asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
+                            asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
                         }
 
                         break;
