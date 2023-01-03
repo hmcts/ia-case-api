@@ -53,6 +53,8 @@ public class DetentionFacilityEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
     }
 
     @Test
@@ -73,6 +75,8 @@ public class DetentionFacilityEditAppealHandlerTest {
         assertNotNull(response);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NOMS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
     }
 
