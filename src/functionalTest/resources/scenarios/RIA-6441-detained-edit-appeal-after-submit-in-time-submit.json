@@ -1,0 +1,47 @@
+{
+  "description": "RIA-6441-detained-edit-appeal-after-submit-in-time-submit.json",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "CaseOfficer",
+    "input": {
+      "eventId": "editAppealAfterSubmit",
+      "state": "awaitingRespondentEvidence",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "appellantHasFixedAddress": "Yes",
+          "decisionLetterReceivedDate": "{$TODAY-4}",
+          "appellantAddress": {
+            "PostCode": "M1 2AB"
+          }
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-ada-appeal-submitted.json",
+      "replacements": {
+        "appellantHasFixedAddress": "Yes",
+        "decisionLetterReceivedDate": "{$TODAY-4}",
+        "hasOtherAppeals": "No",
+        "legalRepCompany": "j",
+        "isAppellantMinor": "No",
+        "submissionOutOfTime": "No",
+        "notificationsSent": [
+          {
+            "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_LEGAL_REPRESENTATIVE",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          },
+          {
+            "id": "1234_EDIT_APPEAL_AFTER_SUBMIT_RESPONDENT",
+            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
+          }
+        ]
+      }
+    }
+  }
+}
