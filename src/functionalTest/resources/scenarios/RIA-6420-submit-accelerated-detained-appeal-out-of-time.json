@@ -12,7 +12,7 @@
         "replacements": {
           "hearingCentre": "harmondsworth",
           "isAcceleratedDetainedAppeal": "Yes",
-          "decisionLetterReceivedDate": "{$TODAY-10}"
+          "decisionLetterReceivedDate": "{$TODAY-15}"
         }
       }
     }
@@ -24,7 +24,7 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "hearingCentre": "harmondsworth",
-        "decisionLetterReceivedDate": "{$TODAY-10}",
+        "decisionLetterReceivedDate": "{$TODAY-15}",
         "submissionOutOfTime": "Yes",
         "recordedOutOfTimeDecision": "No"
       }
