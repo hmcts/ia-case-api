@@ -10,6 +10,7 @@
         "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
         "template": "minimal-age-assessment-appeal-started.json",
         "replacements": {
+          "appealType": "ageAssessment",
           "appellantInUk": "Yes",
           "ageAssessment": "Yes",
           "dateOnDecisionLetter": "{$TODAY-15}"
