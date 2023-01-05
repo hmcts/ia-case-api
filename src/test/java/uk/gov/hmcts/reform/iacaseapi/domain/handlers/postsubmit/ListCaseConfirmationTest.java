@@ -39,7 +39,7 @@ class ListCaseConfirmationTest {
 
     @ParameterizedTest
     @EnumSource(value = YesOrNo.class, names = { "NO", "YES" })
-    void should_return_confirmation(YesOrNo yesOrNo) {
+    void should_return_confirmation(YesOrNo isAda) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -47,7 +47,7 @@ class ListCaseConfirmationTest {
 
         when(asylumCase.read(HOME_OFFICE_HEARING_INSTRUCT_STATUS, String.class))
                 .thenReturn(Optional.of(" "));
-        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(yesOrNo));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(isAda));
 
         PostSubmitCallbackResponse callbackResponse =
             listCaseConfirmation.handle(callback);
@@ -56,7 +56,7 @@ class ListCaseConfirmationTest {
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        if (yesOrNo.equals(YesOrNo.YES)) {
+        if (isAda.equals(YesOrNo.YES)) {
             assertThat(
                     callbackResponse.getConfirmationHeader().get())
                     .contains("You have listed the case");
