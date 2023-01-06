@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -51,8 +55,8 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
         return callback.getEvent() == Event.SUBMIT_APPEAL
-               && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
-               && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU));
+               && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
+               && (appealType.isPresent() && Set.of(EA, HU, EU).contains(appealType.get()));
     }
 
     public PostSubmitCallbackResponse handle(
