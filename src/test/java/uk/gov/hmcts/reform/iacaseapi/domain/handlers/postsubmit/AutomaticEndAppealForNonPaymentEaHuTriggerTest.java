@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
@@ -12,9 +15,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -63,17 +70,26 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             );
     }
 
-    @Test
-    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_after_submission() {
+    private static Stream<Arguments> aipLrScheduleAppeal() {
+        return Stream.of(
+            Arguments.of(Optional.empty(), EA), // AIP = remissions can't be chosen (empty)
+            Arguments.of(Optional.empty(), HU),
+            Arguments.of(Optional.empty(), EU),
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), EA), // LR = chose no remissions
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), HU),
+            Arguments.of(Optional.of(RemissionType.NO_REMISSION), EU)
+        );
+    }
 
+    @ParameterizedTest
+    @MethodSource("aipLrScheduleAppeal")
+    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_eu_after_submission(Optional<RemissionType> remissionType, AppealType appealType) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
-            .thenReturn(Optional.of(RemissionType.NO_REMISSION));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-            .thenReturn(Optional.of(AppealType.HU));
+            .thenReturn(remissionType);
         when(dateProvider.nowWithTime()).thenReturn(now);
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -84,6 +100,9 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             caseId
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(appealType));
 
         automaticEndAppealForNonPaymentEaHuTrigger.handle(callback);
 
@@ -108,7 +127,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-            .thenReturn(Optional.of(AppealType.EA));
+            .thenReturn(Optional.of(EA));
 
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
