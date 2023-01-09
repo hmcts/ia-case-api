@@ -27,5 +27,6 @@
   "hasOtherAppeals": "No",
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
-  "appellantInUk": "Yes"
+  "appellantInUk": "Yes",
+  "isAcceleratedDetainedAppeal": "No"
 }

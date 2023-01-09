@@ -34,5 +34,6 @@
   "submissionOutOfTime": "No",
   "uploadAdditionalEvidenceActionAvailable": "No",
   "isOutOfCountryEnabled": "Yes",
-  "appellantInUk": "Yes"
+  "appellantInUk": "Yes",
+  "isAcceleratedDetainedAppeal": "No"
 }
