@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -159,14 +163,23 @@ class EndAppealHandlerTest {
 
     @Test
     void should_not_handle_paid_appeals() {
+        // technically the events does get handled, but the resulting post-state set in CCD will remain the same instead of
+        // updating to "ENDED", and everything else the handler should handle gets skipped
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
         when(callback.getEvent()).thenReturn(Event.END_APPEAL_AUTOMATICALLY);
 
-        assertThatThrownBy(() -> endAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot auto end appeal as the payment is already made!")
-            .isExactlyInstanceOf(IllegalStateException.class);
+        verify(asylumCase, never()).write(END_APPEAL_DATE, dateProvider.now().toString());
+        verify(asylumCase, never()).write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
+        verify(asylumCase, never()).clear(APPLICATION_WITHDRAW_EXISTS);
+        verify(asylumCase, never()).clear(DISABLE_OVERVIEW_PAGE);
+        verify(asylumCase, never()).clear(REINSTATE_APPEAL_REASON);
+        verify(asylumCase, never()).clear(REINSTATED_DECISION_MAKER);
+        verify(asylumCase, never()).clear(APPEAL_STATUS);
+        verify(asylumCase, never()).clear(REINSTATE_APPEAL_DATE);
+        verify(asylumCase, never()).write(eq(APPLICATIONS), anyList());
+        verify(asylumCase, never()).write(eq(STATE_BEFORE_END_APPEAL), anyString());
     }
 
     @Test

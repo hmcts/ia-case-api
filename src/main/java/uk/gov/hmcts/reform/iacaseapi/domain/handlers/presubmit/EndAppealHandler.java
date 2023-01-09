@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
+@Slf4j
 public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
@@ -64,8 +66,12 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
 
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
+        String caseId = String.valueOf(callback.getCaseDetails().getId());
+
         if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
-            throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
+            log.info("Case ID [{}], paymentStatus [{}]: appeal will not be ended automatically",
+                caseId, paymentStatus);
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
