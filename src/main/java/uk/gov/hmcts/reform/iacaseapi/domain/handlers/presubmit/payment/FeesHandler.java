@@ -72,11 +72,13 @@ public class FeesHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
-        if (HandlerUtils.isAipJourney(asylumCase)) {
+        Optional<AppealType> optionalAppealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+
+        if (HandlerUtils.isAipJourney(asylumCase) && optionalAppealType.isEmpty()) {
             return new PreSubmitCallbackResponse<>(feePayment.aboutToSubmit(callback));
         }
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
+        AppealType appealType = optionalAppealType
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
         YesOrNo isRemissionsEnabled
