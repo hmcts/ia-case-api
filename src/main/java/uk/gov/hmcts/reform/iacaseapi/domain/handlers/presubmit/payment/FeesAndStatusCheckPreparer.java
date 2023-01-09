@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.REJECTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.PAYMENT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.PAID;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -17,7 +21,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -25,6 +28,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @Component
 public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final String PAYMENT_OPTION_NOT_AVAILABLE_LABEL = "The Make a payment option is not available.";
+    private static final String OLD_OR_EXISTING_CASES_LABEL = "You cannot make a payment for this appeal using Payment by Account";
     private final FeePayment<AsylumCase> feePayment;
     private final FeatureToggler featureToggler;
     private final boolean isfeePaymentEnabled;
@@ -51,7 +56,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
                && Arrays.asList(
             Event.START_APPEAL,
             Event.EDIT_APPEAL,
-            Event.PAYMENT_APPEAL)
+            PAYMENT_APPEAL)
                    .contains(callback.getEvent())
                && isfeePaymentEnabled;
     }
@@ -74,72 +79,60 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
         final PreSubmitCallbackResponse<AsylumCase> asylumCasePreSubmitCallbackResponse
             = new PreSubmitCallbackResponse<>(asylumCase);
 
-        if (HandlerUtils.isAipJourney(asylumCase)) {
-            return new PreSubmitCallbackResponse<>(asylumCase);
-        }
-
         final PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
             .orElse(PaymentStatus.PAYMENT_PENDING);
-
-        final String paymentOptionNotAvailableLabel = "The Make a payment option is not available.";
-
-        final String oldOrExistingCasesLabel = "You cannot make a payment for this appeal using Payment by Account";
 
         YesOrNo isRemissionsEnabled
             = featureToggler.getValue("remissions-feature", false) ? YesOrNo.YES : YesOrNo.NO;
         asylumCase.write(IS_REMISSIONS_ENABLED, isRemissionsEnabled);
 
+        Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
+
+        boolean remissionPartiallyApproved = remissionDecision.isPresent()
+                                             && remissionDecision.get().equals(RemissionDecision.PARTIALLY_APPROVED);
+
+        boolean remissionApproved = remissionDecision.isPresent()
+                                    && remissionDecision.get().equals(RemissionDecision.APPROVED);
+
+        boolean paymentAppealEvent = callback.getEvent().equals(PAYMENT_APPEAL);
+        boolean isPaid = paymentStatus.equals(PAID);
+
         asylumCase.read(APPEAL_TYPE, AppealType.class)
             .ifPresent(type -> {
-                Optional<RemissionDecision> remissionDecision = asylumCase.read(REMISSION_DECISION, RemissionDecision.class);
                 switch (type) {
                     case EA:
                     case HU:
                     case EU:
-                        Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-                        if (eaHuPaymentType.isEmpty()
-                            && (remissionDecision.isEmpty() || remissionDecision.get() != RemissionDecision.REJECTED)
-                            && (callback.getEvent() == Event.PAYMENT_APPEAL)
-                        ) {
-                            asylumCasePreSubmitCallbackResponse.addError(oldOrExistingCasesLabel);
-
+                        if (paymentStatus.equals(PAID)
+                            || remissionPartiallyApproved
+                            || remissionApproved) {
+                            asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
                         }
-
-                        eaHuPaymentType
-                            .filter(option -> option.equals("payOffline")
-                                              || paymentStatus == PaymentStatus.PAID)
-                            .ifPresent(s -> {
-                                if (callback.getEvent() == Event.PAYMENT_APPEAL) {
-
-                                    asylumCasePreSubmitCallbackResponse.addError(paymentOptionNotAvailableLabel);
-                                }
-                            });
                         break;
 
                     case PA:
-                        Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
-                        if (paPaymentType.isEmpty()
-                            && (remissionDecision.isEmpty() || remissionDecision.get() != RemissionDecision.REJECTED)
-                            && (callback.getEvent() == Event.PAYMENT_APPEAL)
-                        ) {
-                            asylumCasePreSubmitCallbackResponse.addError(oldOrExistingCasesLabel);
+                        String paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class).orElse("");
+                        String paAipPaymentType = asylumCase.read(PA_APPEAL_TYPE_AIP_PAYMENT_OPTION, String.class).orElse("");
 
+                        if (paPaymentType.isEmpty()
+                            && paAipPaymentType.isEmpty()
+                            && (remissionDecision.isEmpty() || remissionDecision.get() != REJECTED)
+                            && paymentAppealEvent
+                        ) {
+                            asylumCasePreSubmitCallbackResponse.addError(OLD_OR_EXISTING_CASES_LABEL);
                         }
 
-                        paPaymentType
-                            .filter(option -> option.equals("payOffline")
-                                              || paymentStatus == PaymentStatus.PAID
-                                              || (option.equals("payLater") && currentState == State.APPEAL_STARTED))
-                            .ifPresent(s -> {
-                                if (callback.getEvent() == Event.PAYMENT_APPEAL) {
+                        boolean paAppealStartedPayLater = (paPaymentType.equals("payLater") || paAipPaymentType.equals("payLater")) && currentState == APPEAL_STARTED;
 
-                                    asylumCasePreSubmitCallbackResponse.addError(paymentOptionNotAvailableLabel);
-                                }
-                            });
+                        if ((isPaid || remissionPartiallyApproved || remissionApproved || paAppealStartedPayLater)
+                            && paymentAppealEvent) {
+                            asylumCasePreSubmitCallbackResponse.addError(PAYMENT_OPTION_NOT_AVAILABLE_LABEL);
+                        }
+
                         break;
                     case RP:
                     case DC:
-                        if (callback.getEvent() == Event.PAYMENT_APPEAL) {
+                        if (callback.getEvent() == PAYMENT_APPEAL) {
 
                             asylumCasePreSubmitCallbackResponse
                                 .addError("You do not have to pay for this type of appeal.");
@@ -156,7 +149,7 @@ public class FeesAndStatusCheckPreparer implements PreSubmitCallbackHandler<Asyl
 
         if (asylumCasePreSubmitCallbackResponse.getErrors().isEmpty()
             && Arrays.asList(
-            Event.PAYMENT_APPEAL).contains(callback.getEvent())
+            PAYMENT_APPEAL).contains(callback.getEvent())
         ) {
 
             asylumCasePreSubmitCallbackResponse.setData(feePayment.aboutToStart(callback));
