@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -58,7 +60,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
+                && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
                 && (appealType.isPresent() && Set.of(EA, HU, EU).contains(appealType.get()));
     }
 
