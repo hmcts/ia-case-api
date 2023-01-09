@@ -71,6 +71,8 @@
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
+        <cve>CVE-2021-4235</cve>
+        <cve>CVE-2022-3064</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[fasterxml:jackson-databind:2.13.3]]>
@@ -96,5 +98,9 @@
     <suppress>
         <notes><![CDATA[commons libraries ]]></notes>
         <cve>CVE-2021-37533</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[LatencyUtils@2.0.3:utils_project:utils:2.0.3]]></notes>
+        <cve>CVE-2021-4277</cve>
     </suppress>
 </suppressions>
