@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+@Slf4j
 @Component
 public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -68,9 +70,15 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
         Optional<String> timeEventId = asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID);
 
         if (timeEventId.isPresent()) {
+            log.info(
+                    "Asylum Case presubmit handler flow - QuartzSchedulerService reschedule call timeEventId present`");
             int scheduleDelayInMinutes = 52560000;
             ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
-
+            log.info(
+                    "Asylum Case postsubmit handler flow - QuartzSchedulerService reschedule call start `{}` for Case ID `{}`",
+                    callback.getEvent(),
+                    callback.getCaseDetails().getId()
+            );
             scheduler.schedule(
                     new TimedEvent(
                             timeEventId.get(),
@@ -82,7 +90,11 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
                     )
             );
         }
-
+        log.info(
+                "Asylum Case postsubmit handler flow - QuartzSchedulerService reschedule call end `{}` for Case ID `{}`",
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+        );
         return new PostSubmitCallbackResponse();
     }
 

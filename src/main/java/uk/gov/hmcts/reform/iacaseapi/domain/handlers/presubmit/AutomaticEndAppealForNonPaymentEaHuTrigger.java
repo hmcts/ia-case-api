@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+@Slf4j
 @Component
 public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCallbackHandler<AsylumCase> {
 
@@ -69,7 +71,11 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
-
+        log.info(
+                "Asylum Case presubmit handler flow - QuartzSchedulerService call start `{}` for Case ID `{}`",
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
+        );
         TimedEvent timedEvent = scheduler.schedule(
             new TimedEvent(
                 "",
@@ -77,8 +83,14 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
                 scheduledDate,
                 "IA",
                 "Asylum",
+
                 callback.getCaseDetails().getId()
             )
+        );
+        log.info(
+                "Asylum Case presubmit handler flow - QuartzSchedulerService call end `{}` for Case ID `{}`",
+                callback.getEvent(),
+                callback.getCaseDetails().getId()
         );
         asylumCase.write(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID, timedEvent.getId());
         return new PreSubmitCallbackResponse<>(asylumCase);
