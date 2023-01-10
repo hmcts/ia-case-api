@@ -1,5 +1,5 @@
 {
-  "description": "RIA-412 RIA-1571 List case confirmation",
+  "description": "RIA-6527 List case accelerated detained appeal confirmation",
   "request": {
     "uri": "/asylum/ccdSubmitted",
     "credentials": "AdminOfficer",
@@ -7,7 +7,7 @@
       "eventId": "listCase",
       "state": "prepareForHearing",
       "caseData": {
-        "template": "minimal-appeal-submitted.json"
+        "template": "minimal-ada-appeal-submitted.json"
       }
     }
   },
@@ -15,7 +15,7 @@
     "status": 200,
     "confirmation": {
       "header": "# You have listed the case",
-      "body": "#### What happens next\n\nThe hearing notice will be sent to all parties.<br>You don't need to do any more on this case."
+      "body": "#### What happens next\n\nThe legal representative will be directed to submit the appellant's hearing<br>requirements and a Notice of Hearing will be sent to all parties."
     }
   }
 }
