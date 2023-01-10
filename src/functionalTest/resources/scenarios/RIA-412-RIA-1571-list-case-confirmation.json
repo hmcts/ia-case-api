@@ -7,8 +7,7 @@
       "eventId": "listCase",
       "state": "prepareForHearing",
       "caseData": {
-        "template": "minimal-appeal-submitted.json",
-        "isAcceleratedDetainedAppeal": "No"
+        "template": "minimal-appeal-submitted.json"
       }
     }
   },
