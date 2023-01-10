@@ -64,7 +64,7 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "All parties will be notified of the agreed adjustments.");
+                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>");
 
     }
 
@@ -116,7 +116,7 @@ class ReviewHearingRequirementsConfirmationTest {
         assertThat(
             callbackResponse.getConfirmationBody().get())
             .contains(
-                "All parties will be notified of the agreed adjustments.");
+                "The listing team will now list the case. All parties will be notified when the Hearing Notice is available to view.<br><br>");
 
     }
 
