@@ -270,6 +270,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
       - "createCaseLink"
       - "maintainCaseLinks"
     caseworker-ia-admofficer:
