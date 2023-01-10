@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_HAS_FIXED_ADDRESS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
@@ -20,6 +23,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -107,10 +111,14 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
             }
         }
 
-        if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
+        boolean isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == YES;
+        AsylumCaseFieldDefinition appellantHasFixedAddress = isAgeAssessmentAppeal ? AA_APPELLANT_HAS_FIXED_ADDRESS : APPELLANT_HAS_FIXED_ADDRESS;
+        AsylumCaseFieldDefinition appellantAddressField = isAgeAssessmentAppeal ? AA_APPELLANT_ADDRESS : APPELLANT_ADDRESS;
+
+        if (asylumCase.read(appellantHasFixedAddress, YesOrNo.class)
                 .orElse(NO) == YES) {
 
-            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
+            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(appellantAddressField);
 
             if (optionalAppellantAddress.isPresent()) {
                 AddressUk appellantAddress = optionalAppellantAddress.get();

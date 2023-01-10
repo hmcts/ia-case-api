@@ -97,4 +97,9 @@
         <notes><![CDATA[commons libraries ]]></notes>
         <cve>CVE-2021-37533</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2021-4235</cve>
+        <cve>CVE-2022-3064</cve>
+        <cve>CVE-2021-4277</cve>
+    </suppress>
 </suppressions>
