@@ -36,7 +36,7 @@ public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<A
                 .getCaseData();
 
         //Set flag to No to remove access to event updateHearingRequirements for ada cases after submission
-        asylumCase.write(AsylumCaseFieldDefinition.REVIEWED_UPDATED_HEARING_REQUIREMENTS, YesOrNo.NO);
+        asylumCase.write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.NO);
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
