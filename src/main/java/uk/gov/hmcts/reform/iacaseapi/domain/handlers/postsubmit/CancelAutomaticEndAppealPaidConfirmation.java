@@ -47,6 +47,10 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
                 .orElse(PaymentStatus.PAYMENT_PENDING);
         Optional<String> timedEventId = asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID);
+        log.info(
+                "Asylum Case postsubmit canHandler flow - CancelAutomaticEndAppealPaidConfirmation timedEventServiceEnabled '{}' callBackevent '{}' paymentStatus '{}' timedEventId.present '{}'",
+                timedEventServiceEnabled,callback.getEvent(),paymentStatus,timedEventId.isPresent());
+
 
         return  timedEventServiceEnabled
                 && callback.getEvent() == Event.UPDATE_PAYMENT_STATUS
@@ -71,7 +75,7 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
 
         if (timeEventId.isPresent()) {
             log.info(
-                    "Asylum Case presubmit handler flow - QuartzSchedulerService reschedule call timeEventId present`");
+                    "Asylum Case postsubmit handler flow - QuartzSchedulerService reschedule call timeEventId present`");
             int scheduleDelayInMinutes = 52560000;
             ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(scheduleDelayInMinutes);
             log.info(
