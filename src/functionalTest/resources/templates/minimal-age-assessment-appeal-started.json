@@ -13,10 +13,10 @@
       }
     }
   ],
-  "aaAppellantHasFixedAddress": "No",
-  "aaContactPreference": "wantsSms",
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
   "wantsSms": "Text message",
-  "aaMobileNumber": "07977111111",
+  "mobileNumber": "07977111111",
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
   "appellantInUk": "Yes",

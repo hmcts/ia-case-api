@@ -60,12 +60,6 @@ public enum AsylumCaseFieldDefinition {
     APPELLANT_ADDRESS(
         "appellantAddress", new TypeReference<AddressUk>(){}),
 
-    AA_APPELLANT_HAS_FIXED_ADDRESS(
-        "aaAppellantHasFixedAddress", new TypeReference<YesOrNo>(){}),
-
-    AA_APPELLANT_ADDRESS(
-        "aaAppellantAddress", new TypeReference<AddressUk>(){}),
-
     SEARCH_POSTCODE(
         "searchPostcode", new TypeReference<String>(){}),
 
