@@ -11,9 +11,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_HAS_FIXED_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE;
@@ -107,54 +104,6 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
         when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
-
-        CaseManagementLocation expectedCaseManagementLocation =
-            new CaseManagementLocation(Region.NATIONAL, baseLocation);
-        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
-            .thenReturn(expectedCaseManagementLocation);
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            deriveHearingCentreHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(hearingCentreFinder, times(1)).find("A123 4BC");
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
-
-        verify(asylumCase, times(1)).write(STAFF_LOCATION, staffLocation);
-        verify(asylumCase, times(1))
-            .write(CASE_MANAGEMENT_LOCATION, expectedCaseManagementLocation);
-
-        verify(asylumCase, times(1)).write(APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE, hearingCentre);
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "SUBMIT_APPEAL, MANCHESTER, Manchester, MANCHESTER",
-        "EDIT_APPEAL_AFTER_SUBMIT, MANCHESTER, Manchester, MANCHESTER",
-
-        "SUBMIT_APPEAL, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-        "EDIT_APPEAL_AFTER_SUBMIT, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-
-        "SUBMIT_APPEAL, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-        "EDIT_APPEAL_AFTER_SUBMIT, HATTON_CROSS, Hatton Cross, HATTON_CROSS",
-
-        "SUBMIT_APPEAL, NEWCASTLE, Newcastle,",
-        "EDIT_APPEAL_AFTER_SUBMIT, NEWCASTLE, Newcastle,"
-    })
-    void should_derive_hearing_centre_from_aa_appellant_postcode(
-        Event event, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation) {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(event);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(HEARING_CENTRE)).thenReturn(Optional.empty());
-        when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(AA_APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(hearingCentreFinder.find("A123 4BC")).thenReturn(hearingCentre);
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AA_APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         CaseManagementLocation expectedCaseManagementLocation =
             new CaseManagementLocation(Region.NATIONAL, baseLocation);

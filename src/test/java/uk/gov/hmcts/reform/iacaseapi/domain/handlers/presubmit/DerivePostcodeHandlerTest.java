@@ -11,9 +11,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_HAS_FIXED_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEARCH_POSTCODE;
@@ -66,24 +63,6 @@ class DerivePostcodeHandlerTest {
         when(asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
         when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-
-        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            derivePostcodeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-        assertNotNull(callbackResponse);
-        assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(SEARCH_POSTCODE, "A123 4BC");
-    }
-
-    @Test
-    void should_derive_postcode_from_aa_appellant_address() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AA_APPELLANT_ADDRESS)).thenReturn(Optional.of(addressUk));
-        when(addressUk.getPostCode()).thenReturn(Optional.of("A123 4BC"));
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(AA_APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             derivePostcodeHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
