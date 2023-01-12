@@ -1657,6 +1657,7 @@ public enum AsylumCaseFieldDefinition {
 
     LOCAL_AUTHORITY(
             "localAuthority", new TypeReference<String>(){}),
+
     HSC_TRUST(
             "hscTrust", new TypeReference<String>(){}),
 
