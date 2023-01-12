@@ -64,10 +64,10 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
 
         if (callback.getEvent() == Event.EDIT_APPEAL) {
 
-            boolean isRPDCPreNaba = appealTypeForDisplay == null && (appealType == AppealType.DC || appealType == AppealType.RP);
+            boolean isRpDcPreNaba = appealTypeForDisplay == null && (appealType == AppealType.DC || appealType == AppealType.RP);
             boolean isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
 
-            if ((isRPDCPreNaba || isRpDcAda) && (!isAgeAssessmentAppeal)) {
+            if ((isRpDcPreNaba || isRpDcAda) && (!isAgeAssessmentAppeal)) {
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
