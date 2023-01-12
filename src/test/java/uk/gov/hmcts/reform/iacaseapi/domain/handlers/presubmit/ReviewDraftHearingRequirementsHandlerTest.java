@@ -66,6 +66,7 @@ class ReviewDraftHearingRequirementsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
         verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.YES);
 
         reset(callback);
         reset(asylumCase);
