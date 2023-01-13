@@ -8,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -53,13 +52,10 @@ public class DerivePostcodeHandler implements PreSubmitCallbackHandler<AsylumCas
     private Optional<String> getAppellantPostcode(
         AsylumCase asylumCase
     ) {
-        boolean isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == YES;
-        AsylumCaseFieldDefinition appellantHasFixedAddress = isAgeAssessmentAppeal ? AA_APPELLANT_HAS_FIXED_ADDRESS : APPELLANT_HAS_FIXED_ADDRESS;
-        AsylumCaseFieldDefinition appellantAddressField = isAgeAssessmentAppeal ? AA_APPELLANT_ADDRESS : APPELLANT_ADDRESS;
-        if (asylumCase.read(appellantHasFixedAddress, YesOrNo.class)
+        if (asylumCase.read(APPELLANT_HAS_FIXED_ADDRESS, YesOrNo.class)
                 .orElse(NO) == YES) {
 
-            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(appellantAddressField);
+            Optional<AddressUk> optionalAppellantAddress = asylumCase.read(APPELLANT_ADDRESS);
 
             if (optionalAppellantAddress.isPresent()) {
 
