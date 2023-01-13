@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -52,7 +53,44 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
 
         return callback.getEvent() == Event.SUBMIT_APPEAL
                && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
-               && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU));
+               && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU))
+                && checkScenario(asylumCase);
+    }
+
+    private boolean checkScenario(AsylumCase asylumCase) {
+        Optional<YesOrNo> isDetained = Optional.of(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).orElse(YesOrNo.NO));
+        Optional<YesOrNo> isAcceleratedDetainedAppeal = Optional.of(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(YesOrNo.NO));
+        Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
+        Optional<YesOrNo> isAgeAssessmentAppeal = Optional.of(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(YesOrNo.NO));
+
+        if (isDetained.equals(Optional.of(YesOrNo.YES))) {
+            if (isAgeAssessmentAppeal.equals(Optional.of(YesOrNo.YES))) {
+                return true;
+            } else if (isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.NO))
+                    && checkAppealTypeIsHuEaEu(appealType)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (isDetained.equals(Optional.of(YesOrNo.NO))) {
+            if (isAgeAssessmentAppeal.equals(Optional.of(YesOrNo.NO))) {
+                return true;
+            } else if (checkAppealTypeIsHuEaEu(appealType)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkAppealTypeIsHuEaEu(Optional<AppealType> appealType) {
+        String appealTypeName = appealType.get().name();
+
+        return appealTypeName.equals(AppealType.HU.name())
+                || appealTypeName.equals(AppealType.EA.name())
+                || appealTypeName.equals(AppealType.EU.name());
     }
 
     public PostSubmitCallbackResponse handle(
