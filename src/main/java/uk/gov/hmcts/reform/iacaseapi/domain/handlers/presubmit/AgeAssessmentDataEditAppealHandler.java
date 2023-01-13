@@ -66,21 +66,21 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
 
             //Clear all 'hscTrust' field
             if (organisationOnDecisionLetter.equals(OrganisationOnDecisionLetter.LOCAL_AUTHORITY.toString())) {
-                log.info("Clearing Prison details for an IRC Detention centre.");
+                log.info("Clearing HSC Trust data");
                 asylumCase.clear(HSC_TRUST);
             }
 
             //Clear all 'localAuthority' & 'hscTrust' fields
             if (organisationOnDecisionLetter
                     .equals(OrganisationOnDecisionLetter.NATIONAL_AGE_ASSESSMENT_BOARD.toString())) {
-                log.info("Clearing IRC details for a Prison Detention Centre");
+                log.info("Clearing HSC Trust and local authority data");
                 asylumCase.clear(LOCAL_AUTHORITY);
                 asylumCase.clear(HSC_TRUST);
             }
 
             //Clear all 'localAuthority' field
             if (organisationOnDecisionLetter.equals(OrganisationOnDecisionLetter.HSC_TRUST.toString())) {
-                log.info("Clearing IRC details for a Prison Detention Centre");
+                log.info("Clearing local authority data");
                 asylumCase.clear(LOCAL_AUTHORITY);
             }
 
