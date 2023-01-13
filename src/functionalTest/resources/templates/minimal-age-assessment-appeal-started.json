@@ -20,5 +20,7 @@
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
   "appellantInUk": "Yes",
-  "ageAssessment": "Yes"
+  "ageAssessment": "Yes",
+  "organisationOnDecisionLetter": "localAuthority",
+  "localAuthority": "localAuth1"
 }
