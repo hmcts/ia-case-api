@@ -85,21 +85,13 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
         Optional<OutOfCountryDecisionType> outOfCountryDecisionTypeOptional = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
 
         if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES) {
-
             handleAccelaratedDetainedAppeal(asylumCase);
-
         } else if (outOfCountryDecisionTypeOptional.isPresent()) {
-
             handleOutOfCountryAppeal(asylumCase, outOfCountryDecisionTypeOptional.get());
-
         } else if (HandlerUtils.isAgeAssessmentAppeal(asylumCase)) {
-
             handleInCountryAgeAssessmentAppeal(asylumCase);
-
         } else {
-
             handleInCountryAppeal(asylumCase);
-
         }
 
         if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
