@@ -1650,7 +1650,40 @@ public enum AsylumCaseFieldDefinition {
         "listingAvailableForAda", new TypeReference<YesOrNo>(){}),
 
     CALCULATED_HEARING_DATE(
-        "calculatedHearingDate", new TypeReference<String>(){});
+        "calculatedHearingDate", new TypeReference<String>(){}),
+
+    ORGANISATION_ON_DECISION_LETTER(
+            "organisationOnDecisionLetter", new TypeReference<String>(){}),
+
+    LOCAL_AUTHORITY(
+            "localAuthority", new TypeReference<String>(){}),
+
+    HSC_TRUST(
+            "hscTrust", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND(
+            "litigationFriend", new TypeReference<YesOrNo>(){}),
+
+    LITIGATION_FRIEND_GIVEN_NAME(
+            "litigationFriendGivenName", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_FAMILY_NAME(
+            "litigationFriendFamilyName", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_COMPANY(
+            "litigationFriendCompany", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_CONTACT_PREFERENCE(
+            "litigationFriendContactPreference", new TypeReference<ContactPreference>(){}),
+
+    LITIGATION_FRIEND_EMAIL(
+            "litigationFriendEmail", new TypeReference<String>(){}),
+
+    LITIGATION_FRIEND_PHONE_NUMBER(
+            "litigationFriendPhoneNumber", new TypeReference<String>(){}),
+
+    DECISION_LETTER_REFERENCE_NUMBER(
+            "decisionLetterReferenceNumber", new TypeReference<String>(){});
 
 
     private final String value;

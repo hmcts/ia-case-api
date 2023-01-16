@@ -18,6 +18,7 @@
   "wantsSms": "Text message",
   "mobileNumber": "07977111111",
   "appealType": "protection",
+  "appealTypeForDisplay": "protection",
   "appealGroundsProtection": {
     "values": [
       "refugeeConvention"
