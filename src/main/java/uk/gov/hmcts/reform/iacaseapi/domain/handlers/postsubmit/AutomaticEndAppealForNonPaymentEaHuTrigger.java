@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCall
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
-import java.util.List.*;
 
 @Component
 public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCallbackHandler<AsylumCase> {
