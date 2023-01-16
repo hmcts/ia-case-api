@@ -58,7 +58,8 @@ class SendDecisionAndReasonsHandlerTest {
 
         assertNotNull(callback);
         assertEquals(asylumCase, callbackResponse.getData());
-        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.NO);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
     }
 
     @Test
