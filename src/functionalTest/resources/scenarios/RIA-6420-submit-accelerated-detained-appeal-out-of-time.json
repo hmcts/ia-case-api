@@ -1,0 +1,33 @@
+{
+  "description": "RIA-6420 Legal representative submits accelerated detained appeal out of time",
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "submitAppeal",
+      "state": "appealSubmitted",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "hearingCentre": "harmondsworth",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "decisionLetterReceivedDate": "{$TODAY-15}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "hearingCentre": "harmondsworth",
+        "decisionLetterReceivedDate": "{$TODAY-15}",
+        "submissionOutOfTime": "Yes",
+        "recordedOutOfTimeDecision": "No"
+      }
+    }
+  }
+}

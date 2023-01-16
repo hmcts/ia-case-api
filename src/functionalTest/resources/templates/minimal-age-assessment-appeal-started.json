@@ -13,12 +13,14 @@
       }
     }
   ],
-  "aaAppellantHasFixedAddress": "No",
-  "aaContactPreference": "wantsSms",
+  "appellantHasFixedAddress": "No",
+  "contactPreference": "wantsSms",
   "wantsSms": "Text message",
-  "aaMobileNumber": "07977111111",
-  "appealType": "ageAssessment",
+  "mobileNumber": "07977111111",
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
-  "appellantInUk": "Yes"
+  "appellantInUk": "Yes",
+  "ageAssessment": "Yes",
+  "organisationOnDecisionLetter": "localAuthority",
+  "localAuthority": "localAuth1"
 }

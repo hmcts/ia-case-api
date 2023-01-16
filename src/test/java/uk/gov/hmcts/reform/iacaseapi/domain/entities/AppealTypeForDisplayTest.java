@@ -15,6 +15,7 @@ class AppealTypeForDisplayTest {
         assertThat(AppealTypeForDisplay.from("refusalOfEu").equals(Optional.of(AppealTypeForDisplay.EA)));
         assertThat(AppealTypeForDisplay.from("refusalOfHumanRights").equals(Optional.of(AppealTypeForDisplay.HU)));
         assertThat(AppealTypeForDisplay.from("deprivation").equals(Optional.of(AppealTypeForDisplay.DC)));
+        assertThat(AppealTypeForDisplay.from("euSettlementScheme").equals(Optional.of(AppealTypeForDisplay.EU)));
     }
 
     @Test
@@ -24,6 +25,7 @@ class AppealTypeForDisplayTest {
         assertEquals("Refusal of application under the EEA regulations", AppealTypeForDisplay.EA.getDescription());
         assertEquals("Refusal of a human rights claim", AppealTypeForDisplay.HU.getDescription());
         assertEquals("Deprivation of citizenship", AppealTypeForDisplay.DC.getDescription());
+        assertEquals("EU Settlement Scheme", AppealTypeForDisplay.EU.getDescription());
     }
 
     @Test
@@ -33,6 +35,6 @@ class AppealTypeForDisplayTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(5, AppealTypeForDisplay.values().length);
+        assertEquals(6, AppealTypeForDisplay.values().length);
     }
 }

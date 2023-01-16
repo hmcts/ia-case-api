@@ -99,8 +99,9 @@ class FeesHandlerTest {
         });
     }
 
-    @Test
-    void should_clear_other_when_hu_offline_payment() {
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "AG" })
+    void should_clear_other_when_ea_hu_ag_offline_payment(String appealType) {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -108,34 +109,7 @@ class FeesHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
-                AppealType.class)).thenReturn(Optional.of(AppealType.HU));
-            when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-
-            PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-                feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
-
-            assertNotNull(callbackResponse);
-            assertEquals(asylumCase, callbackResponse.getData());
-
-            verify(feePayment, times(1)).aboutToSubmit(callback);
-            verify(asylumCase, times(1))
-                .write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
-            verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
-            reset(callback);
-            reset(feePayment);
-        });
-    }
-
-    @Test
-    void should_clear_other_when_ea_offline_payment() {
-
-        Arrays.asList(
-            Event.START_APPEAL
-        ).forEach(event -> {
-
-            when(callback.getEvent()).thenReturn(event);
-            when(asylumCase.read(APPEAL_TYPE,
-                AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+                AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
             when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -569,7 +543,7 @@ class FeesHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "EA", "HU", "PA" })
+    @ValueSource(strings = { "EA", "HU", "PA", "AG" })
     public void should_return_data_for_valid_help_with_fees_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -603,7 +577,7 @@ class FeesHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "EA", "HU", "PA" })
+    @ValueSource(strings = { "EA", "HU", "PA", "AG" })
     public void should_return_data_for_valid_exceptional_circumstances_remission_type(String type) {
 
         when(callback.getEvent()).thenReturn(Event.START_APPEAL);
@@ -634,5 +608,43 @@ class FeesHandlerTest {
         verify(asylumCase, times(1)).clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(1)).clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
         verify(asylumCase, times(0)).clear(PAYMENT_STATUS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "EA", "HU", "PA", "RP", "DC", "EU" })
+    void should_clear_payments_for_all_ada_types(String appealType) {
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(RP_DC_APPEAL_HEARING_OPTION, String.class))
+            .thenReturn(Optional.of("decisionWithoutHearing"));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1))
+            .write(DECISION_HEARING_FEE_OPTION, "decisionWithoutHearing");
+        verify(asylumCase, times(1))
+            .clear(HEARING_DECISION_SELECTED);
+        verify(asylumCase, times(1))
+            .clear(PA_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1))
+            .clear(EA_HU_APPEAL_TYPE_PAYMENT_OPTION);
+        verify(asylumCase, times(1))
+            .clear(PAYMENT_STATUS);
+        verify(asylumCase, times(1)).clear(FEE_REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_TYPE);
+        verify(asylumCase, times(1)).clear(REMISSION_CLAIM);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_REFERENCE);
+        verify(asylumCase, times(1)).clear(ASYLUM_SUPPORT_DOCUMENT);
+        verify(asylumCase, times(1)).clear(LEGAL_AID_ACCOUNT_NUMBER);
+        verify(asylumCase, times(1)).clear(SECTION17_DOCUMENT);
+        verify(asylumCase, times(1)).clear(SECTION20_DOCUMENT);
+        verify(asylumCase, times(1)).clear(HOME_OFFICE_WAIVER_DOCUMENT);
+        reset(callback);
+        reset(feePayment);
     }
 }

@@ -63,8 +63,7 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
         } else {
             // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
             // So in order to manage the FieldShowConditions we are mapping the APPEAL_TYPE to same as APPEAL_TYPE_FOR_DISPLAY
-            if (asylumCase.read(APPEAL_TYPE, AppealType.class).isEmpty()
-                && !HandlerUtils.isAipJourney(asylumCase)) {
+            if (!HandlerUtils.isAipJourney(asylumCase)) {
 
                 AppealTypeForDisplay appealTypeForDisplay = asylumCase
                     .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)

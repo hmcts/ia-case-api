@@ -71,6 +71,7 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 asylumCase.clear(PRISON_NAME);
                 asylumCase.clear(PRISON_NOMS);
                 asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
+                asylumCase.clear(CUSTODIAL_SENTENCE);
             }
 
             //Clear all 'irc' & 'other' fields
@@ -86,6 +87,7 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
                 asylumCase.clear(IRC_NAME);
                 asylumCase.clear(PRISON_NAME);
                 asylumCase.clear(PRISON_NOMS);
+                asylumCase.clear(CUSTODIAL_SENTENCE);
             }
 
             //Clear custodial sentence date

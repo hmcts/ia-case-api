@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -76,6 +77,8 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             case EA:
             case HU:
             case PA:
+            case AG:
+            case EU:
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
@@ -84,13 +87,14 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
                 Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
                 Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+                boolean isEaHuEuAg = List.of(EA, HU, EU, AG).contains(appealType);
                 // old cases
                 if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
-                        || ((appealType == EA || appealType == HU) && remissionType.isEmpty()
+                        || (isEaHuEuAg && remissionType.isEmpty()
                         && eaHuPaymentType.isEmpty())) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
-                if ((appealType == EA || appealType == HU) && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+                if (isEaHuEuAg && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
                         && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
                         && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);

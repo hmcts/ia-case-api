@@ -77,6 +77,8 @@ public class PaymentStateHandler implements PreSubmitCallbackStateHandler<Asylum
         switch (appealType) {
             case EA:
             case HU:
+            case EU:
+            case AG:
                 if (isPaymentStatusPendingOrFailed) {
                     return new PreSubmitCallbackResponse<>(asylumCase, PENDING_PAYMENT);
                 }
