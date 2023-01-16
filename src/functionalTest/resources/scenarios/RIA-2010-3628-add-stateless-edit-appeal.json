@@ -10,8 +10,7 @@
         "template": "minimal-appeal-started.json",
         "replacements": {
           "appellantStateless": "isStateless",
-          "appellantInUk": "Yes",
-          "appealTypeForDisplay": "protection"
+          "appellantInUk": "Yes"
         }
       }
     }
