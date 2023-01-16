@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -43,6 +44,13 @@ public class ReviewUpdateHearingRequirementsHandler implements PreSubmitCallback
         // since we are re-using the fields from SHR and CCD does not have option to specify AND and OR combination
         // in fieldShowCondition, we set the original flag as well here for right rendering.
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.YES);
+
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        if (isAcceleratedDetainedAppeal) {
+            //For ADA case type - Clear flag to remove access to adjust hearing requirements event
+            asylumCase.clear(ADA_HEARING_ADJUSTMENTS_UPDATABLE);
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
