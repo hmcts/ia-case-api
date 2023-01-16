@@ -4,31 +4,21 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
-import java.util.List;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
-public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
-
-    public DispatchPriority getDispatchPriority() {
-        return DispatchPriority.EARLIEST;
-    }
+public class EditAppealTypePreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -37,10 +27,8 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        Event event = callback.getEvent();
-
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && List.of(START_APPEAL, EDIT_APPEAL).contains(event);
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+               && callback.getEvent() == Event.EDIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -56,20 +44,16 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseDetails()
                 .getCaseData();
 
+        // After release of NABA, the pre-NABA cases will not have APPEAL_TYPE_FOR_DISPLAY populated, so when they get
+        // to select appeal type screen (via EditAppeal event), it will not be pre-populated. This preparer will
+        // make sure APPEAL_TYPE_FOR_DISPLAY is written into from APPEAL_TYPE.
         YesOrNo ageAssessment = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO);
 
-        if (ageAssessment.equals(YES)) {
-            asylumCase.write(APPEAL_TYPE, AppealType.AG);
-        } else {
-            // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
-            // So in order to manage the FieldShowConditions we are mapping the APPEAL_TYPE to same as APPEAL_TYPE_FOR_DISPLAY
-            if (!HandlerUtils.isAipJourney(asylumCase)) {
-
-                AppealTypeForDisplay appealTypeForDisplay = asylumCase
-                    .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
+        if (ageAssessment.equals(NO)
+                && asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class).isEmpty()) {
+            AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
                     .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
-                asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
-            }
+            asylumCase.write(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.from(appealType.getValue()));
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

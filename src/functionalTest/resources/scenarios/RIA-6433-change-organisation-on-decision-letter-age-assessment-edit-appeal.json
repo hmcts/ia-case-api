@@ -1,0 +1,30 @@
+{
+  "description": "RIA-6433-change-organisation-on-decision-letter-age-assessment-edit-appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentativeOrgSuccess",
+    "input": {
+      "eventId": "editAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "legalRepresentativeEmailAddress": "{TEST_LAW_FIRM_ORG_SUCCESS_USERNAME}",
+        "template": "minimal-age-assessment-appeal-started.json",
+        "replacements": {
+          "organisationOnDecisionLetter": "nationalAgeAssessmentBoard"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-age-assessment-appeal-started.json",
+      "replacements": {
+        "appealType": "ageAssessment",
+        "organisationOnDecisionLetter": "nationalAgeAssessmentBoard",
+        "localAuthority": null
+      }
+    }
+  }
+}
