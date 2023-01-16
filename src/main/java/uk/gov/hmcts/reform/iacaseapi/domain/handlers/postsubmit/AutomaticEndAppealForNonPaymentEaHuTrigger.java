@@ -54,8 +54,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
         return callback.getEvent() == Event.SUBMIT_APPEAL
                 && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
                 && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU
-                || checkCaseIsEligibleForAutomaticEndAppeal(asylumCase))
-        );
+                || checkCaseIsEligibleForAutomaticEndAppeal(asylumCase)));
     }
 
     private boolean checkCaseIsEligibleForAutomaticEndAppeal(AsylumCase asylumCase) {
