@@ -60,10 +60,10 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     void setUp() {
 
         automaticEndAppealForNonPaymentEaHuTrigger =
-            new AutomaticEndAppealForNonPaymentEaHuTrigger(
-                dateProvider,
-                scheduler
-            );
+                new AutomaticEndAppealForNonPaymentEaHuTrigger(
+                        dateProvider,
+                        scheduler
+                );
     }
 
     @Test
@@ -74,17 +74,17 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(caseDetails.getId()).thenReturn(caseId);
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
-            .thenReturn(Optional.of(RemissionType.NO_REMISSION));
+                .thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-            .thenReturn(Optional.of(AppealType.HU));
+                .thenReturn(Optional.of(AppealType.HU));
         when(dateProvider.nowWithTime()).thenReturn(now);
         TimedEvent timedEvent = new TimedEvent(
-            id,
-            Event.END_APPEAL_AUTOMATICALLY,
-            ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
-            jurisdiction,
-            caseType,
-            caseId
+                id,
+                Event.END_APPEAL_AUTOMATICALLY,
+                ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
+                jurisdiction,
+                caseType,
+                caseId
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
@@ -109,26 +109,26 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(caseDetails.getId()).thenReturn(caseId);
         when(dateProvider.nowWithTime()).thenReturn(now);
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
-            .thenReturn(Optional.of(RemissionType.NO_REMISSION));
+                .thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-            .thenReturn(Optional.of(AppealType.EA));
+                .thenReturn(Optional.of(AppealType.EA));
 
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(callback))
-            .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
+                .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
     @Test
     void handling_should_throw_if_null_callback() {
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.canHandle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
     private void dataSetUp() {

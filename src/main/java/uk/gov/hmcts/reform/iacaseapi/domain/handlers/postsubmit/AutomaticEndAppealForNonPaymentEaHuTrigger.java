@@ -31,31 +31,31 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
     int schedule14DaysInMinutes;
 
     public AutomaticEndAppealForNonPaymentEaHuTrigger(
-        DateProvider dateProvider,
-        Scheduler scheduler
+            DateProvider dateProvider,
+            Scheduler scheduler
     ) {
         this.dateProvider = dateProvider;
         this.scheduler = scheduler;
     }
 
     public boolean canHandle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callback, "callback must not be null");
 
         AsylumCase asylumCase =
-            callback
-                .getCaseDetails()
-                .getCaseData();
+                callback
+                        .getCaseDetails()
+                        .getCaseData();
 
         Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
         return callback.getEvent() == Event.SUBMIT_APPEAL
-               && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
-               && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU
-                               || checkCaseIsEligibleForAutomaticEndAppeal(asylumCase))
-                  );
+                && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
+                && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU
+                || checkCaseIsEligibleForAutomaticEndAppeal(asylumCase))
+        );
     }
 
     private boolean checkCaseIsEligibleForAutomaticEndAppeal(AsylumCase asylumCase) {
@@ -89,11 +89,11 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
                 AppealType.HU.name(),
                 AppealType.EA.name(),
                 AppealType.EU.name()
-                ).contains(appealType.get().name());
+        ).contains(appealType.get().name());
     }
 
     public PostSubmitCallbackResponse handle(
-        Callback<AsylumCase> callback
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callback)) {
             throw new IllegalStateException("Cannot handle callback for auto end appeal for remission rejection");
@@ -102,14 +102,14 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
         ZonedDateTime scheduledDate = ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(schedule14DaysInMinutes);
 
         scheduler.schedule(
-            new TimedEvent(
-                "",
-                Event.END_APPEAL_AUTOMATICALLY,
-                scheduledDate,
-                "IA",
-                "Asylum",
-                callback.getCaseDetails().getId()
-            )
+                new TimedEvent(
+                        "",
+                        Event.END_APPEAL_AUTOMATICALLY,
+                        scheduledDate,
+                        "IA",
+                        "Asylum",
+                        callback.getCaseDetails().getId()
+                )
         );
         return new PostSubmitCallbackResponse();
     }
