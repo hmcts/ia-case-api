@@ -18,6 +18,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
+@MockitoSettings(strictness = Strictness.LENIENT)
 class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
 
     @Mock private Callback<AsylumCase> callback;
@@ -143,7 +146,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
                 .thenReturn(Optional.of(AppealType.HU));
 
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
+                .thenReturn(Optional.of(YesOrNo.NO));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
@@ -155,7 +158,9 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     @Test
     void should_end_appeal_after_14_days_detained_age_assessment_appeal() {
         dataSetUp();
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
 
         TimedEvent timedEvent = new TimedEvent(
                 id,
@@ -183,6 +188,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     @Test
     void should_end_appeal_after_14_days_detained_non_age_assessment_non_accelerated_detained_HU() {
         dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         TimedEvent timedEvent = new TimedEvent(
                 id,
@@ -210,6 +216,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
     @Test
     void should_end_appeal_after_14_days_detained_non_age_assessment_non_accelerated_detained_EA() {
         dataSetUp();
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
                 .thenReturn(Optional.of(AppealType.EA));
 
