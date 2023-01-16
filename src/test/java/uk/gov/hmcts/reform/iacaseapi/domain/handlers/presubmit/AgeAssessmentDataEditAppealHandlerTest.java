@@ -126,6 +126,7 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_COMPANY);

@@ -111,6 +111,7 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
             asylumCase.clear(HSC_TRUST);
             asylumCase.clear(DECISION_LETTER_REFERENCE_NUMBER);
             asylumCase.clear(DATE_ON_DECISION_LETTER);
+            asylumCase.clear(LITIGATION_FRIEND);
             clearLitigationFriendData(asylumCase);
         }
 
