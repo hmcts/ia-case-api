@@ -103,7 +103,7 @@ public class AppealTypeHandlerTest {
     }
 
     @Test
-    void should_throw_error_if_appealType_and_appealTypeForDisplay_are_both_empty() {
+    void should_throw_error_if_appealTypeForDisplay_is_empty() {
         when(callback.getEvent()).thenReturn(START_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
