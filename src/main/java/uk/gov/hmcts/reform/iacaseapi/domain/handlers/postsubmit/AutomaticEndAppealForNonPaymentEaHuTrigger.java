@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,41 +53,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PostSubmitCal
         return callback.getEvent() == Event.SUBMIT_APPEAL
                 && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
                 && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU
-                || checkCaseIsEligibleForAutomaticEndAppeal(asylumCase)));
-    }
-
-    private boolean checkCaseIsEligibleForAutomaticEndAppeal(AsylumCase asylumCase) {
-        boolean isDetained = isAppellantInDetention(asylumCase);
-        boolean isAcceleratedDetainedAppeal = isAcceleratedDetainedAppeal(asylumCase);
-        boolean isAgeAssessmentAppeal = isAgeAssessmentAppeal(asylumCase);
-
-        Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
-
-        if (isDetained) {
-            if (isAgeAssessmentAppeal) {
-                return true;
-            } else if (!isAcceleratedDetainedAppeal && checkAppealTypeIsHuEaEu(appealType)) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if (isAgeAssessmentAppeal) {
-                return true;
-            } else if (checkAppealTypeIsHuEaEu(appealType)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    private boolean checkAppealTypeIsHuEaEu(Optional<AppealType> appealType) {
-        return List.of(
-                AppealType.HU.name(),
-                AppealType.EA.name(),
-                AppealType.EU.name()
-        ).contains(appealType.get().name());
+                || appealType.get() == AppealType.EU || appealType.get() == AppealType.AG));
     }
 
     public PostSubmitCallbackResponse handle(
