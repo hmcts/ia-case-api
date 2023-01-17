@@ -1,6 +1,6 @@
 {
-  "homeOfficeReferenceNumber": "123456789",
-  "homeOfficeDecisionDate": "{$TODAY}",
+  "decisionLetterReferenceNumber": "RP/50052/2022",
+  "dateOnDecisionLetter": "{$TODAY}",
   "appellantTitle": "Mr",
   "appellantGivenNames": "Talha",
   "appellantFamilyName": "Awan",
