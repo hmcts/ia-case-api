@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -55,7 +59,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
-                && (appealType.isPresent() && (appealType.get() == AppealType.EA || appealType.get() == AppealType.HU));
+                && (appealType.isPresent() && Set.of(EA, HU, EU).contains(appealType.get()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
