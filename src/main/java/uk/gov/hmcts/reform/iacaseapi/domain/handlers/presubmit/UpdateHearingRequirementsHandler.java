@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.PreviousRequirementsAndRequestsAppender;
@@ -87,6 +88,13 @@ public class UpdateHearingRequirementsHandler implements PreSubmitCallbackHandle
         if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
             previousRequirementsAndRequestsAppender.appendAndTrim(asylumCase);
+        }
+
+        boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
+
+        if (isAcceleratedDetainedAppeal) {
+            //Set flag to Yes to enable updateHearingAdjustmentsEvent for ada cases
+            asylumCase.write(ADA_HEARING_ADJUSTMENTS_UPDATABLE, YesOrNo.YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -39,8 +38,10 @@ public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<A
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
 
         if (isAcceleratedDetainedAppeal) {
-            //Set flag to No to remove access to event updateHearingRequirements for ada cases after submission
-            asylumCase.write(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.NO);
+            //Clear to remove access to event updateHearingRequirements for ada cases after submission
+            asylumCase.clear(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE);
+            //Set flag to No to remove access to event updateHearingAdjustments for ada cases after submission
+            asylumCase.clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

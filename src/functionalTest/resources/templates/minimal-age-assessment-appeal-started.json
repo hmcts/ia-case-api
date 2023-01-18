@@ -1,6 +1,6 @@
 {
-  "homeOfficeReferenceNumber": "123456789",
-  "homeOfficeDecisionDate": "{$TODAY}",
+  "decisionLetterReferenceNumber": "AG/50052/2022",
+  "dateOnDecisionLetter": "{$TODAY}",
   "appellantTitle": "Mr",
   "appellantGivenNames": "Talha",
   "appellantFamilyName": "Awan",
@@ -20,5 +20,7 @@
   "appealReferenceNumber": "DRAFT",
   "isOutOfCountryEnabled": "Yes",
   "appellantInUk": "Yes",
-  "ageAssessment": "Yes"
+  "ageAssessment": "Yes",
+  "organisationOnDecisionLetter": "localAuthority",
+  "localAuthority": "localAuth1"
 }

@@ -74,7 +74,7 @@ class HearingTypeHandlerTest {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(type)));
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)).thenReturn(Optional.of(AppealTypeForDisplay.valueOf(type)));
 
         hearingTypeHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
