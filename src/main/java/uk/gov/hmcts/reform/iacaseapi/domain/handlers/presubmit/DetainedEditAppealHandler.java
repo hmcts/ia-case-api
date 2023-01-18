@@ -1,15 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_HAS_FIXED_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_OUT_OF_COUNTRY_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HAS_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MOBILE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEARCH_POSTCODE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -64,6 +56,24 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
             asylumCase.clear(CONTACT_PREFERENCE);
             asylumCase.clear(EMAIL);
             asylumCase.clear(MOBILE_NUMBER);
+        } else if (appellantInDetention.equals(NO)) {
+            // Clear all 'detained' fields when switching to non-detained case
+            asylumCase.clear(DETENTION_STATUS);
+            asylumCase.clear(DETENTION_FACILITY);
+
+            asylumCase.clear(PRISON_NAME);
+            asylumCase.clear(PRISON_NOMS);
+            asylumCase.clear(CUSTODIAL_SENTENCE);
+            asylumCase.clear(DATE_CUSTODIAL_SENTENCE);
+
+            asylumCase.clear(OTHER_DETENTION_FACILITY_NAME);
+
+            asylumCase.clear(IRC_NAME);
+
+            asylumCase.clear(HAS_PENDING_BAIL_APPLICATIONS);
+            asylumCase.clear(BAIL_APPLICATION_NUMBER);
+
+            asylumCase.clear(IS_ACCELERATED_DETAINED_APPEAL);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
