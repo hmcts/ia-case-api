@@ -103,4 +103,9 @@
         <cve>CVE-2022-3064</cve>
         <cve>CVE-2022-45143</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[LatencyUtils-2.0.3.jar vulnerabilities]]>
+        </notes>
+        <cve>CVE-2021-4277</cve>
+    </suppress>
 </suppressions>
