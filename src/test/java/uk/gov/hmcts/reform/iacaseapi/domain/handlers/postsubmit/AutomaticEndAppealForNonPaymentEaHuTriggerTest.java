@@ -147,4 +147,15 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void handling_should_throw_if_can_not_handle() {
+        when(callback.getEvent()).thenReturn(Event.RECORD_REMISSION_DECISION); // unqualified event
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(callback))
+            .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+            .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
 }
