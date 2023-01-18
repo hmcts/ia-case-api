@@ -13,11 +13,14 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -26,6 +29,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -61,6 +66,25 @@ class FeesAndStatusCheckPreparerTest {
 
         feesAndStatusCheckPreparer =
                 new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = {
+        "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION", "HO_WAIVER_REMISSION"
+    })
+    void it_should_add_error_if_there_is_a_remission(RemissionType remissionType) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
+            .thenReturn(Optional.of(remissionType));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertEquals(1, callbackResponse.getErrors().size());
+        assertTrue(callbackResponse.getErrors().contains("The Pay and submit option is not available. Select Submit your appeal to submit the appeal."));
     }
 
     @Test
@@ -234,6 +258,57 @@ class FeesAndStatusCheckPreparerTest {
         assertThat(callbackResponse.getErrors()).isNotEmpty();
         assertThat(callbackResponse.getErrors())
             .contains("You do not have to pay for this type of appeal.");
+    }
+
+    private static Stream<Arguments> paymentOptionNotAvailable() {
+        return Stream.of(
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.empty()),
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.of(RemissionDecision.APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAID), Optional.of(RemissionDecision.PARTIALLY_APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAYMENT_PENDING), Optional.of(RemissionDecision.APPROVED)),
+            Arguments.of(Optional.of(PaymentStatus.PAYMENT_PENDING), Optional.of(RemissionDecision.PARTIALLY_APPROVED))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("paymentOptionNotAvailable")
+    void should_error_when_payment_option_should_be_unavailable(
+        Optional<PaymentStatus> paymentStatus,
+        Optional<RemissionDecision> remissionDecision) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.EA));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(paymentStatus);
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class)).thenReturn(remissionDecision);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Make a payment option is not available.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"refusalOfEu", "refusalOfHumanRights", "protection", "euSettlementScheme"})
+    void should_error_when_remission_approved_or_partially_approved(String type) {
+
+        when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(AppealType.from(type));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(PaymentStatus.PAID));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertThat(callbackResponse.getErrors()).isNotEmpty();
+        assertThat(callbackResponse.getErrors())
+            .contains("The Make a payment option is not available.");
     }
 
 }
