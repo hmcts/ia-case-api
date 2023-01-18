@@ -38,12 +38,12 @@ public class DetainedEditAppealHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
-            .thenReturn(Optional.of(YesOrNo.YES));
     }
 
     @Test
     void should_remove_appellant_address_and_contact_info() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
         PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
         verify(asylumCase, times(1))
@@ -57,6 +57,29 @@ public class DetainedEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.CONTACT_PREFERENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.EMAIL);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.MOBILE_NUMBER);
+    }
+
+    @Test
+    void should_remove_detained_fields_when_editing_to_non_detained() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        PreSubmitCallbackResponse<AsylumCase> response = detainedEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.DETENTION_STATUS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DETENTION_FACILITY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.PRISON_NAME);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.PRISON_NOMS);
+        verify(asylumCase, times(1))
+                .clear(AsylumCaseFieldDefinition.CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_CUSTODIAL_SENTENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.OTHER_DETENTION_FACILITY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IRC_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL);
+
     }
 
     @Test
