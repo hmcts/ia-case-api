@@ -41,4 +41,8 @@ public class HandlerUtils {
     public static boolean isAcceleratedDetainedAppeal(AsylumCase asylumCase) {
         return (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
+
+    public static boolean isAppellantInDetention(AsylumCase asylumCase) {
+        return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
+    }
 }
