@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.IRC;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.OTHER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility.PRISON;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -27,6 +28,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.List;
 
 @Slf4j
 @Component
@@ -42,8 +45,10 @@ public class DetentionFacilityEditAppealHandler implements PreSubmitCallbackHand
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
+        Event event = callback.getEvent();
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && callback.getEvent() == Event.EDIT_APPEAL_AFTER_SUBMIT;
+            && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(event);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
