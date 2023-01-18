@@ -14,6 +14,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -155,11 +157,12 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
                 .thenReturn(Optional.of(YesOrNo.NO));
     }
 
-    @Test
-    void should_end_appeal_after_14_days_detained_age_assessment_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_end_appeal_after_14_days_detained_age_assessment_appeal(AppealType appealType) {
         dataSetUp();
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
 
         TimedEvent timedEvent = new TimedEvent(
@@ -185,10 +188,12 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals("", result.getId());
     }
 
-    @Test
-    void should_end_appeal_after_14_days_detained_non_age_assessment_non_accelerated_detained_HU() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
+    void should_end_appeal_after_14_days_detained_non_age_assessment_non_accelerated_detained(AppealType appealType) {
         dataSetUp();
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
 
         TimedEvent timedEvent = new TimedEvent(
                 id,
@@ -213,41 +218,14 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals("", result.getId());
     }
 
-    @Test
-    void should_end_appeal_after_14_days_detained_non_age_assessment_non_accelerated_detained_EA() {
-        dataSetUp();
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-                .thenReturn(Optional.of(AppealType.EA));
-
-        TimedEvent timedEvent = new TimedEvent(
-                id,
-                Event.END_APPEAL_AUTOMATICALLY,
-                ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
-                jurisdiction,
-                caseType,
-                caseId
-        );
-        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
-
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(callback);
-
-        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
-
-        TimedEvent result = timedEventArgumentCaptor.getValue();
-
-        assertEquals(timedEvent.getCaseId(), result.getCaseId());
-        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
-        assertEquals(timedEvent.getCaseType(), result.getCaseType());
-        assertEquals(timedEvent.getEvent(), result.getEvent());
-        assertEquals("", result.getId());
-    }
-
-    @Test
-    void should_end_appeal_after_14_days_nonDetained_non_age_assessment_appeal() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU", "AG"})
+    void should_end_appeal_after_14_days_nonDetained_age_assessment(AppealType appealType) {
         dataSetUp();
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+                .thenReturn(Optional.of(appealType));
 
         TimedEvent timedEvent = new TimedEvent(
                 id,
@@ -272,48 +250,14 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertEquals("", result.getId());
     }
 
-    @Test
-    void should_end_appeal_after_14_days_nonDetained_HU() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = {"EA", "HU", "EU"})
+    void should_end_appeal_after_14_days_nonDetained_non_age_assessment(AppealType appealType) {
         dataSetUp();
         when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-                .thenReturn(Optional.of(AppealType.HU));
-
-        TimedEvent timedEvent = new TimedEvent(
-                id,
-                Event.END_APPEAL_AUTOMATICALLY,
-                ZonedDateTime.of(dateProvider.nowWithTime(), ZoneId.systemDefault()).plusMinutes(20160),
-                jurisdiction,
-                caseType,
-                caseId
-        );
-        when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
-
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(callback);
-
-        verify(scheduler).schedule(timedEventArgumentCaptor.capture());
-
-        TimedEvent result = timedEventArgumentCaptor.getValue();
-
-        assertEquals(timedEvent.getCaseId(), result.getCaseId());
-        assertEquals(timedEvent.getJurisdiction(), result.getJurisdiction());
-        assertEquals(timedEvent.getCaseType(), result.getCaseType());
-        assertEquals(timedEvent.getEvent(), result.getEvent());
-        assertEquals("", result.getId());
-    }
-
-    @Test
-    void should_end_appeal_after_14_days_nonDetained_EA() {
-        dataSetUp();
-        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class))
-                .thenReturn(Optional.of(YesOrNo.YES));
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-                .thenReturn(Optional.of(AppealType.EA));
+                .thenReturn(Optional.of(appealType));
 
         TimedEvent timedEvent = new TimedEvent(
                 id,
