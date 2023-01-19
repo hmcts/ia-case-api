@@ -34,67 +34,67 @@ import uk.gov.hmcts.reform.iacaseapi.infrastructure.PostSubmitCallbackDispatcher
 @RestController
 public class PostSubmitCallbackController {
 
-    private final PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
+  private final PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher;
 
-    public PostSubmitCallbackController(
-        PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
-    ) {
-        requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
+  public PostSubmitCallbackController(
+      PostSubmitCallbackDispatcher<AsylumCase> callbackDispatcher
+  ) {
+    requireNonNull(callbackDispatcher, "callbackDispatcher must not be null");
 
-        this.callbackDispatcher = callbackDispatcher;
-    }
+    this.callbackDispatcher = callbackDispatcher;
+  }
 
-    @Operation(
-            summary = "Handles 'SubmittedEvent' callbacks from CCD",
-            security =
-                {
-                @SecurityRequirement(name = "Authorization"),
-                @SecurityRequirement(name = "ServiceAuthorization")
-                },
-            responses =
-                {
-                @ApiResponse(
-                      responseCode = "200",
-                      description = "Optional confirmation text for CCD UI",
-                      content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
-                @ApiResponse(
-                      responseCode = "400",
-                      description = "Bad Request",
-                      content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
-                @ApiResponse(
-                      responseCode = "403",
-                      description = "Forbidden",
-                      content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
-                @ApiResponse(
-                      responseCode = "415",
-                      description = "Unsupported Media Type",
-                      content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
-                @ApiResponse(
-                      responseCode = "500",
-                      description = "Internal Server Error",
-                      content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))
-                }
-    )
+  @Operation(
+      summary = "Handles 'SubmittedEvent' callbacks from CCD",
+      security =
+          {
+              @SecurityRequirement(name = "Authorization"),
+              @SecurityRequirement(name = "ServiceAuthorization")
+          },
+      responses =
+          {
+              @ApiResponse(
+                  responseCode = "200",
+                  description = "Optional confirmation text for CCD UI",
+                  content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+              @ApiResponse(
+                  responseCode = "400",
+                  description = "Bad Request",
+                  content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+              @ApiResponse(
+                  responseCode = "403",
+                  description = "Forbidden",
+                  content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+              @ApiResponse(
+                  responseCode = "415",
+                  description = "Unsupported Media Type",
+                  content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class))),
+              @ApiResponse(
+                  responseCode = "500",
+                  description = "Internal Server Error",
+                  content = @Content(schema = @Schema(implementation = PostSubmitCallbackResponse.class)))
+          }
+  )
 
-    @PostMapping(path = "/ccdSubmitted")
-    public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
-        @Parameter(name = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
-    ) {
-        log.info(
-            "Asylum Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+  @PostMapping(path = "/ccdSubmitted")
+  public ResponseEntity<PostSubmitCallbackResponse> ccdSubmitted(
+      @Parameter(name = "Asylum case data", required = true) @RequestBody Callback<AsylumCase> callback
+  ) {
+    log.info(
+        "Asylum Case CCD `ccdSubmitted` event `{}` received for Case ID `{}`",
+        callback.getEvent(),
+        callback.getCaseDetails().getId()
+    );
 
-        PostSubmitCallbackResponse callbackResponse =
-            callbackDispatcher.handle(callback);
+    PostSubmitCallbackResponse callbackResponse =
+        callbackDispatcher.handle(callback);
 
-        log.info(
-            "Asylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
-            callback.getEvent(),
-            callback.getCaseDetails().getId()
-        );
+    log.info(
+        "Asylum Case CCD `ccdSubmitted` event `{}` handled for Case ID `{}`",
+        callback.getEvent(),
+        callback.getCaseDetails().getId()
+    );
 
-        return ok(callbackResponse);
-    }
+    return ok(callbackResponse);
+  }
 }
