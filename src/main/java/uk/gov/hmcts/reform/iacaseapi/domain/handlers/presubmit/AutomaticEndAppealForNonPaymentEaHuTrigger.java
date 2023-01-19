@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_END_APPEAL_TIMED_EVENT_ID;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.time.ZoneId;
