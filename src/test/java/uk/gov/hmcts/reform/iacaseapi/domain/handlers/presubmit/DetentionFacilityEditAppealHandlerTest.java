@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,7 +117,8 @@ public class DetentionFacilityEditAppealHandlerTest {
             when(callback.getEvent()).thenReturn(event);
             for (PreSubmitCallbackStage stage : PreSubmitCallbackStage.values()) {
                 boolean canHandle = detentionFacilityEditAppealHandler.canHandle(stage, callback);
-                if ((event == Event.EDIT_APPEAL_AFTER_SUBMIT) && (stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)) {
+                if (stage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                        && List.of(EDIT_APPEAL, EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent())) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
