@@ -59,7 +59,9 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
         Optional<AppealType> appealType = asylumCase.read(APPEAL_TYPE, AppealType.class);
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
-                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+                && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
+                && (appealType.isPresent() && Set.of(EA, HU, EU).contains(appealType.get()));
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
