@@ -47,6 +47,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
 @SuppressWarnings("unchecked")
 class FeesAndStatusCheckPreparerTest {
 
+    private static final String PAYMENT_OPTION_NOT_AVAILABLE_LABEL = "The Make a payment option is not available.";
+
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -57,34 +59,62 @@ class FeesAndStatusCheckPreparerTest {
     private FeePayment<AsylumCase> feePayment;
     @Mock
     private FeatureToggler featureToggler;
-
     private FeesAndStatusCheckPreparer feesAndStatusCheckPreparer;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
         feesAndStatusCheckPreparer =
-                new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+            new FeesAndStatusCheckPreparer(true, featureToggler, feePayment);
+    }
+
+    private static Stream<Arguments> paymentOptionNotAvailableError() {
+        return Stream.of(
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, AppealType.EA),
+
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, AppealType.EU),
+
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, AppealType.HU),
+
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+            Arguments.of(RemissionType.HO_WAIVER_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.EA),
+
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+            Arguments.of(RemissionType.HELP_WITH_FEES, RemissionDecision.PARTIALLY_APPROVED, AppealType.EU),
+
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU),
+            Arguments.of(RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.PARTIALLY_APPROVED, AppealType.HU)
+        );
     }
 
     @ParameterizedTest
-    @EnumSource(value = RemissionType.class, names = {
-        "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION", "HO_WAIVER_REMISSION"
-    })
-    void it_should_add_error_if_there_is_a_remission(RemissionType remissionType) {
+    @MethodSource("paymentOptionNotAvailableError")
+    void it_should_add_error_if_there_is_a_remission(RemissionType remissionType, RemissionDecision remissionDecision, AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(Event.PAYMENT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class))
+            .thenReturn(Optional.of(appealType));
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(remissionType));
+        when(asylumCase.read(REMISSION_DECISION, RemissionDecision.class))
+            .thenReturn(Optional.of(remissionDecision));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             feesAndStatusCheckPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         assertEquals(1, callbackResponse.getErrors().size());
-        assertTrue(callbackResponse.getErrors().contains("The Pay and submit option is not available. Select Submit your appeal to submit the appeal."));
+        assertTrue(callbackResponse.getErrors().contains(PAYMENT_OPTION_NOT_AVAILABLE_LABEL));
     }
 
     @Test
