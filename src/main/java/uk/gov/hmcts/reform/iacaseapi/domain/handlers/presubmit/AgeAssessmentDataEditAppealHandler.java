@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OrganisationOnDecisionLetter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
@@ -37,6 +38,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 @Slf4j
 @Component
 public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
+
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
+    }
+
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
@@ -113,6 +119,7 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
         //Clear all age assessment related data
         if ((isAcceleratedDetainedAppeal.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(YES)))
                 || isAgeAssessmentAppeal.equals(Optional.of(NO))) {
+            asylumCase.clear(AGE_ASSESSMENT);
             asylumCase.clear(ORGANISATION_ON_DECISION_LETTER);
             asylumCase.clear(LOCAL_AUTHORITY);
             asylumCase.clear(HSC_TRUST);

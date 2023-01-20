@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +49,11 @@ public class AgeAssessmentDataEditAppealHandlerTest {
                 .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AsylumCaseFieldDefinition.AGE_ASSESSMENT, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+    }
+
+    @Test
+    void set_to_latest() {
+        assertThat(ageAssessmentDataEditAppealHandler.getDispatchPriority()).isEqualTo(LATEST);
     }
 
     @Test
@@ -125,6 +132,7 @@ public class AgeAssessmentDataEditAppealHandlerTest {
                 .thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AGE_ASSESSMENT);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LOCAL_AUTHORITY);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
@@ -150,6 +158,7 @@ public class AgeAssessmentDataEditAppealHandlerTest {
                 .thenReturn(Optional.of(YesOrNo.YES));
         PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AGE_ASSESSMENT);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LOCAL_AUTHORITY);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
