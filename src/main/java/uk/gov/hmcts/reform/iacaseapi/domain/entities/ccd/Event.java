@@ -118,7 +118,7 @@ public enum Event {
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
 
     PIP_ACTIVATION("pipActivation"),
-
+    ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
 

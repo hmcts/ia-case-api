@@ -362,6 +362,7 @@ security:
       - "generateUpperTribunalBundle"
       - "asyncStitchingComplete"
       - "markAddendumEvidenceAsReviewed"
+      - "adaSuitabilityReview"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
