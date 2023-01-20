@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HSC_TRUST;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_COMPANY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE;
@@ -59,8 +62,11 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
                 .getCaseData();
 
         Optional<YesOrNo> isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class);
+        Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+        Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
 
-        if (isAgeAssessmentAppeal.equals(Optional.of(YES))) {
+        if ((isAcceleratedDetainedAppeal.equals(Optional.of(NO)) && isAgeAssessmentAppeal.equals(Optional.of(YES)))
+                || (appellantInDetention.equals(Optional.of(NO)) && isAgeAssessmentAppeal.equals(Optional.of(YES)))) {
             String organisationOnDecisionLetter = asylumCase.read(ORGANISATION_ON_DECISION_LETTER, String.class)
                     .orElseThrow(() -> new RequiredFieldMissingException("Organisation on decision letter missing"));
 
@@ -105,13 +111,15 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
         }
 
         //Clear all age assessment related data
-        if (isAgeAssessmentAppeal.equals(Optional.of(NO))) {
+        if ((isAcceleratedDetainedAppeal.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(YES)))
+                || isAgeAssessmentAppeal.equals(Optional.of(NO))) {
             asylumCase.clear(ORGANISATION_ON_DECISION_LETTER);
             asylumCase.clear(LOCAL_AUTHORITY);
             asylumCase.clear(HSC_TRUST);
             asylumCase.clear(DECISION_LETTER_REFERENCE_NUMBER);
             asylumCase.clear(DATE_ON_DECISION_LETTER);
             asylumCase.clear(LITIGATION_FRIEND);
+            asylumCase.clear(AA_APPELLANT_DATE_OF_BIRTH);
             clearLitigationFriendData(asylumCase);
         }
 

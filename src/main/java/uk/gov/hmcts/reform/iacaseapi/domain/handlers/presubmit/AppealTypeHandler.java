@@ -4,12 +4,15 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
@@ -57,9 +60,13 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                 .getCaseData();
 
         YesOrNo ageAssessment = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO);
+        Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+        Optional<YesOrNo> isAcceleratedDetainedAppeal = asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
 
-        if (ageAssessment.equals(YES)) {
+        if ((isAcceleratedDetainedAppeal.equals(Optional.of(NO)) && ageAssessment.equals(YES))
+                || (appellantInDetention.equals(Optional.of(NO)) && ageAssessment.equals(YES))) {
             asylumCase.write(APPEAL_TYPE, AppealType.AG);
+            asylumCase.clear(APPEAL_TYPE_FOR_DISPLAY);
         } else {
             // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
             // So in order to manage the FieldShowConditions we are mapping the APPEAL_TYPE to same as APPEAL_TYPE_FOR_DISPLAY

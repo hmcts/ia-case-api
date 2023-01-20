@@ -41,6 +41,10 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AsylumCaseFieldDefinition.AGE_ASSESSMENT, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
     }
@@ -126,6 +130,32 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_COMPANY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL);
+    }
+
+    @Test
+    void should_remove_all_age_assessment_details_if_now_ada() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.AGE_ASSESSMENT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LOCAL_AUTHORITY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME);
