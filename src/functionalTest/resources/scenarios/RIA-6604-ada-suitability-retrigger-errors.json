@@ -1,0 +1,27 @@
+{
+  "description": "RIA-6604 ada suitability re-trigger - return error message",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "Judge",
+    "input": {
+      "eventId": "adaSuitabilityReview",
+      "state": "respondentReview",
+      "id": 1234,
+      "caseData": {
+        "template": "minimal-ada-appeal-submitted.json",
+        "replacements": {
+          "suitabilityReviewJudge": "Judge x",
+          "suitabilityReviewDecision": "unsuitable",
+          "suitabilityReviewReason": "Reason1"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["ADA suitability has already been determined for this appeal."],
+    "caseData": {
+      "template": "minimal-ada-appeal-submitted.json"
+    }
+  }
+}
