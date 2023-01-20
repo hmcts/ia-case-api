@@ -1,22 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HSC_TRUST;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_COMPANY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
@@ -128,6 +113,14 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
             asylumCase.clear(LITIGATION_FRIEND);
             asylumCase.clear(AA_APPELLANT_DATE_OF_BIRTH);
             clearLitigationFriendData(asylumCase);
+        }
+
+        //Clear HearingType
+        YesOrNo hearingTypeResult = asylumCase.read(HEARING_TYPE_RESULT, YesOrNo.class).orElse(NO);
+        if (hearingTypeResult.equals(YES)) {
+            asylumCase.clear(DECISION_HEARING_FEE_OPTION);
+        } else {
+            asylumCase.clear(RP_DC_APPEAL_HEARING_OPTION);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

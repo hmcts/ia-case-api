@@ -714,7 +714,7 @@ public enum AsylumCaseFieldDefinition {
         "journeyType", new TypeReference<JourneyType>(){}),
 
     HEARING_TYPE_RESULT(
-        "hearingTypeResult", new TypeReference<HearingType>(){}),
+        "hearingTypeResult", new TypeReference<YesOrNo>(){}),
 
     LETTER_SENT_OR_RECEIVED(
             "letterSentOrReceived", new TypeReference<String>(){}),

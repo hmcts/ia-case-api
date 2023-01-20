@@ -175,6 +175,30 @@ public class AgeAssessmentDataEditAppealHandlerTest {
     }
 
     @Test
+    void should_remove_hearing_type_hearing_fee() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER, String.class))
+                .thenReturn(Optional.of(OrganisationOnDecisionLetter.HSC_TRUST.toString()));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION);
+    }
+
+    @Test
+    void should_remove_hearing_type_rp_dc() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER, String.class))
+                .thenReturn(Optional.of(OrganisationOnDecisionLetter.HSC_TRUST.toString()));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION);
+    }
+
+    @Test
     void handling_should_throw_if_detention_facility_not_available() {
         assertThatThrownBy(() -> ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Organisation on decision letter missing")
