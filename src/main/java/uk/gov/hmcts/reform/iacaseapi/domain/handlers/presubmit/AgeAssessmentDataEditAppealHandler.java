@@ -104,7 +104,9 @@ public class AgeAssessmentDataEditAppealHandler implements PreSubmitCallbackHand
         //Clear all age assessment related data
         if ((isAcceleratedDetainedAppeal.equals(Optional.of(YES)) && appellantInDetention.equals(Optional.of(YES)))
                 || isAgeAssessmentAppeal.equals(Optional.of(NO))) {
-            asylumCase.clear(AGE_ASSESSMENT);
+            if (isAcceleratedDetainedAppeal.equals(Optional.of(YES))) {
+                asylumCase.clear(AGE_ASSESSMENT);
+            }
             asylumCase.clear(ORGANISATION_ON_DECISION_LETTER);
             asylumCase.clear(LOCAL_AUTHORITY);
             asylumCase.clear(HSC_TRUST);

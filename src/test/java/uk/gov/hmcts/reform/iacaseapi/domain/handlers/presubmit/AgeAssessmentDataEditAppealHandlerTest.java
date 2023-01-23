@@ -132,7 +132,6 @@ public class AgeAssessmentDataEditAppealHandlerTest {
                 .thenReturn(Optional.of(YesOrNo.NO));
         PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
         assertNotNull(response);
-        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AGE_ASSESSMENT);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LOCAL_AUTHORITY);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
