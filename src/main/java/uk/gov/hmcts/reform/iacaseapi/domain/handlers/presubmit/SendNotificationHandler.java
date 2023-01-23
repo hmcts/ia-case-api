@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
@@ -119,6 +120,9 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         }
         if (!isPaid(callback)) {
             eventsToHandle.add(Event.END_APPEAL_AUTOMATICALLY);
+        }
+        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
+            eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
         return eventsToHandle;
     }
