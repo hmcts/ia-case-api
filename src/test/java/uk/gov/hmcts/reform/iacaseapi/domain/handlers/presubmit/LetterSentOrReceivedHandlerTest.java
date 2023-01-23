@@ -135,7 +135,7 @@ class LetterSentOrReceivedHandlerTest {
     }
 
     @Test
-    void should_write_not_ada_if_appellant_not_detained() {
+    void should_write_not_ada_if_appellant_not_detained_mid_event() {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
         when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
@@ -148,6 +148,22 @@ class LetterSentOrReceivedHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+    }
+
+    @Test
+    void should_write_not_ada_if_appellant_not_detained_about_to_submit() {
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(IS_OUT_OF_COUNTRY_ENABLED, YesOrNo.class)).thenReturn(Optional.of(isOutOfCountryEnabled));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(appellantInUk));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                letterSentOrReceivedHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        verify(asylumCase, times(1)).clear(IS_ACCELERATED_DETAINED_APPEAL);
     }
 
     @Test

@@ -83,7 +83,12 @@ public class LetterSentOrReceivedHandler implements PreSubmitCallbackHandler<Asy
 
         if (callback.getEvent().equals(Event.EDIT_APPEAL)
                 && (appellantInDetention.equals(Optional.of(NO)))) {
-            asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+            if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT) {
+                asylumCase.clear(IS_ACCELERATED_DETAINED_APPEAL);
+            } else {
+                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+            }
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
