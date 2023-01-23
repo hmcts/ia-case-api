@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.consumer.ccd;
 
 import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
 import static java.util.Collections.singletonMap;
+import static org.mockito.Mockito.when;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
@@ -22,6 +23,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
 
     @Pact(provider = "ccdDataStoreAPI_supplementaryUpdate", consumer = "ia_caseApi")
     public RequestResponsePact generatePactFragmentForSupplementaryUpdate(PactDslWithProvider builder) throws IOException {
+        when(featureToggler.getValue("wa-R3-feature", false)).thenReturn(true);
 
         Map<String, Map<String, Object>> payloadData = Maps.newHashMap();
         payloadData.put("$set", singletonMap("HMCTSServiceId", "some-id"));
@@ -47,7 +49,7 @@ public class CcdSupplementaryConsumerTest extends CcdSupplementaryProviderBaseTe
     @PactTestFor(pactMethod = "generatePactFragmentForSupplementaryUpdate")
     public void verifySupplementaryUpdate() {
 
-        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
     }
 

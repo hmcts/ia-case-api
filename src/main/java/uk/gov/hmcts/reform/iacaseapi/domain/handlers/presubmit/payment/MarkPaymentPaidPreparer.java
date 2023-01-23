@@ -6,17 +6,20 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType.*;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionDecision;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -65,10 +68,16 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
         AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
             .orElseThrow(() -> new IllegalStateException("Appeal type is not present"));
 
+        boolean isAipJourney = callback.getCaseDetails().getCaseData()
+            .read(AsylumCaseFieldDefinition.JOURNEY_TYPE, JourneyType.class)
+            .map(journeyType -> journeyType == JourneyType.AIP)
+            .orElse(false);
+
         switch (appealType) {
             case EA:
             case HU:
             case PA:
+            case EU:
                 Optional<RemissionType> remissionType = asylumCase.read(REMISSION_TYPE, RemissionType.class);
                 Optional<RemissionType> lateRemissionType = asylumCase.read(LATE_REMISSION_TYPE, RemissionType.class);
 
@@ -77,19 +86,22 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
                 Optional<String> paPaymentType = asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class);
                 Optional<PaymentStatus> paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class);
                 Optional<String> eaHuPaymentType = asylumCase.read(EA_HU_APPEAL_TYPE_PAYMENT_OPTION, String.class);
+                boolean isEaHuEu = List.of(EA, HU, EU).contains(appealType);
                 // old cases
                 if ((appealType == PA && remissionType.isEmpty() && paPaymentType.isEmpty())
-                        || ((appealType == EA || appealType == HU) && remissionType.isEmpty()
+                        || (isEaHuEu && remissionType.isEmpty()
                         && eaHuPaymentType.isEmpty())) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
-                if ((appealType == EA || appealType == HU) && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
+                if (isEaHuEu && (remissionType.isEmpty() || remissionType.get() == NO_REMISSION)
                         && eaHuPaymentType.isPresent() && eaHuPaymentType.get().equals("payNow")
                         && paymentStatus.isPresent() && paymentStatus.get() == PaymentStatus.PAID) {
                     callbackResponse.addError(NOT_AVAILABLE_LABEL);
                 }
 
-                if (appealType == PA && remissionType.isPresent() && remissionType.get() == NO_REMISSION) {
+                if (appealType == PA && remissionType.isPresent()
+                    && remissionType.get() == NO_REMISSION
+                    && isAipJourney) {
                     paPaymentType
                         .filter(option -> option.equals("payLater"))
                         .ifPresent(s ->

@@ -51,6 +51,8 @@ class PaymentStateHandlerTest {
 
     private PaymentStateHandler paymentStateHandler;
 
+    private static final String PA_PAY_NOW = "payNow";
+
     @BeforeEach
     public void setUp() {
         paymentStateHandler = new PaymentStateHandler(true);
@@ -118,7 +120,27 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU" })
+    @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
+    void should_return_updated_state_for_eu_remission_submit_as_payment_pending_state(RemissionType remissionType) {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EU));
+        asylumCase.write(REMISSION_TYPE, remissionType);
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
     void should_return_ea_submit_as_appeal_submitted_state(AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -174,8 +196,27 @@ class PaymentStateHandlerTest {
         assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 
+    @Test
+    void should_return_updated_state_for_eu_payment_pending_submit_as_pending_payment_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.EU));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -193,7 +234,7 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -201,7 +242,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_valid_state_on_having_remissions_for_given_appeal_types_payment_failed(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -219,7 +260,7 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -227,7 +268,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_valid_state_on_help_with_fees_for_given_appeal_types(String type) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
@@ -245,7 +286,7 @@ class PaymentStateHandlerTest {
         Assert.assertNotNull(returnedCallbackResponse);
         Assert.assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -253,7 +294,7 @@ class PaymentStateHandlerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EA", "HU", "PA"})
+    @ValueSource(strings = {"EA", "HU", "PA", "EU"})
     void should_return_appeal_submitted_state_with_no_remission(String type) {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
 
@@ -270,7 +311,7 @@ class PaymentStateHandlerTest {
         assertNotNull(returnedCallbackResponse);
         assertEquals(asylumCase, returnedCallbackResponse.getData());
 
-        if (Arrays.asList(AppealType.EA, AppealType.HU).contains(AppealType.valueOf(type))) {
+        if (Arrays.asList(AppealType.EA, AppealType.HU, AppealType.EU).contains(AppealType.valueOf(type))) {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.PENDING_PAYMENT);
         } else {
             Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
@@ -392,5 +433,46 @@ class PaymentStateHandlerTest {
         assertThatThrownBy(() -> paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void should_return_updated_state_for_pa_pay_now_payment_pending_submit_as_appeal_submitted_state() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(PAYMENT_STATUS, Optional.of(PaymentStatus.PAYMENT_PENDING));
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+        asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of(PA_PAY_NOW));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = RemissionType.class, names = { "NO_REMISSION", "HO_WAIVER_REMISSION", "HELP_WITH_FEES", "EXCEPTIONAL_CIRCUMSTANCES_REMISSION" })
+    void should_return_updated_state_for_pa_pay_now_remission_submit_as_appeal_submitted_state(RemissionType remissionType) {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        AsylumCase asylumCase = new AsylumCase();
+        asylumCase.write(APPEAL_TYPE, Optional.of(AppealType.PA));
+        asylumCase.write(REMISSION_TYPE, remissionType);
+        asylumCase.write(PA_APPEAL_TYPE_PAYMENT_OPTION, Optional.of(PA_PAY_NOW));
+
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
+            paymentStateHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback, callbackResponse);
+
+        assertNotNull(returnedCallbackResponse);
+        Assertions.assertThat(returnedCallbackResponse.getState()).isEqualTo(State.APPEAL_SUBMITTED);
+        assertEquals(asylumCase, returnedCallbackResponse.getData());
     }
 }

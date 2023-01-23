@@ -91,10 +91,7 @@ public enum Event {
     LINK_APPEAL("linkAppeal"),
     UNLINK_APPEAL("unlinkAppeal"),
     PAYMENT_APPEAL("paymentAppeal"),
-    PAY_AND_SUBMIT_APPEAL("payAndSubmitAppeal"),
     MOVE_TO_PAYMENT_PENDING("moveToPaymentPending"),
-    MOVE_TO_SUBMITTED("moveToSubmitted"),
-    PAY_FOR_APPEAL("payForAppeal"),
     ROLLBACK_PAYMENT("rollbackPayment"),
     ROLLBACK_PAYMENT_TIMEOUT("rollbackPaymentTimeout"),
     ROLLBACK_PAYMENT_TIMEOUT_TO_PAYMENT_PENDING("rollbackPaymentTimeoutToPaymentPending"),
@@ -113,12 +110,15 @@ public enum Event {
     REMOVE_LEGAL_REPRESENTATIVE("removeLegalRepresentative"),
     REQUEST_FEE_REMISSION("requestFeeRemission"),
     RECORD_OUT_OF_TIME_DECISION("recordOutOfTimeDecision"),
-    EDIT_PAYMENT_METHOD("editPaymentMethod"),
     GENERATE_UPPER_TRIBUNAL_BUNDLE("generateUpperTribunalBundle"),
     MARK_EVIDENCE_AS_REVIEWED("markEvidenceAsReviewed"),
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
+    END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
+    GENERATE_SERVICE_REQUEST("generateServiceRequest"),
+
+    PIP_ACTIVATION("pipActivation"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");

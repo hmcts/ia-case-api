@@ -100,6 +100,8 @@ legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentReview.dueInDays: 14
 appellantReasonsForAppeal.dueInDays: 28
+paymentAfterRemissionRejection.dueInMinutes: 20160
+paymentEaHuNoRemission.dueInMinutes: 20160
 
 core_case_data_api_url_template: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases"
 core_case_data_api_metatdata_url: "/caseworkers/{uid}/jurisdictions/{jid}/case-types/{ctid}/cases/pagination_metadata"
@@ -116,6 +118,9 @@ core_case_data_api_assignments_path: "/case-users"
 assign_case_access_api_url: ${AAC_URL:http://127.0.0.1:4454}
 assign_case_access_api_assignments_path: "/case-assignments"
 apply_noc_access_api_assignments_path: "/noc/check-noc-approval"
+noc_set_organisation_to_remove_path: "/noc/set-organisation-to-remove"
+
+pip_access_code_expiry_days: 30
 
 appealReferenceSequenceSeed: 50000
 
@@ -146,6 +151,7 @@ paymentApi:
   endpoint: ${IA_CASE_PAYMENTS_API_URL:http://127.0.0.1:8096}
   aboutToStartPath: "/asylum/ccdAboutToStart"
   aboutToSubmitPath: "/asylum/ccdAboutToSubmit"
+  ccdSubmittedPath: "/asylum/ccdSubmitted"
 
 role-assignment-service:
   url: ${ROLE_ASSIGNMENT_URL:http://localhost:8991}
@@ -183,8 +189,6 @@ security:
       - "editAppeal"
       - "submitAppeal"
       - "paymentAppeal"
-      - "payAndSubmitAppeal"
-      - "payForAppeal"
       - "buildCase"
       - "submitCase"
       - "uploadAdditionalEvidence"
@@ -199,10 +203,9 @@ security:
       - "removeRepresentation"
       - "requestFeeRemission"
       - "nocRequest"
-      - "editPaymentMethod"
+      - "generateServiceRequest"
     caseworker-ia-caseofficer:
       - "moveToPaymentPending"
-      - "moveToSubmitted"
       - "sendDirection"
       - "changeDirectionDueDate"
       - "requestCaseEdit"
@@ -267,6 +270,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
     caseworker-ia-admofficer:
       - "listCma"
       - "listCase"
@@ -337,6 +341,7 @@ security:
       - "makeAnApplication"
       - "draftHearingRequirements"
       - "uploadAddendumEvidenceLegalRep"
+      - "pipActivation"
     caseworker-ia-iacjudge:
       - "generateDecisionAndReasons"
       - "endAppeal"
@@ -365,6 +370,7 @@ security:
       - "rollbackPaymentTimeout"
       - "rollbackPaymentTimeoutToPaymentPending"
       - "updatePaymentStatus"
+      - "endAppealAutomatically"
 
 ### dependency configuration
 ccdGatewayUrl: ${CCD_GW_URL:http://localhost:3453}

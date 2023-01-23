@@ -91,7 +91,6 @@ class EventTest {
         assertEquals("listCma", Event.LIST_CMA.toString());
         assertEquals("editAppealAfterSubmit", Event.EDIT_APPEAL_AFTER_SUBMIT.toString());
         assertEquals("forceRequestCaseBuilding", Event.FORCE_REQUEST_CASE_BUILDING.toString());
-        assertEquals("payAndSubmitAppeal", Event.PAY_AND_SUBMIT_APPEAL.toString());
         assertEquals("markAppealPaid", Event.MARK_APPEAL_PAID.toString());
         assertEquals("requestHomeOfficeData", Event.REQUEST_HOME_OFFICE_DATA.toString());
         assertEquals("makeAnApplication", Event.MAKE_AN_APPLICATION.toString());
@@ -106,10 +105,7 @@ class EventTest {
         assertEquals("removeLegalRepresentative", Event.REMOVE_LEGAL_REPRESENTATIVE.toString());
         assertEquals("requestFeeRemission", Event.REQUEST_FEE_REMISSION.toString());
         assertEquals("recordOutOfTimeDecision", Event.RECORD_OUT_OF_TIME_DECISION.toString());
-        assertEquals("moveToSubmitted", Event.MOVE_TO_SUBMITTED.toString());
         assertEquals("moveToPaymentPending", Event.MOVE_TO_PAYMENT_PENDING.toString());
-        assertEquals("editPaymentMethod", Event.EDIT_PAYMENT_METHOD.toString());
-        assertEquals("payForAppeal", Event.PAY_FOR_APPEAL.toString());
         assertEquals("rollbackPayment", Event.ROLLBACK_PAYMENT.toString());
         assertEquals("rollbackPaymentTimeout", Event.ROLLBACK_PAYMENT_TIMEOUT.toString());
         assertEquals("generateUpperTribunalBundle", Event.GENERATE_UPPER_TRIBUNAL_BUNDLE.toString());
@@ -118,10 +114,13 @@ class EventTest {
         assertEquals("updatePaymentStatus", Event.UPDATE_PAYMENT_STATUS.toString());
         assertEquals("markAddendumEvidenceAsReviewed", Event.MARK_ADDENDUM_EVIDENCE_AS_REVIEWED.toString());
         assertEquals("markPaymentRequestSent", Event.MARK_PAYMENT_REQUEST_SENT.toString());
+        assertEquals("endAppealAutomatically", Event.END_APPEAL_AUTOMATICALLY.toString());
+        assertEquals("generateServiceRequest", Event.GENERATE_SERVICE_REQUEST.toString());
+        assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(115, Event.values().length);
+        assertEquals(114, Event.values().length);
     }
 }

@@ -18,8 +18,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.StreamSupport;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,7 +66,7 @@ public class CcdScenarioRunnerTest {
     @Autowired
     private LaunchDarklyFunctionalTestClient launchDarklyFunctionalTestClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MapSerializer.setObjectMapper(objectMapper);
         RestAssured.baseURI = targetInstance;
@@ -183,8 +183,6 @@ public class CcdScenarioRunnerTest {
                     .extract()
                     .body()
                     .asString();
-
-            System.out.println("Response body: " + actualResponseBody);
 
             String expectedResponseBody = buildCallbackResponseBody(
                 MapValueExtractor.extract(scenario, "expectation"),

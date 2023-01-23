@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.payment;
 
-import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus.*;
@@ -9,7 +8,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO
 import java.time.ZoneId;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -19,9 +17,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit.AppealPaymentConfirmationProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeePayment;
@@ -40,7 +38,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     private final Scheduler scheduler;
     private final DateProvider dateProvider;
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
-    private String hmctsServiceId;
 
     public PayAndSubmitConfirmation(
         AppealPaymentConfirmationProvider appealPaymentConfirmationProvider,
@@ -48,7 +45,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         PostNotificationSender<AsylumCase> postNotificationSender,
         Scheduler scheduler,
         DateProvider dateProvider,
-        @Value("${hmcts_service_id}") String hmctsServiceId,
         CcdSupplementaryUpdater ccdSupplementaryUpdater) {
 
         this.appealPaymentConfirmationProvider = appealPaymentConfirmationProvider;
@@ -56,7 +52,6 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         this.postNotificationSender = postNotificationSender;
         this.scheduler = scheduler;
         this.dateProvider = dateProvider;
-        this.hmctsServiceId = hmctsServiceId;
         this.ccdSupplementaryUpdater = ccdSupplementaryUpdater;
     }
 
@@ -65,9 +60,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
     ) {
         requireNonNull(callback, "callback must not be null");
 
-        return callback.getEvent() == Event.PAY_AND_SUBMIT_APPEAL
-               || callback.getEvent() == Event.PAY_FOR_APPEAL
-               || callback.getEvent() == Event.PAYMENT_APPEAL;
+        return callback.getEvent() == Event.PAYMENT_APPEAL;
     }
 
     public PostSubmitCallbackResponse handle(
@@ -80,14 +73,10 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
         long caseId = callback.getCaseDetails().getId();
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        ccdSupplementaryUpdater.setSupplementaryValues(callback, singletonMap("HMCTSServiceId", hmctsServiceId));
+        ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
 
         // make a payment
-        final boolean isAipJourney = asylumCase.read(JOURNEY_TYPE, JourneyType.class)
-            .map(j -> j == JourneyType.AIP)
-            .orElse(false);
-
-        if (isAipJourney) {
+        if (HandlerUtils.isAipJourney(asylumCase)) {
             return new PostSubmitCallbackResponse();
         }
 
@@ -115,7 +104,7 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                 rollbackEvent = (AppealType.PA == appealType)
                     ? Event.ROLLBACK_PAYMENT_TIMEOUT : Event.ROLLBACK_PAYMENT_TIMEOUT_TO_PAYMENT_PENDING;
             } else {
-                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent() || (Event.PAY_AND_SUBMIT_APPEAL == callback.getEvent() && AppealType.PA == appealType))
+                rollbackEvent = (Event.PAYMENT_APPEAL == callback.getEvent())
                     ? Event.ROLLBACK_PAYMENT : Event.MOVE_TO_PAYMENT_PENDING;
             }
 
@@ -169,7 +158,8 @@ public class PayAndSubmitConfirmation implements PostSubmitCallbackHandler<Asylu
                     caseDetails.getState(),
                     asylumCase,
                     caseDetails.getCreatedDate(),
-                    caseDetails.getSecurityClassification()
+                    caseDetails.getSecurityClassification(),
+                    caseDetails.getSupplementaryData()
                 ),
                 callback.getCaseDetailsBefore(),
                 callback.getEvent()

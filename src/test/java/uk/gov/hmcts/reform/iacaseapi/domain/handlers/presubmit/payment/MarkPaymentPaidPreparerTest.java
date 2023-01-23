@@ -73,7 +73,7 @@ class MarkPaymentPaidPreparerTest {
 
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
     void should_throw_error_if_payment_status_is_already_paid(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -91,7 +91,7 @@ class MarkPaymentPaidPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
     void should_throw_error_if_payment_status_is_already_paid_for_non_remission_appeals(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -110,7 +110,7 @@ class MarkPaymentPaidPreparerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU" })
+    @EnumSource(value = AppealType.class, names = { "PA", "EA", "HU", "EU" })
     void should_return_error_for_old_pa_ea_hu_cases(AppealType appealType) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -145,24 +145,6 @@ class MarkPaymentPaidPreparerTest {
         assertThat(returnedCallbackResponse.getErrors()).contains("Payment is not required for this type of appeal.");
     }
 
-    @Test
-    void should_throw_error_for_pa_pay_later() {
-
-        when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_PAID);
-        when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(PA));
-        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(PA_APPEAL_TYPE_PAYMENT_OPTION, String.class)).thenReturn(Optional.of("payLater"));
-        when(asylumCase.read(REMISSION_TYPE, RemissionType.class)).thenReturn(Optional.of(RemissionType.NO_REMISSION));
-
-        PreSubmitCallbackResponse<AsylumCase> returnedCallbackResponse =
-            markPaymentPaidPreparer.handle(ABOUT_TO_START, callback);
-
-        assertNotNull(returnedCallbackResponse);
-        assertThat(returnedCallbackResponse.getErrors()).contains("You cannot mark this appeal as paid");
-    }
-
     @ParameterizedTest
     @MethodSource("appealTypesWithRemissionTypes")
     void handling_should_error_for_remission_decision_not_present(AppealType type, RemissionType remissionType, AsylumCaseFieldDefinition field) {
@@ -191,6 +173,9 @@ class MarkPaymentPaidPreparerTest {
             Arguments.of(HU, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
             Arguments.of(HU, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
             Arguments.of(HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HO_WAIVER_REMISSION, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HELP_WITH_FEES, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, REMISSION_TYPE),
@@ -200,6 +185,9 @@ class MarkPaymentPaidPreparerTest {
             Arguments.of(HU, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
             Arguments.of(HU, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
             Arguments.of(HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HO_WAIVER_REMISSION, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HELP_WITH_FEES, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, LATE_REMISSION_TYPE)
@@ -235,6 +223,9 @@ class MarkPaymentPaidPreparerTest {
             Arguments.of(HU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
             Arguments.of(HU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
             Arguments.of(HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, REMISSION_TYPE),
             Arguments.of(PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, REMISSION_TYPE),
@@ -244,6 +235,9 @@ class MarkPaymentPaidPreparerTest {
             Arguments.of(HU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(HU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(HU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
+            Arguments.of(EU, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HO_WAIVER_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.HELP_WITH_FEES, RemissionDecision.APPROVED, LATE_REMISSION_TYPE),
             Arguments.of(PA, RemissionType.EXCEPTIONAL_CIRCUMSTANCES_REMISSION, RemissionDecision.APPROVED, LATE_REMISSION_TYPE)

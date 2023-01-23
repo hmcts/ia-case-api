@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
@@ -44,13 +45,14 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.END_APPEAL;
+               && (callback.getEvent() == Event.END_APPEAL || callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY);
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
         PreSubmitCallbackStage callbackStage,
         Callback<AsylumCase> callback
     ) {
+
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
         }
@@ -59,6 +61,12 @@ public class EndAppealHandler implements PreSubmitCallbackHandler<AsylumCase> {
             callback
                 .getCaseDetails()
                 .getCaseData();
+
+        PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
+            .orElse(PaymentStatus.PAYMENT_PENDING);
+        if (callback.getEvent() == Event.END_APPEAL_AUTOMATICALLY && paymentStatus == PaymentStatus.PAID) {
+            throw new IllegalStateException("Cannot auto end appeal as the payment is already made!");
+        }
 
         asylumCase.write(END_APPEAL_DATE, dateProvider.now().toString());
         asylumCase.write(RECORD_APPLICATION_ACTION_DISABLED, YesOrNo.YES);
