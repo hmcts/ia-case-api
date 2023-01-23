@@ -55,6 +55,8 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
         "You have submitted this appeal beyond the deadline. The Tribunal Case Officer will decide if it can proceed. You'll get an email "
             + "telling you whether your appeal can go ahead.";
     private static final String DEFAULT_HEADER = "# Your appeal has been submitted";
+    private static final String AGE_ASSESSMENT_APPEAL_INTERIM_LINK =
+        "\n\nYou can now apply for [interim relief](#).";
 
 
     private final CcdSupplementaryUpdater ccdSupplementaryUpdater;
@@ -143,6 +145,10 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
                 }
                 break;
 
+            case AG:
+                setAgAppealTypeConfirmation(postSubmitResponse, submissionOutOfTime);
+                break;
+
             default:
                 setDefaultConfirmation(postSubmitResponse, submissionOutOfTime);
         }
@@ -223,6 +229,16 @@ public class AppealSubmittedConfirmation implements PostSubmitCallbackHandler<As
             submissionOutOfTime == NO
                 ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL
                 : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL
+        );
+    }
+
+    private void setAgAppealTypeConfirmation(PostSubmitCallbackResponse postSubmitCallbackResponse,
+                                             YesOrNo submissionOutOfTime) {
+
+        postSubmitCallbackResponse.setConfirmationBody(
+            submissionOutOfTime == NO
+                ? WHAT_HAPPENS_NEXT_LABEL + DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
+                : OUT_OF_TIME_WHAT_HAPPENS_NEXT_LABEL + OUT_OF_TIME_DEFAULT_LABEL + AGE_ASSESSMENT_APPEAL_INTERIM_LINK
         );
     }
 
