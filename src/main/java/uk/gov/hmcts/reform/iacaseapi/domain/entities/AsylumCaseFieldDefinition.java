@@ -1683,7 +1683,10 @@ public enum AsylumCaseFieldDefinition {
             "litigationFriendPhoneNumber", new TypeReference<String>(){}),
 
     DECISION_LETTER_REFERENCE_NUMBER(
-            "decisionLetterReferenceNumber", new TypeReference<String>(){});
+            "decisionLetterReferenceNumber", new TypeReference<String>(){}),
+
+    SUITABILITY_REVIEW_DECISION(
+            "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){});
 
 
     private final String value;
