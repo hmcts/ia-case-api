@@ -5,8 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -44,8 +44,6 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
                         .getCaseDetails()
                         .getCaseData();
 
-        AppealType appealType = asylumCase.read(APPEAL_TYPE, AppealType.class)
-            .orElse(null);
         AppealTypeForDisplay appealTypeForDisplay = asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
             .orElse(null);
 
@@ -63,12 +61,31 @@ public class HearingTypeHandler implements PreSubmitCallbackHandler<AsylumCase> 
         }
 
         if (callback.getEvent() == Event.EDIT_APPEAL) {
+            Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
+
+            if (appellantInDetention.equals(Optional.of(NO))) {
+                asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, NO);
+            }
+
+            isRpDcAda = appealTypeForDisplay != null
+                    && (appealTypeForDisplay == AppealTypeForDisplay.DC || appealTypeForDisplay == AppealTypeForDisplay.RP
+                    || asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == YES);
+
+            Optional<YesOrNo> isAcceleratedDetainedAppeal =
+                    asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class);
+
+            if (appellantInDetention.equals(Optional.of(YES))
+                    && isAcceleratedDetainedAppeal.equals(Optional.of(YES))) {
+                asylumCase.write(AGE_ASSESSMENT, NO);
+            }
 
             boolean isAgeAssessmentAppeal = asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO).equals(YES);
 
             if (isRpDcAda && !isAgeAssessmentAppeal) {
+                //No fee
                 asylumCase.write(HEARING_TYPE_RESULT, YES);
             } else {
+                //fee
                 asylumCase.write(HEARING_TYPE_RESULT, YesOrNo.NO);
             }
         }

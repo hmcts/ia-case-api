@@ -11,6 +11,7 @@
         "template": "minimal-age-assessment-appeal-started.json",
         "replacements": {
           "appellantInDetention": "Yes",
+          "isAcceleratedDetainedAppeal": "No",
           "detentionFacility": "other",
           "appellantHasFixedAddress": "Yes",
           "searchPostcode": "BT38 8BT",
@@ -32,6 +33,8 @@
     "caseData": {
       "template": "minimal-age-assessment-appeal-started.json",
       "replacements": {
+        "appellantInDetention": "Yes",
+        "isAcceleratedDetainedAppeal": "No",
         "appealType": "ageAssessment",
         "appellantHasFixedAddress": null,
         "searchPostcode": null,

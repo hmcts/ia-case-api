@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.LATEST;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,8 +43,17 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AsylumCaseFieldDefinition.AGE_ASSESSMENT, YesOrNo.class))
             .thenReturn(Optional.of(YesOrNo.YES));
+    }
+
+    @Test
+    void set_to_latest() {
+        assertThat(ageAssessmentDataEditAppealHandler.getDispatchPriority()).isEqualTo(LATEST);
     }
 
     @Test
@@ -126,6 +137,7 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME);
@@ -133,6 +145,56 @@ public class AgeAssessmentDataEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL);
+    }
+
+    @Test
+    void should_remove_all_age_assessment_details_if_now_ada() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.AGE_ASSESSMENT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AGE_ASSESSMENT);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LOCAL_AUTHORITY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HSC_TRUST);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_LETTER_REFERENCE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DATE_ON_DECISION_LETTER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.AA_APPELLANT_DATE_OF_BIRTH);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_GIVEN_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_FAMILY_NAME);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_COMPANY);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL);
+    }
+
+    @Test
+    void should_remove_hearing_type_hearing_fee() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER, String.class))
+                .thenReturn(Optional.of(OrganisationOnDecisionLetter.HSC_TRUST.toString()));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION);
+    }
+
+    @Test
+    void should_remove_hearing_type_rp_dc() {
+        when(asylumCase.read(AsylumCaseFieldDefinition.ORGANISATION_ON_DECISION_LETTER, String.class))
+                .thenReturn(Optional.of(OrganisationOnDecisionLetter.HSC_TRUST.toString()));
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        PreSubmitCallbackResponse<AsylumCase> response = ageAssessmentDataEditAppealHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION);
     }
 
     @Test

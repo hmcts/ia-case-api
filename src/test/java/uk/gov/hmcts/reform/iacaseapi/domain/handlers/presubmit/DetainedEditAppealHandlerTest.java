@@ -79,6 +79,8 @@ public class DetainedEditAppealHandlerTest {
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.HAS_PENDING_BAIL_APPLICATIONS);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.BAIL_APPLICATION_NUMBER);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.REMOVAL_ORDER_OPTIONS);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.REMOVAL_ORDER_DATE);
 
     }
 
