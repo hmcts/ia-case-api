@@ -74,6 +74,8 @@ public class DetainedEditAppealHandler implements PreSubmitCallbackHandler<Asylu
             asylumCase.clear(BAIL_APPLICATION_NUMBER);
 
             asylumCase.clear(IS_ACCELERATED_DETAINED_APPEAL);
+            asylumCase.clear(REMOVAL_ORDER_OPTIONS);
+            asylumCase.clear(REMOVAL_ORDER_DATE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

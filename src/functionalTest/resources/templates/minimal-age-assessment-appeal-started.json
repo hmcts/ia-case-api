@@ -22,5 +22,6 @@
   "appellantInUk": "Yes",
   "ageAssessment": "Yes",
   "organisationOnDecisionLetter": "localAuthority",
-  "localAuthority": "localAuth1"
+  "localAuthority": "localAuth1",
+  "appellantInDetention": "No"
 }

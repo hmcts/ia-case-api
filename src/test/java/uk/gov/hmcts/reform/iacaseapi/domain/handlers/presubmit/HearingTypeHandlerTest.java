@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_TYPE_RESULT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
@@ -69,12 +70,48 @@ class HearingTypeHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"DC", "RP"})
-    void should_write_to_hearing_type_result_yes_for_edit_appeal_event(String type) {
+    void should_write_to_hearing_type_result_yes_for_edit_appeal_event_ada(String type) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
         when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)).thenReturn(Optional.of(AppealTypeForDisplay.valueOf(type)));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        hearingTypeHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, times(1))
+                .write(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"DC", "RP"})
+    void should_write_to_hearing_type_result_yes_for_edit_appeal_event_detained_not_ada(String type) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)).thenReturn(Optional.of(AppealTypeForDisplay.valueOf(type)));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        hearingTypeHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        verify(asylumCase, times(1))
+                .write(AsylumCaseFieldDefinition.HEARING_TYPE_RESULT, YesOrNo.YES);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"DC", "RP"})
+    void should_write_to_hearing_type_result_yes_for_edit_appeal_event_not_detained_not_ada(String type) {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(asylumCase.read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)).thenReturn(Optional.of(AppealTypeForDisplay.valueOf(type)));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
 
         hearingTypeHandler.handle(PreSubmitCallbackStage.MID_EVENT, callback);
 
