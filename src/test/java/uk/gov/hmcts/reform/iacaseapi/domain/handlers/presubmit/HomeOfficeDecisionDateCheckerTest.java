@@ -149,6 +149,23 @@ class HomeOfficeDecisionDateCheckerTest {
     }
 
     @Test
+    void handles_edge_case_when_ooc_and_refusal_of_permit_is_decided() {
+
+        when(dateProvider.now()).thenReturn(LocalDate.parse("2019-01-15"));
+        when(asylumCase.read(DECISION_LETTER_RECEIVED_DATE)).thenReturn(Optional.of("2019-01-01"));
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+            .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSE_PERMIT));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        homeOfficeDecisionDateChecker.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase).write(asylumExtractor.capture(), outOfTime.capture());
+
+        assertThat(asylumExtractor.getValue()).isEqualTo(SUBMISSION_OUT_OF_TIME);
+        assertThat(outOfTime.getValue()).isEqualTo(NO);
+    }
+
+    @Test
     void handles_out_of_country_decision_letter_date_received_when_in_time() {
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2021-01-25"));
