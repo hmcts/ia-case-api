@@ -42,10 +42,10 @@ public class AdaSuitabilityReviewPreparer implements PreSubmitCallbackHandler<As
 
         PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
 
-        Optional<AdaSuitabilityReviewDecision> mayBeDecision = asylumCase.read(SUITABILITY_REVIEW_DECISION);
-        if (mayBeDecision.isPresent()) {
-            response.addError("ADA suitability has already been determined for this appeal.");
-        }
+//        Optional<AdaSuitabilityReviewDecision> mayBeDecision = asylumCase.read(SUITABILITY_REVIEW_DECISION);
+//        if (mayBeDecision.isPresent()) {
+//            response.addError("ADA suitability has already been determined for this appeal.");
+//        }
 
         return response;
     }
