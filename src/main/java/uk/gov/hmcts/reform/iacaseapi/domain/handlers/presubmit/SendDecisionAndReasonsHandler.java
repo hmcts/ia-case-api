@@ -40,8 +40,10 @@ public class SendDecisionAndReasonsHandler implements PreSubmitCallbackHandler<A
         if (isAcceleratedDetainedAppeal) {
             //Clear to remove access to event updateHearingRequirements for ada cases after submission
             asylumCase.clear(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE);
-            //Set flag to No to remove access to event updateHearingAdjustments for ada cases after submission
+            //Clear to remove access to event updateHearingAdjustments for ada cases after submission
             asylumCase.clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
+            //Clear to remove access to event editCaseListing for ada cases after submission
+            asylumCase.clear(AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

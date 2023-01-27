@@ -115,6 +115,9 @@ public class ListEditCaseHandler implements PreSubmitCallbackHandler<AsylumCase>
             // Set flag for first submission of hearing requirements' event for ADA
             asylumCase.write(ADA_HEARING_REQUIREMENTS_SUBMITTABLE, YesOrNo.YES);
 
+            //Enable editCaseListing event for ADA
+            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.YES);
+
             // reset flag that makes ListCase available for accelerated detained appeals in
             // awaitingRespondentEvidence
             asylumCase.write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
