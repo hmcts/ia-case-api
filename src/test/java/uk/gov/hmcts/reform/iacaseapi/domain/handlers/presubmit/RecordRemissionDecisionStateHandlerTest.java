@@ -73,7 +73,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU"})
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handling_should_throw_if_remission_decision_is_not_present(AppealType type) {
 
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
@@ -91,8 +91,8 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
-    void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu(AppealType type) {
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
+    void should_return_appeal_submitted_state_on_remission_approved_for_ea_hu_eu_ag(AppealType type) {
         // and service-request tab should be hidden (no payment to take care of)
         // and markAppealAsPaid should be hidden (no payment to take care of, case state already sorted)
 
@@ -121,7 +121,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU", "AG" })
     void should_return_payment_pending_on_remission_partially_approved(AppealType type) {
         // and service-request tab should be hidden (payment is handled offline, waysToPay not yet supporting partial remissions)
         // and markAppealAsPaid should be visible, to allow admins to process offline payments
@@ -174,7 +174,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handle_should_return_payment_due_for_remission_rejected(AppealType type) {
         // and service-request tab should be visible (payment is handled via waysToPay service-request)
         // and markAppealAsPaid should not be visible, (payment handled via waysToPay service-request)
@@ -207,7 +207,7 @@ class RecordRemissionDecisionStateHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU" })
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "PA", "EU", "AG" })
     void handle_should_leave_payment_status_as_is_if_present_for_remission_rejected(AppealType type) {
         // payment status gets left alone (e.g. when appeal gets paid for, THEN remissions are requested and decided)
 
