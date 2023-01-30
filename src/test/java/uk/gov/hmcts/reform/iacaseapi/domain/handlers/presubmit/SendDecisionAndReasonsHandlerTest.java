@@ -60,6 +60,7 @@ class SendDecisionAndReasonsHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_UPDATABLE);
         verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_HEARING_ADJUSTMENTS_UPDATABLE);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.ADA_EDIT_LISTING_AVAILABLE);
     }
 
     @Test
