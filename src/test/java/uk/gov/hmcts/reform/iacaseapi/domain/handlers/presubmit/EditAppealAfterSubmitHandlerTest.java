@@ -573,4 +573,28 @@ class EditAppealAfterSubmitHandlerTest {
 
         verify(asylumCase).write(SUBMISSION_OUT_OF_TIME, YES);
     }
+
+    @Test
+    void aaa_case_clears_fields_when_litigation_friend_edited_to_no() {
+
+        final String dateOnDecisionLetterOptional = "2022-11-18";
+        final String nowDate = "2022-11-20";
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(NO));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+
+        verify(asylumCase).clear(LITIGATION_FRIEND_GIVEN_NAME);
+        verify(asylumCase).clear(LITIGATION_FRIEND_FAMILY_NAME);
+        verify(asylumCase).clear(LITIGATION_FRIEND_COMPANY);
+        verify(asylumCase).clear(LITIGATION_FRIEND_CONTACT_PREFERENCE);
+        verify(asylumCase).clear(LITIGATION_FRIEND_EMAIL);
+        verify(asylumCase).clear(LITIGATION_FRIEND_PHONE_NUMBER);
+    }
 }
