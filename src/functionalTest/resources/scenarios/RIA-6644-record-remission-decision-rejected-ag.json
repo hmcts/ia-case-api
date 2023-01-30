@@ -1,0 +1,37 @@
+{
+  "description": "RIA-6644 Admin officer record approved remission decision partially approved for Age Assessment",
+  "disabled": true,
+  "launchDarklyKey": "remissions-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "AdminOfficer",
+    "input": {
+      "eventId": "recordRemissionDecision",
+      "state": "pendingPayment",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "homeOfficeDecisionDate": "{$TODAY-14}",
+          "appealType": "ageAssessment",
+          "isRemissionsEnabled": "Yes",
+          "remissionDecision": "rejected"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealReferenceNumber": "$/(.+)/",
+        "appealType": "ageAssessment",
+        "homeOfficeDecisionDate": "{$TODAY-14}",
+        "remissionDecision": "rejected",
+        "sendDirectionActionAvailable": "No",
+        "currentCaseStateVisibleToAdminOfficer": "pendingPayment"
+      }
+    }
+  }
+}
