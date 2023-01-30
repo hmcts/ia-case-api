@@ -32,6 +32,9 @@ public enum DocumentTag {
     CLARIFYING_QUESTIONS("clarifyingQuestions"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
 
+    ADA_SUITABILITY("adaSuitability"),
+
+
     @JsonEnumDefaultValue
     NONE("");
 
