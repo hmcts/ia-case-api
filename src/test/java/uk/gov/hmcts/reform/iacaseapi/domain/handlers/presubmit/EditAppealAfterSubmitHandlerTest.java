@@ -597,6 +597,7 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(LITIGATION_FRIEND_EMAIL);
         verify(asylumCase).clear(LITIGATION_FRIEND_PHONE_NUMBER);
     }
+
     @Test
     void should_remove_litigation_friend_phone_number_if_now_wants_email() {
         final String dateOnDecisionLetterOptional = "2022-11-18";
