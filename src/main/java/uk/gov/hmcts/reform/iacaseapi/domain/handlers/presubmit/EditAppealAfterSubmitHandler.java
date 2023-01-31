@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ContactPreference;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -127,6 +128,16 @@ public class EditAppealAfterSubmitHandler implements PreSubmitCallbackHandler<As
             asylumCase.clear(LITIGATION_FRIEND_CONTACT_PREFERENCE);
             asylumCase.clear(LITIGATION_FRIEND_EMAIL);
             asylumCase.clear(LITIGATION_FRIEND_PHONE_NUMBER);
+        } else if (hasLitigationFriend.equals(YES)) {
+            asylumCase.read(LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class).ifPresent(
+                    contactPreference -> {
+                        if (contactPreference.equals(ContactPreference.WANTS_EMAIL)) {
+                            asylumCase.clear(LITIGATION_FRIEND_PHONE_NUMBER);
+                        } else {
+                            asylumCase.clear(LITIGATION_FRIEND_EMAIL);
+                        }
+                    }
+            );
         }
     }
 

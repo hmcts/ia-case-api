@@ -597,4 +597,35 @@ class EditAppealAfterSubmitHandlerTest {
         verify(asylumCase).clear(LITIGATION_FRIEND_EMAIL);
         verify(asylumCase).clear(LITIGATION_FRIEND_PHONE_NUMBER);
     }
+    @Test
+    void should_remove_litigation_friend_phone_number_if_now_wants_email() {
+        final String dateOnDecisionLetterOptional = "2022-11-18";
+        final String nowDate = "2022-11-20";
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
+                .thenReturn(Optional.of(ContactPreference.WANTS_EMAIL));
+        PreSubmitCallbackResponse<AsylumCase> response = editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_PHONE_NUMBER);
+    }
+
+    @Test
+    void should_remove_litigation_friend_phone_number_if_now_wants_sms() {
+        final String dateOnDecisionLetterOptional = "2022-11-18";
+        final String nowDate = "2022-11-20";
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+        when(asylumCase.read(LITIGATION_FRIEND, YesOrNo.class)).thenReturn(Optional.of(YES));
+        when(asylumCase.read(DATE_ON_DECISION_LETTER, String.class)).thenReturn(Optional.of(dateOnDecisionLetterOptional));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(nowDate));
+        when(asylumCase.read(AsylumCaseFieldDefinition.LITIGATION_FRIEND_CONTACT_PREFERENCE, ContactPreference.class))
+                .thenReturn(Optional.of(ContactPreference.WANTS_SMS));
+        PreSubmitCallbackResponse<AsylumCase> response = editAppealAfterSubmitHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        assertNotNull(response);
+        verify(asylumCase, times(1)).clear(AsylumCaseFieldDefinition.LITIGATION_FRIEND_EMAIL);
+    }
 }
