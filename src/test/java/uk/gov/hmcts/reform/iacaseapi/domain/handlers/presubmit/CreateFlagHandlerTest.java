@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_LEVEL_FLAGS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_NAME_FOR_DISPLAY;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CASE_LEVEL_FLAGS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 
 import java.util.Optional;
@@ -51,7 +52,7 @@ class CreateFlagHandlerTest {
     @BeforeEach
     public void setUp() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
-        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(callback.getEvent()).thenReturn(Event.CREATE_FLAG);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class)).thenReturn(Optional.of(appellantNameForDisplay));
 
@@ -62,7 +63,7 @@ class CreateFlagHandlerTest {
     void should_write_to_case_flag_fields() {
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
-            createFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+            createFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase, times(1))
             .write(APPELLANT_LEVEL_FLAGS, strategicCaseFlag);
@@ -73,7 +74,7 @@ class CreateFlagHandlerTest {
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
-        assertThatThrownBy(() -> createFlagHandler.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback))
+        assertThatThrownBy(() -> createFlagHandler.handle(ABOUT_TO_SUBMIT, callback))
                 .hasMessage("Cannot handle callback")
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
@@ -89,8 +90,8 @@ class CreateFlagHandlerTest {
 
                 boolean canHandle = createFlagHandler.canHandle(callbackStage, callback);
 
-                if (event == Event.START_APPEAL
-                    && callbackStage == ABOUT_TO_SUBMIT) {
+                if (event == Event.CREATE_FLAG
+                    && callbackStage == ABOUT_TO_START) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);

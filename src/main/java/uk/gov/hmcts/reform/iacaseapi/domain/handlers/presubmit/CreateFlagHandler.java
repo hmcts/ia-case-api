@@ -10,7 +10,11 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Component
@@ -24,8 +28,8 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.START_APPEAL;
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+                && callback.getEvent() == Event.CREATE_FLAG;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -41,13 +45,24 @@ class CreateFlagHandler implements PreSubmitCallbackHandler<AsylumCase> {
                         .getCaseDetails()
                         .getCaseData();
 
-        final String appellantNameForDisplay =
-                asylumCase
-                        .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
-                        .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
+        Optional<StrategicCaseFlag> existingCaseLevelFlags = asylumCase.read(CASE_LEVEL_FLAGS);
 
-        asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay));
-        asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag());
+        Optional<StrategicCaseFlag> existingAppellentLevelFlags = asylumCase.read(APPELLANT_LEVEL_FLAGS);
+
+        if(existingAppellentLevelFlags.isEmpty()
+                || existingAppellentLevelFlags.get().getPartyName() == null
+                || existingAppellentLevelFlags.get().getPartyName().isBlank()) {
+            final String appellantNameForDisplay =
+                    asylumCase
+                            .read(APPELLANT_NAME_FOR_DISPLAY, String.class)
+                            .orElseThrow(() -> new IllegalStateException("appellantNameForDisplay is not present"));
+
+            asylumCase.write(APPELLANT_LEVEL_FLAGS, new StrategicCaseFlag(appellantNameForDisplay));
+        }
+
+        if(existingCaseLevelFlags.isEmpty()) {
+            asylumCase.write(CASE_LEVEL_FLAGS, new StrategicCaseFlag());
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
