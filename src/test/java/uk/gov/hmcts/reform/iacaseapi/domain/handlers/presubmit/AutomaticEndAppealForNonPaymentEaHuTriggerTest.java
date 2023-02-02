@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.iacaseapi.domain.handlers.postsubmit;
+package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,6 +15,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.RemissionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.AsylumCaseServiceResponseException;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -63,8 +66,9 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             );
     }
 
-    @Test
-    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_after_submission() {
+    @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "EA", "HU", "EU"})
+    void should_schedule_automatic_end_appeal_14_days_from_now_ea_hu_eu_after_submission(AppealType appealType) {
 
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
@@ -73,7 +77,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         when(asylumCase.read(REMISSION_TYPE, RemissionType.class))
             .thenReturn(Optional.of(RemissionType.NO_REMISSION));
         when(asylumCase.read(APPEAL_TYPE, AppealType.class))
-            .thenReturn(Optional.of(AppealType.HU));
+            .thenReturn(Optional.of(appealType));
         when(dateProvider.nowWithTime()).thenReturn(now);
         TimedEvent timedEvent = new TimedEvent(
             id,
@@ -85,7 +89,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(callback);
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -112,18 +116,18 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
 
         when(scheduler.schedule(any(TimedEvent.class))).thenThrow(AsylumCaseServiceResponseException.class);
 
-        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(callback))
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .isExactlyInstanceOf(AsylumCaseServiceResponseException.class);
     }
 
     @Test
     void handling_should_throw_if_null_callback() {
 
-        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(null))
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.canHandle(null))
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.canHandle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null))
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
