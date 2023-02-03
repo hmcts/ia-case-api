@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.retry.annotation.EnableRetry;
-import static org.springframework.boot.SpringApplication.*;
 
 @SpringBootApplication
 @EnableRetry
@@ -10,6 +10,6 @@ import static org.springframework.boot.SpringApplication.*;
 public class Application {
 
     public static void main(final String[] args) {
-        run(Application.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
