@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class SystemDocumentManagementUploader {
                         serviceAuthorizationToken,
                         "Asylum",
                         "IA",
-                        Collections.singletonList(file)
+                            (List<MultipartFile>) file
                     );
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
