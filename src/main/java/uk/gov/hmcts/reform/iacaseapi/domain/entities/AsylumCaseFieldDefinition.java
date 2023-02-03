@@ -1690,7 +1690,10 @@ public enum AsylumCaseFieldDefinition {
             "decisionLetterReferenceNumber", new TypeReference<String>(){}),
 
     SUITABILITY_REVIEW_DECISION(
-            "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){});
+            "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){}),
+
+    IS_ADMIN(
+            "isAdmin", new TypeReference<YesOrNo>() {});
 
 
     private final String value;

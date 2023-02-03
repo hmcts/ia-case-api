@@ -272,6 +272,7 @@ security:
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
     caseworker-ia-admofficer:
+      - "startAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
