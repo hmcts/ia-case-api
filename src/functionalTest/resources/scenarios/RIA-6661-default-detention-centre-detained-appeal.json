@@ -1,5 +1,5 @@
 {
-  "description": "RIA-6455 Legal representative submits accelerated detained appeal",
+  "description": "RIA-6661 default detention centre for detained appeals",
   "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
@@ -11,7 +11,6 @@
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "hearingCentre": "harmondsworth",
-          "isAcceleratedDetainedAppeal": "Yes",
           "decisionLetterReceivedDate": "{$TODAY-3}",
           "appellantInDetention": "Yes"
         }
