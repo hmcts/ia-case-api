@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.iacaseapi.fixtures.documents;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
@@ -16,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.DocumentServiceResponseException;
+
 
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
@@ -60,13 +61,13 @@ public class DocumentManagementUploader implements DocumentUploader {
                         serviceAuthorizationToken,
                         "Asylum",
                         "IA",
-                            Collections.singletonList(file).parallelStream().unordered().collect(Collectors.toList())
+                            Collections.singletonList(file)
                     );
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
                 uploadResponse
                     .getDocuments()
-                    .get(0);
+                    .stream().findFirst().orElseThrow(() -> new DocumentServiceResponseException("Document cannot be uploaded, please try again"));
 
             return new Document(
                 uploadedDocument
