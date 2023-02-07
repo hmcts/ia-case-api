@@ -55,7 +55,7 @@ public class DocumentManagementUploader implements DocumentUploader {
             );
 
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
-                    Classification.RESTRICTED.toString(),
+                    Classification.PUBLIC.toString(),
                     "Asylum",
                     "IA",
                     Collections.singletonList(file)

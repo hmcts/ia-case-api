@@ -45,7 +45,6 @@ public class SystemDocumentManagementUploader {
                 .getValue("Authorization");
 
         try {
-
             MultipartFile file = new InMemoryMultipartFile(
                 resource.getFilename(),
                 resource.getFilename(),
@@ -54,7 +53,7 @@ public class SystemDocumentManagementUploader {
             );
 
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
-                    Classification.RESTRICTED.toString(),
+                    Classification.PUBLIC.toString(),
                     "Asylum",
                     "IA",
                     Collections.singletonList(file)
@@ -66,7 +65,7 @@ public class SystemDocumentManagementUploader {
                     documentUploadRequest
             );
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document document  = response.getDocuments().stream()
+            var document  = (uk.gov.hmcts.reform.ccd.document.am.model.Document) response.getDocuments().stream()
                     .findFirst()
                     .orElseThrow();
 
