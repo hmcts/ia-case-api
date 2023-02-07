@@ -4,14 +4,16 @@ import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.io.Serializable;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @EqualsAndHashCode
 @ToString
-public class Document {
+@Data
+public class Document implements Serializable {
 
     private String documentUrl;
     private String documentBinaryUrl;
