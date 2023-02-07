@@ -18,10 +18,6 @@ public class Document {
     private String documentBinaryUrl;
     private String documentFilename;
 
-    private Document() {
-        // noop -- for deserializer
-    }
-
     public Document(
         String documentUrl,
         String documentBinaryUrl,
