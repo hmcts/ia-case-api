@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.fixtures.documents;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
+import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
@@ -52,7 +51,7 @@ public class DocumentManagementUploader implements DocumentUploader {
                 resource.getFilename(),
                 resource.getFilename(),
                 contentType,
-                    ByteArrayOutputStream.toBufferedInputStream(resource.getInputStream()).readAllBytes()
+                ByteStreams.toByteArray(resource.getInputStream())
             );
 
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
@@ -72,11 +71,18 @@ public class DocumentManagementUploader implements DocumentUploader {
                     .findFirst()
                     .orElseThrow();
 
-            return Document.builder()
-                    .documentUrl(document.links.self.href)
-                    .documentBinaryUrl(document.links.binary.href)
-                    .documentFilename(document.originalDocumentName)
-                    .build();
+            return new Document(
+                    document
+                    .links
+                    .self
+                    .href,
+                    document
+                    .links
+                    .binary
+                    .href,
+                    document
+                    .originalDocumentName
+            );
 
         } catch (IOException e) {
             throw new IllegalStateException(e);

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
+import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
 import org.springframework.context.annotation.ComponentScan;
@@ -50,9 +50,8 @@ public class SystemDocumentManagementUploader {
                 resource.getFilename(),
                 resource.getFilename(),
                 contentType,
-                    ByteArrayOutputStream.toBufferedInputStream(resource.getInputStream()).readAllBytes()
+                ByteStreams.toByteArray(resource.getInputStream())
             );
-
 
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
                     Classification.RESTRICTED.toString(),
