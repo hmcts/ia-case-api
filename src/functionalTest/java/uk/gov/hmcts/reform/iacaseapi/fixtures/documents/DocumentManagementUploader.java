@@ -66,18 +66,9 @@ public class DocumentManagementUploader implements DocumentUploader {
                     .findFirst()
                     .orElseThrow();
 
-            return new Document(
-                    document
-                    .links
-                    .self
-                    .href,
-                    document
-                    .links
-                    .binary
-                    .href,
-                    document
-                    .originalDocumentName
-            );
+            return Document.builder()
+                    .documentFilename(document.originalDocumentName)
+                    .build();
 
         } catch (IOException e) {
             throw new IllegalStateException(e);

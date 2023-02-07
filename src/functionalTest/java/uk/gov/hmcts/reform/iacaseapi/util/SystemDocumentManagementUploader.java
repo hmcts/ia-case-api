@@ -69,8 +69,6 @@ public class SystemDocumentManagementUploader {
                     uploadResponse
                             .getDocuments()
                             .get(0);
-            log.info("uploadResponse {}", uploadResponse);
-            log.info("uploadedDocument {}", uploadedDocument);
 
             return new Document(
                     uploadedDocument
