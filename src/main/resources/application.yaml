@@ -271,6 +271,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "listCma"
