@@ -65,23 +65,13 @@ public class SystemDocumentManagementUploader {
                                     Collections.singletonList(file)
                             );
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
-                    uploadResponse
-                            .getDocuments()
-                            .get(0);
+            var document  = (uk.gov.hmcts.reform.ccd.document.am.model.Document) uploadResponse.getDocuments().stream()
+                    .findFirst()
+                    .orElseThrow();
 
-            return new Document(
-                    uploadedDocument
-                            .links
-                            .self
-                            .href,
-                    uploadedDocument
-                            .links
-                            .binary
-                            .href,
-                    uploadedDocument
-                            .originalDocumentName
-            );
+            return Document.builder()
+                    .documentFilename(document.originalDocumentName)
+                    .build();
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
