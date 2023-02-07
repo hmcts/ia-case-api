@@ -54,7 +54,6 @@ public class TransferOutOfAdaHandler implements PreSubmitCallbackHandler<AsylumC
         if (isAcceleratedDetainedAppeal.equals(Optional.of(YesOrNo.YES))) {
 
             asylumCase.write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
-            asylumCase.write(AGE_ASSESSMENT, YesOrNo.NO);
             asylumCase.write(DETENTION_STATUS, DetentionStatus.DETAINED);
             asylumCase.write(TRANSFER_OUT_OF_ADA_DATE, dateProvider.now().toString());
             asylumCase.write(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.YES);

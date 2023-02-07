@@ -62,7 +62,6 @@ class TransferOutOfAdaHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase).write(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.NO);
-        verify(asylumCase).write(AGE_ASSESSMENT, YesOrNo.NO);
         verify(asylumCase).write(DETENTION_STATUS, DetentionStatus.DETAINED);
         verify(asylumCase).write(TRANSFER_OUT_OF_ADA_DATE, dateProvider.now().toString());
         verify(asylumCase).write(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.YES);
