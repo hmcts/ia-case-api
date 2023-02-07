@@ -1,75 +1,91 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
+
+import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
-import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
+@Slf4j
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
 public class SystemDocumentManagementUploader {
 
+    private final CaseDocumentClient caseDocumentClient;
+
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
-    private final CaseDocumentClientApi caseDocumentClientApi;
-
     public SystemDocumentManagementUploader(
-        AuthorizationHeadersProvider authorizationHeadersProvider,
-        CaseDocumentClientApi caseDocumentClientApi
+            CaseDocumentClient caseDocumentClient,
+            AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
+        this.caseDocumentClient = caseDocumentClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
-        this.caseDocumentClientApi = caseDocumentClientApi;
     }
 
     public Document upload(
-        Resource resource,
-        String contentType
+            Resource resource,
+            String contentType
     ) {
         final String serviceAuthorizationToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("ServiceAuthorization");
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("ServiceAuthorization");
 
         final String accessToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("Authorization");
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("Authorization");
 
         try {
-            final MultipartFile file = new MockMultipartFile(Objects.requireNonNull(resource.getFilename()), resource.getFilename(), contentType, resource.getInputStream());
 
-            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
-                    Classification.PUBLIC.toString(),
-                    "Asylum",
-                    "IA",
-                    Collections.singletonList(file)
+            MultipartFile file = new InMemoryMultipartFile(
+                    resource.getFilename(),
+                    resource.getFilename(),
+                    contentType,
+                    ByteStreams.toByteArray(resource.getInputStream())
             );
 
-            UploadResponse response = caseDocumentClientApi.uploadDocuments(
-                    accessToken,
-                    serviceAuthorizationToken,
-                    documentUploadRequest
+
+            UploadResponse uploadResponse =
+                    caseDocumentClient
+                            .uploadDocuments(
+                                    accessToken,
+                                    serviceAuthorizationToken,
+                                    "Asylum",
+                                    "IA",
+                                    Collections.singletonList(file)
+                            );
+
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
+                    uploadResponse
+                            .getDocuments()
+                            .get(0);
+            log.info("uploadResponse {}", uploadResponse);
+            log.info("uploadedDocument {}", uploadedDocument);
+
+            return new Document(
+                    uploadedDocument
+                            .links
+                            .self
+                            .href,
+                    uploadedDocument
+                            .links
+                            .binary
+                            .href,
+                    uploadedDocument
+                            .originalDocumentName
             );
 
-            var document  = (uk.gov.hmcts.reform.ccd.document.am.model.Document) response.getDocuments().stream()
-                    .findFirst()
-                    .orElseThrow();
-
-
-            return Document.builder()
-                    .documentUrl(document.links.self.href)
-                    .documentBinaryUrl(document.links.binary.href)
-                    .documentFilename(document.originalDocumentName)
-                    .build();
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
