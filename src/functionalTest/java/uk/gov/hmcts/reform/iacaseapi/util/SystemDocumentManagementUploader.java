@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
-
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

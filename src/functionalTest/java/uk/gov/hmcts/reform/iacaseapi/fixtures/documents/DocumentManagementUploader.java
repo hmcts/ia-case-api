@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.iacaseapi.fixtures.documents;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 
-import com.microsoft.applicationinsights.core.dependencies.apachecommons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
