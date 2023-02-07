@@ -177,7 +177,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null);
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -207,7 +207,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null);
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -239,7 +239,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null);
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
@@ -271,7 +271,7 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         );
         when(scheduler.schedule(any(TimedEvent.class))).thenReturn(timedEvent);
 
-        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, null);
+        automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
         verify(scheduler).schedule(timedEventArgumentCaptor.capture());
 
