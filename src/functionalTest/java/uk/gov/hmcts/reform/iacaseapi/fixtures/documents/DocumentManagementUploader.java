@@ -9,31 +9,32 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.UserDetailsProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.DocumentServiceResponseException;
 
 
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
 public class DocumentManagementUploader implements DocumentUploader {
 
-    private final CaseDocumentClient caseDocumentClient;
     private final AuthTokenGenerator serviceAuthorizationTokenGenerator;
     private final UserDetailsProvider userDetailsProvider;
 
+    private final CaseDocumentClientApi caseDocumentClientApi;
+
     public DocumentManagementUploader(
-        CaseDocumentClient caseDocumentClient,
         AuthTokenGenerator serviceAuthorizationTokenGenerator,
-        @Qualifier("requestUser") UserDetailsProvider userDetailsProvider
-    ) {
-        this.caseDocumentClient = caseDocumentClient;
+        @Qualifier("requestUser") UserDetailsProvider userDetailsProvider,
+        CaseDocumentClientApi caseDocumentClientApi) {
         this.serviceAuthorizationTokenGenerator = serviceAuthorizationTokenGenerator;
         this.userDetailsProvider = userDetailsProvider;
+        this.caseDocumentClientApi = caseDocumentClientApi;
     }
 
     public Document upload(
@@ -53,32 +54,33 @@ public class DocumentManagementUploader implements DocumentUploader {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
+            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
+                    Classification.RESTRICTED.toString(),
+                    "Asylum",
+                    "Asylum",
+                    Collections.singletonList(file)
+            );
 
-            UploadResponse uploadResponse =
-                caseDocumentClient
-                    .uploadDocuments(
-                        accessToken,
-                        serviceAuthorizationToken,
-                        "Asylum",
-                        "IA",
-                            Collections.singletonList(file)
-                    );
+            UploadResponse response = caseDocumentClientApi.uploadDocuments(
+                    accessToken,
+                    serviceAuthorizationToken,
+                    documentUploadRequest
+            );
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
-                uploadResponse
-                    .getDocuments()
-                    .stream().findFirst().orElseThrow(() -> new DocumentServiceResponseException("Document cannot be uploaded, please try again"));
+            uk.gov.hmcts.reform.ccd.document.am.model.Document document  = response.getDocuments().stream()
+                    .findFirst()
+                    .orElseThrow();
 
             return new Document(
-                uploadedDocument
+                    document
                     .links
                     .self
                     .href,
-                uploadedDocument
+                    document
                     .links
                     .binary
                     .href,
-                uploadedDocument
+                    document
                     .originalDocumentName
             );
 

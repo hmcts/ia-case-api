@@ -2,32 +2,32 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
-public class SystemDocumentManagementUploader implements Serializable {
-
-    private final CaseDocumentClient caseDocumentClient;
+public class SystemDocumentManagementUploader {
 
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
+    private final CaseDocumentClientApi caseDocumentClientApi;
+
     public SystemDocumentManagementUploader(
-        CaseDocumentClient caseDocumentClient,
-        AuthorizationHeadersProvider authorizationHeadersProvider
+        AuthorizationHeadersProvider authorizationHeadersProvider,
+        CaseDocumentClientApi caseDocumentClientApi
     ) {
-        this.caseDocumentClient = caseDocumentClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
+        this.caseDocumentClientApi = caseDocumentClientApi;
     }
 
     public Document upload(
@@ -53,35 +53,36 @@ public class SystemDocumentManagementUploader implements Serializable {
                 ByteStreams.toByteArray(resource.getInputStream())
             );
 
-
-            UploadResponse uploadResponse =
-                caseDocumentClient
-                    .uploadDocuments(
-                        accessToken,
-                        serviceAuthorizationToken,
-                        "Asylum",
-                        "IA",
-                            Collections.singletonList(file).parallelStream().unordered().collect(Collectors.toList())
-                    );
-
-            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
-                uploadResponse
-                    .getDocuments()
-                    .get(0);
-
-            return new Document(
-                uploadedDocument
-                    .links
-                    .self
-                    .href,
-                uploadedDocument
-                    .links
-                    .binary
-                    .href,
-                uploadedDocument
-                    .originalDocumentName
+            DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
+                    Classification.RESTRICTED.toString(),
+                    "Asylum",
+                    "Asylum",
+                    Collections.singletonList(file)
             );
 
+            UploadResponse response = caseDocumentClientApi.uploadDocuments(
+                    accessToken,
+                    serviceAuthorizationToken,
+                    documentUploadRequest
+            );
+
+            uk.gov.hmcts.reform.ccd.document.am.model.Document document  = response.getDocuments().stream()
+                    .findFirst()
+                    .orElseThrow();
+
+
+            return new Document(
+                    document
+                            .links
+                            .self
+                            .href,
+                    document
+                            .links
+                            .binary
+                            .href,
+                    document
+                            .originalDocumentName
+            );
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
