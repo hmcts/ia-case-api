@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @Slf4j
 @Service
@@ -31,7 +30,7 @@ public class SystemDocumentManagementUploader {
         this.authorizationHeadersProvider = authorizationHeadersProvider;
     }
 
-    public Document upload(
+    public uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document upload(
             Resource resource,
             String contentType
     ) {
@@ -65,13 +64,23 @@ public class SystemDocumentManagementUploader {
                                     Collections.singletonList(file)
                             );
 
-            var document  = (uk.gov.hmcts.reform.ccd.document.am.model.Document) uploadResponse.getDocuments().stream()
-                    .findFirst()
-                    .orElseThrow();
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
+                    uploadResponse
+                            .getDocuments()
+                            .get(0);
 
-            return Document.builder()
-                    .documentFilename(document.originalDocumentName)
-                    .build();
+            return new uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document(
+                    uploadedDocument
+                            .links
+                            .self
+                            .href,
+                    uploadedDocument
+                            .links
+                            .binary
+                            .href,
+                    uploadedDocument
+                            .originalDocumentName
+            );
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
