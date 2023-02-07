@@ -56,7 +56,7 @@ public class SystemDocumentManagementUploader {
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
                     Classification.RESTRICTED.toString(),
                     "Asylum",
-                    "Asylum",
+                    "IA",
                     Collections.singletonList(file)
             );
 
