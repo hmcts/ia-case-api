@@ -4,7 +4,6 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
