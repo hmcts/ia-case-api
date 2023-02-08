@@ -21,9 +21,9 @@ public class Document {
     }
 
     public Document(
-        String documentUrl,
-        String documentBinaryUrl,
-        String documentFilename
+            String documentUrl,
+            String documentBinaryUrl,
+            String documentFilename
     ) {
         requireNonNull(documentUrl);
         requireNonNull(documentBinaryUrl);
@@ -44,5 +44,9 @@ public class Document {
 
     public String getDocumentFilename() {
         return documentFilename;
+    }
+
+    public void setDocumentFilename(String documentFilename) {
+        this.documentFilename = documentFilename;
     }
 }
