@@ -47,8 +47,8 @@ public class SystemDocumentManagementUploader {
         try {
 
             MultipartFile file = new InMemoryMultipartFile(
-                resource.getFilename(),
-                resource.getFilename(),
+                    resource.getFilename(),
+                    "doc1",
                 contentType,
                 ByteStreams.toByteArray(resource.getInputStream())
             );
