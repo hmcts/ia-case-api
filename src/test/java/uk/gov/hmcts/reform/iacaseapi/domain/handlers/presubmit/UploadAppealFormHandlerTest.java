@@ -107,32 +107,31 @@ class UploadAppealFormHandlerTest{
             new IdValue<>("1", someTribunalMeta)
         );
 
+        List<DocumentWithMetadata> docsWithMetadata =
+            Arrays.asList(
+                noticeOfDecision1WithMetadata
+            );
+
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("somename"));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
 
-
-
         when(asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS)).thenReturn(Optional.of(allAppealFormDocuments));
-
-
-
         when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(allTribunalDocuments));
-//        when(FilenameUtils.getExtension(noticeOfDecisionDocument.get(0).getValue().getDocument().get().getDocumentFilename())).thenReturn(".pdf");
 
-        when(documentReceiver.tryReceive(noticeOfDecision1,APPEAL_FORM))
-        .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
+        when(documentReceiver.tryReceive(someAppealFormDocument, DocumentTag.APPEAL_FORM))
+            .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
 
-        /*when(documentsAppender.prepend(allTribunalDocuments,any()))
-        .thenReturn(allTribunalDocuments);*/
+        when(documentsAppender.prepend(allTribunalDocuments, docsWithMetadata))
+            .thenReturn(allTribunalDocuments);
 
         PreSubmitCallbackResponse<AsylumCase>callbackResponse=uploadAppealFormHandler.handle(ABOUT_TO_SUBMIT,callback);
 
         assertThat(callbackResponse).isNotNull();
 
-        /*verify(documentsAppender,times(1)).prepend(
+        verify(documentsAppender, times(1)).prepend(
             allTribunalDocuments,
-            noticeOfDecisionWithMetadata
-        );*/
+            docsWithMetadata
+        );
     }
 
 
