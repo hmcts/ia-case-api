@@ -106,6 +106,6 @@
         <cve>CVE-2021-4277</cve>
     </suppress>
     <suppress>
-    	CVE-2022-31197
+    	<cve>CVE-2022-31197</cve>
     </suppress>
 </suppressions>
