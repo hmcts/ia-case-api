@@ -1,6 +1,16 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
-import org.apache.commons.io.FilenameUtils;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +26,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithDescription;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentWithMetadata;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
@@ -25,24 +34,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.APPEAL_FORM;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.DocumentTag.HO_DECISION_LETTER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
-
-@MockitoSettings(strictness=Strictness.LENIENT)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
-class UploadAppealFormHandlerTest{
+class UploadAppealFormHandlerTest {
 
     private final Document someDoc = new Document(
         "someurl",
@@ -61,15 +56,13 @@ class UploadAppealFormHandlerTest{
         "some supplier"
     );
 
-
     private List<IdValue<DocumentWithDescription>> allAppealFormDocuments;
-
     private List<IdValue<DocumentWithMetadata>> allTribunalDocuments;
 
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
-    private CaseDetails <AsylumCase> caseDetails;
+    private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
     @Mock
@@ -77,25 +70,21 @@ class UploadAppealFormHandlerTest{
     @Mock
     private DocumentsAppender documentsAppender;
     @Mock
-    private DocumentWithDescription noticeOfDecision1;
-    @Mock
-    private DocumentWithMetadata noticeOfDecision1WithMetadata;
-
+    private DocumentWithMetadata appealForm1WithMetadata;
     private UploadAppealFormHandler uploadAppealFormHandler;
 
     @BeforeEach
-    public void setUp(){
-
-        uploadAppealFormHandler=
-        new UploadAppealFormHandler(documentReceiver,documentsAppender);
+    public void setUp() {
+        uploadAppealFormHandler =
+                new UploadAppealFormHandler(documentReceiver,documentsAppender);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getCaseDetails().getCaseData()).thenReturn(asylumCase);
     }
 
     @ParameterizedTest
-    @EnumSource(value=Event.class,names={"START_APPEAL"})
-    void should_append_home_office_decision_letter_to_legal_rep_documents_if_not_present(Event event){
+    @EnumSource(value = Event.class,names = {"START_APPEAL"})
+    void should_append_appeal_forms_to_tribunal_documents(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
 
@@ -107,10 +96,7 @@ class UploadAppealFormHandlerTest{
             new IdValue<>("1", someTribunalMeta)
         );
 
-        List<DocumentWithMetadata> docsWithMetadata =
-            Arrays.asList(
-                noticeOfDecision1WithMetadata
-            );
+        List<DocumentWithMetadata> docsWithMetadata = Arrays.asList(appealForm1WithMetadata);
 
         when(asylumCase.read(APPELLANT_NAME_FOR_DISPLAY)).thenReturn(Optional.of("somename"));
         when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
@@ -119,12 +105,11 @@ class UploadAppealFormHandlerTest{
         when(asylumCase.read(TRIBUNAL_DOCUMENTS)).thenReturn(Optional.of(allTribunalDocuments));
 
         when(documentReceiver.tryReceive(someAppealFormDocument, DocumentTag.APPEAL_FORM))
-            .thenReturn(Optional.of(noticeOfDecision1WithMetadata));
+            .thenReturn(Optional.of(appealForm1WithMetadata));
 
-        when(documentsAppender.prepend(allTribunalDocuments, docsWithMetadata))
-            .thenReturn(allTribunalDocuments);
+        when(documentsAppender.prepend(allTribunalDocuments, docsWithMetadata)).thenReturn(allTribunalDocuments);
 
-        PreSubmitCallbackResponse<AsylumCase>callbackResponse=uploadAppealFormHandler.handle(ABOUT_TO_SUBMIT,callback);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse = uploadAppealFormHandler.handle(ABOUT_TO_SUBMIT,callback);
 
         assertThat(callbackResponse).isNotNull();
 

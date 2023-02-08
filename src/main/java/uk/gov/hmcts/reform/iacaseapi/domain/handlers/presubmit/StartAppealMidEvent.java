@@ -65,7 +65,7 @@ public class StartAppealMidEvent implements PreSubmitCallbackHandler<AsylumCase>
                 }
             }
         } else if (callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID)) {
-            if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)){
+            if (isAdmin.equals(YesOrNo.YES) && appellantInUk.equals(YesOrNo.NO)) {
                 response.addError("This option is currently unavailable");
             }
         }
