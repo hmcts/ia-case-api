@@ -3,28 +3,15 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DATE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_DECISION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATIONS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_EDIT_LISTING_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPLICATION_WITHDRAW_EXISTS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.CURRENT_CASE_STATE_VISIBLE_TO_CASE_OFFICER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DISABLE_OVERVIEW_PAGE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_DECISION_ALLOWED;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.*;
 
 import com.google.common.collect.ImmutableSet;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,10 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealDecision;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.Application;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ApplicationType;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State;
@@ -51,21 +35,31 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class GenerateDocumentHandlerTest {
 
+    private static final int ftpaAppealOutOfTimeWorkingDaysAdaAppeal = 5;
+    private static final int ftpaAppealOutOfTimeDaysOoc = 28;
+    private static final int ftpaAppealOutOfTimeDaysUk = 14;
+
     @Mock
     private DocumentGenerator<AsylumCase> documentGenerator;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
+    private AsylumCase asylumCase;
+    @Mock
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private DueDateService dueDateService;
     @Captor
     private ArgumentCaptor<List<IdValue<Application>>> applicationsCaptor;
 
@@ -103,7 +97,12 @@ class GenerateDocumentHandlerTest {
                 true,
                 documentGenerator,
                 dateProvider,
-                true);
+                    true,
+                dueDateService,
+                ftpaAppealOutOfTimeDaysUk,
+                ftpaAppealOutOfTimeDaysOoc,
+                ftpaAppealOutOfTimeWorkingDaysAdaAppeal
+                    );
     }
 
     @Test
@@ -142,9 +141,14 @@ class GenerateDocumentHandlerTest {
             }
 
             if (event.equals(SEND_DECISION_AND_REASONS)) {
+                String expectedFtpaDeadlineUK = now.plusDays(5).toString();
+                final ZonedDateTime zonedDateTime = now.atStartOfDay(ZoneOffset.UTC);
+                final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedFtpaDeadlineUK).atStartOfDay(ZoneOffset.UTC);
+
                 when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
                     .thenReturn(Optional.of(AppealDecision.ALLOWED));
                 when(dateProvider.now()).thenReturn(now);
+                when(dueDateService.calculateDueDate(zonedDateTime, ftpaAppealOutOfTimeDaysUk)).thenReturn(zonedDueDateTime);
             }
 
             when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
@@ -297,7 +301,11 @@ class GenerateDocumentHandlerTest {
                 true,
                 documentGenerator,
                 dateProvider,
-                true);
+                true,
+                    dueDateService,
+                    ftpaAppealOutOfTimeDaysUk,
+                    ftpaAppealOutOfTimeDaysOoc,
+                    ftpaAppealOutOfTimeWorkingDaysAdaAppeal);
 
         for (Event event : Event.values()) {
 
@@ -323,7 +331,11 @@ class GenerateDocumentHandlerTest {
                 false,
                 documentGenerator,
                 dateProvider,
-                true);
+                true,
+                    dueDateService,
+                    ftpaAppealOutOfTimeDaysUk,
+                    ftpaAppealOutOfTimeDaysOoc,
+                    ftpaAppealOutOfTimeWorkingDaysAdaAppeal);
 
         for (Event event : Event.values()) {
 
@@ -393,4 +405,99 @@ class GenerateDocumentHandlerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_ada_appeal() {
+        String expectedFtpaDeadlineAda = now.plusDays(ftpaAppealOutOfTimeWorkingDaysAdaAppeal).toString();
+        final ZonedDateTime zonedDateTime = now.atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedFtpaDeadlineAda).atStartOfDay(ZoneOffset.UTC);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(callback.getEvent()).thenReturn(SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(state);
+        when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+        when(dateProvider.now()).thenReturn(now);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+        when(dueDateService.calculateDueDate(zonedDateTime, ftpaAppealOutOfTimeWorkingDaysAdaAppeal)).thenReturn(zonedDueDateTime);
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, zonedDueDateTime.toLocalDate().toString());
+    }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_ooc_appeal() {
+        String expectedFtpaDeadlineOoc = now.plusDays(ftpaAppealOutOfTimeDaysOoc).toString();
+        final ZonedDateTime zonedDateTime = now.atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedFtpaDeadlineOoc).atStartOfDay(ZoneOffset.UTC);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(callback.getEvent()).thenReturn(SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(state);
+        when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+        when(dateProvider.now()).thenReturn(now);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(expectedUpdatedCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REFUSAL_OF_HUMAN_RIGHTS));
+        when(dueDateService.calculateDueDate(zonedDateTime, ftpaAppealOutOfTimeDaysOoc)).thenReturn(zonedDueDateTime);
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, zonedDueDateTime.toLocalDate().toString());
+    }
+
+    @Test
+    void should_send_decision_and_reasons_and_populate_ftpa_field_uk_appeal() {
+        String expectedFtpaDeadlineUk = now.plusDays(ftpaAppealOutOfTimeDaysUk).toString();
+        final ZonedDateTime zonedDateTime = now.atStartOfDay(ZoneOffset.UTC);
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedFtpaDeadlineUk).atStartOfDay(ZoneOffset.UTC);
+
+        AsylumCase expectedUpdatedCase = mock(AsylumCase.class);
+        when(callback.getEvent()).thenReturn(SEND_DECISION_AND_REASONS);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getState()).thenReturn(state);
+        when(expectedUpdatedCase.read(IS_DECISION_ALLOWED, AppealDecision.class))
+                .thenReturn(Optional.of(AppealDecision.ALLOWED));
+        when(dateProvider.now()).thenReturn(now);
+
+        when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+        when(expectedUpdatedCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+                .thenReturn(Optional.empty());
+        when(dueDateService.calculateDueDate(zonedDateTime, ftpaAppealOutOfTimeDaysUk)).thenReturn(zonedDueDateTime);
+
+        when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                generateDocumentHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(expectedUpdatedCase, callbackResponse.getData());
+        verify(documentGenerator, times(1)).generate(callback);
+
+        verify(expectedUpdatedCase).write(FTPA_APPLICATION_DEADLINE, zonedDueDateTime.toLocalDate().toString());
+    }
+
 }
