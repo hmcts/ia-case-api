@@ -116,6 +116,7 @@ public enum Event {
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
+    TRANSFER_OUT_OF_ADA("transferOutOfAda"),
 
     PIP_ACTIVATION("pipActivation"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),

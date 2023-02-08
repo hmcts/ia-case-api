@@ -36,6 +36,8 @@ public class AdaSuitabilityReviewConfirmation implements PostSubmitCallbackHandl
         final AdaSuitabilityReviewDecision decision =
             asylumCase.read(AsylumCaseFieldDefinition.SUITABILITY_REVIEW_DECISION, AdaSuitabilityReviewDecision.class)
                 .orElseThrow(() -> new RequiredFieldMissingException("ADA suitability review decision unavailable."));
+        String transferOutOfAdaUrl = "/trigger/transferOutOfAda";
+
 
         PostSubmitCallbackResponse postSubmitResponse =
             new PostSubmitCallbackResponse();
@@ -51,7 +53,8 @@ public class AdaSuitabilityReviewConfirmation implements PostSubmitCallbackHandl
             postSubmitResponse.setConfirmationBody(
                 "#### What happens next\n\n"
                     + "All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>"
-                + "\n\nYou must [transfer this appeal out of the accelerated detained appeal process.](/Overview)"
+                + "\n\nYou must [transfer this appeal out of the accelerated detained appeal process.](/case/IA/Asylum/"
+                    + callback.getCaseDetails().getId() + transferOutOfAdaUrl + ")."
             );
         }
 
