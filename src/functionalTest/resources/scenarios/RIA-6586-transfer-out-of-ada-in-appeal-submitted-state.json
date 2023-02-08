@@ -1,19 +1,18 @@
 {
-  "description": "RIA-6455 Legal representative submits accelerated detained appeal",
+  "description": "RIA-6586 Transfer out of ADA in appeal submitted state TCW",
   "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "LegalRepresentative",
+    "credentials": "CaseOfficer",
     "input": {
-      "eventId": "submitAppeal",
+      "eventId": "transferOutOfAda",
       "state": "appealSubmitted",
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
           "hearingCentre": "harmondsworth",
           "isAcceleratedDetainedAppeal": "Yes",
-          "decisionLetterReceivedDate": "{$TODAY-3}",
-          "appellantInDetention": "Yes"
+          "decisionLetterReceivedDate": "{$TODAY-3}"
         }
       }
     }
@@ -25,7 +24,8 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "hearingCentre": "harmondsworth",
-        "decisionLetterReceivedDate": "{$TODAY-3}"
+        "isAcceleratedDetainedAppeal": "No",
+        "hasTransferredOutOfAda": "Yes"
       }
     }
   }

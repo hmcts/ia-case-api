@@ -271,7 +271,9 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "transferOutOfAda"
     caseworker-ia-admofficer:
+      - "startAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
@@ -364,6 +366,7 @@ security:
       - "asyncStitchingComplete"
       - "markAddendumEvidenceAsReviewed"
       - "adaSuitabilityReview"
+      - "transferOutOfAda"
     caseworker-ia-system:
       - "requestHearingRequirementsFeature"
       - "moveToPaymentPending"
