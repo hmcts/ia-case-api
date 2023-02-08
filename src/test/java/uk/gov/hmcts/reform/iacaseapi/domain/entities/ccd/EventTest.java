@@ -117,11 +117,12 @@ class EventTest {
         assertEquals("generateServiceRequest", Event.GENERATE_SERVICE_REQUEST.toString());
         assertEquals("pipActivation", Event.PIP_ACTIVATION.toString());
         assertEquals("adaSuitabilityReview", Event.ADA_SUITABILITY_REVIEW.toString());
+        assertEquals("transferOutOfAda", Event.TRANSFER_OUT_OF_ADA.toString());
 
     }
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(114, Event.values().length);
+        assertEquals(115, Event.values().length);
     }
 }

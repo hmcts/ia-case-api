@@ -1691,10 +1691,15 @@ public enum AsylumCaseFieldDefinition {
 
     SUITABILITY_REVIEW_DECISION(
             "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){}),
-
+            
+    HAS_TRANSFERRED_OUT_OF_ADA(
+            "hasTransferredOutOfAda", new TypeReference<YesOrNo>(){}),
+            
+    TRANSFER_OUT_OF_ADA_DATE(
+            "transferOutOfAdaDate", new TypeReference<String>(){}),
+            
     IS_ADMIN(
             "isAdmin", new TypeReference<YesOrNo>() {});
-
 
     private final String value;
     private final TypeReference typeReference;

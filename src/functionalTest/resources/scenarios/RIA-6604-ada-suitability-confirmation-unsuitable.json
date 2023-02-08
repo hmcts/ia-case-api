@@ -26,7 +26,7 @@
     },
     "confirmation": {
       "header": "# Appeal determined unsuitable to continue as ADA",
-      "body": "#### What happens next\n\nAll parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>\n\nYou must [transfer this appeal out of the accelerated detained appeal process.](/Overview)"
+      "body": "#### What happens next\n\nAll parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>\n\nYou must [transfer this appeal out of the accelerated detained appeal process.](/case/IA/Asylum/1234/trigger/transferOutOfAda)."
     }
   }
 }
