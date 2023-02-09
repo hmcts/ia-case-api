@@ -1,0 +1,25 @@
+{
+  "description": "RIA-6692 Internal case creation add isAdminFlag",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 1122,
+      "eventId": "startAppeal",
+      "state": "appealStartedByAdmin",
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAdmin": "Yes"
+      }
+    }
+  }
+}

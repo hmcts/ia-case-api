@@ -18,13 +18,10 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentReceiver;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentsAppender;
-
-
-
-
 
 @Component
 public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumCase> {
@@ -61,58 +58,64 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
 
         final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        String appellantName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElse("");
-        String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
-        String appealFormSuffix = "appeal form";
+        YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
-        Optional<List<IdValue<DocumentWithDescription>>> maybeAppealForm =
-            asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS);
+        if (isAdmin.equals(YesOrNo.YES)) {
+            String appellantName = asylumCase.read(APPELLANT_NAME_FOR_DISPLAY, String.class).orElse("");
+            String appealReferenceNumber = asylumCase.read(APPEAL_REFERENCE_NUMBER, String.class).orElse("");
+            String appealFormSuffix = "appeal form";
 
-        List<IdValue<DocumentWithDescription>> appealFormDocs =
-                maybeAppealForm.orElse(emptyList());
+            Optional<List<IdValue<DocumentWithDescription>>> maybeAppealForm =
+                    asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS);
 
-        if (maybeAppealForm.isPresent()) {
-            for (IdValue<DocumentWithDescription> appealFormDoc : appealFormDocs) {
+            List<IdValue<DocumentWithDescription>> appealFormDocs =
+                    maybeAppealForm.orElse(emptyList());
 
-                String fileExtension;
+            if (maybeAppealForm.isPresent()) {
+                int docNum = 0;
+                for (IdValue<DocumentWithDescription> appealFormDoc : appealFormDocs) {
 
-                if (appealFormDoc.getValue().getDocument().isPresent()) {
-                    fileExtension = FilenameUtils.getExtension(appealFormDoc.getValue().getDocument().get().getDocumentFilename());
+                    docNum++;
+                    String fileExtension;
 
-                } else {
-                    fileExtension = "pdf";
+                    if (appealFormDoc.getValue().getDocument().isPresent()) {
+                        fileExtension = FilenameUtils.getExtension(appealFormDoc.getValue().getDocument().get().getDocumentFilename());
+                    } else {
+                        fileExtension = "pdf";
+                    }
+
+                    appealFormDoc.getValue().getDocument().get().setDocumentFilename(appealReferenceNumber
+                            + "-"
+                            + appellantName
+                            + "-"
+                            + appealFormSuffix
+                            + docNum
+                            + "."
+                            + fileExtension);
                 }
 
-                appealFormDoc.getValue().getDocument().get().setDocumentFilename(appealReferenceNumber
-                        + "-"
-                        + appellantName
-                        + "-"
-                        + appealFormSuffix
-                        + "."
-                        + fileExtension);
+                List<DocumentWithMetadata> appealForms =
+                        appealFormDocs
+                                .stream()
+                                .map(IdValue::getValue)
+                                .map(document -> documentReceiver.tryReceive(document, DocumentTag.APPEAL_FORM))
+                                .filter(Optional::isPresent)
+                                .map(Optional::get)
+                                .collect(Collectors.toList());
+
+                Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingTribunalDocuments =
+                        asylumCase.read(TRIBUNAL_DOCUMENTS);
+
+                List<IdValue<DocumentWithMetadata>> existingTribunalDocuments =
+                        maybeExistingTribunalDocuments.orElse(emptyList());
+
+                if (!appealForms.isEmpty()) {
+                    List<IdValue<DocumentWithMetadata>> allTribunalDocuments =
+                            documentsAppender.prepend(existingTribunalDocuments, appealForms);
+                    asylumCase.write(TRIBUNAL_DOCUMENTS, allTribunalDocuments);
+                }
+
             }
-
-            List<DocumentWithMetadata> appealForms =
-                    appealFormDocs
-                            .stream()
-                            .map(IdValue::getValue)
-                            .map(document -> documentReceiver.tryReceive(document, DocumentTag.APPEAL_FORM))
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList());
-
-            Optional<List<IdValue<DocumentWithMetadata>>> maybeExistingTribunalDocuments =
-                    asylumCase.read(TRIBUNAL_DOCUMENTS);
-
-            List<IdValue<DocumentWithMetadata>> existingTribunalDocuments =
-                    maybeExistingTribunalDocuments.orElse(emptyList());
-
-            if (!appealForms.isEmpty()) {
-                List<IdValue<DocumentWithMetadata>> allTribunalDocuments =
-                        documentsAppender.prepend(existingTribunalDocuments, appealForms);
-                asylumCase.write(TRIBUNAL_DOCUMENTS, allTribunalDocuments);
-            }
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
