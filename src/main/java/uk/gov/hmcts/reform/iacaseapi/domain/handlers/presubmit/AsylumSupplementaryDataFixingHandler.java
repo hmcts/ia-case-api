@@ -44,7 +44,7 @@ public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHa
 
         Map<String, JsonNode> supplementaryData = caseDetails.getSupplementaryData();
 
-        if (supplementaryData != null && !supplementaryData.containsKey(CcdSupplementaryUpdater.HMCTS_SERVICE_ID)) {
+        if (supplementaryData == null || !supplementaryData.containsKey(CcdSupplementaryUpdater.HMCTS_SERVICE_ID)) {
             ccdSupplementaryUpdater.setHmctsServiceIdSupplementary(callback);
         }
 
