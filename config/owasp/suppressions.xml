@@ -108,4 +108,7 @@
         <cve>CVE-2022-3064</cve>
         <cve>CVE-2022-45143</cve>
     </suppress>
+    <suppress>
+    	<cve>CVE-2022-31197</cve>
+    </suppress>
 </suppressions>
