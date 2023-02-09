@@ -3,13 +3,14 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
-import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
 @Service
@@ -22,8 +23,8 @@ public class SystemDocumentManagementUploader {
 
 
     public SystemDocumentManagementUploader(
-        CaseDocumentClient caseDocumentClient,
-        AuthorizationHeadersProvider authorizationHeadersProvider
+            CaseDocumentClient caseDocumentClient,
+            AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
         this.caseDocumentClient = caseDocumentClient;
         this.authorizationHeadersProvider = authorizationHeadersProvider;
@@ -31,54 +32,52 @@ public class SystemDocumentManagementUploader {
     }
 
     public Document upload(
-        Resource resource,
-        String contentType
+            Resource resource,
+            String contentType
     ) {
         final String serviceAuthorizationToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("ServiceAuthorization");
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("ServiceAuthorization");
 
         final String accessToken =
-            authorizationHeadersProvider
-                .getLegalRepresentativeAuthorization()
-                .getValue("Authorization");
+                authorizationHeadersProvider
+                        .getLegalRepresentativeAuthorization()
+                        .getValue("Authorization");
 
         try {
 
-            MultipartFile file = new InMemoryMultipartFile(
+            MultipartFile file = new MockMultipartFile(
                     resource.getFilename(),
-                    "doc1",
-                contentType,
-                ByteStreams.toByteArray(resource.getInputStream())
+                    resource.getFilename(),
+                    contentType,
+                    ByteStreams.toByteArray(resource.getInputStream())
             );
 
             UploadResponse uploadResponse =
-                caseDocumentClient
-                    .uploadDocuments(
-                        accessToken,
-                        serviceAuthorizationToken,
-                        "Asylum",
-                        "IA",
-                            Collections.singletonList(file)
-                    );
+                    caseDocumentClient
+                            .uploadDocuments(
+                                    accessToken,
+                                    serviceAuthorizationToken,
+                                    "Asylum",
+                                    "IA",
+                                    Collections.singletonList(file)
+                            );
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =
-                uploadResponse
-                    .getDocuments()
-                    .get(0);
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse
+                    .getDocuments().get(0);
 
             return new Document(
-                uploadedDocument
-                    .links
-                    .self
-                    .href,
-                uploadedDocument
-                    .links
-                    .binary
-                    .href,
-                uploadedDocument
-                    .originalDocumentName
+                    uploadedDocument
+                            .links
+                            .self
+                            .href,
+                    uploadedDocument
+                            .links
+                            .binary
+                            .href,
+                    uploadedDocument
+                            .originalDocumentName
             );
 
         } catch (IOException e) {
