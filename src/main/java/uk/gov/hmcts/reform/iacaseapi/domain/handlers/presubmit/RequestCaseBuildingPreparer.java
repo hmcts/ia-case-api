@@ -31,7 +31,7 @@ public class RequestCaseBuildingPreparer implements PreSubmitCallbackHandler<Asy
     public RequestCaseBuildingPreparer(
             @Value("${legalRepresentativeBuildCase.dueInDays}") int legalRepresentativeBuildCaseDueInDays,
             @Value("${legalRepresentativeBuildCase.dueInDaysFromSubmissionDate}") int legalRepresentativeBuildCaseDueFromSubmissionDate,
-            @Value("${legalRepresentativeBuildCase.dueInDaysAda}") int legalRepresentativeBuildCaseDueInDaysAda,
+            @Value("${legalRepresentativeBuildCaseAda.dueInDay}") int legalRepresentativeBuildCaseDueInDaysAda,
             DueDateService dueDateService,
             DateProvider dateProvider
     ) {

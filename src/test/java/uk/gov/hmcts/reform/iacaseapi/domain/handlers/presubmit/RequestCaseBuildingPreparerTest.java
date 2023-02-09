@@ -198,9 +198,12 @@ class RequestCaseBuildingPreparerTest {
 
     @Test
     void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
-        // Testing limited by ZonedDateTime being a final class: it can't be involved in mocking/spying
-        final String nowDate = "2022-11-20";
-        final ZonedDateTime zonedDueDateTime = LocalDate.parse(nowDate).atStartOfDay(ZoneOffset.UTC);
+
+        final String expectedExplanationContains =
+                "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
+        final String expectedDueDate = "2023-02-16";
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -211,7 +214,21 @@ class RequestCaseBuildingPreparerTest {
 
         requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
-        verify(asylumCase, times(1)).write(eq(SEND_DIRECTION_DATE_DUE), anyString());
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .contains(expectedExplanationContains);
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+                .contains(expectedDueDate);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
 
     }
 
