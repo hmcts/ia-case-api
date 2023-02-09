@@ -12,8 +12,6 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
@@ -38,40 +36,60 @@ class AdaSuitabilityReviewConfirmationTest {
 
     private AdaSuitabilityReviewConfirmation adaSuitabilityReviewConfirmation = new AdaSuitabilityReviewConfirmation();
 
-    @ParameterizedTest
-    @EnumSource(value = AdaSuitabilityReviewDecision.class, names = {"SUITABLE", "UNSUITABLE"})
-    void should_return_confirmation(AdaSuitabilityReviewDecision decision) {
+    @Test
+    void should_return_confirmation_for_suitable() {
 
         when(callback.getEvent()).thenReturn(Event.ADA_SUITABILITY_REVIEW);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(SUITABILITY_REVIEW_DECISION, AdaSuitabilityReviewDecision.class)).thenReturn(Optional.of(decision));
+        when(asylumCase.read(SUITABILITY_REVIEW_DECISION, AdaSuitabilityReviewDecision.class)).thenReturn(Optional.of(AdaSuitabilityReviewDecision.SUITABLE));
 
         PostSubmitCallbackResponse callbackResponse =
-            adaSuitabilityReviewConfirmation.handle(callback);
+                adaSuitabilityReviewConfirmation.handle(callback);
 
         assertNotNull(callbackResponse);
         assertTrue(callbackResponse.getConfirmationHeader().isPresent());
         assertTrue(callbackResponse.getConfirmationBody().isPresent());
 
-        if (decision.equals(AdaSuitabilityReviewDecision.SUITABLE)) {
-            assertThat(
+        assertThat(
                 callbackResponse.getConfirmationHeader().get())
                 .contains("# Appeal determined suitable to continue as ADA");
 
-            assertThat(
+        assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>");
-        }
-        if (decision.equals(AdaSuitabilityReviewDecision.UNSUITABLE)) {
-            assertThat(
+    }
+
+    @Test
+    void should_return_confirmation_for_unsuitable() {
+
+        long caseId = 1234;
+
+        when(callback.getEvent()).thenReturn(Event.ADA_SUITABILITY_REVIEW);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(SUITABILITY_REVIEW_DECISION, AdaSuitabilityReviewDecision.class)).thenReturn(Optional.of(AdaSuitabilityReviewDecision.UNSUITABLE));
+        when(caseDetails.getId()).thenReturn(caseId);
+
+        PostSubmitCallbackResponse callbackResponse =
+                adaSuitabilityReviewConfirmation.handle(callback);
+
+        assertNotNull(callbackResponse);
+        assertTrue(callbackResponse.getConfirmationHeader().isPresent());
+        assertTrue(callbackResponse.getConfirmationBody().isPresent());
+
+        assertThat(
                 callbackResponse.getConfirmationHeader().get())
                 .contains("# Appeal determined unsuitable to continue as ADA");
 
-            assertThat(
+        assertThat(
                 callbackResponse.getConfirmationBody().get())
                 .contains("All parties have been notified. The Accelerated Detained Appeal Suitability Decision is available to view in the documents tab.<br>");
-        }
+
+        assertThat(
+                callbackResponse.getConfirmationBody().get())
+                .contains("You must [transfer this appeal out of the accelerated detained appeal process.]"
+                        + "(/case/IA/Asylum/" + caseId + "/trigger/transferOutOfAda)");
 
     }
 
@@ -84,16 +102,16 @@ class AdaSuitabilityReviewConfirmationTest {
         when(asylumCase.read(SUITABILITY_REVIEW_DECISION, AdaSuitabilityReviewDecision.class)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> adaSuitabilityReviewConfirmation.handle(callback))
-            .hasMessage("ADA suitability review decision unavailable.")
-            .isExactlyInstanceOf(RequiredFieldMissingException.class);
+                .hasMessage("ADA suitability review decision unavailable.")
+                .isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(() -> adaSuitabilityReviewConfirmation.handle(callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+                .hasMessage("Cannot handle callback")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -120,12 +138,12 @@ class AdaSuitabilityReviewConfirmationTest {
     void should_not_allow_null_arguments() {
 
         assertThatThrownBy(() -> adaSuitabilityReviewConfirmation.canHandle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
 
         assertThatThrownBy(() -> adaSuitabilityReviewConfirmation.handle(null))
-            .hasMessage("callback must not be null")
-            .isExactlyInstanceOf(NullPointerException.class);
+                .hasMessage("callback must not be null")
+                .isExactlyInstanceOf(NullPointerException.class);
     }
 
 
