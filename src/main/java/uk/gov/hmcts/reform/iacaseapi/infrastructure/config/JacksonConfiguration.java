@@ -17,7 +17,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class JacksonConfiguration {
 
 
-    @ConditionalOnProperty
+    @ConditionalOnProperty(prefix = "SystemDocumentManagementUploader.class", value = "disabled")
+    @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
             .featuresToEnable(READ_ENUMS_USING_TO_STRING)

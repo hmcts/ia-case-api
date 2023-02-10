@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
+
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -63,8 +65,10 @@ public class SystemDocumentManagementUploader {
                                     Collections.singletonList(file)
                             );
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument = uploadResponse
+            uk.gov.hmcts.reform.ccd.document.am.model.Document uploadedDocument =  Objects.requireNonNull(uploadResponse)
                     .getDocuments().get(0);
+
+
 
             return new Document(
                     uploadedDocument
