@@ -15,8 +15,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Configuration
 public class JacksonConfiguration {
 
-    @Bean
-    @Primary
+
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
             .featuresToEnable(READ_ENUMS_USING_TO_STRING)
