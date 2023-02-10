@@ -22,7 +22,7 @@ public class JacksonConfiguration {
             .featuresToEnable(READ_ENUMS_USING_TO_STRING)
             .featuresToEnable(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
             .featuresToEnable(WRITE_ENUMS_USING_TO_STRING)
-            .serializationInclusion(JsonInclude.Include.NON_EMPTY);
+            .serializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @Bean
