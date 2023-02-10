@@ -7,7 +7,6 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_ENUMS_US
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -17,7 +16,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class JacksonConfiguration {
 
 
-    @ConditionalOnProperty(prefix = "SystemDocumentManagementUploader.class", value = "disabled")
     @Primary
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
