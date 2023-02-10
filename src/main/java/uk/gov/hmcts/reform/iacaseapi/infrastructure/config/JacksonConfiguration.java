@@ -18,6 +18,7 @@ public class JacksonConfiguration {
 
 
     @ConditionalOnProperty(prefix = "SystemDocumentManagementUploader.class", value = "disabled")
+    @Primary
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
