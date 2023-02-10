@@ -15,13 +15,14 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Configuration
 public class JacksonConfiguration {
 
-
+    @Bean
+    @Primary
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
             .featuresToEnable(READ_ENUMS_USING_TO_STRING)
             .featuresToEnable(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
             .featuresToEnable(WRITE_ENUMS_USING_TO_STRING)
-            .serializationInclusion(JsonInclude.Include.NON_ABSENT);
+            .serializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
     @Bean
