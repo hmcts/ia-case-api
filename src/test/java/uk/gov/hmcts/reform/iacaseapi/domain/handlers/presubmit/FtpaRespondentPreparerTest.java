@@ -17,6 +17,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -29,6 +30,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class FtpaRespondentPreparerTest {
+
+    private static final int FTPA_DUE_IN_DAYS_OOC = 28;
+    private static final int FTPA_DUE_IN_DAYS_UK = 14;
+    private static final LocalDate FTPA_DUE_DATE_OOC = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_OOC);
+    private static final LocalDate FTPA_DUE_DATE_UK = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_UK);
+
+    private static final LocalDate MISSED_FTPA_SUBMISSION_DATE = LocalDate.now().minusDays(1);
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -59,8 +67,7 @@ class FtpaRespondentPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String ftpaApplicationDeadline = dateProvider.now().plusDays(5).toString();
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_UK.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -70,13 +77,11 @@ class FtpaRespondentPreparerTest {
 
     @Test
     void should_set_out_of_date_submission_state_no_for_ooc_removal_of_client_decision_type() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String ftpaApplicationDeadline = dateProvider.now().plusDays(5).toString();
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_OOC.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -85,8 +90,7 @@ class FtpaRespondentPreparerTest {
     }
 
     @Test
-    void should_set_out_of_date_submission_state_no_when_no_ftpa_application_deadline_date() {
-
+    void should_throw_when_ftpa_application_deadline_date_not_present() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -110,31 +114,27 @@ class FtpaRespondentPreparerTest {
 
     @Test
     void should_set_out_of_date_submission_state_to_yes_for_ooc_removal_of_client_decision_type() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String ftpaApplicationDeadline = dateProvider.now().minusDays(29).toString();
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
-
+        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
-
     }
 
     @Test
     void should_set_out_of_date_submission_state_to_yes() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
 
-        final String ftpaApplicationDeadline = dateProvider.now().minusDays(15).toString();
-        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
