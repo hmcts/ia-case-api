@@ -274,6 +274,7 @@ security:
       - "transferOutOfAda"
     caseworker-ia-admofficer:
       - "startAppeal"
+      - "submitAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"
