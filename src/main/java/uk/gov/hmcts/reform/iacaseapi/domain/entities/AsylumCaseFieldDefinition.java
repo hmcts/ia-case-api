@@ -1705,7 +1705,13 @@ public enum AsylumCaseFieldDefinition {
             "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
-        "adaSuffix", new TypeReference<String>(){});
+        "adaSuffix", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_EMAIL(
+            "internalAppellantEmail", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_MOBILE_NUMBER(
+            "internalAppellantMobileNumber", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

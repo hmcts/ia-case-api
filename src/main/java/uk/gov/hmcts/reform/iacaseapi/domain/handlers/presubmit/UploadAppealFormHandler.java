@@ -69,7 +69,7 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
                     asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS);
 
             List<IdValue<DocumentWithDescription>> appealFormDocs =
-                    maybeAppealForm.orElse(emptyList());
+                    maybeAppealForm.orElseThrow(() -> new IllegalStateException("appealForm is not present"));
 
             if (maybeAppealForm.isPresent()) {
                 int docNum = 0;

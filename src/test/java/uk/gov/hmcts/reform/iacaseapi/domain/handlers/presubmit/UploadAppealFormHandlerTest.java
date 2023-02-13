@@ -131,8 +131,6 @@ class UploadAppealFormHandlerTest {
 
             for (PreSubmitCallbackStage callbackStage : PreSubmitCallbackStage.values()) {
 
-                when(callback.getEvent()).thenReturn(event);
-
                 boolean canHandle = uploadAppealFormHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
@@ -144,8 +142,6 @@ class UploadAppealFormHandlerTest {
                 }
             }
         }
-
-        reset(callback);
     }
 
     @Test
