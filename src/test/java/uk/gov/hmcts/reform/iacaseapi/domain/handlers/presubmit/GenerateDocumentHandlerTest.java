@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.IdValue;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DocumentGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
-import uk.gov.hmcts.reform.iacaseapi.domain.service.holidaydates.HolidayService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -58,9 +57,6 @@ class GenerateDocumentHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private DateProvider dateProvider;
-
-    @Mock
-    private List<LocalDate> holidays;
     @Mock
     private DueDateService dueDateService;
     @Captor
@@ -428,11 +424,9 @@ class GenerateDocumentHandlerTest {
         when(expectedUpdatedCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
                 .thenReturn(Optional.of(YesOrNo.YES));
 
-        final DueDateService dueDateServiceObject = new DueDateService(new HolidayService(holidays));
         final ZonedDateTime fakeAppealDateTime = FAKE_APPEAL_DATE.atStartOfDay(ZoneOffset.UTC);
-        final ZonedDateTime actualFtpaDeadline = dueDateServiceObject.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA);
-
-        when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA)).thenReturn(actualFtpaDeadline);
+        when(dueDateService.calculateDueDate(fakeAppealDateTime, FTPA_DUE_IN_WORKING_DAYS_ADA))
+                .thenReturn(ZonedDateTime.of(EXPECTED_FTPA_DEADLINE_ADA.atStartOfDay(), ZoneOffset.UTC));
 
         when(documentGenerator.generate(callback)).thenReturn(expectedUpdatedCase);
 
