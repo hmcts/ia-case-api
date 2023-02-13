@@ -8,6 +8,13 @@ import org.junit.jupiter.api.Test;
 class DetentionStatusTest {
 
     @Test
+    void has_correct_non_detained_status() {
+        assertEquals(DetentionStatus.NON_DETAINED.toString(), DetentionStatus.NON_DETAINED.getValue());
+        assertEquals("nonDetained", DetentionStatus.NON_DETAINED.toString());
+        assertEquals(DetentionStatus.NON_DETAINED, DetentionStatus.from("nonDetained"));
+    }
+
+    @Test
     void has_correct_detained_detention_status() {
         assertEquals(DetentionStatus.DETAINED.toString(), DetentionStatus.DETAINED.getValue());
         assertEquals("detained", DetentionStatus.DETAINED.toString());
@@ -32,6 +39,6 @@ class DetentionStatusTest {
 
     @Test
     void if_this_test_fails_it_is_because_it_needs_updating_with_your_changes() {
-        assertEquals(2, DetentionStatus.values().length);
+        assertEquals(3, DetentionStatus.values().length);
     }
 }

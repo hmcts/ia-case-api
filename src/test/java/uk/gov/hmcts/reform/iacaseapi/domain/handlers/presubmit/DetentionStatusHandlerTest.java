@@ -114,4 +114,28 @@ class DetentionStatusHandlerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void should_write_detention_status_for_filter_when_appellant_in_detention_is_no() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
+        detentionStatusHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.DETENTION_STATUS, DetentionStatus.NON_DETAINED);
+    }
+
+    @Test
+    void should_write_detention_status_for_filter_when_appellant_in_detention_is_not_present() {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.empty());
+
+        detentionStatusHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1)).write(AsylumCaseFieldDefinition.DETENTION_STATUS, DetentionStatus.NON_DETAINED);
+    }
+
 }
