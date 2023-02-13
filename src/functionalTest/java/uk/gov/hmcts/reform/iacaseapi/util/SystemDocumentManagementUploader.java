@@ -57,29 +57,29 @@ public class SystemDocumentManagementUploader {
     ) {
 
         final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure( DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try {
 
-           final MultipartFile file = new MockMultipartFile(
+            final MultipartFile file = new MockMultipartFile(
                     resource.getFilename(),
                     resource.getFilename(),
                     contentType,
                     ByteStreams.toByteArray(resource.getInputStream())
-            );
+                 );
 
-            final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
+                final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
 
-            JsonNode jsonNode =
+                JsonNode jsonNode =
                     Objects.requireNonNull(mapper.readTree(t))
                             .get(DOCUMENTS)
                             .get(FIRST);
 
-            return mapper.treeToValue(jsonNode, Document.class);
+                return mapper.treeToValue(jsonNode, Document.class);
 
-           } catch (IOException e) {
-              throw new IllegalStateException(e);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
 
     }
@@ -119,14 +119,14 @@ public class SystemDocumentManagementUploader {
 
     private static ByteArrayResource buildByteArrayResource(MultipartFile file) {
         try {
-              return new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
-           } catch (IOException ioException) {
-                throw new IllegalStateException(ioException);
+            return new ByteArrayResource(file.getBytes()) {
+                      @Override
+                     public String getFilename() {
+                          return file.getOriginalFilename();
+                      }
+              };
+        } catch (IOException ioException) {
+            throw new IllegalStateException(ioException);
         }
     }
 }
