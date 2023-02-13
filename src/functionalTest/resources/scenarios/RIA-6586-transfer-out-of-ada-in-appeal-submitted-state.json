@@ -2,7 +2,7 @@
   "description": "RIA-6586 Transfer out of ADA in appeal submitted state TCW",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "Judge",
     "input": {
       "eventId": "transferOutOfAda",
       "state": "appealSubmitted",
