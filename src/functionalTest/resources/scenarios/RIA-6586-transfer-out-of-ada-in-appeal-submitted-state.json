@@ -1,6 +1,5 @@
 {
   "description": "RIA-6586 Transfer out of ADA in appeal submitted state TCW",
-  "launchDarklyKey": "remissions-feature:true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
