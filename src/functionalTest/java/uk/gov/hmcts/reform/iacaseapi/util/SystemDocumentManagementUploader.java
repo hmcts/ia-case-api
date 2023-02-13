@@ -123,7 +123,7 @@ public class SystemDocumentManagementUploader {
                     @Override
                      public String getFilename() {
                     return file.getOriginalFilename();
-              }
+                }
             };
         } catch (IOException ioException) {
             throw new IllegalStateException(ioException);
