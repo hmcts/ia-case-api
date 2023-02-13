@@ -17,13 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,18 +140,20 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
-            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
 
-        if (state.equals(PENDING_PAYMENT)) {
-            values.remove(5);
+        if (!state.equals(PENDING_PAYMENT)) {
+            values.addAll(Arrays.asList(
+                new Value(ADJOURN.name(), ADJOURN.toString()),
+                new Value(EXPEDITE.name(), EXPEDITE.toString()),
+                new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                    TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
+                new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString())
+            ));
         }
 
         DynamicList actualList =
             new DynamicList(values.get(0), values);
-
-
 
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
@@ -197,7 +193,40 @@ class MakeAnApplicationTypesProviderTest {
     @EnumSource(value = State.class, names = {
         "ADJOURNED", "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
     })
-    void should_return_given_application_types_in_adjourned_to_decision(State state) {
+    void should_return_given_application_types_in_adjourned_to_decision_non_ada(State state) {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.empty());
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
+            new Value(TRANSFER.name(), TRANSFER.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
+            new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(OTHER.name(), OTHER.toString()));
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "ADJOURNED", "PREPARE_FOR_HEARING", "PRE_HEARING", "DECISION"
+    })
+    void should_return_given_application_types_in_adjourned_to_decision_ada(State state) {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -210,7 +239,6 @@ class MakeAnApplicationTypesProviderTest {
         Collections.addAll(values,
             new Value(ADJOURN.name(), ADJOURN.toString()),
             new Value(EXPEDITE.name(), EXPEDITE.toString()),
-            new Value(TRANSFER.name(), TRANSFER.toString()),
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
@@ -268,6 +296,8 @@ class MakeAnApplicationTypesProviderTest {
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
             new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
             new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                 TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(OTHER.name(), OTHER.toString()));
@@ -280,7 +310,7 @@ class MakeAnApplicationTypesProviderTest {
     }
 
     @Test
-    void should_return_given_application_types_in_listing() {
+    void should_return_given_application_types_in_listing_non_ada() {
 
         when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
 
@@ -295,6 +325,36 @@ class MakeAnApplicationTypesProviderTest {
             new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
             new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
             new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @Test
+    void should_return_given_application_types_in_listing_ada() {
+
+        when(userDetails.getRoles()).thenReturn(Arrays.asList(ROLE_LEGAL_REP));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(callback.getCaseDetails().getState()).thenReturn(LISTING);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(UPDATE_APPEAL_DETAILS.name(), UPDATE_APPEAL_DETAILS.toString()),
+            new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()),
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
+            new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()),
             new Value(WITHDRAW.name(), WITHDRAW.toString()),
             new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
         DynamicList actualList =
