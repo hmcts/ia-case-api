@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ByteArrayResource;
@@ -22,8 +24,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-import java.io.IOException;
-import java.util.Objects;
+
 
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
@@ -48,7 +49,6 @@ public class SystemDocumentManagementUploader {
             AuthorizationHeadersProvider authorizationHeadersProvider
     ) {
         this.authorizationHeadersProvider = authorizationHeadersProvider;
-
     }
 
     public Document upload(
@@ -70,6 +70,7 @@ public class SystemDocumentManagementUploader {
             );
 
             final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
+
             JsonNode jsonNode =
                     Objects.requireNonNull(mapper.readTree(t))
                             .get(DOCUMENTS)
@@ -77,9 +78,8 @@ public class SystemDocumentManagementUploader {
 
             return mapper.treeToValue(jsonNode, Document.class);
 
-
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+           } catch (IOException e) {
+              throw new IllegalStateException(e);
         }
 
     }
@@ -96,7 +96,6 @@ public class SystemDocumentManagementUploader {
                         .getLegalRepresentativeAuthorization()
                         .getValue("Authorization");
 
-
         MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
         HttpEntity<Resource> fileResource = new HttpEntity<>(buildByteArrayResource(file), buildPartHeaders(file));
         parameters.add(FILES, fileResource);
@@ -108,7 +107,9 @@ public class SystemDocumentManagementUploader {
         headers.set("Authorization", accessToken);
         headers.set("ServiceAuthorization", serviceAuthorizationToken);
         return new HttpEntity<>(parameters, headers);
+
     }
+
     private static HttpHeaders buildPartHeaders(MultipartFile file) {
         requireNonNull(file.getContentType());
         final HttpHeaders headers = new HttpHeaders();
@@ -118,14 +119,14 @@ public class SystemDocumentManagementUploader {
 
     private static ByteArrayResource buildByteArrayResource(MultipartFile file) {
         try {
-            return new ByteArrayResource(file.getBytes()) {
+              return new ByteArrayResource(file.getBytes()) {
                 @Override
                 public String getFilename() {
                     return file.getOriginalFilename();
                 }
             };
-        } catch (IOException ioException) {
-            throw new IllegalStateException(ioException);
+           } catch (IOException ioException) {
+                throw new IllegalStateException(ioException);
         }
     }
 }
