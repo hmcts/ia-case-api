@@ -5,20 +5,18 @@ import static java.util.Objects.requireNonNull;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @EqualsAndHashCode
 @ToString
+@NoArgsConstructor
 public class Document {
 
     private String documentUrl;
     private String documentBinaryUrl;
     private String documentFilename;
-
-    private Document() {
-        // noop -- for deserializer
-    }
 
     public Document(
         String documentUrl,
