@@ -56,8 +56,8 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
             ? Event.PAYMENT_APPEAL
             : Event.UPDATE_PAYMENT_STATUS;
 
-        log.info("AIP Cancel End Even Payment Status [{}] Even Id [{}]",
-            paymentStatus, qualifyingEvent);
+        log.info("AIP Cancel End Even Payment Status [{}] Even Id [{}] Service Enabled [{}]",
+            paymentStatus, qualifyingEvent, timedEventServiceEnabled);
 
         return  timedEventServiceEnabled
                 && callback.getEvent() == qualifyingEvent
