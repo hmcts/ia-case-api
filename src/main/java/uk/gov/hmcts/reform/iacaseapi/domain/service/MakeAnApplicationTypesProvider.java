@@ -100,8 +100,11 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
 
                     if (isAcceleratedDetainedAppeal(asylumCase) && currentState != PENDING_PAYMENT) {
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                        values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                 }
 
@@ -145,6 +148,8 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_HEARING_REQUIREMENTS.toString()));
 
                     if (isAcceleratedDetainedAppeal(asylumCase)) {
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }
@@ -170,6 +175,8 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_HEARING_REQUIREMENTS.toString()));
 
                     if (isAcceleratedDetainedAppeal(asylumCase)) {
+                        values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
+                        values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
                         values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
                             TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
                     }
@@ -190,7 +197,14 @@ public class MakeAnApplicationTypesProvider {
 
                 values.add(new Value(ADJOURN.name(), ADJOURN.toString()));
                 values.add(new Value(EXPEDITE.name(), EXPEDITE.toString()));
-                values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+
+                if (isAcceleratedDetainedAppeal(asylumCase) && hasRole(ROLE_LEGAL_REP)) {
+                    values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
+                        TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
+                } else {
+                    values.add(new Value(TRANSFER.name(), TRANSFER.toString()));
+                }
+
                 values.add(new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()));
 
                 if (hasRole(ROLE_LEGAL_REP)) {
@@ -198,11 +212,6 @@ public class MakeAnApplicationTypesProvider {
                         UPDATE_APPEAL_DETAILS.toString()));
                     values.add(new Value(UPDATE_HEARING_REQUIREMENTS.name(),
                         UPDATE_HEARING_REQUIREMENTS.toString()));
-
-                    if (isAcceleratedDetainedAppeal(asylumCase)) {
-                        values.add(new Value(TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.name(),
-                            TRANSFER_OUT_OF_ACCELERATED_DETAINED_APPEALS_PROCESS.toString()));
-                    }
                 }
                 values.add(new Value(WITHDRAW.name(), WITHDRAW.toString()));
                 values.add(new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()));
