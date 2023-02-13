@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PostSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
 
+@Slf4j
 @Component
 public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallbackHandler<AsylumCase> {
 
@@ -43,6 +45,8 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
     ) {
         requireNonNull(callback, "callback must not be null");
 
+
+
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
         PaymentStatus paymentStatus = asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)
                 .orElse(PaymentStatus.PAYMENT_PENDING);
@@ -51,6 +55,9 @@ public class CancelAutomaticEndAppealPaidConfirmation implements PostSubmitCallb
         Event qualifyingEvent = HandlerUtils.isAipJourney(asylumCase)
             ? Event.PAYMENT_APPEAL
             : Event.UPDATE_PAYMENT_STATUS;
+
+        log.info("AIP Cancel End Even Payment Status [{}] Even Id [{}]",
+            paymentStatus, qualifyingEvent);
 
         return  timedEventServiceEnabled
                 && callback.getEvent() == qualifyingEvent
