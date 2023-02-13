@@ -69,14 +69,14 @@ public class SystemDocumentManagementUploader {
                     ByteStreams.toByteArray(resource.getInputStream())
                  );
 
-                final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
+          final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
 
-                JsonNode jsonNode =
+            JsonNode jsonNode =
                     Objects.requireNonNull(mapper.readTree(t))
                             .get(DOCUMENTS)
                             .get(FIRST);
 
-                return mapper.treeToValue(jsonNode, Document.class);
+        return mapper.treeToValue(jsonNode, Document.class);
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -120,11 +120,11 @@ public class SystemDocumentManagementUploader {
     private static ByteArrayResource buildByteArrayResource(MultipartFile file) {
         try {
             return new ByteArrayResource(file.getBytes()) {
-                      @Override
+                   @Override
                      public String getFilename() {
-                          return file.getOriginalFilename();
-                      }
-              };
+                      return file.getOriginalFilename();
+                  }
+            };
         } catch (IOException ioException) {
             throw new IllegalStateException(ioException);
         }
