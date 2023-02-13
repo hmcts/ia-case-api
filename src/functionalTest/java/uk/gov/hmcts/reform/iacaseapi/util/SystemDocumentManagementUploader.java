@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -13,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
 
+
 @Service
 @ComponentScan("uk.gov.hmcts.reform.ccd.document.am.feign")
+@EnableAutoConfiguration(excludeName = "JacksonConfiguration.class")
 public class SystemDocumentManagementUploader {
 
     private final CaseDocumentClient caseDocumentClient;
