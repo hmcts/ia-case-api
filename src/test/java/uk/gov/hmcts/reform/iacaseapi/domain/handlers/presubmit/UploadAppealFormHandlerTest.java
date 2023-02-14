@@ -85,7 +85,7 @@ class UploadAppealFormHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = Event.class,names = {"START_APPEAL"})
+    @EnumSource(value = Event.class,names = {"SUBMIT_APPEAL"})
     void should_append_appeal_forms_to_tribunal_documents(Event event) {
 
         when(callback.getEvent()).thenReturn(event);
@@ -134,7 +134,7 @@ class UploadAppealFormHandlerTest {
                 boolean canHandle = uploadAppealFormHandler.canHandle(callbackStage, callback);
 
                 if (callbackStage == ABOUT_TO_SUBMIT
-                        && callback.getEvent() == Event.START_APPEAL
+                        && callback.getEvent() == Event.SUBMIT_APPEAL
                 ) {
                     assertTrue(canHandle);
                 } else {
