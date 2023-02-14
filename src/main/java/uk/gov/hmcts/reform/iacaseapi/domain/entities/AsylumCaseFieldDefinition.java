@@ -403,6 +403,9 @@ public enum AsylumCaseFieldDefinition {
     UPLOAD_THE_NOTICE_OF_DECISION_DOCS(
         "uploadTheNoticeOfDecisionDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
 
+    UPLOAD_THE_APPEAL_FORM_DOCS(
+        "uploadTheAppealFormDocs", new TypeReference<List<IdValue<DocumentWithDescription>>>(){}),
+
     UPLOAD_THE_NOTICE_OF_DECISION_EXPLANATION(
         "uploadTheNoticeOfDecisionExplanation", new TypeReference<String>(){}),
 
@@ -1697,18 +1700,24 @@ public enum AsylumCaseFieldDefinition {
 
     SUITABILITY_REVIEW_DECISION(
             "suitabilityReviewDecision", new TypeReference<AdaSuitabilityReviewDecision>(){}),
-            
+
     HAS_TRANSFERRED_OUT_OF_ADA(
             "hasTransferredOutOfAda", new TypeReference<YesOrNo>(){}),
-            
+
     TRANSFER_OUT_OF_ADA_DATE(
             "transferOutOfAdaDate", new TypeReference<String>(){}),
-            
+
     IS_ADMIN(
             "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
-        "adaSuffix", new TypeReference<String>(){});
+        "adaSuffix", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_EMAIL(
+            "internalAppellantEmail", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_MOBILE_NUMBER(
+            "internalAppellantMobileNumber", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;
