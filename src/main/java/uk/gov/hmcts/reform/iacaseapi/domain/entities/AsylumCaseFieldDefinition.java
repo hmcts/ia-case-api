@@ -547,6 +547,9 @@ public enum AsylumCaseFieldDefinition {
     DECISION_AND_REASONS_AVAILABLE(
         "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
 
+    FTPA_APPLICATION_DEADLINE(
+            "ftpaApplicationDeadline", new TypeReference<String>(){}),
+
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
 
@@ -826,6 +829,9 @@ public enum AsylumCaseFieldDefinition {
 
     AUTOMATIC_DIRECTION_REQUESTING_HEARING_REQUIREMENTS(
         "automaticDirectionRequestingHearingRequirements", new TypeReference<String>(){}),
+
+    AUTOMATIC_END_APPEAL_TIMED_EVENT_ID(
+            "automaticEndAppealTimedEventId", new TypeReference<String>(){}),
 
     APPLICATION_CHANGE_DESIGNATED_HEARING_CENTRE(
         "applicationChangeDesignatedHearingCentre", new TypeReference<HearingCentre>(){}),
@@ -1705,7 +1711,13 @@ public enum AsylumCaseFieldDefinition {
             "isAdmin", new TypeReference<YesOrNo>() {}),
 
     ADA_SUFFIX(
-        "adaSuffix", new TypeReference<String>(){});
+        "adaSuffix", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_EMAIL(
+            "internalAppellantEmail", new TypeReference<String>(){}),
+
+    INTERNAL_APPELLANT_MOBILE_NUMBER(
+            "internalAppellantMobileNumber", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

@@ -45,7 +45,7 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && callback.getEvent() == Event.START_APPEAL;
+                && callback.getEvent() == Event.SUBMIT_APPEAL;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -69,7 +69,7 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
                     asylumCase.read(UPLOAD_THE_APPEAL_FORM_DOCS);
 
             List<IdValue<DocumentWithDescription>> appealFormDocs =
-                    maybeAppealForm.orElse(emptyList());
+                    maybeAppealForm.orElseThrow(() -> new IllegalStateException("appealForm is not present"));
 
             if (maybeAppealForm.isPresent()) {
                 int docNum = 0;

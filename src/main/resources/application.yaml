@@ -94,6 +94,7 @@ featureFlag:
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: 28
+legalRepresentativeBuildCaseAda.dueInDay: 9
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
 legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
@@ -132,10 +133,9 @@ cache:
 appealOutOfTimeDaysUk: 14
 appealOutOfTimeDaysOoc: 28
 appealOutOfTimeAcceleratedDetainedWorkingDays: 5
-ftpaAppellantAppealOutOfTimeDaysUk: 14
-ftpaAppellantAppealOutOfTimeDaysOoc: 28
-ftpaRespondentAppealOutOfTimeDaysUk: 14
-ftpaRespondentAppealOutOfTimeDaysOoc: 28
+ftpaAppealOutOfTimeWorkingDaysAdaAppeal: 5
+ftpaAppealOutOfTimeDaysUk: 14
+ftpaAppealOutOfTimeDaysOoc: 28
 
 defaultHearingCentre: taylorHouse
 
@@ -271,6 +271,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
       - "transferOutOfAda"
     caseworker-ia-admofficer:
       - "startAppeal"
