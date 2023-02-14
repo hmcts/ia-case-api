@@ -107,4 +107,7 @@
         <cve>CVE-2022-45143</cve>
         <cve>CVE-2022-31197</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2022-31197</cve>
+    </suppress>
 </suppressions>
