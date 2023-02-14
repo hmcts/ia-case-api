@@ -271,6 +271,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
       - "transferOutOfAda"
     caseworker-ia-admofficer:
       - "startAppeal"
