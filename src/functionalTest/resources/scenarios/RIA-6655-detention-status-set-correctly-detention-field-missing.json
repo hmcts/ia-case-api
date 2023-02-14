@@ -1,0 +1,25 @@
+{
+  "description": "RIA-6655 Confirm detention status set correctly when appellantInDetention field is missing -- Tests DetentionStatusHandler specifically",
+  "launchDarklyKey": "out-of-country-feature:true",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "LegalRepresentative",
+    "input": {
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json"
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "detentionStatus": "nonDetained"
+      }
+    }
+  }
+}
