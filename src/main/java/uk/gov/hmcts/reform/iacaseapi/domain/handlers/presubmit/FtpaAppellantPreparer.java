@@ -7,10 +7,11 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YE
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.*;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
@@ -19,24 +20,17 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
-
 @Component
 public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
     private final DateProvider dateProvider;
-    private final int ftpaAppellantAppealOutOfTimeDaysUk;
-    private final int ftpaAppellantAppealOutOfTimeDaysOoc;
     private final FeatureToggler featureToggler;
 
     public FtpaAppellantPreparer(
         DateProvider dateProvider,
-        @Value("${ftpaAppellantAppealOutOfTimeDaysUk}") int ftpaAppellantAppealOutOfTimeDaysUk,
-        @Value("${ftpaAppellantAppealOutOfTimeDaysOoc}") int ftpaAppellantAppealOutOfTimeDaysOoc,
         FeatureToggler featureToggler
     ) {
         this.dateProvider = dateProvider;
-        this.ftpaAppellantAppealOutOfTimeDaysUk = ftpaAppellantAppealOutOfTimeDaysUk;
-        this.ftpaAppellantAppealOutOfTimeDaysOoc = ftpaAppellantAppealOutOfTimeDaysOoc;
         this.featureToggler = featureToggler;
     }
 
@@ -81,13 +75,16 @@ public class FtpaAppellantPreparer implements PreSubmitCallbackHandler<AsylumCas
             asylumCase.clear(FTPA_APPELLANT_EVIDENCE_DOCUMENTS);
         }
 
-        final Optional<String> mayBeAppealDate = asylumCase.read(APPEAL_DATE);
+        final Optional<String> ftpaApplicationDeadline =
+                asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE, String.class);
 
-        Optional<OutOfCountryDecisionType> maybeOutOfCountryDecisionType = asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class);
+        if (ftpaApplicationDeadline.isEmpty()) {
+            throw new RequiredFieldMissingException("FTPA application deadline missing.");
+        }
 
-        final int ftpaAppellantAppealOutOfTimeDays =  maybeOutOfCountryDecisionType.isPresent() ? ftpaAppellantAppealOutOfTimeDaysOoc : ftpaAppellantAppealOutOfTimeDaysUk;
+        LocalDate ftpaApplicationDeadlineDate = LocalDate.parse(ftpaApplicationDeadline.get());
 
-        if (mayBeAppealDate.filter(s -> dateProvider.now().isAfter(LocalDate.parse(s).plusDays(ftpaAppellantAppealOutOfTimeDays))).isPresent()) {
+        if (dateProvider.now().isAfter(ftpaApplicationDeadlineDate)) {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YES);
         } else {
             asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, NO);
