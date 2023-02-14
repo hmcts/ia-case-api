@@ -69,6 +69,7 @@ public class SystemDocumentManagementUploader {
                     ByteStreams.toByteArray(resource.getInputStream())
                  );
 
+            // the ip should be changed to hostname with a placeholder
             final String t = restTemplate.postForObject("http://127.0.0.1:4455/cases/documents", httpEntity(file), String.class);
 
             JsonNode jsonNode =
