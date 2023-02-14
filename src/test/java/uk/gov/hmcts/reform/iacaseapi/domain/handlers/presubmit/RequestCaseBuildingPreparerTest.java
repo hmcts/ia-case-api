@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,16 +14,17 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -35,16 +37,21 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class RequestCaseBuildingPreparerTest {
 
     private static final int DUE_IN_DAYS = 28;
+    private static final int DUE_IN_DAYS_ADA = 9;
     private static final int DUE_IN_DAYS_FROM_SUBMISSION_DATE = 42;
 
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private DueDateService dueDateService;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -62,7 +69,7 @@ class RequestCaseBuildingPreparerTest {
     @BeforeEach
     public void setUp() {
         requestCaseBuildingPreparer =
-            new RequestCaseBuildingPreparer(DUE_IN_DAYS, DUE_IN_DAYS_FROM_SUBMISSION_DATE, dateProvider);
+            new RequestCaseBuildingPreparer(DUE_IN_DAYS, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS_ADA, dueDateService, dateProvider);
     }
 
     @Test
@@ -187,6 +194,42 @@ class RequestCaseBuildingPreparerTest {
             .getBuildCaseDirectionDueDate(asylumCase, dateProvider, DUE_IN_DAYS_FROM_SUBMISSION_DATE, DUE_IN_DAYS);
 
         assertThat(buildCaseDirectionDueDate).isEqualTo(LocalDate.now().plusDays(DUE_IN_DAYS));
+    }
+
+    @Test
+    void should_return_current_date_plus_9_days_when_submission_is_an_ada_case() {
+
+        final String expectedExplanationContains =
+                "You have until the date indicated below to upload your Appeal Skeleton Argument and evidence";
+        final Parties expectedParties = Parties.LEGAL_REPRESENTATIVE;
+        final String expectedDueDate = "2023-02-16";
+        final ZonedDateTime zonedDueDateTime = LocalDate.parse(expectedDueDate).atStartOfDay(ZoneOffset.UTC);
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(callback.getEvent()).thenReturn(Event.REQUEST_CASE_BUILDING);
+        when(asylumCase.read(AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        when(dueDateService.calculateDueDate(any(), eq(DUE_IN_DAYS_ADA))).thenReturn(zonedDueDateTime);
+
+        requestCaseBuildingPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        verify(asylumCase, times(3)).write(asylumExtractorCaptor.capture(), asylumCaseValuesArgumentCaptor.capture());
+
+        List<AsylumCaseFieldDefinition> extractors = asylumExtractorCaptor.getAllValues();
+        List<String> asylumCaseValues = asylumCaseValuesArgumentCaptor.getAllValues();
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_EXPLANATION)))
+                .contains(expectedExplanationContains);
+
+        assertThat(
+                asylumCaseValues.get(extractors.indexOf(SEND_DIRECTION_DATE_DUE)))
+                .contains(expectedDueDate);
+
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDueDate);
+
     }
 
 }
