@@ -80,13 +80,10 @@ public class RequestRespondentReviewPreparer implements PreSubmitCallbackHandler
         );
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
-
-        int dueInDays = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? requestRespondentReviewDueInDaysForAda
-                : requestRespondentReviewDueInDays;
+        
         LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), dueInDays).toLocalDate()
-                : dateProvider.now().plusDays(dueInDays);
+                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentReviewDueInDaysForAda).toLocalDate()
+                : dateProvider.now().plusDays(requestRespondentReviewDueInDays);
         asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         asylumCase.write(UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE, YesOrNo.YES);

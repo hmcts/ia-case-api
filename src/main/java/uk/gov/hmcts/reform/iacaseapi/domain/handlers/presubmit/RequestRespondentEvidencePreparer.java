@@ -124,12 +124,9 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        int dueInDays = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-            ? requestRespondentEvidenceDueInDaysAda
-            : requestRespondentEvidenceDueInDays;
         LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), dueInDays).toLocalDate()
-                : dateProvider.now().plusDays(dueInDays);
+                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate()
+                : dateProvider.now().plusDays(requestRespondentEvidenceDueInDays);
 
         asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
