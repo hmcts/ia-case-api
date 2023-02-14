@@ -15,6 +15,7 @@
           "caseFlagSetAsideReheardExists": "Yes",
           "ftpaRespondentSubmitted": "Yes",
           "ftpaRespondentSubmissionOutOfTime": "No",
+          "ftpaApplicationDeadline": "{$TODAY+1}",
           "ftpaRespondentApplicationDate": "{$TODAY}",
           "ftpaRespondentDocuments": [
             {
