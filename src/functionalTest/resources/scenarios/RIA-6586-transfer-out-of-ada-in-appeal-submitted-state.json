@@ -4,7 +4,6 @@
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "CaseOfficer",
     "input": {
-      "id": 3333,
       "eventId": "transferOutOfAda",
       "state": "appealSubmitted",
       "caseData": {
@@ -25,17 +24,7 @@
       "replacements": {
         "hearingCentre": "harmondsworth",
         "isAcceleratedDetainedAppeal": "No",
-        "hasTransferredOutOfAda": "Yes",
-        "notificationsSent": [
-          {
-            "id": "3333_TRANSFER_OUT_OF_ADA_LEGAL_REP",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
-          },
-          {
-            "id": "3333_TRANSFER_OUT_OF_ADA_HOME_OFFICE",
-            "value": "$/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/"
-          }
-        ]
+        "hasTransferredOutOfAda": "Yes"
       }
     }
   }
