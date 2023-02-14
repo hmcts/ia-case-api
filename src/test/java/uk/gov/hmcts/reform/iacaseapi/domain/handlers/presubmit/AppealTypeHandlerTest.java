@@ -11,12 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AGE_ASSESSMENT;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE_FOR_DISPLAY;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPELLANT_IN_DETENTION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.EDIT_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.START_APPEAL;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority.EARLIEST;
@@ -33,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForFilter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
@@ -82,6 +78,7 @@ public class AppealTypeHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_TYPE, AppealType.AG);
+        verify(asylumCase, times(1)).write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.AG);
     }
 
     @Test
@@ -100,6 +97,7 @@ public class AppealTypeHandlerTest {
         assertEquals(asylumCase, callbackResponse.getData());
 
         verify(asylumCase, times(1)).write(APPEAL_TYPE, AppealType.AG);
+        verify(asylumCase, times(1)).write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.AG);
     }
 
     @Test
@@ -123,6 +121,9 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, never()).write(APPEAL_TYPE, AppealType.AG);
         verify(asylumCase, times(1))
             .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.HU.getValue()));
+        verify(asylumCase, times(1))
+                .write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.from(AppealTypeForDisplay.HU.getValue()));
+
     }
 
     @Test
@@ -146,6 +147,8 @@ public class AppealTypeHandlerTest {
         verify(asylumCase, never()).write(APPEAL_TYPE, AppealType.AG);
         verify(asylumCase, times(1))
                 .write(APPEAL_TYPE, AppealType.from(AppealTypeForDisplay.HU.getValue()));
+        verify(asylumCase, times(1))
+                .write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.from(AppealTypeForDisplay.HU.getValue()));
     }
 
     @Test
