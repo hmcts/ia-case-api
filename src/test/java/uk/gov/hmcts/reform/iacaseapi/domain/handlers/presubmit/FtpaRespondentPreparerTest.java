@@ -1,15 +1,8 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
@@ -22,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
+import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfCountryDecisionType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
@@ -36,6 +30,13 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
 class FtpaRespondentPreparerTest {
+
+    private static final int FTPA_DUE_IN_DAYS_OOC = 28;
+    private static final int FTPA_DUE_IN_DAYS_UK = 14;
+    private static final LocalDate FTPA_DUE_DATE_OOC = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_OOC);
+    private static final LocalDate FTPA_DUE_DATE_UK = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_UK);
+
+    private static final LocalDate MISSED_FTPA_SUBMISSION_DATE = LocalDate.now().minusDays(1);
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -54,7 +55,7 @@ class FtpaRespondentPreparerTest {
     @BeforeEach
     public void setUp() {
         ftpaRespondentPreparer =
-            new FtpaRespondentPreparer(dateProvider, 14,28, featureToggler);
+            new FtpaRespondentPreparer(dateProvider, featureToggler);
 
         when(asylumCase.read(FTPA_RESPONDENT_SUBMITTED)).thenReturn(Optional.of("No"));
     }
@@ -66,8 +67,7 @@ class FtpaRespondentPreparerTest {
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String appealDate = dateProvider.now().minusDays(1).toString();
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_UK.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -77,15 +77,11 @@ class FtpaRespondentPreparerTest {
 
     @Test
     void should_set_out_of_date_submission_state_no_for_ooc_removal_of_client_decision_type() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String appealDate = dateProvider.now().minusDays(1).toString();
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
-        when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_OOC.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -94,46 +90,51 @@ class FtpaRespondentPreparerTest {
     }
 
     @Test
-    void should_set_out_of_date_submission_state_no_when_no_appeal_date() {
-
+    void should_throw_when_ftpa_application_deadline_date_not_present() {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.empty());
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
 
-        ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+        RequiredFieldMissingException thrown = assertThrows(
+                RequiredFieldMissingException.class,
+                () -> ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback),
+                    "Expected handler to throw RequiredFieldMissingException due to ftpaApplicationDeadline not present"
+        );
 
-        verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        assertTrue(thrown.getMessage().contentEquals("FTPA application deadline missing."));
+
+        assertNotNull(callback);
+
+        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(dateProvider, never()).now();
 
     }
 
     @Test
     void should_set_out_of_date_submission_state_to_yes_for_ooc_removal_of_client_decision_type() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String appealDate = dateProvider.now().minusDays(29).toString();
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-            .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
         verify(asylumCase).write(FTPA_RESPONDENT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
-
     }
 
     @Test
     void should_set_out_of_date_submission_state_to_yes() {
-
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_RESPONDENT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String appealDate = dateProvider.now().minusDays(15).toString();
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(MISSED_FTPA_SUBMISSION_DATE.toString()));
 
         ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
 
@@ -174,8 +175,8 @@ class FtpaRespondentPreparerTest {
         when(asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
         when(dateProvider.now()).thenReturn(LocalDate.now());
-        final String appealDate = dateProvider.now().minusDays(15).toString();
-        when(asylumCase.read(APPEAL_DATE)).thenReturn(Optional.of(appealDate));
+        final String ftpaApplicationDeadline = dateProvider.now().minusDays(15).toString();
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(ftpaApplicationDeadline));
 
         final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             ftpaRespondentPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
