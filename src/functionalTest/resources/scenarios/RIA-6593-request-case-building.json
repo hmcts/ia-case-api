@@ -1,7 +1,7 @@
 {
   "description": "RIA-6593 Request case building direction to legal representative - Potential Failure Around Public Holidays",
   "request": {
-    "uri": "/asylum/ccdAboutToSubmit",
+    "uri": "/asylum/ccdAboutToStart",
     "credentials": "CaseOfficer",
     "input": {
       "id": 1789,
