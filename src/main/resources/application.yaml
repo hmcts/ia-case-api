@@ -133,10 +133,9 @@ cache:
 appealOutOfTimeDaysUk: 14
 appealOutOfTimeDaysOoc: 28
 appealOutOfTimeAcceleratedDetainedWorkingDays: 5
-ftpaAppellantAppealOutOfTimeDaysUk: 14
-ftpaAppellantAppealOutOfTimeDaysOoc: 28
-ftpaRespondentAppealOutOfTimeDaysUk: 14
-ftpaRespondentAppealOutOfTimeDaysOoc: 28
+ftpaAppealOutOfTimeWorkingDaysAdaAppeal: 5
+ftpaAppealOutOfTimeDaysUk: 14
+ftpaAppealOutOfTimeDaysOoc: 28
 
 defaultHearingCentre: taylorHouse
 
@@ -272,6 +271,7 @@ security:
       - "markEvidenceAsReviewed"
       - "completeClarifyQuestions"
       - "markAddendumEvidenceAsReviewed"
+      - "markAppealPaid"
       - "transferOutOfAda"
     caseworker-ia-admofficer:
       - "startAppeal"

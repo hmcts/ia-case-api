@@ -67,6 +67,8 @@
             Snakeyaml coming via Launch Darkly transitives
             ]]>
         </notes>
+		<cve>CVE-2021-4235</cve>
+		<cve>CVE-2022-3064</cve>
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
@@ -87,6 +89,7 @@
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2022-42252</cve>
         <cve>CVE-2022-41854</cve>
+		<cve>CVE-2022-45143</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[postgresql:postgresql:42.4.1]]>
@@ -94,12 +97,12 @@
         <cve>CVE-2022-41946</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[commons libraries ]]></notes>
         <cve>CVE-2021-37533</cve>
+		<cve>CVE-2021-4277</cve>
     </suppress>
     <suppress>
-        <cve>CVE-2021-4235</cve>
-        <cve>CVE-2022-3064</cve>
+        <notes><![CDATA[LatencyUtils-2.0.3.jar vulnerabilities]]>
+        </notes>
         <cve>CVE-2021-4277</cve>
         <cve>CVE-2022-45143</cve>
         <cve>CVE-2022-31197</cve>
