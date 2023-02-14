@@ -209,6 +209,18 @@ class DraftHearingRequirementsHandlerTest {
     }
 
     @Test
+    void should_set_flag_for_editing_listing_if_transferring_out_of_ada() {
+
+        when(asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            draftHearingRequirementsHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(asylumCase, times(1))
+            .write(eq(ADA_EDIT_LISTING_AVAILABLE), eq(YesOrNo.YES));
+    }
+
+    @Test
     void handling_should_throw_if_cannot_actually_handle() {
 
         assertThatThrownBy(

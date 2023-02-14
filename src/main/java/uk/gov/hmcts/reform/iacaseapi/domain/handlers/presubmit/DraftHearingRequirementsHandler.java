@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,6 +112,14 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         if (isAcceleratedDetainedAppeal) {
             asylumCase.clear(ADA_HEARING_REQUIREMENTS_SUBMITTABLE);
             asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.YES);
+        }
+
+        boolean appealTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (appealTransferredOutOfAda) {
+            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

@@ -1713,6 +1713,9 @@ public enum AsylumCaseFieldDefinition {
     ADA_SUFFIX(
         "adaSuffix", new TypeReference<String>(){}),
 
+    HEARING_REQ_SUFFIX(
+        "hearingReqSuffix", new TypeReference<String>(){}),
+
     INTERNAL_APPELLANT_EMAIL(
             "internalAppellantEmail", new TypeReference<String>(){}),
 
