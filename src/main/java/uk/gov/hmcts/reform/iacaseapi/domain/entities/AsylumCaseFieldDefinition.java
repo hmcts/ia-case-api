@@ -547,6 +547,9 @@ public enum AsylumCaseFieldDefinition {
     DECISION_AND_REASONS_AVAILABLE(
         "decisionAndReasonsAvailable", new TypeReference<YesOrNo>(){}),
 
+    FTPA_APPLICATION_DEADLINE(
+            "ftpaApplicationDeadline", new TypeReference<String>(){}),
+
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
 

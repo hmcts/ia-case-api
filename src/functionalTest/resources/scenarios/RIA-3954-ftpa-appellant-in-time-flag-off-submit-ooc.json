@@ -11,7 +11,7 @@
       "caseData": {
         "template": "minimal-appeal-submitted.json",
         "replacements": {
-          "appealDate": "{$TODAY-20}",
+          "ftpaApplicationDeadline": "{$TODAY+28}",
           "outOfCountryDecisionType":"refusalOfHumanRights"
         }
       }
@@ -24,7 +24,6 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "ftpaAppellantSubmissionOutOfTime": "No",
-        "appealDate": "{$TODAY-20}",
         "sendDirectionActionAvailable": "Yes",
         "outOfCountryDecisionType":"refusalOfHumanRights"
       }
