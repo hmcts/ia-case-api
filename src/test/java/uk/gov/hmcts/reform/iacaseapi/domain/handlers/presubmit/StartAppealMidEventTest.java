@@ -9,8 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_REFERENCE_NUMBER;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.OUT_OF_COUNTRY_DECISION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.MID_EVENT;
@@ -34,6 +33,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 class StartAppealMidEventTest {
 
     private static final String HOME_OFFICE_DECISION_PAGE_ID = "homeOfficeDecision";
+    private static final String OUT_OF_COUNTRY_PAGE_ID = "outOfCountry";
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -53,6 +54,7 @@ class StartAppealMidEventTest {
     private String wrongHomeOfficeReferenceFormat = "A234567";
     private String callbackErrorMessage =
         "Enter the Home office reference or Case ID in the correct format. The Home office reference or Case ID cannot include letters and must be either 9 digits or 16 digits with dashes.";
+    private String getCallbackErrorMessageOutOfCountry = "This option is currently unavailable";
     private StartAppealMidEvent startAppealMidEvent;
 
     @BeforeEach
@@ -66,7 +68,7 @@ class StartAppealMidEventTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID, ""})
+    @ValueSource(strings = { HOME_OFFICE_DECISION_PAGE_ID,OUT_OF_COUNTRY_PAGE_ID, ""})
     void it_can_handle_callback(String pageId) {
 
         for (Event event : Event.values()) {
@@ -80,7 +82,7 @@ class StartAppealMidEventTest {
 
                 if ((event == Event.START_APPEAL || event == Event.EDIT_APPEAL || event == Event.EDIT_APPEAL_AFTER_SUBMIT)
                     && callbackStage == MID_EVENT
-                    && callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID)) {
+                    && (callback.getPageId().equals(HOME_OFFICE_DECISION_PAGE_ID) || callback.getPageId().equals(OUT_OF_COUNTRY_PAGE_ID))) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
@@ -127,6 +129,25 @@ class StartAppealMidEventTest {
         assertEquals(asylumCase, callbackResponse.getData());
         final Set<String> errors = callbackResponse.getErrors();
         assertThat(errors).hasSize(1).containsOnly(callbackErrorMessage);
+    }
+
+    @Test
+    void should_error_when_trying_to_select_out_of_country_path_for_internal_case_creation() {
+        when(callback.getPageId()).thenReturn(OUT_OF_COUNTRY_PAGE_ID);
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.NO));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                startAppealMidEvent.handle(PreSubmitCallbackStage.MID_EVENT, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+        final Set<String> errors = callbackResponse.getErrors();
+        assertThat(errors).hasSize(1).containsOnly(getCallbackErrorMessageOutOfCountry);
     }
 
     @Test
