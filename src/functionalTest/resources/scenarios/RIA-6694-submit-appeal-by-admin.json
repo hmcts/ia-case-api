@@ -13,7 +13,6 @@
           "appealReferenceNumber": "PA/12345/2018",
           "appellantInUk": "Yes",
           "appellantInDetention": "Yes",
-          "isAcceleratedDetainedAppeal": "Yes",
           "decisionLetterReceivedDate": "{$TODAY}",
           "uploadTheAppealFormDocs": [
             {
@@ -39,11 +38,10 @@
       "template": "minimal-appeal-submitted.json",
       "replacements": {
         "isAdmin": "Yes",
-        "detentionStatus": null,
-        "legalRepresentativeName": "Admin Officer",
-        "legalRepresentativeEmailAddress": "ia-adminofficer@fake.hmcts.net",
-        "legalRepCompany": "",
         "ircName": null,
+        "legalRepresentativeName": null,
+        "legalRepresentativeEmailAddress": null,
+        "legalRepCompany": null,
         "hearingCentre": "harmondsworth",
         "appealReferenceNumber": "PA/12345/2018",
         "tribunalDocuments": [
