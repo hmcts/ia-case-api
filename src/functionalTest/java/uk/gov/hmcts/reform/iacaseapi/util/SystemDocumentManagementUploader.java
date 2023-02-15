@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
 import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.util.Collections;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
