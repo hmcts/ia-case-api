@@ -6,24 +6,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_DATE_DUE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SEND_DIRECTION_PARTIES;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.UPLOAD_HOME_OFFICE_APPEAL_RESPONSE_ACTION_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.iacaseapi.domain.DateProvider;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition;
@@ -34,14 +39,16 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class RequestRespondentReviewPreparerTest {
 
     private static final int DUE_IN_DAYS = 14;
-
+    private static final int ADA_DUE_IN_DAYS = 2;
     @Mock
     private DateProvider dateProvider;
     @Mock
@@ -50,6 +57,9 @@ class RequestRespondentReviewPreparerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
+
+    @Mock
+    private DueDateService dueDateService;
 
     @Captor
     private ArgumentCaptor<YesOrNo> asylumYesNoCaptor;
@@ -63,20 +73,25 @@ class RequestRespondentReviewPreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentReviewPreparer =
-            new RequestRespondentReviewPreparer(DUE_IN_DAYS, dateProvider);
+            new RequestRespondentReviewPreparer(DUE_IN_DAYS, ADA_DUE_IN_DAYS, dateProvider, dueDateService);
     }
 
-    @Test
-    void should_prepare_send_direction_fields() {
+    @ParameterizedTest
+    @ValueSource (strings = {"", "YES", "NO"})
+    void should_prepare_send_direction_fields(String isAda) {
 
         final String expectedExplanationContains = "You must respond to the Tribunal and tell them:";
         final Parties expectedParties = Parties.RESPONDENT;
         final String expectedDateDue = "2018-12-07";
+        final String expectedAdaDateDue = "2018-11-25";
 
         when(dateProvider.now()).thenReturn(LocalDate.parse("2018-11-23"));
+        when(dueDateService.calculateDueDate(any(), eq(ADA_DUE_IN_DAYS))).thenReturn(LocalDate.parse(expectedAdaDateDue).atStartOfDay(ZoneOffset.UTC));
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.REQUEST_RESPONDENT_REVIEW);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(isAda.isEmpty() ? Optional.empty() : Optional.of(YesOrNo.valueOf(isAda)));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentReviewPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
@@ -109,7 +124,8 @@ class RequestRespondentReviewPreparerTest {
             .isEqualByComparingTo(YesOrNo.YES);
 
         verify(asylumCase, times(1)).write(SEND_DIRECTION_PARTIES, expectedParties);
-        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, expectedDateDue);
+        verify(asylumCase, times(1)).write(SEND_DIRECTION_DATE_DUE, isAda.equals("YES")
+                ? expectedAdaDateDue : expectedDateDue);
     }
 
     @Test
