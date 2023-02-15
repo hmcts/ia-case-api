@@ -1,18 +1,15 @@
 package uk.gov.hmcts.reform.iacaseapi.util;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
-import java.io.IOException;
-import java.util.Collections;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.util.Collections;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
-
 
 @Service
 public class SystemDocumentManagementUploader {
@@ -43,10 +40,6 @@ public class SystemDocumentManagementUploader {
                         .getLegalRepresentativeAuthorization()
                         .getValue("Authorization");
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         try {
 
             MultipartFile file = new InMemoryMultipartFile(
@@ -55,6 +48,7 @@ public class SystemDocumentManagementUploader {
                     contentType,
                     ByteStreams.toByteArray(resource.getInputStream())
             );
+
 
 
             UploadResponse  uploadResponse =
