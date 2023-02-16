@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,6 +17,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.OutOfTimeDecisionType.*;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +40,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -51,6 +55,8 @@ class RequestRespondentEvidencePreparerTest {
     private FeatureToggler featureToggler;
     @Mock
     private DateProvider dateProvider;
+    @Mock
+    private DueDateService dueDateService;
     @Mock
     private Callback<AsylumCase> callback;
     @Mock
@@ -68,7 +74,7 @@ class RequestRespondentEvidencePreparerTest {
     @BeforeEach
     public void setUp() {
         requestRespondentEvidencePreparer =
-            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, featureToggler, dateProvider);
+            new RequestRespondentEvidencePreparer(DUE_IN_DAYS, DUE_IN_DAYS_ADA, featureToggler, dateProvider, dueDateService);
     }
 
     @Test
@@ -146,6 +152,7 @@ class RequestRespondentEvidencePreparerTest {
         when(asylumCase.read(HOME_OFFICE_SEARCH_STATUS, String.class)).thenReturn(Optional.of("SUCCESS"));
 
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(dueDateService.calculateDueDate(any(), eq(DUE_IN_DAYS_ADA))).thenReturn(LocalDate.parse(expectedDateDue).atStartOfDay(ZoneOffset.UTC));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             requestRespondentEvidencePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);

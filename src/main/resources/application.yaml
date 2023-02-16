@@ -94,12 +94,14 @@ featureFlag:
   isHomeOfficeIntegrationEnabled: ${IA_HOME_OFFICE_INTEGRATION_ENABLED:true}
 
 legalRepresentativeBuildCase.dueInDays: 28
+legalRepresentativeBuildCaseAda.dueInDay: 9
 legalRepresentativeBuildCase.dueInDaysFromSubmissionDate: 42
 legalRepresentativeHearingRequirements.dueInDays: 5
 legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentEvidence.dueInDaysAda: 3
 requestRespondentReview.dueInDays: 14
+requestRespondentReviewAda.dueInDays: 2
 appellantReasonsForAppeal.dueInDays: 28
 paymentAfterRemissionRejection.dueInMinutes: 20160
 paymentEaHuNoRemission.dueInMinutes: 20160
