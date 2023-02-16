@@ -84,7 +84,6 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
             } else {
                 setupCaseCreation(asylumCase, null);
             }
-
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
