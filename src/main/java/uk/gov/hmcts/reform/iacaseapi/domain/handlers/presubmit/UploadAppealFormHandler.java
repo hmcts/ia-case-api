@@ -76,21 +76,19 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
                 for (IdValue<DocumentWithDescription> appealFormDoc : appealFormDocs) {
 
                     docNum++;
-                    String fileExtension = "pdf";
 
-                    if (appealFormDoc.getValue().getDocument().isPresent()) {
-
-                        fileExtension = FilenameUtils.getExtension(appealFormDoc.getValue().getDocument().get().getDocumentFilename());
-
-                        appealFormDoc.getValue().getDocument().get().setDocumentFilename(appealReferenceNumber
-                                                                                         + "-"
-                                                                                         + appellantName
-                                                                                         + "-"
-                                                                                         + appealFormSuffix
-                                                                                         + docNum
-                                                                                         + "."
-                                                                                         + fileExtension);
-                    }
+                    int finalDocNum = docNum;
+                    appealFormDoc.getValue().getDocument().ifPresent(document -> {
+                        String fileExtension = document.getDocumentFilename();
+                        document.setDocumentFilename(appealReferenceNumber
+                                                     + "-"
+                                                     + appellantName
+                                                     + "-"
+                                                     + appealFormSuffix
+                                                     + finalDocNum
+                                                     + "."
+                                                     + fileExtension);
+                    });
                 }
 
                 List<DocumentWithMetadata> appealForms =
