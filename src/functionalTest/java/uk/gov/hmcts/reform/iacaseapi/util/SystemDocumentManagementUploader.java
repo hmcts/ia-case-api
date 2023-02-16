@@ -47,7 +47,7 @@ public class SystemDocumentManagementUploader {
                     resource.getFilename(),
                     contentType,
                     ByteStreams.toByteArray(resource.getInputStream())
-           );
+            );
 
 
             UploadResponse  uploadResponse =
