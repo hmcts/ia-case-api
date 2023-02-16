@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
+
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,8 +12,10 @@ import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.Document;
+import uk.gov.hmcts.reform.iacaseapi.infrastructure.config.JacksonConfiguration;
 
 @Service
+@EnableAutoConfiguration(exclude = {JacksonConfiguration.class})
 public class SystemDocumentManagementUploader {
 
     private final CaseDocumentClient caseDocumentClient;
