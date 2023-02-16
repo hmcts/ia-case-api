@@ -135,7 +135,6 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
             .isExactlyInstanceOf(NullPointerException.class);
     }
 
-
     private void dataSetUp() {
         when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
         when(callback.getCaseDetails()).thenReturn(caseDetails);
