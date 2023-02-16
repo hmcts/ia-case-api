@@ -74,12 +74,12 @@ public class UploadAppealFormHandler implements PreSubmitCallbackHandler<AsylumC
             if (maybeAppealForm.isPresent()) {
                 int docNum = 0;
                 for (IdValue<DocumentWithDescription> appealFormDoc : appealFormDocs) {
-
                     docNum++;
 
                     int finalDocNum = docNum;
+
                     appealFormDoc.getValue().getDocument().ifPresent(document -> {
-                        String fileExtension = document.getDocumentFilename();
+                        String fileExtension = FilenameUtils.getExtension(document.getDocumentFilename());
                         document.setDocumentFilename(appealReferenceNumber
                                                      + "-"
                                                      + appellantName
