@@ -1,5 +1,6 @@
 {
   "description": "RIA-6692 Submit an appeal by admin",
+  "disabled" : "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
     "credentials": "AdminOfficer",
