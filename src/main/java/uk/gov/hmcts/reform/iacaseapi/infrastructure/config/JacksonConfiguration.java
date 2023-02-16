@@ -27,7 +27,7 @@ public class JacksonConfiguration {
 
     @Bean
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-      ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         objectMapper.registerModule(new Jdk8Module());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(
