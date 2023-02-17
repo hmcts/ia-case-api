@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.util;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Collections;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class SystemDocumentManagementUploader {
     private final CaseDocumentClient caseDocumentClient;
     private final AuthorizationHeadersProvider authorizationHeadersProvider;
 
+    @Autowired
     public SystemDocumentManagementUploader(
             CaseDocumentClient caseDocumentClient,
             AuthorizationHeadersProvider authorizationHeadersProvider
