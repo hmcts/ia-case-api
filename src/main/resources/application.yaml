@@ -274,6 +274,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "markAppealPaid"
       - "transferOutOfAda"
+      - "markAppealAsAda"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "listCma"
@@ -304,6 +305,7 @@ security:
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
       - "editAppealAfterSubmit"
+      - "markAppealAsAda"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"
