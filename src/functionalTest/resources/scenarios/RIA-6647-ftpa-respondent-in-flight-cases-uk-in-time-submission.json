@@ -1,0 +1,28 @@
+{
+  "description": "RIA-6647 Respondent FTPA out of time flag on application submission for in flight UK cases set to no",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "HomeOfficeGeneric",
+    "input": {
+      "id": 1234,
+      "eventId": "applyForFTPARespondent",
+      "state": "decided",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "appealDate": "{$TODAY-13}"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "ftpaAppellantSubmissionOutOfTime": "No"
+      }
+    }
+  }
+}
