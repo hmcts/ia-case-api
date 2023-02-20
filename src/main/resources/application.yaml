@@ -274,6 +274,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "markAppealPaid"
       - "transferOutOfAda"
+      - "markAppealAsAda"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
@@ -305,6 +306,7 @@ security:
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
       - "editAppealAfterSubmit"
+      - "markAppealAsAda"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

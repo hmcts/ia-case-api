@@ -45,4 +45,8 @@ public class HandlerUtils {
     public static boolean isAppellantInDetention(AsylumCase asylumCase) {
         return (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).orElse(YesOrNo.NO) == YesOrNo.YES;
     }
+
+    public static String getAdaSuffix() {
+        return "_ada";
+    }
 }
