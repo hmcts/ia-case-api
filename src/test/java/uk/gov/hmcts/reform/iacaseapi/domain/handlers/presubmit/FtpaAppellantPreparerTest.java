@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -35,8 +37,11 @@ class FtpaAppellantPreparerTest {
     private static final int FTPA_DUE_IN_DAYS_UK = 14;
     private static final LocalDate FTPA_DUE_DATE_OOC = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_OOC);
     private static final LocalDate FTPA_DUE_DATE_UK = LocalDate.now().plusDays(FTPA_DUE_IN_DAYS_UK);
-
     private static final LocalDate MISSED_FTPA_SUBMISSION_DATE = LocalDate.now().minusDays(1);
+    private static final String IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE_TO_COMPARE = "2023-02-17";
+    private static final String IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE = "1999-01-01";
+    private static final String IN_FLIGHT_CASES_FTPA_IN_TIME_DATE_OOC = "2023-02-01";
+    private static final String IN_FLIGHT_CASES_FTPA_IN_TIME_DATE_UK = "2023-02-05";
 
     @Mock
     private Callback<AsylumCase> callback;
@@ -66,7 +71,7 @@ class FtpaAppellantPreparerTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(dateProvider.now()).thenReturn(LocalDate.now());
         when(asylumCase.read(OUT_OF_COUNTRY_DECISION_TYPE, OutOfCountryDecisionType.class))
-                .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));;
+                .thenReturn(Optional.of(OutOfCountryDecisionType.REMOVAL_OF_CLIENT));
 
         when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.of(FTPA_DUE_DATE_UK.toString()));
 
@@ -92,27 +97,52 @@ class FtpaAppellantPreparerTest {
     }
 
     @Test
-    void should_throw_when_ftpa_application_deadline_date_not_present() {
+    void should_throw_when_ftpa_application_deadline_date_and_appeal_date_not_present() {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
         when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.empty());
 
         RequiredFieldMissingException thrown = assertThrows(
                 RequiredFieldMissingException.class,
                 () -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback),
-                "Expected handler to throw RequiredFieldMissingException due to ftpaApplicationDeadline not present"
+                "Expected handler to throw RequiredFieldMissingException due to appealDate not present"
         );
 
-        assertTrue(thrown.getMessage().contentEquals("FTPA application deadline missing."));
+        assertTrue(thrown.getMessage().contentEquals("Appeal date missing."));
 
         assertNotNull(callback);
 
         verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
         verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
         verify(dateProvider, never()).now();
+    }
 
+    @Test
+    void should_throw_when_ftpa_application_deadline_date_and_appellant_in_uk_not_present() {
+
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of("2023-01-01"));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.empty());
+
+        RequiredFieldMissingException thrown = assertThrows(
+                RequiredFieldMissingException.class,
+                () -> ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback),
+                "Expected handler to throw RequiredFieldMissingException due to appealDate not present"
+        );
+
+        assertTrue(thrown.getMessage().contentEquals("Appellant in UK missing."));
+
+        assertNotNull(callback);
+
+        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        verify(asylumCase, never()).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        verify(dateProvider, never()).now();
     }
 
 
@@ -288,4 +318,54 @@ class FtpaAppellantPreparerTest {
             .hasMessage("callback must not be null")
             .isExactlyInstanceOf(NullPointerException.class);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE, IN_FLIGHT_CASES_FTPA_IN_TIME_DATE_OOC})
+    void should_populate_ftpa_submission_out_of_time_to_correct_value_for_in_flight_cases_ooc(String input) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of(input));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE_TO_COMPARE));
+
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        if (input.equals(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE)) {
+            verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        } else {
+            verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        }
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE, IN_FLIGHT_CASES_FTPA_IN_TIME_DATE_UK})
+    void should_populate_ftpa_submission_out_of_time_to_correct_value_for_in_flight_cases_uk(String input) {
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(callback.getEvent()).thenReturn(Event.APPLY_FOR_FTPA_APPELLANT);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(FTPA_APPLICATION_DEADLINE, String.class)).thenReturn(Optional.empty());
+        when(asylumCase.read(APPEAL_DATE, String.class)).thenReturn(Optional.of(input));
+        when(asylumCase.read(APPELLANT_IN_UK, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        when(dateProvider.now()).thenReturn(LocalDate.parse(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE_TO_COMPARE));
+
+        final PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                ftpaAppellantPreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callback);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        if (input.equals(IN_FLIGHT_CASES_FTPA_OUT_OF_TIME_DATE)) {
+            verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.YES);
+        } else {
+            verify(asylumCase).write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, YesOrNo.NO);
+        }
+    }
+
 }
