@@ -31,7 +31,9 @@
         "appealType": "protection",
         "reasonAppealMarkedAsAda": "Some explanation",
         "dateMarkedAsAda": "{$TODAY}",
-        "adaSuffix": "_ada"
+        "adaSuffix": "_ada",
+        "homeOfficeDecisionDate": null,
+        "decisionLetterReceivedDate": "{$TODAY}"
       }
     }
   }

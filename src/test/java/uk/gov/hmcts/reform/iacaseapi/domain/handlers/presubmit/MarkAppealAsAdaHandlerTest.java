@@ -41,6 +41,7 @@ class MarkAppealAsAdaHandlerTest {
     private LocalDate date = LocalDate.now();
     private static final String MARK_APPEAL_AS_ADA_REASON = "mark appeal as ada reason";
     private static final String ADA_SUFFIX_VALUE = "_ada";
+    private static final String DECISION_DATE = "25 Feb 2023";
 
     @BeforeEach
     public void setup() {
@@ -58,6 +59,7 @@ class MarkAppealAsAdaHandlerTest {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
         when(asylumCase.read(MARK_APPEAL_AS_ADA_EXPLANATION, String.class)).thenReturn(Optional.of(MARK_APPEAL_AS_ADA_REASON));
         when(callback.getEvent()).thenReturn(Event.MARK_APPEAL_AS_ADA);
+        when(asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)).thenReturn(Optional.of(DECISION_DATE));
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
             markAppealAsAdaHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
 
@@ -69,7 +71,9 @@ class MarkAppealAsAdaHandlerTest {
         verify(asylumCase).write(DATE_MARKED_AS_ADA, dateProvider.now().toString());
         verify(asylumCase).write(REASON_APPEAL_MARKED_AS_ADA, MARK_APPEAL_AS_ADA_REASON);
         verify(asylumCase).write(ADA_SUFFIX, ADA_SUFFIX_VALUE);
+        verify(asylumCase).write(DECISION_LETTER_RECEIVED_DATE, DECISION_DATE);
         verify(asylumCase).clear(MARK_APPEAL_AS_ADA_EXPLANATION);
+        verify(asylumCase).clear(HOME_OFFICE_DECISION_DATE);
     }
 
     @Test
