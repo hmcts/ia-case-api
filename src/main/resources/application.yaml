@@ -101,6 +101,7 @@ legalRepresentativeReview.dueInDays: 5
 requestRespondentEvidence.dueInDays: 14
 requestRespondentEvidence.dueInDaysAda: 3
 requestRespondentReview.dueInDays: 14
+requestRespondentReviewAda.dueInDays: 2
 appellantReasonsForAppeal.dueInDays: 28
 paymentAfterRemissionRejection.dueInMinutes: 20160
 paymentEaHuNoRemission.dueInMinutes: 20160
@@ -273,6 +274,7 @@ security:
       - "markAddendumEvidenceAsReviewed"
       - "markAppealPaid"
       - "transferOutOfAda"
+      - "markAppealAsAda"
     caseworker-ia-admofficer:
       - "startAppeal"
       - "listCma"
@@ -303,6 +305,7 @@ security:
       - "asyncStitchingComplete"
       - "markPaymentRequestSent"
       - "editAppealAfterSubmit"
+      - "markAppealAsAda"
     caseworker-ia-homeofficeapc:
       - "uploadHomeOfficeBundle"
       - "uploadAdditionalEvidenceHomeOffice"

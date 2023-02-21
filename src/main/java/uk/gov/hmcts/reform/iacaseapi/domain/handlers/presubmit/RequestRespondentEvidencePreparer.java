@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefin
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
+import uk.gov.hmcts.reform.iacaseapi.domain.service.DueDateService;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Component
@@ -30,17 +33,20 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
     private final int requestRespondentEvidenceDueInDaysAda;
     private final FeatureToggler featureToggler;
     private final DateProvider dateProvider;
+    private final DueDateService dueDateService;
 
     public RequestRespondentEvidencePreparer(
         @Value("${requestRespondentEvidence.dueInDays}") int requestRespondentEvidenceDueInDays,
         @Value("${requestRespondentEvidence.dueInDaysAda}") int requestRespondentEvidenceDueInDaysAda,
         FeatureToggler featureToggler,
-        DateProvider dateProvider
+        DateProvider dateProvider,
+        DueDateService dueDateService
     ) {
         this.requestRespondentEvidenceDueInDays = requestRespondentEvidenceDueInDays;
         this.requestRespondentEvidenceDueInDaysAda = requestRespondentEvidenceDueInDaysAda;
         this.featureToggler = featureToggler;
         this.dateProvider = dateProvider;
+        this.dueDateService = dueDateService;
     }
 
     public boolean canHandle(
@@ -118,15 +124,11 @@ public class RequestRespondentEvidencePreparer implements PreSubmitCallbackHandl
 
         asylumCase.write(SEND_DIRECTION_PARTIES, Parties.RESPONDENT);
 
-        int dueInDays = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
-            ? requestRespondentEvidenceDueInDaysAda
-            : requestRespondentEvidenceDueInDays;
-        asylumCase.write(SEND_DIRECTION_DATE_DUE,
-            dateProvider
-                .now()
-                .plusDays(dueInDays)
-                .toString()
-        );
+        LocalDate dueDate = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)
+                ? dueDateService.calculateDueDate(dateProvider.now().atStartOfDay(ZoneOffset.UTC), requestRespondentEvidenceDueInDaysAda).toLocalDate()
+                : dateProvider.now().plusDays(requestRespondentEvidenceDueInDays);
+
+        asylumCase.write(SEND_DIRECTION_DATE_DUE, dueDate.toString());
 
         asylumCase.write(UPLOAD_HOME_OFFICE_BUNDLE_ACTION_AVAILABLE, YesOrNo.YES);
 
