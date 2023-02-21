@@ -1,12 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DATE_MARKED_AS_ADA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DETENTION_STATUS;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.MARK_APPEAL_AS_ADA_EXPLANATION;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REASON_APPEAL_MARKED_AS_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.MARK_APPEAL_AS_ADA;
 
 import org.springframework.stereotype.Component;
@@ -66,6 +61,11 @@ public class MarkAppealAsAdaHandler implements PreSubmitCallbackHandler<AsylumCa
             asylumCase.write(DATE_MARKED_AS_ADA, dateProvider.now().toString());
             asylumCase.write(REASON_APPEAL_MARKED_AS_ADA, markAppealAsAdaReason);
             asylumCase.write(ADA_SUFFIX, HandlerUtils.getAdaSuffix());
+
+            if (asylumCase.read(DECISION_LETTER_RECEIVED_DATE).isEmpty()) {
+                asylumCase.write(DECISION_LETTER_RECEIVED_DATE, asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class).orElse(null));
+                asylumCase.clear(HOME_OFFICE_DECISION_DATE);
+            }
 
             asylumCase.clear(MARK_APPEAL_AS_ADA_EXPLANATION);
         }
