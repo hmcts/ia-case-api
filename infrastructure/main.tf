@@ -16,7 +16,7 @@ locals {
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = var.location
-  tags     = merge(var.common_tags, map("lastUpdated", "${timestamp()}"))
+  tags     = merge(var.common_tags, tomap("lastUpdated", "${timestamp()}"))
 }
 
 data "azurerm_key_vault" "ia_key_vault" {
@@ -32,7 +32,7 @@ module "ia_case_api_database_11" {
   database_name      = "${var.postgresql_database_name}"
   postgresql_user    = "${var.postgresql_user}"
   postgresql_version = "11"
-  common_tags        = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  common_tags        = "${merge(var.common_tags, tomap("lastUpdated", "${timestamp()}"))}"
   subscription       = "${var.subscription}"
 }
 
