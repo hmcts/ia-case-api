@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.NotificationSender;
 
@@ -40,10 +43,10 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && getEventsToHandle().contains(callback.getEvent());
+            && getEventsToHandle(callback).contains(callback.getEvent());
     }
 
-    private List<Event> getEventsToHandle() {
+    private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
         List<Event> eventsToHandle = Lists.newArrayList(
             Event.SUBMIT_APPEAL,
             Event.SEND_DIRECTION,
@@ -110,11 +113,16 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
             Event.MANAGE_FEE_UPDATE,
             Event.REQUEST_FEE_REMISSION,
             Event.RECORD_OUT_OF_TIME_DECISION,
-            Event.END_APPEAL_AUTOMATICALLY,
             Event.UPDATE_PAYMENT_STATUS
         );
         if (!isSaveAndContinueEnabled) {
             eventsToHandle.add(Event.BUILD_CASE);
+        }
+        if (!isPaid(callback)) {
+            eventsToHandle.add(Event.END_APPEAL_AUTOMATICALLY);
+        }
+        if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
+            eventsToHandle.add(Event.PAYMENT_APPEAL);
         }
         return eventsToHandle;
     }
@@ -130,5 +138,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         AsylumCase asylumCaseWithNotificationMarker = notificationSender.send(callback);
 
         return new PreSubmitCallbackResponse<>(asylumCaseWithNotificationMarker);
+    }
+
+    private boolean isPaid(Callback<AsylumCase> callback) {
+        return callback.getCaseDetails().getCaseData()
+            .read(PAYMENT_STATUS, PaymentStatus.class)
+            .map(paymentStatus -> paymentStatus.equals(PaymentStatus.PAID))
+            .orElse(false);
     }
 }
