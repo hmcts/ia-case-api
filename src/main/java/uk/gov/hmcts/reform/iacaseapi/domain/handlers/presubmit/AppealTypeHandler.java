@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForDisplay;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealTypeForFilter;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -63,7 +62,6 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
         if ((isAcceleratedDetainedAppeal.equals(Optional.of(NO)) && ageAssessment.equals(YES))
                 || (appellantInDetention.equals(Optional.of(NO)) && ageAssessment.equals(YES))) {
             asylumCase.write(APPEAL_TYPE, AppealType.AG);
-            asylumCase.write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.AG);
             asylumCase.clear(APPEAL_TYPE_FOR_DISPLAY);
         } else {
             // After release of NABA, front-end will populate APPEAL_TYPE_FOR_DISPLAY instead of APPEAL_TYPE
@@ -74,7 +72,6 @@ public class AppealTypeHandler implements PreSubmitCallbackHandler<AsylumCase> {
                     .read(APPEAL_TYPE_FOR_DISPLAY, AppealTypeForDisplay.class)
                     .orElseThrow(() -> new IllegalStateException("Appeal type not present"));
                 asylumCase.write(APPEAL_TYPE, AppealType.from(appealTypeForDisplay.getValue()));
-                asylumCase.write(APPEAL_TYPE_FOR_FILTER, AppealTypeForFilter.from(appealTypeForDisplay.getValue()));
 
             }
         }

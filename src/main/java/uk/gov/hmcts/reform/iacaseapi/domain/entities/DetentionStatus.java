@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum DetentionStatus {
 
-    NON_DETAINED("nonDetained"),
     DETAINED("detained"),
     ACCELERATED("detainedAccelerated");
 
