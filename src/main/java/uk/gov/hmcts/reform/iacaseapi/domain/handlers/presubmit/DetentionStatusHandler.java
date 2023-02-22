@@ -46,6 +46,7 @@ public class DetentionStatusHandler implements PreSubmitCallbackHandler<AsylumCa
                 .getCaseDetails()
                 .getCaseData();
 
+
         if (asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class).isPresent() && asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).isPresent()) {
 
             Optional<YesOrNo> appellantInDetention = asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class);
