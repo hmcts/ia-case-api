@@ -32,7 +32,7 @@ module "ia_case_api_database_11" {
   database_name      = "${var.postgresql_database_name}"
   postgresql_user    = "${var.postgresql_user}"
   postgresql_version = "11"
-  common_tags        = "merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
+  common_tags        =  merge(var.common_tags, tomap({"lastUpdated" = "${timestamp()}"}))
   subscription       = "${var.subscription}"
 }
 
