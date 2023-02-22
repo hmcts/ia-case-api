@@ -1717,7 +1717,14 @@ public enum AsylumCaseFieldDefinition {
             "internalAppellantEmail", new TypeReference<String>(){}),
 
     INTERNAL_APPELLANT_MOBILE_NUMBER(
-            "internalAppellantMobileNumber", new TypeReference<String>(){});
+            "internalAppellantMobileNumber", new TypeReference<String>(){}),
+
+    DATE_MARKED_AS_ADA(
+            "dateMarkedAsAda", new TypeReference<String>(){}),
+    MARK_APPEAL_AS_ADA_EXPLANATION(
+        "markAppealAsAdaExplanation", new TypeReference<String>(){}),
+    REASON_APPEAL_MARKED_AS_ADA(
+        "reasonAppealMarkedAsAda", new TypeReference<String>(){});
 
     private final String value;
     private final TypeReference typeReference;

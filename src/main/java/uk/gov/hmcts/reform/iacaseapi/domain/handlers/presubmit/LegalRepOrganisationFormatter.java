@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.AddressUk;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ref.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
@@ -56,27 +58,32 @@ public class LegalRepOrganisationFormatter implements PreSubmitCallbackHandler<A
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (HandlerUtils.isRepJourney(asylumCase)) {
-            final OrganisationEntityResponse organisationEntityResponse =
-                    professionalOrganisationRetriever.retrieve();
+        YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
 
-            if (organisationEntityResponse == null) {
-                log.warn("Data fetched from Professional Ref data is empty, case ID: {}", callback.getCaseDetails().getId());
+        if (isAdmin.equals(YesOrNo.NO)) {
+
+            if (HandlerUtils.isRepJourney(asylumCase)) {
+                final OrganisationEntityResponse organisationEntityResponse =
+                        professionalOrganisationRetriever.retrieve();
+
+                if (organisationEntityResponse == null) {
+                    log.warn("Data fetched from Professional Ref data is empty, case ID: {}", callback.getCaseDetails().getId());
+                }
+
+                if (organisationEntityResponse != null
+                        && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
+                        && featureToggler.getValue("share-case-feature", false)) {
+
+                    log.info("PRD endpoint called for caseId [{}] orgId[{}]",
+                            callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
+
+                    setupCaseCreation(asylumCase, organisationEntityResponse.getOrganisationIdentifier());
+                }
+
+                mapToAsylumCase(asylumCase, organisationEntityResponse);
+            } else {
+                setupCaseCreation(asylumCase, null);
             }
-
-            if (organisationEntityResponse != null
-                    && StringUtils.isNotBlank(organisationEntityResponse.getOrganisationIdentifier())
-                    && featureToggler.getValue("share-case-feature", false)) {
-
-                log.info("PRD endpoint called for caseId [{}] orgId[{}]",
-                        callback.getCaseDetails().getId(), organisationEntityResponse.getOrganisationIdentifier());
-
-                setupCaseCreation(asylumCase, organisationEntityResponse.getOrganisationIdentifier());
-            }
-
-            mapToAsylumCase(asylumCase, organisationEntityResponse);
-        } else {
-            setupCaseCreation(asylumCase, null);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
