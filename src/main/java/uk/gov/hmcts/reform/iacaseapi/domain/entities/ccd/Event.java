@@ -73,6 +73,7 @@ public enum Event {
     REVIEW_TIME_EXTENSION("reviewTimeExtension"),
     SEND_DIRECTION_WITH_QUESTIONS("sendDirectionWithQuestions"),
     FLAG_CASE("flagCase"),
+    CREATE_FLAG("createFlag"),
     REMOVE_FLAG("removeFlag"),
     REQUEST_CMA_REQUIREMENTS("requestCmaRequirements"),
     EDIT_CMA_REQUIREMENTS("editCmaRequirements"),
