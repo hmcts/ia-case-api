@@ -26,7 +26,9 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(Event.START_APPEAL).contains(callback.getEvent());
+               && Arrays.asList(Event.START_APPEAL,
+                Event.EDIT_APPEAL,
+                Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -46,12 +48,28 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
 
             Optional<String> internalAppellantMobileNumber = asylumCase.read(INTERNAL_APPELLANT_MOBILE_NUMBER, String.class);
             Optional<String> internalAppellantEmail = asylumCase.read(INTERNAL_APPELLANT_EMAIL, String.class);
+            Optional<String> appealSubmissionInternalDate = asylumCase.read(APPEAL_SUBMISSION_INTERNAL_DATE, String.class);
+            Optional<String> decisionLetterReceivedDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class);
+            Optional<String> homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class);
+            Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class);
 
             if (internalAppellantMobileNumber.isPresent()) {
                 asylumCase.write(MOBILE_NUMBER, internalAppellantMobileNumber);
             }
             if (internalAppellantEmail.isPresent()) {
                 asylumCase.write(EMAIL, internalAppellantEmail);
+            }
+            if (appealSubmissionInternalDate.isPresent()) {
+                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, appealSubmissionInternalDate);
+            }
+            if (decisionLetterReceivedDate.isPresent()) {
+                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, decisionLetterReceivedDate);
+            }
+            if (homeOfficeDecisionDate.isPresent()) {
+                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, homeOfficeDecisionDate);
+            }
+            if (tribunalReceivedDate.isPresent()) {
+                asylumCase.write(TRIBUNAL_RECEIVED_INTERNAL_DATE, tribunalReceivedDate);
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);
