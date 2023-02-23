@@ -278,6 +278,7 @@ security:
     caseworker-ia-admofficer:
       - "startAppeal"
       - "submitAppeal"
+      - "editAppeal"
       - "listCma"
       - "listCase"
       - "recordAttendeesAndDuration"

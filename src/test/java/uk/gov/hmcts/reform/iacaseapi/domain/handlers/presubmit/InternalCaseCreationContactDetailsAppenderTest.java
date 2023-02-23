@@ -80,7 +80,7 @@ class InternalCaseCreationContactDetailsAppenderTest {
                 boolean canHandle = internalCaseCreationContactDetailsAppender.canHandle(callbackStage, callback);
 
                 if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                        && callback.getEvent() == Event.START_APPEAL) {
+                        && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
