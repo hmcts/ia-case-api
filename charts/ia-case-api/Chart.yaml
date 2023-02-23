@@ -10,3 +10,19 @@ dependencies:
   - name: java
     version: 4.0.3
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+  - name: ccd
+    version: 8.0.24
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ccd.enabled
+  - name: xui-webapp
+    version: ~1.0.0
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: xui-webapp.enabled
+  - name: idam-pr
+    version: ~2.3.0
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: idam-pr.enabled
+  - name: camunda-bpm
+    version: 0.0.28
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: camunda-bpm.enabled
