@@ -1733,7 +1733,11 @@ public enum AsylumCaseFieldDefinition {
     MARK_APPEAL_AS_ADA_EXPLANATION(
         "markAppealAsAdaExplanation", new TypeReference<String>(){}),
     REASON_APPEAL_MARKED_AS_ADA(
-        "reasonAppealMarkedAsAda", new TypeReference<String>(){});
+        "reasonAppealMarkedAsAda", new TypeReference<String>(){}),
+
+    ADA_HEARING_REQUIREMENTS_SUBMITTED(
+            "adaHearingRequirementsSubmitted", new TypeReference<YesOrNo>(){})
+    ;
 
     private final String value;
     private final TypeReference typeReference;

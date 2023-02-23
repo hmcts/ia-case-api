@@ -1,0 +1,30 @@
+{
+  "description": "RIA-6542: Submit AIP PA payNow appeal",
+  "request": {
+    "uri": "/asylum/ccdAboutToSubmit",
+    "credentials": "Citizen",
+    "input": {
+      "id": 1122,
+      "eventId": "submitAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-aip-appeal-started.json",
+        "replacements": {
+          "paymentStatus": "Payment pending",
+          "paAipAppealTypePaymentOption": "payNow"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-aip-appeal-started.json",
+      "replacements": {
+        "currentCaseStateVisibleToAdminOfficer": "appealSubmitted"
+      }
+    }
+  }
+}
+
