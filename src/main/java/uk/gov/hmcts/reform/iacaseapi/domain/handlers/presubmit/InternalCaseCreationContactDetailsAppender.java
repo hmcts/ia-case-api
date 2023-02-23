@@ -48,10 +48,6 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
 
             Optional<String> internalAppellantMobileNumber = asylumCase.read(INTERNAL_APPELLANT_MOBILE_NUMBER, String.class);
             Optional<String> internalAppellantEmail = asylumCase.read(INTERNAL_APPELLANT_EMAIL, String.class);
-            Optional<String> appealSubmissionInternalDate = asylumCase.read(APPEAL_SUBMISSION_INTERNAL_DATE, String.class);
-            Optional<String> decisionLetterReceivedDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class);
-            Optional<String> homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class);
-            Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class);
 
             if (internalAppellantMobileNumber.isPresent()) {
                 asylumCase.write(MOBILE_NUMBER, internalAppellantMobileNumber);
@@ -59,15 +55,23 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
             if (internalAppellantEmail.isPresent()) {
                 asylumCase.write(EMAIL, internalAppellantEmail);
             }
+
+            Optional<String> appealSubmissionInternalDate = asylumCase.read(APPEAL_SUBMISSION_INTERNAL_DATE, String.class);
             if (appealSubmissionInternalDate.isPresent()) {
                 asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, appealSubmissionInternalDate);
             }
+
+            Optional<String> decisionLetterReceivedDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class);
             if (decisionLetterReceivedDate.isPresent()) {
                 asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, decisionLetterReceivedDate);
             }
+
+            Optional<String> homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class);
             if (homeOfficeDecisionDate.isPresent()) {
                 asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, homeOfficeDecisionDate);
             }
+
+            Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class);
             if (tribunalReceivedDate.isPresent()) {
                 asylumCase.write(TRIBUNAL_RECEIVED_INTERNAL_DATE, tribunalReceivedDate);
             }
