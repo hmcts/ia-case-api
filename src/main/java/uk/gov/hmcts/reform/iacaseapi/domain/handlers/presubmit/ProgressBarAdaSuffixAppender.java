@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -11,7 +9,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
@@ -40,12 +38,9 @@ public class ProgressBarAdaSuffixAppender implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)
-            .ifPresent(isAda -> {
-                if (isAda.equals(YES)) {
-                    asylumCase.write(ADA_SUFFIX, ADA_SUFFIX_STRING);
-                }
-            });
+        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+            asylumCase.write(ADA_SUFFIX, HandlerUtils.getAdaSuffix());
+        }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
     }

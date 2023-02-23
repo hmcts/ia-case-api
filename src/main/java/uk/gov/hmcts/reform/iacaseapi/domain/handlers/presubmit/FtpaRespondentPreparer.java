@@ -23,6 +23,9 @@ import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 @Component
 public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCase> {
 
+    private static final int FTPA_DAYS_ALLOWED_UK = 14;
+    private static final int FTPA_DAYS_ALLOWED_OOC = 28;
+
     private final DateProvider dateProvider;
     private final FeatureToggler featureToggler;
 
@@ -79,7 +82,9 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
                 asylumCase.read(AsylumCaseFieldDefinition.FTPA_APPLICATION_DEADLINE, String.class);
 
         if (ftpaApplicationDeadline.isEmpty()) {
-            throw new RequiredFieldMissingException("FTPA application deadline missing.");
+            // For in-flight cases
+            asylumCase.write(FTPA_APPELLANT_SUBMISSION_OUT_OF_TIME, checkInFlightCaseFtpaOutOfTime(asylumCase));
+            return new PreSubmitCallbackResponse<>(asylumCase);
         }
 
         LocalDate ftpaApplicationDeadlineDate = LocalDate.parse(ftpaApplicationDeadline.get());
@@ -91,6 +96,26 @@ public class FtpaRespondentPreparer implements PreSubmitCallbackHandler<AsylumCa
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
+    }
+
+    private YesOrNo checkInFlightCaseFtpaOutOfTime(AsylumCase asylumCase) {
+        Optional<String> appealDate = asylumCase.read(APPEAL_DATE, String.class);
+        Optional<YesOrNo> appellantInUk = asylumCase.read(APPELLANT_IN_UK, YesOrNo.class);
+        if (appealDate.isEmpty()) {
+            throw new RequiredFieldMissingException("Appeal date missing.");
+        }
+        if (appellantInUk.isEmpty()) {
+            throw new RequiredFieldMissingException("Appellant in UK missing.");
+        }
+
+        LocalDate ftpaApplicationDeadline;
+        if (appellantInUk.equals(Optional.of(YES))) {
+            ftpaApplicationDeadline = LocalDate.parse(appealDate.get()).plusDays(FTPA_DAYS_ALLOWED_UK);
+        } else {
+            ftpaApplicationDeadline = LocalDate.parse(appealDate.get()).plusDays(FTPA_DAYS_ALLOWED_OOC);
+        }
+
+        return dateProvider.now().isBefore(ftpaApplicationDeadline) ? NO : YES;
     }
 
 }

@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -58,6 +60,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                 && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
+
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(

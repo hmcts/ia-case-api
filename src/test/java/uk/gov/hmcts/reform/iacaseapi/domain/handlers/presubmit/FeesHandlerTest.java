@@ -5,18 +5,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ASYLUM_SUPPORT_REFERENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.DECISION_HEARING_FEE_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.EA_HU_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.FEE_REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_DECISION_SELECTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HOME_OFFICE_WAIVER_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_FEE_PAYMENT_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_REMISSIONS_ENABLED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.LEGAL_AID_ACCOUNT_NUMBER;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PA_APPEAL_TYPE_PAYMENT_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_CLAIM;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.REMISSION_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.RP_DC_APPEAL_HEARING_OPTION;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION17_DOCUMENT;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SECTION20_DOCUMENT;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,6 +56,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit.payment.FeesHandler;
@@ -99,9 +126,29 @@ class FeesHandlerTest {
         });
     }
 
+    @Test
+    void should_not_write_paymentPending_if_paymentStatus_not_empty() {
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
+        when(asylumCase.read(APPEAL_TYPE,
+            AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class))
+            .thenReturn(Optional.of(PaymentStatus.PAYMENT_PENDING));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(PAYMENT_STATUS, PaymentStatus.PAYMENT_PENDING);
+
+        reset(callback);
+        reset(feePayment);
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = { "EA", "HU", "AG" })
-    void should_clear_other_when_ea_hu_ag_offline_payment(String appealType) {
+    @ValueSource(strings = { "EU", "EA", "HU", "AG" })
+    void should_clear_other_when_eu_ea_hu_ag_offline_payment(String appealType) {
 
         Arrays.asList(
             Event.START_APPEAL
@@ -109,8 +156,10 @@ class FeesHandlerTest {
 
             when(callback.getEvent()).thenReturn(event);
             when(asylumCase.read(APPEAL_TYPE,
+
                 AppealType.class)).thenReturn(Optional.of(AppealType.valueOf(appealType)));
             when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+
 
             PreSubmitCallbackResponse<AsylumCase> callbackResponse =
                 feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
@@ -255,16 +304,48 @@ class FeesHandlerTest {
     }
 
     @Test
-    void it_cannot_handle_callback_for_aip_journey() {
+    void it_can_handle_callback_for_aip_journey() {
 
+        when(callback.getEvent()).thenReturn(Event.START_APPEAL);
         when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
-        FeesHandler fees =
-            new FeesHandler(true, feePayment, featureToggler);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(Optional.of(JourneyType.AIP));
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(
-            () -> fees.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
-            .hasMessage("Cannot handle callback")
-            .isExactlyInstanceOf(IllegalStateException.class);
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        verify(feePayment, times(1)).aboutToSubmit(callback);
+        verify(asylumCase, never()).write(eq(IS_REMISSIONS_ENABLED), any());
+    }
+
+    private static Stream<Arguments> appealTypeNotEmptyOrNonAip() {
+        return Stream.of(
+            Arguments.of(Optional.of(JourneyType.AIP), Optional.of(AppealType.EA)),
+            Arguments.of(Optional.empty(), Optional.of(AppealType.EA))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("appealTypeNotEmptyOrNonAip")
+    void it_runs_further_checks_if_not_aip_or_if_aip_and_appealType_already_present(
+        Optional<JourneyType> optionalJourneyType,
+        Optional<AppealType> optionalAppealType) {
+
+        // this behavior makes sure the FeeHandler doesn't run several times but only at the beginning
+        // of the AIP journey, when the appeal type hasn't been chosen yet
+
+        when(callback.getEvent()).thenReturn(Event.EDIT_APPEAL);
+        when(featureToggler.getValue("remissions-feature", false)).thenReturn(true);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(optionalJourneyType);
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(optionalAppealType);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+
+        // if journeyType isn't AIP and appealType isn't empty, then continue with what comes afterwards in the handler
+
+        feesHandler.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback);
+        verify(asylumCase, atLeastOnce()).write(eq(IS_REMISSIONS_ENABLED), any());
     }
 
     @Test

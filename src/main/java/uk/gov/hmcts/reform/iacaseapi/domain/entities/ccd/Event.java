@@ -117,6 +117,7 @@ public enum Event {
     END_APPEAL_AUTOMATICALLY("endAppealAutomatically"),
     GENERATE_SERVICE_REQUEST("generateServiceRequest"),
     TRANSFER_OUT_OF_ADA("transferOutOfAda"),
+    MARK_APPEAL_AS_ADA("markAppealAsAda"),
 
     PIP_ACTIVATION("pipActivation"),
     ADA_SUITABILITY_REVIEW("adaSuitabilityReview"),
