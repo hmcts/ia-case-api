@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -129,7 +128,7 @@ class FeesHandlerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = AppealType.class, names = { "EU", "EA", "HU", "AG" })
+    @ValueSource(strings = { "EU", "EA", "HU", "AG" })
     void should_clear_other_when_eu_ea_hu_ag_offline_payment(String appealType) {
 
         Arrays.asList(
