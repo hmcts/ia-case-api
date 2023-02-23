@@ -58,7 +58,7 @@ public class AutomaticEndAppealForNonPaymentEaHuTrigger implements PreSubmitCall
 
         return  callback.getEvent() == Event.SUBMIT_APPEAL
                 && callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && (remissionType.isPresent() && remissionType.get() == RemissionType.NO_REMISSION)
+                && (remissionType.map(remission -> remission.equals(RemissionType.NO_REMISSION)).orElse(true))
                 && (appealType.isPresent() && Set.of(EA, HU, EU, AG).contains(appealType.get()));
 
     }
