@@ -65,6 +65,13 @@ class TransferOutOfAdaHandlerTest {
         verify(asylumCase).write(DETENTION_STATUS, DetentionStatus.DETAINED);
         verify(asylumCase).write(TRANSFER_OUT_OF_ADA_DATE, dateProvider.now().toString());
         verify(asylumCase).write(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.YES);
+
+        verify(asylumCase).write(LISTING_AVAILABLE_FOR_ADA, YesOrNo.NO);
+        verify(asylumCase).write(ADA_HEARING_ADJUSTMENTS_UPDATABLE, YesOrNo.NO);
+        verify(asylumCase).write(ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.NO);
+        verify(asylumCase).write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
+        verify(asylumCase).write(ADA_HEARING_REQUIREMENTS_SUBMITTABLE, YesOrNo.NO);
+        verify(asylumCase).write(ADA_EDIT_LISTING_AVAILABLE, YesOrNo.NO);
     }
 
     @Test

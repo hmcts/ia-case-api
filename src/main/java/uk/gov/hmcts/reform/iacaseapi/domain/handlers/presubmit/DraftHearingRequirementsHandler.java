@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,11 +68,11 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
 
         asylumCase.write(WITNESS_COUNT, witnessDetails.size());
 
-        asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.YES);
+        asylumCase.write(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YES);
 
         asylumCase.write(REVIEWED_HEARING_REQUIREMENTS, YesOrNo.NO);
 
-        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YesOrNo.YES)).orElse(false)
+        if (asylumCase.read(CASE_FLAG_SET_ASIDE_REHEARD_EXISTS, YesOrNo.class).map(flag -> flag.equals(YES)).orElse(false)
             && featureToggler.getValue("reheard-feature", false)) {
 
             Optional<List<IdValue<DocumentWithMetadata>>> maybeHearingRequirements =
@@ -103,19 +104,27 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
             asylumCase.clear(ADDITIONAL_TRIBUNAL_RESPONSE);
             asylumCase.clear(HEARING_REQUIREMENTS);
         } else {
-            asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.YES);
+            asylumCase.write(CURRENT_HEARING_DETAILS_VISIBLE, YES);
         }
 
         boolean isAcceleratedDetainedAppeal = HandlerUtils.isAcceleratedDetainedAppeal(asylumCase);
 
         if (isAcceleratedDetainedAppeal) {
             asylumCase.clear(ADA_HEARING_REQUIREMENTS_SUBMITTABLE);
-            asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.YES);
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YES);
 
             // This flag is set so that when it is transferred out of ADA into normal detained flow,
             // it is used in CaseEvent definition to move into correct state if HR are submitted or not.
-            asylumCase.write(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.YES);
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_SUBMITTED, YES);
 
+        }
+
+        boolean appealTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (appealTransferredOutOfAda) {
+            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

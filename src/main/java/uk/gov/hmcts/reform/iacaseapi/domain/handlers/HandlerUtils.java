@@ -58,4 +58,8 @@ public class HandlerUtils {
     public static boolean isAppealPaid(AsylumCase asylumCase) {
         return asylumCase.read(PAYMENT_STATUS, PaymentStatus.class).orElse(null) == PaymentStatus.PAID;
     }
+
+    public static String getAfterHearingReqSuffix() {
+        return "_afterHearingReq";
+    }
 }

@@ -2,20 +2,27 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQ_SUFFIX;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getAdaSuffix;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.getAfterHearingReqSuffix;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isAcceleratedDetainedAppeal;
 
+import java.util.Set;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriority;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 
 @Component
 public class ProgressBarAdaSuffixAppender implements PreSubmitCallbackHandler<AsylumCase> {
-
-    private static final String ADA_SUFFIX_STRING = "_ada";
 
     public boolean canHandle(
         PreSubmitCallbackStage callbackStage,
@@ -25,7 +32,12 @@ public class ProgressBarAdaSuffixAppender implements PreSubmitCallbackHandler<As
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && callback.getEvent() == Event.SUBMIT_APPEAL;
+               && Set.of(SUBMIT_APPEAL, TRANSFER_OUT_OF_ADA).contains(callback.getEvent());
+    }
+
+    @Override
+    public DispatchPriority getDispatchPriority() {
+        return DispatchPriority.LATEST;
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
@@ -38,8 +50,20 @@ public class ProgressBarAdaSuffixAppender implements PreSubmitCallbackHandler<As
 
         AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
 
-        if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
-            asylumCase.write(ADA_SUFFIX, HandlerUtils.getAdaSuffix());
+        if (isAcceleratedDetainedAppeal(asylumCase)) {
+            asylumCase.write(ADA_SUFFIX, getAdaSuffix());
+        } else {
+            asylumCase.write(ADA_SUFFIX, "");
+        }
+
+        // Set suffix to append to URLs of images when appeal transfers out of ADA after submitHearingRequirements
+        if (callback.getEvent().equals(TRANSFER_OUT_OF_ADA)) {
+            asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)
+                .ifPresent(yesOrNo -> {
+                    if (yesOrNo.equals(YES)) {
+                        asylumCase.write(HEARING_REQ_SUFFIX, getAfterHearingReqSuffix());
+                    }
+                });
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);
