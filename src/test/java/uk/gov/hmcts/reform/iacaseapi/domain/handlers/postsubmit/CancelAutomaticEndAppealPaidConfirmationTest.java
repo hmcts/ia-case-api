@@ -4,14 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.AUTOMATIC_END_APPEAL_TIMED_EVENT_ID;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -22,6 +32,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.CaseDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PostSubmitCallbackResponse;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.PaymentStatus;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.Scheduler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.model.TimedEvent;
@@ -69,10 +80,18 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
     }
 
-    @Test
-    void should_schedule_automatic_end_appeal_100_years_from_now() {
-        when(callback.getEvent()).thenReturn(Event.UPDATE_PAYMENT_STATUS);
+    private static Stream<Arguments> qualifyingEvent() {
+        return Stream.of(
+            Arguments.of(Optional.of(JourneyType.AIP), Event.PAYMENT_APPEAL),
+            Arguments.of(Optional.empty(), Event.UPDATE_PAYMENT_STATUS)
+        );
+    }
 
+    @ParameterizedTest
+    @MethodSource("qualifyingEvent")
+    void should_schedule_automatic_end_appeal_100_years_from_now(Optional<JourneyType> journeyType, Event event) {
+        when(callback.getEvent()).thenReturn(event);
+        when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(journeyType);
 
         TimedEvent timedEvent = new TimedEvent(
                 timedEventId,
@@ -127,8 +146,9 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
                 .isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    @Test
-    void it_can_handle_callback() {
+    @ParameterizedTest
+    @MethodSource("qualifyingEvent")
+    void it_can_handle_callback(Optional<JourneyType> journeyType, Event qualifyingEvent) {
 
         for (Event event : Event.values()) {
             for (PaymentStatus paymentStatus : PaymentStatus.values()) {
@@ -140,11 +160,12 @@ public class CancelAutomaticEndAppealPaidConfirmationTest {
                 when(asylumCase.read(PAYMENT_STATUS, PaymentStatus.class)).thenReturn(Optional.of(paymentStatus));
                 when(asylumCase.read(AUTOMATIC_END_APPEAL_TIMED_EVENT_ID)).thenReturn(Optional.of("1234567"));
 
+                when(asylumCase.read(JOURNEY_TYPE, JourneyType.class)).thenReturn(journeyType);
 
                 boolean canHandle = cancelAutomaticEndAppealHandler.canHandle(callback);
 
                 if (timedEventServiceEnabled
-                        && event == Event.UPDATE_PAYMENT_STATUS
+                        && event == qualifyingEvent
                         && paymentStatus == PaymentStatus.PAID
                         && !timedEventId.isEmpty() && timedEventId != null) {
                     assertThat(canHandle).isEqualTo(true);
