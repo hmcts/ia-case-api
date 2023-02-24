@@ -3,27 +3,27 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: {{ .Release.Name }}-postgresql
-    POSTGRES_NAME: {{ .Values.postgresql.auth.database}}
-    POSTGRES_USERNAME: {{ .Values.postgresql.auth.username}}
-    POSTGRES_PASSWORD: {{ .Values.postgresql.auth.password}}
-    POSTGRES_CONNECTION_OPTIONS: ''
-    IA_CASE_DOCUMENTS_API_URL: http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/
-    IA_CASE_NOTIFICATIONS_API_URL: http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/
-    IA_TIMED_EVENT_SERVICE_URL: http://ia-timed-event-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/
-    IA_TIMED_EVENT_SERVICE_ENABLED: 'false'
-    IA_CASE_PAYMENTS_API_URL: http://ia-case-payments-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/
-    IA_HOME_OFFICE_INTEGRATION_API_URL: http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/
-    IA_HOME_OFFICE_INTEGRATION_ENABLED: 'false'
-    IA_IDAM_REDIRECT_URI: https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback
-    CCD_URL: http://${SERVICE_NAME}-ccd-data-store-api
-    CCD_GW_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    DM_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    IDAM_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
-    OPEN_ID_IDAM_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
-    S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    IS_SAVE_AND_CONTINUE_ENABLED: 'false'
-    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    POSTGRES_CONNECTION_OPTIONS: ""
+    IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_TIMED_EVENT_SERVICE_ENABLED: "false"
+    IA_CASE_PAYMENTS_API_URL: "http://ia-case-payments-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
+    IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
+    IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
+    CCD_URL: "http://${SERVICE_NAME}-ccd-data-store-api"
+    CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
+    OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    IS_SAVE_AND_CONTINUE_ENABLED: "false"
+    ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   keyVaults:
     ia:
       secrets:
@@ -42,6 +42,7 @@ java:
         - launch-darkly-sdk-key
   postgresql:
     enabled: true
+
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
@@ -54,6 +55,7 @@ idam-pr:
       - https://${SERVICE_NAME}-case-management-web/oauth2redirect
     ccd_data_store_api:
       - http://${SERVICE_NAME}-ccd-data-store-api/oauth2redirect
+
 xui-webapp:
   enabled: true
   nodejs:
@@ -102,6 +104,7 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+
 ccd:
   enabled: true
   ccd:
@@ -119,6 +122,7 @@ ccd:
       enabled: false
     elastic:
       enabled: true
+
   global:
     ccdApiGatewayIngress: ${SERVICE_NAME}-ccd-api-gw
     ccdAdminWebIngress: ${SERVICE_NAME}-ccd-admin-web
@@ -137,6 +141,7 @@ ccd:
     auth:
       postgresUsername: hmcts
       postgresPassword: hmcts
+
   ccd-admin-web:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
@@ -147,9 +152,11 @@ ccd:
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OAUTH2_TOKEN_ENDPOINT: https://idam-web-public.aat.platform.hmcts.net/oauth2/token'
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+
     idam-pr:
       releaseNameOverride: ${SERVICE_NAME}-ccd-admin-idam-pr
       enabled: true
+
   ccd-user-profile-api:
     java:
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
@@ -159,6 +166,7 @@ ccd:
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,sscs
       keyVaults: [ ]
+
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
@@ -174,6 +182,7 @@ ccd:
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       keyVaults: [ ]
+
   ccd-api-gateway-web:
     nodejs:
       imagePullPolicy: Always
@@ -184,6 +193,7 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressIP: ${INGRESS_IP}
       disableKeyVaults: true
+
   #Use this image to import your CCD definition. To have an image available, create a git tag and push it.
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/sscs/ccd-definition-importer-benefit:S10538-22nonProd
@@ -216,13 +226,16 @@ ccd:
       - caseworker-ia-homeofficepou
       - caseworker-ia-respondentofficer
       - citizen
+
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: es
     replicas: 1
+
   logstash:
     image: null
     tag: ccd-cmc-logstash-latest
+
 ia-case-notifications-api:
   enabled: false
   java:
@@ -232,6 +245,7 @@ ia-case-notifications-api:
       IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
       IA_EXUI_FRONTEND_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
       OPEN_ID_IDAM_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
+
 ia-bail-case-api:
   enabled: false
   java:
@@ -261,16 +275,19 @@ ia-bail-case-api:
           - s2s-microservice
           - prof-ref-data-url
           - launch-darkly-sdk-key
+
 ia-case-access-api:
   enabled: false
   java:
     image: hmctspublic.azurecr.io/ia/ia-case-access-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-case-access-api
+
 ia-home-office-mock-api:
   enabled: false
   java:
     image: hmctspublic.azurecr.io/ia/ia-home-office-mock-api:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-home-office-mock-api
+
 ia-case-payments-api:
   enabled: false
   java:
@@ -294,6 +311,7 @@ ia-case-payments-api:
         - s2s-secret
         - s2s-microservice
         - AppInsightsInstrumentationKey
+
 ia-case-documents-api:
   enabled: false
   java:
@@ -301,6 +319,7 @@ ia-case-documents-api:
     releaseNameOverride: ${SERVICE_NAME}-ia-case-documents-api
     environment: null
     IA_AIP_FRONTEND_URL: https://immigration-appeal.{{ .Values.global.environment }}.platform.hmcts.net/
+
 ia-home-office-integration-api:
   enabled: false
   java:
@@ -308,20 +327,21 @@ ia-home-office-integration-api:
     releaseNameOverride: ${SERVICE_NAME}-ia-home-office-integration-api
     environment: null
     HOME_OFFICE_ENDPOINT: http://ia-home-office-mock-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+
 ia-timed-event-service:
   enabled: false
   java:
     image: hmctspublic.azurecr.io/ia/ia-timed-event-service:latest
     releaseNameOverride: ${SERVICE_NAME}-ia-timed-event-service
     environment: null
-    IDAM_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
-    S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    CCD_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    POSTGRES_HOST: {{ .Release.Name }}-postgresql
-    POSTGRES_NAME: {{ .Values.postgresql.auth.database}}
-    POSTGRES_USERNAME: {{ .Values.postgresql.auth.username}}
-    POSTGRES_PASSWORD: {{ .Values.postgresql.auth.password}}
-    POSTGRES_CONNECTION_OPTIONS: ''
+    IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+    S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    POSTGRES_CONNECTION_OPTIONS: ""
   keyVaults:
     ia:
       resourceGroup: ia
@@ -336,6 +356,7 @@ ia-timed-event-service:
         - AppInsightsInstrumentationKey
   postgresql:
     enabled: true
+
 servicebus:
   enabled: false
   teamName: ia
