@@ -19,21 +19,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class InternalCaseCreationContactDetailsAppender implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(Event.START_APPEAL,
-                Event.EDIT_APPEAL,
-                Event.EDIT_APPEAL_AFTER_SUBMIT).contains(callback.getEvent());
+                && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-        PreSubmitCallbackStage callbackStage,
-        Callback<AsylumCase> callback
+            PreSubmitCallbackStage callbackStage,
+            Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");
@@ -54,26 +52,6 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
             }
             if (internalAppellantEmail.isPresent()) {
                 asylumCase.write(EMAIL, internalAppellantEmail);
-            }
-
-            Optional<String> appealSubmissionInternalDate = asylumCase.read(APPEAL_SUBMISSION_INTERNAL_DATE, String.class);
-            if (appealSubmissionInternalDate.isPresent()) {
-                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, appealSubmissionInternalDate);
-            }
-
-            Optional<String> decisionLetterReceivedDate = asylumCase.read(DECISION_LETTER_RECEIVED_DATE, String.class);
-            if (decisionLetterReceivedDate.isPresent()) {
-                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, decisionLetterReceivedDate);
-            }
-
-            Optional<String> homeOfficeDecisionDate = asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class);
-            if (homeOfficeDecisionDate.isPresent()) {
-                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, homeOfficeDecisionDate);
-            }
-
-            Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class);
-            if (tribunalReceivedDate.isPresent()) {
-                asylumCase.write(TRIBUNAL_RECEIVED_INTERNAL_DATE, tribunalReceivedDate);
             }
         }
         return new PreSubmitCallbackResponse<>(asylumCase);

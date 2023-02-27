@@ -37,9 +37,8 @@ class InternalCaseCreationContactDetailsAppenderTest {
     private AsylumCase asylumCase;
 
     private String internalMobileNumber = "07123123123";
+
     private String internalEmailAddress = "test_email@domain.com";
-    private String appealSubmissionDate = "2000-02-02";
-    private String tribunalRecievedDate = "2001-01-01";
 
     private InternalCaseCreationContactDetailsAppender internalCaseCreationContactDetailsAppender;
 
@@ -53,7 +52,7 @@ class InternalCaseCreationContactDetailsAppenderTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
     }
-    
+
     @Test
     void handler_checks_internal_contact_details_and_appends_to_main_fields() {
 
@@ -70,21 +69,6 @@ class InternalCaseCreationContactDetailsAppenderTest {
     }
 
     @Test
-    void handler_checks_internal_date_fields_have_been_assigned_main_fields_values() {
-
-        when(asylumCase.read(HOME_OFFICE_DECISION_DATE, String.class)).thenReturn(Optional.of(appealSubmissionDate));
-        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class)).thenReturn(Optional.of(tribunalRecievedDate));
-
-        PreSubmitCallbackResponse<AsylumCase> response =
-                internalCaseCreationContactDetailsAppender.handle(ABOUT_TO_SUBMIT, callback);
-
-        assertThat(response).isNotNull();
-
-        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_INTERNAL_DATE, Optional.of(appealSubmissionDate));
-        verify(asylumCase, times(1)).write(TRIBUNAL_RECEIVED_INTERNAL_DATE, Optional.of(tribunalRecievedDate));
-    }
-
-    @Test
     void it_can_handle_callback_for_all_events() {
 
         for (Event event : Event.values()) {
@@ -95,14 +79,12 @@ class InternalCaseCreationContactDetailsAppenderTest {
 
                 boolean canHandle = internalCaseCreationContactDetailsAppender.canHandle(callbackStage, callback);
 
-                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT && (event == Event.START_APPEAL
-                        || event == Event.EDIT_APPEAL_AFTER_SUBMIT
-                        || event == Event.EDIT_APPEAL)) {
+                if (callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                        && (callback.getEvent() == Event.START_APPEAL || callback.getEvent() == Event.EDIT_APPEAL)) {
                     assertTrue(canHandle);
                 } else {
                     assertFalse(canHandle);
                 }
-
             }
         }
     }
