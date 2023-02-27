@@ -111,6 +111,11 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
         if (isAcceleratedDetainedAppeal) {
             asylumCase.clear(ADA_HEARING_REQUIREMENTS_SUBMITTABLE);
             asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.YES);
+
+            // This flag is set so that when it is transferred out of ADA into normal detained flow,
+            // it is used in CaseEvent definition to move into correct state if HR are submitted or not.
+            asylumCase.write(ADA_HEARING_REQUIREMENTS_SUBMITTED, YesOrNo.YES);
+
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

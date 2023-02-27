@@ -26,7 +26,7 @@ public class InternalCaseCreationContactDetailsAppender implements PreSubmitCall
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-               && Arrays.asList(Event.START_APPEAL).contains(callback.getEvent());
+               && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
