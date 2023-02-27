@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.APPEAL_TYPE;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.JOURNEY_TYPE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.JourneyType;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 
 @ExtendWith(MockitoExtension.class)
 class HandlerUtilsTest {
@@ -65,5 +65,17 @@ class HandlerUtilsTest {
     void given_aaa_test_should_pass() {
         when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
         assertTrue(HandlerUtils.isAgeAssessmentAppeal(asylumCase));
+    }
+
+    @Test
+    void isInternalCase_should_return_true() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        assertTrue(HandlerUtils.isInternalCase(asylumCase));
+    }
+
+    @Test
+    void isInternalCase_should_return_false() {
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
+        assertFalse(HandlerUtils.isInternalCase(asylumCase));
     }
 }
