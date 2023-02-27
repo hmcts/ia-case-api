@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
+import static java.util.Objects.requireNonNull;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -12,8 +14,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallb
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.infrastructure.clients.CcdSupplementaryUpdater;
-
-import static java.util.Objects.requireNonNull;
 
 @Component
 public class AsylumSupplementaryDataFixingHandler implements PreSubmitCallbackHandler<AsylumCase> {
