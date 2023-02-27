@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EA;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.EU;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.HU;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AppealType.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 
 import java.time.LocalDateTime;
@@ -310,6 +308,17 @@ class AutomaticEndAppealForNonPaymentEaHuTriggerTest {
         assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
             .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
             .isExactlyInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void should_fail_can_handle_for_ada_appeals() {
+        dataSetUp();
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class))
+                .thenReturn(Optional.of(YesOrNo.YES));
+
+        assertThatThrownBy(() -> automaticEndAppealForNonPaymentEaHuTrigger.handle(PreSubmitCallbackStage.ABOUT_TO_SUBMIT, callback))
+                .hasMessage("Cannot handle callback for auto end appeal for remission rejection")
+                .isExactlyInstanceOf(IllegalStateException.class);
     }
 
 }
