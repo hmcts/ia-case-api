@@ -4,9 +4,9 @@ java:
   applicationPort: 8090
   aadIdentityName: ia
   environment:
-    POSTGRES_PORT: 5432
-    POSTGRES_HOST: ia-case-api-postgres-11-db-{{ .Values.global.environment }}.postgres.database.azure.com
-    POSTGRES_USERNAME: ia_case_api@ia-case-api-postgres-11-db-{{ .Values.global.environment }}
+    POSTGRES_PORT: "{{ .Values.postgresql.service.port }}"
+    POSTGRES_HOST: "{{ .Values.postgresql.releaseNameOverride }}"
+    POSTGRES_USERNAME: "{{ .Values.auth.username }}@{{ .Values.postgresql.releaseNameOverride }}"
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
     PROF_REF_DATA_URL: "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     REF_DATA_CASE_WORKER_URL: "http://rd-caseworker-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -28,6 +28,7 @@ java:
     IS_SAVE_AND_CONTINUE_ENABLED: "false"
     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   postgresql:
+    releaseNameOverride: ${SERVICE_NAME}-postgresql
     auth:
       username: ia_case_api
       password: ia_case_api
