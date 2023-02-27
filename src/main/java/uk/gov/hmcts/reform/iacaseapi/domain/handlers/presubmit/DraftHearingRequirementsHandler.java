@@ -119,14 +119,6 @@ public class DraftHearingRequirementsHandler implements PreSubmitCallbackHandler
 
         }
 
-        boolean appealTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
-            .map(yesOrNo -> yesOrNo.equals(YES))
-            .orElse(false);
-
-        if (appealTransferredOutOfAda) {
-            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
-        }
-
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }
