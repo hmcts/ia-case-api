@@ -49,11 +49,11 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         if (isInternalCase(asylumCase)) {
             return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
                     && getInternalEventsToHandle().contains(callback.getEvent());
-        } else if (!isInternalCase(asylumCase)) {
-            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                    && getEventsToHandle(callback).contains(callback.getEvent());
         }
-        return false;
+
+        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                && getEventsToHandle(callback).contains(callback.getEvent());
+
     }
 
     private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
