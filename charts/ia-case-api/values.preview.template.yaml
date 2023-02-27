@@ -137,10 +137,10 @@ ccd:
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     enableKeyVaults: true
     devMode: true
-    postgresql: null
-    auth:
-      postgresUsername: hmcts
-      postgresPassword: hmcts
+    #postgresql: null
+    #auth:
+    #  postgresUsername: hmcts
+    #  postgresPassword: hmcts
 
   ccd-admin-web:
     nodejs:
