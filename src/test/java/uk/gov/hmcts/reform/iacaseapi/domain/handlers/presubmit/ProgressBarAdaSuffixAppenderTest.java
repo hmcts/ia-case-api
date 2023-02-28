@@ -11,13 +11,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_SUFFIX;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.HEARING_REQ_SUFFIX;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.SUBMIT_HEARING_REQUIREMENTS_AVAILABLE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.SUBMIT_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event.TRANSFER_OUT_OF_ADA;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_START;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.NO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +68,7 @@ class ProgressBarAdaSuffixAppenderTest {
     @Test
     void should_write_ada_suffix_if_appeal_is_ada() {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YES));
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -77,16 +82,19 @@ class ProgressBarAdaSuffixAppenderTest {
 
     private static Stream<Arguments> noAda() {
         return Stream.of(
-            Arguments.of(Optional.empty()),
-            Arguments.of(Optional.of(NO))
+            Arguments.of(Optional.of(NO), SUBMIT_APPEAL),
+            Arguments.of(Optional.of(NO), TRANSFER_OUT_OF_ADA),
+            // isAcceleratedDetainedAppeal is always set, but empty optional scenario is tested for code coverage
+            Arguments.of(Optional.empty(), SUBMIT_APPEAL),
+            Arguments.of(Optional.empty(), TRANSFER_OUT_OF_ADA)
         );
     }
 
     @ParameterizedTest
     @MethodSource("noAda")
-    void should_not_write_ada_suffix_if_appeal_is_not_ada(Optional<YesOrNo> isAcceleratedDetainedAppealOpt) {
+    void should_write_blank_ada_suffix_if_appeal_is_not_ada(Optional<YesOrNo> isAcceleratedDetainedAppealOpt, Event event) {
 
-        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+        when(callback.getEvent()).thenReturn(event);
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(isAcceleratedDetainedAppealOpt);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -95,7 +103,49 @@ class ProgressBarAdaSuffixAppenderTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, never()).write(ADA_SUFFIX, "_ada");
+        if (isAcceleratedDetainedAppealOpt.isPresent()) {
+            verify(asylumCase, times(1)).write(ADA_SUFFIX, "");
+        } else {
+            verify(asylumCase, never()).write(ADA_SUFFIX, "_ada");
+        }
+    }
+
+    @Test
+    void should_write_suffix_for_out_of_ada_appeals_after_hearing_requirements() {
+
+        when(callback.getEvent()).thenReturn(TRANSFER_OUT_OF_ADA);
+        when(asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(Optional.of(YES));
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            progressBarAdaSuffixAppender.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(HEARING_REQ_SUFFIX, "_afterHearingReq");
+    }
+
+    private static Stream<Arguments> noSubmitHearingRequirements() {
+        return Stream.of(
+            Arguments.of(Optional.empty()),
+            Arguments.of(Optional.of(NO))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("noSubmitHearingRequirements")
+    void should_not_write_suffix_for_out_of_ada_appeals_after_hearing_requirements(Optional<YesOrNo> submitHearingRequirementsAvailable) {
+
+        when(callback.getEvent()).thenReturn(TRANSFER_OUT_OF_ADA);
+        when(asylumCase.read(SUBMIT_HEARING_REQUIREMENTS_AVAILABLE, YesOrNo.class)).thenReturn(submitHearingRequirementsAvailable);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            progressBarAdaSuffixAppender.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, never()).write(HEARING_REQ_SUFFIX, "_afterHearingReq");
     }
 
     @Test
@@ -109,7 +159,7 @@ class ProgressBarAdaSuffixAppenderTest {
 
                 boolean canHandle = progressBarAdaSuffixAppender.canHandle(callbackStage, callback);
 
-                if (callback.getEvent() == Event.SUBMIT_APPEAL
+                if (Set.of(SUBMIT_APPEAL, TRANSFER_OUT_OF_ADA).contains(event)
                     && callbackStage == ABOUT_TO_SUBMIT) {
 
                     assertTrue(canHandle);

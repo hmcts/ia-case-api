@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -42,8 +43,17 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
+
+        final AsylumCase asylumCase = callback.getCaseDetails().getCaseData();
+
+        if (isInternalCase(asylumCase)) {
+            return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
+                    && getInternalEventsToHandle().contains(callback.getEvent());
+        }
+
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-            && getEventsToHandle(callback).contains(callback.getEvent());
+                && getEventsToHandle(callback).contains(callback.getEvent());
+
     }
 
     private List<Event> getEventsToHandle(Callback<AsylumCase> callback) {
@@ -128,6 +138,18 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         }
         if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData()) && isPaid(callback)) {
             eventsToHandle.add(Event.PAYMENT_APPEAL);
+        }
+        return eventsToHandle;
+    }
+
+    private List<Event> getInternalEventsToHandle() {
+        List<Event> eventsToHandle = Lists.newArrayList(
+                //Event.SUBMIT_APPEAL,
+                Event.EDIT_APPEAL_AFTER_SUBMIT,
+                Event.REQUEST_RESPONDENT_EVIDENCE
+        );
+        if (!isSaveAndContinueEnabled) {
+            //eventsToHandle.add(Event.BUILD_CASE);
         }
         return eventsToHandle;
     }

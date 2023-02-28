@@ -36,7 +36,7 @@ public class AppealUserRoleAppender implements PreSubmitCallbackHandler<AsylumCa
 
         Event event = callback.getEvent();
 
-        return callbackStage == PreSubmitCallbackStage.ABOUT_TO_START
+        return (callbackStage == PreSubmitCallbackStage.ABOUT_TO_START || callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT)
                 && List.of(START_APPEAL).contains(event);
     }
 

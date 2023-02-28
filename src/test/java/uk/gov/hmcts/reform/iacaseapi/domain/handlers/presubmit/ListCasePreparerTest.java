@@ -194,6 +194,23 @@ class ListCasePreparerTest {
     }
 
     @Test
+    void should_set_error_when_transferred_out_of_ada_after_listing() {
+
+        when(asylumCase.read(AsylumCaseFieldDefinition.HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(AsylumCaseFieldDefinition.CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.class))
+            .thenReturn(Optional.of(YesOrNo.YES));
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+            listCasePreparer.handle(PreSubmitCallbackStage.ABOUT_TO_START, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+        Assertions.assertThat(callbackResponse.getErrors()).hasSize(1);
+        Assertions.assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
+            "Case was listed before being transferred out of ADA. Edit case listing instead.");
+    }
+
+    @Test
     void should_work_for_old_flow_when_requirements_not_captured() {
 
         when(asylumCase.read(AsylumCaseFieldDefinition.HEARING_CENTRE))
