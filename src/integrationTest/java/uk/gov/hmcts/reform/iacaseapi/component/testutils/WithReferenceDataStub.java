@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 
@@ -37,6 +38,7 @@ public interface WithReferenceDataStub {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
+                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .withBody(responseJson)
                     .build()
             )
@@ -52,6 +54,7 @@ public interface WithReferenceDataStub {
                 aResponse()
                     .withStatus(HttpStatus.CREATED.value())
                     .withHeader("Content-Type", "application/json")
+                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .build()
             )
         );

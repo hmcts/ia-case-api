@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.new
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
+import org.springframework.http.HttpHeaders;
 
 public interface WithUserDetailsStub {
 
@@ -36,6 +37,7 @@ public interface WithUserDetailsStub {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
+                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .withBody("{\"sub\":\"someone@somewhere.com\","
                         + "\"uid\":\"1\",\"roles\":[\"caseworker-ia\",\"caseworker-ia-legalrep-solicitor\"],"
                         + "\"name\":null,\"given_name\":\"Legal rep\",\"family_name\":\"Solicitor\"}")
