@@ -50,13 +50,14 @@ class AppealReferenceNumberHandlerTest {
     private CaseDetails<AsylumCase> caseDetails;
     @Mock
     private AsylumCase asylumCase;
-
     @Mock
     private DateProvider dateProvider;
     @Mock
     private AppealReferenceNumberGenerator appealReferenceNumberGenerator;
 
     private AppealReferenceNumberHandler appealReferenceNumberHandler;
+
+    private String tribunalReceivedDate = "02-02-2023";
 
     @BeforeEach
     public void setUp() {
@@ -210,6 +211,36 @@ class AppealReferenceNumberHandlerTest {
         verify(asylumCase, times(1)).write(APPEAL_REFERENCE_NUMBER, "DRAFT");
 
         verifyNoInteractions(appealReferenceNumberGenerator);
+    }
+
+    @Test
+    void should_write_to_internal_fields_when_case_is_created_by_admin() {
+
+        when(callback.getEvent()).thenReturn(Event.SUBMIT_APPEAL);
+
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.of("DRAFT"));
+
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        when(asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class)).thenReturn(Optional.of(tribunalReceivedDate));
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.PA));
+        when(asylumCase.read(APPEAL_REFERENCE_NUMBER)).thenReturn(Optional.empty());
+
+        final LocalDate now = LocalDate.now();
+        when(dateProvider.now()).thenReturn(now);
+
+        PreSubmitCallbackResponse<AsylumCase> callbackResponse =
+                appealReferenceNumberHandler.handle(ABOUT_TO_SUBMIT, callback);
+
+        assertNotNull(callbackResponse);
+        assertEquals(asylumCase, callbackResponse.getData());
+
+        verify(asylumCase, times(1)).write(TRIBUNAL_RECEIVED_INTERNAL_DATE, Optional.of(tribunalReceivedDate));
+        verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_INTERNAL_DATE, now.toString());
+
     }
 
     @Test

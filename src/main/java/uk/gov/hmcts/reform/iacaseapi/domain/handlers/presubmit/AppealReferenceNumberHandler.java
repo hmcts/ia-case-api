@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.DispatchPriori
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackResponse;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.PreSubmitCallbackStage;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
-import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.AppealReferenceNumberGenerator;
 
@@ -100,9 +99,10 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
 
-            if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+            YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
+            if (isAdmin.equals(YesOrNo.YES)) {
 
-                Optional<String> tribunalReceivedDate = asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class);
+                Optional<String> tribunalReceivedDate = Optional.of(asylumCase.read(TRIBUNAL_RECEIVED_DATE, String.class).orElse(""));
                 if (tribunalReceivedDate.isPresent()) {
                     asylumCase.write(TRIBUNAL_RECEIVED_INTERNAL_DATE, tribunalReceivedDate);
                 }
