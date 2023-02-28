@@ -144,7 +144,7 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
 
     private List<Event> getInternalEventsToHandle() {
         List<Event> eventsToHandle = Lists.newArrayList(
-                Event.SUBMIT_APPEAL,
+                //Event.SUBMIT_APPEAL,
                 Event.EDIT_APPEAL_AFTER_SUBMIT,
                 Event.REQUEST_RESPONDENT_EVIDENCE
         );
