@@ -22,6 +22,7 @@ public interface WithReferenceDataStub {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
+                    .withHeader(HttpHeaders.CONNECTION, "close")
                     .withBody(responseJson)
                     .build()
             )
