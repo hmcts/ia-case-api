@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.Maps;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.UserDetails;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
+import uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils;
 import uk.gov.hmcts.reform.iacaseapi.domain.service.FeatureToggler;
 
 @Service
@@ -29,9 +31,9 @@ public class CcdSupplementaryUpdater {
     private final RestTemplate restTemplate;
     private final AuthTokenGenerator serviceAuthTokenGenerator;
     private final UserDetails userDetails;
-    private String ccdUrl;
-    private String ccdSupplementaryApiPath;
-    private String hmctsServiceId;
+    private final String ccdUrl;
+    private final String ccdSupplementaryApiPath;
+    private final String hmctsServiceId;
 
     public CcdSupplementaryUpdater(FeatureToggler featureToggler, RestTemplate restTemplate,
                                    AuthTokenGenerator serviceAuthTokenGenerator,
@@ -52,6 +54,11 @@ public class CcdSupplementaryUpdater {
     public void setHmctsServiceIdSupplementary(final Callback<AsylumCase> callback) {
         if (featureToggler.getValue("wa-R3-feature", false)) {
             requireNonNull(callback, "callback must not be null");
+
+            if (HandlerUtils.isAipJourney(callback.getCaseDetails().getCaseData())
+                && hasCitizenRole(userDetails.getRoles())) {
+                return;
+            }
 
             final long caseId = callback.getCaseDetails().getId();
 
@@ -77,23 +84,24 @@ public class CcdSupplementaryUpdater {
                     .build(caseId);
 
             ResponseEntity<Object> response;
+            String url = ccdUrl + uri.getPath();
             try {
                 response = restTemplate
                         .exchange(
-                                ccdUrl + uri.getPath(),
+                                url,
                                 HttpMethod.POST,
                                 requestEntity,
                                 Object.class
                         );
 
+                log.info("Http status received from CCD supplementary update API [{}]", response.getStatusCodeValue());
             } catch (RestClientResponseException e) {
-                throw new CcdDataIntegrationException(
-                        "Couldn't update CCD case supplementary data using API: " + ccdUrl + ccdSupplementaryApiPath,
-                        e
-                );
+                log.info("Couldn't update CCD case supplementary data using API: [{}]", url, e);
             }
-
-            log.info("Http status received from CCD supplementary update API; {}", response.getStatusCodeValue());
         }
+    }
+
+    private boolean hasCitizenRole(List<String> roles) {
+        return roles != null && roles.contains("citizen");
     }
 }
