@@ -18,7 +18,9 @@ variable "env" {
 variable "subscription" {
 }
 
-variable "ilbIp" {}
+variable "ilbIp" {
+  default = ""
+}
 
 variable "common_tags" {
   type = map(string)
