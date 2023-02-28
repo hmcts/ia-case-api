@@ -19,19 +19,19 @@ import uk.gov.hmcts.reform.iacaseapi.domain.handlers.PreSubmitCallbackHandler;
 public class InternalCaseCreationContactDetailsAppender implements PreSubmitCallbackHandler<AsylumCase> {
 
     public boolean canHandle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         requireNonNull(callbackStage, "callbackStage must not be null");
         requireNonNull(callback, "callback must not be null");
 
         return callbackStage == PreSubmitCallbackStage.ABOUT_TO_SUBMIT
-                && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent());
+               && Arrays.asList(Event.START_APPEAL, Event.EDIT_APPEAL).contains(callback.getEvent());
     }
 
     public PreSubmitCallbackResponse<AsylumCase> handle(
-            PreSubmitCallbackStage callbackStage,
-            Callback<AsylumCase> callback
+        PreSubmitCallbackStage callbackStage,
+        Callback<AsylumCase> callback
     ) {
         if (!canHandle(callbackStage, callback)) {
             throw new IllegalStateException("Cannot handle callback");

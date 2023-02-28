@@ -52,7 +52,7 @@ class InternalCaseCreationContactDetailsAppenderTest {
         when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
 
     }
-
+    
     @Test
     void handler_checks_internal_contact_details_and_appends_to_main_fields() {
 
