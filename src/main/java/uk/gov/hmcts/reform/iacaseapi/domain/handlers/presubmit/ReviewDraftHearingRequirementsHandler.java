@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo.YES;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -61,6 +62,14 @@ public class ReviewDraftHearingRequirementsHandler implements PreSubmitCallbackH
             asylumCase.write(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.NO);
             //Set flag to Yes to enable updateHearingRequirementsEvent for ada cases
             asylumCase.write(ADA_HEARING_REQUIREMENTS_UPDATABLE, YesOrNo.YES);
+        }
+
+        boolean appealTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(yesOrNo -> yesOrNo.equals(YES))
+            .orElse(false);
+
+        if (appealTransferredOutOfAda) {
+            asylumCase.write(ADA_EDIT_LISTING_AVAILABLE, YES);
         }
 
         return new PreSubmitCallbackResponse<>(asylumCase);

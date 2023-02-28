@@ -71,6 +71,24 @@ public class ListCasePreparer implements PreSubmitCallbackHandler<AsylumCase> {
             });
         }
 
+        boolean hasTransferredOutOfAda = asylumCase.read(HAS_TRANSFERRED_OUT_OF_ADA, YesOrNo.class)
+            .map(field -> field.equals(YesOrNo.YES))
+            .orElse(false);
+
+        boolean listCaseWasTriggeredInAdaJourney = asylumCase.read(CURRENT_HEARING_DETAILS_VISIBLE, YesOrNo.class)
+            .map(field -> field.equals(YesOrNo.YES))
+            .orElse(false);
+
+        if (callback.getEvent().equals(Event.LIST_CASE)
+            && hasTransferredOutOfAda
+            && listCaseWasTriggeredInAdaJourney) {
+            // direct user to use EDIT_CASE_LISTING instead of LIST_CASE if the appeal was transferred out of ADA after listing
+
+            PreSubmitCallbackResponse<AsylumCase> response = new PreSubmitCallbackResponse<>(asylumCase);
+            response.addError("Case was listed before being transferred out of ADA. Edit case listing instead.");
+            return response;
+        }
+
         return new PreSubmitCallbackResponse<>(asylumCase);
     }
 }

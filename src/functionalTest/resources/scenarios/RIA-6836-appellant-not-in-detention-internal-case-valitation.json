@@ -1,0 +1,30 @@
+{
+  "description": "RIA-6836 Validation error for appellant not in detention during internal case creation",
+   "request": {
+    "uri": "/asylum/ccdMidEvent?pageId=detention",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 6836,
+      "eventId": "startAppeal",
+      "state": "appealStarted",
+      "caseData": {
+        "template": "minimal-appeal-started.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "appellantInDetention": "No"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": ["The option is currently unavailable"],
+    "caseData": {
+      "template": "minimal-appeal-started.json",
+      "replacements": {
+        "isAdmin": "Yes",
+        "appellantInDetention": "No"
+      }
+    }
+  }
+}
