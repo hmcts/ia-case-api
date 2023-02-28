@@ -238,7 +238,6 @@ class AppealReferenceNumberHandlerTest {
         assertNotNull(callbackResponse);
         assertEquals(asylumCase, callbackResponse.getData());
 
-        verify(asylumCase, times(1)).write(TRIBUNAL_RECEIVED_INTERNAL_DATE, Optional.of(tribunalReceivedDate));
         verify(asylumCase, times(1)).write(APPEAL_SUBMISSION_INTERNAL_DATE, now.toString());
 
     }

@@ -556,9 +556,6 @@ public enum AsylumCaseFieldDefinition {
     TRIBUNAL_RECEIVED_DATE(
             "tribunalReceivedDate", new TypeReference<String>(){}),
 
-    TRIBUNAL_RECEIVED_INTERNAL_DATE(
-            "tribunalReceivedInternalDate", new TypeReference<String>(){}),
-
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
 
