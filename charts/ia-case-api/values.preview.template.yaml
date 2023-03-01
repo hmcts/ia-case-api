@@ -208,36 +208,36 @@ ccd:
       disableKeyVaults: true
 
   #Use this image to import your CCD definition. To have an image available, create a git tag and push it.
-  ccd-definition-importer:
-    image: hmctspublic.azurecr.io/ia/ccd-definition-importer-benefit:S10538-22nonProd
-    definitionFilename: ia-ccd-definitions.xlsx
-    redirectUri: http://${SERVICE_NAME}-ccd-admin-web/oauth2redirect
-    environment:
-      CCD_ENVIRONMENT: PROD
-      CCD_DEF_EM_CCD_ORCHESTRATOR_URL: http://${SERVICE_NAME}-em-ccd-orchestrator
-      CCD_DEF_TRIBUNALS_API_URL: http://${SERVICE_NAME}-java
-      CCD_DEF_TYA_NOTIFICATIONS_API_URL: http://${SERVICE_NAME}-tya-notification
-      CCD_DEF_BULK_SCAN_API_URL: http://${SERVICE_NAME}-bulk-scan-api
-      CCD_DEF_BULK_SCAN_ORCHESTRATOR_URL: http://${SERVICE_NAME}-bulk-scan-orchestrator
-      CCD_DEF_COR_BACKEND_URL: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_STORE_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_DEF_TYA_LINK: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_DEF_TYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_DEF_MYA_LINK: http://${SERVICE_NAME}/sign-in?tya=
-      CCD_DEF_MYA_REPRESENTATIVE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_DEF_MYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-      CCD_DEF_ENV: PROD
-      CCD_DEF_VERSION: S10538-22
-    secrets: []
-    userRoles:
-      - caseworker-ia-legalrep-solicitor
-      - caseworker-ia-caseofficer
-      - caseworker-ia-adminofficer
-      - caseworker-ia-homeofficeapc
-      - caseworker-ia-homeofficelart
-      - caseworker-ia-homeofficepou
-      - caseworker-ia-respondentofficer
-      - citizen
+#  ccd-definition-importer:
+#    image: hmctspublic.azurecr.io/ia/ccd-definition-importer-benefit:S10538-22nonProd
+#    definitionFilename: ia-ccd-definitions.xlsx
+#    redirectUri: http://${SERVICE_NAME}-ccd-admin-web/oauth2redirect
+#    environment:
+#      CCD_ENVIRONMENT: PROD
+#      CCD_DEF_EM_CCD_ORCHESTRATOR_URL: http://${SERVICE_NAME}-em-ccd-orchestrator
+#      CCD_DEF_TRIBUNALS_API_URL: http://${SERVICE_NAME}-java
+#      CCD_DEF_TYA_NOTIFICATIONS_API_URL: http://${SERVICE_NAME}-tya-notification
+#      CCD_DEF_BULK_SCAN_API_URL: http://${SERVICE_NAME}-bulk-scan-api
+#      CCD_DEF_BULK_SCAN_ORCHESTRATOR_URL: http://${SERVICE_NAME}-bulk-scan-orchestrator
+#      CCD_DEF_COR_BACKEND_URL: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_STORE_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_DEF_TYA_LINK: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_DEF_TYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_DEF_MYA_LINK: http://${SERVICE_NAME}/sign-in?tya=
+#      CCD_DEF_MYA_REPRESENTATIVE_LINK: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_DEF_MYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
+#      CCD_DEF_ENV: PROD
+#      CCD_DEF_VERSION: S10538-22
+#    secrets: []
+#    userRoles:
+#      - caseworker-ia-legalrep-solicitor
+#      - caseworker-ia-caseofficer
+#      - caseworker-ia-adminofficer
+#      - caseworker-ia-homeofficeapc
+#      - caseworker-ia-homeofficelart
+#      - caseworker-ia-homeofficepou
+#      - caseworker-ia-respondentofficer
+#      - citizen
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
