@@ -40,8 +40,8 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
         - launch-darkly-sdk-key
-  postgresql:
-    enabled: false
+#  postgresql:
+#    enabled: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
@@ -144,6 +144,7 @@ ccd:
         POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
         
   postgresql:
+    enabled: true
     releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
     initdbScripts:
       init.sql: |-
