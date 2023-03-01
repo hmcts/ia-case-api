@@ -138,6 +138,7 @@ ccd:
     enableKeyVaults: true
     devMode: true    
     postgresql:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
       auth:
         postgresUsername: hmcts
         postgresPassword: hmcts
