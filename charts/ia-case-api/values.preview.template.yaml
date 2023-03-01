@@ -41,7 +41,7 @@ java:
         - em-stitching-enabled
         - launch-darkly-sdk-key
   postgresql:
-    enabled: true
+    enabled: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
@@ -137,11 +137,11 @@ ccd:
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     enableKeyVaults: true
     devMode: true    
-#    postgresql:
-#      releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
-#      auth:
-#        postgresUsername: hmcts
-#        postgresPassword: hmcts
+    postgresql:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
+      auth:
+        postgresUsername: hmcts
+        postgresPassword: hmcts
         
   postgresql:
     releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
