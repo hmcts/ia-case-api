@@ -550,6 +550,12 @@ public enum AsylumCaseFieldDefinition {
     FTPA_APPLICATION_DEADLINE(
             "ftpaApplicationDeadline", new TypeReference<String>(){}),
 
+    APPEAL_SUBMISSION_INTERNAL_DATE(
+            "appealSubmissionInternalDate", new TypeReference<String>(){}),
+
+    TRIBUNAL_RECEIVED_DATE(
+            "tribunalReceivedDate", new TypeReference<String>(){}),
+
     ADD_CASE_NOTE_SUBJECT(
         "addCaseNoteSubject", new TypeReference<String>(){}),
 

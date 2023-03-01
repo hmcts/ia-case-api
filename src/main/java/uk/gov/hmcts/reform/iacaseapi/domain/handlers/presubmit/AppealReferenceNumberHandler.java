@@ -97,8 +97,12 @@ public class AppealReferenceNumberHandler implements PreSubmitCallbackHandler<As
                 );
 
             asylumCase.write(APPEAL_REFERENCE_NUMBER, appealReferenceNumber);
-
             asylumCase.write(APPEAL_SUBMISSION_DATE, dateProvider.now().toString());
+
+            YesOrNo isAdmin = asylumCase.read(IS_ADMIN, YesOrNo.class).orElse(YesOrNo.NO);
+            if (isAdmin.equals(YesOrNo.YES)) {
+                asylumCase.write(APPEAL_SUBMISSION_INTERNAL_DATE, dateProvider.now().toString());
+            }
         }
 
         return callbackResponse;
