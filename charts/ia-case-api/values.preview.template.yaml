@@ -144,6 +144,7 @@ ccd:
         postgresPassword: hmcts
         
   postgresql:
+    releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
     initdbScripts:
       init.sql: |-
         CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
