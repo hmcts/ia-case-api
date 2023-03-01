@@ -3,10 +3,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    POSTGRES_HOST: ${SERVICE_NAME}-ccd-postgresql
+    POSTGRES_NAME: ia-case-api
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
@@ -140,14 +140,16 @@ ccd:
     postgresql:
       releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
       auth:
-        POSTGRES_USERNAME: ccd
-        POSTGRES_PASSWORD: ccd
-        
+        postgresUsername: hmcts
+        postgresPassword: hmcts
+
+
   postgresql:
     enabled: true
     releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
     initdbScripts:
       init.sql: |-
+        CREATE DATABASE "ia_case_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
         CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
         CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
         CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
