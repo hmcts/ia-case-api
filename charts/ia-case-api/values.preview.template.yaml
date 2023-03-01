@@ -140,8 +140,8 @@ ccd:
     postgresql:
       releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
       auth:
-        postgresUsername: hmcts
-        postgresPassword: hmcts
+        POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+        POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
         
   postgresql:
     releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
