@@ -10,7 +10,7 @@ buildscript {
 
 plugins {
     id 'application'
-    //id 'checkstyle'
+    id 'checkstyle'
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.42.0'
@@ -73,44 +73,44 @@ tasks.withType(Test) {
     }
 }
 
-//sourceSets {
-//
-//    integrationTest {
-//        java {
-//            compileClasspath += main.output + test.output
-//            runtimeClasspath += main.output + test.output
-//            srcDir file('src/integrationTest/java')
-//        }
-//        resources.srcDir file('src/integrationTest/resources')
-//    }
-//
-//    functionalTest {
-//        java {
-//            compileClasspath += main.output + test.output
-//            runtimeClasspath += main.output + test.output
-//            srcDir file('src/functionalTest/java')
-//        }
-//        resources.srcDir file('src/functionalTest/resources')
-//    }
-//
-//    smokeTest {
-//        java {
-//            compileClasspath += main.output + test.output
-//            runtimeClasspath += main.output + test.output
-//            srcDir file('src/smokeTest/java')
-//        }
-//        resources.srcDir file('src/smokeTest/resources')
-//    }
-//
-//    contractTest {
-//        java {
-//            compileClasspath += main.output
-//            runtimeClasspath += main.output
-//            srcDir file('src/contractTest/java')
-//        }
-//        resources.srcDir file('src/contactTest/resources')
-//    }
-//}
+sourceSets {
+
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integrationTest/java')
+        }
+        resources.srcDir file('src/integrationTest/resources')
+    }
+
+    functionalTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/functionalTest/java')
+        }
+        resources.srcDir file('src/functionalTest/resources')
+    }
+
+    smokeTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/smokeTest/java')
+        }
+        resources.srcDir file('src/smokeTest/resources')
+    }
+
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contactTest/resources')
+    }
+}
 
 lombok {
     config['config.stopbubbling'] = 'true'
@@ -118,71 +118,71 @@ lombok {
     config['lombok.anyConstructor.addConstructorProperties'] = 'true'
 }
 
-//idea {
-//    module {
-//        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-//        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-//        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-//        testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-//        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
-//        testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
-//        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
-//        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
-//    }
-//}
+idea {
+    module {
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+        testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
+        testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
+        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
+    }
+}
 
-//configurations {
-//    integrationTestCompile.extendsFrom testCompile
-//    integrationTestRuntime.extendsFrom testRuntime
-//    functionalTestCompile.extendsFrom testCompile
-//    functionalTestRuntime.extendsFrom testRuntime
-//    contractTestCompile.extendsFrom testCompile
-//    contractTestRuntime.extendsFrom testRuntime
-//}
-//
-//checkstyle {
-//    maxWarnings = 0
-//    toolVersion = '8.40'
-//    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-//    configDir = new File(rootDir, 'config/checkstyle')
-//}
-//
-//pmd {
-//    toolVersion = '6.41.0'
-//    ignoreFailures = true
-//    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
-//    reportsDir = file("$project.buildDir/reports/pmd")
-//    ruleSets = [
-//        'category/java/errorprone.xml',
-//        'category/java/bestpractices.xml'
-//    ]
-//}
-//
-//task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
-//    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-//    classpath = sourceSets.integrationTest.runtimeClasspath
-//}
-//
-//task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-//
-//    systemProperty "scenario", System.getProperty('scenario')
-//    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-//    classpath = sourceSets.functionalTest.runtimeClasspath
-//    finalizedBy aggregate
-//}
-//
-//task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
-//    testClassesDirs = sourceSets.smokeTest.output.classesDirs
-//    classpath = sourceSets.smokeTest.runtimeClasspath
-//}
-//
-//task contract(type: Test) {
-//    description = "Runs the consumer Pact tests"
-//    group = 'Verification'
-//    useJUnitPlatform()
-//    testClassesDirs = sourceSets.contractTest.output.classesDirs
-//    classpath = sourceSets.contractTest.runtimeClasspath
-//}
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+    functionalTestCompile.extendsFrom testCompile
+    functionalTestRuntime.extendsFrom testRuntime
+    contractTestCompile.extendsFrom testCompile
+    contractTestRuntime.extendsFrom testRuntime
+}
+
+checkstyle {
+    maxWarnings = 0
+    toolVersion = '8.40'
+    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+    configDir = new File(rootDir, 'config/checkstyle')
+}
+
+pmd {
+    toolVersion = '6.41.0'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    ruleSets = [
+        'category/java/errorprone.xml',
+        'category/java/bestpractices.xml'
+    ]
+}
+
+task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+
+    systemProperty "scenario", System.getProperty('scenario')
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+    finalizedBy aggregate
+}
+
+task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
+    testClassesDirs = sourceSets.smokeTest.output.classesDirs
+    classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+task contract(type: Test) {
+    description = "Runs the consumer Pact tests"
+    group = 'Verification'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+}
 
 project.ext {
     pacticipant = 'ia_caseApi'
@@ -194,14 +194,14 @@ jacoco {
     toolVersion = "0.8.4"
 }
 
-//jacocoTestReport {
-//    executionData(test, integration)
-//    reports {
-//        xml.enabled = true
-//        csv.enabled = false
-//        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-//    }
-//}
+jacocoTestReport {
+    executionData(test, integration)
+    reports {
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
 
 pitest {
     junit5PluginVersion = '0.15'
@@ -219,22 +219,22 @@ pitest {
 
 project.tasks['pitest'].group = "Verification"
 
-//sonarqube {
-//    properties {
-//        property "sonar.projectName", "IA :: Immigration & Asylum case api"
-//        property "sonar.projectKey", "IACASEAPI"
-//        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-//        property "sonar.pitest.mode", "reuseReport"
-//        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-//        property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/config/**," +
-//                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
-//                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
-//                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java"
-//    }
-//}
+sonarqube {
+    properties {
+        property "sonar.projectName", "IA :: Immigration & Asylum case api"
+        property "sonar.projectKey", "IACASEAPI"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+        property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/config/**," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/SystemDateProvider.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/Application.java," +
+                                     "src/main/java/uk/gov/hmcts/reform/iacaseapi/infrastructure/security/idam/IdamAuthoritiesConverter.java"
+    }
+}
 
-//project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
-//project.tasks['sonarqube'].group = "Verification"
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+project.tasks['sonarqube'].group = "Verification"
 
 repositories {
     jcenter()
@@ -304,60 +304,60 @@ dependencies {
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'3.5.0'
-//    testCompile "com.github.tomakehurst:wiremock:2.19.0"
-//    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
-//    testCompile 'com.github.tomakehurst:wiremock:2.23.2'
-//    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
-//    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-//    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-//    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-//    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-//    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
-//    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
-//    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
-//    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-//    //pact contract testing
-//    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
-//    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
-//    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.7'
-//    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
+    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
+    testCompile 'com.github.tomakehurst:wiremock:2.23.2'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
+    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
+    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+    //pact contract testing
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
+    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.7'
+    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
 
-//    contractTestCompile sourceSets.main.runtimeClasspath
-//    contractTestCompile sourceSets.test.runtimeClasspath
-//
-//    integrationTestCompile sourceSets.main.runtimeClasspath
-//    integrationTestCompile sourceSets.test.runtimeClasspath
-//
-//    functionalTestCompile sourceSets.main.runtimeClasspath
-//    functionalTestCompile sourceSets.test.runtimeClasspath
-//
-//    smokeTestCompile sourceSets.main.runtimeClasspath
-//    smokeTestCompile sourceSets.test.runtimeClasspath
-//
-//    contractTestCompile sourceSets.main.runtimeClasspath
-//    contractTestCompile sourceSets.test.runtimeClasspath
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
+
+    integrationTestCompile sourceSets.main.runtimeClasspath
+    integrationTestCompile sourceSets.test.runtimeClasspath
+
+    functionalTestCompile sourceSets.main.runtimeClasspath
+    functionalTestCompile sourceSets.test.runtimeClasspath
+
+    smokeTestCompile sourceSets.main.runtimeClasspath
+    smokeTestCompile sourceSets.test.runtimeClasspath
+
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
 
 }
 
-//task runAndPublishConsumerPactTests(type: Test) {
-//    logger.lifecycle("Runs pact Tests")
-//    testClassesDirs = sourceSets.contractTest.output.classesDirs
-//    classpath = sourceSets.contractTest.runtimeClasspath
-//
-//}
-//
-//runAndPublishConsumerPactTests.finalizedBy pactPublish
-//
-//pact {
-//    broker {
-//        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-//    }
-//    publish {
-//        pactDirectory = 'pacts'
-//        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
-//        version = project.pacticipantVersion
-//    }
-//}
+task runAndPublishConsumerPactTests(type: Test) {
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+pact {
+    broker {
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    }
+    publish {
+        pactDirectory = 'pacts'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        version = project.pacticipantVersion
+    }
+}
 
 dependencyCheck {
     suppressionFile = 'config/owasp/suppressions.xml'
