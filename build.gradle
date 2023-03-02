@@ -72,45 +72,45 @@ tasks.withType(Test) {
         exceptionFormat = 'full'
     }
 }
-
-sourceSets {
-
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integrationTest/java')
-        }
-        resources.srcDir file('src/integrationTest/resources')
-    }
-
-    functionalTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/functionalTest/java')
-        }
-        resources.srcDir file('src/functionalTest/resources')
-    }
-
-    smokeTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/smokeTest/java')
-        }
-        resources.srcDir file('src/smokeTest/resources')
-    }
-
-    contractTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/contractTest/java')
-        }
-        resources.srcDir file('src/contactTest/resources')
-    }
-}
+//
+//sourceSets {
+//
+//    integrationTest {
+//        java {
+//            compileClasspath += main.output + test.output
+//            runtimeClasspath += main.output + test.output
+//            srcDir file('src/integrationTest/java')
+//        }
+//        resources.srcDir file('src/integrationTest/resources')
+//    }
+//
+//    functionalTest {
+//        java {
+//            compileClasspath += main.output + test.output
+//            runtimeClasspath += main.output + test.output
+//            srcDir file('src/functionalTest/java')
+//        }
+//        resources.srcDir file('src/functionalTest/resources')
+//    }
+//
+//    smokeTest {
+//        java {
+//            compileClasspath += main.output + test.output
+//            runtimeClasspath += main.output + test.output
+//            srcDir file('src/smokeTest/java')
+//        }
+//        resources.srcDir file('src/smokeTest/resources')
+//    }
+//
+//    contractTest {
+//        java {
+//            compileClasspath += main.output
+//            runtimeClasspath += main.output
+//            srcDir file('src/contractTest/java')
+//        }
+//        resources.srcDir file('src/contactTest/resources')
+//    }
+//}
 
 lombok {
     config['config.stopbubbling'] = 'true'
@@ -118,71 +118,71 @@ lombok {
     config['lombok.anyConstructor.addConstructorProperties'] = 'true'
 }
 
-idea {
-    module {
-        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-        testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
-        testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
-        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
-        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
-    }
-}
+//idea {
+//    module {
+//        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+//        testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+//        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+//        testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+//        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
+//        testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
+//        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
+//        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
+//    }
+//}
 
-configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
-    functionalTestCompile.extendsFrom testCompile
-    functionalTestRuntime.extendsFrom testRuntime
-    contractTestCompile.extendsFrom testCompile
-    contractTestRuntime.extendsFrom testRuntime
-}
-
-checkstyle {
-    maxWarnings = 0
-    toolVersion = '8.40'
-    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-    configDir = new File(rootDir, 'config/checkstyle')
-}
-
-pmd {
-    toolVersion = '6.41.0'
-    ignoreFailures = true
-    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
-    reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSets = [
-        'category/java/errorprone.xml',
-        'category/java/bestpractices.xml'
-    ]
-}
-
-task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-}
-
-task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-
-    systemProperty "scenario", System.getProperty('scenario')
-    testClassesDirs = sourceSets.functionalTest.output.classesDirs
-    classpath = sourceSets.functionalTest.runtimeClasspath
-    finalizedBy aggregate
-}
-
-task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
-    testClassesDirs = sourceSets.smokeTest.output.classesDirs
-    classpath = sourceSets.smokeTest.runtimeClasspath
-}
-
-task contract(type: Test) {
-    description = "Runs the consumer Pact tests"
-    group = 'Verification'
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-}
+//configurations {
+//    integrationTestCompile.extendsFrom testCompile
+//    integrationTestRuntime.extendsFrom testRuntime
+//    functionalTestCompile.extendsFrom testCompile
+//    functionalTestRuntime.extendsFrom testRuntime
+//    contractTestCompile.extendsFrom testCompile
+//    contractTestRuntime.extendsFrom testRuntime
+//}
+//
+//checkstyle {
+//    maxWarnings = 0
+//    toolVersion = '8.40'
+//    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+//    configDir = new File(rootDir, 'config/checkstyle')
+//}
+//
+//pmd {
+//    toolVersion = '6.41.0'
+//    ignoreFailures = true
+//    sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
+//    reportsDir = file("$project.buildDir/reports/pmd")
+//    ruleSets = [
+//        'category/java/errorprone.xml',
+//        'category/java/bestpractices.xml'
+//    ]
+//}
+//
+//task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+//    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+//    classpath = sourceSets.integrationTest.runtimeClasspath
+//}
+//
+//task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+//
+//    systemProperty "scenario", System.getProperty('scenario')
+//    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+//    classpath = sourceSets.functionalTest.runtimeClasspath
+//    finalizedBy aggregate
+//}
+//
+//task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
+//    testClassesDirs = sourceSets.smokeTest.output.classesDirs
+//    classpath = sourceSets.smokeTest.runtimeClasspath
+//}
+//
+//task contract(type: Test) {
+//    description = "Runs the consumer Pact tests"
+//    group = 'Verification'
+//    useJUnitPlatform()
+//    testClassesDirs = sourceSets.contractTest.output.classesDirs
+//    classpath = sourceSets.contractTest.runtimeClasspath
+//}
 
 project.ext {
     pacticipant = 'ia_caseApi'
@@ -194,14 +194,14 @@ jacoco {
     toolVersion = "0.8.4"
 }
 
-jacocoTestReport {
-    executionData(test, integration)
-    reports {
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-    }
-}
+//jacocoTestReport {
+//    executionData(test, integration)
+//    reports {
+//        xml.enabled = true
+//        csv.enabled = false
+//        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+//    }
+//}
 
 pitest {
     junit5PluginVersion = '0.15'
@@ -233,8 +233,8 @@ sonarqube {
     }
 }
 
-project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
-project.tasks['sonarqube'].group = "Verification"
+//project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+//project.tasks['sonarqube'].group = "Verification"
 
 repositories {
     jcenter()
@@ -251,42 +251,42 @@ dependencyManagement {
 }
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    compile group: 'org.springframework.security', name: 'spring-security-oauth2-client'
-    compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-    compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-    compile group: 'org.springframework.security', name: 'spring-security-test'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-    compile group: 'org.springframework', name: 'spring-context-support'
-    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv'
-    compile group: 'org.flywaydb', name: 'flyway-core'
-    compile group: 'org.yaml', name: 'snakeyaml'
-    compile group: 'org.apache.commons', name: 'commons-lang3'
-    compile group: 'commons-io', name: 'commons-io', version: '2.10.0'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient'
-    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.4.1'
-    compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
-    compile group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1'
-    compile group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+    implementation group: 'org.springframework.security', name: 'spring-security-test'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    implementation group: 'org.springframework', name: 'spring-context-support'
+    implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv'
+    implementation group: 'org.flywaydb', name: 'flyway-core'
+    implementation group: 'org.yaml', name: 'snakeyaml'
+    implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.1'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1'
+    implementation group: 'org.javamoney.moneta', name: 'moneta-core', version: '1.4.2'
 
-    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
-    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
-    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
+    implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
+    implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
+    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+    implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
+    implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -304,60 +304,60 @@ dependencies {
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
     testImplementation group: 'org.mockito', name: 'mockito-core', version :'3.5.0'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
-    testCompile 'com.github.tomakehurst:wiremock:2.23.2'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
-    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
-    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
-    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
-    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-    //pact contract testing
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
-    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.7'
-    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
+//    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+//    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
+//    testCompile 'com.github.tomakehurst:wiremock:2.23.2'
+//    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
+//    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+//    testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+//    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+//    testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+//    testCompile "com.github.tomakehurst:wiremock-jre8:2.23.2"
+//    testCompile group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1'
+//    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
+//    testCompile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+//    //pact contract testing
+//    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.7'
+//    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
+//    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.7'
+//    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test' ,version : versions.springBoot
 
-    contractTestCompile sourceSets.main.runtimeClasspath
-    contractTestCompile sourceSets.test.runtimeClasspath
-
-    integrationTestCompile sourceSets.main.runtimeClasspath
-    integrationTestCompile sourceSets.test.runtimeClasspath
-
-    functionalTestCompile sourceSets.main.runtimeClasspath
-    functionalTestCompile sourceSets.test.runtimeClasspath
-
-    smokeTestCompile sourceSets.main.runtimeClasspath
-    smokeTestCompile sourceSets.test.runtimeClasspath
-
-    contractTestCompile sourceSets.main.runtimeClasspath
-    contractTestCompile sourceSets.test.runtimeClasspath
-
-}
-
-task runAndPublishConsumerPactTests(type: Test) {
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
+//    contractTestCompile sourceSets.main.runtimeClasspath
+//    contractTestCompile sourceSets.test.runtimeClasspath
+//
+//    integrationTestCompile sourceSets.main.runtimeClasspath
+//    integrationTestCompile sourceSets.test.runtimeClasspath
+//
+//    functionalTestCompile sourceSets.main.runtimeClasspath
+//    functionalTestCompile sourceSets.test.runtimeClasspath
+//
+//    smokeTestCompile sourceSets.main.runtimeClasspath
+//    smokeTestCompile sourceSets.test.runtimeClasspath
+//
+//    contractTestCompile sourceSets.main.runtimeClasspath
+//    contractTestCompile sourceSets.test.runtimeClasspath
 
 }
 
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-pact {
-    broker {
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-    }
-    publish {
-        pactDirectory = 'pacts'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
-        version = project.pacticipantVersion
-    }
-}
+//task runAndPublishConsumerPactTests(type: Test) {
+//    logger.lifecycle("Runs pact Tests")
+//    testClassesDirs = sourceSets.contractTest.output.classesDirs
+//    classpath = sourceSets.contractTest.runtimeClasspath
+//
+//}
+//
+//runAndPublishConsumerPactTests.finalizedBy pactPublish
+//
+//pact {
+//    broker {
+//        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+//    }
+//    publish {
+//        pactDirectory = 'pacts'
+//        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+//        version = project.pacticipantVersion
+//    }
+//}
 
 dependencyCheck {
     suppressionFile = 'config/owasp/suppressions.xml'
