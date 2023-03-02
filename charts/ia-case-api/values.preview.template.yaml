@@ -129,7 +129,7 @@ ccd:
     adminWeb:
       enabled: true
     definitionImporter:
-      enabled: true
+      enabled: false
     userProfileImporter:
       enabled: false
     apiGatewayWeb:
