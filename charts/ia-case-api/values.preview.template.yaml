@@ -3,10 +3,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: ${SERVICE_NAME}-ccd-postgresql
-    POSTGRES_NAME: ia-case-api
-    POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
+    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
+    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     POSTGRES_CONNECTION_OPTIONS: ""
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
@@ -45,7 +45,6 @@ java:
 
 postgresql:
   enabled: true
-  releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
   initdbScripts:
     init.sql: |-
       CREATE DATABASE "ia_case_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
@@ -131,8 +130,8 @@ ccd:
       enabled: false
     apiGatewayWeb:
       enabled: true
-#    postgresql:
-#      enabled: true
+    postgresql:
+      enabled: true
     s2s:
       enabled: false
     elastic:
@@ -153,7 +152,7 @@ ccd:
     enableKeyVaults: true
     devMode: true
     postgresql:
-      releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
+      releaseNameOverride: "{{ .Release.Name }}-postgresql"
       auth:
         postgresUsername: hmcts
         postgresPassword: hmcts
