@@ -40,8 +40,8 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
         - launch-darkly-sdk-key
-  postgresql:
-    enabled: true
+#  postgresql:
+#    enabled: false
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
