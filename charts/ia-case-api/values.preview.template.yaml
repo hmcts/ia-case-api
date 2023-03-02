@@ -140,6 +140,8 @@ ccd:
       enabled: false
     elastic:
       enabled: true
+    ras:
+      enabled: false
   global:
     ccdApiGatewayIngress: ${SERVICE_NAME}-ccd-api-gw
     ccdAdminWebIngress: ${SERVICE_NAME}-ccd-admin-web
