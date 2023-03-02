@@ -3,10 +3,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_NAME: "{{ .Values.postgresql.auth.database}}"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.auth.username}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
+    POSTGRES_NAME: ia-case-api
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
@@ -40,22 +40,26 @@ java:
         - docmosis-enabled
         - em-stitching-enabled
         - launch-darkly-sdk-key
-#  postgresql:
-#    enabled: false
-
-postgresql:
-  enabled: true
-  initdbScripts:
-    init.sql: |-
-      CREATE DATABASE "ia_case_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "draftstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "evidence" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "annotation" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "hmc-cft-hearing-service" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresql:
+    enabled: true
+    image:
+      tag: '11.6.0'
+    primary:
+      persistence:
+        enabled: false
+      resources:
+        requests:
+          cpu: 25m
+      initdb:
+        scripts:
+          init.sql: |
+            CREATE DATABASE ia-case-api WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+    auth:
+      username: hmcts
+      password: hmcts
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
@@ -97,7 +101,6 @@ xui-webapp:
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       JURISDICTIONS: IA
-      #ID to be checked
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
@@ -131,12 +134,11 @@ ccd:
     apiGatewayWeb:
       enabled: true
     postgresql:
-      enabled: true
+      enabled: false
     s2s:
       enabled: false
     elastic:
       enabled: true
-
   global:
     ccdApiGatewayIngress: ${SERVICE_NAME}-ccd-api-gw
     ccdAdminWebIngress: ${SERVICE_NAME}-ccd-admin-web
@@ -151,27 +153,27 @@ ccd:
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     enableKeyVaults: true
     devMode: true
-    postgresql:
-      releaseNameOverride: "{{ .Release.Name }}-postgresql"
-      auth:
-        postgresUsername: hmcts
-        postgresPassword: hmcts
 
-
-#  postgresql:
-#    enabled: true
-#    releaseNameOverride: ${SERVICE_NAME}-ccd-postgresql
-#    initdbScripts:
-#      init.sql: |-
-#        CREATE DATABASE "ia_case_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "draftstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "evidence" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "annotation" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#        CREATE DATABASE "hmc-cft-hearing-service" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  ccd-api-gateway-web:
+    nodejs:
+      imagePullPolicy: Always
+      environment:
+        ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
+        IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
+        IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
+        PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+      ingressIP: ${INGRESS_IP}
+      disableKeyVaults: true
+  ccd-data-store-api:
+    java:
+      imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 2048Mi
+      devmemoryLimits: 4096Mi
+      autoscaling:
+        enabled: false
+      disableKeyVaults: true
+      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-admin-web:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
@@ -182,11 +184,6 @@ ccd:
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OAUTH2_TOKEN_ENDPOINT: https://idam-web-public.aat.platform.hmcts.net/oauth2/token'
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-
-    idam-pr:
-      releaseNameOverride: ${SERVICE_NAME}-ccd-admin-idam-pr
-      enabled: true
-
   ccd-user-profile-api:
     java:
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
@@ -196,7 +193,6 @@ ccd:
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
       keyVaults: [ ]
-
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
@@ -212,49 +208,9 @@ ccd:
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
       keyVaults: [ ]
-
-  ccd-api-gateway-web:
-    nodejs:
-      imagePullPolicy: Always
-      environment:
-        ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
-        IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
-        IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
-        PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
-      ingressIP: ${INGRESS_IP}
-      disableKeyVaults: true
-
-  #Use this image to import your CCD definition. To have an image available, create a git tag and push it.
-#  ccd-definition-importer:
-#    image: hmctspublic.azurecr.io/ia/ccd-definition-importer-benefit:S10538-22nonProd
-#    definitionFilename: ia-ccd-definitions.xlsx
-#    redirectUri: http://${SERVICE_NAME}-ccd-admin-web/oauth2redirect
-#    environment:
-#      CCD_ENVIRONMENT: PROD
-#      CCD_DEF_EM_CCD_ORCHESTRATOR_URL: http://${SERVICE_NAME}-em-ccd-orchestrator
-#      CCD_DEF_TRIBUNALS_API_URL: http://${SERVICE_NAME}-java
-#      CCD_DEF_TYA_NOTIFICATIONS_API_URL: http://${SERVICE_NAME}-tya-notification
-#      CCD_DEF_BULK_SCAN_API_URL: http://${SERVICE_NAME}-bulk-scan-api
-#      CCD_DEF_BULK_SCAN_ORCHESTRATOR_URL: http://${SERVICE_NAME}-bulk-scan-orchestrator
-#      CCD_DEF_COR_BACKEND_URL: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_STORE_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_DEF_TYA_LINK: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_DEF_TYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_DEF_MYA_LINK: http://${SERVICE_NAME}/sign-in?tya=
-#      CCD_DEF_MYA_REPRESENTATIVE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_DEF_MYA_APPOINTEE_LINK: http://${SERVICE_NAME}-ccd-definition-store
-#      CCD_DEF_ENV: PROD
-#      CCD_DEF_VERSION: S10538-22
-#    secrets: []
-#    userRoles:
-#      - caseworker-ia-legalrep-solicitor
-#      - caseworker-ia-caseofficer
-#      - caseworker-ia-adminofficer
-#      - caseworker-ia-homeofficeapc
-#      - caseworker-ia-homeofficelart
-#      - caseworker-ia-homeofficepou
-#      - caseworker-ia-respondentofficer
-#      - citizen
+  postgresql:
+    persistence:
+      enabled: false
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -265,101 +221,3 @@ ccd:
     image: null
     tag: ccd-cmc-logstash-latest
 
-
-#         - submit-hearing-requirements-enabled
-#         - system-username
-#         - system-password
-#         - idam-client-id
-#         - idam-secret
-#         - s2s-secret
-#         - s2s-microservice
-#         - prof-ref-data-url
-#         - docmosis-enabled
-# ia-case-api:
-#   enabled: false
-#   java:
-#     image: hmctspublic.azurecr.io/ia/ia-case-api:latest
-#     releaseNameOverride: ${SERVICE_NAME}-ia-case-api
-#     environment:
-#     POSTGRES_HOST: {{ .Release.Name }}-postgresql"
-#     POSTGRES_NAME: {{ .Values.postgresql.auth.database}}
-#     POSTGRES_USERNAME: {{ .Values.postgresql.auth.username}}
-#     POSTGRES_PASSWORD: {{ .Values.postgresql.auth.password}}
-#     POSTGRES_CONNECTION_OPTIONS: ""
-#     IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-#     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-#     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-#     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
-#     IA_CASE_PAYMENTS_API_URL: "http://ia-case-payments-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-#     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
-#     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
-#     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
-#     CCD_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
-#     OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
-#     S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#     IS_SAVE_AND_CONTINUE_ENABLED: "false"
-#     ROLE_ASSIGNMENT_URL: "http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#   keyVaults:
-#     ia:
-#       secrets:
-#         - docmosis-enabled
-#         - em-stitching-enabled
-#         - launch-darkly-sdk-key
-#   postgresql:
-#     #Whether to deploy the Postgres Chart or not
-#     #Whether to deploy the Postgres Chart or not
-    # enabled: true
-    # Enable this to use a local ccd user profile importer
-  # ccd-user-profile-importer:
-  #   image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a
-  #   environment:
-  #     AUTH_PROVIDER_BASE_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-  #     CCD_USER_PROFILE_URL: http://${SERVICE_NAME}-ccd-user-profile-api
-  #   users:
-  #     - system.update@hmcts.net|SSCS|Benefit|appealCreated
-  #     - sscs.superuser@mailinator.com|SSCS|Benefit|appealCreated
-  #     - sscs-citizen2@hmcts.net|SSCS|Benefit|appealCreated  #         disabled: true
-  #       ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD:
-  #         secretRef: role-assignment-service-IDAM-ADMIN-SECRET
-  #         key: key
-  #         disabled: true
-  #       ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET:
-  #         secretRef: role-assignment-service-IDAM-CLIENT-SECRET
-  #         key: key
-  # am-role-assignment-service:
-  #   java:
-  #     image: 'hmctspublic.azurecr.io/am/role-assignment-service:latest'
-  #     imagePullPolicy: Always
-  #     ingressHost: ""
-  #     releaseNameOverride: ${SERVICE_NAME}-am-role-assignment-service
-  #     readinessDelay: 240
-  #     livenessDelay: 240
-  #     environment:
-  #       ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
-  #       ROLE_ASSIGNMENT_DB_NAME: "role_assignment"
-  #       ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
-  #       AM_ROLE_ASSIGNMENT_SERVICE_SECRET: AAAAAAAAAAAAAAAA
-  #       IDAM_USER_URL: "https://idam-web-public.aat.platform.hmcts.net"
-  #       IDAM_S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-  #       OPEN_ID_API_BASE_URI: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o"
-  #       ROLE_ASSIGNMENT_IDAM_ADMIN_USERID: ras-validation-system@hmcts.net
-  #       SPRING_CLOUD_PROPERTIESVOLUME_PATHS: "/mnt/secrets/am,/mnt/secrets/sscs"
-  #       APPLICATION_LOGGING_LEVEL: INFO
-  #       BYPASS_ORG_DROOL_RULE: true
-  #       LAUNCH_DARKLY_ENV: pr
-  #       ENABLE_DB_MIGRATE: true
-  #     keyVaults:
-  #       sscs:
-  #         secrets:
-  #           - name: preview-ccd-db-username
-  #             alias: ROLE_ASSIGNMENT_DB_USERNAME
-  #           - name: preview-ccd-db-password
-  #             alias: ROLE_ASSIGNMENT_DB_PASSWORD
-  #     secrets:
-  #       LD_SDK_KEY:
-  #         secretRef: role-assignment-service-LD-SDK-KEY
-  #         key: key
-  #         disabled: true
