@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
@@ -96,7 +97,17 @@ public class MakeAnApplicationTypesProvider {
 
             case PENDING_PAYMENT:
             case AWAITING_RESPONDENT_EVIDENCE:
-                if (hasRole(ROLE_ADMIN)
+            case CASE_BUILDING:
+            case AWAITING_REASONS_FOR_APPEAL:
+            case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
+            case AWAITING_CMA_REQUIREMENTS:
+            case CASE_UNDER_REVIEW:
+            case REASONS_FOR_APPEAL_SUBMITTED:
+            case RESPONDENT_REVIEW:
+            case SUBMIT_HEARING_REQUIREMENTS:
+
+                if (currentState == AWAITING_RESPONDENT_EVIDENCE
+                    && hasRole(ROLE_ADMIN)
                     && isInternalCase(asylumCase)
                     && isAcceleratedDetainedAppeal(asylumCase)) {
 
@@ -108,14 +119,7 @@ public class MakeAnApplicationTypesProvider {
                             UPDATE_HEARING_REQUIREMENTS.toString()));
                     }
                 }
-            case CASE_BUILDING:
-            case AWAITING_REASONS_FOR_APPEAL:
-            case AWAITING_CLARIFYING_QUESTIONS_ANSWERS:
-            case AWAITING_CMA_REQUIREMENTS:
-            case CASE_UNDER_REVIEW:
-            case REASONS_FOR_APPEAL_SUBMITTED:
-            case RESPONDENT_REVIEW:
-            case SUBMIT_HEARING_REQUIREMENTS:
+
                 if (hasRole(ROLE_LEGAL_REP) || hasHomeOfficeRole) {
                     values.add(new Value(JUDGE_REVIEW_LO.name(), JUDGE_REVIEW_LO.toString()));
                 } else {
