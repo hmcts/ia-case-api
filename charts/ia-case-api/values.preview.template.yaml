@@ -187,15 +187,15 @@ ccd:
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OAUTH2_TOKEN_ENDPOINT: https://idam-web-public.aat.platform.hmcts.net/oauth2/token'
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-  ccd-user-profile-api:
-    java:
-      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      imagePullPolicy: Always
-      enviroment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
-      keyVaults: [ ]
+#  ccd-user-profile-api:
+#    java:
+#      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+#      imagePullPolicy: Always
+#      enviroment:
+#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+#        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
+#      keyVaults: [ ]
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
