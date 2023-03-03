@@ -139,8 +139,8 @@ ccd:
     ras:
       enabled: false
   global:
-    ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
-    ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
+    ccdApiGatewayIngress: http://gateway-${SERVICE_FQDN}
+    ccdAdminWebIngress: http://admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://ccd-data-store-api-${SERVICE_FQDN}
     ccdDefinitionStoreUrl: http://ccd-definition-store-${SERVICE_FQDN}
     # Enable this to use a local ccd user profile importer
@@ -161,7 +161,7 @@ ccd:
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
-      ingressHost: gateway-${SERVICE_FQDN}
+      ingressHost: http://gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       disableKeyVaults: true
   ccd-data-store-api:
@@ -188,11 +188,11 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es
-      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      ingressHost: http://ccd-data-store-api-${SERVICE_FQDN}
   ccd-admin-web:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
-      ingressHost: admin-web-${SERVICE_FQDN}
+      ingressHost: http://admin-web-${SERVICE_FQDN}
       environment:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
@@ -229,7 +229,7 @@ ccd:
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
-      ingressHost: ccd-definition-store-${SERVICE_FQDN}
+      ingressHost: http://ccd-definition-store-${SERVICE_FQDN}
   postgresql:
     persistence:
       enabled: false
