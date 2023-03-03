@@ -203,15 +203,15 @@ ccd:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
       idam-pr:
         enabled: true
-#  ccd-user-profile-api:
-#    java:
-#      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-#      imagePullPolicy: Always
-#      enviroment:
-#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-#        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
-#      keyVaults: [ ]
+  #  ccd-user-profile-api:
+  #    java:
+  #      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+  #      imagePullPolicy: Always
+  #      enviroment:
+  #        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+  #        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+  #        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
+  #      keyVaults: [ ]
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
