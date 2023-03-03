@@ -193,7 +193,6 @@ ccd:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
-      disableKeyVaults: true
       environment:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
@@ -201,8 +200,34 @@ ccd:
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
+        ADMINWEB_LOGIN_URL: "https://idam-web-public.aat.platform.hmcts.net/login"
+        ADMINWEB_IMPORT_URL: "http://ccd-definition-store-${SERVICE_FQDN}/import"
+        ADMINWEB_JURISDICTIONS_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/data/jurisdictions"
+        ADMINWEB_USER_PROFILE_URL: "http://ccd-user-profile-api-aat.service.core-compute-aat.internal/users"
+        ADMINWEB_SAVE_USER_PROFILE_URL: "http://ccd-user-profile-api-aat.service.core-compute-aat.internal/users/save"
+        ADMINWEB_USER_ROLE_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/user-role"
+        ADMIN_ALL_USER_ROLES_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/user-roles"
+        ADMINWEB_CREATE_DEFINITION_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/draft"
+        ADMINWEB_UPDATE_DEFINITION_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/draft/save"
+        ADMINWEB_DELETE_DEFINITION_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/draft"
+        ADMINWEB_DEFINITIONS_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/drafts"
+        ADMINWEB_WHOAMI_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/idam/profile"
+        ADMINWEB_AUTHORIZATION_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/idam/adminweb/authorization"
+        ADMINWEB_IMPORT_AUDITS_URL: "http://ccd-definition-store-${SERVICE_FQDN}/api/import-audits"
+        ADMINWEB_ELASTIC_INDEX_URL: "http://ccd-definition-store-${SERVICE_FQDN}/elastic-support/index"
+        ADMINWEB_ELASTIC_CASE_TYPES_URL: "http://ccd-definition-store-${SERVICE_FQDN}/elastic-support/case-types"
+        ADMINWEB_GLOBAL_SEARCH_INDEX_URL: "http://ccd-definition-store-${SERVICE_FQDN}/elastic-support/global-search/index"
+        ADMINWEB_GET_DICTIONARY_URL: "http://ts-translation-service-aat.service.core-compute-aat.internal/dictionary"
+
+        ADMINWEB_ROLES_WHITELIST: "ccd-import,ccd-import-validate,manage-translations,load-translations"
       idam-pr:
         enabled: true
+      keyVaults:
+        ccd:
+          secrets:
+            - microservicekey-ccd-admin
+            - ccd-admin-web-oauth2-client-secret
+            - AppInsightsInstrumentationKey
   #  ccd-user-profile-api:
   #    java:
   #      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
