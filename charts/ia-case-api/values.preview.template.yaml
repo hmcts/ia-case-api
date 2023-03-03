@@ -200,15 +200,14 @@ ccd:
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
-
-      idam-pr:
-        enabled: true
-      keyVaults:
-        ccd:
-          secrets:
-            - microservicekey-ccd-admin
-            - ccd-admin-web-oauth2-client-secret
-            - AppInsightsInstrumentationKey
+    idam-pr:
+      enabled: true
+    keyVaults:
+      ccd:
+        secrets:
+          - microservicekey-ccd-admin
+          - ccd-admin-web-oauth2-client-secret
+          - AppInsightsInstrumentationKey
   #  ccd-user-profile-api:
   #    java:
   #      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
