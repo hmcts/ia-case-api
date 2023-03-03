@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.ADA_HEARING_REQUIREMENTS_TO_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ACCELERATED_DETAINED_APPEAL;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.IS_ADMIN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.ADJOURN;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.EXPEDITE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.JUDGE_REVIEW_LO;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.LINK_OR_UNLINK;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.OTHER;
@@ -17,7 +20,14 @@ import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTyp
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_APPEAL_DETAILS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.UPDATE_HEARING_REQUIREMENTS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.entities.MakeAnApplicationTypes.WITHDRAW;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_SUBMITTED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.APPEAL_TAKEN_OFFLINE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.AWAITING_RESPONDENT_EVIDENCE;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.DECIDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.ENDED;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.FINAL_BUNDLING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.LISTING;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.State.PENDING_PAYMENT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +58,7 @@ import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.field.YesOrNo;
 class MakeAnApplicationTypesProviderTest {
 
     private static final String ROLE_LEGAL_REP = "caseworker-ia-legalrep-solicitor";
+    private static final String ROLE_ADMIN = "caseworker-ia-admofficer";
 
     @Mock Callback<AsylumCase> callback;
     @Mock CaseDetails<AsylumCase> caseCaseDetails;
@@ -158,6 +169,75 @@ class MakeAnApplicationTypesProviderTest {
         DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
         assertNotNull(expectedList);
         assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @Test
+    void should_return_correct_application_types_when_internal_ada_case_awaiting_respondent_evidence() {
+        // For internal case, ADA, in AWAITING_RESPONDENT_EVIDENCE state
+
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails().getState()).thenReturn(AWAITING_RESPONDENT_EVIDENCE);
+
+        final List<Value> values = new ArrayList<>();
+        Collections.addAll(values,
+            new Value(ADJOURN.name(), ADJOURN.toString()),
+            new Value(EXPEDITE.name(), EXPEDITE.toString()),
+            new Value(JUDGE_REVIEW.name(), JUDGE_REVIEW.toString()),
+            new Value(TIME_EXTENSION.name(), TIME_EXTENSION.toString()),
+            new Value(WITHDRAW.name(), WITHDRAW.toString()),
+            new Value(LINK_OR_UNLINK.name(), LINK_OR_UNLINK.toString()),
+            new Value(OTHER.name(), OTHER.toString()));
+
+        DynamicList actualList =
+            new DynamicList(values.get(0), values);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems()).containsAll(actualList.getListItems());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {
+        "AWAITING_RESPONDENT_EVIDENCE",
+        "CASE_BUILDING",
+        "AWAITING_REASONS_FOR_APPEAL",
+        "AWAITING_CLARIFYING_QUESTIONS_ANSWERS",
+        "AWAITING_CMA_REQUIREMENTS",
+        "CASE_UNDER_REVIEW",
+        "REASONS_FOR_APPEAL_SUBMITTED",
+        "RESPONDENT_REVIEW",
+        "SUBMIT_HEARING_REQUIREMENTS",
+        "FTPA_SUBMITTED",
+        "FTPA_DECIDED",
+        "ADJOURNED",
+        "PREPARE_FOR_HEARING",
+        "PRE_HEARING",
+        "DECISION"
+    })
+    void should_have_updateHearingRequirements_when_internal_ada_case_after_hearing_req_submitted(State state) {
+        // For internal case, ADA, in AWAITING_RESPONDENT_EVIDENCE state (after triggering SUBMIT_HEARING_REQUIREMENT)
+
+        // The state doesn't change for an ADA case after SUBMIT_HEARING_REQUIREMENTS (remains
+        // AWAITING_RESPONDENT_EVIDENCE) but ADA_HEARING_REQUIREMENTS_TO_REVIEW will be set to YES
+
+        when(userDetails.getRoles()).thenReturn(List.of(ROLE_ADMIN));
+
+        when(callback.getCaseDetails()).thenReturn(caseCaseDetails);
+        when(caseCaseDetails.getCaseData()).thenReturn(asylumCase);
+        when(asylumCase.read(IS_ADMIN, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(asylumCase.read(ADA_HEARING_REQUIREMENTS_TO_REVIEW, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+        when(callback.getCaseDetails().getState()).thenReturn(state);
+
+        DynamicList expectedList = makeAnApplicationTypesProvider.getMakeAnApplicationTypes(callback);
+        assertNotNull(expectedList);
+        assertThat(expectedList.getListItems())
+            .contains(new Value(UPDATE_HEARING_REQUIREMENTS.name(), UPDATE_HEARING_REQUIREMENTS.toString()));
     }
 
     @ParameterizedTest
