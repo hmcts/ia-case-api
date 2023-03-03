@@ -16,7 +16,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
-    CCD_URL: "http://${SERVICE_NAME}-ccd-data-store-api"
+    CCD_URL: "http://ccd-data-store-api-${SERVICE_FQDN}"
     CCD_GW_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     DM_URL: "http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
@@ -69,11 +69,9 @@ idam-pr:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
     CCD Admin:
-      - http://${SERVICE_NAME}-ccd-admin-web/oauth2redirect
-    CCD:
-      - https://${SERVICE_NAME}-case-management-web/oauth2redirect
+      - http://admin-web-${SERVICE_FQDN}/oauth2redirect
     ccd_data_store_api:
-      - http://${SERVICE_NAME}-ccd-data-store-api/oauth2redirect
+      - http://ccd-data-store-api-${SERVICE_FQDN}/oauth2redirect
 
 xui-webapp:
   enabled: true
@@ -85,22 +83,18 @@ xui-webapp:
     memoryLimits: 1836Mi
     cpuLimits: 1900m
     environment:
-      HEALTH_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw/health
-      HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
-      HEALTH_TERMS_AND_CONDITIONS_API: http://${SERVICE_NAME}-xui-terms-and-conditions/health
-      SERVICES_EM_ANNO_API: http://${SERVICE_NAME}-ccd-api-gw
-      SERVICES_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
-      SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac
-      SERVICES_TERMS_AND_CONDITIONS: http://${SERVICE_NAME}-xui-terms-and-conditions
+      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_DATA_API: http://ccd-data-store-api-${SERVICE_FQDN}/health
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}/health
+      SERVICES_EM_ANNO_API: http://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-${SERVICE_FQDN}
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      SERVICES_HEARINGS_COMPONENT_API: http://jurisdiction-hearings-api-aat.service.core-compute-aat.internal
-      SERVICES_HMC_HEARINGS_COMPONENT_API: http://${SERVICE_NAME}-hmc-cft-hearing-service
       SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
-      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -128,6 +122,8 @@ ccd:
   ccd:
     adminWeb:
       enabled: true
+    managementWeb:
+      enabled: false
     definitionImporter:
       enabled: false
     userProfileImporter:
@@ -143,10 +139,10 @@ ccd:
     ras:
       enabled: false
   global:
-    ccdApiGatewayIngress: ${SERVICE_NAME}-ccd-api-gw
-    ccdAdminWebIngress: ${SERVICE_NAME}-ccd-admin-web
-    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
-    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
+    ccdDataStoreUrl: http://ccd-data-store-api-${SERVICE_FQDN}
+    ccdDefinitionStoreUrl: http://ccd-definition-store-${SERVICE_FQDN}
     # Enable this to use a local ccd user profile importer
     # ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
@@ -165,6 +161,7 @@ ccd:
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+      ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       disableKeyVaults: true
   ccd-data-store-api:
@@ -176,17 +173,36 @@ ccd:
       autoscaling:
         enabled: false
       disableKeyVaults: true
+      environment:
+        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,ia
+        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,ia
+        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
+        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+        IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
+        IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
+        IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-admin-web:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
-      ingressHost: ${SERVICE_NAME}-ccd-admin-web
+      ingressHost: admin-web-${SERVICE_FQDN}
       disableKeyVaults: true
       environment:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
         IDAM_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OAUTH2_TOKEN_ENDPOINT: https://idam-web-public.aat.platform.hmcts.net/oauth2/token'
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
+      idam-pr:
+        enabled: true
 #  ccd-user-profile-api:
 #    java:
 #      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
@@ -206,14 +222,14 @@ ccd:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,fpl_case_service,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ia,em_ccd_orchestrator,ccd_case_document_am_api
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ia,em_ccd_orchestrator,ccd_case_document_am_api
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
-      ingressHost: ${SERVICE_NAME}-ccd-admin-web/oauth2redirect
+      ingressHost: ccd-definition-store-${SERVICE_FQDN}
   postgresql:
     persistence:
       enabled: false
