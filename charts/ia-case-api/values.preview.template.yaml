@@ -200,6 +200,8 @@ ccd:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
+      autoscaling:
+        enabled: false
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
@@ -209,8 +211,9 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
-        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+        USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
+      ingressHost: ${SERVICE_NAME}-ccd-admin-web/oauth2redirect
   postgresql:
     persistence:
       enabled: false
