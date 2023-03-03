@@ -213,7 +213,7 @@ ccd:
         ELASTIC_SEARCH_FAIL_ON_IMPORT: false
         USER_PROFILE_HOST: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
       keyVaults: [ ]
-      ingressHost: ${SERVICE_NAME}-ccd-admin-web/oauth2redirect
+      ingressHost: ${SERVICE_NAME}-ccd-admin-web
   postgresql:
     persistence:
       enabled: false
