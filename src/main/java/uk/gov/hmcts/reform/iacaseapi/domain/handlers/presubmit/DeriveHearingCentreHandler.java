@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
+import uk.gov.hmcts.reform.iacaseapi.domain.entities.DetentionFacility;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.HearingCentre;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.ccd.callback.Callback;
@@ -68,6 +69,8 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                         .getCaseDetails()
                         .getCaseData();
 
+        String detentionFacility = String.valueOf(asylumCase.read(DETENTION_FACILITY, String.class));
+
         if (asylumCase.read(HEARING_CENTRE).isEmpty()
                 || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
 
@@ -75,7 +78,8 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
 
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
                 if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == NO
-                        && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO) {
+                        && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
+                        && !detentionFacility.equals(DetentionFacility.OTHER.getValue())) {
                     setHearingCentreFromDetentionFacilityName(asylumCase);
                 } else {
                     //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
@@ -89,6 +93,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 }
 
             } else {
+                // set Hearing Centre by Postcode for non-detained cases
                 trySetHearingCentreFromPostcode(asylumCase);
             }
         }
