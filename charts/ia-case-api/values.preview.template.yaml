@@ -158,12 +158,13 @@ ccd:
       imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
-        IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
+        IDAM_SERVICE_KEY: ${API_GATEWAY_S2S_KEY}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       disableKeyVaults: true
+
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
@@ -177,7 +178,7 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,ia
-        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,ia
+        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,ia, iac
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
@@ -186,9 +187,10 @@ ccd:
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true
-        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es
-        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es
+        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+
   ccd-admin-web:
     nodejs:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
@@ -200,18 +202,19 @@ ccd:
         IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
-      idam-pr:
+    idam-pr:
         enabled: true
 
-  #  ccd-user-profile-api:
-  #    java:
-  #      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-  #      imagePullPolicy: Always
-  #      enviroment:
-  #        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-  #        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-  #        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
-  #      keyVaults: [ ]
+#  ccd-user-profile-api:
+#    java:
+#      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+#      imagePullPolicy: Always
+#      environment:
+#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+#        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
+#      keyVaults: [ ]
+
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
@@ -220,7 +223,7 @@ ccd:
         enabled: false
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
+        DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ia,em_ccd_orchestrator,ccd_case_document_am_api
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
