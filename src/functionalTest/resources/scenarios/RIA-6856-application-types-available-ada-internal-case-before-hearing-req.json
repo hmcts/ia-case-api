@@ -1,0 +1,69 @@
+{
+  "description": "RIA-6856: Admins make an application for internal ADA case before submitting hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 68561,
+      "eventId": "makeAnApplication",
+      "state": "awaitingRespondentEvidence",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "appealType": "refusalOfEu"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfEu",
+        "isAdmin": "Yes",
+        "isAcceleratedDetainedAppeal": "Yes",
+        "makeAnApplicationTypes": {
+          "value": {
+            "code": "ADJOURN",
+            "label": "Adjourn"
+          },
+          "list_items": [
+            {
+              "code": "ADJOURN",
+              "label": "Adjourn"
+            },
+            {
+              "code": "EXPEDITE",
+              "label": "Expedite"
+            },
+            {
+              "code": "JUDGE_REVIEW",
+              "label": "Judge's review of application decision"
+            },
+            {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
+            {
+              "code": "WITHDRAW",
+              "label": "Withdraw"
+            },
+            {
+              "code": "LINK_OR_UNLINK",
+              "label": "Link/unlink appeals"
+            },
+            {
+              "code": "OTHER",
+              "label": "Other"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+

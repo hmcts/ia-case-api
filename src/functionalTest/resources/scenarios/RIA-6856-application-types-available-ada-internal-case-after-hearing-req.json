@@ -1,0 +1,67 @@
+{
+  "description": "RIA-6856: Admins make an application for internal ADA case after submitting hearing requirements",
+  "request": {
+    "uri": "/asylum/ccdAboutToStart",
+    "credentials": "AdminOfficer",
+    "input": {
+      "id": 68562,
+      "eventId": "makeAnApplication",
+      "state": "caseBuilding",
+      "caseData": {
+        "template": "minimal-appeal-submitted.json",
+        "replacements": {
+          "isAdmin": "Yes",
+          "isAcceleratedDetainedAppeal": "Yes",
+          "appealType": "refusalOfEu",
+          "adaHearingRequirementsToReview": "Yes"
+        }
+      }
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "errors": [],
+    "caseData": {
+      "template": "minimal-appeal-submitted.json",
+      "replacements": {
+        "appealType": "refusalOfEu",
+        "isAdmin": "Yes",
+        "isAcceleratedDetainedAppeal": "Yes",
+        "adaHearingRequirementsToReview": "Yes",
+        "makeAnApplicationTypes": {
+          "value": {
+            "code": "JUDGE_REVIEW",
+            "label": "Judge's review of application decision"
+          },
+          "list_items": [
+            {
+              "code": "JUDGE_REVIEW",
+              "label": "Judge's review of application decision"
+            },
+            {
+              "code": "UPDATE_HEARING_REQUIREMENTS",
+              "label": "Update hearing requirements"
+            },
+            {
+              "code": "TIME_EXTENSION",
+              "label": "Time extension"
+            },
+            {
+              "code": "WITHDRAW",
+              "label": "Withdraw"
+            },
+            {
+              "code": "LINK_OR_UNLINK",
+              "label": "Link/unlink appeals"
+            },
+            {
+              "code": "OTHER",
+              "label": "Other"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
