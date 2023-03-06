@@ -74,6 +74,40 @@ class HomeOfficeRequestHomeOfficeDataPreparerTest {
     }
 
     @ParameterizedTest
+    @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU", "AG" })
+    void handle_should_return_error_for_detained_appeals(AppealType appealType) {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(appealType));
+        when(asylumCase.read(APPELLANT_IN_DETENTION, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.YES));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
+    }
+
+    @Test
+    void handle_should_return_error_for_aaa_appeals() {
+
+        when(callback.getEvent()).thenReturn(Event.REQUEST_HOME_OFFICE_DATA);
+        when(callback.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetails.getCaseData()).thenReturn(asylumCase);
+
+        when(asylumCase.read(APPEAL_TYPE, AppealType.class)).thenReturn(Optional.of(AppealType.AG));
+
+        PreSubmitCallbackResponse<AsylumCase> response =
+            homeOfficeDataPreparer.handle(ABOUT_TO_START, callback);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).contains("You cannot request Home Office data for this appeal");
+    }
+
+    @ParameterizedTest
     @EnumSource(value = AppealType.class, names = { "PA", "RP", "DC", "EA", "HU" })
     void handler_should_not_error_for_no_match(AppealType appealType) {
 
