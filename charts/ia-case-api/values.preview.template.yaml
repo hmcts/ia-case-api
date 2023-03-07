@@ -97,7 +97,7 @@ xui-webapp:
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN} #added
       JURISDICTIONS: IA
-      LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
+#      LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
