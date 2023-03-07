@@ -368,9 +368,9 @@ class DeriveHearingCentreHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "Garth, MANCHESTER, Manchester, MANCHESTER", "Highpoint, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
-            "Swansea, NEWPORT, Newport, NEWPORT", "Perth, GLASGOW, Glasgow, GLASGOW",
-            "Reading, BIRMINGHAM, Birmingham, BIRMINGHAM"
+        "Garth, MANCHESTER, Manchester, MANCHESTER", "Highpoint, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+        "Swansea, NEWPORT, Newport, NEWPORT", "Perth, GLASGOW, Glasgow, GLASGOW",
+        "Reading, BIRMINGHAM, Birmingham, BIRMINGHAM"
     })
     void should_derive_hearing_centre_from_detention_facility_name_from_prison(
             String prisonName, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation
@@ -405,9 +405,9 @@ class DeriveHearingCentreHandlerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "Brookhouse, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE", "Dungavel, GLASGOW, Glasgow, GLASGOW",
-            "Harmondsworth, HATTON_CROSS, Hatton Cross, HATTON_CROSS", "Derwentside, BRADFORD, Bradford, BRADFORD",
-            "Yarlswood, YARLSWOOD, Yarlswood, YARLS_WOOD"
+        "Brookhouse, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE", "Dungavel, GLASGOW, Glasgow, GLASGOW",
+        "Harmondsworth, HATTON_CROSS, Hatton Cross, HATTON_CROSS", "Derwentside, BRADFORD, Bradford, BRADFORD",
+        "Yarlswood, YARLSWOOD, Yarlswood, YARLS_WOOD"
     })
     void should_derive_hearing_centre_from_detention_facility_name_from_irc(
             String ircName, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation
