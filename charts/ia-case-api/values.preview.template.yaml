@@ -83,16 +83,16 @@ xui-webapp:
     memoryLimits: 1836Mi
     cpuLimits: 1900m
     environment:
-      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
-      HEALTH_CCD_DATA_API: http://ccd-data-store-api-${SERVICE_FQDN}/health
-      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-${SERVICE_FQDN}
-      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}
+      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
+      HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
+      SERVICES_EM_ANNO_API: https://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-${SERVICE_FQDN}
+      SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
+      SERVICES_S2S: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      SERVICES_PRD_LOCATION_API: https://rd-location-ref-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN} #added
@@ -142,11 +142,11 @@ ccd:
   global:
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: http://ccd-data-store-api-${SERVICE_FQDN}
-    ccdDefinitionStoreUrl: http://ccd-definition-store-${SERVICE_FQDN}
+    ccdDataStoreUrl: https://ccd-data-store-api-${SERVICE_FQDN}
+    ccdDefinitionStoreUrl: https://ccd-definition-store-${SERVICE_FQDN}
     # Enable this to use a local ccd user profile importer
     # ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
-    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
+    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal #url doesn't work
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
@@ -188,7 +188,7 @@ ccd:
         #ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
-        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: https://${SERVICE_NAME}-es-master:9200
         ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
         ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
         ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
@@ -219,6 +219,22 @@ ccd:
 #        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
 #        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
 #      keyVaults: [ ]
+
+#  ccd-user-profile-api:
+#    java:
+#      autoscaling:
+#        enabled: false
+#      imagePullPolicy: Always
+#      enviroment:
+#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+#      keyVaults: [ ]
+#      environment:
+#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+#      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+#
+#  ccd-user-profile-importer:
+#    users:
+#      - et.api.1@hmcts.net|EMPLOYMENT|ET_Admin|Open
 
   ccd-definition-store-api:
     java:
@@ -257,8 +273,8 @@ ccd:
         MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
         MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
         MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
-        CCD_DATA_STORE_API_BASE_URL: http://ccd-data-store-api-${SERVICE_FQDN}
-        CCD_DEFINITION_STORE_API_BASE_URL: http://ccd-definition-store-${SERVICE_FQDN}
+        CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+        CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-${SERVICE_FQDN}
         PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
       autoscaling:
         enabled: false
@@ -267,7 +283,7 @@ ccd:
   am-role-assignment-service:
     java:
       environment:
-        CCD_DATA_STORE_URL: http://ccd-data-store-api-${SERVICE_FQDN}
+        CCD_DATA_STORE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
         RUN_LD_ON_STARTUP: false
       keyVaults: [ ]
 
