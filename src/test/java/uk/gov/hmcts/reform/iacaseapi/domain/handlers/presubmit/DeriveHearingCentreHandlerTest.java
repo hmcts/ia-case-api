@@ -366,8 +366,15 @@ class DeriveHearingCentreHandlerTest {
         verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HARMONDSWORTH);
     }
 
-    @Test
-    void should_derive_hearing_centre_from_detention_facility_name_from_prison() {
+    @ParameterizedTest
+    @CsvSource({
+            "Garth, MANCHESTER, Manchester, MANCHESTER", "Highpoint, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE",
+            "Swansea, NEWPORT, Newport, NEWPORT", "Perth, GLASGOW, Glasgow, GLASGOW",
+            "Reading, BIRMINGHAM, Birmingham, BIRMINGHAM"
+    })
+    void should_derive_hearing_centre_from_detention_facility_name_from_prison(
+            String prisonName, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation
+    ) {
 
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
@@ -377,13 +384,13 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(DETENTION_FACILITY)).thenReturn(Optional.of(DetentionFacility.PRISON));
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
-        when(asylumCase.read(PRISON_NAME, String.class)).thenReturn(Optional.of("Garth"));
+        when(asylumCase.read(PRISON_NAME, String.class)).thenReturn(Optional.of(prisonName));
         when(asylumCase.read(IRC_NAME, String.class)).thenReturn(Optional.empty());
-        when(hearingCentreFinder.findByDetentionFacility("Garth")).thenReturn(HearingCentre.MANCHESTER);
+        when(hearingCentreFinder.findByDetentionFacility(prisonName)).thenReturn(hearingCentre);
 
         CaseManagementLocation expectedCaseManagementLocation =
-                new CaseManagementLocation(Region.NATIONAL, BaseLocation.MANCHESTER);
-        when(caseManagementLocationService.getCaseManagementLocation(StaffLocation.getLocation(HearingCentre.MANCHESTER).toString()))
+                new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
                 .thenReturn(expectedCaseManagementLocation);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -392,13 +399,19 @@ class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
 
-        verify(hearingCentreFinder, times(1)).findByDetentionFacility("Garth");
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.MANCHESTER);
+        verify(hearingCentreFinder, times(1)).findByDetentionFacility(prisonName);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
     }
 
-    @Test
-    void should_derive_hearing_centre_from_detention_facility_name_from_irc() {
-
+    @ParameterizedTest
+    @CsvSource({
+            "Brookhouse, TAYLOR_HOUSE, Taylor House, TAYLOR_HOUSE", "Dungavel, GLASGOW, Glasgow, GLASGOW",
+            "Harmondsworth, HATTON_CROSS, Hatton Cross, HATTON_CROSS", "Derwentside, BRADFORD, Bradford, BRADFORD",
+            "Yarlswood, YARLSWOOD, Yarlswood, YARLS_WOOD"
+    })
+    void should_derive_hearing_centre_from_detention_facility_name_from_irc(
+            String ircName, HearingCentre hearingCentre, String staffLocation, BaseLocation baseLocation
+    ) {
         when(callback.getCaseDetails()).thenReturn(caseDetails);
         when(callback.getEvent()).thenReturn(SUBMIT_APPEAL);
         when(caseDetails.getCaseData()).thenReturn(asylumCase);
@@ -408,12 +421,12 @@ class DeriveHearingCentreHandlerTest {
         when(asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(AGE_ASSESSMENT, YesOrNo.class)).thenReturn(Optional.of(YesOrNo.NO));
         when(asylumCase.read(PRISON_NAME, String.class)).thenReturn(Optional.empty());
-        when(asylumCase.read(IRC_NAME, String.class)).thenReturn(Optional.of("Harmondsworth"));
-        when(hearingCentreFinder.findByDetentionFacility("Harmondsworth")).thenReturn(HearingCentre.HATTON_CROSS);
+        when(asylumCase.read(IRC_NAME, String.class)).thenReturn(Optional.of(ircName));
+        when(hearingCentreFinder.findByDetentionFacility(ircName)).thenReturn(hearingCentre);
 
         CaseManagementLocation expectedCaseManagementLocation =
-                new CaseManagementLocation(Region.NATIONAL, BaseLocation.HARMONDSWORTH);
-        when(caseManagementLocationService.getCaseManagementLocation(StaffLocation.getLocation(HearingCentre.HARMONDSWORTH).toString()))
+                new CaseManagementLocation(Region.NATIONAL, baseLocation);
+        when(caseManagementLocationService.getCaseManagementLocation(staffLocation))
                 .thenReturn(expectedCaseManagementLocation);
 
         PreSubmitCallbackResponse<AsylumCase> callbackResponse =
@@ -422,8 +435,8 @@ class DeriveHearingCentreHandlerTest {
         assertNotNull(callbackResponse);
         assertThat(callbackResponse.getData()).isEqualTo(asylumCase);
 
-        verify(hearingCentreFinder, times(1)).findByDetentionFacility("Harmondsworth");
-        verify(asylumCase, times(1)).write(HEARING_CENTRE, HearingCentre.HATTON_CROSS);
+        verify(hearingCentreFinder, times(1)).findByDetentionFacility(ircName);
+        verify(asylumCase, times(1)).write(HEARING_CENTRE, hearingCentre);
     }
 
     @Test
