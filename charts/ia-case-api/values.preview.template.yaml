@@ -16,7 +16,7 @@ java:
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    CCD_URL: "http://ccd-data-store-api-${SERVICE_FQDN}"
+    CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
     CCD_GW_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     DM_URL: "http://dm-store-aat.service.core-compute-aat.internal"
     IDAM_URL: "https://idam-api.aat.platform.hmcts.net"
@@ -86,9 +86,9 @@ xui-webapp:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: http://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-${SERVICE_FQDN}
+      SERVICES_EM_ANNO_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -140,9 +140,9 @@ ccd:
     ras:
       enabled: false
   global:
-    ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
-    ccdDataStoreUrl: https://ccd-data-store-api-${SERVICE_FQDN}
+    ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
     ccdDefinitionStoreUrl: https://ccd-definition-store-${SERVICE_FQDN}
     # Enable this to use a local ccd user profile importer
     # ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
@@ -273,7 +273,7 @@ ccd:
         MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
         MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
         MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
-        CCD_DATA_STORE_API_BASE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+        CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-${SERVICE_FQDN}
         PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
       autoscaling:
@@ -283,7 +283,7 @@ ccd:
   am-role-assignment-service:
     java:
       environment:
-        CCD_DATA_STORE_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
       keyVaults: [ ]
 
