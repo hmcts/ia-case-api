@@ -91,8 +91,8 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      SERVICES_S2S: https://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      SERVICES_PRD_LOCATION_API: https://rd-location-ref-api-aat.service.core-compute-aat.internal
+      SERVICES_S2S: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
       SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN} #added
