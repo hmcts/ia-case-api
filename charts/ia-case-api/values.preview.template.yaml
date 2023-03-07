@@ -83,11 +83,11 @@ xui-webapp:
     memoryLimits: 1836Mi
     cpuLimits: 1900m
     environment:
-      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: https://ccd-data-store-api-${SERVICE_FQDN}/health
       HEALTH_TERMS_AND_CONDITIONS_API: https://xui-terms-and-conditions-${SERVICE_FQDN}/health
-      SERVICES_EM_ANNO_API: https://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
+      SERVICES_EM_ANNO_API: http://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: https://ccd-data-store-api-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: https://xui-terms-and-conditions-${SERVICE_FQDN}
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
