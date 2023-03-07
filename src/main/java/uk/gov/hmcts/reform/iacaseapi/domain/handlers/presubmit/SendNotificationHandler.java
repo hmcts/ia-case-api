@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.iacaseapi.domain.handlers.presubmit;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.*;
+import static uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCaseFieldDefinition.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.iacaseapi.domain.handlers.HandlerUtils.isInternalCase;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.iacaseapi.domain.entities.AsylumCase;
@@ -142,11 +143,12 @@ public class SendNotificationHandler implements PreSubmitCallbackHandler<AsylumC
         return eventsToHandle;
     }
 
-    private List<Event> getInternalEventsToHandle() {
-        List<Event> eventsToHandle = Lists.newArrayList(
+    private Set<Event> getInternalEventsToHandle() {
+        Set<Event> eventsToHandle = Set.of(
                 //Event.SUBMIT_APPEAL,
                 Event.EDIT_APPEAL_AFTER_SUBMIT,
-                Event.REQUEST_RESPONDENT_EVIDENCE
+                Event.REQUEST_RESPONDENT_EVIDENCE,
+                Event.DECIDE_AN_APPLICATION
         );
         if (!isSaveAndContinueEnabled) {
             //eventsToHandle.add(Event.BUILD_CASE);
