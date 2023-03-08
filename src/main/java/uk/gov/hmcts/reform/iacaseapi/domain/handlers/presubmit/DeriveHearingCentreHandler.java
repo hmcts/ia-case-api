@@ -69,7 +69,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                         .getCaseDetails()
                         .getCaseData();
 
-        String detentionFacility = String.valueOf(asylumCase.read(DETENTION_FACILITY, String.class));
+        Optional<String> detentionFacility = asylumCase.read(DETENTION_FACILITY, String.class);
 
         if (asylumCase.read(HEARING_CENTRE).isEmpty()
                 || Event.EDIT_APPEAL_AFTER_SUBMIT.equals(callback.getEvent())) {
@@ -79,7 +79,7 @@ public class DeriveHearingCentreHandler implements PreSubmitCallbackHandler<Asyl
                 // for detained non-ADA non-AAA cases, set Hearing Centre according to Detention Facility
                 if (asylumCase.read(IS_ACCELERATED_DETAINED_APPEAL, YesOrNo.class).orElse(NO) == NO
                         && asylumCase.read(AGE_ASSESSMENT, YesOrNo.class).orElse(NO) == NO
-                        && !detentionFacility.equals(DetentionFacility.OTHER.getValue())) {
+                        && !detentionFacility.equals(Optional.of(DetentionFacility.OTHER.getValue()))) {
                     setHearingCentreFromDetentionFacilityName(asylumCase);
                 } else {
                     //assign dedicated Hearing Centre Harmondsworth for all other detained appeals
