@@ -79,6 +79,7 @@ spring:
   profiles:
     include:
       - postcodes
+      - hc-mapping
   flyway.enabled: true
   flyway.baselineOnMigrate: true
   flyway.schemas: ${POSTGRES_NAME:ia_case_api}
