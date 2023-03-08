@@ -66,7 +66,7 @@ ia-case-payments-api:
   enabled: true
   java:
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/ia-case-payments-api:latest
+    image: hmctspublic.azurecr.io/ia/case-payments-api:latest
     releaseNameOverride: ${SERVICE_NAME}-case-payments
     ingressHost: payments-api-${SERVICE_FQDN}
     environment:
