@@ -1,9 +1,9 @@
 {
-  "description": "RIA-6733 Mark EA/HU appeal as paid Case Officer",
+  "description": "RIA-6733 Mark EA/HU appeal as paid Admin Officer",
   "enabled": "true",
   "request": {
     "uri": "/asylum/ccdAboutToSubmit",
-    "credentials": "CaseOfficer",
+    "credentials": "AdminOfficer",
     "input": {
       "id": 6733,
       "eventId": "markAppealPaid",
