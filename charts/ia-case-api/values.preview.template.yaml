@@ -62,6 +62,23 @@ java:
       username: hmcts
       password: hmcts
 
+ia-case-payments-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: hmctspublic.azurecr.io/ia/ia-case-payments-api:latest # or pr
+    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
+    ingressHost: ia-payments-api-${SERVICE_FQDN}
+    environment:
+      IDAM_URL: https://idam-api.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal"
+      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+    keyVaults: []
+
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
@@ -260,27 +277,27 @@ ccd:
     persistence:
       enabled: false
 
-  aac-manage-case-assignment:
-    enabled: true
-    java:
-      imagePullPolicy: Always
-      releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
-      image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
-      ingressHost: aac-${SERVICE_FQDN}
-      environment:
-        IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-        MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
-        MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
-        MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
-        CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        CCD_DEFINITION_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-definition-store
-        PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
-      autoscaling:
-        enabled: false
-      keyVaults: [ ]
+#  aac-manage-case-assignment:
+#    enabled: true
+#    java:
+#      imagePullPolicy: Always
+#      releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
+#      image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+#      ingressHost: aac-${SERVICE_FQDN}
+#      environment:
+#        IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+#        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+#        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+#        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+#        MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
+#        MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
+#        MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
+#        CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+#        CCD_DEFINITION_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-definition-store
+#        PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+#      autoscaling:
+#        enabled: false
+#      keyVaults: [ ]
 
 #  am-role-assignment-service:
 #    java:
