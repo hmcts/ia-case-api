@@ -120,7 +120,7 @@ xui-webapp:
 
 ia-case-payments-api:
   enabled: true
-  nodejs:
+  java:
     imagePullPolicy: Always
     image: 'hmctspublic.azurecr.io/ia/ia-case-payments-api:latest'
     releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
