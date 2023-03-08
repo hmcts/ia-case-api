@@ -12,7 +12,7 @@ java:
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
-    IA_CASE_PAYMENTS_API_URL: "http://{{ .Release.Name }}-ia-case-payments"
+    IA_CASE_PAYMENTS_API_URL: "http://{{ .Release.Name }}-case-payments-api"
     IA_HOME_OFFICE_INTEGRATION_API_URL: "http://ia-home-office-integration-api-aat.service.core-compute-aat.internal/"
     IA_HOME_OFFICE_INTEGRATION_ENABLED: "false"
     IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
