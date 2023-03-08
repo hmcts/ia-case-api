@@ -62,23 +62,6 @@ java:
       username: hmcts
       password: hmcts
 
-ia-case-payments-api:
-  enabled: true
-  java:
-    imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ia/ia-case-payments-api:latest # or pr
-    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
-    ingressHost: ia-payments-api-${SERVICE_FQDN}
-    environment:
-      IDAM_URL: https://idam-api.aat.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
-      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal"
-      CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-    keyVaults: []
-
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
@@ -112,7 +95,7 @@ xui-webapp:
       SERVICES_PRD_LOCATION_API: http://rd-location-ref-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_JUDICIAL_API: http://rd-judicial-api-aat.service.core-compute-aat.internal
       SERVICES_PRD_COMMONDATA_API: http://rd-commondata-api-aat.service.core-compute-aat.internal
-      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN} #added
+      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       JURISDICTIONS: IA
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: false
@@ -134,6 +117,23 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
+
+ia-case-payments-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: 'hmctspublic.azurecr.io/ia/ia-case-payments-api:latest'
+    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
+    ingressHost: ia-payments-api-${SERVICE_FQDN}
+    environment:
+      IDAM_URL: https://idam-api.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal"
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+    keyVaults: []
 
 ccd:
   enabled: true
@@ -226,34 +226,6 @@ ccd:
 #        IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 #        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults: []
-#    idam-pr:
-#        enabled: true
-
-#  ccd-user-profile-api:
-#    java:
-#      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-#      imagePullPolicy: Always
-#      environment:
-#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-#        USER_PROFILE_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,ia
-#      keyVaults: [ ]
-
-#  ccd-user-profile-api:
-#    java:
-#      autoscaling:
-#        enabled: false
-#      imagePullPolicy: Always
-#      enviroment:
-#        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-#      keyVaults: [ ]
-#      environment:
-#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
-#      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
-#
-#  ccd-user-profile-importer:
-#    users:
-#      - et.api.1@hmcts.net|EMPLOYMENT|ET_Admin|Open
 
   ccd-definition-store-api:
     java:
@@ -276,35 +248,6 @@ ccd:
   postgresql:
     persistence:
       enabled: false
-
-#  aac-manage-case-assignment:
-#    enabled: true
-#    java:
-#      imagePullPolicy: Always
-#      releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
-#      image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
-#      ingressHost: aac-${SERVICE_FQDN}
-#      environment:
-#        IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-#        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-#        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-#        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-#        MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
-#        MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
-#        MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
-#        CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
-#        CCD_DEFINITION_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-definition-store
-#        PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
-#      autoscaling:
-#        enabled: false
-#      keyVaults: [ ]
-
-#  am-role-assignment-service:
-#    java:
-#      environment:
-#        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
-#        RUN_LD_ON_STARTUP: false
-#      keyVaults: [ ]
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
