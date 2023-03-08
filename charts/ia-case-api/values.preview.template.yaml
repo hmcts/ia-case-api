@@ -62,6 +62,23 @@ java:
       username: hmcts
       password: hmcts
 
+ia-case-payments-api:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    image: 'hmctspublic.azurecr.io/ia/ia-case-payments-api:latest'
+    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
+    ingressHost: ia-payments-api-${SERVICE_FQDN}
+    environment:
+      IDAM_URL: https://idam-api.aat.platform.hmcts.net
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
+      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal"
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+    keyVaults: []
+
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
   enabled: true
@@ -117,23 +134,6 @@ xui-webapp:
           - mc-idam-client-secret
           - system-user-name
           - system-user-password
-
-ia-case-payments-api:
-  enabled: true
-  java:
-    imagePullPolicy: Always
-    image: 'hmctspublic.azurecr.io/ia/ia-case-payments-api:latest'
-    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
-    ingressHost: ia-payments-api-${SERVICE_FQDN}
-    environment:
-      IDAM_URL: https://idam-api.aat.platform.hmcts.net
-      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-      PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
-      PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal"
-      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-    keyVaults: []
 
 ccd:
   enabled: true

@@ -22,6 +22,10 @@ dependencies:
     version: ~2.3.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
+  - name: ia-case-payments-api
+    version: ~0.0.15
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ia-case-payments-api.enabled
 #  - name: camunda-bpm
 #    version: 0.0.28
 #    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
