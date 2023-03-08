@@ -67,8 +67,8 @@ ia-case-payments-api:
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/ia-case-payments-api:latest
-    releaseNameOverride: ${SERVICE_NAME}-ia-case-payments
-    ingressHost: ia-payments-api-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-case-payments
+    ingressHost: payments-api-${SERVICE_FQDN}
     environment:
       IDAM_URL: https://idam-api.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
