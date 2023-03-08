@@ -143,10 +143,10 @@ ccd:
     ccdApiGatewayIngress: http://{{ .Release.Name }}-ccd-api-gw
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://{{ .Release.Name }}-ccd-data-store-api
-    ccdDefinitionStoreUrl: https://ccd-definition-store-${SERVICE_FQDN}
+    ccdDefinitionStoreUrl:  http://{{ .Release.Name }}-ccd-definition-store
     # Enable this to use a local ccd user profile importer
     # ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
-    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal #url doesn't work
+    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
@@ -274,7 +274,7 @@ ccd:
         MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
         MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,ia #?
         CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        CCD_DEFINITION_STORE_API_BASE_URL: https://ccd-definition-store-${SERVICE_FQDN}
+        CCD_DEFINITION_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-definition-store
         PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
       autoscaling:
         enabled: false
