@@ -63,7 +63,7 @@ java:
       password: hmcts
 
 ia-case-payments-api:
-  enabled: true
+  enabled: false
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
