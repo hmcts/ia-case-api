@@ -54,6 +54,9 @@ def secrets = [
         secret('submit-hearing-requirements-enabled', 'IA_SUBMIT_HEARING_REQUIREMENTS_ENABLED'),
         secret('launch-darkly-sdk-key', 'LAUNCH_DARKLY_SDK_KEY'),
 
+        secret('system-username', 'IA_SYSTEM_USERNAME'),
+        secret('system-password', 'IA_SYSTEM_PASSWORD'),
+
         secret('hearing-centre-activation-date-bradford', 'IA_HEARING_CENTRE_ACTIVATION_DATE_BRADFORD'),
         secret('hearing-centre-activation-date-manchester', 'IA_HEARING_CENTRE_ACTIVATION_DATE_MANCHESTER'),
         secret('hearing-centre-activation-date-newport', 'IA_HEARING_CENTRE_ACTIVATION_DATE_NEWPORT'),
