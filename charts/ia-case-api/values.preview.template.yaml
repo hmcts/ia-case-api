@@ -79,6 +79,7 @@ ia-case-payments-api:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
     keyVaults:
       ia:
+        resourceGroup: ia
         secrets:
           - idam-client-id
           - idam-secret
