@@ -63,7 +63,7 @@ java:
       password: hmcts
 
 ia-case-payments-api:
-  enabled: false
+  enabled: true
   java:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ia/case-payments-api:latest
@@ -77,8 +77,7 @@ ia-case-payments-api:
       PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      #IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    keyVaults: []
+
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
