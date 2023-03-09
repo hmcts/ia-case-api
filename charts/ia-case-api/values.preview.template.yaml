@@ -74,19 +74,11 @@ ia-case-payments-api:
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
-      PAY_CALLBACK_URL: ia-payments-api-${SERVICE_FQDN}/service-request-update
+      PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    keyVaults:
-      ia:
-        secrets:
-          - idam-client-id
-          - idam-secret
-          - s2s-secret
-          - s2s-microservice
-          - system-username
-          - system-password
+      #IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
+    keyVaults: []
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
