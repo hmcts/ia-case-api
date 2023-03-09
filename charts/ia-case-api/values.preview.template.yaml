@@ -80,14 +80,11 @@ ia-case-payments-api:
       IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
     keyVaults:
       ia:
-        resourceGroup: ia
         secrets:
           - idam-client-id
           - idam-secret
-          - idam-redirect-uri
           - s2s-secret
           - s2s-microservice
-          - AppInsightsInstrumentationKey
           - system-username
           - system-password
 
