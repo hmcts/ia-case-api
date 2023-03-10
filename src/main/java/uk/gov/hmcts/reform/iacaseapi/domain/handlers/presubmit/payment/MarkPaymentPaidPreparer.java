@@ -79,7 +79,9 @@ public class MarkPaymentPaidPreparer implements PreSubmitCallbackHandler<AsylumC
             case PA:
             case AG:
             case EU:
-                if (internalDetainedCase(asylumCase)) {
+                if (HandlerUtils.isAcceleratedDetainedAppeal(asylumCase)) {
+                    callbackResponse.addError("Payment is not required for this type of appeal.");
+                } else if (internalDetainedCase(asylumCase)) {
                     if (awaitingRemissionDecision(asylumCase)) {
 
                         callbackResponse.addError("You cannot mark this appeal as paid because the remission decision has not been recorded.");
