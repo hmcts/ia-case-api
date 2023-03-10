@@ -70,15 +70,14 @@ ia-case-payments-api:
     releaseNameOverride: ${SERVICE_NAME}-case-payments-api
     ingressHost: ia-payments-api-${SERVICE_FQDN}
     environment:
-      IDAM_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_URL: https://idam-web-public.aat.platform.hmcts.net
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
       PAY_CALLBACK_URL: https://ia-payments-api-${SERVICE_FQDN}/service-request-update
       PROF_REF_DATA_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      #IA_IDAM_REDIRECT_URI: "https://ia-case-api-aat.service.core-compute-aat.internal/oauth2/callback"
-    keyVaults: []
+
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-idam-pr
