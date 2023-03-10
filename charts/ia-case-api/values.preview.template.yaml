@@ -8,7 +8,7 @@ java:
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
-    IA_CASE_DOCUMENTS_API_URL: "http://{{ .Release.Name }}-case-documents-api"
+    IA_CASE_DOCUMENTS_API_URL: "http://ia-case-documents-api-aat.service.core-compute-aat.internal/"
     IA_CASE_NOTIFICATIONS_API_URL: "http://ia-case-notifications-api-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_URL: "http://ia-timed-event-service-aat.service.core-compute-aat.internal/"
     IA_TIMED_EVENT_SERVICE_ENABLED: "false"
